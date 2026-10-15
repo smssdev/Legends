@@ -8,7 +8,7 @@
 |---|---|
 | الخطة والقرارات | [`docs/PLAN.md`](docs/PLAN.md) |
 | الهوية البصرية | [`brand/README.md`](brand/README.md) |
-| خطة السبرنتات حتى v1.0 | [`docs/SPRINTS.md`](docs/SPRINTS.md) |
+| خطة السبرنتات حتى v1.0 (32 سبرنتاً) | [`docs/SPRINTS.md`](docs/SPRINTS.md) |
 | دليل العمل للمطورين وأدوات الـ AI | [`CLAUDE.md`](CLAUDE.md) |
 
 **الحالة:** التخطيط انتهى، والتالي Sprint 1.
