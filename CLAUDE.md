@@ -14,7 +14,8 @@
 
 - Laravel 12 API (`backend/`, Sanctum توكن Bearer, البادئة `/api/v1`) يخدم الويب والموبايل معاً.
 - الويب: Vue 3 SPA (`web/`) + Vue Router + Pinia + Tailwind + Echo · RTL عربي.
-- الموبايل: Flutter (`mobile/`) لـ Android وiOS + Riverpod + go_router + dio + عميل Reverb (Pusher).
+- الموبايل: Flutter (`mobile/`) لـ Android في v1 + Riverpod + go_router + dio + عميل Reverb (Pusher). **iOS بعد v1:** لا تستخدم مكتبات خاصة بـ Android فقط، حتى يُضاف iOS بالبناء فقط.
+- **مجاني بالكامل في v1:** لا تضف خدمة أو مكتبة تحتاج اشتراكاً أو دفعاً.
 - عقد الـ API: `docs/api/openapi.yaml`، يُحدَّث في نفس PR أي تغيير في المسارات، ومنه يُولَّد عميل TypeScript وعميل Dart. أحداث المباراة في `docs/api/match-events.md`.
 - SQLite بوضع WAL (+ busy_timeout + foreign keys)، بثلاثة ملفات منفصلة: البيانات، والكاش، والطابور.
 - Reverb + Echo للبث اللحظي · Queues (database) · Scheduler كل دقيقة.
