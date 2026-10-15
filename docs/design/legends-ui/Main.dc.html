@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: نظام التصميم</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="width: 1440px; height: 1300px; box-sizing: border-box; padding: 64px 72px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; gap: 48px">
+
+<div style="display: flex; align-items: center; gap: 28px">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="شعار Legends" style="width: 96px; height: 96px; border-radius: 24px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 44px; letter-spacing: 0.5px">Legends <span style="color: #F5B82E">·</span> نظام التصميم</h1>
+<p style="margin: 0; font-size: 18px; color: #A9B6CC">داكن افتراضياً، ذهبي للفعل المهم، أخضر للملعب فقط. نفس المكونات في الويب والموبايل.</p>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+
+<section style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">الألوان</h2>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{swatches}}" as="s" hint-placeholder-count="10">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="height: 64px; border-radius: 14px; background: {{s.hex}}; border: 1px solid rgba(247,244,234,0.14)"></div>
+<div style="font-size: 13px; font-weight: 600">{{s.name}}</div>
+<div style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: #A9B6CC" dir="ltr">{{s.hex}}</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">الخطوط</h2>
+<div style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 36px; line-height: 1.2">ليلة الحسم في أنفيلد</div>
+<div style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 22px">عنوان قسم · Alexandria 700</div>
+<div style="font-size: 16px; line-height: 1.7; color: #D9DFEA">النص الأساسي بخط IBM Plex Sans Arabic بحجم 16، واضح على الشاشات الصغيرة والكبيرة، ومناسب للجداول وتعليق المباراة.</div>
+<div style="display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #F5B82E" dir="ltr">2 – 1</span>
+<span style="font-size: 14px; color: #A9B6CC">الأرقام والنتائج · Barlow Condensed</span>
+</div>
+</section>
+
+<section style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">الأزرار والشارات</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+<button type="button" style="height: 48px; padding: 0 24px; border-radius: 14px; border: 0; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">احفظ التشكيلة</button>
+<button type="button" style="height: 48px; padding: 0 24px; border-radius: 14px; border: 1.5px solid rgba(245,184,46,0.6); background: transparent; color: #F5B82E; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">تحسين تلقائي</button>
+<button type="button" style="height: 48px; padding: 0 20px; border-radius: 14px; border: 0; background: #163360; color: #F7F4EA; font-family: 'Alexandria', sans-serif; font-weight: 500; font-size: 16px">إلغاء</button>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<span style="display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(239,68,68,0.16); color: #FF8A8A; font-weight: 600; font-size: 13px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #EF4444"></span>مباشر 67'</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: #163360; font-size: 13px; font-weight: 600"><img src="/_blob/5bd2c4d5326f6c6a577d7a17fa6803e8" alt="" style="width: 18px; height: 18px">1,250</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(30,158,74,0.18); color: #6FDC97; font-size: 13px; font-weight: 600">فوز</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(169,182,204,0.16); color: #C9D2E1; font-size: 13px; font-weight: 600">تعادل</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(242,153,74,0.18); color: #FFB677; font-size: 13px; font-weight: 600">خسارة</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(245,184,46,0.16); color: #F5B82E; font-size: 13px; font-weight: 600">الحكم: صارم</span>
+</div>
+<div style="display: flex; gap: 10px; align-items: center">
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="4">
+<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 28px; padding: 0 10px; border-radius: 8px; background: {{l.bg}}; color: {{l.fg}}; font-weight: 700; font-size: 13px">{{l.name}}</span>
+</sc-for>
+<span style="font-size: 13px; color: #A9B6CC">ألوان الخطوط: تختلف في الإضاءة لا في اللون فقط</span>
+</div>
+</section>
+
+<section style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">بطاقة اللاعب واللياقة</h2>
+<sc-for list="{{players}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 14px; background: #0D2348">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 28px; border-radius: 8px; background: {{p.posBg}}; color: {{p.posFg}}; font-weight: 700; font-size: 13px">{{p.pos}}</span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-weight: 600; font-size: 16px">{{p.name}}</span>
+<span style="font-size: 13px; color: #A9B6CC">{{p.meta}}</span>
+</div>
+<div style="width: 120px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A9B6CC"><span>اللياقة</span><span dir="ltr" style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: {{p.fitColor}}">{{p.fit}}%</span></div>
+<div style="height: 6px; border-radius: 6px; background: rgba(247,244,234,0.10)"><div style="height: 6px; border-radius: 6px; width: {{p.fit}}%; background: {{p.fitColor}}"></div></div>
+</div>
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 12px; background: #163360; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; color: #F5B82E">{{p.ovr}}</span>
+</div>
+</sc-for>
+</section>
+
+</div>
+
+<section style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; gap: 40px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 8px; width: 260px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">شارات الأندية</h2>
+<p style="margin: 0; font-size: 14px; color: #A9B6CC; line-height: 1.6">شارة مولّدة من ألوان النادي وحروفه، بدل الشعارات الحقيقية.</p>
+</div>
+<div style="display: flex; gap: 18px; align-items: center">
+<sc-for list="{{crests}}" as="c" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 72px; border-radius: 18px 18px 32px 32px; background: {{c.bg}}; color: {{c.fg}}; border: 2px solid {{c.ring}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 1px">{{c.code}}</span>
+<span style="font-size: 13px; color: #D9DFEA">{{c.name}}</span>
+</div>
+</sc-for>
+</div>
+<div style="flex: 1"></div>
+<div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+<span style="font-size: 13px; color: #A9B6CC">التنقل</span>
+<div style="display: flex; gap: 6px; padding: 6px; border-radius: 16px; background: #0D2348">
+<span style="display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; background: rgba(245,184,46,0.14); color: #F5B82E; font-weight: 600; font-size: 14px">الرئيسية</span>
+<span style="display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; color: #C9D2E1; font-size: 14px">الفريق</span>
+<span style="display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; color: #C9D2E1; font-size: 14px">السوق</span>
+</div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() {
+const fitColor = (f) => f >= 80 ? '#2BB673' : f >= 60 ? '#F5B82E' : '#F2994A';
+const pos = {
+  'ح': { posBg: '#F5B82E', posFg: '#0A1F42' },
+  'د': { posBg: '#2F6FDB', posFg: '#FFFFFF' },
+  'و': { posBg: '#1E9E4A', posFg: '#FFFFFF' },
+  'هـ': { posBg: '#F2994A', posFg: '#2A1300' }
+};
+const players = [
+  { pos: 'هـ', name: 'محمد صلاح', meta: 'جناح أيمن · 33 سنة · مصر', ovr: 91, fit: 92 },
+  { pos: 'د', name: 'فيرجيل فان دايك', meta: 'قلب دفاع · 34 سنة · القائد', ovr: 90, fit: 68 },
+  { pos: 'و', name: 'ريان خرافنبيرخ', meta: 'وسط دفاعي · 23 سنة', ovr: 85, fit: 41 }
+].map((p) => ({ ...p, ...pos[p.pos], fitColor: fitColor(p.fit) }));
+return {
+  swatches: [
+    { name: 'كحلي (الخلفية)', hex: '#0A1F42' },
+    { name: 'سطح', hex: '#10284F' },
+    { name: 'سطح مرتفع', hex: '#163360' },
+    { name: 'ذهبي', hex: '#F5B82E' },
+    { name: 'ذهبي داكن', hex: '#C08A0C' },
+    { name: 'أخضر الملعب', hex: '#1E9E4A' },
+    { name: 'عاجي (النص)', hex: '#F7F4EA' },
+    { name: 'نص ثانوي', hex: '#A9B6CC' },
+    { name: 'مباشر', hex: '#EF4444' },
+    { name: 'تنبيه', hex: '#F2994A' }
+  ],
+  lines: [
+    { name: 'حارس', ...{ bg: '#F5B82E', fg: '#0A1F42' } },
+    { name: 'دفاع', ...{ bg: '#2F6FDB', fg: '#FFFFFF' } },
+    { name: 'وسط', ...{ bg: '#1E9E4A', fg: '#FFFFFF' } },
+    { name: 'هجوم', ...{ bg: '#F2994A', fg: '#2A1300' } }
+  ],
+  players,
+  crests: [
+    { code: 'LIV', name: 'ليفربول', bg: '#C8102E', fg: '#FFFFFF', ring: '#F6C343' },
+    { code: 'ARS', name: 'آرسنال', bg: '#FFFFFF', fg: '#DB0007', ring: '#DB0007' },
+    { code: 'MCI', name: 'مان سيتي', bg: '#6CABDD', fg: '#0A1F42', ring: '#FFFFFF' },
+    { code: 'CHE', name: 'تشيلسي', bg: '#034694', fg: '#FFFFFF', ring: '#DBA111' },
+    { code: 'NEW', name: 'نيوكاسل', bg: '#241F20', fg: '#FFFFFF', ring: '#FFFFFF' }
+  ]
+};
+}
+}
+</script>
+</body>
+</html>
