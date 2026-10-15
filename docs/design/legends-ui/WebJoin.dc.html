@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: الانضمام لدوري</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 900px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 14px; padding: 18px 32px; border-bottom: 1px solid rgba(247,244,234,0.06)">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 40px; height: 40px; border-radius: 10px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 1.5px; color: #F5B82E" dir="ltr">LEGENDS</span>
+<div style="flex: 1"></div>
+<a href="#" style="font-size: 14px; text-decoration: none; color: #C9D2E1">دورياتي (2 من 4)</a>
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 800">ح</span>
+</header>
+
+<main style="flex: 1; box-sizing: border-box; width: 100%; max-width: 1080px; margin: 0 auto; padding: 40px 24px; display: flex; flex-direction: column; gap: 28px">
+
+<ol aria-label="خطوات الانضمام" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 12px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<li style="flex: 1 1 200px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; background: {{s.bg}}; border: 1px solid {{s.border}}">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: {{s.dotBg}}; color: {{s.dotFg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px">{{s.mark}}</span>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">{{s.title}}</span><span style="font-size: 12px; color: #A9B6CC">{{s.sub}}</span></div>
+</li>
+</sc-for>
+</ol>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<section aria-label="كود الدوري" style="flex: 1 1 420px; border-radius: 22px; background: #10284F; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 26px">انضم بكود الدوري</h1>
+<p style="margin: 0; font-size: 14px; color: #A9B6CC">الكود من 8 أحرف، تجده في رابط الدعوة</p>
+</div>
+<div dir="ltr" style="display: flex; gap: 8px; justify-content: center">
+<sc-for list="{{code}}" as="c" hint-placeholder-count="8">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 60px; border-radius: 12px; background: #0A1F42; border: 1.5px solid rgba(245,184,46,0.55); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; color: #F5B82E">{{c}}</span>
+</sc-for>
+</div>
+<div style="border-radius: 18px; background: #0D2348; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 14px; background: rgba(245,184,46,0.14); color: #F5B82E"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 19px">دوري الشلة</span><span style="font-size: 13px; color: #A9B6CC">أنشأه سليمان</span></div>
+<span style="display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: rgba(30,158,74,0.18); color: #6FDC97; font-size: 12px; font-weight: 600">دوري نزيه</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="6">
+<div style="padding: 10px 12px; border-radius: 12px; background: rgba(247,244,234,0.04); display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A9B6CC">{{f.k}}</span><span style="font-weight: 600; font-size: 14px">{{f.v}}</span></div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section aria-label="حالة الطلب" style="flex: 1 1 340px; border-radius: 22px; background: linear-gradient(160deg, #12305E, #0D2348); border: 1px solid rgba(245,184,46,0.3); padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 88px; height: 88px; border-radius: 50%; background: rgba(245,184,46,0.12); box-shadow: 0 0 0 10px rgba(245,184,46,0.06)"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#F5B82E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2"></path></svg></span>
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 22px">طلبك وصل لسليمان</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #C9D2E1">بانتظار موافقته. سنرسل لك إشعاراً فور الموافقة، وبعدها تختار فريقك.</p>
+<div style="width: 100%; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; background: rgba(8,26,56,0.6); text-align: right">
+<span style="font-size: 12px; color: #A9B6CC">الأندية المتاحة الآن</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{available}}" as="a" hint-placeholder-count="6">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 38px; border-radius: 9px 9px 17px 17px; background: {{a.bg}}; color: {{a.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px">{{a.code}}</span>
+</sc-for>
+<span style="display: inline-flex; align-items: center; font-size: 13px; color: #A9B6CC">+6</span>
+</div>
+</div>
+<button type="button" style="width: 100%; height: 48px; border-radius: 14px; border: 0; background: rgba(247,244,234,0.08); color: #F7F4EA; font-size: 15px">إلغاء الطلب</button>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+const step = (mark, title, sub, state) => ({
+  mark, title, sub,
+  bg: state === 'now' ? 'rgba(245,184,46,0.10)' : '#10284F',
+  border: state === 'now' ? 'rgba(245,184,46,0.5)' : 'transparent',
+  dotBg: state === 'done' ? '#2BB673' : state === 'now' ? '#F5B82E' : 'rgba(247,244,234,0.10)',
+  dotFg: state === 'todo' ? '#C9D2E1' : '#0A1F42'
+});
+return {
+  steps: [step('✓', 'الكود', 'K7F2X9QA', 'done'), step('2', 'موافقة المنشئ', 'بانتظار سليمان', 'now'), step('3', 'اختيار الفريق', 'بعد الموافقة', 'todo')],
+  code: 'K7F2X9QA'.split(''),
+  facts: [
+    { k: 'القالب', v: 'الدوري الإنجليزي' }, { k: 'الفرق', v: '16 · منها 4 مدربين' },
+    { k: 'البداية', v: 'السبت 21:00 بتوقيتك' }, { k: 'الجولات', v: 'جولة يومياً' },
+    { k: 'الميزانية', v: '3 ملايين' }, { k: 'نهاية الموسم', v: 'موسم جديد' }
+  ],
+  available: [
+    { code: 'MCI', bg: '#6CABDD', fg: '#0A1F42' }, { code: 'NEW', bg: '#241F20', fg: '#FFFFFF' },
+    { code: 'TOT', bg: '#FFFFFF', fg: '#132257' }, { code: 'AVL', bg: '#670E36', fg: '#95BFE5' },
+    { code: 'MUN', bg: '#DA291C', fg: '#FBE122' }, { code: 'BHA', bg: '#0057B8', fg: '#FFFFFF' }
+  ]
+};
+}
+}
+</script>
+</body>
+</html>

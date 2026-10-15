@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: إنشاء حساب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+input::placeholder{color:#7F8DA8}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 900px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-wrap: wrap">
+
+<section aria-label="كيف تبدأ" style="flex: 1 1 480px; position: relative; overflow: hidden; box-sizing: border-box; padding: 56px; background: radial-gradient(120% 90% at 80% 10%, #163A70 0%, #0D2348 45%, #071733 100%); display: flex; flex-direction: column; justify-content: center; gap: 36px">
+<div style="display: flex; align-items: center; gap: 14px">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 56px; height: 56px; border-radius: 14px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: 2px; color: #F5B82E" dir="ltr">LEGENDS</span>
+</div>
+<div style="padding: 18px 20px; border-radius: 18px; background: rgba(245,184,46,0.10); border: 1px solid rgba(245,184,46,0.35); display: flex; align-items: center; gap: 14px; max-width: 520px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 18px">س</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 16px">سليمان دعاك إلى «دوري الشلة»</span><span style="font-size: 13px; color: #C9D2E1">الدوري الإنجليزي · 16 فريقاً · يبدأ السبت 21:00</span></div>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 18px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<li style="display: flex; align-items: flex-start; gap: 16px">
+<span style="flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: {{s.bg}}; color: {{s.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">{{s.n}}</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 17px">{{s.title}}</span><span style="font-size: 14px; color: #A9B6CC">{{s.body}}</span></div>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<section aria-label="إنشاء حساب" style="flex: 1 1 420px; box-sizing: border-box; padding: 48px 24px; display: flex; align-items: center; justify-content: center">
+<form style="width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 30px">أنشئ حسابك</h2>
+<p style="margin: 0; font-size: 15px; color: #A9B6CC">دقيقة واحدة وتكون على الدكة</p>
+</div>
+<button type="button" style="height: 52px; border-radius: 14px; border: 0; background: #FFFFFF; color: #1F2937; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 12px"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; color: #4285F4">G</span>التسجيل بحساب Google</button>
+<div style="display: flex; align-items: center; gap: 12px; color: #7F8DA8; font-size: 13px"><span style="flex: 1; height: 1px; background: rgba(247,244,234,0.12)"></span>أو بالبريد<span style="flex: 1; height: 1px; background: rgba(247,244,234,0.12)"></span></div>
+<label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 600">اسمك في اللعبة
+<input type="text" placeholder="مثلاً: كوتش حمزة" style="height: 50px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(247,244,234,0.14); background: #10284F; color: #F7F4EA; font-size: 16px">
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 600">البريد الإلكتروني
+<input type="email" dir="ltr" placeholder="you@example.com" style="height: 50px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(247,244,234,0.14); background: #10284F; color: #F7F4EA; font-size: 16px; text-align: left">
+</label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 600">كلمة المرور
+<input type="password" dir="ltr" value="legends2026" style="height: 50px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(247,244,234,0.14); background: #10284F; color: #F7F4EA; font-size: 16px; text-align: left">
+<span style="display: flex; gap: 6px"><span style="flex: 1; height: 4px; border-radius: 4px; background: #2BB673"></span><span style="flex: 1; height: 4px; border-radius: 4px; background: #2BB673"></span><span style="flex: 1; height: 4px; border-radius: 4px; background: #2BB673"></span><span style="flex: 1; height: 4px; border-radius: 4px; background: rgba(247,244,234,0.12)"></span></span>
+<span style="font-size: 12px; font-weight: 500; color: #6FDC97">قوية · 8 أحرف على الأقل وفيها رقم</span>
+</label>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #C9D2E1; line-height: 1.6"><input type="checkbox" checked style="width: 18px; height: 18px; margin-top: 3px; accent-color: #F5B82E">أوافق على <a href="#" style="text-decoration: none">الشروط</a> و<a href="#" style="text-decoration: none">سياسة الخصوصية</a></label>
+<button type="submit" style="height: 54px; border-radius: 14px; border: 0; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 17px">إنشاء الحساب</button>
+<p style="margin: 0; text-align: center; font-size: 13px; color: #A9B6CC">سنرسل رابط تأكيد إلى بريدك</p>
+<p style="margin: 0; text-align: center; font-size: 14px; color: #A9B6CC">عندك حساب؟ <a href="WebLogin.dc.html" style="font-weight: 600; text-decoration: none">سجّل الدخول</a></p>
+</form>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = (n, title, body, active) => ({ n, title, body, bg: active ? '#F5B82E' : 'rgba(247,244,234,0.08)', fg: active ? '#0A1F42' : '#C9D2E1' });
+return {
+  steps: [
+    s(1, 'أنشئ حسابك', 'بالبريد أو بحساب Google', true),
+    s(2, 'انضم بكود الدوري', 'وينتظر طلبك موافقة المنشئ', false),
+    s(3, 'اختر فريقك', 'أي نادٍ بلا مدرب، وابدأ الموسم', false)
+  ]
+};
+}
+}
+</script>
+</body>
+</html>

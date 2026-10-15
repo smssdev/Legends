@@ -30,7 +30,7 @@ a{color:#F5B82E}a:hover{color:#FFD36B}
 
 <div style="display: flex; gap: 8px; overflow: hidden">
 <sc-for list="{{formations}}" as="f" hint-placeholder-count="5">
-<button type="button" style="flex: none; height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px">{{f.label}}</button>
+<button type="button" dir="ltr" style="flex: none; height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px">{{f.label}}</button>
 </sc-for>
 </div>
 
@@ -93,10 +93,10 @@ const tab = (label, k, href, active) => ({ label, icon: I[k], href, fg: active ?
 const fitColor = (f) => f >= 80 ? '#2BB673' : f >= 60 ? '#F5B82E' : '#F2994A';
 const ring = { GK: '#F5B82E', D: '#2F6FDB', M: '#1E9E4A', A: '#F2994A' };
 const xi = [
-  ['أليسون', 'GK', 89, 95, 50, 90],
-  ['فريمبونغ', 'D', 83, 88, 86, 70], ['غوميز', 'D', 79, 90, 63, 76], ['فان دايك', 'D', 90, 68, 37, 76], ['كيركيز', 'D', 82, 58, 14, 70],
-  ['خرافنبيرخ', 'M', 85, 41, 50, 56], ['فيرتز', 'M', 89, 86, 76, 44], ['ماك أليستر', 'M', 87, 80, 24, 44],
-  ['صلاح', 'A', 91, 92, 84, 19], ['إيساك', 'A', 88, 88, 50, 13], ['خاكبو', 'A', 84, 84, 16, 19]
+  ['أليسون', 'GK', 89, 95, 50, 91],
+  ['فريمبونغ', 'D', 83, 88, 86, 70], ['غوميز', 'D', 79, 90, 63, 74], ['فان دايك', 'D', 90, 68, 37, 74], ['كيركيز', 'D', 82, 58, 14, 70],
+  ['خرافنبيرخ', 'M', 85, 41, 50, 54], ['فيرتز', 'M', 89, 86, 76, 42], ['ماك أليستر', 'M', 87, 80, 24, 42],
+  ['صلاح', 'A', 91, 92, 84, 18], ['إيساك', 'A', 88, 88, 50, 12], ['خاكبو', 'A', 84, 84, 16, 18]
 ].map(([name, line, ovr, fit, x, y]) => ({ name, ovr, fit, x, y, ring: ring[line], fitColor: fitColor(fit) }));
 const P = { 'ح': ['#F5B82E', '#0A1F42'], 'د': ['#2F6FDB', '#FFFFFF'], 'و': ['#1E9E4A', '#FFFFFF'], 'هـ': ['#F2994A', '#2A1300'] };
 const bench = [['و', 'سوبوسلاي', 83], ['و', 'إندو', 79], ['د', 'روبرتسون', 82], ['هـ', 'إيكيتيكي', 84], ['هـ', 'كييزا', 81]]

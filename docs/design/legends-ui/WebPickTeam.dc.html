@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: اختيار الفريق</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 1000px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; gap: 14px; padding: 18px 32px; border-bottom: 1px solid rgba(247,244,234,0.06)">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 40px; height: 40px; border-radius: 10px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 1.5px; color: #F5B82E" dir="ltr">LEGENDS</span>
+<div style="flex: 1"></div>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(30,158,74,0.18); color: #6FDC97; font-size: 13px; font-weight: 600">وافق سليمان على طلبك</span>
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 800">ح</span>
+</header>
+
+<main style="flex: 1; box-sizing: border-box; width: 100%; max-width: 1360px; margin: 0 auto; padding: 32px 24px 40px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<section aria-label="الأندية" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px">
+<div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 28px">اختر فريقك في دوري الشلة</h1>
+<span style="font-size: 14px; color: #A9B6CC">12 نادياً متاحاً من 16 · الأقوى أولاً</span>
+</div>
+<div style="display: flex; padding: 4px; border-radius: 12px; background: #10284F" role="group" aria-label="تصفية">
+<button type="button" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 0; background: #F5B82E; color: #0A1F42; font-size: 13px; font-weight: 700">المتاحة</button>
+<button type="button" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 0; background: transparent; color: #C9D2E1; font-size: 13px">الكل</button>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{clubs}}" as="c" hint-placeholder-count="16">
+<button type="button" style="text-align: right; padding: 16px; border-radius: 18px; border: 1.5px solid {{c.border}}; background: {{c.bg}}; color: #F7F4EA; opacity: {{c.opacity}}; display: flex; flex-direction: column; gap: 12px; font-family: 'IBM Plex Sans Arabic', sans-serif">
+<div style="display: flex; align-items: center; gap: 10px; width: 100%">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 46px; border-radius: 11px 11px 21px 21px; background: {{c.cbg}}; color: {{c.cfg}}; border: 2px solid {{c.ring}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px">{{c.code}}</span>
+<div style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 15px">{{c.name}}</span><span style="font-size: 12px; color: {{c.statusColor}}">{{c.status}}</span></div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%">
+<div style="display: flex; flex-direction: column"><span style="font-size: 11px; color: #A9B6CC">القوة</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; color: #F5B82E">{{c.str}}</span></div>
+<span style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: rgba(247,244,234,0.06); color: #C9D2E1">{{c.goal}}</span>
+</div>
+</button>
+</sc-for>
+</div>
+</section>
+
+<aside aria-label="النادي المختار" style="flex: 1 1 340px; min-width: 0; border-radius: 22px; background: linear-gradient(170deg, #12305E 0%, #0D2348 100%); border: 1px solid rgba(245,184,46,0.35); padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 72px; border-radius: 16px 16px 32px 32px; background: #FFFFFF; border: 2px solid #DB0007; color: #DB0007; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px">ARS</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 24px">آرسنال</span><span style="font-size: 13px; color: #A9B6CC">قوة 84.1 · الثاني في الدوري</span></div>
+</div>
+<div style="padding: 14px; border-radius: 14px; background: rgba(245,184,46,0.10); display: flex; align-items: center; gap: 12px">
+<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#F5B82E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3"></path></svg>
+<div style="display: flex; flex-direction: column"><span style="font-size: 12px; color: #A9B6CC">هدف الإدارة هذا الموسم</span><span style="font-weight: 700; font-size: 15px; color: #F5B82E">المنافسة على اللقب · نصف نهائي الكأس</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div style="padding: 10px; border-radius: 12px; background: rgba(8,26,56,0.6)"><div style="font-size: 11px; color: #A9B6CC">الميزانية</div><div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px" dir="ltr">3.0M</div></div>
+<div style="padding: 10px; border-radius: 12px; background: rgba(8,26,56,0.6)"><div style="font-size: 11px; color: #A9B6CC">اللاعبون</div><div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">24</div></div>
+<div style="padding: 10px; border-radius: 12px; background: rgba(8,26,56,0.6)"><div style="font-size: 11px; color: #A9B6CC">متوسط العمر</div><div style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">26.3</div></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: #A9B6CC">أبرز اللاعبين</span>
+<sc-for list="{{stars}}" as="s" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: rgba(8,26,56,0.5)">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 24px; border-radius: 7px; background: {{s.posBg}}; color: {{s.posFg}}; font-weight: 700; font-size: 11px">{{s.pos}}</span>
+<span style="flex: 1; font-weight: 600; font-size: 14px">{{s.name}}</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #F5B82E">{{s.ovr}}</span>
+</div>
+</sc-for>
+</div>
+<button type="button" style="height: 54px; border-radius: 14px; border: 0; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 17px">استلم تدريب آرسنال</button>
+<span style="font-size: 12px; color: #A9B6CC; text-align: center">يمكنك تدريب فريق واحد في كل دوري، وحتى 4 دوريات</span>
+</aside>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+const raw = [
+  ['ليفربول', 'LIV', '#C8102E', '#FFFFFF', '#F6C343', 84.8, 'سليمان'],
+  ['آرسنال', 'ARS', '#FFFFFF', '#DB0007', '#DB0007', 84.1, null, true],
+  ['مان سيتي', 'MCI', '#6CABDD', '#0A1F42', '#FFFFFF', 83.8],
+  ['نيوكاسل', 'NEW', '#241F20', '#FFFFFF', '#FFFFFF', 81.1],
+  ['توتنهام', 'TOT', '#FFFFFF', '#132257', '#132257', 80.9],
+  ['أستون فيلا', 'AVL', '#670E36', '#95BFE5', '#95BFE5', 80.6],
+  ['تشيلسي', 'CHE', '#034694', '#FFFFFF', '#DBA111', 80.4, 'يوسف'],
+  ['مان يونايتد', 'MUN', '#DA291C', '#FBE122', '#000000', 80.2, 'أحمد'],
+  ['نوتنغهام', 'NFO', '#DD0000', '#FFFFFF', '#FFFFFF', 79.5],
+  ['كريستال بالاس', 'CRY', '#1B458F', '#C4122E', '#C4122E', 78.2],
+  ['برايتون', 'BHA', '#0057B8', '#FFFFFF', '#FFFFFF', 77.7],
+  ['فولهام', 'FUL', '#FFFFFF', '#000000', '#CC0000', 77.6],
+  ['وست هام', 'WHU', '#7A263A', '#1BB1E7', '#1BB1E7', 77.4],
+  ['بورنموث', 'BOU', '#DA291C', '#000000', '#000000', 77.4],
+  ['إيفرتون', 'EVE', '#003399', '#FFFFFF', '#FFFFFF', 77.2],
+  ['برينتفورد', 'BRE', '#E30613', '#FFFFFF', '#FFFFFF', 76.6]
+];
+const goal = (i) => i < 2 ? 'اللقب' : i < 6 ? 'المربع الذهبي' : i < 10 ? 'النصف الأول' : 'البقاء';
+const clubs = raw.map(([name, code, cbg, cfg, ring, str, coach, selected], i) => ({
+  name, code, cbg, cfg, ring, str, goal: goal(i),
+  status: coach ? `مع المدرب ${coach}` : 'بلا مدرب · متاح',
+  statusColor: coach ? '#A9B6CC' : '#6FDC97',
+  bg: selected ? 'rgba(245,184,46,0.12)' : '#10284F',
+  border: selected ? '#F5B82E' : 'transparent',
+  opacity: coach ? 0.45 : 1
+}));
+const P = { 'ح': ['#F5B82E', '#0A1F42'], 'د': ['#2F6FDB', '#FFFFFF'], 'و': ['#1E9E4A', '#FFFFFF'], 'هـ': ['#F2994A', '#2A1300'] };
+const stars = [['هـ', 'بوكايو ساكا', 88], ['د', 'غابرييل', 88], ['و', 'ديكلان رايس', 87], ['و', 'مارتن أوديغارد', 87], ['هـ', 'فيكتور غيوكيريس', 87]]
+  .map(([pos, name, ovr]) => ({ pos, name, ovr, posBg: P[pos][0], posFg: P[pos][1] }));
+return { clubs, stars };
+}
+}
+</script>
+</body>
+</html>
