@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: اختيار الفريق</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+<div style="box-sizing: border-box; padding: 20px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; font-weight: 600; color: #6FDC97">وافق سليمان على طلبك</span>
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 22px">اختر فريقك</h1>
+<span style="font-size: 12px; color: #A9B6CC">12 نادياً متاحاً · الأقوى أولاً</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{clubs}}" as="c" hint-placeholder-count="9">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: {{c.bg}}; border: 1.5px solid {{c.border}}; opacity: {{c.opacity}}">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 40px; border-radius: 10px 10px 18px 18px; background: {{c.cbg}}; color: {{c.cfg}}; border: 2px solid {{c.ring}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px">{{c.code}}</span>
+<div style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 14px">{{c.name}}</span><span style="font-size: 11px; color: {{c.statusColor}}">{{c.status}}</span></div>
+<span style="font-size: 11px; padding: 2px 7px; border-radius: 6px; background: rgba(247,244,234,0.06); color: #C9D2E1">{{c.goal}}</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #F5B82E; width: 38px; text-align: left">{{c.str}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="position: absolute; bottom: 0; left: 0; right: 0; box-sizing: border-box; padding: 14px 16px 24px; background: rgba(8,26,56,0.97); border-top: 1px solid rgba(247,244,234,0.08); display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-size: 12px; color: #A9B6CC">هدف الإدارة:</span><span style="font-size: 13px; font-weight: 700; color: #F5B82E">المنافسة على اللقب</span></div>
+<button type="button" style="height: 54px; border-radius: 14px; border: 0; background: #F5B82E; color: #0A1F42; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 17px">استلم تدريب آرسنال</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const raw = [
+  ['ليفربول', 'LIV', '#C8102E', '#FFFFFF', '#F6C343', 84.8, 'سليمان'],
+  ['آرسنال', 'ARS', '#FFFFFF', '#DB0007', '#DB0007', 84.1, null, true],
+  ['مان سيتي', 'MCI', '#6CABDD', '#0A1F42', '#FFFFFF', 83.8],
+  ['نيوكاسل', 'NEW', '#241F20', '#FFFFFF', '#FFFFFF', 81.1],
+  ['توتنهام', 'TOT', '#FFFFFF', '#132257', '#132257', 80.9],
+  ['أستون فيلا', 'AVL', '#670E36', '#95BFE5', '#95BFE5', 80.6],
+  ['تشيلسي', 'CHE', '#034694', '#FFFFFF', '#DBA111', 80.4, 'يوسف'],
+  ['مان يونايتد', 'MUN', '#DA291C', '#FBE122', '#000000', 80.2, 'أحمد'],
+  ['نوتنغهام', 'NFO', '#DD0000', '#FFFFFF', '#FFFFFF', 79.5]
+];
+const goal = (i) => i < 2 ? 'اللقب' : i < 6 ? 'المربع' : 'النصف الأول';
+return {
+  clubs: raw.map(([name, code, cbg, cfg, ring, str, coach, selected], i) => ({
+    name, code, cbg, cfg, ring, str, goal: goal(i),
+    status: coach ? `مع ${coach}` : 'متاح',
+    statusColor: coach ? '#A9B6CC' : '#6FDC97',
+    bg: selected ? 'rgba(245,184,46,0.12)' : '#10284F',
+    border: selected ? '#F5B82E' : 'transparent',
+    opacity: coach ? 0.45 : 1
+  }))
+};
+}
+}
+</script>
+</body>
+</html>
