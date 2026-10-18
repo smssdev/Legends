@@ -135,6 +135,7 @@ a{color:#F5B82E}a:hover{color:#FFD36B}
 class Component extends DCLogic {
 renderVals() {
 const I = {
+  ball: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7l4 3-1.5 4.5h-5L8 10z',
   home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
   team: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-2a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8',
   lineup: 'M3 5h18v14H3zM12 5v14M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5',
@@ -147,9 +148,9 @@ const I = {
   league: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3',
   mail: 'M3 6h18v12H3zM3 7l9 6 9-6'
 };
-const links = { 'الرئيسية': 'WebHome.dc.html', 'الفريق': 'WebSquad.dc.html', 'التشكيلة': 'WebLineup.dc.html', 'التكتيك': 'WebTactics.dc.html', 'التدريب': 'WebTraining.dc.html', 'السوق': 'WebMarket.dc.html', 'الملعب': 'WebStadium.dc.html', 'المالية': 'WebFinance.dc.html', 'الدوري والكأس': 'WebLeague.dc.html' };
+const links = { 'الرئيسية': 'WebHome.dc.html', 'المباراة': 'WebMatch.dc.html', 'الفريق': 'WebSquad.dc.html', 'التشكيلة': 'WebLineup.dc.html', 'التكتيك': 'WebTactics.dc.html', 'التدريب': 'WebTraining.dc.html', 'السوق': 'WebMarket.dc.html', 'الملعب': 'WebStadium.dc.html', 'المالية': 'WebFinance.dc.html', 'الدوري والكأس': 'WebLeague.dc.html' };
 const active = 'الدوري والكأس';
-const nav = [['الرئيسية', 'home'], ['الفريق', 'team'], ['التشكيلة', 'lineup'], ['التكتيك', 'tactics'], ['التدريب', 'training'], ['السوق', 'market'], ['الكشاف', 'scout'], ['الملعب', 'stadium'], ['المالية', 'finance'], ['الدوري والكأس', 'league'], ['الرسائل', 'mail']]
+const nav = [['الرئيسية', 'home'], ['المباراة', 'ball'], ['الفريق', 'team'], ['التشكيلة', 'lineup'], ['التكتيك', 'tactics'], ['التدريب', 'training'], ['السوق', 'market'], ['الكشاف', 'scout'], ['الملعب', 'stadium'], ['المالية', 'finance'], ['الدوري والكأس', 'league'], ['الرسائل', 'mail']]
   .map(([label, k]) => ({ label, icon: I[k], href: links[label] || '#', bg: label === active ? 'rgba(245,184,46,0.14)' : 'transparent', fg: label === active ? '#F5B82E' : '#C9D2E1', weight: label === active ? 600 : 400 }));
 const C = {
   ARS: ['آرسنال', '#FFFFFF', '#DB0007'], LIV: ['ليفربول', '#C8102E', '#FFFFFF'], MCI: ['مان سيتي', '#6CABDD', '#0A1F42'], CHE: ['تشيلسي', '#034694', '#FFFFFF'],
