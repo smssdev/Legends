@@ -107,7 +107,7 @@ class Simulator
             $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
             $ball = $choreo['ball'];
             $ticks[] = $state['out'];
-            $out[] = $state['out'] + ['frames' => $choreo['frames'], 'teams' => self::teams($state)];
+            $out[] = $state['out'] + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
         }
 
         $match->fill(compact('state', 'ball', 'pending', 'applied', 'ticks'))->save();
@@ -144,7 +144,7 @@ class Simulator
             for ($n = 0; $live['next_at'] !== null && $now >= $live['next_at'] && ! $m->state['finished'] && $n < 300; $n++) {
                 $tick = $this->advance($m, 1)[0];
                 $live['recent'] = array_slice([...$live['recent'], $tick], -20);
-                $live['next_at'] += ($tick['period'] >= 3 ? $timing['extra_time_tick_ms'] : $timing['tick_ms']) + self::pauseMs($tick, $timing);
+                $live['next_at'] += $tick['moment']['ms'] + self::pauseMs($tick, $timing);
             }
             $m->live = $live;
             $m->save();

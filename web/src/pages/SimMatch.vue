@@ -17,6 +17,7 @@
           <svg v-else viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
         </button>
         <button v-for="s in [1, 2, 4]" :key="s" type="button" class="h-10 min-w-11 rounded-sm font-numbers text-lg" :class="speed === s ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="speed === s" dir="ltr" @click="speed = s">×{{ s }}</button>
+        <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="finished" @click="skipMoment">تخطَّ اللقطة</button>
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : 'تخطٍّ للنهاية' }}</button>
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
@@ -38,28 +39,21 @@
           <span class="text-xs text-text-muted">أي من المدربين يستطيع البدء.</span>
         </section>
 
-        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 1000 / 560" aria-label="الملعب" dir="ltr">
-          <PitchCanvas ref="pitch" :players="pitchPlayers" :kits="kits" />
+        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 16 / 9" aria-label="الملعب" dir="ltr">
+          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" @cue="onCue" @sound="onSound" />
 
-          <div dir="rtl" class="absolute end-3 top-3 flex items-stretch overflow-hidden rounded-md shadow-lg" aria-live="polite">
+          <div dir="rtl" class="absolute end-3 top-3 z-10 flex items-stretch overflow-hidden rounded-md shadow-lg" aria-live="polite">
             <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.home, color: kits.homeText }">{{ view.clubs.home.name }}</span>
             <span class="flex items-center bg-bg-deep px-3 py-1 font-numbers text-2xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.away, color: kits.awayText }">{{ view.clubs.away.name }}</span>
             <span class="flex items-center gap-1.5 bg-surface px-3 font-numbers text-xl text-gold"><span class="size-1.5 rounded-full bg-live" />{{ minuteText }}</span>
           </div>
 
-          <span v-if="phaseText" dir="rtl" class="absolute start-3 top-12 rounded-pill md:top-3 bg-bg-deep/80 px-3 py-1 text-xs text-text-soft">{{ phaseText }}</span>
-
           <div v-if="live && countdown > 0" dir="rtl" class="pointer-events-none absolute inset-0 flex items-center justify-center">
             <span class="font-numbers text-8xl text-gold drop-shadow-lg">{{ countdown }}</span>
           </div>
 
-          <div v-if="goal" dir="rtl" class="absolute inset-0 flex flex-col items-center justify-center gap-3" :style="{ background: `radial-gradient(circle at 50% 45%, ${goal.color}99, rgba(4,12,30,0.4) 62%)` }">
-            <span class="font-display text-6xl font-extrabold drop-shadow-lg md:text-7xl">هدف!</span>
-            <span class="rounded-pill bg-bg-deep/90 px-4 py-2 text-base font-semibold">{{ goal.text }}</span>
-          </div>
-
-          <div v-if="halftime || finished" dir="rtl" class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
+          <div v-if="halftime || finished" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
             <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : 'الاستراحة' }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
@@ -71,10 +65,6 @@
             </div>
           </div>
 
-          <div dir="rtl" class="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-lg bg-bg-deep/85 px-4 py-2">
-            <span class="font-numbers text-lg text-gold">{{ minuteText }}</span>
-            <span class="flex-1 text-sm font-semibold md:text-base">{{ feed[0]?.text ?? 'صافرة البداية...' }}</span>
-          </div>
         </section>
       </div>
 
@@ -179,7 +169,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
-import PitchCanvas from '../match/PitchCanvas.vue'
+import Broadcast from '../match/broadcast/Broadcast.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, sim, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
@@ -197,8 +187,6 @@ const minute = ref<[number, number]>([0, 0])
 const last = shallowRef<Tick | null>(null)
 const momentum = ref<number[]>([])
 const feed = ref<{ minute: string; text: string; important: boolean }[]>([])
-const goal = ref<{ text: string; color: string } | null>(null)
-const phaseText = ref('')
 const error = ref('')
 const playing = ref(true)
 const speed = ref(Number(route.query.speed) || 1)
@@ -208,7 +196,7 @@ const finished = ref(false)
 const skipping = ref(false)
 const dev = ref(false)
 const soundOn = ref(false)
-const pitch = ref<InstanceType<typeof PitchCanvas>>()
+const pitch = ref<any>()
 const sound = new MatchSound()
 
 const buffer: Tick[] = []
@@ -217,19 +205,46 @@ let timer = 0
 let htTimer = 0
 
 const minuteText = computed(() => (minute.value[1] ? `${minute.value[0]}+${minute.value[1]}'` : `${minute.value[0]}'`))
-const kits = computed(() => {
-  const h = clubColors(view.value?.clubs.home ?? ({} as any))
-  const a = clubColors(view.value?.clubs.away ?? ({} as any))
-  const clash = h.primary.toLowerCase() === a.primary.toLowerCase()
-  const textOn = (hex: string) => (parseInt(hex.slice(1, 3), 16) * 299 + parseInt(hex.slice(3, 5), 16) * 587 + parseInt(hex.slice(5, 7), 16) * 114) / 1000 > 150 ? '#0A1F42' : '#FFFFFF'
-  const away = clash ? a.secondary : a.primary
-  return { home: h.primary, homeText: textOn(h.primary), away, awayText: textOn(away) }
+// Score bug and stats colours follow the broadcast kits (with the away change kit on a clash).
+const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))
+// Kits for the 3D broadcast: shirt and trim from the club colours, shorts from the trim when it contrasts.
+const bkits = computed(() => {
+  const lum = (hex: string) => (parseInt(hex.slice(1, 3), 16) * 299 + parseInt(hex.slice(3, 5), 16) * 587 + parseInt(hex.slice(5, 7), 16) * 114) / 1000
+  const make = (side: Side, shirt: string, trim: string, gk: string) => {
+    const club = view.value?.clubs[side]
+    const shorts = Math.abs(lum(shirt) - lum(trim)) > 60 ? trim : shirt
+    return { shirt, trim, shorts, socks: shirt, text: lum(shirt) > 150 ? '#0A1F42' : '#FFFFFF', gk, name: club?.name ?? '', coach: 'مدرب ' + (club?.name ?? '') }
+  }
+  const h = clubColors(view.value?.clubs.home ?? ({} as any)), a = clubColors(view.value?.clubs.away ?? ({} as any))
+  // Two similar shirts (Arsenal and Liverpool are both red): the away side changes to its second colour, or to white or navy.
+  const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+  const far = (x: string, y: string) => rgb(x).reduce((d, v, i) => d + Math.abs(v - rgb(y)[i]), 0) > 160
+  let away = a.primary, awayTrim = a.secondary
+  if (!far(h.primary, away)) {
+    away = far(h.primary, a.secondary) ? a.secondary : far(h.primary, '#F3F0E6') ? '#F3F0E6' : '#1C2333'
+    awayTrim = a.primary
+  }
+  return { home: make('home', h.primary, h.secondary, '#2E8B57'), away: make('away', away, awayTrim, '#E9D70B') }
 })
-const pitchPlayers = computed(() => {
-  const out: Record<string, { no: number; side: Side; gk: boolean }> = {}
-  for (const side of ['home', 'away'] as Side[]) for (const p of teams.value[side]?.players ?? []) out[p.id] = { no: p.no, side, gk: p.slot_line === 'gk' }
-  return out
-})
+let pendingScore: Record<Side, number> | null = null
+function onCue(name: string) {
+  if (name === 'goal' && pendingScore) { score.value = pendingScore; pendingScore = null }
+}
+function onSound(name: string) {
+  if (name === 'kick') sound.kick(true)
+  else if (name === 'thud') sound.kick(false)
+  else if (name === 'whistle') sound.whistle(1)
+  else if (name === 'whistle-long') sound.whistle(1)
+  else if (name === 'roar' || name === 'net') { if (name === 'roar') sound.roar() }
+  else if (name === 'groan' || name === 'murmur') sound.groan()
+}
+function momentMs(t?: Tick) {
+  return (t?.moment?.ms ?? view.value?.timing.tick_ms ?? 3000) / speed.value
+}
+function skipMoment() {
+  pitch.value?.skip()
+  if (!live.value) { clearTimeout(timer); schedule(120) }
+}
 const nameOf = (side: Side, id?: number) => teams.value[side]?.players.find((p) => p.id === id)?.name ?? ''
 const clubName = (side: Side) => view.value?.clubs[side].name ?? ''
 
@@ -298,10 +313,6 @@ function applyDraft() {
 }
 
 // ---------------------------------------------------------------- clock
-function tickMs(t?: Tick) {
-  const timing = view.value!.timing
-  return ((t && t.period >= 3 ? timing.extra_time_tick_ms : timing.tick_ms) || 3000) / (live.value ? 1 : speed.value)
-}
 
 async function fetchNext(count = 1) {
   if (fetching || finished.value) return
@@ -330,36 +341,27 @@ async function step() {
   const t = buffer.shift()!
   show(t)
   if (!t.finished && buffer.length === 0) fetchNext()
-  if (!halftime.value && !finished.value) schedule(tickMs(t))
+  if (!halftime.value && !finished.value) schedule(momentMs(t))
 }
 
 function show(t: Tick, animate = true) {
   last.value = t
   minute.value = t.minute
-  score.value = t.score
+  if (pendingScore) score.value = pendingScore
+  pendingScore = null
+  // The score changes when the ball crosses the line in the shot, not at the start of the minute.
+  if (animate && t.events.some((e) => e.type === 'goal')) pendingScore = t.score
+  else score.value = t.score
   if (t.teams) teams.value = t.teams
   momentum.value = [...momentum.value, t.danger]
-  if (animate) pitch.value?.play(t.frames, tickMs(t) * 0.95)
+  if (animate) pitch.value?.play(t, { dirHome: t.period === 2 || t.period === 4 ? -1 : 1 })
   sound.danger(t.danger)
-  const att = [...t.events].reverse().find((e) => e.type === 'attack')
-  phaseText.value = att ? `هجمة ${clubName(att.team as Side)}${att.counter ? ' مرتدة' : ''}` : ''
 
   for (const e of t.events) {
     const text = line(e, nameOf, clubName)
     const important = ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type)
     if (text) feed.value.unshift({ minute: minuteText.value, text, important })
-    if (e.type === 'goal') {
-      const color = e.team === 'home' ? kits.value.home : kits.value.away
-      goal.value = { text: `${nameOf(e.team as Side, e.scorer)} ${minuteText.value}${e.assist ? ` · صناعة ${nameOf(e.team as Side, e.assist)}` : ''}`, color }
-      window.setTimeout(() => (goal.value = null), Math.max(1200, 2600 / speed.value))
-      sound.kick(true)
-      sound.roar()
-    } else if (e.type === 'attack' && ['saved', 'missed'].includes(e.result)) {
-      sound.kick(true)
-      sound.groan()
-    } else if (e.type === 'card' || e.type === 'foul' || (e.type === 'attack' && e.result === 'offside')) {
-      sound.whistle()
-    } else if (e.type === 'period') {
+    if (e.type === 'period') {
       sound.whistle(e.name === 'fulltime' ? 3 : 2)
       if (e.name === 'halftime' && animate) startHalftime()
     } else if (e.type === 'shootout') {
@@ -372,7 +374,7 @@ function show(t: Tick, animate = true) {
   }
   pending.value = pending.value.filter((o) => t.tick < o.target)
   rejected.value = t.rejected.map((r) => `رُفض الأمر: ${({ no_subs_left: 'لا تبديلات متبقية', bad_players: 'اللاعب غير متاح', bad_tactics: 'تكتيك غير صالح', bad_formation: 'طريقة غير صالحة' } as Record<string, string>)[r.reason] ?? r.reason}`)
-  if (t.finished) finished.value = true
+  if (t.finished) { if (animate) window.setTimeout(() => (finished.value = true), momentMs(t)); else finished.value = true }
   if (draft.plan === undefined && mine.value && teams.value[mine.value]) {
     Object.assign(draft, teams.value[mine.value].tactics)
     initial.value ??= { ...teams.value[mine.value].tactics }
