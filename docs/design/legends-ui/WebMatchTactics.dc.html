@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: التكتيك أثناء المباراة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#071733}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; min-height: 1000px; overflow: hidden; background: #071733; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+<dc-import name="WebMatch" hint-size="100%,1000px"></dc-import>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(4,12,30,0.62)"></div>
+
+<aside aria-label="التكتيك أثناء المباراة" style="position: absolute; top: 0; right: 0; bottom: 0; width: min(500px, 100%); box-sizing: border-box; background: #0B1E40; border-left: 1px solid rgba(247,244,234,0.10); box-shadow: -20px 0 60px rgba(0,0,0,0.5); display: flex; flex-direction: column">
+
+<div style="padding: 18px 20px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(247,244,234,0.08)">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px">التكتيك أثناء المباراة</h2>
+<span style="font-size: 13px; color: #A9B6CC">ليفربول <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px" dir="ltr">2-1</span> · الدقيقة <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; color: #F5B82E">67</span> · المباراة مستمرة خلفك</span>
+</div>
+<a href="WebMatch.dc.html" aria-label="إغلاق" style="width: 44px; height: 44px; border-radius: 12px; background: #163360; color: #F7F4EA; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+</div>
+
+<div style="flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 18px">
+
+<section style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">خطة اللعب</span>
+<div role="radiogroup" aria-label="خطة اللعب" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{plans}}" as="o" hint-placeholder-count="5">
+<button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="min-height: 58px; padding: 8px 12px; border-radius: 12px; border: 1.5px solid {{o.border}}; background: {{o.bg}}; color: #F7F4EA; text-align: right; display: flex; flex-direction: column; gap: 2px; font-family: inherit">
+<span style="font-weight: 700; font-size: 14px; color: {{o.fg}}">{{o.label}}</span>
+<span style="font-size: 12px; color: #A9B6CC">{{o.hint}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">قطع الكرة</span>
+<div role="radiogroup" aria-label="قطع الكرة" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #10284F">
+<sc-for list="{{tackling}}" as="o" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 44px; border-radius: 9px; border: 0; background: {{o.bg}}; color: {{o.fg}}; font-size: 13px; font-weight: 700">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #F2994A">الحكم متوسط · رايس عنده صفراء، ولاعبوك لا</span>
+</section>
+
+<sc-for list="{{sliders}}" as="s" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><label for="{{s.id}}" style="font-size: 14px; font-weight: 700">{{s.label}}</label><span style="font-size: 13px; color: #F5B82E; font-weight: 700">{{s.valueLabel}} · <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px">{{s.value}}</span></span></div>
+<input id="{{s.id}}" type="range" min="0" max="100" value="{{s.value}}" onInput="{{s.change}}" style="width: 100%; height: 28px; accent-color: #F5B82E">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A9B6CC"><span>{{s.min}}</span><span style="color: {{s.effectColor}}">{{s.effect}}</span><span>{{s.max}}</span></div>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700">التمركز</span>
+<sc-for list="{{positioning}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 74px; font-size: 13px; color: #C9D2E1">{{r.line}}</span>
+<div role="radiogroup" aria-label="{{r.line}}" style="flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #10284F">
+<sc-for list="{{r.opts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 44px; border-radius: 9px; border: 0; background: {{o.bg}}; color: {{o.fg}}; font-size: 12px; font-weight: 700">{{o.label}}</button></sc-for>
+</div>
+</div>
+</sc-for>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{toggles}}" as="t" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 14px; background: #10284F">
+<span style="font-size: 13px; font-weight: 700">{{t.label}}</span>
+<div role="radiogroup" aria-label="{{t.label}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{t.opts}}" as="o" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 44px; border-radius: 9px; border: 0; background: {{o.bg}}; color: {{o.fg}}; font-size: 13px; font-weight: 700">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #A9B6CC">{{t.note}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="الأثر المتوقع" style="display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; background: rgba(245,184,46,0.08); border: 1px solid rgba(245,184,46,0.3)">
+<span style="font-size: 14px; font-weight: 700; color: #F5B82E">الأثر المتوقع لتغييراتك</span>
+<sc-if value="{{noChanges}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #A9B6CC">لم تغيّر شيئاً بعد.</span></sc-if>
+<sc-for list="{{effects}}" as="e" hint-placeholder-count="3">
+<div style="display: flex; gap: 8px; font-size: 13px; line-height: 1.6"><span style="flex: none; width: 7px; height: 7px; margin-top: 8px; border-radius: 50%; background: {{e.color}}"></span><span><strong>{{e.what}}</strong> · {{e.why}}</span></div>
+</sc-for>
+<span style="font-size: 12px; color: #A9B6CC">النتيجة تأتي من المباراة نفسها: الأثر يظهر في الكرات المقطوعة والارتدادات واللياقة، لا كرقم قوة.</span>
+</section>
+</div>
+
+<div style="padding: 14px 20px 18px; border-top: 1px solid rgba(247,244,234,0.08); display: flex; gap: 10px; align-items: center">
+<a href="WebMatch.dc.html" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 54px; border-radius: 14px; background: #F5B82E; color: #0A1F42; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 16px">طبّق في الدقيقة <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 20px">68</span></a>
+<a href="WebMatch.dc.html" style="display: inline-flex; align-items: center; height: 54px; padding: 0 16px; border-radius: 14px; background: #163360; color: #F7F4EA; text-decoration: none; font-size: 14px">تجاهل</a>
+</div>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { plan: 'passing', tackle: 'eager', pressing: 85, style: 62, tempo: 60, att: 'support', mid: 'stay', def: 'fullbacks', trap: 'no', marking: 'zone' }; }
+  renderVals() {
+    const st = this.state || {};
+    const base = { plan: 'passing', tackle: 'eager', pressing: 75, style: 62, tempo: 60, att: 'support', mid: 'stay', def: 'fullbacks', trap: 'no', marking: 'zone' };
+    const on = (k, id) => st[k] === id;
+    const seg = (k, list) => list.map(([id, label]) => ({ label, on: on(k, id), pick: () => this.setState({ [k]: id }), bg: on(k, id) ? '#F5B82E' : 'transparent', fg: on(k, id) ? '#0A1F42' : '#C9D2E1' }));
+    const plans = [['counter', 'هجوم مرتد', 'قوي ضد الدفاع المتقدم'], ['long', 'كرات طويلة', 'يتجاوز الضغط بالبدنية'], ['passing', 'تمريرات', 'يقوى ضد الدفاع المتوسط'], ['wings', 'الأجنحة', 'قوي ضد الدفاع المتراجع'], ['shots', 'تسديد من بعيد', 'حين يتكتل الخصم في المنطقة']].map(([id, label, hint]) => ({ label, hint, on: on('plan', id), pick: () => this.setState({ plan: id }), bg: on('plan', id) ? 'rgba(245,184,46,0.14)' : '#10284F', border: on('plan', id) ? '#F5B82E' : 'rgba(247,244,234,0.08)', fg: on('plan', id) ? '#F5B82E' : '#F7F4EA' }));
+    const word = (v, lo, mid, hi) => v < 34 ? lo : v < 67 ? mid : hi;
+    const slider = (id, key, label, min, max, words, effect) => ({ id, label, min, max, value: st[key], valueLabel: word(st[key], words[0], words[1], words[2]), change: (e) => this.setState({ [key]: Number(e.target.value) }), effect: st[key] !== base[key] ? effect(st[key] > base[key]) : 'بدون تغيير', effectColor: st[key] !== base[key] ? '#F5B82E' : '#A9B6CC' });
+    const sliders = [
+      slider('tac-press', 'pressing', 'الضغط على الخصم', 'منخفض', 'عالٍ', ['منخفض', 'متوسط', 'عالٍ'], (up) => up ? 'كرات مقطوعة أكثر · لياقة أسرع' : 'لياقة أبطأ · مساحة لبنائهم'),
+      slider('tac-style', 'style', 'الأسلوب', 'دفاعي', 'هجومي', ['دفاعي', 'متوازن', 'هجومي'], (up) => up ? 'هجمات أكثر · مساحات خلفك' : 'أمان أكثر · هجمات أقل'),
+      slider('tac-tempo', 'tempo', 'إيقاع اللعب', 'بطيء', 'سريع', ['بطيء', 'متوسط', 'سريع'], (up) => up ? 'مباراة مفتوحة · دقة أقل' : 'احتفاظ بالكرة · هجمات أقل')
+    ];
+    const effects = [];
+    if (st.pressing !== base.pressing) effects.push({ color: '#F2994A', what: st.pressing > base.pressing ? 'لياقة الوسط تنزل أسرع' : 'لياقة أفضل في آخر 20 دقيقة', why: 'خرافنبيرخ عند 54% الآن' });
+    if (st.plan !== base.plan) effects.push({ color: '#F5B82E', what: 'خطة جديدة في مرحلة التقدم', why: 'تحكم عليها الدقائق القادمة من سلوك دفاعهم' });
+    if (st.tackle !== base.tackle) effects.push({ color: '#F5B82E', what: st.tackle === 'hard' ? 'أخطاء وبطاقات أكثر' : 'تغيّر في الكرات المسترجعة', why: 'الحكم متوسط' });
+    if (st.def !== base.def || st.att !== base.att || st.mid !== base.mid) effects.push({ color: '#2BB673', what: 'تغيّر أدوار الخطوط', why: 'ترى الأسهم الجديدة على الملعب في الدقيقة التالية' });
+    if (st.trap !== base.trap) effects.push({ color: '#F2994A', what: 'مصيدة التسلل', why: 'تقطع ارتداداتهم، وفشلها يعطي فرصة محققة' });
+    if (st.style !== base.style || st.tempo !== base.tempo) effects.push({ color: '#F5B82E', what: 'إيقاع المباراة يتغير', why: 'عدد الهجمات للفريقين معاً' });
+    return {
+      plans, tackling: seg('tackle', [['legal', 'قانوني'], ['normal', 'عادي'], ['eager', 'حماس'], ['hard', 'خشونة']]), sliders,
+      positioning: [
+        { line: 'المهاجمون', opts: seg('att', [['back', 'ارتداد'], ['support', 'مساندة الوسط'], ['only', 'هجوم فقط']]) },
+        { line: 'الوسط', opts: seg('mid', [['def', 'مساندة الدفاع'], ['stay', 'بقاء'], ['push', 'اندفاع']]) },
+        { line: 'المدافعون', opts: seg('def', [['stay', 'بقاء'], ['fullbacks', 'هجوم الظهيرين'], ['mid', 'مساندة الوسط']]) }
+      ],
+      toggles: [
+        { label: 'مصيدة التسلل', note: 'تقطع المرتد والكرات الطويلة', opts: seg('trap', [['yes', 'نعم'], ['no', 'لا']]) },
+        { label: 'الرقابة', note: 'رجل لرجل يحد من نجم واحد', opts: seg('marking', [['zone', 'منطقة'], ['man', 'رجل لرجل']]) }
+      ],
+      effects, noChanges: effects.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>

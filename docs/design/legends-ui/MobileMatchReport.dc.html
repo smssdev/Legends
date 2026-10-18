@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: تقرير المباراة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#071733}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; min-height: 1560px; box-sizing: border-box; padding: 12px 14px 28px; background: #071733; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; gap: 12px">
+
+<header style="display: flex; align-items: center; gap: 8px">
+<a href="MobileSimSetup.dc.html" aria-label="رجوع" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #10284F; color: #F7F4EA"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+<span style="flex: 1; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">تقرير المباراة</span>
+<a href="MobileMatch.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 12px; background: #163360; color: #F7F4EA; text-decoration: none; font-size: 13px">أعد المباراة</a>
+</header>
+
+<section aria-label="النتيجة النهائية" style="border-radius: 20px; background: linear-gradient(180deg, #12305E 0%, #0D2348 100%); padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 90px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 50px; border-radius: 12px 12px 24px 24px; background: #C8102E; border: 2px solid #F6C343; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px">LIV</span><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 14px">ليفربول</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 11px; color: #A9B6CC">نهاية المباراة</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 52px; line-height: 1" dir="ltr">1 <span style="color: #A9B6CC">–</span> 3</span><span style="height: 22px; padding: 0 10px; border-radius: 999px; background: rgba(43,182,115,0.18); color: #6FDC97; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center">فوز</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 90px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 50px; border-radius: 12px 12px 24px 24px; background: #FFFFFF; border: 2px solid #DB0007; color: #DB0007; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px">ARS</span><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 14px">آرسنال</span></div>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #C9D2E1"><span>صلاح 23' · إيساك 51' و68'</span><span>ساكا 38'</span></div>
+</section>
+
+<section aria-label="لماذا فزت" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 18px">لماذا فزت؟</h2>
+<sc-for list="{{reasons}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; gap: 12px; padding: 12px; border-radius: 16px; background: #10284F; border-right: 3px solid {{r.color}}">
+<div style="flex: none; width: 58px; display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; color: {{r.color}}">{{r.big}}</span><span style="font-size: 10px; color: #A9B6CC; text-align: center">{{r.unit}}</span></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700; font-size: 14px">{{r.title}}</span><span style="font-size: 12px; line-height: 1.6; color: #D9DFEA">{{r.text}}</span></div>
+</div>
+</sc-for>
+<div style="padding: 10px 12px; border-radius: 14px; background: rgba(242,153,74,0.10); border: 1px solid rgba(242,153,74,0.4); font-size: 12px; line-height: 1.6"><strong style="color: #FFB677">يحتاج تحسيناً:</strong> 3 ارتدادات خطيرة من خلف كيركيز، ومنها هدف ساكا.</div>
+</section>
+
+<section aria-label="رجل المباراة" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: linear-gradient(160deg, rgba(200,16,46,0.35), #10284F 60%); border: 1px solid rgba(245,184,46,0.35)">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: #C8102E; border: 2px solid #F6C343; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px">9</span>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 11px; font-weight: 700; color: #F5B82E">رجل المباراة</span><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px">ألكسندر إيساك</span><span style="font-size: 12px; color: #C9D2E1">هدفان · 3 على المرمى</span></div>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 32px; color: #F5B82E">9.1</span>
+</section>
+
+<section aria-label="الزخم" style="padding: 12px; border-radius: 16px; background: #10284F; display: flex; flex-direction: column; gap: 6px">
+<span style="font-weight: 700; font-size: 14px">الزخم</span>
+<svg viewBox="0 0 360 70" preserveAspectRatio="none" width="100%" height="70" role="img" aria-label="منحنى الزخم: أفضلية ليفربول معظم المباراة"><line x1="0" y1="35" x2="360" y2="35" stroke="rgba(247,244,234,0.18)"></line><path d="{{mom.up}}" fill="#C8102E"></path><path d="{{mom.down}}" fill="#F7F4EA" fill-opacity="0.8"></path></svg>
+<div style="display: flex; justify-content: space-between; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #A9B6CC"><span>'0</span><span>'45</span><span>'90</span></div>
+</section>
+
+<section aria-label="الإحصائيات" style="padding: 12px; border-radius: 16px; background: #10284F; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="8">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; justify-content: space-between; font-size: 12px"><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px">{{s.h}}</span><span style="color: #A9B6CC">{{s.label}}</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px">{{s.a}}</span></div>
+<div style="display: flex; gap: 3px; height: 5px"><div style="flex: {{s.h}}; border-radius: 5px; background: #C8102E"></div><div style="flex: {{s.a}}; border-radius: 5px; background: #F7F4EA"></div></div>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="أين لُعبت المباراة" style="padding: 12px; border-radius: 16px; background: #10284F; display: flex; flex-direction: column; gap: 6px">
+<span style="font-weight: 700; font-size: 14px">أين لُعبت المباراة؟</span>
+<div dir="ltr" style="display: grid; grid-template-columns: 20fr 52fr 28fr; height: 70px; border-radius: 10px; overflow: hidden; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px">
+<span style="background: #17803C; display: flex; align-items: center; justify-content: center">20%</span><span style="background: #1E9E4A; display: flex; align-items: center; justify-content: center">52%</span><span style="background: #27B358; display: flex; align-items: center; justify-content: center">28%</span>
+</div>
+<div dir="ltr" style="display: flex; justify-content: space-between; font-size: 11px; color: #A9B6CC"><span>ثلثنا</span><span>الوسط</span><span>ثلثهم</span></div>
+</section>
+
+<section aria-label="تقييمات لاعبيك" style="padding: 12px; border-radius: 16px; background: #10284F; display: flex; flex-direction: column; gap: 4px">
+<span style="font-weight: 700; font-size: 14px">تقييمات لاعبيك</span>
+<sc-for list="{{ratings}}" as="p" hint-placeholder-count="11">
+<div style="display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(247,244,234,0.05); font-size: 13px"><span style="flex: 1">{{p.name}}</span><span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 24px; border-radius: 7px; background: {{p.bg}}; color: {{p.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px">{{p.r}}</span></div>
+</sc-for>
+</section>
+
+<a href="MobileSimSetup.dc.html" style="display: inline-flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #F5B82E; color: #0A1F42; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 16px">مباراة جديدة</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1560}}'>
+const MR_MOM = [1, 2, 3, 2, 1, -1, -2, 0, 2, 3, 4, 3, 2, 1, 0, -1, 1, 2, 3, 5, 4, 3, 2, 1, -1, -2, -3, -2, -1, 0, 1, 2, 2, 1, 0, -2, -4, -5, -3, -1, 0, 1, 2, 1, 0, 1, 2, 3, 3, 4, 5, 4, 3, 2, 1, 0, -1, -2, -2, -1, 1, 2, 3, 3, 4, 3, -2, -3, 4, 3, 2, 1, 0, -1, -2, -1, 0, 1, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0, 1, 1];
+class Component extends DCLogic {
+  renderVals() {
+    const X = (m) => (360 - m / 90 * 360).toFixed(1);
+    let up = 'M360 35', down = 'M360 35';
+    MR_MOM.forEach((v, m) => { up += ' L' + X(m + 1) + ' ' + (35 - Math.max(0, v) * 6); down += ' L' + X(m + 1) + ' ' + (35 + Math.max(0, -v) * 6); });
+    up += ' L0 35 Z'; down += ' L0 35 Z';
+    const rc = (r) => r >= 8 ? ['#1E9E4A', '#FFFFFF'] : r >= 7 ? ['#5FB85A', '#0A1F42'] : r >= 6 ? ['#F5B82E', '#0A1F42'] : ['#F2994A', '#2A1300'];
+    const ratings = [['ألكسندر إيساك', 9.1], ['فلوريان فيرتز', 8.7], ['محمد صلاح', 8.2], ['رايان خرافنبيرخ', 7.6], ['أليكسيس ماك أليستر', 7.4], ['فيرجيل فان دايك', 7.3], ['إبراهيما كوناتي', 7.2], ['أليسون', 7.1], ['جيريمي فريمبونغ', 6.9], ['كودي خاكبو', 6.6], ['ميلوش كيركيز', 5.8]].map(([name, r]) => { const c = rc(r); return { name, r: r.toFixed(1), bg: c[0], fg: c[1] }; });
+    return {
+      mom: { up, down }, ratings,
+      reasons: [
+        { color: '#2BB673', big: '9', unit: 'بناء مقطوع', title: 'ضغطك أفسد بناءهم', text: 'فرصتان محققتان وهدف إيساك الأول جاءت من قطع الكرة في نصف ملعبهم.' },
+        { color: '#F5B82E', big: '6', unit: 'تمريرة حاسمة', title: 'فيرتز بين الخطوط', text: 'بعد تحولك للتمريرات في الدقيقة 62، صنع الهدف الثالث.' },
+        { color: '#6CABDD', big: '5/2', unit: 'فرص محققة', title: 'النتيجة تعكس المباراة', text: '3 أهداف من 5 فرص محققة، مقابل هدف من فرصتين.' }
+      ],
+      stats: [{ label: 'الاستحواذ %', h: 56, a: 44 }, { label: 'التسديدات', h: 15, a: 8 }, { label: 'على المرمى', h: 8, a: 3 }, { label: 'فرص محققة', h: 5, a: 2 }, { label: 'بناء مقطوع', h: 9, a: 4 }, { label: 'ارتدادات', h: 4, a: 6 }, { label: 'أخطاء', h: 11, a: 14 }, { label: 'بطاقات صفراء', h: 1, a: 3 }]
+    };
+  }
+}
+</script>
+</body>
+</html>

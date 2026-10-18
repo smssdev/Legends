@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: إعداد المحاكي</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#071733}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 1000px; background: radial-gradient(1200px 500px at 50% -120px, #163A73 0%, #071733 60%); color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; box-sizing: border-box; padding: 20px 28px 40px; display: flex; flex-direction: column; gap: 22px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 40px; height: 40px; border-radius: 10px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 1.5px; color: #F5B82E" dir="ltr">LEGENDS</span>
+</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(245,184,46,0.14); color: #F5B82E; font-size: 13px; font-weight: 700">المحاكي · في التطوير فقط</span>
+<div style="flex: 1"></div>
+<span style="font-size: 13px; color: #A9B6CC">نسخة البيانات <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: #F7F4EA">EA FC 26</span> · المحرك <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: #F7F4EA" dir="ltr">v1</span></span>
+</header>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 34px">مباراة في المحاكي</h1>
+<p style="margin: 0; font-size: 16px; color: #A9B6CC">اختر ناديين حقيقيين، وحدد من يدير كل فريق، ثم شاهد المباراة وأدرها بالتبديلات والتكتيك.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch">
+
+<sc-for list="{{teams}}" as="t" hint-placeholder-count="2">
+<section aria-label="{{t.aria}}" style="flex: 1 1 380px; min-width: 0; border-radius: 22px; background: #10284F; border: 1px solid rgba(247,244,234,0.08); padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 13px; font-weight: 700; color: #F5B82E">{{t.slot}}</span><span style="font-size: 12px; color: #A9B6CC">{{t.venue}}</span></div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #C9D2E1">ابحث عن نادٍ
+<span style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 14px; border-radius: 12px; background: #0D2348; border: 1px solid rgba(247,244,234,0.12)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A9B6CC" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input type="text" value="{{t.query}}" style="flex: 1; min-width: 0; border: 0; background: transparent; color: #F7F4EA; font-family: inherit; font-size: 15px; outline: none"></span>
+</label>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{leagues}}" as="lg" hint-placeholder-count="6"><span style="display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: 999px; background: {{lg.bg}}; color: {{lg.fg}}; font-size: 12px; font-weight: 600">{{lg.label}}</span></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 16px; padding: 14px; border-radius: 16px; background: linear-gradient(135deg, {{t.tint}}, rgba(13,35,72,0.4)); border: 1px solid rgba(247,244,234,0.10)">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 72px; border-radius: 18px 18px 32px 32px; background: {{t.crestBg}}; border: 2px solid {{t.crestRing}}; color: {{t.crestFg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px">{{t.code}}</span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 24px">{{t.name}}</span>
+<span style="font-size: 13px; color: #C9D2E1">الدوري الإنجليزي · <span dir="ltr" style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px">{{t.shape}}</span></span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 38px; line-height: 1; color: #F5B82E">{{t.str}}</span><span style="font-size: 11px; color: #A9B6CC">القوة</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{t.stars}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 26px; border-radius: 8px; background: {{s.posBg}}; color: {{s.posFg}}; font-size: 12px; font-weight: 700">{{s.pos}}</span><span style="flex: 1">{{s.name}}</span><span style="font-size: 12px; color: #A9B6CC">{{s.attr}}</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #F5B82E; width: 26px; text-align: left">{{s.ovr}}</span></div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #C9D2E1">من يدير الفريق؟</span>
+<div role="radiogroup" aria-label="{{t.ctrlAria}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 4px; border-radius: 12px; background: #0D2348">
+<sc-for list="{{t.ctrl}}" as="c" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.pick}}" style="height: 44px; border-radius: 9px; border: 0; background: {{c.bg}}; color: {{c.fg}}; font-size: 14px; font-weight: 700">{{c.label}}</button></sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding-top: 6px; border-top: 1px solid rgba(247,244,234,0.08); font-size: 13px; color: #C9D2E1">
+<span style="flex: 1">{{t.tactic}}</span>
+<a href="WebTactics.dc.html" style="font-weight: 700; text-decoration: none">عدّل التشكيلة والتكتيك</a>
+</div>
+</section>
+</sc-for>
+
+<section aria-label="مفتاح المواجهة" style="flex: 1 1 300px; min-width: 0; border-radius: 22px; background: #0D2348; border: 1px solid rgba(245,184,46,0.3); padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 18px">مفتاح المواجهة</h2>
+<sc-for list="{{keys}}" as="k" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 14px; background: #10284F">
+<span style="font-size: 14px; font-weight: 600">{{k.title}}</span>
+<div style="display: flex; align-items: center; gap: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 17px"><span style="color: #FF6B81">{{k.a}}</span><div style="flex: 1; height: 6px; border-radius: 6px; background: rgba(247,244,234,0.12); display: flex; overflow: hidden"><div style="width: {{k.pct}}%; background: #C8102E"></div></div><span>{{k.b}}</span></div>
+<span style="font-size: 12px; color: #A9B6CC">{{k.note}}</span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 14px; background: #10284F">
+<span style="font-size: 13px; color: #C9D2E1">التوقع من 2000 محاكاة (لوحة المطور)</span>
+<div style="display: flex; height: 30px; border-radius: 8px; overflow: hidden; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px">
+<span style="width: 43%; background: #C8102E; display: flex; align-items: center; justify-content: center">43%</span>
+<span style="width: 26%; background: #4A5B7A; display: flex; align-items: center; justify-content: center">26%</span>
+<span style="width: 31%; background: #F7F4EA; color: #DB0007; display: flex; align-items: center; justify-content: center">31%</span>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A9B6CC"><span>فوز ليفربول</span><span>تعادل</span><span>فوز آرسنال</span></div>
+</div>
+</section>
+</div>
+
+<section aria-label="إعدادات المباراة" style="border-radius: 22px; background: #10284F; border: 1px solid rgba(247,244,234,0.08); padding: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 24px">
+<sc-for list="{{settings}}" as="g" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: #C9D2E1">{{g.label}}</span>
+<div role="radiogroup" aria-label="{{g.label}}" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #0D2348">
+<sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="flex: 1; height: 44px; border-radius: 9px; border: 0; background: {{o.bg}}; color: {{o.fg}}; font-size: 13px; font-weight: 700">{{o.label}}</button></sc-for>
+</div>
+<span style="font-size: 12px; color: #A9B6CC">{{g.note}}</span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="sim-seed" style="font-size: 13px; color: #C9D2E1">البذرة</label>
+<div style="display: flex; gap: 6px">
+<input id="sim-seed" type="text" value="48213" dir="ltr" style="flex: 1; min-width: 0; height: 52px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(247,244,234,0.12); background: #0D2348; color: #F7F4EA; font-family: 'Barlow Condensed', sans-serif; font-size: 20px">
+<button type="button" style="height: 52px; padding: 0 14px; border-radius: 12px; border: 0; background: #163360; color: #F7F4EA; font-size: 13px">عشوائية</button>
+</div>
+<span style="font-size: 12px; color: #A9B6CC">نفس البذرة + نفس الأوامر = نفس المباراة حرفياً</span>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<a href="WebMatch.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 60px; padding: 0 36px; border-radius: 16px; background: #F5B82E; color: #0A1F42; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 19px; box-shadow: 0 10px 30px rgba(245,184,46,0.28)"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"></path></svg>ابدأ المباراة</a>
+<a href="WebMatchReport.dc.html" style="display: inline-flex; align-items: center; height: 60px; padding: 0 22px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid rgba(245,184,46,0.55); color: #F5B82E; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">النتيجة فوراً</a>
+<span style="font-size: 13px; color: #A9B6CC">حوالي 5 دقائق بسرعة ×1 · مقدمة 8 ثوانٍ واستراحة 30 ثانية</span>
+</div>
+
+<section aria-label="آخر المحاكيات" style="border-radius: 20px; background: #0D2348; padding: 16px 20px; display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0 0 6px; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">آخر المحاكيات</h2>
+<sc-for list="{{history}}" as="h" hint-placeholder-count="3">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(247,244,234,0.06); font-size: 14px">
+<span style="flex: 1 1 220px; font-weight: 600">{{h.match}}</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px" dir="ltr">{{h.score}}</span>
+<span style="font-size: 12px; color: #A9B6CC">{{h.meta}}</span>
+<a href="WebMatch.dc.html" style="display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 10px; background: #163360; color: #F7F4EA; text-decoration: none; font-size: 13px">أعد نفس المباراة</a>
+</div>
+</sc-for>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { ctrlL: 'me', ctrlA: 'cpu', ref: 'mid', comp: 'league', speed: '×1', venue: 'home', quality: 'auto' }; }
+  renderVals() {
+    const st = this.state || {};
+    const seg = (key, opts) => opts.map(([id, label]) => ({ label, on: st[key] === id, pick: () => this.setState({ [key]: id }), bg: st[key] === id ? '#F5B82E' : 'transparent', fg: st[key] === id ? '#0A1F42' : '#C9D2E1' }));
+    const pos = { 'هـ': ['#F2994A', '#2A1300'], 'و': ['#1E9E4A', '#FFFFFF'], 'د': ['#2F6FDB', '#FFFFFF'], 'ح': ['#F5B82E', '#0A1F42'] };
+    const star = (p, name, attr, ovr) => ({ pos: p, posBg: pos[p][0], posFg: pos[p][1], name, attr, ovr });
+    return {
+      leagues: ['الإنجليزي', 'الإسباني', 'الإيطالي', 'الألماني', 'الفرنسي', 'السعودي'].map((label, i) => ({ label, bg: i === 0 ? 'rgba(245,184,46,0.16)' : '#0D2348', fg: i === 0 ? '#F5B82E' : '#C9D2E1' })),
+      teams: [
+        { aria: 'الفريق الأول', slot: 'الفريق 1', venue: 'صاحب الأرض · أنفيلد', query: 'ليفربول', name: 'ليفربول', code: 'LIV', crestBg: '#C8102E', crestRing: '#F6C343', crestFg: '#FFFFFF', tint: 'rgba(200,16,46,0.28)', str: 85, shape: '4-2-3-1',
+          stars: [star('هـ', 'محمد صلاح', 'سرعة 89 · تسديد 88', 91), star('د', 'فيرجيل فان دايك', 'دفاع 90 · بدنية 87', 90), star('و', 'فلوريان فيرتز', 'تمرير 88 · مراوغة 90', 89)],
+          ctrlAria: 'من يدير ليفربول', ctrl: seg('ctrlL', [['me', 'أنا'], ['cpu', 'الحاسوب']]), tactic: 'تمريرات · ضغط 75 · هجومي معتدل · حماس' },
+        { aria: 'الفريق الثاني', slot: 'الفريق 2', venue: 'الضيف', query: 'آرسنال', name: 'آرسنال', code: 'ARS', crestBg: '#FFFFFF', crestRing: '#DB0007', crestFg: '#DB0007', tint: 'rgba(219,0,7,0.18)', str: 84, shape: '4-3-3',
+          stars: [star('هـ', 'بوكايو ساكا', 'سرعة 84 · مراوغة 88', 88), star('د', 'غابرييل', 'دفاع 88 · بدنية 84', 88), star('هـ', 'فيكتور غيوكيريس', 'سرعة 90 · بدنية 91', 87)],
+          ctrlAria: 'من يدير آرسنال', ctrl: seg('ctrlA', [['me', 'أنا'], ['cpu', 'الحاسوب']]), tactic: 'شخصية البوت: المتكيف · هجوم مرتد' }
+      ],
+      keys: [
+        { title: 'سرعة صلاح ضد إنكابيي', a: '89', b: '84', pct: 55, note: 'الطرف الأيمن مفتاح خطة الأجنحة' },
+        { title: 'ضغط ليفربول ضد بناء أوديغارد', a: '78', b: '88', pct: 47, note: 'لو كُسر الضغط، ارتداداتهم خطيرة' },
+        { title: 'خط الوسط: خرافنبيرخ وماك أليستر ضد رايس وزوبيميندي', a: '83', b: '81', pct: 51, note: 'سيطرة الوسط تحدد نصيب المبادرة' }
+      ],
+      settings: [
+        { label: 'الحكم', note: 'الصارم يُكثر البطاقات مع الخشونة', opts: seg('ref', [['soft', 'متساهل'], ['mid', 'متوسط'], ['strict', 'صارم']]) },
+        { label: 'المسابقة', note: 'الكأس: وقت إضافي ثم ترجيح عند التعادل', opts: seg('comp', [['league', 'دوري'], ['cup', 'كأس']]) },
+        { label: 'الملعب', note: 'ميزة الأرض 2.5% + أرضية الملعب', opts: seg('venue', [['home', 'أرض الفريق 1'], ['neutral', 'محايد']]) },
+        { label: 'السرعة', note: '×1 = 3 ثوانٍ لكل دقيقة لعب', opts: seg('speed', [['×1', '×1'], ['×2', '×2'], ['×4', '×4']]) },
+        { label: 'الجودة', note: 'تلقائي حسب قدرة الجهاز', opts: seg('quality', [['auto', 'تلقائي'], ['high', 'عالية'], ['lite', 'خفيفة'], ['text', 'نص']]) }
+      ],
+      history: [
+        { match: 'ليفربول ضد آرسنال', score: '3 – 1', meta: 'بذرة 48213 · أدرت ليفربول · 4 أوامر' },
+        { match: 'ريال مدريد ضد برشلونة', score: '2 – 2', meta: 'بذرة 99102 · بوت ضد بوت' },
+        { match: 'الهلال ضد النصر', score: '1 – 0', meta: 'بذرة 30577 · أدرت النصر · 6 أوامر' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

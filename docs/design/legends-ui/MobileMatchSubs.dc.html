@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: التبديل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#071733}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #071733; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+<dc-import name="MobileMatch" hint-size="390px,844px"></dc-import>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(4,12,30,0.6)"></div>
+
+<section aria-label="التبديل" style="position: absolute; left: 0; right: 0; bottom: 0; height: 660px; box-sizing: border-box; border-radius: 26px 26px 0 0; background: #0B1E40; border-top: 1px solid rgba(247,244,234,0.12); box-shadow: 0 -20px 50px rgba(0,0,0,0.55); display: flex; flex-direction: column">
+<div style="display: flex; justify-content: center; padding-top: 8px"><span style="width: 44px; height: 5px; border-radius: 5px; background: rgba(247,244,234,0.25)"></span></div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px">
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 18px">التبديل · <span style="font-family: 'Barlow Condensed', sans-serif" dir="ltr">1/3</span></span><span style="font-size: 12px; color: #A9B6CC">اختر من يخرج ثم من يدخل</span></div>
+<a href="MobileMatch.dc.html" aria-label="إغلاق" style="width: 44px; height: 44px; border-radius: 12px; background: #163360; color: #F7F4EA; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+</div>
+
+<div style="margin: 0 16px 8px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(245,184,46,0.10); border: 1px solid rgba(245,184,46,0.4)">
+<span style="flex: 1; font-size: 13px; line-height: 1.5"><strong style="color: #F5B82E">اقتراح:</strong> خرافنبيرخ (54%) ← إندو</span>
+<button type="button" onClick="{{takeSuggestion}}" style="height: 40px; padding: 0 12px; border-radius: 10px; border: 0; background: #F5B82E; color: #0A1F42; font-weight: 700; font-size: 13px">اختره</button>
+</div>
+
+<div role="tablist" aria-label="القائمة" style="margin: 0 16px 8px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #10284F">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{tb.on}}" onClick="{{tb.pick}}" style="height: 40px; border-radius: 9px; border: 0; background: {{tb.bg}}; color: {{tb.fg}}; font-size: 13px; font-weight: 700">{{tb.label}}</button></sc-for>
+</div>
+
+<div style="flex: 1; overflow-y: auto; padding: 0 16px; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{rows}}" as="p" hint-placeholder-count="8">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="display: flex; align-items: center; gap: 8px; min-height: 50px; padding: 6px 10px; border-radius: 12px; border: 1.5px solid {{p.border}}; background: {{p.bg}}; color: #F7F4EA; font-family: inherit; text-align: right">
+<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 24px; border-radius: 7px; background: {{p.posBg}}; color: {{p.posFg}}; font-size: 11px; font-weight: 700">{{p.pos}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 14px; font-weight: 600">{{p.name}}</span><span style="font-size: 11px; color: #A9B6CC">{{p.sub}}</span></span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; color: {{p.color}}" dir="ltr">{{p.val}}</span>
+</button>
+</sc-for>
+</div>
+
+<div style="padding: 10px 16px 22px; border-top: 1px solid rgba(247,244,234,0.08); display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px"><span style="color: #F2994A; font-weight: 700">{{outName}}</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A9B6CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg><span style="color: #2BB673; font-weight: 700">{{inName}}</span></div>
+<a href="MobileMatch.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 52px; border-radius: 14px; background: #F5B82E; color: #0A1F42; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 15px">بدّل في الدقيقة <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 18px">68</span></a>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'out', out: 38, inn: 3 }; }
+  renderVals() {
+    const st = this.state || {};
+    const pos = { 'ح': ['#F5B82E', '#0A1F42'], 'د': ['#2F6FDB', '#FFFFFF'], 'و': ['#1E9E4A', '#FFFFFF'], 'هـ': ['#F2994A', '#2A1300'] };
+    const col = (v) => v >= 75 ? '#2BB673' : v >= 60 ? '#F5B82E' : '#F2994A';
+    const pitch = [[38, 'و', 'رايان خرافنبيرخ', 54, 'وسط دفاعي · عليه صفراء'], [10, 'و', 'أليكسيس ماك أليستر', 61, 'وسط'], [30, 'د', 'جيريمي فريمبونغ', 63, 'ظهير أيمن'], [6, 'د', 'ميلوش كيركيز', 66, 'ظهير أيسر · تجاوزه ساكا 3 مرات'], [11, 'هـ', 'محمد صلاح', 70, 'جناح أيمن'], [7, 'و', 'فلوريان فيرتز', 72, 'وسط هجومي'], [9, 'هـ', 'ألكسندر إيساك', 74, 'مهاجم'], [18, 'هـ', 'كودي خاكبو', 76, 'جناح أيسر']];
+    const benchL = [[3, 'و', 'واتارو إندو', 79, 'وسط دفاعي · دفاع 79'], [8, 'و', 'دومينيك سوبوسلاي', 83, 'وسط هجومي · تمرير 84'], [26, 'د', 'آندي روبرتسون', 82, 'ظهير أيسر · تمرير 80'], [22, 'هـ', 'هوغو إيكيتيكي', 83, 'مهاجم · سرعة 86'], [17, 'و', 'كيرتس جونز', 80, 'وسط · مراوغة 82'], [2, 'د', 'جو غوميز', 79, 'قلب دفاع']];
+    const isOut = st.tab !== 'in';
+    const rows = isOut
+      ? pitch.map(([no, p, name, fit, sub]) => { const on = st.out === no; return { pos: p, posBg: pos[p][0], posFg: pos[p][1], name, sub, val: fit + '%', color: col(fit), on, pick: () => this.setState({ out: no, tab: 'in' }), bg: on ? 'rgba(242,153,74,0.14)' : '#10284F', border: on ? '#F2994A' : 'transparent' }; })
+      : benchL.map(([no, p, name, ovr, sub]) => { const on = st.inn === no; return { pos: p, posBg: pos[p][0], posFg: pos[p][1], name, sub, val: String(ovr), color: '#F5B82E', on, pick: () => this.setState({ inn: no }), bg: on ? 'rgba(43,182,115,0.14)' : '#10284F', border: on ? '#2BB673' : 'transparent' }; });
+    const o = pitch.find((r) => r[0] === st.out) || pitch[0];
+    const i = benchL.find((r) => r[0] === st.inn) || benchL[0];
+    return {
+      rows, outName: o[2], inName: i[2],
+      tabs: [['out', 'يخرج: في الملعب'], ['in', 'يدخل: البدلاء']].map(([id, label]) => ({ label, on: (st.tab || 'out') === id, pick: () => this.setState({ tab: id }), bg: (st.tab || 'out') === id ? '#F5B82E' : 'transparent', fg: (st.tab || 'out') === id ? '#0A1F42' : '#C9D2E1' })),
+      takeSuggestion: () => this.setState({ out: 38, inn: 3 })
+    };
+  }
+}
+</script>
+</body>
+</html>

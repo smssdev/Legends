@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: السوق</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+
+<div style="box-sizing: border-box; padding: 16px 16px 0; display: flex; flex-direction: column; gap: 12px">
+
+<header style="display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; display: flex; flex-direction: column">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 22px">السوق</h1>
+<span style="font-size: 12px; color: #A9B6CC">مفتوح حتى الجولة 22</span>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 10px; background: #10284F; font-size: 12px"><span style="color: #A9B6CC">الرصيد</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px" dir="ltr">3.24M</span></span>
+<button type="button" aria-label="الكشاف" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: rgba(245,184,46,0.14); color: #F5B82E; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"></path></svg></button>
+</header>
+
+<div style="display: flex; gap: 6px; overflow: hidden" role="tablist" aria-label="مصادر اللاعبين">
+<sc-for list="{{tabsTop}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" aria-selected="{{t.sel}}" style="flex: none; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px; border: 0; background: {{t.bg}}; color: {{t.fg}}; font-size: 13px; font-weight: 600">{{t.label}}<span style="font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: {{t.nColor}}">{{t.n}}</span></button>
+</sc-for>
+</div>
+
+<a href="#" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(160deg, #12305E 0%, #0D2348 100%); border: 1px solid rgba(245,184,46,0.35); text-decoration: none; color: #F7F4EA">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 38px; border-radius: 10px 10px 17px 17px; background: #FFFFFF; border: 2px solid #DB0007; color: #DB0007; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px">ARS</span>
+<span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 13px">حمزة يعرض على كودي خاكبو</span><span style="font-size: 11px; color: #A9B6CC">قيمته 920K · ينتهي بعد 11 ساعة</span></span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #F5B82E" dir="ltr">1.10M</span>
+</a>
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 12px; color: #A9B6CC">سعر ثابت 125% من القيمة</span>
+<button type="button" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: #10284F; color: #F7F4EA; font-size: 13px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>تصفية · 80+</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{players}}" as="p" hint-placeholder-count="7">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: #10284F">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: #163360; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: {{p.ovrColor}}">{{p.ovr}}</span>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; align-items: center; gap: 6px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 18px; border-radius: 5px; background: {{p.posBg}}; color: {{p.posFg}}; font-weight: 700; font-size: 10px">{{p.pos}}</span><span style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span></span>
+<span style="font-size: 11px; color: #A9B6CC">{{p.club}} · {{p.age}} سنة</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px" dir="ltr">{{p.price}}</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #7F8FAA" dir="ltr">{{p.value}}</span></div>
+<button type="button" aria-label="شراء {{p.name}}" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: #F5B82E; color: #0A1F42; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+</sc-for>
+</div>
+
+</div>
+
+<nav aria-label="التنقل" style="position: absolute; bottom: 0; left: 0; right: 0; height: 88px; box-sizing: border-box; padding: 8px 12px 20px; background: rgba(8,26,56,0.96); border-top: 1px solid rgba(247,244,234,0.08); display: flex; align-items: center; justify-content: space-around">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; height: 56px; border-radius: 14px; text-decoration: none; color: {{t.fg}}; background: {{t.bg}}">
+<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg>
+<span style="font-size: 11px; font-weight: {{t.weight}}">{{t.label}}</span>
+</a>
+</sc-for>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const I = {
+  home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  team: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-2a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8',
+  market: 'M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7',
+  ball: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7l4 3-1.5 4.5h-5L8 10z',
+  more: 'M5 12h.01M12 12h.01M19 12h.01'
+};
+const tab = (label, k, href, active) => ({ label, icon: I[k], href, fg: active ? '#F5B82E' : '#A9B6CC', bg: active ? 'rgba(245,184,46,0.12)' : 'transparent', weight: active ? 700 : 500 });
+const P = { 'ح': ['#F5B82E', '#0A1F42'], 'د': ['#2F6FDB', '#FFFFFF'], 'و': ['#1E9E4A', '#FFFFFF'], 'هـ': ['#F2994A', '#2A1300'] };
+const players = [
+  ['هـ', 'إرلينغ هالاند', 'مان سيتي', 25, 90, '1.38M', '1.73M'],
+  ['و', 'رودري', 'مان سيتي', 29, 90, '1.25M', '1.56M'],
+  ['و', 'ساندرو تونالي', 'نيوكاسل', 25, 86, '1.02M', '1.28M'],
+  ['و', 'برونو غيماريش', 'نيوكاسل', 28, 86, '940K', '1.18M'],
+  ['و', 'تشافي سيمونز', 'توتنهام', 22, 84, '960K', '1.20M'],
+  ['د', 'موريلو', 'نوتنغهام', 23, 83, '840K', '1.05M'],
+  ['هـ', 'أنتوني غوردون', 'نيوكاسل', 25, 83, '820K', '1.03M']
+].map(([pos, name, club, age, ovr, value, price]) => ({ pos, name, club, age, ovr, value, price, posBg: P[pos][0], posFg: P[pos][1], ovrColor: ovr >= 88 ? '#F5B82E' : '#F7F4EA' }));
+return {
+  players,
+  tabsTop: [['أندية الحاسوب', 294], ['القائمة', 6], ['المجموعة', 300], ['العروض', 3]].map(([label, n], i) => ({ label, n, sel: i === 0 ? 'true' : 'false', bg: i === 0 ? '#F5B82E' : '#10284F', fg: i === 0 ? '#0A1F42' : '#C9D2E1', nColor: i === 3 ? '#FF8A8A' : 'inherit' })),
+  tabs: [tab('الرئيسية', 'home', 'MobileHome.dc.html'), tab('الفريق', 'team', 'MobileSquad.dc.html'), tab('المباراة', 'ball', 'MobileMatch.dc.html'), tab('السوق', 'market', 'MobileMarket.dc.html', true), tab('المزيد', 'more', '#')]
+};
+}
+}
+</script>
+</body>
+</html>
