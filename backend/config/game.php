@@ -63,7 +63,7 @@ return [
         'phase_base_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 8200, 'header' => 3500],
         'phase_slope_bp' => 22,              // per rating point of difference
         'share_slope_bp' => 40,              // initiative share per point of midfield difference
-        'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 200, 'header' => 450],
+        'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 360, 'header' => 450],
         'goal_slope_bp' => 18,               // per point of shooter − keeper
         'penalty_goal_bp' => 7600, 'free_kick_goal_bp' => 700,
         'on_target_bp' => 4600, 'corner_after_save_bp' => 3000,
@@ -88,6 +88,7 @@ return [
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
     'clock' => ['dev_round_minutes' => 1],
+    'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     'monitoring' => ['ntfy_topic' => env('NTFY_TOPIC')],
     'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18],
