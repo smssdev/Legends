@@ -81,6 +81,7 @@ class SimulatorApiTest extends TestCase
     public function test_a_live_match_runs_on_the_server_clock_for_both_screens(): void
     {
         Carbon::setTestNow('2026-10-18 12:00:00');
+        config(['game.match.moment_ms' => null]); // fixed 3 s minutes keep the arithmetic below simple
         $home = $this->club('Alpha', 82);
         $away = $this->club('Beta', 79);
         $id = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5, 'mode' => 'live'])
@@ -102,6 +103,7 @@ class SimulatorApiTest extends TestCase
         $this->assertSame([1, 2], array_column($a['ticks'], 'tick'));
         $this->assertCount(6, $a['ticks'][0]['frames']);
         $this->assertSame(80, $a['ticks'][0]['teams']['away']['tactics']['style']);
+        $this->assertSame(3000, $a['ticks'][0]['moment']['ms']);
 
         // The second screen asks at the same moment: same minutes, nothing simulated twice.
         $b = $this->getJson("/api/v1/sim/matches/$id/live?since=1")->json();
