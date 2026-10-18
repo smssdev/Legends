@@ -77,6 +77,7 @@ export interface Tick {
   rejected: { action: any; reason: string }[]
   finished: boolean
   frames: Frame[]
+  moment?: { kind: string; ms: number }
   teams?: Record<Side, TeamSnapshot>
   debug?: { initiative?: { rate: number; home_share: number } }
 }
