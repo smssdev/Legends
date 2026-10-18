@@ -28,3 +28,6 @@ Thumbs.db
 /public/assets
 /public/icon-192.png
 /public/favicon.png
+
+# Database backups (db:backup)
+/database/backups
