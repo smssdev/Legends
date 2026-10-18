@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// The scheduler runs every minute on the server (Windows Task Scheduler or cron).
+// Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
+Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');
