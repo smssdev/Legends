@@ -89,9 +89,9 @@ const I = {
 const tab = (label, k, href, active) => ({ label, icon: I[k], href, fg: active ? '#F5B82E' : '#A9B6CC', bg: active ? 'rgba(245,184,46,0.12)' : 'transparent', weight: active ? 700 : 500 });
 const parts = (done, running) => Array.from({ length: 15 }, (_, n) => n < done ? '#F5B82E' : (running && n === done) ? '#2BB673' : 'rgba(247,244,234,0.12)');
 return {
-  facts: [{ k: 'السعة', v: '38,500', color: '#F7F4EA' }, { k: 'ميزة الأرض', v: '+2%', color: '#6FDC97' }, { k: 'التذاكر للمباراة', v: '118K', color: '#F7F4EA' }, { k: 'المكتمل', v: '20/45', color: '#F5B82E' }],
+  facts: [{ k: 'السعة', v: '38,500', color: '#F7F4EA' }, { k: 'ميزة الأرض', v: '+3.5%', color: '#6FDC97' }, { k: 'التذاكر للمباراة', v: '118K', color: '#F7F4EA' }, { k: 'المكتمل', v: '20/45', color: '#F5B82E' }],
   sections: [
-    { title: 'أرضية الملعب', effect: 'ميزة اللعب على أرضك', icon: 'M3 6h18v12H3zM12 6v12M3 10h3v4H3M21 10h-3v4h3', parts: parts(8, true), count: 8, now: '2%', nowColor: '#6FDC97', running: true, idle: false, bg: 'linear-gradient(160deg, rgba(43,182,115,0.16) 0%, #10284F 70%)', border: 'rgba(43,182,115,0.5)' },
+    { title: 'أرضية الملعب', effect: 'فوق الأساسية 2.5%', icon: 'M3 6h18v12H3zM12 6v12M3 10h3v4H3M21 10h-3v4h3', parts: parts(8, true), count: 8, now: '+1%', nowColor: '#6FDC97', running: true, idle: false, bg: 'linear-gradient(160deg, rgba(43,182,115,0.16) 0%, #10284F 70%)', border: 'rgba(43,182,115,0.5)' },
     { title: 'التذاكر والمقاعد', effect: 'دخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16', parts: parts(5, false), count: 5, now: '+8K', nowColor: '#F7F4EA', running: false, idle: true, bg: '#10284F', border: 'transparent' },
     { title: 'تدريب الفريق', effect: 'تقدم أسرع في خانات التدريب', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12', parts: parts(7, false), count: 7, now: 'م1', nowColor: '#F7F4EA', running: false, idle: true, bg: '#10284F', border: 'transparent' }
   ],

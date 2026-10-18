@@ -102,6 +102,7 @@ a{color:#F5B82E}a:hover{color:#FFD36B}
 class Component extends DCLogic {
 renderVals() {
 const I = {
+  ball: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7l4 3-1.5 4.5h-5L8 10z',
   home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
   team: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-2a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8',
   lineup: 'M3 5h18v14H3zM12 5v14M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5',
@@ -114,9 +115,9 @@ const I = {
   league: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3',
   mail: 'M3 6h18v12H3zM3 7l9 6 9-6'
 };
-const links = { 'الرئيسية': 'WebHome.dc.html', 'الفريق': 'WebSquad.dc.html', 'التشكيلة': 'WebLineup.dc.html', 'التكتيك': 'WebTactics.dc.html', 'التدريب': 'WebTraining.dc.html', 'السوق': 'WebMarket.dc.html', 'الملعب': 'WebStadium.dc.html', 'المالية': 'WebFinance.dc.html', 'الدوري والكأس': 'WebLeague.dc.html' };
+const links = { 'الرئيسية': 'WebHome.dc.html', 'المباراة': 'WebMatch.dc.html', 'الفريق': 'WebSquad.dc.html', 'التشكيلة': 'WebLineup.dc.html', 'التكتيك': 'WebTactics.dc.html', 'التدريب': 'WebTraining.dc.html', 'السوق': 'WebMarket.dc.html', 'الملعب': 'WebStadium.dc.html', 'المالية': 'WebFinance.dc.html', 'الدوري والكأس': 'WebLeague.dc.html' };
 const active = 'الملعب';
-const nav = [['الرئيسية', 'home'], ['الفريق', 'team'], ['التشكيلة', 'lineup'], ['التكتيك', 'tactics'], ['التدريب', 'training'], ['السوق', 'market'], ['الكشاف', 'scout'], ['الملعب', 'stadium'], ['المالية', 'finance'], ['الدوري والكأس', 'league'], ['الرسائل', 'mail']]
+const nav = [['الرئيسية', 'home'], ['المباراة', 'ball'], ['الفريق', 'team'], ['التشكيلة', 'lineup'], ['التكتيك', 'tactics'], ['التدريب', 'training'], ['السوق', 'market'], ['الكشاف', 'scout'], ['الملعب', 'stadium'], ['المالية', 'finance'], ['الدوري والكأس', 'league'], ['الرسائل', 'mail']]
   .map(([label, k]) => ({ label, icon: I[k], href: links[label] || '#', bg: label === active ? 'rgba(245,184,46,0.14)' : 'transparent', fg: label === active ? '#F5B82E' : '#C9D2E1', weight: label === active ? 600 : 400 }));
 const DONE = '#F5B82E', RUN = '#2BB673', EMPTY = 'rgba(247,244,234,0.12)';
 const stages = (done, running, vals) => [0, 1, 2].map((s) => ({
@@ -127,12 +128,12 @@ const stages = (done, running, vals) => [0, 1, 2].map((s) => ({
 return {
   nav,
   facts: [
-    { k: 'السعة', v: '38,500', color: '#F7F4EA' }, { k: 'ميزة الأرض', v: '+2%', color: '#6FDC97' },
+    { k: 'السعة', v: '38,500', color: '#F7F4EA' }, { k: 'ميزة الأرض', v: '+3.5%', color: '#6FDC97' },
     { k: 'دخل التذاكر للمباراة', v: '118K', color: '#F7F4EA' }, { k: 'الأجزاء المكتملة', v: '20 / 45', color: '#F5B82E' }
   ],
   sections: [
     { title: 'التذاكر والمقاعد', effect: 'دخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16', stages: stages(5, false, ['+8K', '+16K', '+24K']), status: 'متوقف · القسم الحالي في البناء', statusVal: '5 / 15', statusColor: '#A9B6CC', running: false, idle: true, bg: '#10284F', border: 'transparent' },
-    { title: 'أرضية الملعب', effect: 'ميزة اللعب على أرضك', icon: 'M3 6h18v12H3zM12 6v12M3 10h3v4H3M21 10h-3v4h3', stages: stages(8, true, ['2%', '4%', '6%']), status: 'يُبنى الجزء 4 من المرحلة 2', statusVal: '06:48:12', statusColor: '#6FDC97', running: true, idle: false, bg: 'linear-gradient(160deg, rgba(43,182,115,0.16) 0%, #10284F 70%)', border: 'rgba(43,182,115,0.5)' },
+    { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية 2.5%', icon: 'M3 6h18v12H3zM12 6v12M3 10h3v4H3M21 10h-3v4h3', stages: stages(8, true, ['+1%', '+2%', '+3%']), status: 'يُبنى الجزء 4 من المرحلة 2', statusVal: '06:48:12', statusColor: '#6FDC97', running: true, idle: false, bg: 'linear-gradient(160deg, rgba(43,182,115,0.16) 0%, #10284F 70%)', border: 'rgba(43,182,115,0.5)' },
     { title: 'تدريب الفريق', effect: 'تقدم أسرع في كل خانات التدريب', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12', stages: stages(7, false, ['سريع', 'أسرع', 'الأسرع']), status: 'متوقف · القسم الحالي في البناء', statusVal: '7 / 15', statusColor: '#A9B6CC', running: false, idle: true, bg: '#10284F', border: 'transparent' }
   ]
 };
