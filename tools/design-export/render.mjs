@@ -18,7 +18,7 @@ const BLOBS = {
 };
 
 class DCLogic {
-  constructor() { this.props = {}; this.state = {}; }
+  constructor(props) { this.props = props || {}; this.state = {}; }
   setState(s) { Object.assign(this.state, s); }
   forceUpdate() {}
 }
@@ -67,7 +67,7 @@ function matchBlock(text, start, tag) {
 function expand(text, scope) {
   let out = '';
   let i = 0;
-  const re = /<(sc-for|sc-if)\b([^>]*)>/g;
+  const re = /<(sc-for|sc-if|dc-import)\b([^>]*)>/g;
   while (true) {
     re.lastIndex = i;
     const m = re.exec(text);
@@ -81,7 +81,15 @@ function expand(text, scope) {
       const a = attrs.match(new RegExp(`${name}="\\{\\{\\s*([^}]+?)\\s*\\}\\}"`)) || attrs.match(new RegExp(`${name}="([^"]*)"`));
       return a ? a[1] : undefined;
     };
-    if (tag === 'sc-for') {
+    if (tag === 'dc-import') {
+      // A child artboard: inline its rendered body in place.
+      // Every other attribute becomes a prop, as in the design runtime.
+      const props = {};
+      for (const [, k, v] of attrs.matchAll(/([a-z][\w-]*)="([^"]*)"/g)) {
+        if (k !== 'name' && !k.startsWith('hint-')) props[k.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = v;
+      }
+      out += renderBody(path.join(srcDir, `${attr('name')}.dc.html`), props).html;
+    } else if (tag === 'sc-for') {
       const list = lookup(scope, attr('list')) || [];
       const as = attr('as') || 'item';
       list.forEach((item, idx) => { out += expand(inner, { ...scope, [as]: item, $index: idx }); });
@@ -92,18 +100,22 @@ function expand(text, scope) {
   }
 }
 
-function render(file) {
+function renderBody(file, props = {}) {
   const src = fs.readFileSync(file, 'utf8');
   const dc = src.match(/<x-dc>([\s\S]*?)<\/x-dc>/)[1];
   const helmet = (dc.match(/<helmet>([\s\S]*?)<\/helmet>/) || [, ''])[1];
   const body = dc.replace(/<helmet>[\s\S]*?<\/helmet>/, '');
   const code = src.match(/<script type="text\/x-dc"[^>]*>([\s\S]*?)<\/script>/)[1];
+  const Component = new Function('DCLogic', `${code}\nreturn Component;`)(DCLogic);
+  const vals = new Component(props).renderVals();
+  return { src, helmet, html: expand(body, vals) };
+}
+
+function render(file) {
+  const { src, helmet, html: body } = renderBody(file);
   const title = (src.match(/<title>([\s\S]*?)<\/title>/) || [, 'Legends'])[1];
   const lang = (src.match(/<html lang="([^"]+)"/) || [, 'ar'])[1];
-  const Component = new Function('DCLogic', `${code}\nreturn Component;`)(DCLogic);
-  const vals = new Component().renderVals();
-  let html = expand(body, vals);
-  html = html
+  const html = body
     .replace(/\/_blob\/([0-9a-f]{32})/g, (_, id) => `assets/${BLOBS[id] || id}`)
     .replace(/href="([A-Za-z]+)\.dc\.html"/g, 'href="$1.html"');
   return `<!doctype html>

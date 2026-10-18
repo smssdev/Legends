@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: المباراة بملء الشاشة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#06122A}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; width: 844px; height: 390px; overflow: hidden; background: #06122A; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+
+<section aria-label="الملعب بكاميرا البث" dir="ltr" style="position: absolute; left: 0; top: -52px; width: 844px; height: 473px">
+<svg viewBox="0 0 1000 560" preserveAspectRatio="none" width="100%" height="100%" role="img" aria-label="ملعب أنفيلد بزاوية البث" style="position: absolute; inset: 0">
+<defs>
+<linearGradient id="ml-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040C1E"></stop><stop offset="1" stop-color="#0C2552"></stop></linearGradient>
+<pattern id="ml-crowd" width="9" height="8" patternUnits="userSpaceOnUse"><rect width="9" height="8" fill="#14254A"></rect><circle cx="2.5" cy="2.5" r="1.7" fill="#C8102E"></circle><circle cx="7" cy="6" r="1.6" fill="#E9E3D2" opacity="0.55"></circle><circle cx="6.5" cy="1.5" r="1.2" fill="#7A0A1C"></circle></pattern>
+<radialGradient id="ml-flood" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFF6D8" stop-opacity="0.55"></stop><stop offset="1" stop-color="#FFF6D8" stop-opacity="0"></stop></radialGradient>
+<linearGradient id="ml-depth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000814" stop-opacity="0.45"></stop><stop offset="0.45" stop-color="#000814" stop-opacity="0.05"></stop><stop offset="1" stop-color="#000814" stop-opacity="0"></stop></linearGradient>
+<radialGradient id="ml-vig" cx="0.5" cy="0.55" r="0.75"><stop offset="0.6" stop-color="#000" stop-opacity="0"></stop><stop offset="1" stop-color="#000" stop-opacity="0.55"></stop></radialGradient>
+</defs>
+<rect width="1000" height="560" fill="url(#ml-sky)"></rect>
+<polygon points="{{pitch.standFar}}" fill="url(#ml-crowd)"></polygon>
+<polygon points="{{pitch.standLeft}}" fill="url(#ml-crowd)"></polygon>
+<polygon points="{{pitch.standRight}}" fill="url(#ml-crowd)"></polygon>
+<rect width="1000" height="120" fill="#040C1E" opacity="0.25"></rect>
+<path d="M-20 34 H1020 M-20 58 H1020" stroke="#040C1E" stroke-opacity="0.55" stroke-width="3"></path>
+<rect width="1000" height="16" fill="#0A1A38"></rect>
+<path d="M0 16 H1000" stroke="#F5B82E" stroke-opacity="0.35" stroke-width="1"></path>
+<circle cx="70" cy="18" r="70" fill="url(#ml-flood)"></circle>
+<circle cx="930" cy="18" r="70" fill="url(#ml-flood)"></circle>
+<polygon points="{{pitch.apron}}" fill="#177A3B"></polygon>
+<sc-for list="{{pitch.stripes}}" as="st" hint-placeholder-count="14"><polygon points="{{st.pts}}" fill="{{st.fill}}"></polygon></sc-for>
+<polygon points="{{pitch.boards}}" fill="#0B1E40"></polygon>
+<text x="500" y="{{pitch.boardsY}}" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="9" letter-spacing="6" fill="#F5B82E">LEGENDS · LEGENDS · LEGENDS · LEGENDS · LEGENDS · LEGENDS</text>
+<path d="{{pitch.lines}}" fill="none" stroke="#FFFFFF" stroke-opacity="0.82" stroke-width="1.6" stroke-linejoin="round"></path>
+<path d="{{pitch.goals}}" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"></path>
+<path d="{{pitch.nets}}" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="0.8"></path>
+<ellipse cx="500" cy="300" rx="420" ry="190" fill="url(#ml-flood)" opacity="0.18"></ellipse>
+<rect width="1000" height="560" fill="url(#ml-depth)"></rect>
+<rect width="1000" height="560" fill="url(#ml-vig)"></rect>
+</svg>
+<sc-for list="{{players}}" as="p" hint-placeholder-count="22">
+<div style="position: absolute; left: {{p.l}}%; top: {{p.t}}%; transform: translate(-50%, -100%); transition: left {{dur}}s linear, top {{dur}}s linear; display: flex; flex-direction: column; align-items: center; pointer-events: none">
+<sc-if value="{{p.label}}" hint-placeholder-val="{{ false }}"><span dir="rtl" style="margin-bottom: 3px; padding: 1px 7px; border-radius: 6px; background: rgba(4,12,30,0.82); font-size: 11px; font-weight: 600; white-space: nowrap; color: #F7F4EA">{{p.label}}</span></sc-if>
+<span style="width: {{p.w}}px; height: {{p.h}}px; box-sizing: border-box; border-radius: 9px 9px 6px 6px; background: {{p.kit}}; border: 2px solid {{p.trim}}; color: {{p.numc}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: {{p.fs}}px; display: flex; align-items: center; justify-content: center; box-shadow: {{p.ring}}">{{p.no}}</span>
+<span style="width: {{p.sw}}px; height: {{p.sh}}px; margin-top: -2px; border-radius: 50%; background: rgba(0,0,0,0.38)"></span>
+</div>
+</sc-for>
+<span style="position: absolute; left: {{ball.l}}%; top: {{ball.t}}%; width: {{ball.sw}}px; height: {{ball.sh}}px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(0,0,0,0.45); transition: left {{dur}}s linear, top {{dur}}s linear"></span>
+<span style="position: absolute; left: {{ball.l}}%; top: {{ball.t}}%; width: {{ball.d}}px; height: {{ball.d}}px; margin-top: {{ball.lift}}px; transform: translate(-50%, -50%); border-radius: 50%; box-sizing: border-box; border: 1.5px solid #0A1F42; background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #E8E8E8 55%, #9CA3AF 100%); box-shadow: 0 0 0 3px rgba(245,184,46,0.45), 0 0 16px rgba(255,255,255,0.55); transition: left {{dur}}s linear, top {{dur}}s linear, margin-top {{dur}}s ease-out"></span>
+</section>
+
+<div dir="rtl" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; align-items: stretch; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.45)">
+<span style="display: inline-flex; align-items: center; padding: 0 10px; background: #C8102E; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 13px">ليفربول</span>
+<span style="display: inline-flex; align-items: center; padding: 4px 10px; background: #071733; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px" dir="ltr">{{score.a}} – {{score.l}}</span>
+<span style="display: inline-flex; align-items: center; padding: 0 10px; background: #F7F4EA; color: #DB0007; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 13px">آرسنال</span>
+<span style="display: inline-flex; align-items: center; gap: 5px; padding: 0 10px; background: #10284F; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; color: #F5B82E"><span style="width: 6px; height: 6px; border-radius: 50%; background: #EF4444"></span>{{minute}}'</span>
+</div>
+
+<a href="MobileMatch.dc.html" aria-label="الخروج من ملء الشاشة" style="position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; border-radius: 12px; background: rgba(4,12,30,0.8); color: #F7F4EA; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"></path></svg></a>
+
+<div style="position: absolute; top: 10px; left: 12px; display: flex; gap: 6px">
+<button type="button" onClick="{{togglePlay}}" aria-label="{{playLabel}}" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: rgba(4,12,30,0.8); color: #F7F4EA; display: inline-flex; align-items: center; justify-content: center">
+<sc-if value="{{playing}}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></sc-if>
+<sc-if value="{{paused}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"></path></svg></sc-if>
+</button>
+<sc-for list="{{speeds}}" as="sp" hint-placeholder-count="3"><button type="button" onClick="{{sp.pick}}" aria-pressed="{{sp.on}}" style="min-width: 44px; height: 44px; border-radius: 12px; border: 0; background: {{sp.bg}}; color: {{sp.fg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px" dir="ltr">{{sp.label}}</button></sc-for>
+</div>
+
+<sc-if value="{{goalFlash}}" hint-placeholder-val="{{ false }}">
+<div dir="rtl" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: radial-gradient(circle at 50% 45%, rgba(200,16,46,0.6), rgba(4,12,30,0.4) 62%)">
+<sc-for list="{{confetti}}" as="c" hint-placeholder-count="28"><span aria-hidden="true" style="position: absolute; left: {{c.x}}%; top: {{c.y}}%; width: {{c.w}}px; height: {{c.h}}px; border-radius: 2px; background: {{c.color}}; transform: rotate({{c.r}}deg); opacity: 0.9"></span></sc-for>
+<span style="position: relative; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 64px; line-height: 1; color: #F7F4EA; text-shadow: 0 6px 30px rgba(200,16,46,0.9)">هدف!</span>
+<div style="position: relative; display: flex; align-items: center; gap: 14px; padding: 10px 18px 10px 12px; border-radius: 18px; background: rgba(4,12,30,0.95); border: 1px solid rgba(245,184,46,0.45)">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 14px; background: #C8102E; border: 2px solid #F6C343; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px">9</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px">ألكسندر إيساك <span style="font-family: 'Barlow Condensed', sans-serif; color: #F5B82E">68'</span></span><span style="font-size: 13px; color: #C9D2E1">هدفه الثاني اليوم · صناعة فلوريان فيرتز · ليفربول 3-1</span></div>
+</div>
+</div>
+</sc-if>
+
+<nav aria-label="أوامر المدرب" style="position: absolute; right: 12px; top: 64px; bottom: 64px; display: flex; flex-direction: column; justify-content: center; gap: 8px">
+<a href="MobileMatchSubs.dc.html" style="width: 56px; height: 56px; border-radius: 16px; background: #F5B82E; color: #0A1F42; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3M20 16H6l3 3"></path></svg>تبديل</a>
+<a href="MobileMatchTactics.dc.html" style="width: 56px; height: 56px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid rgba(245,184,46,0.6); background: rgba(4,12,30,0.8); color: #F5B82E; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>تكتيك</a>
+<button type="button" onClick="{{quickAttack}}" style="width: 56px; height: 56px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid rgba(247,244,234,0.25); background: rgba(4,12,30,0.8); color: #F7F4EA; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 700"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M11 5h8v8"></path></svg>هجوم</button>
+<button type="button" onClick="{{quickHold}}" style="width: 56px; height: 56px; box-sizing: border-box; border-radius: 16px; border: 1.5px solid rgba(247,244,234,0.25); background: rgba(4,12,30,0.8); color: #F7F4EA; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 700"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path></svg>تأمين</button>
+</nav>
+
+<div dir="rtl" style="position: absolute; bottom: 10px; left: 12px; right: 80px; display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; background: rgba(4,12,30,0.86)">
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; color: #F5B82E">{{minute}}'</span>
+<span style="flex: 1; font-size: 13px; font-weight: 600">{{text}}</span>
+</div>
+<sc-if value="{{hasPending}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; height: 38px; padding: 0 12px; border-radius: 12px; background: rgba(245,184,46,0.16); border: 1px solid rgba(245,184,46,0.5); font-size: 12px; white-space: nowrap"><strong>{{pendingLabel}}</strong>&nbsp;· الدقيقة {{pendingAt}}</span></sc-if>
+<sc-if value="{{hasApplied}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; height: 38px; padding: 0 12px; border-radius: 12px; background: rgba(43,182,115,0.16); border: 1px solid rgba(43,182,115,0.5); font-size: 12px; white-space: nowrap">طُبّق: {{appliedLabel}}</span></sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"frame":{"editor":"int","default":0,"min":0,"max":23},"still":{"editor":"boolean","default":false},"$preview":{"width":844,"height":390}}'>
+const WM_FRAMES = [
+  [66, 'L', 38, 34, 0, 'بناء', 'ليفربول يبني من الخلف: فان دايك إلى ماك أليستر', ''],
+  [66, 'L', 47, 28, 0, 'بناء', 'ماك أليستر يدور ويمرر لخرافنبيرخ', ''],
+  [66, 'L', 58, 40, 0, 'تقدم', 'خرافنبيرخ يفتح اللعب على الطرف الأيمن', ''],
+  [66, 'L', 71, 57, 3, 'تقدم', 'كرة طويلة في المساحة إلى صلاح', ''],
+  [66, 'L', 83, 59, 0, 'صناعة', 'صلاح ينطلق في مواجهة إنكابيي', ''],
+  [66, 'L', 91, 47, 0, 'صناعة', 'صلاح يقطع للداخل بيساره...', ''],
+  [66, 'L', 103, 34, 1, 'تسديدة', 'تسديدة قوية من صلاح!', 'shot'],
+  [66, 'A', 101, 32, 0, '', 'رايا يطير ويمسكها! تصدٍّ رائع', 'save'],
+  [67, 'A', 86, 22, 0, 'ارتداد', 'رايا يرمي سريعاً إلى أوديغارد', ''],
+  [67, 'A', 70, 18, 0, 'ارتداد', 'أوديغارد يقود الارتداد بسرعة', ''],
+  [67, 'A', 54, 12, 2, 'تقدم', 'بينية إلى ساكا خلف كيركيز', ''],
+  [67, 'A', 36, 10, 0, 'تقدم', 'ساكا ينطلق على الطرف', ''],
+  [67, 'A', 20, 20, 0, 'صناعة', 'ساكا يدخل المنطقة ويرفع رأسه', ''],
+  [67, 'L', 12, 30, 0, '', 'كوناتي يقطع العرضية في اللحظة الأخيرة', ''],
+  [68, 'L', 22, 36, 0, 'بناء', 'أليسون يبدأ الهجمة سريعاً', ''],
+  [68, 'L', 42, 32, 0, 'تقدم', 'فيرتز يستلم بين الخطوط', ''],
+  [68, 'L', 62, 36, 0, 'تقدم', 'فيرتز يتقدم ولا أحد يضغطه', ''],
+  [68, 'L', 80, 30, 0, 'صناعة', 'فيرتز يمرر بينية ساحرة إلى إيساك', ''],
+  [68, 'L', 93, 35, 0, 'تسديدة', 'إيساك وجهاً لوجه مع رايا...', 'shot'],
+  [68, 'L', 104.5, 32, 1, '', 'هدف! إيساك يسجل الثالث لليفربول!', 'goal'],
+  [68, 'L', 103, 32, 0, '', 'ليفربول 3-1 آرسنال · صناعة: فيرتز', 'celebrate'],
+  [68, 'L', 100, 30, 0, '', 'إعادة: بينية فيرتز من الدائرة', 'celebrate'],
+  [69, 'A', 52.5, 34, 0, '', 'آرسنال يبدأ من منتصف الملعب', ''],
+  [69, 'A', 46, 30, 0, 'بناء', 'رايس إلى زوبيميندي', '']
+];
+const WM_LIV = [[1, 'أليسون', 5, 34, 1], [30, 'فريمبونغ', 30, 56], [5, 'كوناتي', 26, 42], [4, 'فان دايك', 26, 26], [6, 'كيركيز', 30, 12], [38, 'خرافنبيرخ', 40, 40], [10, 'ماك أليستر', 42, 27], [11, 'صلاح', 56, 57], [7, 'فيرتز', 56, 34], [18, 'خاكبو', 56, 12], [9, 'إيساك', 66, 34]];
+const WM_ARS = [[1, 'رايا', 100, 34, 1], [4, 'وايت', 76, 12], [2, 'صليبا', 80, 26], [6, 'غابرييل', 80, 42], [5, 'إنكابيي', 76, 56], [41, 'رايس', 70, 34], [36, 'زوبيميندي', 62, 24], [8, 'أوديغارد', 60, 44], [7, 'ساكا', 50, 12], [14, 'غيوكيريس', 46, 34], [19, 'تروسار', 50, 56]];
+function wmP(x, y) {
+  const t = y / 68;
+  const s = 0.64 + 0.36 * t;
+  return [500 + (x - 52.5) / 105 * 940 * s, 92 + 430 * (0.62 * t + 0.38 * t * t), s];
+}
+function wmPts(list) { return list.map(([x, y]) => { const p = wmP(x, y); return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '); }
+function wmPath(list, close) { return list.map(([x, y], i) => { const p = wmP(x, y); return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ') + (close ? ' Z' : ''); }
+function wmPitch() {
+  const stripes = [];
+  for (let i = 0; i < 14; i++) { const a = i * 7.5, b = a + 7.5; stripes.push({ pts: wmPts([[a, 0], [b, 0], [b, 68], [a, 68]]), fill: i % 2 ? '#1E9A4B' : '#22A653' }); }
+  const circle = []; for (let k = 0; k <= 48; k++) { const an = k / 48 * Math.PI * 2; circle.push([52.5 + 9.15 * Math.cos(an), 34 + 9.15 * Math.sin(an)]); }
+  const rect = (x0, y0, x1, y1) => wmPath([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], true);
+  const lines = [rect(0, 0, 105, 68), wmPath([[52.5, 0], [52.5, 68]]), wmPath(circle), rect(0, 13.84, 16.5, 54.16), rect(88.5, 13.84, 105, 54.16), rect(0, 24.84, 5.5, 43.16), rect(99.5, 24.84, 105, 43.16)].join(' ');
+  const goal = (gx, back) => {
+    const a = wmP(gx, 30.34), b = wmP(gx, 37.66), ha = 21.8 * a[2], hb = 21.8 * b[2];
+    const c = wmP(back, 30.34), d = wmP(back, 37.66);
+    return { frame: 'M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) + ' L' + a[0].toFixed(1) + ' ' + (a[1] - ha).toFixed(1) + ' L' + b[0].toFixed(1) + ' ' + (b[1] - hb).toFixed(1) + ' L' + b[0].toFixed(1) + ' ' + b[1].toFixed(1),
+      net: 'M' + a[0].toFixed(1) + ' ' + (a[1] - ha).toFixed(1) + ' L' + c[0].toFixed(1) + ' ' + (c[1] - ha * 0.7).toFixed(1) + ' L' + c[0].toFixed(1) + ' ' + c[1].toFixed(1) + ' M' + b[0].toFixed(1) + ' ' + (b[1] - hb).toFixed(1) + ' L' + d[0].toFixed(1) + ' ' + (d[1] - hb * 0.7).toFixed(1) + ' L' + d[0].toFixed(1) + ' ' + d[1].toFixed(1) + ' M' + c[0].toFixed(1) + ' ' + (c[1] - ha * 0.7).toFixed(1) + ' L' + d[0].toFixed(1) + ' ' + (d[1] - hb * 0.7).toFixed(1) };
+  };
+  const g1 = goal(0, -2.2), g2 = goal(105, 107.2);
+  const fl = wmP(-3, -2.4), fr = wmP(108, -2.4);
+  const al = wmP(-9, -7), ar = wmP(114, -7), bl = wmP(-9, 76), br = wmP(114, 76);
+  return {
+    stripes, lines, goals: g1.frame + ' ' + g2.frame, nets: g1.net + ' ' + g2.net,
+    apron: [al, ar, br, bl].map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' '),
+    boards: fl[0].toFixed(1) + ',' + fl[1].toFixed(1) + ' ' + fr[0].toFixed(1) + ',' + fr[1].toFixed(1) + ' ' + fr[0].toFixed(1) + ',' + (fr[1] - 11).toFixed(1) + ' ' + fl[0].toFixed(1) + ',' + (fl[1] - 11).toFixed(1),
+    boardsY: (fl[1] - 3).toFixed(1),
+    standFar: '-20,0 1020,0 1020,' + (al[1] + 2).toFixed(1) + ' -20,' + (al[1] + 2).toFixed(1),
+    standLeft: '-20,' + al[1].toFixed(1) + ' ' + al[0].toFixed(1) + ',' + al[1].toFixed(1) + ' ' + bl[0].toFixed(1) + ',' + bl[1].toFixed(1) + ' -20,' + bl[1].toFixed(1),
+    standRight: '1020,' + ar[1].toFixed(1) + ' ' + ar[0].toFixed(1) + ',' + ar[1].toFixed(1) + ' ' + br[0].toFixed(1) + ',' + br[1].toFixed(1) + ' 1020,' + br[1].toFixed(1)
+  };
+}
+const WM_CONFETTI = Array.from({ length: 28 }, (_, i) => ({ x: (i * 37 + 11) % 100, y: (i * 53 + 7) % 90, w: 6 + (i % 3) * 2, h: 10 + (i % 4) * 2, r: (i * 47) % 180, color: ['#C8102E', '#F5B82E', '#F7F4EA', '#F6C343'][i % 4] }));
+const WM_MOM = [1, 2, 3, 2, 1, -1, -2, 0, 2, 3, 4, 3, 2, 1, 0, -1, 1, 2, 3, 5, 4, 3, 2, 1, -1, -2, -3, -2, -1, 0, 1, 2, 2, 1, 0, -2, -4, -5, -3, -1, 0, 1, 2, 1, 0, 1, 2, 3, 3, 4, 5, 4, 3, 2, 1, 0, -1, -2, -2, -1, 1, 2, 3, 3, 4, 3, -2, -3, 4];
+class Component extends DCLogic {
+  constructor(props) { super(props); const pr = props || {}; const still = pr.still === true || pr.still === 'true'; this.state = { f: Number(pr.frame) || 0, playing: !still, speed: 1, tab: 'quick', shape: '4-2-3-1', pending: null, applied: null }; }
+  componentDidMount() { this.restart(); }
+  componentWillUnmount() { clearInterval(this.timer); }
+  restart() { clearInterval(this.timer); if (!this.state.playing) return; this.timer = setInterval(() => this.step(), 760 / this.state.speed); }
+  step() {
+    const f = (this.state.f + 1) % WM_FRAMES.length;
+    const min = WM_FRAMES[f][0];
+    const next = { f };
+    if (this.state.pending && min >= this.state.pending.at) { next.applied = { label: this.state.pending.label, at: this.state.pending.at, until: f + 4 }; next.pending = null; }
+    if (this.state.applied && this.state.applied.until === f) next.applied = null;
+    this.setState(next);
+  }
+  renderVals() {
+    const st = this.state || {};
+    const f = st.f || 0, speed = st.speed || 1, tab = st.tab || 'quick', playing = st.playing !== false;
+    const [minute, poss, bx, by, bz, phase, text, kind] = WM_FRAMES[f];
+    if (!this._pitch) this._pitch = wmPitch();
+    const shift = (bx - 52.5) * 0.5, dy = (by - 34) * 0.18;
+    const place = (team, row, isL) => {
+      const [no, name, x0, y0, gk] = row;
+      let x, y;
+      if (gk) { x = x0 + shift * 0.07; y = 34 + (by - 34) * 0.3; }
+      else {
+        const attacking = poss === (isL ? 'L' : 'A');
+        const dir = isL ? 1 : -1;
+        const press = isL && !attacking && x0 > 38 ? 5 : 0;
+        x = x0 + shift + dir * (attacking ? 5 : -3) + press; y = y0 + dy;
+      }
+      return { no, name, x: Math.max(1.5, Math.min(103.5, x)), y: Math.max(2, Math.min(66, y)), gk: !!gk, isL };
+    };
+    const ps = WM_LIV.map((r) => place('L', r, true)).concat(WM_ARS.map((r) => place('A', r, false)));
+    const dist = (p) => (p.x - bx) * (p.x - bx) + (p.y - by) * (p.y - by);
+    const holderTeam = poss === 'L';
+    let holder = null, marker = null;
+    ps.filter((p) => p.isL === holderTeam && !p.gk).forEach((p) => { if (!holder || dist(p) < dist(holder)) holder = p; });
+    ps.filter((p) => p.isL !== holderTeam).forEach((p) => { if (!marker || dist(p) < dist(marker)) marker = p; });
+    if (kind === 'save' || kind === 'goal') { const g = ps.find((p) => p.gk && p.isL !== (kind === 'goal' ? holderTeam : !holderTeam)); if (g) { g.x = Math.max(1, Math.min(104, bx - (g.isL ? -1 : 1))); g.y = by + 1.5; } }
+    if (holder && kind !== 'save') { holder.x = bx - (holder.isL ? 1.4 : -1.4); holder.y = by + 0.6; holder.hold = true; }
+    if (marker && marker !== holder && !marker.gk) { marker.x = bx + (marker.isL ? -2.2 : 2.2); marker.y = by + 1.8; }
+    const players = ps.map((p) => {
+      const pr = wmP(p.x, p.y), sc = pr[2];
+      const kit = p.isL ? (p.gk ? '#1F6B45' : '#C8102E') : (p.gk ? '#E7C826' : '#FFFFFF');
+      const trim = p.isL ? (p.gk ? '#0E3D27' : '#F6C343') : (p.gk ? '#6B5A00' : '#DB0007');
+      const numc = p.isL ? '#FFFFFF' : (p.gk ? '#2A2300' : '#DB0007');
+      return { no: p.no, l: (pr[0] / 10).toFixed(2), t: (pr[1] / 5.6).toFixed(2), w: Math.round(24 * sc), h: Math.round(28 * sc), fs: Math.round(15 * sc), sw: Math.round(26 * sc), sh: Math.round(8 * sc), kit, trim, numc,
+        ring: p.hold ? (p.isL ? '0 0 0 3px #F5B82E, 0 4px 10px rgba(0,0,0,0.5)' : '0 0 0 3px #F7F4EA, 0 4px 10px rgba(0,0,0,0.5)') : '0 4px 10px rgba(0,0,0,0.45)',
+        label: p.hold ? p.name : '' };
+    });
+    const bp = wmP(bx, by);
+    const ball = { l: (bp[0] / 10).toFixed(2), t: (bp[1] / 5.6).toFixed(2), d: Math.round(15 * bp[2]), sw: Math.round(15 * bp[2]), sh: Math.round(6 * bp[2]), lift: Math.round(-bz * 14 * bp[2]) };
+    const scored = f >= 19;
+    const nowMin = minute;
+    const momX = (m) => (1000 - m / 90 * 1000).toFixed(1);
+    let up = 'M1000 46', down = 'M1000 46';
+    for (let m = 0; m < Math.min(nowMin, WM_MOM.length); m++) { const v = WM_MOM[m]; up += ' L' + momX(m + 1) + ' ' + (46 - Math.max(0, v) * 8) ; down += ' L' + momX(m + 1) + ' ' + (46 + Math.max(0, -v) * 8); }
+    up += ' L' + momX(Math.min(nowMin, WM_MOM.length)) + ' 46 Z'; down += ' L' + momX(Math.min(nowMin, WM_MOM.length)) + ' 46 Z';
+    const mk = (m, team, kind, title) => ({ x: (100 - m / 90 * 100).toFixed(2), y: team === 'L' ? 12 : 80, bg: kind === 'card' ? '#F5D90A' : (team === 'L' ? '#C8102E' : '#F7F4EA'), fg: team === 'L' ? '#FFFFFF' : '#071733', isGoal: kind === 'goal', isCard: kind === 'card', isSub: kind === 'sub', title });
+    const marks = [mk(23, 'L', 'goal', 'هدف: صلاح 23'), mk(38, 'A', 'goal', 'هدف: ساكا 38'), mk(51, 'L', 'goal', 'هدف: إيساك 51'), mk(61, 'A', 'sub', 'تبديل في آرسنال 61'), mk(64, 'A', 'card', 'صفراء: رايس 64')];
+    if (scored) marks.push(mk(68, 'L', 'goal', 'هدف: إيساك 68'));
+    const pend = st.pending, appl = st.applied;
+    const qList = [['هجوم كامل', 'الأسلوب هجومي جداً، إيقاع عالٍ، الظهيران يتقدمان'], ['تأمين النتيجة', 'دفاع متأخر، إيقاع منخفض، قطع عادي'], ['ضغط عالٍ', 'الضغط 85، المصيدة نعم: لياقة أسرع'], ['إبطاء اللعب', 'إيقاع 25 وتمريرات: نحتفظ بالكرة'], ['استغلال الأطراف', 'خطة الأجنحة وهجوم الظهيرين'], ['عودة للخطة', 'ترجع لتكتيك ما قبل المباراة']];
+    const setPending = (label) => this.setState({ pending: { label, at: minute + 1 }, applied: null });
+    const quick = qList.map(([label, hint]) => { const on = pend && pend.label === label; return { label, hint, pick: () => setPending(label), bg: on ? 'rgba(245,184,46,0.16)' : '#0D2348', border: on ? '#F5B82E' : 'rgba(247,244,234,0.08)', fg: on ? '#F5B82E' : '#F7F4EA' }; });
+    const tabsDef = [['quick', 'سريع'], ['subs', 'تبديل'], ['tactics', 'تكتيك'], ['shape', 'الطريقة']];
+    const tabs = tabsDef.map(([id, label]) => ({ label, on: tab === id, pick: () => this.setState({ tab: id }), bg: tab === id ? '#F5B82E' : 'transparent', fg: tab === id ? '#0A1F42' : '#C9D2E1' }));
+    const fitColor = (v) => v >= 75 ? '#2BB673' : v >= 60 ? '#F5B82E' : '#F2994A';
+    const tired = [[38, 'خرافنبيرخ', 54], [10, 'ماك أليستر', 61], [30, 'فريمبونغ', 63], [11, 'صلاح', 70]].map(([no, name, fit]) => ({ no, name, fit, color: fitColor(fit) }));
+    const shapes = ['4-2-3-1', '4-3-3', '4-4-2', '3-5-2', '5-3-2', '4-1-4-1'].map((label) => { const on = (st.shape || '4-2-3-1') === label; return { label, on, pick: () => { this.setState({ shape: label }); setPending('الطريقة ' + label); }, bg: on ? 'rgba(245,184,46,0.16)' : '#0D2348', border: on ? '#F5B82E' : 'rgba(247,244,234,0.08)', fg: on ? '#F5B82E' : '#F7F4EA' }; });
+    const speeds = [1, 2, 4].map((v) => ({ label: '×' + v, on: speed === v, pick: () => this.setState({ speed: v, playing: true }, () => this.restart()), bg: speed === v ? '#F5B82E' : 'transparent', fg: speed === v ? '#0A1F42' : '#C9D2E1' }));
+    const ringPct = ((f % 4) + 1) * 25;
+    return {
+      pitch: this._pitch, players, ball, dur: (0.74 / speed).toFixed(2),
+      minute, text, phase, possName: poss === 'L' ? 'ليفربول' : 'آرسنال', possColor: poss === 'L' ? '#FF6B81' : '#F7F4EA',
+      score: { l: scored ? 3 : 2, a: 1 }, goalFlash: kind === 'goal', replay: kind === 'celebrate', confetti: WM_CONFETTI,
+      mom: { up, down, nowX: momX(nowMin) }, marks,
+      stats: [{ label: 'الاستحواذ %', h: 56, a: 44 }, { label: 'تسديدات', h: scored ? 13 : 12, a: 7 }, { label: 'على المرمى', h: scored ? 7 : 6, a: 3 }, { label: 'فرص محققة', h: scored ? 5 : 4, a: 2 }, { label: 'أخطاء', h: 9, a: 13 }, { label: 'بطاقات صفراء', h: 1, a: 2 }],
+      speeds, playing, paused: !playing, playLabel: playing ? 'إيقاف مؤقت' : 'تشغيل',
+      togglePlay: () => this.setState({ playing: !playing }, () => this.restart()),
+      tabs, tabQuick: tab === 'quick', tabSubs: tab === 'subs', tabTactics: tab === 'tactics', tabShape: tab === 'shape',
+      quick, tired, shapes,
+      tacticRows: [{ k: 'خطة اللعب', v: 'تمريرات' }, { k: 'الضغط', v: '75 · عالٍ' }, { k: 'الأسلوب', v: 'هجومي معتدل' }, { k: 'الإيقاع', v: '60' }, { k: 'قطع الكرة', v: 'حماس' }],
+      quickAttack: () => setPending('هجوم كامل'), quickHold: () => setPending('تأمين النتيجة'),
+      hasPending: !!pend, pendingLabel: pend ? pend.label : '', pendingAt: pend ? pend.at : '', cancelPending: () => this.setState({ pending: null }),
+      ringBg: 'conic-gradient(#F5B82E ' + ringPct + '%, rgba(247,244,234,0.12) 0)',
+      hasApplied: !!appl, appliedLabel: appl ? appl.label : '', appliedAt: appl ? appl.at : '',
+      alerts: [{ color: '#F2994A', text: 'خرافنبيرخ: اللياقة 54% وتنزل بسرعة مع الضغط العالي' }, { color: '#F5B82E', text: 'كيركيز تجاوزه ساكا 3 مرات منذ الاستراحة' }, { color: '#A9B6CC', text: 'رايس عليه صفراء و3 أخطاء: خطر طرد' }],
+      oppTactics: [{ k: 'قطع الكرة', v: 'حماس' }, { k: 'الرقابة', v: 'منطقة' }, { k: 'خطة اللعب', v: 'هجوم مرتد' }, { k: 'مصيدة التسلل', v: 'نعم' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

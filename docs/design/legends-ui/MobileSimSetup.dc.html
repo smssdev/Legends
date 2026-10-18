@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends موبايل: إعداد المحاكي</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#071733}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="position: relative; width: 390px; height: 844px; overflow: hidden; background: radial-gradient(500px 300px at 50% -60px, #1A3F7A 0%, #071733 70%); color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif">
+
+<div style="box-sizing: border-box; padding: 12px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<header style="display: flex; align-items: center; gap: 10px">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 36px; height: 36px; border-radius: 10px">
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 19px">مباراة في المحاكي</span><span style="font-size: 12px; color: #A9B6CC">اختر ناديين ومن يديرهما</span></div>
+<span style="display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: rgba(245,184,46,0.14); color: #F5B82E; font-size: 11px; font-weight: 700">تطوير</span>
+</header>
+
+<sc-for list="{{teams}}" as="t" hint-placeholder-count="2">
+<section aria-label="{{t.slot}}" style="border-radius: 18px; background: linear-gradient(135deg, {{t.tint}}, #10284F 70%); border: 1px solid rgba(247,244,234,0.10); padding: 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 54px; border-radius: 14px 14px 24px 24px; background: {{t.crestBg}}; border: 2px solid {{t.crestRing}}; color: {{t.crestFg}}; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px">{{t.code}}</span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 11px; font-weight: 700; color: #F5B82E">{{t.slot}} · {{t.venue}}</span><span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 20px">{{t.name}}</span><span style="font-size: 12px; color: #C9D2E1">{{t.stars}}</span></div>
+<div style="display: flex; flex-direction: column; align-items: center"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 30px; line-height: 1; color: #F5B82E">{{t.str}}</span><span style="font-size: 10px; color: #A9B6CC">القوة</span></div>
+</div>
+<div style="display: flex; gap: 8px">
+<button type="button" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid rgba(247,244,234,0.14); background: #0D2348; color: #F7F4EA; font-size: 13px">تغيير النادي</button>
+<div role="radiogroup" aria-label="{{t.ctrlAria}}" style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 3px; border-radius: 12px; background: #0D2348">
+<sc-for list="{{t.ctrl}}" as="c" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{c.on}}" onClick="{{c.pick}}" style="height: 38px; border-radius: 9px; border: 0; background: {{c.bg}}; color: {{c.fg}}; font-size: 13px; font-weight: 700">{{c.label}}</button></sc-for>
+</div>
+</div>
+</section>
+</sc-for>
+
+<section aria-label="التوقع" style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 16px; background: #10284F">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #C9D2E1"><span>التوقع من 2000 محاكاة</span><span>مفتاح المواجهة: سرعة صلاح ضد إنكابيي</span></div>
+<div style="display: flex; height: 26px; border-radius: 8px; overflow: hidden; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px"><span style="width: 43%; background: #C8102E; display: flex; align-items: center; justify-content: center">43%</span><span style="width: 26%; background: #4A5B7A; display: flex; align-items: center; justify-content: center">26%</span><span style="width: 31%; background: #F7F4EA; color: #DB0007; display: flex; align-items: center; justify-content: center">31%</span></div>
+</section>
+
+<section aria-label="الإعدادات" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{settings}}" as="g" hint-placeholder-count="6">
+<button type="button" onClick="{{g.cycle}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px; padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(247,244,234,0.10); background: #10284F; color: #F7F4EA; font-family: inherit; text-align: right">
+<span style="font-size: 11px; color: #A9B6CC">{{g.label}}</span>
+<span style="font-size: 15px; font-weight: 700">{{g.value}}</span>
+</button>
+</sc-for>
+</section>
+</div>
+
+<div style="position: absolute; bottom: 0; left: 0; right: 0; box-sizing: border-box; padding: 12px 16px 24px; background: linear-gradient(180deg, rgba(7,23,51,0) 0%, #071733 30%); display: flex; flex-direction: column; gap: 8px">
+<a href="MobileMatch.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 16px; background: #F5B82E; color: #0A1F42; text-decoration: none; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"></path></svg>ابدأ المباراة</a>
+<a href="MobileMatchReport.dc.html" style="display: inline-flex; align-items: center; justify-content: center; height: 44px; border-radius: 12px; color: #F5B82E; text-decoration: none; font-size: 14px; font-weight: 700">النتيجة فوراً</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { ctrlL: 'me', ctrlA: 'cpu', i: { ref: 1, comp: 0, venue: 0, speed: 0, quality: 0, seed: 0 } }; }
+  renderVals() {
+    const st = this.state || {};
+    const i = st.i || {};
+    const seg = (key) => [['me', 'أنا'], ['cpu', 'الحاسوب']].map(([id, label]) => ({ label, on: st[key] === id, pick: () => this.setState({ [key]: id }), bg: st[key] === id ? '#F5B82E' : 'transparent', fg: st[key] === id ? '#0A1F42' : '#C9D2E1' }));
+    const defs = [['ref', 'الحكم', ['متساهل', 'متوسط', 'صارم']], ['comp', 'المسابقة', ['دوري', 'كأس (إضافي وترجيح)']], ['venue', 'الملعب', ['أنفيلد', 'محايد']], ['speed', 'السرعة', ['×1 · حوالي 5 دقائق', '×2', '×4']], ['quality', 'الجودة', ['تلقائي', 'عالية', 'خفيفة', 'نص']], ['seed', 'البذرة', ['48213', 'عشوائية']]];
+    const settings = defs.map(([k, label, vals]) => ({ label, value: vals[(i[k] || 0) % vals.length], cycle: () => this.setState({ i: { ...i, [k]: ((i[k] || 0) + 1) % vals.length } }) }));
+    return {
+      teams: [
+        { slot: 'الفريق 1', venue: 'صاحب الأرض', name: 'ليفربول', code: 'LIV', crestBg: '#C8102E', crestRing: '#F6C343', crestFg: '#FFFFFF', tint: 'rgba(200,16,46,0.30)', str: 85, stars: 'صلاح 91 · فان دايك 90 · فيرتز 89', ctrlAria: 'من يدير ليفربول', ctrl: seg('ctrlL') },
+        { slot: 'الفريق 2', venue: 'الضيف', name: 'آرسنال', code: 'ARS', crestBg: '#FFFFFF', crestRing: '#DB0007', crestFg: '#DB0007', tint: 'rgba(219,0,7,0.20)', str: 84, stars: 'ساكا 88 · غابرييل 88 · رايس 87', ctrlAria: 'من يدير آرسنال', ctrl: seg('ctrlA') }
+      ],
+      settings
+    };
+  }
+}
+</script>
+</body>
+</html>
