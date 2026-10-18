@@ -45,7 +45,7 @@ return [
         'version' => 1,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
-        'attack_rate_bp' => 5800,                 // هجمات في الدقيقة للفريقين معاً
+        'attack_rate_bp' => 5300,                 // هجمات في الدقيقة للفريقين معاً
         'phase_floor_bp' => 800, 'phase_ceiling_bp' => 9200,
         'funnel_target_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 7500],
         'matchup_cp' => [                         // خطة الهجوم × شكل دفاع الخصم (عالٍ، متوسط، منخفض)، بمئات النقطة
@@ -59,6 +59,32 @@ return [
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
         'live_reading_every_minutes' => 15,
+        // Phase duels: success = base + slope × (attack − defence in rating points), clamped to floor..ceiling
+        'phase_base_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 8200, 'header' => 3500],
+        'phase_slope_bp' => 22,              // per rating point of difference
+        'share_slope_bp' => 40,              // initiative share per point of midfield difference
+        'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 200, 'header' => 450],
+        'goal_slope_bp' => 18,               // per point of shooter − keeper
+        'penalty_goal_bp' => 7600, 'free_kick_goal_bp' => 700,
+        'on_target_bp' => 4600, 'corner_after_save_bp' => 3000,
+        'press_bonus_cp' => 4,               // defence bonus in build-up per pressing point above 50
+        'tempo_precision_cp' => 3,           // own precision loss per tempo point above 50
+        'counter_base_bp' => 3200, 'counter_plan_bp' => 1600, 'counter_bonus_cp' => 150,
+        'trap_base_bp' => 3500, 'trap_fail_bonus_cp' => 600,
+        'foul_bp' => [800, 1300, 1900, 2700], // per lost duel, by tackling level
+        'card_bp' => [1300, 1950, 2850, 3900], // per foul, by tackling level
+        'referee_bp' => [7000, 10000, 13500], // soft, medium, strict
+        'dogso_red_bp' => 300,
+        'midfield_foul_bp' => 2300,          // per quiet minute: ordinary fouls away from danger
+        'penalty_share_bp' => 700,          // fouls at the box that are inside it
+        'offside_bp' => ['long' => 1500, 'counter' => 1200, 'passing' => 450, 'wings' => 350, 'shots' => 200],
+        'injury_bp' => [200, 300, 450, 700],
+        'man_down_cp' => 350,
+        'captain_cp' => 80,
+        'trailing_push_bp_per_minute' => 50,
+        'late_open_bp_per_minute' => 30,     // the game opens up after minute 75
+        'late_lapse_cp_per_minute' => 14,    // tired defences lose concentration after minute 70
+        'stoppage' => [1 => [1, 3], 2 => [2, 6], 3 => [0, 2], 4 => [0, 2]],
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
     'clock' => ['dev_round_minutes' => 1],
