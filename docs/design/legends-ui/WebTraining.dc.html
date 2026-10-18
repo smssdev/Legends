@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Legends: التدريب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;family=Barlow+Condensed:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A1F42}
+a{color:#F5B82E}a:hover{color:#FFD36B}
+</style>
+</helmet>
+<div dir="rtl" style="min-height: 1000px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="القائمة الرئيسية" style="flex: 1 1 248px; max-width: 280px; box-sizing: border-box; padding: 24px 16px; background: #081A38; border-left: 1px solid rgba(247,244,234,0.06); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 8px">
+<img src="/_blob/3db7f68e0ee8f757e178e4c66bed01da" alt="" style="width: 44px; height: 44px; border-radius: 12px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: 1.5px; color: #F5B82E" dir="ltr">LEGENDS</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="11">
+<a href="{{n.href}}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 12px; text-decoration: none; background: {{n.bg}}; color: {{n.fg}}; font-weight: {{n.weight}}; font-size: 15px">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px">
+<h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 28px">التدريب</h1>
+<span style="font-size: 14px; color: #A9B6CC">لاعب من كل خط · جلسة كل 8 ساعات حتى لو كنت غائباً · عند 100% القوة +1</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 12px; background: #10284F; font-size: 14px"><span style="color: #A9B6CC">أموال النادي</span><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px" dir="ltr">3.24M</span></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 12px; background: #10284F"><img src="/_blob/5bd2c4d5326f6c6a577d7a17fa6803e8" alt="العملة المميزة" style="width: 22px; height: 22px"><span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px" dir="ltr">1,250</span></span>
+</div>
+</header>
+
+<section aria-label="خانات التدريب" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px">
+<sc-for list="{{slots}}" as="s" hint-placeholder-count="4">
+<article style="border-radius: 22px; padding: 18px; background: {{s.cardBg}}; border: 1.5px solid {{s.border}}; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #C9D2E1"><span style="display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 22px; border-radius: 6px; background: {{s.posBg}}; color: {{s.posFg}}; font-weight: 700; font-size: 11px">{{s.pos}}</span>خانة {{s.slot}}</span>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; color: {{s.timeColor}}" dir="ltr">{{s.time}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 17px">{{s.name}}</span>
+<span style="font-size: 12px; color: #A9B6CC">{{s.meta}}</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: center; gap: 14px">
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 40px; line-height: 1">{{s.ovr}}</span>
+<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="{{s.bar}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 40px; line-height: 1; color: {{s.bar}}">{{s.next}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A9B6CC"><span>التقدم</span><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 15px; color: {{s.bar}}" dir="ltr">{{s.pct}}%</span></div>
+<span style="height: 10px; border-radius: 10px; background: rgba(247,244,234,0.1)"><span style="display: block; height: 10px; border-radius: 10px; width: {{s.pct}}%; background: {{s.bar}}"></span></span>
+</div>
+<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}">
+<button type="button" style="height: 44px; border-radius: 12px; border: 0; background: #2BB673; color: #062B17; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 14px">اختر لاعباً جديداً</button>
+</sc-if>
+<sc-if value="{{s.running}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: 1fr auto; gap: 8px">
+<button type="button" style="height: 44px; border-radius: 12px; border: 0; background: rgba(245,184,46,0.14); color: #F5B82E; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px">أنهِ الجلسة الآن <img src="/_blob/5bd2c4d5326f6c6a577d7a17fa6803e8" alt="" style="width: 18px; height: 18px"><span style="font-family: 'Barlow Condensed', sans-serif; font-size: 16px">{{s.coins}}</span></button>
+<button type="button" aria-label="إخراج من التدريب" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: rgba(247,244,234,0.07); color: #C9D2E1; display: inline-flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+</article>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<section aria-label="مرشحون للتدريب" style="flex: 3 1 520px; min-width: 0; border-radius: 20px; background: #10284F; padding: 18px 18px 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 17px; font-weight: 700">مرشحون للتدريب</h2><span style="font-size: 12px; color: #A9B6CC">الأصغر سناً يتطور أسرع وسقفه أعلى</span></div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px">
+<thead><tr style="color: #A9B6CC; font-size: 12px">
+<th style="text-align: right; padding: 10px 8px; font-weight: 500">اللاعب</th>
+<th style="padding: 10px 8px; font-weight: 500">السن</th>
+<th style="padding: 10px 8px; font-weight: 500">القوة</th>
+<th style="padding: 10px 8px; font-weight: 500">السقف</th>
+<th style="padding: 10px 8px; font-weight: 500">جلسات للـ +1</th>
+<th style="padding: 10px 8px; font-weight: 500"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">إجراء</span></th>
+</tr></thead>
+<tbody>
+<sc-for list="{{candidates}}" as="c" hint-placeholder-count="6">
+<tr style="border-top: 1px solid rgba(247,244,234,0.05)">
+<td style="padding: 9px 8px"><div style="display: flex; align-items: center; gap: 10px"><span style="display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 22px; border-radius: 6px; background: {{c.posBg}}; color: {{c.posFg}}; font-weight: 700; font-size: 11px">{{c.pos}}</span><span style="font-weight: 600">{{c.name}}</span></div></td>
+<td style="padding: 9px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 16px">{{c.age}}</td>
+<td style="padding: 9px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700">{{c.ovr}}</td>
+<td style="padding: 9px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #6FDC97">{{c.pot}}</td>
+<td style="padding: 9px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: #C9D2E1">~{{c.sessions}}</td>
+<td style="padding: 9px 8px; text-align: left"><button type="button" style="height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(245,184,46,0.45); background: transparent; color: #F5B82E; font-size: 13px; font-weight: 700">{{c.action}}</button></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+<aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<section aria-label="منشأة التدريب" style="border-radius: 20px; background: #10284F; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 16px; font-weight: 700">منشأة التدريب</h2><span style="font-size: 12px; color: #A9B6CC">المرحلة 1 من 3</span></div>
+<div style="display: flex; gap: 4px"><sc-for list="{{facility}}" as="f" hint-placeholder-count="15"><span style="flex: 1; height: 8px; border-radius: 3px; background: {{f}}"></span></sc-for></div>
+<span style="font-size: 13px; color: #C9D2E1; line-height: 1.6">كل مرحلة تسرّع التقدم في كل الخانات. تُطوَّر من صفحة الملعب.</span>
+<a href="WebStadium.dc.html" style="display: inline-flex; align-items: center; height: 44px; font-size: 14px; font-weight: 700; text-decoration: none">إلى الملعب</a>
+</section>
+
+<sc-for list="{{extras}}" as="e" hint-placeholder-count="2">
+<section style="border-radius: 20px; padding: 18px; background: linear-gradient(160deg, #12305E 0%, #0D2348 100%); border: 1px solid rgba(245,184,46,0.22); display: flex; gap: 14px; align-items: flex-start">
+<span style="flex: none; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 14px; background: rgba(245,184,46,0.14)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F5B82E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{e.icon}}"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px">{{e.title}}</span>
+<span style="font-size: 13px; color: #C9D2E1; line-height: 1.6">{{e.body}}</span>
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; font-size: 14px; font-weight: 700; text-decoration: none">{{e.cta}}</a>
+</div>
+</section>
+</sc-for>
+
+</aside>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+const I = {
+  home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  team: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-2a4 4 0 0 0-3-3.9M16 3.1a3.5 3.5 0 0 1 0 6.8',
+  lineup: 'M3 5h18v14H3zM12 5v14M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5',
+  tactics: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4',
+  training: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12',
+  market: 'M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7',
+  scout: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',
+  stadium: 'M3 10c0-2 4-4 9-4s9 2 9 4v6c0 2-4 4-9 4s-9-2-9-4zM3 10c0 2 4 4 9 4s9-2 9-4',
+  finance: 'M3 7h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l3-3h11M16 13h2',
+  league: 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3',
+  mail: 'M3 6h18v12H3zM3 7l9 6 9-6'
+};
+const links = { 'الرئيسية': 'WebHome.dc.html', 'الفريق': 'WebSquad.dc.html', 'التشكيلة': 'WebLineup.dc.html', 'التكتيك': 'WebTactics.dc.html', 'التدريب': 'WebTraining.dc.html', 'السوق': 'WebMarket.dc.html', 'الملعب': 'WebStadium.dc.html', 'المالية': 'WebFinance.dc.html', 'الدوري والكأس': 'WebLeague.dc.html' };
+const active = 'التدريب';
+const nav = [['الرئيسية', 'home'], ['الفريق', 'team'], ['التشكيلة', 'lineup'], ['التكتيك', 'tactics'], ['التدريب', 'training'], ['السوق', 'market'], ['الكشاف', 'scout'], ['الملعب', 'stadium'], ['المالية', 'finance'], ['الدوري والكأس', 'league'], ['الرسائل', 'mail']]
+  .map(([label, k]) => ({ label, icon: I[k], href: links[label] || '#', bg: label === active ? 'rgba(245,184,46,0.14)' : 'transparent', fg: label === active ? '#F5B82E' : '#C9D2E1', weight: label === active ? 600 : 400 }));
+const P = { 'ح': ['#F5B82E', '#0A1F42'], 'د': ['#2F6FDB', '#FFFFFF'], 'و': ['#1E9E4A', '#FFFFFF'], 'هـ': ['#F2994A', '#2A1300'] };
+const slots = [
+  ['ح', 'الحارس', 'جورجي مامارداشفيلي', '25 سنة · السقف 89', 84, 64, '03:12:40', 20],
+  ['د', 'الدفاع', 'ميلوش كيركيز', '22 سنة · السقف 88', 82, 82, '05:40:05', 30],
+  ['و', 'الوسط', 'كيرتس جونز', '25 سنة · السقف 85', 80, 31, '07:55:18', 35],
+  ['هـ', 'الهجوم', 'هوغو إيكيتيكي', '23 سنة · السقف 89', 83, 100, 'اكتمل', 0]
+].map(([pos, slot, name, meta, ovr, pct, time, coins]) => {
+  const done = pct >= 100;
+  return {
+    pos, slot, name, meta, ovr, next: ovr + 1, pct, time, coins, done, running: !done,
+    posBg: P[pos][0], posFg: P[pos][1],
+    bar: done ? '#2BB673' : '#F5B82E', timeColor: done ? '#6FDC97' : '#A9B6CC',
+    cardBg: done ? 'linear-gradient(160deg, rgba(43,182,115,0.18) 0%, #10284F 70%)' : '#10284F',
+    border: done ? 'rgba(43,182,115,0.55)' : 'transparent'
+  };
+});
+const candidates = [
+  ['هـ', 'ريو نغوموها', 17, 68, 86, 6, 'بدل إيكيتيكي'],
+  ['و', 'تري نيوني', 18, 64, 84, 5, 'بعد جونز'],
+  ['د', 'جيوفاني ليوني', 19, 69, 85, 6, 'بعد كيركيز'],
+  ['د', 'كونور برادلي', 22, 78, 85, 11, 'بعد كيركيز'],
+  ['و', 'رايان خرافنبيرخ', 23, 85, 89, 18, 'بعد جونز'],
+  ['هـ', 'ألكسندر إيساك', 26, 88, 89, 22, 'بدل إيكيتيكي']
+].map(([pos, name, age, ovr, pot, sessions, action]) => ({ pos, name, age, ovr, pot, sessions, action, posBg: P[pos][0], posFg: P[pos][1] }));
+return {
+  nav, slots, candidates,
+  facility: Array.from({ length: 15 }, (_, i) => i < 5 ? '#F5B82E' : i < 7 ? 'rgba(245,184,46,0.4)' : 'rgba(247,244,234,0.12)'),
+  extras: [
+    { title: 'معسكر التدريب', body: 'أرسل مجموعة من لاعبيك لمعسكر مكثف يرفع تقدمهم مرة واحدة، ويغيبون عنه عن المباريات.', cta: 'جهّز المعسكر', icon: 'M3 20l9-15 9 15zM9 20l3-5 3 5' },
+    { title: 'التدريب السري', body: 'جلسة خاصة قبل المباراة ترفع خطاً واحداً لمباراة واحدة، ولا يراها خصمك.', cta: 'اختر الخط', icon: 'M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5zM12 15v2' }
+  ]
+};
+}
+}
+</script>
+</body>
+</html>
