@@ -81,6 +81,16 @@ export interface Tick {
   debug?: { initiative?: { rate: number; home_share: number } }
 }
 
+export interface LiveSync {
+  started: boolean
+  finished: boolean
+  tick: number
+  server_now: number
+  next_at: number | null
+  gap: boolean
+  ticks: Tick[]
+}
+
 export interface MatchView {
   id: string
   seed: number
@@ -88,6 +98,8 @@ export interface MatchView {
   referee: number
   venue: 'home' | 'neutral'
   control: Record<Side, 'me' | 'cpu'>
+  mode: 'solo' | 'live'
+  started: boolean
   tick: number
   finished: boolean
   score: Record<Side, number>
@@ -118,6 +130,8 @@ export const sim = {
   create: (body: Record<string, unknown>) => call<MatchView>('POST', '/matches', body),
   show: (id: string) => call<MatchView>('GET', `/matches/${id}`),
   ticks: (id: string, count = 1) => call<{ ticks: Tick[] }>('POST', `/matches/${id}/ticks`, { count }),
+  start: (id: string) => call<LiveSync>('POST', `/matches/${id}/start`),
+  live: (id: string, since: number) => call<LiveSync>('GET', `/matches/${id}/live?since=${since}`),
   order: (id: string, order: Record<string, unknown>) =>
     call<{ target_tick: number; duplicate: boolean }>('POST', `/matches/${id}/actions`, {
       ...order,
