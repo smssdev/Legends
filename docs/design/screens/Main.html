@@ -12,13 +12,13 @@ a{color:#F5B82E}a:hover{color:#FFD36B}
 </style>
 </head>
 <body>
-<div dir="rtl" style="width: 1440px; height: 1300px; box-sizing: border-box; padding: 64px 72px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; gap: 48px">
+<div dir="rtl" style="width: 1440px; height: 1480px; box-sizing: border-box; padding: 64px 72px; background: #0A1F42; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; gap: 48px">
 
 <div style="display: flex; align-items: center; gap: 28px">
 <img src="assets/icon-512.png" alt="شعار Legends" style="width: 96px; height: 96px; border-radius: 24px">
 <div style="display: flex; flex-direction: column; gap: 6px">
 <h1 style="margin: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 44px; letter-spacing: 0.5px">Legends <span style="color: #F5B82E">·</span> نظام التصميم</h1>
-<p style="margin: 0; font-size: 18px; color: #A9B6CC">داكن افتراضياً، ذهبي للفعل المهم، أخضر للملعب فقط. نفس المكونات في الويب والموبايل.</p>
+<p style="margin: 0; font-size: 18px; color: #A9B6CC">داكن افتراضياً، ذهبي للفعل المهم، أخضر للملعب فقط. نفس الرموز في الويب (Vue + Tailwind) والتطبيق (Flutter) من ملف واحد: <span dir="ltr">docs/design/tokens.json</span></p>
 </div>
 </div>
 
@@ -218,6 +218,22 @@ a{color:#F5B82E}a:hover{color:#FFD36B}
 <span style="display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; color: #C9D2E1; font-size: 14px">الفريق</span>
 <span style="display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 12px; color: #C9D2E1; font-size: 14px">السوق</span>
 </div>
+</div>
+</section>
+
+<section aria-label="مكونات المباراة" style="background: #10284F; border: 1px solid rgba(247,244,234,0.08); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; gap: 14px"><h2 style="margin: 0; font-family: 'Alexandria', sans-serif; font-size: 20px; font-weight: 700">مكونات المباراة</h2><span style="font-size: 13px; color: #A9B6CC">تُستخدم في المحاكي والمباراة الحية، ويُكتب كل مكون مرة في Vue ومرة في Flutter بنفس المقاسات</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; color: #A9B6CC">لوحة النتيجة (صاحب الأرض يميناً)</span>
+<div style="display: flex; align-items: stretch; border-radius: 12px; overflow: hidden"><span style="display: inline-flex; align-items: center; padding: 0 12px; background: #C8102E; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 15px">ليفربول</span><span style="display: inline-flex; align-items: center; padding: 6px 14px; background: #071733; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px" dir="ltr">1 – 2</span><span style="display: inline-flex; align-items: center; padding: 0 12px; background: #F7F4EA; color: #DB0007; font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 15px">آرسنال</span><span style="display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; background: #163360; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; color: #F5B82E"><span style="width: 7px; height: 7px; border-radius: 50%; background: #EF4444"></span>67'</span></div></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; color: #A9B6CC">لاعب على الملعب (معه الكرة / عادي / الخصم)</span>
+<div style="display: flex; gap: 14px; align-items: flex-end"><span style="width: 26px; height: 30px; box-sizing: border-box; border-radius: 9px 9px 6px 6px; background: #C8102E; border: 2px solid #F6C343; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px #F5B82E">11</span><span style="width: 26px; height: 30px; box-sizing: border-box; border-radius: 9px 9px 6px 6px; background: #C8102E; border: 2px solid #F6C343; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center">7</span><span style="width: 26px; height: 30px; box-sizing: border-box; border-radius: 9px 9px 6px 6px; background: #FFFFFF; border: 2px solid #DB0007; color: #DB0007; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center">7</span></div></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; color: #A9B6CC">أمر سريع</span>
+<button type="button" style="min-height: 60px; padding: 8px 14px; border-radius: 12px; border: 1.5px solid #F5B82E; background: rgba(245,184,46,0.16); color: #F7F4EA; text-align: right; display: flex; flex-direction: column; gap: 2px; font-family: inherit"><span style="font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 14px; color: #F5B82E">ضغط عالٍ</span><span style="font-size: 12px; color: #A9B6CC">الضغط 85 · لياقة أسرع</span></button></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; color: #A9B6CC">أمر معلّق ثم مطبّق</span>
+<div style="display: flex; gap: 10px"><span style="display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: 12px; background: rgba(245,184,46,0.12); border: 1px solid rgba(245,184,46,0.45); font-size: 13px"><span style="width: 24px; height: 24px; border-radius: 50%; background: conic-gradient(#F5B82E 50%, rgba(247,244,234,0.12) 0)"></span>يُطبق في الدقيقة 68</span><span style="display: inline-flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 12px; background: rgba(43,182,115,0.14); border: 1px solid rgba(43,182,115,0.5); font-size: 13px">طُبّق في الدقيقة 68</span></div></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; color: #A9B6CC">مرحلة الهجمة</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: #071733; font-size: 13px; color: #C9D2E1">هجمة ليفربول · <strong style="color: #FF6B81; margin-right: 4px">صناعة</strong></span></div>
 </div>
 </section>
 
