@@ -11,6 +11,13 @@
       <p class="mt-1 text-text-muted">اختر ناديين حقيقيين، وحدد من يدير كل فريق، ثم شاهد المباراة وأدرها.</p>
     </div>
 
+    <div role="radiogroup" aria-label="نوع المباراة" class="grid grid-cols-2 gap-3">
+      <button v-for="m in modes" :key="m.v" type="button" role="radio" :aria-checked="settings.mode === m.v" class="flex min-h-20 flex-col items-start gap-1 rounded-xl border-2 p-4 text-start" :class="settings.mode === m.v ? 'border-gold bg-gold/10' : 'border-transparent bg-surface'" @click="settings.mode = m.v">
+        <span class="font-display text-lg font-extrabold" :class="settings.mode === m.v ? 'text-gold' : ''">{{ m.label }}</span>
+        <span class="text-xs text-text-muted">{{ m.hint }}</span>
+      </button>
+    </div>
+
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ error }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
@@ -70,7 +77,7 @@
     </div>
 
     <section class="grid gap-4 rounded-xl bg-surface p-4 md:grid-cols-3" aria-label="إعدادات المباراة">
-      <div v-for="g in groups" :key="g.key" class="flex flex-col gap-2">
+      <div v-for="g in groups.filter((g) => settings.mode === 'solo' || g.key !== 'speed')" :key="g.key" class="flex flex-col gap-2">
         <span class="text-sm text-text-soft">{{ g.label }}</span>
         <div role="radiogroup" :aria-label="g.label" class="flex gap-1 rounded-md bg-surface-sunk p-1">
           <button v-for="o in g.options" :key="String(o.v)" type="button" role="radio" :aria-checked="settings[g.key] === o.v" class="h-touch flex-1 rounded-sm text-sm font-bold" :class="settings[g.key] === o.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="settings[g.key] = o.v">{{ o.label }}</button>
@@ -85,11 +92,12 @@
       </div>
     </section>
 
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 bg-bg/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:bg-transparent md:p-0">
       <button type="button" class="flex h-14 items-center gap-2 rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold disabled:opacity-50" :disabled="!ready || busy" @click="start">
         {{ busy ? 'جارٍ التجهيز...' : 'ابدأ المباراة' }}
       </button>
-      <span class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 5 دقائق بسرعة ×1' }}</span>
+      <span v-if="notReady" class="text-sm font-bold text-warning">{{ notReady }}</span>
+      <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 5 دقائق بسرعة ×1' }}</span>
     </div>
   </main>
 </template>
@@ -113,30 +121,42 @@ const plans = [
 const blank = () => ({ league: '', q: '', results: [] as Club[], club: null as Club | null, squad: null as any, control: 'cpu' as 'me' | 'cpu', plan: 'passing' })
 const pick = reactive({ home: { ...blank(), control: 'me' as 'me' | 'cpu' }, away: blank() })
 const settings = reactive<Record<string, any>>({ mode: 'solo', referee: 1, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
+const modes = [
+  { v: 'solo', label: 'ضد الحاسوب', hint: 'على هذا الجهاز، مع السرعة والإيقاف والتخطي' },
+  { v: 'live', label: 'ضد صديق', hint: 'كل واحد من جهازه برابط تشاركه معه' },
+] as const
 const groups = [
-  { key: 'mode', label: 'طريقة اللعب', options: [{ v: 'solo', label: 'هذا الجهاز' }, { v: 'live', label: 'مع صديق' }] },
   { key: 'referee', label: 'الحكم', options: [{ v: 0, label: 'متساهل' }, { v: 1, label: 'متوسط' }, { v: 2, label: 'صارم' }] },
   { key: 'competition', label: 'المسابقة', options: [{ v: 'league', label: 'دوري' }, { v: 'cup', label: 'كأس' }] },
   { key: 'venue', label: 'الملعب', options: [{ v: 'home', label: 'أرض الفريق 1' }, { v: 'neutral', label: 'محايد' }] },
   { key: 'speed', label: 'السرعة', options: [{ v: 1, label: '×1' }, { v: 2, label: '×2' }, { v: 4, label: '×4' }] },
 ]
 const ready = computed(() => pick.home.club && pick.away.club && pick.home.club.id !== pick.away.club.id)
+const notReady = computed(() =>
+  !pick.home.club || !pick.away.club ? 'اختر نادياً لكل فريق من القائمتين.' : pick.home.club.id === pick.away.club.id ? 'اختر ناديين مختلفين.' : '',
+)
 
 let timers: Record<Side, number> = { home: 0, away: 0 }
+async function load(side: Side) {
+  try {
+    pick[side].results = await sim.clubs({ q: pick[side].q, league: pick[side].league })
+  } catch (e: any) {
+    error.value = e.message
+  }
+}
 function search(side: Side) {
   clearTimeout(timers[side])
-  timers[side] = window.setTimeout(async () => {
-    try {
-      pick[side].results = await sim.clubs({ q: pick[side].q, league: pick[side].league })
-    } catch (e: any) {
-      error.value = e.message
-    }
-  }, 200)
+  timers[side] = window.setTimeout(() => load(side), 200)
 }
 
 async function choose(side: Side, club: Club) {
   pick[side].club = club
-  pick[side].squad = await sim.squad(club.id)
+  pick[side].squad = null
+  try {
+    pick[side].squad = await sim.squad(club.id)
+  } catch (e: any) {
+    error.value = e.message
+  }
 }
 
 function stars(side: Side) {
@@ -165,14 +185,13 @@ async function start() {
 onMounted(async () => {
   try {
     leagues.value = await sim.leagues()
+    if (!leagues.value.length) error.value = 'لا توجد أندية في قاعدة البيانات. شغّل من مجلد backend: php artisan data:import'
     pick.home.league = leagues.value[0]?.name ?? ''
     pick.away.league = pick.home.league
-    await Promise.all([search('home'), search('away')])
-    window.setTimeout(async () => {
-      const [a, b] = pick.home.results
-      if (a) await choose('home', a)
-      if (b) await choose('away', b)
-    }, 450)
+    await Promise.all([load('home'), load('away')])
+    // Start with the league's two strongest clubs so the match can begin at once.
+    const [a, b] = pick.home.results
+    await Promise.all([a && choose('home', a), b && choose('away', b)])
   } catch (e: any) {
     error.value = 'تعذر الاتصال بالـ API. شغّل composer dev من مجلد backend.'
   }
