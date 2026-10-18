@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Engine\FloatGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -75,5 +76,44 @@ class SimulatorApiTest extends TestCase
     {
         config(['game.simulator.enabled' => false]);
         $this->getJson('/api/v1/sim/leagues')->assertNotFound();
+    }
+
+    public function test_a_live_match_runs_on_the_server_clock_for_both_screens(): void
+    {
+        Carbon::setTestNow('2026-10-18 12:00:00');
+        $home = $this->club('Alpha', 82);
+        $away = $this->club('Beta', 79);
+        $id = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5, 'mode' => 'live'])
+            ->assertCreated()->assertJsonPath('mode', 'live')->assertJsonPath('started', false)
+            ->assertJsonPath('control', ['home' => 'me', 'away' => 'me'])->json('id');
+
+        // Nothing moves before the start, and nobody can drive the clock by hand.
+        $this->getJson("/api/v1/sim/matches/$id/live")->assertOk()->assertJsonPath('started', false)->assertJsonCount(0, 'ticks');
+        $this->postJson("/api/v1/sim/matches/$id/ticks")->assertStatus(409);
+
+        $this->postJson("/api/v1/sim/matches/$id/start")->assertOk()->assertJsonPath('started', true);
+        $this->getJson("/api/v1/sim/matches/$id/live")->assertJsonCount(0, 'ticks');
+
+        // 3 s countdown + one minute (3 s): two minutes are due.
+        Carbon::setTestNow('2026-10-18 12:00:06');
+        $this->postJson("/api/v1/sim/matches/$id/actions", ['type' => 'tactics', 'team' => 'away', 'tactics' => ['style' => 80], 'idempotency_key' => 'a1'])
+            ->assertStatus(202)->assertJsonPath('target_tick', 1);
+        $a = $this->getJson("/api/v1/sim/matches/$id/live?since=0")->assertOk()->json();
+        $this->assertSame([1, 2], array_column($a['ticks'], 'tick'));
+        $this->assertCount(6, $a['ticks'][0]['frames']);
+        $this->assertSame(80, $a['ticks'][0]['teams']['away']['tactics']['style']);
+
+        // The second screen asks at the same moment: same minutes, nothing simulated twice.
+        $b = $this->getJson("/api/v1/sim/matches/$id/live?since=1")->json();
+        $this->assertSame([2], array_column($b['ticks'], 'tick'));
+        $this->assertSame(2, $b['tick']);
+
+        // Far behind: the match catches up to the end, and the buffer says it skipped.
+        Carbon::setTestNow('2026-10-18 13:00:00');
+        $end = $this->getJson("/api/v1/sim/matches/$id/live?since=2")->json();
+        $this->assertTrue($end['finished']);
+        $this->assertTrue($end['gap']);
+        $this->getJson("/api/v1/sim/matches/$id/report")->assertOk();
+        Carbon::setTestNow();
     }
 }

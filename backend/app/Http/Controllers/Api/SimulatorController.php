@@ -48,6 +48,7 @@ class SimulatorController extends Controller
             'competition' => 'nullable|in:league,cup',
             'referee' => 'nullable|integer|between:0,2',
             'venue' => 'nullable|in:home,neutral',
+            'mode' => 'nullable|in:solo,live',
             'control.home' => 'nullable|in:me,cpu',
             'control.away' => 'nullable|in:me,cpu',
             'home.formation' => ['nullable', Rule::in(Formations::names())],
@@ -89,8 +90,25 @@ class SimulatorController extends Controller
     public function ticks(Request $request, SimMatch $match)
     {
         $data = $request->validate(['count' => 'nullable|integer|min:1|max:200']);
+        abort_if($match->live !== null, 409, 'المباراة المباشرة يديرها الخادم.');
 
         return ['ticks' => $this->sim->advance($match, (int) ($data['count'] ?? 1))];
+    }
+
+    public function start(SimMatch $match)
+    {
+        abort_if($match->live === null, 409, 'هذه ليست مباراة مباشرة.');
+        $this->sim->start($match);
+
+        return $this->sim->sync($match, $match->state['tick']);
+    }
+
+    public function live(Request $request, SimMatch $match)
+    {
+        abort_if($match->live === null, 409, 'هذه ليست مباراة مباشرة.');
+        $since = (int) ($request->validate(['since' => 'nullable|integer|min:0'])['since'] ?? 0);
+
+        return $this->sim->sync($match, $since);
     }
 
     public function report(Request $request, SimMatch $match)

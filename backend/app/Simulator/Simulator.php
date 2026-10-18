@@ -8,12 +8,15 @@ use App\Engine\Formations;
 use App\Engine\MatchSetup;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
+use App\Support\GameClock;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
  * The simulator (docs/MATCH_VIEW.md 8): same engine, same events and frames
- * as a league match, but the client drives the clock (speed, pause, skip).
- * The server still computes every minute.
+ * as a league match. Solo matches: the client drives the clock (speed,
+ * pause, skip). Live matches (two devices, one per coach): the server keeps
+ * the clock and both screens poll it. The server computes every minute.
  */
 class Simulator
 {
@@ -43,10 +46,13 @@ class Simulator
 
         $state = MatchFactory::make($home, $away, $setup['options'], $setup['overrides']);
 
+        $live = ($in['mode'] ?? 'solo') === 'live';
+
         return SimMatch::create([
             'seed' => $seed,
             'setup' => $setup,
-            'control' => ['home' => $in['control']['home'] ?? 'me', 'away' => $in['control']['away'] ?? 'cpu'],
+            'control' => $live ? ['home' => 'me', 'away' => 'me'] : ['home' => $in['control']['home'] ?? 'me', 'away' => $in['control']['away'] ?? 'cpu'],
+            'live' => $live ? ['next_at' => null, 'recent' => []] : null,
             'state' => $state,
             'ticks' => [],
             'pending' => [],
@@ -57,6 +63,12 @@ class Simulator
 
     /** Queues an order for the next minute that has not been simulated yet. */
     public function order(SimMatch $match, array $order): array
+    {
+        // Re-read inside a write transaction: a live match may be advancing right now.
+        return DB::transaction(fn () => $this->queue(SimMatch::findOrFail($match->id), $order));
+    }
+
+    private function queue(SimMatch $match, array $order): array
     {
         $keys = array_column(array_merge($match->pending ?? [], $match->applied ?? []), 'key');
         if (in_array($order['key'], $keys, true)) {
@@ -103,6 +115,70 @@ class Simulator
         return $out;
     }
 
+    /** Starts a live match's clock a few seconds from now, so both screens are ready. */
+    public function start(SimMatch $match): void
+    {
+        DB::transaction(function () use ($match) {
+            $m = SimMatch::findOrFail($match->id);
+            if ($m->live !== null && $m->live['next_at'] === null) {
+                $m->live = ['next_at' => GameClock::nowMs() + 3000] + $m->live;
+                $m->save();
+            }
+        });
+    }
+
+    /**
+     * Live matches: simulates every minute that is due by the clock, then
+     * returns the minutes after $since that are still kept with their frames.
+     * Both screens call this; the write transaction makes one of them do the
+     * work and the other read the result.
+     */
+    public function sync(SimMatch $match, int $since): array
+    {
+        return DB::transaction(function () use ($match, $since) {
+            $m = SimMatch::findOrFail($match->id);
+            $live = $m->live;
+            $now = GameClock::nowMs();
+            $timing = $m->state['cfg']['match'];
+
+            for ($n = 0; $live['next_at'] !== null && $now >= $live['next_at'] && ! $m->state['finished'] && $n < 300; $n++) {
+                $tick = $this->advance($m, 1)[0];
+                $live['recent'] = array_slice([...$live['recent'], $tick], -20);
+                $live['next_at'] += ($tick['period'] >= 3 ? $timing['extra_time_tick_ms'] : $timing['tick_ms']) + self::pauseMs($tick, $timing);
+            }
+            $m->live = $live;
+            $m->save();
+
+            $ticks = array_values(array_filter($live['recent'], fn ($t) => $t['tick'] > $since));
+
+            return [
+                'started' => $live['next_at'] !== null,
+                'finished' => $m->state['finished'],
+                'tick' => $m->state['tick'],
+                'server_now' => $now,
+                'next_at' => $m->state['finished'] ? null : $live['next_at'],
+                // Older minutes were dropped from the buffer: the screen jumps to the latest.
+                'gap' => $ticks && $ticks[0]['tick'] > $since + 1,
+                'ticks' => $ticks,
+            ];
+        });
+    }
+
+    /** The break after a minute that ends a period. */
+    private static function pauseMs(array $tick, array $timing): int
+    {
+        foreach ($tick['events'] as $e) {
+            if ($e['type'] === 'period' && $e['name'] === 'halftime') {
+                return $timing['halftime_seconds'] * 1000;
+            }
+            if ($e['type'] === 'period' && in_array($e['name'], ['extra_time', 'extra_time_half', 'penalties'], true)) {
+                return ($timing['extra_time_break_seconds'] ?? 10) * 1000;
+            }
+        }
+
+        return 0;
+    }
+
     public function report(SimMatch $match, string $side = 'home'): array
     {
         return Report::build($match->state, $match->ticks ?? [], $side);
@@ -120,6 +196,8 @@ class Simulator
             'referee' => $s['referee'],
             'venue' => $s['venue'],
             'control' => $match->control,
+            'mode' => $match->live === null ? 'solo' : 'live',
+            'started' => $match->live === null || $match->live['next_at'] !== null,
             'tick' => $s['tick'],
             'finished' => $s['finished'],
             'score' => $s['score'],
