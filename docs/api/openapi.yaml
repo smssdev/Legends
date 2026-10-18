@@ -80,6 +80,7 @@ paths:
                 competition: { type: string, enum: [league, cup] }
                 referee: { type: integer, enum: [0, 1, 2], description: 0 soft, 1 medium, 2 strict }
                 venue: { type: string, enum: [home, neutral] }
+                mode: { type: string, enum: [solo, live], description: 'solo: the client drives the clock. live: two devices, the server keeps the clock and both coaches are "me".' }
                 control:
                   type: object
                   properties:
@@ -151,6 +152,7 @@ paths:
               properties:
                 count: { type: integer, minimum: 1, maximum: 200, default: 1 }
       responses:
+        '409': { description: Live match; the server keeps the clock }
         '200':
           description: One entry per simulated minute (docs/api/match-events.md)
           content:
@@ -159,6 +161,32 @@ paths:
                 type: object
                 properties:
                   ticks: { type: array, items: { type: object } }
+  /sim/matches/{match}/start:
+    post:
+      tags: [simulator]
+      summary: Start a live match (kick-off 3 s later)
+      parameters: [{ $ref: '#/components/parameters/Match' }]
+      responses:
+        '200':
+          description: Same body as /live
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LiveSync' }
+        '409': { description: Not a live match }
+  /sim/matches/{match}/live:
+    get:
+      tags: [simulator]
+      summary: Live match poll. Simulates the minutes due by the server clock, returns those after `since`
+      parameters:
+        - { $ref: '#/components/parameters/Match' }
+        - { name: since, in: query, schema: { type: integer, minimum: 0 }, description: Last minute this screen has shown }
+      responses:
+        '200':
+          description: New minutes with their frames (the last 20 are kept)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LiveSync' }
+        '409': { description: Not a live match }
   /sim/matches/{match}/report:
     get:
       tags: [simulator]
@@ -224,6 +252,8 @@ components:
         referee: { type: integer }
         venue: { type: string }
         control: { type: object }
+        mode: { type: string, enum: [solo, live] }
+        started: { type: boolean, description: Always true for solo matches }
         tick: { type: integer }
         finished: { type: boolean }
         score: { type: object }
@@ -232,3 +262,13 @@ components:
         clubs: { type: object }
         teams: { type: object }
         slots: { type: object }
+    LiveSync:
+      type: object
+      properties:
+        started: { type: boolean }
+        finished: { type: boolean }
+        tick: { type: integer, description: Last simulated minute }
+        server_now: { type: integer, description: Server clock in ms }
+        next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
+        gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
+        ticks: { type: array, items: { type: object } }
