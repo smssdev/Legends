@@ -1,0 +1,82 @@
+name: Package
+
+# Builds a ready-to-run copy of Legends (API + built web app + imported club
+# data) and uploads it as a downloadable artifact. Needs only PHP 8.3+ with
+# pdo_sqlite on the machine that runs it. See docs/RUN.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, intl
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install backend
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress --no-dev --optimize-autoloader
+
+      - name: Build web app into backend/public
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+          rm -rf ../backend/public/assets
+          cp -r dist/. ../backend/public/
+
+      - name: Databases and club data
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
+          echo "SIMULATOR_ENABLED=true" >> .env
+          php artisan key:generate --force
+          php artisan migrate --force
+          php artisan data:import
+
+      - name: Smoke test
+        working-directory: backend
+        run: |
+          php artisan serve --port=8000 > /tmp/serve.log 2>&1 &
+          SERVER=$!
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/ > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/sim | grep -q '<div id="app">'
+          curl -sf http://127.0.0.1:8000/api/v1/sim/leagues | grep -q 'Premier League'
+          kill $SERVER; sleep 1
+          # Fold the WAL into the database files so the copy is self-contained.
+          for db in database/*.sqlite; do sqlite3 "$db" 'PRAGMA wal_checkpoint(TRUNCATE);'; done
+          rm -f database/*.sqlite-wal database/*.sqlite-shm
+
+      - name: Assemble
+        run: |
+          mkdir -p out/legends
+          cp -r backend out/legends/backend
+          rm -rf out/legends/backend/tests out/legends/backend/storage/logs/*.log
+          cp docs/RUN.md out/legends/README.md
+          printf '#!/usr/bin/env bash\ncd "$(dirname "$0")/backend" && echo "Open http://127.0.0.1:8000/sim" && php artisan serve --port=8000\n' > out/legends/run.sh
+          printf '@echo off\r\ncd /d "%%~dp0backend"\r\necho Open http://127.0.0.1:8000/sim\r\nphp artisan serve --port=8000\r\n' > out/legends/run.bat
+          chmod +x out/legends/run.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legends-${{ github.sha }}
+          path: out
+          retention-days: 14
