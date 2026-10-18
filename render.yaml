@@ -1,0 +1,10 @@
+# Render Blueprint: one free web service from the Dockerfile.
+# Deploy: https://render.com/deploy?repo=https://github.com/smssdev/Legends
+services:
+  - type: web
+    name: legends
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/sim/leagues
+    autoDeploy: true
