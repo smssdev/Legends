@@ -68,3 +68,18 @@ jobs:
           curl -sf -X POST -H 'Content-Type: application/json' -d '{"count":5}' "http://127.0.0.1:8000/api/v1/sim/matches/$id/ticks" | grep -q '"moment"'
       - if: failure()
         run: docker logs legends || true
+
+  scripts:
+    name: Server scripts (PowerShell parse)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - shell: pwsh
+        run: |
+          $bad = 0
+          foreach ($f in Get-ChildItem deploy/windows/*.ps1) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) { $bad++; $errors | ForEach-Object { Write-Host "$($f.Name): $($_.Message) (line $($_.Extent.StartLineNumber))" } }
+          }
+          if ($bad) { exit 1 }
