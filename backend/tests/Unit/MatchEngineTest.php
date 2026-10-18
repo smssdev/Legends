@@ -1,0 +1,87 @@
+<?php
+
+namespace Tests\Unit;
+
+use App\Engine\MatchSetup;
+use App\Simulator\Runner;
+use PHPUnit\Framework\TestCase;
+
+class MatchEngineTest extends TestCase
+{
+    private function squad(int $base, int $ovr): array
+    {
+        $positions = ['GK', 'GK', 'RB', 'CB', 'CB', 'LB', 'CB', 'CDM', 'CM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST', 'ST', 'CM'];
+        $lines = ['GK' => 'gk', 'RB' => 'def', 'CB' => 'def', 'LB' => 'def', 'CDM' => 'mid', 'CM' => 'mid', 'CAM' => 'mid',
+            'RM' => 'mid', 'LM' => 'mid', 'RW' => 'att', 'LW' => 'att', 'ST' => 'att'];
+
+        return array_map(fn ($pos, $i) => [
+            'id' => $base + $i, 'name' => "P$i", 'position' => $pos, 'line' => $lines[$pos], 'age' => 20 + $i,
+            'overall' => $ovr - intdiv($i, 3), 'pac' => 70, 'sho' => 65, 'pas' => 70, 'dri' => 70, 'def' => 65, 'phy' => 70,
+            'gk_diving' => 75, 'gk_handling' => 75, 'gk_positioning' => 75, 'gk_reflexes' => 75,
+            'penalties' => 70, 'free_kick' => 65, 'crossing' => 65, 'heading' => 65, 'stamina' => 75, 'aggression' => 60,
+        ], $positions, array_keys($positions));
+    }
+
+    private function state(int $seed): array
+    {
+        $cfg = require __DIR__.'/../../config/game.php';
+        $club = fn ($id) => ['id' => $id, 'name' => "C$id", 'code' => 'C'.$id, 'primary' => '#000000', 'secondary' => '#FFFFFF', 'strength' => 8000];
+
+        return MatchSetup::build(
+            ['club' => $club(1), 'squad' => $this->squad(100, 82)],
+            ['club' => $club(2), 'squad' => $this->squad(200, 80)],
+            ['seed' => $seed],
+            ['match' => $cfg['match'], 'engine' => $cfg['engine']],
+        );
+    }
+
+    public function test_same_seed_gives_the_same_match(): void
+    {
+        [$a, $ticksA] = Runner::toEnd($this->state(42));
+        [$b, $ticksB] = Runner::toEnd($this->state(42));
+
+        $this->assertSame($ticksA, $ticksB);
+        $this->assertSame($a['score'], $b['score']);
+        $this->assertTrue($a['finished']);
+        $this->assertGreaterThanOrEqual(93, count($ticksA));
+    }
+
+    public function test_a_substitution_applies_at_the_next_minute_and_counts(): void
+    {
+        $state = Runner::tick($this->state(7));
+        $team = $state['teams']['home'];
+        $out = $team['players'][5]['id'];
+        $in = $team['players'][12]['id'];
+
+        $state = Runner::tick($state, [['type' => 'sub', 'team' => 'home', 'out' => $out, 'in' => $in]]);
+        $players = array_column($state['teams']['home']['players'], null, 'id');
+
+        $this->assertFalse($players[$out]['on']);
+        $this->assertTrue($players[$in]['on']);
+        $this->assertSame(1, $state['teams']['home']['subs_used']);
+        $this->assertSame([], $state['out']['rejected']);
+    }
+
+    public function test_invalid_orders_are_rejected_and_change_nothing(): void
+    {
+        $state = Runner::tick($this->state(7), [
+            ['type' => 'tactics', 'team' => 'home', 'tactics' => ['pressing' => 150]],
+            ['type' => 'formation', 'team' => 'away', 'formation' => '2-2-6'],
+        ]);
+
+        $this->assertCount(2, $state['out']['rejected']);
+        $this->assertSame(50, $state['teams']['home']['tactics']['pressing']);
+    }
+
+    public function test_cup_draws_are_decided(): void
+    {
+        foreach (range(1, 30) as $seed) {
+            $s = $this->state($seed);
+            $s['competition'] = 'cup';
+            [$end] = Runner::toEnd($s);
+            $h = $end['score']['home'] + ($end['shootout']['home'] ?? 0);
+            $a = $end['score']['away'] + ($end['shootout']['away'] ?? 0);
+            $this->assertNotSame($h, $a, "seed $seed");
+        }
+    }
+}
