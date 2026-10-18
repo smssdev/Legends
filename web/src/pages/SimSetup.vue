@@ -58,7 +58,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <div role="radiogroup" :aria-label="`من يدير ${side === 'home' ? 'الفريق الأول' : 'الفريق الثاني'}`" class="grid grid-cols-2 gap-1 rounded-md bg-surface-sunk p-1">
+          <div v-if="settings.mode === 'solo'" role="radiogroup" :aria-label="`من يدير ${side === 'home' ? 'الفريق الأول' : 'الفريق الثاني'}`" class="grid grid-cols-2 gap-1 rounded-md bg-surface-sunk p-1">
             <button v-for="c in controls" :key="c.v" type="button" role="radio" :aria-checked="pick[side].control === c.v" class="h-10 rounded-sm text-sm font-bold" :class="pick[side].control === c.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="pick[side].control = c.v">{{ c.label }}</button>
           </div>
           <label class="sr-only" :for="`plan-${side}`">خطة اللعب</label>
@@ -89,7 +89,7 @@
       <button type="button" class="flex h-14 items-center gap-2 rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold disabled:opacity-50" :disabled="!ready || busy" @click="start">
         {{ busy ? 'جارٍ التجهيز...' : 'ابدأ المباراة' }}
       </button>
-      <span class="text-sm text-text-muted">حوالي 5 دقائق بسرعة ×1</span>
+      <span class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 5 دقائق بسرعة ×1' }}</span>
     </div>
   </main>
 </template>
@@ -112,8 +112,9 @@ const plans = [
 ]
 const blank = () => ({ league: '', q: '', results: [] as Club[], club: null as Club | null, squad: null as any, control: 'cpu' as 'me' | 'cpu', plan: 'passing' })
 const pick = reactive({ home: { ...blank(), control: 'me' as 'me' | 'cpu' }, away: blank() })
-const settings = reactive<Record<string, any>>({ referee: 1, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
+const settings = reactive<Record<string, any>>({ mode: 'solo', referee: 1, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
 const groups = [
+  { key: 'mode', label: 'طريقة اللعب', options: [{ v: 'solo', label: 'هذا الجهاز' }, { v: 'live', label: 'مع صديق' }] },
   { key: 'referee', label: 'الحكم', options: [{ v: 0, label: 'متساهل' }, { v: 1, label: 'متوسط' }, { v: 2, label: 'صارم' }] },
   { key: 'competition', label: 'المسابقة', options: [{ v: 'league', label: 'دوري' }, { v: 'cup', label: 'كأس' }] },
   { key: 'venue', label: 'الملعب', options: [{ v: 'home', label: 'أرض الفريق 1' }, { v: 'neutral', label: 'محايد' }] },
@@ -150,11 +151,11 @@ async function start() {
   try {
     const match = await sim.create({
       home_id: pick.home.club!.id, away_id: pick.away.club!.id, seed: settings.seed, referee: settings.referee,
-      competition: settings.competition, venue: settings.venue,
+      competition: settings.competition, venue: settings.venue, mode: settings.mode,
       control: { home: pick.home.control, away: pick.away.control },
       home: { tactics: { plan: pick.home.plan } }, away: { tactics: { plan: pick.away.plan } },
     })
-    router.push({ name: 'sim-match', params: { id: match.id }, query: { speed: settings.speed } })
+    router.push({ name: 'sim-match', params: { id: match.id }, query: settings.mode === 'live' ? { side: 'home' } : { speed: settings.speed } })
   } catch (e: any) {
     error.value = e.message
     busy.value = false
