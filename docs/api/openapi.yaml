@@ -1,0 +1,234 @@
+openapi: 3.1.0
+info:
+  title: Legends API
+  version: 1.0.0
+  description: |
+    API for the Legends web app (and the Flutter app after v1.0). All routes are under /api/v1.
+    Match events and frames are described in docs/api/match-events.md.
+servers:
+  - url: /api/v1
+tags:
+  - name: simulator
+    description: Development simulator (docs/MATCH_VIEW.md 8). Returns 404 unless the simulator is enabled.
+paths:
+  /sim/leagues:
+    get:
+      tags: [simulator]
+      summary: Leagues with club counts
+      responses:
+        '200':
+          description: Leagues ordered by their strongest club
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name: { type: string }
+                    clubs: { type: integer }
+                    top: { type: integer, description: Strongest club strength in hundredths }
+  /sim/clubs:
+    get:
+      tags: [simulator]
+      summary: Search clubs
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 60 } }
+        - { name: league, in: query, schema: { type: string, maxLength: 80 } }
+      responses:
+        '200':
+          description: Up to 60 clubs, strongest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ClubSummary' }
+  /sim/clubs/{club}:
+    get:
+      tags: [simulator]
+      summary: A club's squad with the automatic best eleven
+      parameters:
+        - { name: club, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: Squad, formation, starters and bench
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  club: { type: object }
+                  formation: { type: string }
+                  starters: { type: array, items: { type: integer } }
+                  bench: { type: array, items: { type: integer } }
+                  players: { type: array, items: { type: object } }
+  /sim/matches:
+    post:
+      tags: [simulator]
+      summary: Create a simulator match
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [home_id, away_id]
+              properties:
+                home_id: { type: integer }
+                away_id: { type: integer }
+                seed: { type: integer, minimum: 1 }
+                competition: { type: string, enum: [league, cup] }
+                referee: { type: integer, enum: [0, 1, 2], description: 0 soft, 1 medium, 2 strict }
+                venue: { type: string, enum: [home, neutral] }
+                control:
+                  type: object
+                  properties:
+                    home: { type: string, enum: [me, cpu] }
+                    away: { type: string, enum: [me, cpu] }
+                home: { $ref: '#/components/schemas/TeamSetup' }
+                away: { $ref: '#/components/schemas/TeamSetup' }
+      responses:
+        '201':
+          description: The match as the screen needs it
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchView' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /sim/matches/{match}:
+    get:
+      tags: [simulator]
+      summary: Current match view
+      parameters: [{ $ref: '#/components/parameters/Match' }]
+      responses:
+        '200':
+          description: Match view
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchView' }
+  /sim/matches/{match}/actions:
+    post:
+      tags: [simulator]
+      summary: Queue a coach order for the next minute
+      parameters: [{ $ref: '#/components/parameters/Match' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, team, idempotency_key]
+              properties:
+                type: { type: string, enum: [sub, tactics, formation] }
+                team: { type: string, enum: [home, away] }
+                out: { type: integer, description: Player leaving (sub) }
+                in: { type: integer, description: Player coming on (sub) }
+                tactics: { $ref: '#/components/schemas/Tactics' }
+                formation: { type: string }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '202':
+          description: Queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  target_tick: { type: integer }
+                  duplicate: { type: boolean }
+        '200': { description: Same idempotency key seen before; nothing queued }
+        '409': { description: The match has finished }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /sim/matches/{match}/ticks:
+    post:
+      tags: [simulator]
+      summary: Simulate the next minute(s)
+      parameters: [{ $ref: '#/components/parameters/Match' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                count: { type: integer, minimum: 1, maximum: 200, default: 1 }
+      responses:
+        '200':
+          description: One entry per simulated minute (docs/api/match-events.md)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticks: { type: array, items: { type: object } }
+  /sim/matches/{match}/report:
+    get:
+      tags: [simulator]
+      summary: Post-match report from one side's view
+      parameters:
+        - { $ref: '#/components/parameters/Match' }
+        - { name: side, in: query, schema: { type: string, enum: [home, away] } }
+      responses:
+        '200': { description: Reasons, verdict, man of the match, ratings, stats, thirds, momentum, timeline }
+        '409': { description: The match has not finished }
+components:
+  parameters:
+    Match:
+      name: match
+      in: path
+      required: true
+      schema: { type: string, description: ULID }
+  responses:
+    ValidationError:
+      description: Validation failed (messages in Arabic)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message: { type: string }
+              errors: { type: object, additionalProperties: { type: array, items: { type: string } } }
+  schemas:
+    ClubSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        league_name: { type: string }
+        strength_cp: { type: integer, description: Average of the best 18 in hundredths }
+        color_primary: { type: string }
+        color_secondary: { type: string }
+    Tactics:
+      type: object
+      properties:
+        plan: { type: string, enum: [counter, long, passing, wings, shots] }
+        tackling: { type: integer, minimum: 0, maximum: 3 }
+        pressing: { type: integer, minimum: 0, maximum: 100 }
+        style: { type: integer, minimum: 0, maximum: 100 }
+        tempo: { type: integer, minimum: 0, maximum: 100 }
+        att: { type: string, enum: [back, support, only] }
+        mid: { type: string, enum: [def, stay, push] }
+        def: { type: string, enum: [stay, fullbacks, mid] }
+        trap: { type: integer, enum: [0, 1] }
+        marking: { type: string, enum: [zone, man] }
+    TeamSetup:
+      type: object
+      properties:
+        formation: { type: string, enum: ['4-2-3-1', '4-3-3', '4-4-2', '4-1-4-1', '3-5-2', '5-3-2'] }
+        tactics: { $ref: '#/components/schemas/Tactics' }
+    MatchView:
+      type: object
+      properties:
+        id: { type: string }
+        seed: { type: integer }
+        competition: { type: string }
+        referee: { type: integer }
+        venue: { type: string }
+        control: { type: object }
+        tick: { type: integer }
+        finished: { type: boolean }
+        score: { type: object }
+        formations: { type: array, items: { type: string } }
+        timing: { type: object }
+        clubs: { type: object }
+        teams: { type: object }
+        slots: { type: object }
