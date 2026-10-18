@@ -10,7 +10,13 @@
 
 ## الحالة الحالية
 
-مرحلة التخطيط انتهت، والتالي **Sprint 1: المحاكي** (مباراة بين أي ناديين حقيقيين تُشاهد وتُدار حية، `docs/MATCH_VIEW.md`). لا يوجد كود بعد. المشروع يُبنى من الصفر، ولا يُنسخ كود من مستودع `smssdev/coach`.
+**Sprint 1: المحاكي** كوده مكتمل (الحالة في `docs/sprints/sprint-01.md`): المحرك، والواجهة البرمجية `/api/v1/sim`، وشاشات المحاكي الثلاث. بقي اعتماد التصاميم (D0) وقياس الأداء وجلسة اللعب. للتجربة: `docs/RUN.md` (Codespaces أو نسخة Actions الجاهزة).
+
+## الأوامر
+
+- من `backend/`: `composer setup` (أول مرة)، `composer dev` (الـ API على 8000 + الطابور + المجدول + الويب على 5173)، `composer test`، `composer fresh` (يمسح الملفات الثلاثة ثم يهاجر)، `vendor/bin/pint`.
+- من `web/`: `npm run dev`، `npm run build` (يولّد `src/styles/tokens.css` من `docs/design/tokens.json` تلقائياً).
+- PHP 8.4 مستحسن. على 8.3 تفتح المعاملات بـ `BEGIN IMMEDIATE` عبر `App\Database\ImmediatePdo` (Laravel لا يطبق `transaction_mode` قبل 8.4)، واختبار `ImmediateTransactionTest` يتحقق من ذلك. المشروع يُبنى من الصفر، ولا يُنسخ كود من مستودع `smssdev/coach`.
 
 ## الستاك (محسوم)
 
