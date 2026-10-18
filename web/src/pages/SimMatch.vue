@@ -7,7 +7,11 @@
       </RouterLink>
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />
-      <div class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" aria-label="سرعة المحاكاة">
+      <template v-if="live">
+        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />مباشر · تدير {{ mine ? view?.clubs[mine].name : '' }}</span>
+        <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? 'نُسخ الرابط' : 'رابط الصديق' }}</button>
+      </template>
+      <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" aria-label="سرعة المحاكاة">
         <button type="button" class="size-10 rounded-sm bg-surface-raised" :aria-label="playing ? 'إيقاف مؤقت' : 'تشغيل'" @click="togglePlay">
           <svg v-if="playing" viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
           <svg v-else viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
@@ -23,6 +27,17 @@
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
+        <section v-if="live && !started" aria-label="بدء المباراة المباشرة" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
+          <span class="font-display text-2xl font-extrabold">مباراة مباشرة مع صديق</span>
+          <p class="max-w-md text-sm text-text-soft">أرسل الرابط لصديقك ليدير {{ view?.clubs[other].name }} من جهازه، ثم ابدأ حين يكون جاهزاً.</p>
+          <div class="flex w-full max-w-md gap-2">
+            <input :value="friendLink" readonly dir="ltr" aria-label="رابط الصديق" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
+            <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? 'نُسخ' : 'نسخ' }}</button>
+          </div>
+          <button type="button" class="h-12 rounded-md bg-gold px-8 font-display font-bold text-on-gold disabled:opacity-50" :disabled="starting" @click="startLive">{{ starting ? '...' : 'ابدأ المباراة' }}</button>
+          <span class="text-xs text-text-muted">أي من المدربين يستطيع البدء.</span>
+        </section>
+
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 1000 / 560" aria-label="الملعب" dir="ltr">
           <PitchCanvas ref="pitch" :players="pitchPlayers" :kits="kits" />
 
@@ -35,6 +50,10 @@
 
           <span v-if="phaseText" dir="rtl" class="absolute start-3 top-12 rounded-pill md:top-3 bg-bg-deep/80 px-3 py-1 text-xs text-text-soft">{{ phaseText }}</span>
 
+          <div v-if="live && countdown > 0" dir="rtl" class="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <span class="font-numbers text-8xl text-gold drop-shadow-lg">{{ countdown }}</span>
+          </div>
+
           <div v-if="goal" dir="rtl" class="absolute inset-0 flex flex-col items-center justify-center gap-3" :style="{ background: `radial-gradient(circle at 50% 45%, ${goal.color}99, rgba(4,12,30,0.4) 62%)` }">
             <span class="font-display text-6xl font-extrabold drop-shadow-lg md:text-7xl">هدف!</span>
             <span class="rounded-pill bg-bg-deep/90 px-4 py-2 text-base font-semibold">{{ goal.text }}</span>
@@ -45,8 +64,9 @@
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
             <div class="flex flex-wrap justify-center gap-2">
-              <button v-if="halftime" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
-              <RouterLink v-if="finished" :to="{ name: 'sim-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
+              <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
+              <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
+              <RouterLink v-if="finished" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
               <RouterLink v-if="finished" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
             </div>
           </div>
@@ -80,7 +100,7 @@
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
           <div class="flex items-center gap-2">
             <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ view.clubs[mine].name }}</span></h2>
-            <div v-if="view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
+            <div v-if="!live && view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="s in (['home', 'away'] as const)" :key="s" type="button" class="h-9 rounded-sm px-2 text-xs font-bold" :class="mine === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="chosen = s">{{ view.clubs[s].code }}</button>
             </div>
             <span v-if="mine" class="text-xs text-text-muted">التبديلات <b class="font-numbers text-base text-text" dir="ltr">{{ teams[mine].subs_used }}/{{ teams[mine].subs_max }}</b></span>
@@ -218,6 +238,7 @@ const chosen = ref<Side | null>(null)
 const mine = computed<Side | null>(() => {
   const c = view.value?.control
   if (!c) return null
+  if (view.value?.mode === 'live') return route.query.side === 'away' ? 'away' : 'home'
   if (c.home === 'me' && c.away === 'me') return chosen.value ?? 'home'
   return c.home === 'me' ? 'home' : c.away === 'me' ? 'away' : null
 })
@@ -279,7 +300,7 @@ function applyDraft() {
 // ---------------------------------------------------------------- clock
 function tickMs(t?: Tick) {
   const timing = view.value!.timing
-  return ((t && t.period >= 3 ? timing.extra_time_tick_ms : timing.tick_ms) || 3000) / speed.value
+  return ((t && t.period >= 3 ? timing.extra_time_tick_ms : timing.tick_ms) || 3000) / (live.value ? 1 : speed.value)
 }
 
 async function fetchNext(count = 1) {
@@ -360,6 +381,11 @@ function show(t: Tick, animate = true) {
 
 function startHalftime() {
   halftime.value = true
+  if (live.value) {
+    clearInterval(htTimer)
+    htTimer = window.setInterval(() => (halftimeLeft.value = Math.max(0, halftimeLeft.value - 1)), 1000)
+    return
+  }
   halftimeLeft.value = Math.round((view.value!.timing.halftime_seconds || 30) / speed.value)
   clearInterval(htTimer)
   htTimer = window.setInterval(() => {
@@ -399,6 +425,72 @@ async function skip() {
   }
 }
 
+// ---------------------------------------------------------------- live (two devices)
+// The server keeps the clock; each screen polls it and plays the minutes as they come.
+const live = computed(() => view.value?.mode === 'live')
+const started = ref(true)
+const starting = ref(false)
+const countdown = ref(0)
+const copied = ref(false)
+const other = computed<Side>(() => (mine.value === 'away' ? 'home' : 'away'))
+const friendLink = computed(() => `${location.origin}/sim/${props.id}?side=${other.value}`)
+let seen = 0
+let pollTimer = 0
+
+async function share() {
+  try {
+    if (navigator.share) await navigator.share({ title: 'Legends', text: 'أدر فريقك في مباراتنا', url: friendLink.value })
+    else await navigator.clipboard.writeText(friendLink.value)
+    copied.value = true
+    window.setTimeout(() => (copied.value = false), 2000)
+  } catch {
+    /* the user closed the share sheet */
+  }
+}
+
+async function startLive() {
+  starting.value = true
+  try {
+    handleSync(await sim.start(props.id))
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    starting.value = false
+  }
+}
+
+async function poll() {
+  clearTimeout(pollTimer)
+  if (finished.value) return
+  let wait = 1500
+  try {
+    wait = handleSync(await sim.live(props.id, seen))
+  } catch (e: any) {
+    error.value = e.message
+  }
+  if (!finished.value) pollTimer = window.setTimeout(poll, wait)
+}
+
+/** Plays new minutes and returns how long to wait before asking again. */
+function handleSync(r: import('../api/sim').LiveSync): number {
+  started.value = r.started
+  const fresh = r.ticks.filter((t) => t.tick > seen)
+  // Behind (a slow phone, a locked screen): jump without animation, play only the last minute.
+  fresh.forEach((t, i) => {
+    show(t, i === fresh.length - 1)
+    seen = t.tick
+  })
+  if (r.tick > seen) seen = r.tick
+  if (fresh.length && halftime.value && !fresh.some((t) => t.events.some((e) => e.type === 'period' && e.name === 'halftime'))) {
+    halftime.value = false
+    clearInterval(htTimer)
+  }
+  const left = r.next_at === null ? 1500 : r.next_at - r.server_now
+  countdown.value = r.started && r.tick === 0 && left > 0 ? Math.ceil(left / 1000) : 0
+  if (halftime.value) halftimeLeft.value = Math.max(0, Math.ceil(left / 1000))
+  return Math.min(1500, Math.max(250, left + 60))
+}
+
 function toggleSound() {
   sound.start()
   soundOn.value = !soundOn.value
@@ -416,6 +508,11 @@ onMounted(async () => {
       initial.value = { ...teams.value[mine.value].tactics }
     }
     finished.value = view.value.finished
+    if (live.value) {
+      started.value = view.value.started
+      seen = view.value.tick
+      return poll()
+    }
     await fetchNext()
     schedule(1200)
   } catch (e: any) {
@@ -425,6 +522,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   clearTimeout(timer)
+  clearTimeout(pollTimer)
   clearInterval(htTimer)
   sound.stop()
 })
