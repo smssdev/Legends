@@ -1,0 +1,21 @@
+{
+  // GitHub Codespaces: Code > Codespaces > Create codespace on this branch.
+  // When it finishes setting up, the simulator opens on port 8000.
+  "name": "Legends",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "containerEnv": { "SIMULATOR_ENABLED": "true" },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "cd backend && php artisan serve --host=0.0.0.0 --port=8000",
+  "forwardPorts": [8000, 5173],
+  "portsAttributes": {
+    "8000": { "label": "Legends (built app + API)", "onAutoForward": "openBrowser" },
+    "5173": { "label": "Vite dev server" }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["docs/sprints/sprint-01.md"] },
+    "vscode": { "extensions": ["Vue.volar", "bmewburn.vscode-intelephense-client", "bradlc.vscode-tailwindcss"] }
+  }
+}
