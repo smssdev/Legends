@@ -17,6 +17,13 @@ return [
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
         'home_base_bp' => 250,                     // ميزة أساسية لكل فريق على أرضه
         'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب
+        // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
+        'moment_ms' => [
+            'quiet' => 900, 'attack' => 1600, 'stoppage' => 2400, 'shootout' => 3000,
+            'offside' => 6400, 'miss' => 7000, 'save' => 6400, 'corner' => 5600, 'goal' => 12800,
+            'yellow' => 6800, 'red' => 9000, 'free_kick' => 8600, 'free_kick_goal' => 9400,
+            'penalty' => 10000, 'penalty_goal' => 10600, 'sub' => 5600, 'injury' => 6000,
+        ],
     ],
     'league' => [
         'lock_last_bp' => 2500, 'absence_days' => 3,
