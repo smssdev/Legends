@@ -17,6 +17,7 @@
 | `rejected` | list | أوامر رُفضت مع السبب (`no_subs_left`، `bad_players`، `bad_tactics`، `bad_formation`) |
 | `finished` | bool | انتهت المباراة |
 | `frames` | list | 6 إطارات مفتاحية للرسم (أدناه) |
+| `moment` | {kind, ms} | لقطة الدقيقة ومدة عرضها بالميلي ثانية [MOMENTS.md]: `quiet` `attack` `goal` `save` `miss` `offside` `corner` `yellow` `red` `free_kick` `penalty` `sub` `injury` `stoppage` `shootout`. يحسبها الخادم من الأحداث (`MomentClock`) فتتزامن الشاشتان |
 | `teams` | object | لقطة الفريقين بعد الدقيقة: الطريقة، التكتيك، التبديلات، الإحصائيات، واللاعبون بلياقتهم وبطاقاتهم وتقييمهم |
 | `debug` | object | **في المحاكي فقط:** قيم داخلية للوحة المطور (معدل الهجمات ونصيب صاحب الأرض) |
 
