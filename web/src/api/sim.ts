@@ -117,6 +117,8 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!res.ok) {
+    // On the free test server the disk is wiped on every restart, so an old match link can vanish.
+    if (res.status === 404 && path.startsWith('/matches/')) throw new Error('هذه المباراة لم تعد موجودة: أُعيد تشغيل سيرفر التجربة فمُسحت المباريات. ابدأ مباراة جديدة من صفحة المحاكي.')
     const data = await res.json().catch(() => ({}))
     throw new Error(data.message || `خطأ ${res.status}`)
   }
