@@ -118,4 +118,30 @@ class SimulatorApiTest extends TestCase
         $this->getJson("/api/v1/sim/matches/$id/report")->assertOk();
         Carbon::setTestNow();
     }
+
+    public function test_two_friends_meet_in_a_room_and_the_match_kicks_off(): void
+    {
+        Carbon::setTestNow('2026-10-19 12:00:00');
+        $home = $this->club('Alpha', 82);
+        $away = $this->club('Beta', 79);
+        $room = $this->postJson('/api/v1/sim/rooms', ['name' => 'سليمان', 'club_id' => $home])
+            ->assertCreated()->assertJsonPath('host.name', 'سليمان')->assertJsonPath('guest', null)->assertJsonPath('match_id', null)->json('id');
+
+        // The guest cannot take the host's club.
+        $this->postJson("/api/v1/sim/rooms/$room/join", ['name' => 'حمزة', 'club_id' => $home])->assertUnprocessable();
+
+        $joined = $this->postJson("/api/v1/sim/rooms/$room/join", ['name' => 'حمزة', 'club_id' => $away])
+            ->assertOk()->assertJsonPath('guest.name', 'حمزة')->assertJsonPath('guest.club.id', $away)->json();
+        $this->assertNotNull($joined['match_id']);
+
+        // The host's screen sees the match; it is live, started, and carries both names.
+        $this->getJson("/api/v1/sim/rooms/$room")->assertJsonPath('match_id', $joined['match_id']);
+        $this->getJson('/api/v1/sim/matches/'.$joined['match_id'])->assertOk()
+            ->assertJsonPath('mode', 'live')->assertJsonPath('started', true)
+            ->assertJsonPath('coaches.home', 'سليمان')->assertJsonPath('coaches.away', 'حمزة');
+
+        // A second guest is turned away.
+        $this->postJson("/api/v1/sim/rooms/$room/join", ['name' => 'آخر', 'club_id' => $away])->assertUnprocessable();
+        Carbon::setTestNow();
+    }
 }
