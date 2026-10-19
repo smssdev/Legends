@@ -1,6 +1,6 @@
 # Sprint 2: أداة الصور والدفعة 1
 
-> المهام وتعريف الانتهاء في `docs/SPRINTS.md` (Sprint 2). المراجع: [MATCH_VIEW 4.7] و`docs/art/images/00-guide.md` و`art/raw/README.md`.
+> المهام وتعريف الانتهاء في `docs/SPRINTS.md` (Sprint 2). **خطة الأيام (25 صورة يومياً) في `docs/sprints/sprint-02-days.md`.** المراجع: [MATCH_VIEW 4.7] و`docs/art/images/00-guide.md` و`art/raw/README.md`.
 
 **البداية:** 2026-10-19 · **النهاية المتوقعة:** 2026-10-26 (25 صورة يومياً، الإيقاع في `docs/SPRINTS.md`) · **الحالة:** جارٍ
 
