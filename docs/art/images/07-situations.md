@@ -15,7 +15,7 @@
 
 ## المجموعة 249: غرفة الفار والشاشات
 
-**المجلد:** `art/raw/v4/var-room/`  
+**المجلد:** `art/raw/var-room/`  
 **المحادثة:** جديدة. خلفيات الفار. الشاشات فارغة، واللعبة تعرض عليها اللقطة.
 
 ### 249.1 `room.jpg`
@@ -52,12 +52,12 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 250: البطاقة الصفراء (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/cards/yellow/`  
+**المجلد:** `art/raw/cards/yellow/`  
 **المحادثة:** جديدة. كل مشاهد البطاقة الصفراء: الحكم من زوايا مختلفة وردود اللاعبين. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 250.1 `ref-angles.png`
 
-show-side، show-front، show-back · **ارفق `art/raw/v5/referee-1/ref.png`**
+show-side، show-front، show-back · **ارفق `art/raw/referee-1/ref.png`**
 
 ```
 Use the attached image as the reference for this exact same person: the same face, hair, body and clothes. A wide 3:2 landscape image showing the same fictional man three times, side by side in one row, every figure full body from head to boots, all at the same size and scale, with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. He wears an all-black referee kit (black shirt, shorts and socks, black boots) with a whistle on a cord around his neck. Bald head, short dark beard, fit build. The card is a plain bright yellow referee card. Players wear plain pure white kits. On the left: the referee seen from the side, arm raised straight up holding the yellow card. In the middle: the referee seen from the front facing the camera, holding the yellow card up high. On the right: the referee seen from behind, holding the yellow card up towards a player. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -97,12 +97,12 @@ Use the attached image as the reference for the style and light. A wide 3:2 land
 
 ## المجموعة 251: البطاقة الحمراء (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/cards/red/`  
+**المجلد:** `art/raw/cards/red/`  
 **المحادثة:** جديدة. الطرد: الحكم، واللاعب المطرود، واحتجاج الزملاء. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 251.1 `ref-angles.png`
 
-show-side، show-front، show-back · **ارفق `art/raw/v5/referee-1/ref.png`**
+show-side، show-front، show-back · **ارفق `art/raw/referee-1/ref.png`**
 
 ```
 Use the attached image as the reference for this exact same person: the same face, hair, body and clothes. A wide 3:2 landscape image showing the same fictional man three times, side by side in one row, every figure full body from head to boots, all at the same size and scale, with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. He wears an all-black referee kit (black shirt, shorts and socks, black boots) with a whistle on a cord around his neck. Bald head, short dark beard, fit build. The card is a plain bright red referee card. Players wear plain pure white kits. On the left: the referee seen from the side, arm raised straight up holding the red card. In the middle: the referee seen from the front facing the camera, holding the red card up high. On the right: the referee seen from behind, holding the red card up towards a player. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -142,12 +142,12 @@ Use the attached image as the reference for the style and light. A wide 3:2 land
 
 ## المجموعة 252: الحكم: الأخطاء والقرارات (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/referee-calls/`  
+**المجلد:** `art/raw/referee-calls/`  
 **المحادثة:** جديدة. إشارات الحكم الأخرى: ضربة حرة، استمرار، إصابة، حائط. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 252.1 `calls-1.png`
 
-freekick-direct، freekick-indirect، play-on · **ارفق `art/raw/v5/referee-1/ref.png`**
+freekick-direct، freekick-indirect، play-on · **ارفق `art/raw/referee-1/ref.png`**
 
 ```
 Use the attached image as the reference for this exact same person: the same face, hair, body and clothes. A wide 3:2 landscape image showing the same fictional man three times, side by side in one row, every figure full body from head to boots, all at the same size and scale, with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. He wears an all-black referee kit (black shirt, shorts and socks, black boots) with a whistle on a cord around his neck. Bald head, short dark beard, fit build. On the left: pointing his arm straight in the direction of a direct free kick. In the middle: holding one arm straight up for an indirect free kick. On the right: both arms swept forward: play on. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -171,12 +171,12 @@ Use the attached image as the reference for this exact same person: the same fac
 
 ## المجموعة 253: مراجعة الفار (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/var/`  
+**المجلد:** `art/raw/var/`  
 **المحادثة:** جديدة. كل مراحل الفار: التواصل، الإشارة، الشاشة، القرار. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 253.1 `steps-1.png`
 
-ear، wait، var-sign · **ارفق `art/raw/v5/referee-1/ref.png`**
+ear، wait، var-sign · **ارفق `art/raw/referee-1/ref.png`**
 
 ```
 Use the attached image as the reference for this exact same person: the same face, hair, body and clothes. A wide 3:2 landscape image showing the same fictional man three times, side by side in one row, every figure full body from head to boots, all at the same size and scale, with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. He wears an all-black referee kit (black shirt, shorts and socks, black boots) with a whistle on a cord around his neck. Bald head, short dark beard, fit build. On the left: hand on his earpiece, listening, the other arm raised to stop play. In the middle: standing still, hand on his earpiece, players waiting around him unseen. On the right: drawing a rectangle in the air with both index fingers, the video review sign. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -208,7 +208,7 @@ Use the attached image as the reference for this exact same person: the same fac
 
 ## المجموعة 254: شجار ودفع (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/scuffle/`  
+**المجلد:** `art/raw/scuffle/`  
 **المحادثة:** جديدة. التدافع بعد خطأ: الحكم يفصل بين اللاعبين. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 254.1 `scuffle-a.png`

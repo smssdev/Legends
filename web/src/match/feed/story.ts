@@ -4,7 +4,7 @@
 // without), the commentator's Arabic bubble, and the timeline cards written
 // once the scene has played. Pure and seeded by the match and minute.
 // The scene kind and the minute's length come from the server (tick.moment).
-// TODO(Flutter, Sprint 34): move to the server with the rest of the director [MATCH_VIEW 4.3].
+// TODO(Flutter, Sprint 43): move to the server with the rest of the director [MATCH_VIEW 4.3].
 
 // Commentary. {p} the main player, {q} the second one (assist, keeper, defender),
 // {A} the club the moment belongs to, {B} the other one, {n} a number.

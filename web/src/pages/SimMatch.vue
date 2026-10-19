@@ -645,14 +645,14 @@ function toggleSound() {
   voice.setOn(soundOn.value && commentary.value !== 'off')
   if (soundOn.value) sound.whistle()
 }
-// The commentator speaks when the sound is on: Arabic, English, or not at all.
+// The commentator speaks when the sound is on: English (the default), Arabic, or not at all.
 function toggleCommentary() {
-  commentary.value = ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value]
+  commentary.value = ({ en: 'ar', ar: 'off', off: 'en' } as const)[commentary.value]
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
 function readPref(): Lang | 'off' {
-  try { const v = localStorage.getItem('legends.commentary'); return v === 'en' || v === 'off' ? v : 'ar' } catch { return 'ar' }
+  try { const v = localStorage.getItem('legends.commentary'); return v === 'ar' || v === 'off' ? v : 'en' } catch { return 'en' }
 }
 
 onMounted(async () => {
