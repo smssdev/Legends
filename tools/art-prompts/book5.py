@@ -16,7 +16,7 @@ OLD = [b for b in BOOK if b['part'] in KEEP_PARTS or b['t'] in KEEP_TITLES]
 for b in OLD:
     if b['t'] in KEEP_TITLES: b['part'] = 'situations' if 'الفار' in b['t'] else 'kit'
 
-ANIM = ('These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. '
+ANIM = ('These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. '
         'Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line '
         '(the ground line is at the same height in every frame), with clear space between frames and nothing cut off.')
 def an(n): return f'an {n}' if str(n)[0] == '8' or n in (11, 18) else f'a {n}'
@@ -42,12 +42,16 @@ def anim_prompt(who, seq_title, total, frames, view, ref_mode):
     a = frames[0][0]
     span = (f'{n} animation frames side by side in one row: frames {a} to {a + n - 1} of {an(total)}-frame {seq_title} sequence'
             if n > 1 else f'one single animation frame, centred: frame {a} of {an(total)}-frame {seq_title} sequence')
-    body = (f'{start}A wide 3:2 landscape image with {span}. {count(n)} The character is {who}. {view} {ANIM} '
+    if view in (VIEW['side'], VIEW['backwards']):   # in a side view the model cannot tell left from right: name the near and far limbs
+        frames = [(i, re.sub(r'\bthe (right|left) (foot|leg|knee|arm|heel|thigh)', lambda m: f'the {"near" if m.group(1) == "right" else "far"} ({m.group(1)}) {m.group(2)}', d)) for i, d in frames]
+    diff = ('Each frame is a clearly different pose from the others in this image; never repeat a pose. ' if n > 1 else '') + \
+           ('Do not copy any pose from the attached previous image: draw the next poses of the motion. ' if ref_mode == 'prev' else '')
+    body = (f'{start}A wide 3:2 landscape image with {span}. {count(n)} The character is {who}. {view} {ANIM} {diff}'
             + ' '.join(f'{p} (frame {i}): {d}' for p, (i, d) in zip(pos, frames)) + f' {NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
     return she(re.sub(r'\s+', ' ', body).strip(), who)
 
 VIEW = {
- 'side': 'He is seen exactly from the side, his body and face turned to the right; whenever he moves, he moves to the right.',
+ 'side': 'He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right.',
  'q-front': 'He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right.',
  'q-back': 'He is seen in three-quarter view from behind, his back half turned to the camera; whenever he moves, he moves diagonally away from the camera and to the right.',
  'front': 'He is seen from the front, facing the camera; whenever he moves, he moves straight towards the camera.',
