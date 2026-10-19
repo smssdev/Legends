@@ -311,6 +311,11 @@ PARTS5 = [('stadium', 'الجزء 1: الملاعب'), ('stadium-var', 'الجز
           ('crowd', 'الجزء 10: الجمهور'), ('broadcast', 'الجزء 11: البث المباشر'), ('kit', 'الجزء 12: الكرات والمرامي والأعلام والأدوات'), ('fx', 'الجزء 13: المؤثرات المتحركة')]
 order = [p for p, _ in PARTS5]
 ALLB.sort(key=lambda g: order.index(g['part']))
+# one tidy tree: art/raw/<what>/..., without the book version in the path
+def tidy(x): return re.sub(r'art/raw/v\d/', 'art/raw/', x) if isinstance(x, str) else x
+for g in ALLB:
+    g['folder'] = tidy(g['folder']); g['note'] = tidy(g['note'])
+    for b in g['boards']: b['ref'] = tidy(b['ref'])
 print(len(ALLB), sum(len(g['boards']) for g in ALLB))
 
 # ---------------- write: one guide + one file per part ----------------
@@ -408,3 +413,31 @@ for p in parts:
             W('```\n' + b['p'] + '\n```\n')
     open(f'{OUT}/{fname[p]}', 'w').write('\n'.join(o) + '\n')
 print(len(ALLB), total, parts)
+
+# a README in every folder of art/raw/ naming the boards that go in it
+RAW = os.path.join('..', '..', 'art', 'raw')
+folders = {}
+gi = 0
+for p in parts:
+    for g in [g for g in ALLB if g['part'] == p]:
+        gi += 1
+        folders.setdefault(g['folder'], []).append((gi, g, fname[p]))
+for folder, entries in folders.items():
+    path = os.path.join('..', '..', folder)
+    os.makedirs(path, exist_ok=True)
+    o = [f'# {" · ".join(g["t"] for _, g, _ in entries)}\n',
+         'احفظ هنا كل لوحة باسمها كما هي (لا تقصها). أوامرها في '
+         + '، '.join(f'`docs/art/images/{f}` (المجموعة {i})' for i, _, f in entries) + '.\n',
+         '| الملف | المحتوى | المرفق |', '|---|---|---|']
+    for _, g, _ in entries:
+        for b in g['boards']:
+            r = b['ref']
+            att = r if isinstance(r, str) else ('اللوحة الأولى' if r else '—')
+            o.append(f'| `{b["f"]}` | {b.get("why") or b.get("names")} | {att} |')
+    open(os.path.join(path, 'README.md'), 'w').write('\n'.join(o) + '\n')
+idx = ['# الصور الخام\n', f'**{len(folders)} مجلداً.** كل مجلد فيه `README.md` بأسماء لوحاته. الشرح وطريقة العمل في `docs/art/images/00-guide.md`.\n',
+       '| المجلد | المحتوى | اللوحات |', '|---|---|---|']
+for folder, entries in sorted(folders.items()):
+    idx.append(f'| `{folder[len("art/raw/"):]}` | {" · ".join(g["t"] for _, g, _ in entries)} | {sum(len(g["boards"]) for _, g, _ in entries)} |')
+open(os.path.join(RAW, 'README.md'), 'w').write('\n'.join(idx) + '\n')
+print(len(folders), 'folders')

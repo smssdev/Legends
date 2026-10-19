@@ -25,7 +25,7 @@
 
 ## المجموعة 1: ملعب الأرينا ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/arena/night/`  
+**المجلد:** `art/raw/stadiums/arena/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 1.1 `shot.jpg`
@@ -158,7 +158,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 2: ملعب الكلاسيكي نهاراً
 
-**المجلد:** `art/raw/v4/stadiums/classic/day/`  
+**المجلد:** `art/raw/stadiums/classic/day/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 2.1 `shot.jpg`
@@ -291,7 +291,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 3: ملعب الخليجي عند الغروب
 
-**المجلد:** `art/raw/v4/stadiums/gulf/dusk/`  
+**المجلد:** `art/raw/stadiums/gulf/dusk/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 3.1 `shot.jpg`
@@ -424,7 +424,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 4: ملعب المغاربي ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/maghreb/night/`  
+**المجلد:** `art/raw/stadiums/maghreb/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 4.1 `shot.jpg`
@@ -557,7 +557,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 5: ملعب الساحلي عند الغروب
 
-**المجلد:** `art/raw/v4/stadiums/coast/dusk/`  
+**المجلد:** `art/raw/stadiums/coast/dusk/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 5.1 `shot.jpg`
@@ -690,7 +690,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 6: ملعب الجبلي نهاراً
 
-**المجلد:** `art/raw/v4/stadiums/alpine/day/`  
+**المجلد:** `art/raw/stadiums/alpine/day/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 6.1 `shot.jpg`
@@ -823,7 +823,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 7: ملعب القبة ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/dome/night/`  
+**المجلد:** `art/raw/stadiums/dome/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 7.1 `shot.jpg`
@@ -956,7 +956,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 8: ملعب المدرجات القديمة تحت المطر
 
-**المجلد:** `art/raw/v4/stadiums/terraces/rain/`  
+**المجلد:** `art/raw/stadiums/terraces/rain/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 8.1 `shot.jpg`
@@ -1089,7 +1089,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 9: ملعب المرجل ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/cauldron/night/`  
+**المجلد:** `art/raw/stadiums/cauldron/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 9.1 `shot.jpg`
@@ -1222,7 +1222,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 10: ملعب المدينة ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/skyline/night/`  
+**المجلد:** `art/raw/stadiums/skyline/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 10.1 `shot.jpg`
@@ -1355,7 +1355,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 11: ملعب الوطني نهاراً
 
-**المجلد:** `art/raw/v4/stadiums/national/day/`  
+**المجلد:** `art/raw/stadiums/national/day/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 11.1 `shot.jpg`
@@ -1488,7 +1488,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 12: ملعب الصحراوي في الحر
 
-**المجلد:** `art/raw/v4/stadiums/desert/heat/`  
+**المجلد:** `art/raw/stadiums/desert/heat/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 12.1 `shot.jpg`
@@ -1621,7 +1621,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 13: ملعب المحلي ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/local/night/`  
+**المجلد:** `art/raw/stadiums/local/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 13.1 `shot.jpg`
@@ -1754,7 +1754,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 14: ملعب النهائي ليلاً
 
-**المجلد:** `art/raw/v4/stadiums/final/night/`  
+**المجلد:** `art/raw/stadiums/final/night/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 14.1 `shot.jpg`
@@ -1887,7 +1887,7 @@ Use the attached image as the reference for the style, light and colours. A wide
 
 ## المجموعة 15: ملعب التدريب نهاراً
 
-**المجلد:** `art/raw/v4/stadiums/training/day/`  
+**المجلد:** `art/raw/stadiums/training/day/`  
 **المحادثة:** جديدة. الحالة الأساسية لهذا الملعب: كل زوايا الكاميرا وجمهوره.
 
 ### 15.1 `shot.jpg`
@@ -1940,7 +1940,7 @@ Use the attached image as the reference: the same stadium, the same camera heigh
 
 ## المجموعة 16: أجواء ما قبل المباراة وبعدها
 
-**المجلد:** `art/raw/v4/scenes/`  
+**المجلد:** `art/raw/scenes/`  
 **المحادثة:** جديدة. مشاهد عامة تظهر بين اللقطات.
 
 ### 16.1 `aerial-night.jpg`

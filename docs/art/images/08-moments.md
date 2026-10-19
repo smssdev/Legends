@@ -14,7 +14,7 @@
 
 ## المجموعة 255: لحظات جماعية متحركة
 
-**المجلد:** `art/raw/v5/team/`  
+**المجلد:** `art/raw/team/`  
 **المحادثة:** جديدة. مشاهد بين لاعبين بإطارات متتالية.
 
 ### 255.1 `hug-01.png`
@@ -147,12 +147,12 @@ Use the attached images (the first board and the previous one) to keep the same 
 
 ## المجموعة 256: احتفالات الهدف (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/celebrations/`  
+**المجلد:** `art/raw/celebrations/`  
 **المحادثة:** جديدة. احتفالات متنوعة للهداف. ارفق صورة من لوحات المهاجم الأولى لتبقى الملامح. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 256.1 `solo-1.png`
 
-airplane، knee-slide، belly-slide · **ارفق `art/raw/v5/striker/ref.png`**
+airplane، knee-slide، belly-slide · **ارفق `art/raw/striker/ref.png`**
 
 ```
 Use the attached image as the reference for this exact same person: the same face, hair, body and clothes. A wide 3:2 landscape image showing the same fictional man three times, side by side in one row, every figure full body from head to boots, all at the same size and scale, with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. He wears a plain pure white football kit (white short-sleeve shirt, white shorts, white socks) and black boots, with no logos or numbers. The kit must be pure white, because the game paints the team colours on it. Short dark brown hair, light olive skin, light stubble, athletic striker build. On the left: running with both arms stretched out like aeroplane wings. In the middle: knee slide on the ground, arms raised, leaning back. On the right: diving and sliding forward on his belly, arms forward. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -184,7 +184,7 @@ Use the attached image as the reference for this exact same person: the same fac
 
 ## المجموعة 257: احتفالات جماعية (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/team-celebrations/`  
+**المجلد:** `art/raw/team-celebrations/`  
 **المحادثة:** جديدة. الفريق كله يحتفل. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 257.1 `team-1.png`
@@ -221,7 +221,7 @@ Use the attached image as the reference for the style and light. A wide 3:2 land
 
 ## المجموعة 258: الكأس والتتويج (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/trophy/`  
+**المجلد:** `art/raw/trophy/`  
 **المحادثة:** جديدة. نهاية الموسم والنهائيات. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 258.1 `lift.png`
@@ -242,7 +242,7 @@ Use the attached image as the reference for the style and light. A wide 3:2 land
 
 ## المجموعة 259: ركلات الترجيح (وضعيات ثابتة)
 
-**المجلد:** `art/raw/v4/shootout/`  
+**المجلد:** `art/raw/shootout/`  
 **المحادثة:** جديدة. الأطقم بيضاء للفريقين، واللعبة تلوّن كل فريق. هذه وضعيات مفردة للحظات التي تتوقف فيها الحركة (تجميد، لقطة قريبة).
 
 ### 259.1 `line.png`
