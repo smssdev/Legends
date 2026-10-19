@@ -90,7 +90,7 @@ class Simulator
                 'seats' => ['home' => $room->host_seat ?? self::newSeat(), 'away' => $seat],
             ]);
             $room->update(['sim_match_id' => $match->id]);
-            $this->start($match, (int) config('game.match.room_kickoff_ms'));
+            $this->start($match);
 
             return $seat;
         });
@@ -195,9 +195,10 @@ class Simulator
         return $out;
     }
 
-    /** Starts a live match's clock a few seconds from now, so both screens are ready. */
-    public function start(SimMatch $match, int $delayMs = 3000): void
+    /** Starts a live match's clock: kick-off after the pre-match break (game.match.kickoff_ms). */
+    public function start(SimMatch $match, ?int $delayMs = null): void
     {
+        $delayMs ??= (int) config('game.match.kickoff_ms');
         DB::transaction(function () use ($match, $delayMs) {
             $m = SimMatch::findOrFail($match->id);
             if ($m->live !== null && $m->live['next_at'] === null) {

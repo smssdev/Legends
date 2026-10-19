@@ -81,7 +81,7 @@ class SimulatorApiTest extends TestCase
     public function test_a_live_match_runs_on_the_server_clock_for_both_screens(): void
     {
         Carbon::setTestNow('2026-10-18 12:00:00');
-        config(['game.match.moment_ms' => null]); // fixed 3 s minutes keep the arithmetic below simple
+        config(['game.match.moment_ms' => null, 'game.match.kickoff_ms' => 3000]); // fixed 3 s minutes and a 3 s kick-off keep the arithmetic simple
         $home = $this->club('Alpha', 82);
         $away = $this->club('Beta', 79);
         $made = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5, 'mode' => 'live'])
@@ -161,6 +161,7 @@ class SimulatorApiTest extends TestCase
     public function test_in_a_live_match_each_coach_manages_only_his_side_and_cannot_see_the_other_tactics(): void
     {
         Carbon::setTestNow('2026-10-19 12:00:00');
+        config(['game.match.kickoff_ms' => 3000]);
         $home = $this->club('Alpha', 82);
         $away = $this->club('Beta', 79);
         $made = $this->postJson('/api/v1/sim/matches', [
@@ -197,7 +198,7 @@ class SimulatorApiTest extends TestCase
     public function test_a_live_minute_is_made_just_before_it_starts_and_its_result_waits_for_it(): void
     {
         Carbon::setTestNow('2026-10-19 12:00:00');
-        config(['game.match.moment_ms' => null, 'game.match.live_lead_ms' => 1200]);
+        config(['game.match.moment_ms' => null, 'game.match.live_lead_ms' => 1200, 'game.match.kickoff_ms' => 3000]);
         $made = $this->postJson('/api/v1/sim/matches', ['home_id' => $this->club('Alpha', 82), 'away_id' => $this->club('Beta', 79), 'seed' => 3, 'mode' => 'live'])->json();
         $id = $made['id'];
         $this->postJson("/api/v1/sim/matches/$id/start", [], ['X-Seat' => $made['seats']['home']]);

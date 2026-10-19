@@ -50,6 +50,7 @@
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
             <div class="flex flex-wrap justify-center gap-2">
               <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
+              <a v-if="halftime && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
               <RouterLink v-if="finished" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
@@ -147,7 +148,7 @@
             </div>
 
             <div v-for="o in pending" :key="o.key" class="flex items-center gap-3 rounded-lg border border-gold/45 bg-gold/10 px-3 py-2 text-sm">
-              <span class="flex-1"><b>{{ o.label }}</b></span><span class="text-gold">يُطبق في الدقيقة القادمة</span>
+              <span class="flex-1"><b>{{ o.label }}</b></span><span class="text-gold">{{ minute[0] === 0 ? 'يُطبق مع صافرة البداية' : 'يُطبق في الدقيقة القادمة' }}</span>
             </div>
             <div v-for="o in applied" :key="o.key" class="rounded-lg border border-success/50 bg-success/15 px-3 py-2 text-sm"><b>{{ o.label }}</b> طُبّق في الدقيقة {{ o.minute }}</div>
             <div v-for="r in rejected" :key="r" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]">{{ r }}</div>
