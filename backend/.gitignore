@@ -32,3 +32,4 @@ Thumbs.db
 
 # Database backups (db:backup)
 /database/backups
+/storage/.built-commit
