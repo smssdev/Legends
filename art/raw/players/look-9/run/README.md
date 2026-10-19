@@ -2,12 +2,14 @@
 
 احفظ هنا كل لوحة باسمها كما هي (لا تقصها). أوامرها في `docs/art/images/04-looks.md` (المجموعة 127).
 
+**الدفعة:** 4.
+
 | الملف | المحتوى | المرفق |
 |---|---|---|
-| `run-side-01.png` | running: الإطارات 1 إلى 3 من 8 | art/raw/players/look-9/ref.png |
-| `run-side-02.png` | running: الإطارات 4 إلى 6 من 8 | art/raw/players/look-9/ref.png + اللوحة السابقة |
-| `run-side-03.png` | running: الإطارات 7 إلى 8 من 8 | art/raw/players/look-9/ref.png + اللوحة السابقة |
-| `sprint-01.png` | sprinting: الإطارات 1 إلى 3 من 12 | art/raw/players/look-9/ref.png |
-| `sprint-02.png` | sprinting: الإطارات 4 إلى 6 من 12 | art/raw/players/look-9/ref.png + اللوحة السابقة |
-| `sprint-03.png` | sprinting: الإطارات 7 إلى 9 من 12 | art/raw/players/look-9/ref.png + اللوحة السابقة |
-| `sprint-04.png` | sprinting: الإطارات 10 إلى 12 من 12 | art/raw/players/look-9/ref.png + اللوحة السابقة |
+| `run-side-01.png` | running: الإطارات 1 إلى 3 من 8 | `art/raw/players/look-9/ref.png` |
+| `run-side-02.png` | running: الإطارات 4 إلى 6 من 8 | `art/raw/players/look-9/ref.png` و`art/raw/players/look-9/run/run-side-01.png` |
+| `run-side-03.png` | running: الإطارات 7 إلى 8 من 8 | `art/raw/players/look-9/ref.png` و`art/raw/players/look-9/run/run-side-02.png` |
+| `sprint-01.png` | sprinting: الإطارات 1 إلى 3 من 12 | `art/raw/players/look-9/ref.png` |
+| `sprint-02.png` | sprinting: الإطارات 4 إلى 6 من 12 | `art/raw/players/look-9/ref.png` و`art/raw/players/look-9/run/sprint-01.png` |
+| `sprint-03.png` | sprinting: الإطارات 7 إلى 9 من 12 | `art/raw/players/look-9/ref.png` و`art/raw/players/look-9/run/sprint-02.png` |
+| `sprint-04.png` | sprinting: الإطارات 10 إلى 12 من 12 | `art/raw/players/look-9/ref.png` و`art/raw/players/look-9/run/sprint-03.png` |

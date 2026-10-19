@@ -2,9 +2,11 @@
 
 احفظ هنا كل لوحة باسمها كما هي (لا تقصها). أوامرها في `docs/art/images/07-situations.md` (المجموعة 249).
 
+**الدفعة:** 3.
+
 | الملف | المحتوى | المرفق |
 |---|---|---|
-| `room.jpg` | غرفة الفار | — |
-| `room-close.jpg` | حكم الفار عن قرب | اللوحة الأولى |
-| `monitor-pitch.jpg` | شاشة جانب الملعب | اللوحة الأولى |
-| `monitor-close.jpg` | الشاشة عن قرب | اللوحة الأولى |
+| `room.jpg` | غرفة الفار | بلا مرفق |
+| `room-close.jpg` | حكم الفار عن قرب | `art/raw/var-room/room.jpg` |
+| `monitor-pitch.jpg` | شاشة جانب الملعب | `art/raw/var-room/room.jpg` |
+| `monitor-close.jpg` | الشاشة عن قرب | `art/raw/var-room/room.jpg` |
