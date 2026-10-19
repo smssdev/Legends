@@ -52,7 +52,7 @@ def obj(first, what, items, bg=GREEN):
 # ---------------- stadiums ----------------
 VIEWS = {
  'shot': ('الكاميرا الرئيسية: التسديدة والحارس والهدف', 'L02 L03 L04 L08 L16 L20 L21',
-  'Side view along the edge of the penalty area. The whole goal in the right third of the image, seen from the side and slightly from the front so the goal mouth faces left towards the camera: both posts, the crossbar and the full net clearly visible, the goal line running from the near post towards the camera. The left two thirds: empty, well lit grass of the penalty area for the players, the penalty spot visible.'),
+  'Side view along the edge of the penalty area. The whole goal in the right third of the image, seen from the side and slightly from the front so the goal mouth faces left towards the camera: both posts, the crossbar and the full net clearly visible, the goal line running from the near post towards the camera. The left two thirds: empty, well lit grass of the penalty area for the players, the penalty spot visible. The goal is one simple white goal frame: two white posts, a white crossbar and a white net, nothing else beside it (no black poles, no padding, no extra posts, no cameras or equipment).'),
  'run': ('الجري والمراوغة والضغط في وسط الملعب', 'L02 L03 L06 L07 L11',
   'Side view of the middle of the pitch, the halfway line and part of the centre circle visible, no goal. Wide empty grass across the whole image for players running.'),
  'wing': ('الجناح على خط التماس والعرضية', 'L02 L03 L05',
@@ -66,7 +66,7 @@ VIEWS = {
  'corner': ('الركنية والاحتفال عند الراية', 'L03 L10',
   'Corner flag area close up, the advertising boards and the front rows of the crowd right behind it, empty grass in front.'),
  'box-high': ('المنطقة من فوق قليلاً: الركنية والتسلل', 'L05 L10',
-  'The camera is raised about three metres high, close to the side of the penalty area, looking across the box at the goal. The whole penalty box fills the lower half of the image, the goal is large in the centre with its net, and the six-yard box, the penalty arc and the penalty spot are sharp and easy to see.'),
+  'A raised camera in the first row of the stand, about six metres above the grass, close to the side of the penalty area and looking down across the box at the goal. Seen from above at an angle: the whole penalty box fills the lower half of the image, the goal is large and close in the centre with its net, and the six-yard box, the penalty arc and the penalty spot are sharp and easy to see. This view is higher than the other views: the horizon is near the top of the image.'),
  'bench': ('المدرب والبدلاء والتبديل', 'L02 L03 L12',
   'The touchline technical area: the coaches box marked on the grass and the team bench with empty seats behind it, no people.'),
  'touchline': ('الحكم الرابع ودخول البديل', 'L12 L13 L14',
