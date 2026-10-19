@@ -21,6 +21,7 @@
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : 'تخطٍّ للنهاية' }}</button>
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="commentaryOn" @click="toggleCommentary">{{ commentaryOn ? 'التعليق الإنجليزي: يعمل' : 'التعليق الإنجليزي: متوقف' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
 
@@ -40,7 +41,7 @@
         </section>
 
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 16 / 9" aria-label="الملعب" dir="ltr">
-          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" @cue="onCue" @sound="onSound" />
+          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :commentary="commentaryOn" @cue="onCue" @sound="onSound" @say="(text, excited) => voice.say(text, excited)" />
 
           <div dir="rtl" class="absolute end-3 top-3 z-10 flex items-stretch overflow-hidden rounded-md shadow-lg" aria-live="polite">
             <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.home, color: kits.homeText }">{{ view.clubs.home.name }}</span>
@@ -175,6 +176,7 @@ import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, sim, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
+import { Commentator } from '../match/voice'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -198,6 +200,8 @@ const dev = ref(false)
 const soundOn = ref(false)
 const pitch = ref<any>()
 const sound = new MatchSound()
+const voice = new Commentator()
+const commentaryOn = ref(readPref('legends.commentary', true))
 
 const buffer: Tick[] = []
 let fetching = false
@@ -243,6 +247,7 @@ function momentMs(t?: Tick) {
 }
 function skipMoment() {
   pitch.value?.skip()
+  voice.stop()
   if (!live.value) { clearTimeout(timer); schedule(120) }
 }
 const nameOf = (side: Side, id?: number) => teams.value[side]?.players.find((p) => p.id === id)?.name ?? ''
@@ -497,7 +502,17 @@ function toggleSound() {
   sound.start()
   soundOn.value = !soundOn.value
   sound.setMuted(!soundOn.value)
+  voice.setOn(soundOn.value && commentaryOn.value)
   if (soundOn.value) sound.whistle()
+}
+// The commentator speaks when the sound is on; the subtitles show either way.
+function toggleCommentary() {
+  commentaryOn.value = !commentaryOn.value
+  voice.setOn(soundOn.value && commentaryOn.value)
+  try { localStorage.setItem('legends.commentary', commentaryOn.value ? '1' : '0') } catch {}
+}
+function readPref(key: string, fallback: boolean) {
+  try { const v = localStorage.getItem(key); return v === null ? fallback : v === '1' } catch { return fallback }
 }
 
 onMounted(async () => {
@@ -527,6 +542,7 @@ onBeforeUnmount(() => {
   clearTimeout(pollTimer)
   clearInterval(htTimer)
   sound.stop()
+  voice.stop()
 })
 
 const lastAttacks = computed(() => (last.value?.events ?? []).filter((e) => e.type === 'attack'))
