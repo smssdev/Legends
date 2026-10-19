@@ -36,7 +36,7 @@
 
 ## المجموعة 17: ملعب الأرينا تحت المطر
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/stadiums/arena/rain/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -87,7 +87,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 18: ملعب الأرينا نهاراً
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/stadiums/arena/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -138,7 +138,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 19: ملعب الكلاسيكي ليلاً
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/stadiums/classic/night/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -189,7 +189,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 20: ملعب الكلاسيكي تحت الثلج
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/stadiums/classic/snow/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -240,7 +240,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 21: ملعب الخليجي ليلاً
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/stadiums/gulf/night/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -291,7 +291,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 22: ملعب الخليجي في الحر
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/stadiums/gulf/heat/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -342,7 +342,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 23: ملعب المغاربي نهاراً
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/stadiums/maghreb/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -393,7 +393,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 24: ملعب المغاربي عند الغروب
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/stadiums/maghreb/dusk/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -444,7 +444,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 25: ملعب الساحلي نهاراً
 
-**الدفعة 6** (السبرنت 8)  
+**الدفعة 6** (السبرنت 50 (v1.6))  
 **المجلد:** `art/raw/stadiums/coast/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -495,7 +495,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 26: ملعب الساحلي تحت المطر
 
-**الدفعة 6** (السبرنت 8)  
+**الدفعة 6** (السبرنت 50 (v1.6))  
 **المجلد:** `art/raw/stadiums/coast/rain/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -546,7 +546,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 27: ملعب الجبلي تحت الثلج
 
-**الدفعة 7** (السبرنت 8)  
+**الدفعة 7** (السبرنت 50 (v1.6))  
 **المجلد:** `art/raw/stadiums/alpine/snow/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -597,7 +597,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 28: ملعب الجبلي في الضباب
 
-**الدفعة 7** (السبرنت 8)  
+**الدفعة 7** (السبرنت 50 (v1.6))  
 **المجلد:** `art/raw/stadiums/alpine/fog/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -648,7 +648,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 29: ملعب القبة نهاراً
 
-**الدفعة 8** (السبرنت 9)  
+**الدفعة 8** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/dome/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -699,7 +699,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 30: ملعب المدرجات القديمة ليلاً
 
-**الدفعة 9** (السبرنت 9)  
+**الدفعة 9** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/terraces/night/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -750,7 +750,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 31: ملعب المدرجات القديمة في الضباب
 
-**الدفعة 9** (السبرنت 9)  
+**الدفعة 9** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/terraces/fog/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -801,7 +801,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 32: ملعب المرجل نهاراً
 
-**الدفعة 10** (السبرنت 9)  
+**الدفعة 10** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/cauldron/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -852,7 +852,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 33: ملعب المرجل تحت المطر
 
-**الدفعة 10** (السبرنت 9)  
+**الدفعة 10** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/cauldron/rain/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -903,7 +903,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 34: ملعب المدينة تحت المطر
 
-**الدفعة 11** (السبرنت 9)  
+**الدفعة 11** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/skyline/rain/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -954,7 +954,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 35: ملعب المدينة عند الغروب
 
-**الدفعة 11** (السبرنت 9)  
+**الدفعة 11** (السبرنت 51 (v1.7))  
 **المجلد:** `art/raw/stadiums/skyline/dusk/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1005,7 +1005,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 36: ملعب الوطني ليلاً
 
-**الدفعة 12** (السبرنت 10)  
+**الدفعة 12** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/national/night/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1056,7 +1056,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 37: ملعب الوطني في الحر
 
-**الدفعة 12** (السبرنت 10)  
+**الدفعة 12** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/national/heat/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1107,7 +1107,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 38: ملعب الصحراوي ليلاً
 
-**الدفعة 13** (السبرنت 10)  
+**الدفعة 13** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/desert/night/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1158,7 +1158,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 39: ملعب الصحراوي عند الغروب
 
-**الدفعة 13** (السبرنت 10)  
+**الدفعة 13** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/desert/dusk/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1209,7 +1209,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 40: ملعب المحلي نهاراً
 
-**الدفعة 14** (السبرنت 10)  
+**الدفعة 14** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/local/day/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1260,7 +1260,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 41: ملعب المحلي تحت المطر
 
-**الدفعة 14** (السبرنت 10)  
+**الدفعة 14** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/local/rain/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1311,7 +1311,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 42: ملعب النهائي عند الغروب
 
-**الدفعة 15** (السبرنت 10)  
+**الدفعة 15** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/final/dusk/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 
@@ -1362,7 +1362,7 @@ Use the attached image as the reference for the same stadium architecture, the s
 
 ## المجموعة 43: ملعب التدريب في الضباب
 
-**الدفعة 16** (السبرنت 10)  
+**الدفعة 16** (السبرنت 52 (v1.8))  
 **المجلد:** `art/raw/stadiums/training/fog/`  
 **المحادثة:** جديدة. نفس الملعب في حالة أخرى: الزوايا الأساسية الخمس.
 

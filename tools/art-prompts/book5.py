@@ -410,8 +410,9 @@ for g in ALLB:
 def attach_md(b):
     return ('**ارفق:** ' + ' و'.join(f'`{a}`' for a in b['attach'])) if b['attach'] else '**بلا مرفق** (أول صورة)'
 WAVES = sorted({g['wave'] for g in ALLB})
-SPRINT_OF = {1: 'السبرنت 2 (الصور) و3 (المحاكاة)', 2: 'السبرنت 4', 3: 'السبرنت 5', 4: 'السبرنت 6', 5: 'السبرنت 7', 6: 'السبرنت 8', 7: 'السبرنت 8'}
-def sprint_of(w): return SPRINT_OF.get(w, 'السبرنت 9' if w <= 11 else 'السبرنت 10')
+# wave 1 now (sprints 2-3); the rest after v1.1, one version per sprint (phase Z, sprints 46-52)
+SPRINT_OF = {1: 'السبرنت 2 (الصور) و3 (المحاكاة)', 2: 'السبرنت 46 (v1.2)', 3: 'السبرنت 47 (v1.3)', 4: 'السبرنت 48 (v1.4)', 5: 'السبرنت 49 (v1.5)', 6: 'السبرنت 50 (v1.6)', 7: 'السبرنت 50 (v1.6)'}
+def sprint_of(w): return SPRINT_OF.get(w, 'السبرنت 51 (v1.7)' if w <= 11 else 'السبرنت 52 (v1.8)')
 
 # ---------------- write: one guide + one file per part ----------------
 OUT = os.path.join('..', '..', 'docs', 'art', 'images')
