@@ -8,6 +8,7 @@ php artisan key:generate --force
 php artisan migrate --force
 php artisan data:import
 composer build-web
+git rev-parse HEAD > storage/.built-commit
 echo
 echo "Ready: the simulator is at port 8000, path /sim"
 echo "For live frontend work run: composer dev   (Vite on port 5173)"
