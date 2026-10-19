@@ -2,12 +2,12 @@
 
 Every Arabic line of web/src/match/feed/story.ts has a file name: <moment>-<slot>-<n>.wav
 (slot: pre before the moment, key the moment itself, post after it). The list, with each
-line's tone and text, is in tools/commentary/ar-voice/files.txt.
+line's tone and text, is in audio/raw/ar/story/files.txt.
 
   python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in story.ts
   python3 tools/commentary/arabic_voice.py build    # make web/public/commentary/ar/phrases.mp3 + .json
 
-build takes each recording in ar-voice/ (wav, mp3, m4a, ogg or flac, same name), trims the
+build takes each recording in audio/raw/ar/story/ (wav, mp3, m4a, ogg or flac, same name), trims the
 silence and levels the loudness. A line not recorded yet keeps its clip from the current
 pack, so the voice can be recorded a few lines at a time. Needs node (with the web app's
 dependencies installed) and ffmpeg; nothing else.
@@ -15,7 +15,7 @@ dependencies installed) and ffmpeg; nothing else.
 import json, os, re, shutil, subprocess, sys, tempfile
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-VOICE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ar-voice')
+VOICE = os.path.join(ROOT, 'audio', 'raw', 'ar', 'story')
 PACK = os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', 'phrases')
 LIST = os.path.join(VOICE, 'files.txt')
 SR = 24000

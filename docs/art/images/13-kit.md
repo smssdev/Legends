@@ -28,7 +28,7 @@
 
 ## المجموعة 304: الكرة الكلاسيكية
 
-**المجلد:** `art/raw/v5/balls/classic/`  
+**المجلد:** `art/raw/balls/classic/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 304.1 `spin-01.png`
@@ -81,7 +81,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 305: كرة الدوري الحديثة
 
-**المجلد:** `art/raw/v5/balls/league/`  
+**المجلد:** `art/raw/balls/league/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 305.1 `spin-01.png`
@@ -134,7 +134,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 306: كرة الشتاء
 
-**المجلد:** `art/raw/v5/balls/winter/`  
+**المجلد:** `art/raw/balls/winter/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 306.1 `spin-01.png`
@@ -187,7 +187,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 307: كرة النهائي
 
-**المجلد:** `art/raw/v5/balls/final/`  
+**المجلد:** `art/raw/balls/final/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 307.1 `spin-01.png`
@@ -240,7 +240,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 308: الكرة القديمة
 
-**المجلد:** `art/raw/v5/balls/retro/`  
+**المجلد:** `art/raw/balls/retro/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 308.1 `spin-01.png`
@@ -293,7 +293,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 309: كرة الصالات
 
-**المجلد:** `art/raw/v5/balls/futsal/`  
+**المجلد:** `art/raw/balls/futsal/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 309.1 `spin-01.png`
@@ -346,7 +346,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 310: المرمى العادي: حركة الشبكة
 
-**المجلد:** `art/raw/v5/goals/standard/`  
+**المجلد:** `art/raw/goals/standard/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 310.1 `bulge-01.png`
@@ -391,7 +391,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 311: المرمى العميق: حركة الشبكة
 
-**المجلد:** `art/raw/v5/goals/deep/`  
+**المجلد:** `art/raw/goals/deep/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 311.1 `bulge-01.png`
@@ -436,7 +436,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 312: مرمى الشبكة السداسية: حركة الشبكة
 
-**المجلد:** `art/raw/v5/goals/hex/`  
+**المجلد:** `art/raw/goals/hex/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 312.1 `bulge-01.png`
@@ -481,7 +481,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 313: مرمى بشبكة سوداء: حركة الشبكة
 
-**المجلد:** `art/raw/v5/goals/black-net/`  
+**المجلد:** `art/raw/goals/black-net/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 313.1 `bulge-01.png`
@@ -526,7 +526,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 314: مرمى التدريب: حركة الشبكة
 
-**المجلد:** `art/raw/v5/goals/training/`  
+**المجلد:** `art/raw/goals/training/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 314.1 `bulge-01.png`
@@ -571,7 +571,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 315: الراية والأعلام
 
-**المجلد:** `art/raw/v5/flags/`  
+**المجلد:** `art/raw/flags/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
 ### 315.1 `corner-flag-01.png`
@@ -624,7 +624,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 316: أدوات الملعب
 
-**المجلد:** `art/raw/v3/props/`  
+**المجلد:** `art/raw/props/`  
 **المحادثة:** جديدة. كل ما يحمله الحكام واللاعبون والجمهور. البطاقة والراية واللوحة بيضاء لتلوّنها اللعبة.
 
 ### 316.1 `sheet-1-a.png`
@@ -677,7 +677,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 317: المرمى العادي
 
-**المجلد:** `art/raw/v4/goals/standard/`  
+**المجلد:** `art/raw/goals/standard/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
 ### 317.1 `views.png`
@@ -698,7 +698,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 318: المرمى العميق
 
-**المجلد:** `art/raw/v4/goals/deep/`  
+**المجلد:** `art/raw/goals/deep/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
 ### 318.1 `views.png`
@@ -719,7 +719,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 319: مرمى الشبكة السداسية
 
-**المجلد:** `art/raw/v4/goals/hex/`  
+**المجلد:** `art/raw/goals/hex/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
 ### 319.1 `views.png`
@@ -740,7 +740,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 320: مرمى بشبكة سوداء
 
-**المجلد:** `art/raw/v4/goals/black-net/`  
+**المجلد:** `art/raw/goals/black-net/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
 ### 320.1 `views.png`
@@ -761,7 +761,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 321: مرمى التدريب
 
-**المجلد:** `art/raw/v4/goals/training/`  
+**المجلد:** `art/raw/goals/training/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
 ### 321.1 `views.png`
@@ -782,7 +782,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 322: الشبكة والقائم عن قرب
 
-**المجلد:** `art/raw/v4/net/`  
+**المجلد:** `art/raw/net/`  
 **المحادثة:** جديدة. لقطات قريبة للحظة دخول الكرة وارتطامها.
 
 ### 322.1 `net-inside.jpg`
