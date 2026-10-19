@@ -16,8 +16,8 @@
 
 | الدفعة | السبرنت | المجموعات | اللوحات |
 |---|---|---|---|
-| 1 | السبرنت 2 (الصور) و3 (المحاكاة) | 25 | 176 |
-| 2 | السبرنت 46 (v1.2) | 58 | 371 |
+| 1 | السبرنت 2 (الصور) و3 (المحاكاة) | 44 | 268 |
+| 2 | السبرنت 46 (v1.2) | 39 | 279 |
 | 3 | السبرنت 47 (v1.3) | 53 | 364 |
 | 4 | السبرنت 48 (v1.4) | 53 | 348 |
 | 5 | السبرنت 49 (v1.5) | 40 | 250 |
@@ -43,6 +43,16 @@
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 48. المهاجم الرئيسي: الكرة | 19 | [`03-players.md`](03-players.md) | `art/raw/striker/ball/` |
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 49. المهاجم الرئيسي: الالتحام والسقوط | 15 | [`03-players.md`](03-players.md) | `art/raw/striker/ground/` |
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 50. المهاجم الرئيسي: المشاعر | 12 | [`03-players.md`](03-players.md) | `art/raw/striker/emotion/` |
+| أشكال اللاعبين (الحركات الأساسية) | 78. شكل لاعب 1: البطاقة المرجعية | 2 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/` |
+| أشكال اللاعبين (الحركات الأساسية) | 79. شكل لاعب 1: الجري بالاتجاهات | 7 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/run/` |
+| أشكال اللاعبين (الحركات الأساسية) | 81. شكل لاعب 1: الكرة | 11 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/ball/` |
+| أشكال اللاعبين (الحركات الأساسية) | 82. شكل لاعب 1: الالتحام والسقوط | 8 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/ground/` |
+| أشكال اللاعبين (الحركات الأساسية) | 83. شكل لاعب 1: المشاعر | 5 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/emotion/` |
+| أشكال اللاعبين (الحركات الأساسية) | 84. شكل لاعب 2: البطاقة المرجعية | 2 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/` |
+| أشكال اللاعبين (الحركات الأساسية) | 85. شكل لاعب 2: الجري بالاتجاهات | 7 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/run/` |
+| أشكال اللاعبين (الحركات الأساسية) | 87. شكل لاعب 2: الكرة | 11 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/ball/` |
+| أشكال اللاعبين (الحركات الأساسية) | 88. شكل لاعب 2: الالتحام والسقوط | 8 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/ground/` |
+| أشكال اللاعبين (الحركات الأساسية) | 89. شكل لاعب 2: المشاعر | 5 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/emotion/` |
 | الحراس | 198. حارس المرمى 1: البطاقة المرجعية | 2 | [`05-keepers.md`](05-keepers.md) | `art/raw/keeper/` |
 | الحراس | 199. حارس المرمى 1: الاستعداد | 4 | [`05-keepers.md`](05-keepers.md) | `art/raw/keeper/ready/` |
 | الحراس | 200. حارس المرمى 1: الارتماء | 10 | [`05-keepers.md`](05-keepers.md) | `art/raw/keeper/dive/` |
@@ -52,11 +62,20 @@
 | الحكام | 230. الحكم 1: البطاقة المرجعية | 2 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/` |
 | الحكام | 231. الحكم 1: الجري بالاتجاهات | 6 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/run/` |
 | الحكام | 233. الحكم 1: الإشارات | 8 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/signals/` |
+| الحكام | 234. الحكم 1: الفار | 4 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/var/` |
+| الحكام | 245. الحكم المساعد: البطاقة المرجعية | 1 | [`06-officials.md`](06-officials.md) | `art/raw/linesman/` |
+| الحكام | 246. الحكم المساعد: الحركة | 4 | [`06-officials.md`](06-officials.md) | `art/raw/linesman/move/` |
+| الحكام | 247. الحكم الرابع: البطاقة المرجعية | 1 | [`06-officials.md`](06-officials.md) | `art/raw/fourth/` |
+| الحكام | 248. الحكم الرابع: الحركة | 2 | [`06-officials.md`](06-officials.md) | `art/raw/fourth/move/` |
+| الفار والشاشات | 250. البطاقة الصفراء (وضعيات ثابتة) | 5 | [`07-situations.md`](07-situations.md) | `art/raw/cards/yellow/` |
+| الفار والشاشات | 251. البطاقة الحمراء (وضعيات ثابتة) | 5 | [`07-situations.md`](07-situations.md) | `art/raw/cards/red/` |
 | اللحظات الجماعية | 256. احتفالات الهدف (وضعيات ثابتة) | 4 | [`08-moments.md`](08-moments.md) | `art/raw/celebrations/` |
 | المدربون | 260. المدرب 1: البطاقة المرجعية | 2 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-1/` |
 | المدربون | 261. المدرب 1: الانطلاق والتوقف والدوران | 2 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-1/start/` |
 | المدربون | 262. المدرب 1: الحركة | 2 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-1/move/` |
 | المدربون | 263. المدرب 1: المشاعر | 6 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-1/emotion/` |
+| الدكة والطاقم الطبي | 300. الطاقم الطبي (وضعيات ثابتة) | 2 | [`10-bench.md`](10-bench.md) | `art/raw/medics/` |
+| الدكة والطاقم الطبي | 301. البدلاء (وضعيات ثابتة) | 2 | [`10-bench.md`](10-bench.md) | `art/raw/bench/` |
 | الجمهور | 302. الجمهور | 9 | [`11-crowd.md`](11-crowd.md) | `art/raw/crowd/` |
 | الكرات والمرامي والأعلام والأدوات | 304. الكرة الكلاسيكية | 6 | [`13-kit.md`](13-kit.md) | `art/raw/balls/classic/` |
 | الكرات والمرامي والأعلام والأدوات | 310. المرمى العادي: حركة الشبكة | 5 | [`13-kit.md`](13-kit.md) | `art/raw/goals/standard/` |
@@ -81,18 +100,8 @@
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 74. المدافع: المشاعر | 12 | [`03-players.md`](03-players.md) | `art/raw/defender/emotion/` |
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 76. المهاجم الرئيسي: حالات خاصة (وضعيات ثابتة) | 4 | [`03-players.md`](03-players.md) | `art/raw/striker-states/` |
 | اللاعبون الرئيسيون (كل الحركات والاتجاهات) | 77. المهاجم الرئيسي: أهداف استعراضية (وضعيات ثابتة) | 3 | [`03-players.md`](03-players.md) | `art/raw/striker-skills/` |
-| أشكال اللاعبين (الحركات الأساسية) | 78. شكل لاعب 1: البطاقة المرجعية | 2 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/` |
-| أشكال اللاعبين (الحركات الأساسية) | 79. شكل لاعب 1: الجري بالاتجاهات | 7 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/run/` |
 | أشكال اللاعبين (الحركات الأساسية) | 80. شكل لاعب 1: المشي والهرولة | 6 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/walk/` |
-| أشكال اللاعبين (الحركات الأساسية) | 81. شكل لاعب 1: الكرة | 11 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/ball/` |
-| أشكال اللاعبين (الحركات الأساسية) | 82. شكل لاعب 1: الالتحام والسقوط | 8 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/ground/` |
-| أشكال اللاعبين (الحركات الأساسية) | 83. شكل لاعب 1: المشاعر | 5 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-1/emotion/` |
-| أشكال اللاعبين (الحركات الأساسية) | 84. شكل لاعب 2: البطاقة المرجعية | 2 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/` |
-| أشكال اللاعبين (الحركات الأساسية) | 85. شكل لاعب 2: الجري بالاتجاهات | 7 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/run/` |
 | أشكال اللاعبين (الحركات الأساسية) | 86. شكل لاعب 2: المشي والهرولة | 6 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/walk/` |
-| أشكال اللاعبين (الحركات الأساسية) | 87. شكل لاعب 2: الكرة | 11 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/ball/` |
-| أشكال اللاعبين (الحركات الأساسية) | 88. شكل لاعب 2: الالتحام والسقوط | 8 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/ground/` |
-| أشكال اللاعبين (الحركات الأساسية) | 89. شكل لاعب 2: المشاعر | 5 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-2/emotion/` |
 | أشكال اللاعبين (الحركات الأساسية) | 90. شكل لاعب 3: البطاقة المرجعية | 2 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-3/` |
 | أشكال اللاعبين (الحركات الأساسية) | 91. شكل لاعب 3: الجري بالاتجاهات | 7 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-3/run/` |
 | أشكال اللاعبين (الحركات الأساسية) | 92. شكل لاعب 3: المشي والهرولة | 6 | [`04-looks.md`](04-looks.md) | `art/raw/players/look-3/walk/` |
@@ -102,13 +111,6 @@
 | الحراس | 203. حارس المرمى 1: التوزيع | 5 | [`05-keepers.md`](05-keepers.md) | `art/raw/keeper/distribute/` |
 | الحراس | 205. حارس المرمى 1: ركلات الجزاء | 9 | [`05-keepers.md`](05-keepers.md) | `art/raw/keeper/penalty/` |
 | الحكام | 232. الحكم 1: المشي والهرولة | 3 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/walk/` |
-| الحكام | 234. الحكم 1: الفار | 4 | [`06-officials.md`](06-officials.md) | `art/raw/referee-1/var/` |
-| الحكام | 245. الحكم المساعد: البطاقة المرجعية | 1 | [`06-officials.md`](06-officials.md) | `art/raw/linesman/` |
-| الحكام | 246. الحكم المساعد: الحركة | 4 | [`06-officials.md`](06-officials.md) | `art/raw/linesman/move/` |
-| الحكام | 247. الحكم الرابع: البطاقة المرجعية | 1 | [`06-officials.md`](06-officials.md) | `art/raw/fourth/` |
-| الحكام | 248. الحكم الرابع: الحركة | 2 | [`06-officials.md`](06-officials.md) | `art/raw/fourth/move/` |
-| الفار والشاشات | 250. البطاقة الصفراء (وضعيات ثابتة) | 5 | [`07-situations.md`](07-situations.md) | `art/raw/cards/yellow/` |
-| الفار والشاشات | 251. البطاقة الحمراء (وضعيات ثابتة) | 5 | [`07-situations.md`](07-situations.md) | `art/raw/cards/red/` |
 | الفار والشاشات | 252. الحكم: الأخطاء والقرارات (وضعيات ثابتة) | 3 | [`07-situations.md`](07-situations.md) | `art/raw/referee-calls/` |
 | اللحظات الجماعية | 255. لحظات جماعية متحركة | 16 | [`08-moments.md`](08-moments.md) | `art/raw/team/` |
 | اللحظات الجماعية | 257. احتفالات جماعية (وضعيات ثابتة) | 4 | [`08-moments.md`](08-moments.md) | `art/raw/team-celebrations/` |
@@ -116,8 +118,6 @@
 | المدربون | 265. المدرب 2: الانطلاق والتوقف والدوران | 2 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-2/start/` |
 | المدربون | 266. المدرب 2: الحركة | 2 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-2/move/` |
 | المدربون | 267. المدرب 2: المشاعر | 6 | [`09-coaches.md`](09-coaches.md) | `art/raw/coach-2/emotion/` |
-| الدكة والطاقم الطبي | 300. الطاقم الطبي (وضعيات ثابتة) | 2 | [`10-bench.md`](10-bench.md) | `art/raw/medics/` |
-| الدكة والطاقم الطبي | 301. البدلاء (وضعيات ثابتة) | 2 | [`10-bench.md`](10-bench.md) | `art/raw/bench/` |
 | الكرات والمرامي والأعلام والأدوات | 305. كرة الدوري الحديثة | 6 | [`13-kit.md`](13-kit.md) | `art/raw/balls/league/` |
 | الكرات والمرامي والأعلام والأدوات | 311. المرمى العميق: حركة الشبكة | 5 | [`13-kit.md`](13-kit.md) | `art/raw/goals/deep/` |
 | الكرات والمرامي والأعلام والأدوات | 315. الراية والأعلام | 6 | [`13-kit.md`](13-kit.md) | `art/raw/flags/` |
