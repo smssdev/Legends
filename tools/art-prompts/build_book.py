@@ -72,18 +72,22 @@ VIEWS = {
  'touchline': ('الحكم الرابع ودخول البديل', 'L12 L13 L14',
   'The halfway line meeting the touchline seen from the side, the fourth official area and the bench far behind, empty.'),
  'monitor': ('شاشة الفار', 'L17 L19',
-  'An empty video review monitor on a stand under a small canopy, standing on the grass strip outside the touchline beside the pitch (never on the playing field), its screen blank and dark, the empty pitch behind it.'),
+  'Exactly ONE empty video review monitor (a single screen, never two) on a stand under a small canopy, standing on the grass strip outside the touchline beside the pitch (never on the playing field), its screen blank and dark, the empty pitch behind it.'),
  'centre': ('البداية والاستراحة والنهاية', 'L15',
   'The centre circle and the centre spot seen from the side at pitch level, the stands behind, empty pitch.'),
  'tunnel-out': ('خروج اللاعبين من النفق', 'L15',
   'The players tunnel exit at pitch level, the tunnel opening and the stands around it, the pitch in front, no people.'),
 }
 FANS_LOOK = ('Fans wear many different plain colours (white, black, grey, yellow, green, blue, red, orange), no stripes, no club colours, no logos. '
-             'The faces are slightly out of focus, like a real TV shot.')
+             'Shallow depth of field: every face is soft and slightly blurred, no sharp portraits, like a real TV shot.')
+CROWD_GEO = ('The camera stands on the grass beside the pitch and looks sideways along the front rows of one stand: '
+             'the fans fill the right two thirds of the image, row behind row rising up and away, and they look towards the pitch on the left. '
+             'The pitch is only a strip on the left edge, in front of the fans. Behind the fans there are only more rows of seats and fans, '
+             'never grass, never a goal and never the pitch behind them.')
 CROWD = [
- ('crowd-joy.jpg', 'الجمهور يحتفل بالهدف', 'L03 L08 L09', 'Close-up of the home crowd in the stands celebrating a goal, scarves raised, arms up, two red flares glowing. ' + FANS_LOOK),
- ('crowd-tense.jpg', 'ترقب قبل ركلة جزاء أو ضربة حرة', 'L08 L09', 'Close-up of the crowd in the stands, fans biting their nails and holding their heads in tension. ' + FANS_LOOK),
- ('crowd-sad.jpg', 'تحسر بعد فرصة أو هدف ملغى', 'L02 L16 L17', 'Close-up of the crowd in the stands, disappointed fans with heads down and hands on their heads. ' + FANS_LOOK),
+ ('crowd-joy.jpg', 'الجمهور يحتفل بالهدف', 'L03 L08 L09', 'Close-up of the home crowd in the stands celebrating a goal, scarves raised, arms up, two red flares glowing in the stand among the fans. ' + CROWD_GEO + ' ' + FANS_LOOK),
+ ('crowd-tense.jpg', 'ترقب قبل ركلة جزاء أو ضربة حرة', 'L08 L09', 'Close-up of the crowd in the stands, fans biting their nails and holding their heads in tension. ' + CROWD_GEO + ' ' + FANS_LOOK),
+ ('crowd-sad.jpg', 'تحسر بعد فرصة أو هدف ملغى', 'L02 L16 L17', 'Close-up of the crowd in the stands, disappointed fans with heads down and hands on their heads. ' + CROWD_GEO + ' ' + FANS_LOOK),
 ]
 def stadium(name, desc, cond, keys, crowd=True, extras=()):
     items = []
@@ -95,7 +99,7 @@ def stadium(name, desc, cond, keys, crowd=True, extras=()):
         items.append(('plate', f'{k}.jpg', why, used, p))
     if crowd:
         for f, why, used, view in CROWD:
-            items.append(('plate', f, why, used, f'Same stadium and same light as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view} In the background, the same stadium as the attached image: {desc}.'))
+            items.append(('plate', f, why, used, f'Same stadium and same light as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view} The rest of the stadium, seen above and beyond the stand, is the same stadium as the attached image: {desc}.'))
     for f, why, used, view in extras:
         items.append(('plate', f, why, used, f'Same stadium as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view}'))
     return items
