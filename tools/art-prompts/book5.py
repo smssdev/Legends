@@ -19,6 +19,16 @@ for b in OLD:
 ANIM = ('These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. '
         'Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line '
         '(the ground line is at the same height in every frame), with clear space between frames and nothing cut off.')
+def an(n): return f'an {n}' if str(n)[0] == '8' or n in (11, 18) else f'a {n}'
+def count(n, what='figure'):
+    if n == 1: return f'The image shows exactly one {what}, centred, and no other people.'
+    return f'The image shows exactly {n} {what}s of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people.'
+def she(text, who):
+    # a woman: every he/his/him in the shared sentences becomes she/her
+    if 'female' not in who: return text
+    for a, b in (('He', 'She'), ('he', 'she'), ('His', 'Her'), ('his', 'her'), ('him', 'her'), ('himself', 'herself')):
+        text = re.sub(rf'\b{a}\b', b, text)
+    return text.replace('same fictional man', 'same fictional woman')
 def anim_prompt(who, seq_title, total, frames, view, ref_mode):
     n = len(frames)
     pos = {1: ['Frame'], 2: ['Left frame', 'Right frame'], 3: ['Left frame', 'Middle frame', 'Right frame']}[n]
@@ -30,17 +40,22 @@ def anim_prompt(who, seq_title, total, frames, view, ref_mode):
         start = ('Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, '
                  'to continue the same motion at the same scale and on the same ground line. ')
     a = frames[0][0]
-    body = (f'{start}A wide 3:2 landscape image with {n} animation frame{"s" if n > 1 else ""} side by side in one row: '
-            f'frames {a} to {a + n - 1} of a {total}-frame {seq_title} sequence. The character is {who}. {view} {ANIM} '
-            + ' '.join(f'{p} (frame {i}): {d}' for p, (i, d) in zip(pos, frames)) + f' {LIGHT} {ANAT} {GREEN} {NOTEXT}')
-    return re.sub(r'\s+', ' ', body).strip()
+    span = (f'{n} animation frames side by side in one row: frames {a} to {a + n - 1} of {an(total)}-frame {seq_title} sequence'
+            if n > 1 else f'one single animation frame, centred: frame {a} of {an(total)}-frame {seq_title} sequence')
+    body = (f'{start}A wide 3:2 landscape image with {span}. {count(n)} The character is {who}. {view} {ANIM} '
+            + ' '.join(f'{p} (frame {i}): {d}' for p, (i, d) in zip(pos, frames)) + f' {NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
+    return she(re.sub(r'\s+', ' ', body).strip(), who)
 
 VIEW = {
- 'side': 'He is seen from the side, facing and moving to the right.',
- 'q-front': 'He is seen in three-quarter view, moving diagonally towards the camera and to the right.',
- 'q-back': 'He is seen in three-quarter view from behind, moving diagonally away from the camera and to the right.',
- 'front': 'He is seen from the front, moving straight towards the camera.',
- 'back': 'He is seen from behind, moving straight away from the camera.',
+ 'side': 'He is seen exactly from the side, his body and face turned to the right; whenever he moves, he moves to the right.',
+ 'q-front': 'He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right.',
+ 'q-back': 'He is seen in three-quarter view from behind, his back half turned to the camera; whenever he moves, he moves diagonally away from the camera and to the right.',
+ 'front': 'He is seen from the front, facing the camera; whenever he moves, he moves straight towards the camera.',
+ 'back': 'He is seen from behind, his back to the camera; whenever he moves, he moves straight away from the camera.',
+ 'turn': 'He stays on the same spot and turns round on it; each frame says exactly which way he faces.',
+ 'line': 'He is seen from the front, facing the camera, on the touchline; when he moves, he side-steps towards the right of the image without turning.',
+ 'still-front': 'He is seen from the front, facing the camera, standing on the same spot in every frame.',
+ 'backwards': 'He is seen exactly from the side, his body, face and toes turned to the right, but he moves backwards, to the left of the image.',
 }
 def cycle(style, frames=8):
     # a stride cycle: contact, down, pass, flight/up for each foot
@@ -81,10 +96,13 @@ def outfield_sequences(full=True):
     S += [seq('sprint', 'sprinting', cycle(STYLE['sprint'], 12)), seq('jog', 'jogging', cycle(STYLE['jog'])), seq('walk', 'walking', cycle(STYLE['walk']))]
     if full:
         S += [seq('walk-front', 'walking', cycle(STYLE['walk']), 'front'), seq('walk-back', 'walking', cycle(STYLE['walk']), 'back'),
-              seq('backpedal', 'back-pedalling', cycle(STYLE['back'], 8)[:6]),
+              seq('backpedal', 'back-pedalling', [f'Back-pedalling: body and face still turned to the right, moving backwards to the left with short quick steps on the balls of the feet, arms out for balance, {x}' for x in (
+                  'the right foot reaching back behind the body, toes first, the left foot flat under the hips.', 'the right foot landing behind on its toes, the weight moving back onto it.',
+                  'both feet close together under the hips, knees slightly bent.', 'the left foot reaching back behind the body, toes first, the right foot flat under the hips.',
+                  'the left foot landing behind on its toes, the weight moving back onto it.', 'both feet close together under the hips again, knees slightly bent.')], 'backwards'),
               seq('start', 'starting to run', ['Standing ready, weight on the balls of the feet.', 'Leaning forward, first push off the left foot.', 'First short step with the right foot, arms driving.', 'Second step, gathering speed.', 'Third step, almost at full running speed.', 'Running at full speed.']),
               seq('stop', 'stopping', ['Running at full speed.', 'Leaning back, the front foot planted to brake.', 'Short braking step, arms out.', 'Almost stopped, knees bent.', 'Standing, catching his balance.', 'Standing ready.']),
-              seq('turn', 'turning round', ['Standing, facing right.', 'Turning, now in three-quarter view facing the camera.', 'Facing the camera, front view.', 'Still turning, three-quarter view facing left.', 'Facing left, side view.', 'Standing, facing left, settled.']),
+              seq('turn', 'turning round', ['Standing, side view, body and face turned to the right.', 'Turning, now in three-quarter view facing the camera.', 'Facing the camera, front view.', 'Still turning, three-quarter view facing left.', 'Side view, body and face turned to the left.', 'Standing, side view, facing left, settled.'], 'turn'),
               seq('idle', 'idle breathing', ['Standing relaxed, breathing in, chest slightly raised.', 'Standing relaxed, shoulders settling.', 'Standing relaxed, breathing out.', 'Standing relaxed, weight shifting to the other foot.'])]
     S += [seq('dribble', 'dribbling', [c.replace('touching down', 'touching the ball down') if i in (0, 4) else c for i, c in enumerate(cycle(STYLE['drib']))])]
     S += [seq('shoot', 'shooting', ['Approach: a long stride with the left foot towards a ball that is not shown.', 'Approach: a stride with the right foot, eyes on the ball.', 'The last long stride, arms opening for balance.',
@@ -92,16 +110,16 @@ def outfield_sequences(full=True):
                                     'Follow-through: the right leg rising forward past the hips.', 'Follow-through: the right leg high in front, body leaning back slightly.', 'Landing on the right foot, recovering balance, eyes following the shot.'])]
     S += [seq('pass', 'passing', ['Approaching a ball that is not shown, short stride.', 'The left foot planted, the right leg drawing back a little.', 'Striking with the inside of the right foot.', 'Short follow-through, foot pointing at the target.', 'Stepping forward after the pass.', 'Standing, watching the pass.'])]
     S += [seq('header', 'jumping header', ['Running in to meet a cross, eyes up.', 'Crouching to jump, knees bent, arms back.', 'Taking off, arms swinging up.', 'Rising in the air, body arched back.', 'At the top of the jump, snapping the head forward to hit a ball that is not shown.', 'Starting to come down, arms out.', 'Landing on both feet, knees bending.', 'Standing up again, watching the ball.'])]
-    S += [seq('tackle', 'sliding tackle', ['Running in towards an opponent.', 'Dropping down, the leading leg reaching forward.', 'Sliding on his side, the leading leg fully extended.', 'Still sliding, grass flying, arms behind.', 'Slowing down on the ground.', 'Stopped, lying on his side.', 'Pushing himself up with one hand.', 'Back on his feet.'], wide=True)]
-    S += [seq('fall', 'falling after a foul', ['Running with the ball, balanced.', 'Clipped from behind, his legs tangling.', 'Stumbling forward, losing balance, arms forward.', 'Diving forward to the ground.', 'Hitting the ground, chest first, arms out.', 'Rolling onto his side, holding his leg.', 'Lying on the ground, appealing to the referee.', 'Getting up on one knee.'], wide=True)]
+    S += [seq('tackle', 'sliding tackle', ['Running in towards an opponent.', 'Dropping down onto his left hip, the right leg reaching forward.', 'Sliding on his left side along the ground, the right leg fully extended forward, the left leg bent under him.', 'Still sliding, grass flying, arms behind.', 'Slowing down on the ground.', 'Stopped, lying on his side.', 'Pushing himself up with one hand.', 'Back on his feet.'], wide=True)]
+    S += [seq('fall', 'falling after a foul', ['Running at speed, balanced.', 'Clipped from behind on the left ankle, his legs tangling.', 'Stumbling forward, losing balance, arms forward.', 'Diving forward to the ground.', 'Hitting the ground, chest first, arms out.', 'Rolling onto his side, holding his leg.', 'Lying on the ground, appealing to the referee.', 'Getting up on one knee.'], wide=True)]
     S += [seq('celebrate', 'celebration run', cycle(STYLE['cel']))]
     S += [seq('sad', 'disappointment', ['Watching the shot go wide, standing.', 'Hands rising towards his head.', 'Both hands on his head, mouth open in disbelief.', 'Bending forward, hands still on his head.', 'Crouching down, head low.', 'Kneeling, head down.'])]
     if full:
-        S += [seq('volley', 'volley', ['Watching a ball dropping from the air, arms out.', 'Leaning back, the right leg lifting.', 'Striking at hip height, body tilted back.', 'Follow-through, leg across the body.', 'Landing on the right foot.', 'Standing, watching the volley.']),
+        S += [seq('volley', 'volley', ['Watching a ball dropping from the air, arms out.', 'Leaning back, the right leg lifting.', 'Striking at hip height, body tilted back.', 'Follow-through, the right leg swinging across in front of the body.', 'Landing on the right foot.', 'Standing, watching the volley.']),
               seq('chip', 'chip shot', ['Running in, eyes on the keeper.', 'Planting the left foot short of the ball.', 'A short stabbing kick under the ball.', 'Foot stopping just after the touch.', 'Watching the ball float.', 'Arms rising as it drops in.']),
               seq('cross', 'crossing', ['Running down the wing.', 'The left foot planted, body leaning back.', 'The right foot swinging across the body.', 'Contact under the ball, curling it.', 'Follow-through, arms out.', 'Watching the cross.']),
               seq('control', 'first touch', ['Watching a pass coming in.', 'Opening his body, right foot lifting.', 'Cushioning the ball with the inside of the foot.', 'The ball dropping dead at his feet.', 'Pushing it forward.', 'Starting to run.']),
-              seq('block', 'blocking a shot', ['Seeing the shot, turning side-on.', 'Throwing his body in the way, leg stretching.', 'Fully stretched, arms behind his back.', 'The impact, turning away.', 'Landing.', 'Getting up.'], wide=True),
+              seq('block', 'blocking a shot', ['Seeing the shot, turning side-on.', 'Throwing his body in the way, the right leg stretching out sideways.', 'Fully stretched, arms behind his back.', 'The impact, turning away.', 'Landing.', 'Getting up.'], wide=True),
               seq('getup', 'getting up', ['Lying face down.', 'Pushing up onto his hands.', 'On one knee.', 'Standing up, brushing grass off.'], wide=True),
               seq('hurt', 'injury', ['Falling to the ground holding his knee.', 'Lying on his side, knee pulled up, in pain.', 'Rolling onto his back, hands on his knee.', 'Lying still, grimacing, one hand raised for help.'], wide=True),
               seq('knee-slide', 'knee slide celebration', ['Running in celebration.', 'Dropping onto both knees.', 'Sliding on his knees, arms rising.', 'Sliding, leaning back, arms wide.', 'Slowing down, roaring.', 'Stopped on his knees, fists clenched.'], wide=True),
@@ -117,8 +135,8 @@ def outfield_sequences(full=True):
 KEEPER_SEQ = [
  seq('ready', 'keeper ready bounce', ['In the ready stance, knees bent, arms out, hands open.', 'Bouncing lightly on his toes, slightly up.', 'Settling down again.', 'Low set position just before the shot, weight forward.']),
  seq('shuffle', 'side shuffle along the goal line', ['Ready stance.', 'Side step, feet apart.', 'Feet together.', 'Side step again.', 'Feet together.', 'Set position.'], 'q-front'),
- seq('dive-high', 'high dive', ['Set position, eyes on the ball.', 'A small step towards the ball.', 'Pushing off the near leg, body starting to lean.', 'Launching upward, arms reaching up.', 'Rising in the air, body stretching out.', 'Full stretch at the highest point, body horizontal, hands reaching.', 'Starting to fall, arms still reaching.', 'Falling, one shoulder coming down first.', 'Landing on his side.', 'Sliding to a stop on his side.'], wide=True),
- seq('dive-low', 'low dive', ['Set position.', 'Pushing off sideways low.', 'Diving low along the ground, both hands reaching.', 'Body stretched along the ground.', 'Landing on his side.', 'Stopped, lying on his side.'], wide=True),
+ seq('dive-high', 'high dive to the right of the image', ['Set position, eyes on the ball.', 'A small step to the right.', 'Pushing off the right leg, body starting to lean to the right.', 'Launching upward, arms reaching up.', 'Rising in the air, body stretching out.', 'Full stretch at the highest point, body horizontal, hands reaching.', 'Starting to fall, arms still reaching.', 'Falling, one shoulder coming down first.', 'Landing on his side.', 'Sliding to a stop on his side.'], wide=True),
+ seq('dive-low', 'low dive to the right of the image', ['Set position.', 'Pushing off low to the right.', 'Diving low along the ground, both hands reaching.', 'Body stretched along the ground.', 'Landing on his side.', 'Stopped, lying on his side.'], wide=True),
  seq('catch-high', 'high catch', ['Set position, looking up.', 'Jumping up, arms rising.', 'At the top, both hands above his head, gloves shaped around a ball that is not shown.', 'Pulling the ball down to his chest.', 'Landing, holding the ball at his chest.', 'Standing, holding the ball.']),
  seq('catch-chest', 'chest catch', ['Set position.', 'Leaning forward, arms forming a basket.', 'Catching at the chest, gloves wrapped around a ball that is not shown.', 'Holding the ball tight, bending over it.']),
  seq('punch', 'punching clear', ['Looking up at a cross.', 'Jumping, one arm pulling back.', 'Punching forward with one fist.', 'Arm fully extended.', 'Coming down.', 'Landing.']),
@@ -129,9 +147,9 @@ KEEPER_SEQ = [
  seq('kick', 'goal kick', ['Standing behind a ball that is not shown.', 'Running in.', 'Planting the left foot.', 'The right leg swinging back.', 'Striking the ball hard.', 'Follow-through high.', 'Landing.', 'Watching the kick.']),
  seq('throw', 'overarm throw', ['Holding a ball that is not shown at his side.', 'Arm drawing back.', 'Arm high behind him.', 'Arm whipping over.', 'Releasing forward.', 'Follow-through.']),
  seq('celebrate', 'save celebration', ['Standing up after a save.', 'Fists clenching.', 'Roaring, both fists up, legs straight and natural.', 'Pointing at his team-mates, shouting.']),
- seq('front-dive', 'penalty dive seen from the front', ['Seen from the front: ready on the line, arms wide.', 'Seen from the front: a small hop.', 'Seen from the front: pushing off to his left.', 'Seen from the front: in the air, body tilting.', 'Seen from the front: body horizontal in the air, arms reaching to his left.', 'Seen from the front: falling.', 'Seen from the front: landing on his side.', 'Seen from the front: lying on the ground.'], 'front', wide=True),
+ seq('front-dive', 'penalty dive seen from the front', ['Seen from the front: ready on the line, arms wide.', 'Seen from the front: a small hop.', 'Seen from the front: pushing off to his left.', 'Seen from the front: in the air, body tilting to his left.', 'Seen from the front: body horizontal in the air, arms reaching to his left.', 'Seen from the front: falling.', 'Seen from the front: landing on his side.', 'Seen from the front: lying on the ground.'], 'front', wide=True),
  seq('front-catch', 'penalty catch seen from the front', ['Seen from the front: ready on the line.', 'Seen from the front: catching at his chest.', 'Seen from the front: holding the ball, celebrating.', 'Seen from the front: arms wide, roaring.'], 'front'),
- seq('back-dive', 'penalty dive seen from behind', ['Seen from behind: ready on the line, arms wide.', 'Seen from behind: pushing off to his left.', 'Seen from behind: in the air, body tilting.', 'Seen from behind: body horizontal in the air, arms reaching.', 'Seen from behind: falling.', 'Seen from behind: lying on the ground.'], 'back', wide=True),
+ seq('back-dive', 'penalty dive seen from behind', ['Seen from behind: ready on the line, arms wide.', 'Seen from behind: pushing off to his left.', 'Seen from behind: in the air, body tilting to his left.', 'Seen from behind: body horizontal in the air, arms reaching to his left.', 'Seen from behind: falling.', 'Seen from behind: lying on the ground.'], 'back', wide=True),
 ]
 REF_SEQ = [
  seq('run', 'running', cycle(STYLE['run'])), seq('walk', 'walking', cycle(STYLE['walk'])),
@@ -143,9 +161,9 @@ REF_SEQ = [
  seq('var', 'video review sign', ['Hand on his earpiece, listening.', 'Raising both index fingers.', 'Drawing the top of a rectangle in the air.', 'Drawing the sides of the rectangle.', 'Finishing the rectangle.', 'Walking towards the touchline.']),
  seq('monitor', 'watching the review screen', ['Arriving at a screen that is not shown.', 'Bending forward, hands on hips, watching.', 'Leaning closer.', 'Straightening up, decision made.']),
 ]
-LIN_SEQ = [seq('side-run', 'side-running along the line', ['Side-stepping along the line, flag down.', 'Feet apart.', 'Feet together.', 'Feet apart.', 'Feet together.', 'Side-stepping on.']),
-           seq('flag', 'raising the flag', ['Standing, flag down.', 'Lifting the flag.', 'Flag straight up.', 'Flag held out forward at shoulder height, offside.'])]
-FOURTH_SEQ = [seq('board', 'raising the substitution board', ['Standing, holding a blank digital board low.', 'Lifting the board.', 'Board at chest height.', 'Board raised above his head, the screen dark and empty.', 'Holding it high.', 'Lowering the board.'], 'front')]
+LIN_SEQ = [seq('side-run', 'side-running along the line', ['Side-stepping to the right, flag down in the right hand.', 'Feet wide apart, flag down.', 'Feet together, flag down.', 'Feet wide apart again, flag down.', 'Feet together again, flag down.', 'Side-stepping on to the right, flag down.'], 'line'),
+           seq('flag', 'raising the flag', ['Standing, flag down in the right hand.', 'Lifting the flag in the right hand.', 'Flag held straight up above his head.', 'Flag held out straight forward at shoulder height: offside.'], 'still-front')]
+FOURTH_SEQ = [seq('board', 'raising the substitution board', ['Standing, holding a blank digital board low.', 'Lifting the board.', 'Board at chest height.', 'Board raised above his head, the screen dark and empty.', 'Holding it high.', 'Lowering the board.'], 'still-front')]
 COACH_SEQ = [
  seq('idle', 'touchline idle', ['Standing, arms crossed.', 'Shifting his weight.', 'Hand on his chin, thinking.', 'Arms crossed again.']),
  seq('instruct', 'shouting instructions', ['Stepping forward.', 'Pointing forward.', 'Shouting, arm pointing.', 'Hands cupped around his mouth, shouting.']),
@@ -154,14 +172,17 @@ COACH_SEQ = [
  seq('argue', 'protesting', ['Stepping towards the fourth official.', 'Arms wide open.', 'Shouting.', 'Pointing at the pitch.', 'Throwing his arms down.', 'Walking back, shaking his head.']),
 ]
 def ref_card(who):
-    return re.sub(r'\s+', ' ', (f'A wide 3:2 landscape character reference card of {who}: four full body views side by side in one row at exactly the same scale, standing on the same ground line, '
-                                 'relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. '
-                                 f'{LIGHT} {ANAT} {GREEN} {NOTEXT}'))
+    who = who.rstrip('.')
+    return she(re.sub(r'\s+', ' ', ('A wide 3:2 landscape character reference card: exactly four full body views of the same one person side by side in one row, '
+                                 'no more and no fewer, at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body, nothing cut off. '
+                                 f'The character is {who}. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. '
+                                 f'{NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')), who)
 def faces_card(who, items):
-    return re.sub(r'\s+', ' ', ('Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, '
-                                'head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. '
-                                f'{who} ' + ' '.join(f'{p}: {c}' for p, c in zip(['Top left', 'Top right', 'Bottom left', 'Bottom right'], items)) +
-                                ' Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. ' + NOTEXT))
+    who = who.rstrip('.')
+    return she(re.sub(r'\s+', ' ', ('Use the attached reference card for this exact same person. A wide 3:2 landscape image with exactly four close-up portraits of him in a 2 by 2 grid, '
+                                'head and shoulders, all of the same person, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. '
+                                f'The character is {who}. ' + ' '.join(f'{p}: {c}' for p, c in zip(['Top left', 'Top right', 'Bottom left', 'Bottom right'], items)) +
+                                ' Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. ' + NOTEXT)), who)
 FACE4 = ['focused and calm.', 'screaming with joy.', 'devastated, hands on head.', 'angry, protesting.']
 
 CH = []  # (part, title, folder, who, sequences, faces)
@@ -218,7 +239,7 @@ character('officials', 'الحكم المساعد', 'art/raw/v5/linesman/', 'a f
 character('officials', 'الحكم الرابع', 'art/raw/v5/fourth/', 'a fictional fourth official in a black referee jacket and black trousers, short brown hair, glasses', FOURTH_SEQ, 'لوحة التبديل.', faces=False)
 for i, d in enumerate([C1, C2] + [c for _, c in COACHES + MORE_COACHES], 1):
     rest = d.split(': ', 1)[1]; kind = 'female football head coach' if 'Female' in d else 'football head coach'
-    character('coaches', f'المدرب {i}', f'art/raw/v5/coach-{i}/', f'a fictional {kind} wearing {rest[0].lower() + rest[1:]}', COACH_SEQ, 'مدرب على خط التماس.')
+    character('coaches', f'المدرب {i}', f'art/raw/v5/coach-{i}/', f'a fictional {kind} wearing a {rest[0].lower() + rest[1:]}', COACH_SEQ, 'مدرب على خط التماس.')
 
 # objects in motion
 def obj_seq(title, folder, part, what, seqs, bg='green'):
@@ -229,8 +250,10 @@ def obj_seq(title, folder, part, what, seqs, bg='green'):
         for ci in range(0, total, 3):
             ch = fr[ci:ci + 3]; pos = ['Left frame', 'Middle frame', 'Right frame'][:len(ch)]
             start = '' if first else 'Use the attached images (the first board and the previous one) to keep the exact same object, scale and style. '
-            p = re.sub(r'\s+', ' ', f'{start}A wide 3:2 landscape image with {len(ch)} consecutive animation frames side by side in one row: frames {ch[0][0]} to {ch[-1][0]} of a {total}-frame {name} loop for a 2D game, '
-                       f'evenly spaced in time, each frame the same size and centred in its third. {what} ' + ' '.join(f'{p} (frame {i}): {d}' for p, (i, d) in zip(pos, ch)) +
+            cell = {1: 'centred in the image', 2: 'centred in its half of the image', 3: 'centred in its third of the image'}[len(ch)]
+            loop = ' It is a seamless loop: the last frame leads smoothly back into the first.' if 'loop' in name else ''
+            p = re.sub(r'\s+', ' ', f'{start}A wide 3:2 landscape image with ' + (f'exactly {len(ch)} consecutive animation frames side by side in one row, no more and no fewer: frames {ch[0][0]} to {ch[-1][0]}' if len(ch) > 1 else f'one single animation frame, centred: frame {ch[0][0]}') + f' of {an(total)}-frame {name} for a 2D game, '
+                       f'evenly spaced in time, each frame the same size and {cell}, each moving on only slightly from the one before.{loop} {what} ' + ' '.join(f'{p} (frame {i}): {d}' for p, (i, d) in zip(pos, ch)) +
                        f' Photorealistic render lit by cool night stadium floodlights from above. {bgt} {NOTEXT}')
             boards.append(dict(f=f'{key}-{ci // 3 + 1:02d}.png', names=f'{name}: {ch[0][0]} إلى {ch[-1][0]} من {total}', ref=not first and 'اللوحة الأولى + السابقة', p=p)); first = False
     return dict(t=title, folder=folder, note='إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.', boards=boards, part=part)
@@ -245,16 +268,16 @@ for k, ar, d in GOALS:
      ('bulge', 'net bulge', ['The net still.', 'The back of the net starting to push out at the top corner.', 'The net bulging out strongly.', 'Maximum bulge, the mesh stretched.', 'The net springing back.', 'The net bouncing out a little again.', 'Smaller bounce.', 'The net settling.', 'The net still again.']),
      ('shake', 'post shaking after a hit', ['The goal still.', 'The near post vibrating, a small white impact flash.', 'The post still vibrating, the net trembling.', 'The vibration fading.', 'The goal still.', 'The goal still, the net swaying gently.']),
     ]))
-OBJ.append(obj_seq('الراية والأعلام', 'art/raw/v5/flags/', 'kit', 'Plain white flags on poles fluttering in the wind.', [
+OBJ.append(obj_seq('الراية والأعلام', 'art/raw/v5/flags/', 'kit', 'Plain white flags on poles fluttering in the wind; the pole stays fixed in the same place in every frame and only the cloth moves.', [
  ('corner-flag', 'corner flag fluttering', ['A corner flag on its pole, the plain white flag fluttering, phase %d of the wave.' % i for i in range(1, 7)]),
  ('fan-flag', 'big fan flag waving', ['A big plain white flag waved on a pole, phase %d of the wave.' % i for i in range(1, 7)]),
  ('linesman-flag', 'assistant referee flag waving', ['A red and yellow assistant referee flag waved above a hand in a black sleeve, phase %d.' % i for i in range(1, 7)]),
 ]))
 FXA = [
- ('ground', 'مؤثرات الأرض', 'magenta', [('grass', 'grass spray', ['A kick just landing on the turf.', 'Grass and soil starting to fly up.', 'A spray of grass and soil in the air.', 'The spray spreading and rising.', 'Clumps falling back.', 'Last bits settling.']),
-                                        ('water', 'water splash', ['A foot hitting wet grass.', 'Water starting to splash.', 'A wide splash of water.', 'Drops flying outward.', 'Drops falling.', 'Last drops.']),
-                                        ('snow', 'snow burst', ['A kick into snow.', 'Snow bursting up.', 'A cloud of snow.', 'The cloud spreading.', 'Snow falling back.', 'Last flakes.']),
-                                        ('dust', 'landing dust', ['A body hitting the ground.', 'A puff of dust and grass rising.', 'The puff spreading.', 'Fading.'])]),
+ ('ground', 'مؤثرات الأرض', 'magenta', [('grass', 'grass spray', ['A small burst at the point where a kick hits the turf, only the first specks of grass.', 'Grass and soil starting to fly up.', 'A spray of grass and soil in the air.', 'The spray spreading and rising.', 'Clumps falling back.', 'Last bits settling.']),
+                                        ('water', 'water splash', ['The first small splash where a foot hits wet grass.', 'Water starting to splash.', 'A wide splash of water.', 'Drops flying outward.', 'Drops falling.', 'Last drops.']),
+                                        ('snow', 'snow burst', ['The first small puff where a kick hits snow.', 'Snow bursting up.', 'A cloud of snow.', 'The cloud spreading.', 'Snow falling back.', 'Last flakes.']),
+                                        ('dust', 'landing dust', ['The first small puff where a body hits the ground.', 'A puff of dust and grass rising.', 'The puff spreading.', 'Fading.'])]),
  ('weather', 'مؤثرات الطقس', 'green', [('rain', 'rain loop', ['Rain streaks across the whole frame, phase %d of a seamless loop.' % i for i in range(1, 5)]),
                                        ('snow', 'snowfall loop', ['Snowflakes across the whole frame, phase %d of a seamless loop.' % i for i in range(1, 5)]),
                                        ('fog', 'drifting fog loop', ['A soft layer of white fog drifting, phase %d of a seamless loop.' % i for i in range(1, 5)])]),
@@ -272,25 +295,25 @@ FXA = [
                                           ('clap', 'fans clapping loop', ['A row of fans seen from behind, blurred, clapping above their heads, phase %d.' % i for i in range(1, 5)])]),
 ]
 for k, ar, bg, seqs in FXA:
-    OBJ.append(obj_seq(f'مؤثرات متحركة: {ar}', f'art/raw/v5/fx/{k}/', 'fx', 'Visual effects for a football game.', seqs, bg))
+    OBJ.append(obj_seq(f'مؤثرات متحركة: {ar}', f'art/raw/v5/fx/{k}/', 'fx', 'Visual effects for a football game. Only the effect itself is drawn: no people, no feet, no ball, no grass field and no ground, unless a frame names fans.', seqs, bg))
 
 # group moments as short sequences of two-person scenes
-DUO = [('hug', 'celebration hug', ['Two players in white kits running towards each other.', 'Jumping into a hug.', 'Hugging, one lifting the other.', 'Setting him down, both roaring.']),
-       ('high-five', 'high five', ['Two players in white kits approaching.', 'Hands rising.', 'Hands slapping together.', 'Turning away, smiling.']),
-       ('header-duel', 'header duel', ['Two players from different teams, both in white kits, waiting for a cross.', 'Both crouching to jump.', 'Both rising, shoulder to shoulder.', 'One heading the ball, the other beaten.', 'Coming down.', 'Landing, one stumbling.']),
-       ('tackle-duel', 'tackle duel', ['An attacker in white running with the ball, a defender in white closing in.', 'The defender sliding in.', 'The attacker jumping over the slide.', 'The attacker landing and running on.', 'The defender sliding past.', 'The defender stopping on the ground.']),
-       ('pile', 'team pile-on', ['The scorer in white sliding on his knees.', 'Team-mates arriving.', 'Team-mates jumping on him.', 'A pile of players.']),
-       ('shake', 'handshake', ['Two people facing each other.', 'Reaching out right hands.', 'Shaking hands.', 'Patting each other on the shoulder.']),
-       ('push', 'push and separate', ['Two players in white face to face.', 'One pushing the other.', 'A referee in black stepping between them.', 'The referee separating them, arms out.'])]
+DUO = [('hug', 'celebration hug', ['Exactly two players in white kits running towards each other.', 'The two jumping into a hug.', 'Hugging, one lifting the other.', 'Setting him down, both roaring.']),
+       ('high-five', 'high five', ['Exactly two players in white kits approaching each other.', 'Hands rising.', 'Hands slapping together.', 'Turning away, smiling.']),
+       ('header-duel', 'header duel', ['Two players from different teams, both in white kits, waiting for a cross.', 'Both crouching to jump.', 'Both rising, shoulder to shoulder.', 'One heading a ball that is not shown, the other beaten.', 'Coming down.', 'Landing, one stumbling.']),
+       ('tackle-duel', 'tackle duel', ['Exactly two players: an attacker in white running, a defender in white closing in.', 'The defender sliding in.', 'The attacker jumping over the slide.', 'The attacker landing and running on.', 'The defender sliding past.', 'The defender stopping on the ground.']),
+       ('pile', 'team pile-on', ['The scorer in white sliding on his knees, alone.', 'Four team-mates in white running in towards him.', 'The four team-mates jumping on him.', 'A pile of exactly five players, the scorer underneath.']),
+       ('shake', 'handshake', ['Exactly two players in white kits facing each other.', 'Reaching out right hands.', 'Shaking hands.', 'Patting each other on the shoulder.']),
+       ('push', 'push and separate', ['Exactly two players in white face to face.', 'One pushing the other.', 'A referee in black arriving and stepping between them: three people now.', 'The referee separating them, arms out.'])]
 boards = []
 for i, (k, name, fr) in enumerate(DUO):
     frs = list(enumerate(fr, 1))
     for ci in range(0, len(frs), 2):
         ch = frs[ci:ci + 2]
         start = '' if not boards else 'Use the attached images (the first board and the previous one) to keep the same people, scale and style. '
-        p = re.sub(r'\s+', ' ', f'{start}A wide 3:2 landscape image with {len(ch)} consecutive animation frames side by side in one row: frames {ch[0][0]} to {ch[-1][0]} of a {len(fr)}-frame {name} sequence for a 2D game, '
-                   f'each frame showing the fictional people full body at the same scale on the same ground line, seen from the side. {ANIM} ' +
-                   ' '.join(f'{p} (frame {j}): {d}' for p, (j, d) in zip(['Left frame', 'Right frame'], ch)) + f' {LIGHT} {ANAT} {GREEN} {NOTEXT}')
+        p = re.sub(r'\s+', ' ', f'{start}A wide 3:2 landscape image with exactly {len(ch)} consecutive animation frames side by side in one row: frames {ch[0][0]} to {ch[-1][0]} of {an(len(fr))}-frame {name} sequence for a 2D game, '
+                   f'each frame showing the fictional people full body at the same scale on the same ground line, seen from the side. Each frame shows exactly the people it names and no one else. {ANIM} ' +
+                   ' '.join(f'{p} (frame {j}): {d}' for p, (j, d) in zip(['Left frame', 'Right frame'], ch)) + f' {NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
         boards.append(dict(f=f'{k}-{ci // 2 + 1:02d}.png', names=f'{name}: {ch[0][0]} إلى {ch[-1][0]} من {len(fr)}', ref=bool(boards) and 'اللوحة الأولى + السابقة', p=p))
 OBJ.append(dict(t='لحظات جماعية متحركة', folder='art/raw/v5/team/', note='مشاهد بين لاعبين بإطارات متتالية.', boards=boards, part='moments'))
 
@@ -417,6 +440,7 @@ W('5. **احفظ كل لوحة باسمها المكتوب** داخل مجلده
 W('6. **أرسل لي أول 3 لوحات من كل نوع جديد** قبل أن تكمله. أو ارفع مجلد `art` على GitHub: **Add file** ← **Upload files** ← **Commit directly to the main branch**.\n')
 W('## قبل حفظ كل لوحة\n')
 W('- [ ] عدد الإطارات صحيح، بالترتيب من اليسار إلى اليمين.')
+W('- [ ] عدد الأشخاص والعناصر كما يذكر الأمر بالضبط، ولا كرة في صور الشخصيات (اللعبة ترسم الكرة).')
 W('- [ ] كل إطار يتقدم قليلاً عن الذي قبله، لا قفزة كبيرة ولا تكرار.')
 W('- [ ] الحجم نفسه وخط الأرض نفسه في كل الإطارات وفي كل لوحات السلسلة.')
 W('- [ ] الجسم كامل، والتشريح طبيعي: الركبة تنثني للأمام، ولا طرف مكسور أو ملتوٍ، وخمسة أصابع.')
