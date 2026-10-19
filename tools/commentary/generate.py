@@ -121,7 +121,7 @@ def lift(a):
 
 def sprite(items, path):
     """One mp3 per pack, and a map of key -> [start, length] in seconds."""
-    gap = np.zeros(int(SR * 0.25), 'float32')
+    gap = np.zeros(int(SR * 0.15), 'float32')
     parts, index, t = [], {}, 0.0
     for key, a in items:
         index[key] = [round(t, 3), round(len(a) / SR, 3)]
@@ -130,7 +130,7 @@ def sprite(items, path):
     audio = np.clip(np.concatenate(parts), -1, 1)
     with tempfile.TemporaryDirectory() as d:
         sf.write(f'{d}/s.wav', audio, SR)
-        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', f'{d}/s.wav', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '40k', path + '.mp3'], check=True)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', f'{d}/s.wav', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '32k', path + '.mp3'], check=True)
     with open(path + '.json', 'w', encoding='utf-8') as h:
         json.dump(index, h, ensure_ascii=False, separators=(',', ':'))
 
