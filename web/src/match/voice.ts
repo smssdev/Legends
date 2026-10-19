@@ -3,8 +3,8 @@
 // the voice it is said in (calm, or excited for the big moments), and for English
 // each club's name and its players' surnames. The Arabic voice says no names.
 // A club without clips falls back to the browser's own voice for that line.
-// A line is never cut mid-sentence: lines queue, and a big moment only clears
-// the lines still waiting.
+// Calm lines queue and are never cut; a big moment's line (excited) is said at
+// once, cutting the line before it short, so the voice stays with the scene.
 
 export type Lang = 'en' | 'ar'
 export type Part = { key: string; club?: string }
@@ -112,10 +112,22 @@ export class Commentator {
 
   say(line: Line | null) {
     if (!this.on || !line?.text) return
-    if (line.excited) this.queue = []
-    else if (this.queue.length) this.queue.shift()
+    // The big call (goal, save) comes the instant the ball gets there: it cuts the build-up short.
+    if (line.excited) {
+      this.queue = [line]
+      if (this.busy) this.cut()
+      return this.next()
+    }
+    if (this.queue.length) this.queue.shift()
     this.queue.push(line)
     if (!this.busy) this.next()
+  }
+
+  private cut() {
+    clearTimeout(this.timer)
+    for (const s of this.sources) try { s.stop() } catch {}
+    this.sources = []
+    if (this.utter) { this.utter = null; this.synth?.cancel() }
   }
 
   /** How long until the commentator has finished what he is saying (ms). */

@@ -58,6 +58,7 @@
 
     <div v-if="intro" class="preview">
       <span class="kick">{{ live ? 'مباراة بين صديقين' : 'ما قبل المباراة' }}</span>
+      <span v-if="live && countdown > 0" class="plan">الصافرة بعد <b dir="ltr">{{ countdown }}</b> ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن</span>
       <div class="teams">
         <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></div>
         <span class="vs">VS</span>
@@ -311,6 +312,8 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .mic .tx span { text-align: left; color: #FFD36B; font-size: 12px; font-weight: 600 }
 
 .preview { position: absolute; inset: 0; z-index: 12; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 16px; overflow-y: auto; background: radial-gradient(70% 60% at 50% 40%, rgba(245,184,46,.12), transparent 70%), linear-gradient(180deg, #0B2149, #050D1F) }
+.plan { font-size: 14px; color: #C9D2E1; text-align: center }
+.plan b { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; color: #FFD36B }
 .kick { font-family: 'Alexandria', sans-serif; font-weight: 700; color: #FFD36B; letter-spacing: .06em; font-size: 13px }
 .teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: clamp(10px, 4cqw, 40px); width: min(100%, 720px) }
 .team { display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0 }
