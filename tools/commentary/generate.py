@@ -3,7 +3,8 @@ English with Kokoro (George), Arabic with Piper (Kareem).
 
 Output in web/public/commentary/:
   phrases.mp3 + .json          every English phrase in feed/story.ts, in the voice it is said (calm or excited)
-  ar/phrases.mp3 + .json       the same for Arabic (the Arabic voice says no names)
+  ar/phrases.mp3 + .json       the same for Arabic (the Arabic voice says no names); once lines are
+                               recorded by a person (ar-voice/), arabic_voice.py builds this pack instead
   clubs/<slug>.mp3 + .json     each covered club's name and its players' surnames (English)
 
 The browser joins the pieces into lines at play time (web/src/match/voice.ts).
@@ -184,7 +185,9 @@ def main():
         ps = phrases('en')
         print(len(ps), 'English phrases', file=sys.stderr)
         sprite([(('!' if ex else '') + p, rec.clip(p, ex)) for p, ex in ps], os.path.join(OUT, 'phrases'))
-    if a.only in (None, 'arabic') and a.arabic:
+    if a.only in (None, 'arabic') and a.arabic and any(f.endswith(('.wav', '.mp3', '.m4a', '.ogg', '.flac', '.aac')) for f in os.listdir(os.path.join(os.path.dirname(__file__), 'ar-voice'))):
+        print('Arabic: recorded voice in ar-voice/, use arabic_voice.py build instead', file=sys.stderr)
+    elif a.only in (None, 'arabic') and a.arabic:
         ar = ArabicRecorder(a.arabic, cache)
         ps = phrases('ar')
         print(len(ps), 'Arabic phrases', file=sys.stderr)
