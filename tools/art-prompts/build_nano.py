@@ -20,6 +20,8 @@ ANAT = ('Correct, natural anatomy in every pose: knees and elbows bend the natur
 GREEN = 'The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out.'
 MAG = 'The background is one flat, solid magenta (#FF00FF) with nothing else on it, so each item is easy to cut out.'
 NOTEXT = 'The image has no text, no numbers and no logos.'
+NOBALL = ('There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, '
+          'the body moves exactly as if the ball were there, but the ball is not drawn.')
 POS = {1: ['In the centre'], 2: ['On the left', 'On the right'], 3: ['On the left', 'In the middle', 'On the right'],
        4: ['Top left', 'Top right', 'Bottom left', 'Bottom right']}
 grid = {1: (1, 1), 2: (2, 1), 3: (3, 1), 4: (2, 2), 5: (3, 2), 6: (3, 2)}
@@ -46,15 +48,18 @@ def board_prompt(rec, cells, ref):
             subj, lay = f'{n} different fictional footballers, each with a different look', 'side by side in one row'
         else:
             subj = 'the same fictional man' if n > 1 else 'a fictional man'
-            lay = {1: 'once, centred', 2: 'twice, side by side in one row, with plenty of room for wide poses', 3: 'three times, side by side in one row'}[n]
+            lay = {1: 'exactly once, centred', 2: 'exactly twice, side by side in one row, with plenty of room for wide poses', 3: 'exactly three times, side by side in one row'}[n]
+        many = f'There are exactly {n} figures, no more and no fewer, and no other people. ' if n > 1 else 'There is exactly one figure and no other people. '
+        space = 'with clear space between them and nothing cut off' if n > 1 else 'with nothing cut off'
         body = (f'{start}A wide 3:2 landscape image showing {subj} {lay}, every figure full body from head to boots, all at the same size and scale, '
-                f'with clear space between them and nothing cut off. Unless a pose says otherwise he is seen from the side, facing right. '
-                f'{fix_ground(rec["who"])} {fix_ground(lines(cells))} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
+                f'{space}. {many}Unless a pose says otherwise he is seen from the side, facing right. '
+                f'{fix_ground(rec["who"])} {fix_ground(lines(cells))} {NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
     elif k == 'duo':
         start = 'Use the attached image as the reference for the style and light. ' if ref else ''
         body = (f'{start}A wide 3:2 landscape image with {n} separate scenes side by side in one row, each showing fictional people together, '
                 f'full body from head to boots, interacting naturally, with clear space between the scenes and nothing cut off. '
-                f'{fix_ground(rec["who"]).replace("He wears", "Everyone wears")} {fix_ground(lines(cells))} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
+                f'Each scene shows exactly the people it names, counted exactly, and no one else. '
+                f'{fix_ground(rec["who"]).replace("He wears", "The referee wears" if "referee kit" in rec["who"] else "Everyone wears")} {fix_ground(lines(cells))} {NOBALL} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
     elif k == 'half':
         body = (f'{start}A wide 3:2 landscape image with {n} close-ups in a 2 by 2 grid, from the waist up, seen from the front facing the camera, '
                 f'all the same size with clear space between them. {rec["who"]} {lines(cells)} {LIGHT} {ANAT} {GREEN} {NOTEXT}')
@@ -66,8 +71,9 @@ def board_prompt(rec, cells, ref):
     else:
         start = 'Use the attached image as the reference for the style and light, and for the exact same object where it repeats. ' if ref else ''
         bg = {'green': GREEN.replace('each figure', 'each item'), 'magenta': MAG, 'black': 'The background is pure black, because these are light effects.'}[rec['bg']]
-        lay = {1: 'one item, centred', 2: 'two separate items side by side in one row', 3: 'three separate items side by side in one row'}[n]
-        body = (f'{start}A wide 3:2 landscape image with {lay}, each with clear space around it and nothing cut off. {rec["who"]} '
+        lay = {1: 'exactly one item, centred, with clear space around it', 2: 'exactly two separate items side by side in one row, each with clear space around it',
+               3: 'exactly three separate items side by side in one row, each with clear space around it'}[n]
+        body = (f'{start}A wide 3:2 landscape image with {lay} and nothing cut off. {rec["who"]} '
                 f'{lines(cells)} Photorealistic render lit by cool night stadium floodlights from above. {bg} {NOTEXT}')
     return re.sub(r'\s+', ' ', body).strip()
 
@@ -80,8 +86,11 @@ def plate_prompt(p, first, variant=False):
         start = ('Use the attached image as the reference for the same stadium architecture, the same camera height and lens; the weather and light are as described here. ' if variant else
                  '' if first else 'Use the attached image as the reference: the same stadium, the same camera height and lens, the same light and colours. ')
         if high: start = start.replace('the same camera height and lens, ', '').replace(', the same camera height and lens;', ';')
-        same = '' if first else ' This must be exactly the same stadium as the attached image: the same roof, seats, LED ribbons, advertising boards, floodlights and colours.'
-        return (f'{start}A wide 16:9 landscape photograph of a football stadium: {m.group(1)}, with a full crowd blurred in the stands. {v} {cam} '
+        same = '' if first else ' This must be exactly the same stadium as the attached image: the same architecture, roof, stands, seats, advertising boards, floodlights and colours, with nothing added and nothing removed.'
+        desc = m.group(1); crowd = 'with a full crowd blurred in the stands'
+        if 'no stands' in desc:   # the training ground: spectators at a rail, no stands to cast shadows
+            desc = desc.replace('sharp shadows of the stands', 'sharp shadows of the trees'); crowd = 'with the few spectators behind the rail blurred'
+        return (f'{start}A wide 16:9 landscape photograph of a football stadium: {desc}, {crowd}. {v} {cam} '
                 'The pitch is completely empty: no players, no people on the grass and no ball. Photorealistic and cinematic, like a live TV broadcast. ' + NOTEXT + same)
     body = p
     for junk in ['Same style as before.', 'Same stadium as before.', 'Same stadium and same light as before.', 'Photorealistic, cinematic, landscape 1536x1024.',
