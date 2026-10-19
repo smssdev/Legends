@@ -88,7 +88,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 305: كرة الدوري الحديثة
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/balls/league/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -148,7 +148,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 306: كرة الشتاء
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/balls/winter/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -208,7 +208,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 307: كرة النهائي
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/balls/final/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -268,7 +268,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 308: الكرة القديمة
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/balls/retro/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -328,7 +328,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 309: كرة الصالات
 
-**الدفعة 6** (السبرنت 8)  
+**الدفعة 6** (السبرنت 50 (v1.6))  
 **المجلد:** `art/raw/balls/futsal/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -439,7 +439,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 311: المرمى العميق: حركة الشبكة
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/goals/deep/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -490,7 +490,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 312: مرمى الشبكة السداسية: حركة الشبكة
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/goals/hex/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -541,7 +541,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 313: مرمى بشبكة سوداء: حركة الشبكة
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/goals/black-net/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -592,7 +592,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 314: مرمى التدريب: حركة الشبكة
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/goals/training/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -643,7 +643,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 315: الراية والأعلام
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/flags/`  
 **المحادثة:** جديدة. إطارات متتالية تُعرض بسرعة فتصير حركة ناعمة.
 
@@ -703,7 +703,7 @@ Use the attached images (the first board and the previous one) to keep the exact
 
 ## المجموعة 316: أدوات الملعب
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/props/`  
 **المحادثة:** جديدة. كل ما يحمله الحكام واللاعبون والجمهور. البطاقة والراية واللوحة بيضاء لتلوّنها اللعبة.
 
@@ -787,7 +787,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 318: المرمى العميق
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/goals/deep/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
@@ -811,7 +811,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 319: مرمى الشبكة السداسية
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/goals/hex/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
@@ -835,7 +835,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 320: مرمى بشبكة سوداء
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/goals/black-net/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
@@ -859,7 +859,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 321: مرمى التدريب
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/goals/training/`  
 **المحادثة:** جديدة. المرمى وحده لنحرك شبكته في الكود.
 
@@ -883,7 +883,7 @@ Use the attached image as the reference for the style and light, and for the exa
 
 ## المجموعة 322: الشبكة والقائم عن قرب
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/net/`  
 **المحادثة:** جديدة. لقطات قريبة للحظة دخول الكرة وارتطامها.
 
