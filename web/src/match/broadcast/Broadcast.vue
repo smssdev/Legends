@@ -18,6 +18,7 @@
       <div class="badge freeze" :class="{ on: hud.freeze }">{{ hud.freeze }}</div>
       <div v-for="(l, i) in hud.lines" :key="i" class="ol" :style="{ left: l.x + '%', top: l.y + '%', background: l.color }">{{ l.text }}</div>
       <svg class="whistle" :class="{ on: hud.whistle }" :style="hud.whistle ? { left: hud.whistle.x + '%', top: hud.whistle.y + '%' } : {}" viewBox="0 0 64 44" aria-hidden="true"><rect x="6" y="18" width="30" height="18" rx="9" fill="#F5B82E" /><rect x="30" y="21" width="16" height="8" fill="#F5B82E" /><path d="M14 12a16 16 0 0 1 20 0M9 6a24 24 0 0 1 30 0" stroke="#F5B82E" stroke-width="3" fill="none" stroke-linecap="round" /></svg>
+      <div class="say" :class="{ on: hud.say }" dir="ltr">{{ hud.say }}</div>
       <div class="wipe" :class="{ on: hud.wipe }" :style="hud.wipe ? { transform: `translateX(${hud.wipe.x}%) skewX(-18deg)`, background: hud.wipe.color } : {}" />
     </div>
   </div>
@@ -31,9 +32,10 @@ import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { createWorld } from './world'
 import { animate, makePerson, setNear } from './people'
 import { direct, lerpKeys } from './director'
+import { phraseKey, slug, surname, type Line } from '../voice'
 
-const props = defineProps<{ kits: any; teams: any; seed: number; speed: number; minute: string }>()
-const emit = defineEmits<{ cue: [name: string]; sound: [name: string] }>()
+const props = defineProps<{ kits: any; teams: any; seed: number; speed: number; minute: string; commentary?: boolean }>()
+const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: Line] }>()
 const host = ref<HTMLDivElement>()
 const mini = ref<HTMLCanvasElement>()
 const hud = reactive<any>({})
@@ -108,6 +110,20 @@ if (location.search.includes('debug')) (window as any).__broadcast = { play: (tk
 // ---------------------------------------------------------------- per frame
 const rate = (tt) => { for (const [a, b, r] of script.slow) if (tt >= a && tt <= b) return r; return 1 }
 const name = (x) => (script.players[x] ? script.players[x].name : String(x))
+// Commentary lines: {A}/{B} become the clubs and {id} the player's surname, as a commentator
+// says it. The parts tell the commentator which recorded clips make up the line.
+const clubOf = (side) => props.kits[side].name
+function partsOf(l) {
+  const out = []
+  for (const piece of l.split(/(\{\w+\})/)) {
+    const m = piece.match(/^\{(\w+)\}$/)
+    if (m && (m[1] === 'A' || m[1] === 'B')) out.push({ club: slug(clubOf(script.sideOf(m[1]))), key: '@club' })
+    else if (m) { const p = script.players[m[1]]; if (p) out.push({ club: slug(clubOf(p.side)), key: surname(p.name) }) }
+    else if (/[A-Za-z]/.test(phraseKey(piece))) out.push({ key: phraseKey(piece) })
+  }
+  return out
+}
+const spoken = (l) => l.replace(/\{A\}/g, clubOf(script.sideOf('A'))).replace(/\{B\}/g, clubOf(script.sideOf('B'))).replace(/\{(\w+)\}/g, (_, id) => (script.players[id] ? surname(script.players[id].name) : ''))
 const camTmp = { v: null }
 function project(v) { const p = v.clone().project(W.camera); return { x: ((p.x + 1) / 2) * 100, y: ((1 - p.y) / 2) * 100 } }
 function camKey(x, y, zoom) {
@@ -146,6 +162,7 @@ function frame(now) {
       t = Math.min(script.dur, t + real * r)
       for (const [ts, n] of script.snd) { const k = 's' + ts + n; if (t >= ts && !fired.has(k)) { fired.add(k); emit('sound', n) } }
       for (const [ts, n] of script.cues) { const k = 'c' + ts + n; if (t >= ts && !fired.has(k)) { fired.add(k); emit('cue', n) } }
+      for (const [ts, l, ex] of script.say) { const k = 'v' + ts; if (t >= ts && !fired.has(k)) { fired.add(k); emit('say', { text: spoken(l), parts: partsOf(l), excited: !!ex }) } }
     }
     draw(t, real * r)
   }
@@ -239,6 +256,8 @@ function updateHud(tt, cut) {
   let wipe = null
   for (const c of s.cuts) for (const e of [c.t0, c.t1]) if (c.type !== 'minimap' && e > 0 && e < s.dur && Math.abs(tt - e) < 0.13) wipe = { x: -140 + ((tt - e + 0.13) / 0.26) * 280, color: props.kits[s.sideOf(c.team || 'A')].shirt }
   hud.wipe = wipe
+  const line = props.commentary ? [...s.say].reverse().find(([ts]) => tt >= ts && tt < ts + 3.2) : null
+  hud.say = line ? spoken(line[1]) : ''
 }
 
 // Quiet minutes: the server's own frames on a mini-map.
@@ -303,5 +322,6 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); W?.dispose() })
 .freeze { top: 4%; background: #EF4444; color: #fff; font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif }
 .ol { position: absolute; transform: translate(-50%, 10%); color: #fff; font-weight: 700; padding: 0.15em 0.7em; border-radius: 0.35em; white-space: nowrap }
 .whistle { position: absolute; width: 3.2em; height: 2.2em; transform: translate(-50%, -100%) }
+.say { position: absolute; top: 4%; left: 50%; transform: translateX(-50%); max-width: 76%; padding: 0.35em 0.9em; border-radius: 0.5em; background: rgba(5, 7, 12, 0.72); color: #F7F4EA; font-weight: 600; font-size: 1.15em; text-align: center }
 .wipe { position: absolute; top: -10%; bottom: -10%; left: 0; width: 60%; border-left: 1.2em solid #F5B82E }
 </style>
