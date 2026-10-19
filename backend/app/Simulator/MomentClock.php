@@ -57,14 +57,32 @@ class MomentClock
         if (in_array('sub', $types, true)) {
             return 'sub';
         }
+        if (self::coach($events)) {
+            return 'coach';
+        }
         if (in_array('shootout', $types, true)) {
             return 'shootout';
+        }
+        if (in_array('period', $types, true)) {
+            return 'whistle';
         }
         if (in_array('stoppage', $types, true)) {
             return 'stoppage';
         }
 
         return $attack ? 'attack' : 'quiet';
+    }
+
+    // A coach changed the tactics or the shape this minute (a sub has its own shot).
+    private static function coach(array $events): bool
+    {
+        foreach ($events as $e) {
+            if ($e['type'] === 'action' && in_array($e['action']['type'] ?? '', ['tactics', 'formation'], true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function scored(array $events): bool

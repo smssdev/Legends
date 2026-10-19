@@ -1,13 +1,16 @@
-// The English commentator (docs/PLAN.md 2.21). Lines are joined at play time from
-// clips recorded with a free neural voice (tools/commentary/generate.py): every
-// phrase calm and excited, and per club its name and its players' surnames.
+// The commentator (docs/PLAN.md 2.21), in English or Arabic. Lines are joined at
+// play time from recorded clips (tools/commentary/generate.py): every phrase in
+// the voice it is said in (calm, or excited for the big moments), and for English
+// each club's name and its players' surnames. The Arabic voice says no names.
 // A club without clips falls back to the browser's own voice for that line.
 // A line is never cut mid-sentence: lines queue, and a big moment only clears
 // the lines still waiting.
 
+export type Lang = 'en' | 'ar'
 export type Part = { key: string; club?: string }
-export type Line = { text: string; parts: Part[]; excited: boolean }
+export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang }
 type Pack = { buf: AudioBuffer; map: Record<string, [number, number]> }
+type Clip = { pack: Pack; at: [number, number]; rate: number }
 
 // Keep these three in step with tools/commentary/generate.py.
 export function slug(name: string) {
@@ -25,6 +28,36 @@ export function surname(full: string) {
   return w.slice(i).join(' ')
 }
 
+/**
+ * A commentary line from story.ts as the commentator says it. English names
+ * become clips of the player's (or club's) pack; Arabic is one phrase.
+ * vars: {p, q} player ids, A the side the moment belongs to, n a number.
+ */
+export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null; x: boolean; vars: any }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
+  if (lang === 'ar') return l.ar ? { lang, text: l.ar, parts: [{ key: phraseKey(l.ar) }], excited: l.x } : null
+  if (!l.en) return null
+  const v = l.vars, other = v.A === 'home' ? 'away' : 'home'
+  const parts: Part[] = []
+  let text = ''
+  for (const piece of l.en.replace(/\{n\}/g, v.n ?? '').split(/(\{[pqAB]\})/)) {
+    const m = piece.match(/^\{([pqAB])\}$/)
+    if (m && (m[1] === 'A' || m[1] === 'B')) {
+      const club = clubs[m[1] === 'A' ? v.A : other]
+      parts.push({ club: slug(club), key: '@club' })
+      text += club
+    } else if (m) {
+      const p = players[v[m[1]]]
+      if (!p) continue
+      parts.push({ club: slug(clubs[p.side]), key: surname(p.name) })
+      text += surname(p.name)
+    } else {
+      text += piece
+      if (/[A-Za-z]/.test(phraseKey(piece))) parts.push({ key: phraseKey(piece) })
+    }
+  }
+  return { lang, text, parts, excited: l.x }
+}
+
 const BASE = import.meta.env.BASE_URL + 'commentary/'
 const GAP = 0.07
 
@@ -32,7 +65,6 @@ export class Commentator {
   on = false
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
-  private phrases: Promise<Pack | null> | null = null
   private wanted: string[] = []
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
@@ -40,15 +72,17 @@ export class Commentator {
   private busy = false
   private sources: AudioBufferSourceNode[] = []
   private timer = 0
+  private endsAt = 0
   private utter: SpeechSynthesisUtterance | null = null
-  private synthVoice: SpeechSynthesisVoice | null = null
+  private synthVoice: Record<Lang, SpeechSynthesisVoice | null> = { en: null, ar: null }
   private readonly synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
 
   constructor() {
     if (!this.synth) return
     const pick = () => {
       const vs = this.synth!.getVoices()
-      this.synthVoice = vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ?? vs.find((v) => /en-GB/i.test(v.lang)) ?? vs.find((v) => /^en/i.test(v.lang)) ?? null
+      this.synthVoice.en = vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ?? vs.find((v) => /en-GB/i.test(v.lang)) ?? vs.find((v) => /^en/i.test(v.lang)) ?? null
+      this.synthVoice.ar = vs.find((v) => /^ar/i.test(v.lang)) ?? null
     }
     pick()
     this.synth.addEventListener?.('voiceschanged', pick)
@@ -65,22 +99,32 @@ export class Commentator {
       this.out.connect(this.ctx.destination)
     }
     void this.ctx.resume()
-    this.phrases ??= this.load('phrases')
-    for (const c of this.wanted) this.pack(c)
+    this.pack('phrases')
+    this.pack('ar/phrases')
+    for (const c of this.wanted) this.pack('clubs/' + c)
   }
 
   /** Fetch the two clubs' names early, before their first line. */
   prepare(clubs: string[]) {
     this.wanted = clubs.map(slug)
-    if (this.ctx) for (const c of this.wanted) this.pack(c)
+    if (this.ctx) for (const c of this.wanted) this.pack('clubs/' + c)
   }
 
-  say(line: Line) {
-    if (!this.on || !line.text) return
+  say(line: Line | null) {
+    if (!this.on || !line?.text) return
     if (line.excited) this.queue = []
     else if (this.queue.length) this.queue.shift()
     this.queue.push(line)
     if (!this.busy) this.next()
+  }
+
+  /** How long until the commentator has finished what he is saying (ms). */
+  remainingMs(): number {
+    if (!this.busy || !this.ctx) return 0
+    const now = this.ctx.currentTime
+    let ms = Math.max(0, (this.endsAt - now) * 1000)
+    for (const l of this.queue) ms += l.text.length * 65
+    return ms
   }
 
   stop() {
@@ -105,21 +149,21 @@ export class Commentator {
 
   // The clips for a line, null when one is missing for good (use the browser voice),
   // or 'wait' while a pack is still loading (the line is dropped; it would come late anyway).
-  private resolve(line: Line): { pack: Pack; at: [number, number]; rate: number }[] | null | 'wait' {
-    const phrases = this.ready.get('phrases')
-    if (phrases === undefined) return 'wait'
-    const out = []
+  private resolve(line: Line): Clip[] | null | 'wait' {
+    const phrasePack = line.lang === 'ar' ? 'ar/phrases' : 'phrases'
+    const out: Clip[] = []
     for (const p of line.parts) {
-      const pack = p.club ? this.ready.get(p.club) : phrases
-      if (pack === undefined) { if (p.club) this.pack(p.club); return 'wait' }
-      const at = pack?.map[p.club ? p.key : (line.excited ? '!' : '') + p.key]
+      const name = p.club ? 'clubs/' + p.club : phrasePack
+      const pack = this.ready.get(name)
+      if (pack === undefined) { this.pack(name); return 'wait' }
+      const at = pack?.map[p.club ? p.key : (line.excited ? '!' : '') + p.key] ?? pack?.map[p.key]
       if (!pack || !at) return null
       out.push({ pack, at, rate: p.club && line.excited ? 1.07 : 1 })
     }
     return out.length ? out : null
   }
 
-  private play(clips: { pack: Pack; at: [number, number]; rate: number }[]) {
+  private play(clips: Clip[]) {
     const ctx = this.ctx!
     let t = ctx.currentTime + 0.03
     this.sources = clips.map(({ pack, at, rate }) => {
@@ -131,40 +175,41 @@ export class Commentator {
       t += at[1] / rate + GAP
       return s
     })
+    this.endsAt = t
     this.timer = window.setTimeout(() => this.next(), (t - ctx.currentTime) * 1000 + 150)
   }
 
   private speak(line: Line): void {
-    if (!this.synth) return this.next()
+    const v = this.synthVoice[line.lang]
+    if (!this.synth || (line.lang === 'ar' && !v)) return this.next()
     // Kept referenced: Chrome stops speech whose utterance gets garbage collected.
     const u = new SpeechSynthesisUtterance(line.text)
-    if (this.synthVoice) u.voice = this.synthVoice
-    u.lang = this.synthVoice?.lang ?? 'en-GB'
+    if (v) u.voice = v
+    u.lang = v?.lang ?? (line.lang === 'ar' ? 'ar' : 'en-GB')
     u.rate = line.excited ? 1.12 : 1
     u.pitch = line.excited ? 1.2 : 1
     u.onend = u.onerror = () => { if (this.utter === u) { this.utter = null; this.next() } }
     this.utter = u
+    this.endsAt = (this.ctx?.currentTime ?? 0) + line.text.length * 0.065
     this.synth.speak(u)
   }
 
   private pack(name: string) {
-    if (!this.packs.has(name)) this.packs.set(name, this.load('clubs/' + name, name))
-    return this.packs.get(name)!
-  }
-
-  private load(path: string, key = path): Promise<Pack | null> {
-    const p = (async () => {
-      try {
-        const [map, bytes] = await Promise.all([
-          fetch(BASE + path + '.json').then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
-          fetch(BASE + path + '.mp3').then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status))),
-        ])
-        return { map, buf: await this.ctx!.decodeAudioData(bytes) }
-      } catch {
-        return null
-      }
-    })()
-    void p.then((v) => this.ready.set(key, v))
-    return p
+    if (!this.packs.has(name) && this.ctx) {
+      const p = (async () => {
+        try {
+          const [map, bytes] = await Promise.all([
+            fetch(BASE + name + '.json').then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
+            fetch(BASE + name + '.mp3').then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status))),
+          ])
+          return { map, buf: await this.ctx!.decodeAudioData(bytes) }
+        } catch {
+          return null
+        }
+      })()
+      this.packs.set(name, p)
+      void p.then((v) => this.ready.set(name, v))
+    }
+    return this.packs.get(name)
   }
 }
