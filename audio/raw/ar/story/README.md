@@ -1,4 +1,4 @@
-# ما يقوله المحاكي الآن
+# ما يقوله المحاكي الآن (الدفعة 1)
 
 ضع هنا كل مقطع باسمه، ثم: `python3 tools/commentary/arabic_voice.py build`. القائمة نفسها في `files.txt`.
 
