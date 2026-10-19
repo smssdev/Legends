@@ -216,7 +216,8 @@ function frame(now) {
       party.value = { side: s.side, who: s.who }
     })
     if (scene && t >= sceneT) fire('end', () => { sceneOn.value = false; party.value = null; addItems(); showBubble() })
-    if (t >= total) fire('done', () => { bubbleOn.value = false })
+    // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
+    if (t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
   }
   raf = requestAnimationFrame(frame)
 }

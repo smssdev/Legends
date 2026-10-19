@@ -17,8 +17,10 @@ class MomentClock
             return ['kind' => $kind, 'ms' => (int) $match['tick_ms']];
         }
         $key = in_array($kind, ['free_kick', 'penalty'], true) && self::scored($events) ? $kind.'_goal' : $kind;
+        // A breath after every scene: the timeline and the clock before the next one.
+        $gap = in_array($kind, ['quiet', 'attack'], true) ? 0 : (int) ($match['scene_gap_ms'] ?? 0);
 
-        return ['kind' => $kind, 'ms' => (int) ($table[$key] ?? $table[$kind])];
+        return ['kind' => $kind, 'ms' => (int) ($table[$key] ?? $table[$kind]) + $gap];
     }
 
     public static function kind(array $events): string
