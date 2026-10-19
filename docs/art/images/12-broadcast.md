@@ -110,6 +110,6 @@ tv-camera، handheld، mic
 **ارفق:** `art/raw/broadcast/big-screen.jpg`
 
 ```
-Use the attached image as the reference for the style and light, and for the exact same object where it repeats. A wide 3:2 landscape image with three separate items side by side in one row, each with clear space around it and nothing cut off. Broadcast equipment, all screens blank. On the left: a big broadcast TV camera on a tripod. In the middle: a handheld TV camera. On the right: a plain microphone with no logo on the cube. Photorealistic render lit by cool night stadium floodlights from above. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each item is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached image as the reference for the style and light, and for the exact same object where it repeats. A wide 3:2 landscape image with exactly three separate items side by side in one row, each with clear space around it and nothing cut off. Broadcast equipment, all screens blank. On the left: a big broadcast TV camera on a tripod. In the middle: a handheld TV camera. On the right: a plain microphone with no logo on the cube. Photorealistic render lit by cool night stadium floodlights from above. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each item is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
