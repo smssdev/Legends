@@ -147,8 +147,8 @@ function rng(seed) {
 const first = (events, type) => events.find((e) => e.type === type)
 // The scene's own length in seconds, and when its key moment happens (see art.ts).
 export const SCENE_TIME = {
-  goal: [5.2, 1.75], save: [4.6, 1.6], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
-  offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [4.2, 1.75], blocked: [4.0, 1.35], board: [3.0, 0.5],
+  goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
+  offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
 }
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 
@@ -162,6 +162,8 @@ const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: '
 export function story(tick, ctx) {
   const ev = tick.events, R = rng((ctx.seed || 1) * 31 + tick.tick * 977)
   const pick = (a) => a[Math.floor(R() * a.length)]
+  // The scene's own seed: where the shot goes, which way the keeper dives.
+  const seed = () => Math.floor(R() * 1e9)
   const P = (id) => ctx.players[id]
   const nm = (id) => P(id)?.name ?? ''
   const no = (id) => P(id)?.no ?? ''
@@ -179,9 +181,15 @@ export function story(tick, ctx) {
     const ok = list.filter((l) => (!l.includes('{p}') || vars.p) && (!l.includes('{q}') || vars.q))
     return ok.length ? pick(ok) : null
   }
+  // The key line is said the instant the scene reaches its key moment (the ball arriving), the
+  // build-up line before it and the reaction after: the voice and the picture stay together.
   function speak(key, at = {}) {
     const L = LINES[key]
     if (!L) return
+    if (out.scene) {
+      const k = SCENE_TIME[out.scene][1] / SCENE_TIME[out.scene][0]
+      at = { key: k, post: Math.min(0.92, k + 0.16) }
+    }
     const slot = (name, t) => {
       const s = L[name]
       if (!s) return
@@ -203,7 +211,7 @@ export function story(tick, ctx) {
   if (kind === 'goal' && goal) {
     const s = goal.team, header = attack?.quality === 'header'
     Object.assign(vars, { p: goal.scorer, q: goal.assist ?? null, A: s })
-    set('goal', s, { no: no(goal.scorer) }, 'هدف', nm(goal.scorer), goal.assist ? `صناعة ${nm(goal.assist)}` : ctx.clubs[s])
+    set('goal', s, { no: no(goal.scorer), passNo: goal.assist ? no(goal.assist) : '', defNo: no(attack?.defender), lane: attack?.lane, quality: attack?.quality, v: seed() }, 'هدف', nm(goal.scorer), goal.assist ? `صناعة ${nm(goal.assist)}` : ctx.clubs[s])
     before(header ? 'عرضية' : 'هجمة خطيرة', nm(goal.scorer), ctx.clubs[s])
     speak(header ? 'header' : 'goal', { key: 0.36, post: 0.62 })
     item(s, 'goal', nm(goal.scorer), goal.assist ? `هدف · صناعة ${nm(goal.assist)}` : header ? 'هدف · رأسية' : 'هدف', { goal: true })
@@ -213,7 +221,7 @@ export function story(tick, ctx) {
     Object.assign(vars, { p: sp.taker, q: sp.keeper ?? null, A: s })
     const isPen = kind === 'penalty'
     const result = scored ? 'goal' : sp.keeper ? 'save' : 'miss'
-    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored, saved: result === 'save' }, scored ? 'هدف' : isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), scored ? (isPen ? 'ركلة جزاء' : 'ضربة حرة مباشرة') : result === 'save' ? `تصدى ${nm(sp.keeper)}` : 'خارج المرمى')
+    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored, saved: result === 'save', v: seed() }, scored ? 'هدف' : isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), scored ? (isPen ? 'ركلة جزاء' : 'ضربة حرة مباشرة') : result === 'save' ? `تصدى ${nm(sp.keeper)}` : 'خارج المرمى')
     before(isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), 'المنفذ يستعد... والجميع ينتظر')
     speak(isPen ? (scored ? 'penalty_goal' : 'penalty_save') : `free_kick_${result}`, { key: isPen ? 0.49 : 0.51, post: 0.72 })
     if (foul?.player) item(other(s), 'foul', nm(foul.player), isPen ? 'تسبب في ركلة جزاء' : 'خطأ')
@@ -229,7 +237,7 @@ export function story(tick, ctx) {
   } else if (kind === 'save' && attack) {
     const s = attack.team
     Object.assign(vars, { p: attack.shooter, q: attack.keeper ?? null, A: s })
-    set('save', s, { shooterNo: no(attack.shooter) }, 'تصدٍّ رائع', nm(attack.keeper) || 'الحارس', `أمام ${nm(attack.shooter)}`)
+    set('save', s, { no: no(attack.shooter), passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', defNo: no(attack.defender), lane: attack.lane, quality: attack.quality, corner: attack.result === 'corner', v: seed() }, 'تصدٍّ رائع', nm(attack.keeper) || 'الحارس', `أمام ${nm(attack.shooter)}`)
     before('تسديدة', nm(attack.shooter), ctx.clubs[s])
     speak('save', { key: 0.35, post: 0.62 })
     item(other(s), 'save', nm(attack.keeper) || 'الحارس', `تصدٍّ أمام ${nm(attack.shooter)}`)
@@ -238,8 +246,9 @@ export function story(tick, ctx) {
     const s = attack.team, blocked = attack.result === 'blocked'
     Object.assign(vars, { p: attack.shooter, q: attack.defender ?? null, A: s })
     const how = blocked ? null : pick(['wide', 'wide', 'over', 'post'])
-    if (blocked) set('blocked', s, { no: no(attack.shooter), defNo: no(attack.defender) }, 'صدّها الدفاع', nm(attack.shooter), nm(attack.defender) ? `تدخل ${nm(attack.defender)}` : ctx.clubs[other(s)])
-    else set('miss', s, { no: no(attack.shooter), how }, how === 'post' ? 'القائم!' : 'فرصة ضائعة', nm(attack.shooter), how === 'over' ? 'فوق العارضة' : how === 'post' ? 'ارتطمت بالقائم' : 'بجانب القائم')
+    const look = { passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', lane: attack.lane, quality: attack.quality, v: seed() }
+    if (blocked) set('blocked', s, { no: no(attack.shooter), defNo: no(attack.defender), ...look }, 'صدّها الدفاع', nm(attack.shooter), nm(attack.defender) ? `تدخل ${nm(attack.defender)}` : ctx.clubs[other(s)])
+    else set('miss', s, { no: no(attack.shooter), defNo: no(attack.defender), how, ...look }, how === 'post' ? 'القائم!' : 'فرصة ضائعة', nm(attack.shooter), how === 'over' ? 'فوق العارضة' : how === 'post' ? 'ارتطمت بالقائم' : 'بجانب القائم')
     before('تسديدة', nm(attack.shooter), ctx.clubs[s])
     speak(blocked ? 'blocked' : how === 'post' ? 'post' : 'miss', { key: 0.4, post: 0.68 })
     item(s, 'miss', nm(attack.shooter), blocked ? 'تسديدة محجوبة' : how === 'post' ? 'القائم' : 'فرصة ضائعة')
@@ -253,7 +262,7 @@ export function story(tick, ctx) {
   } else if (kind === 'corner' && corner) {
     const s = corner.team, won = corner.won !== false, header = attack?.shooter
     Object.assign(vars, { p: header ?? null, q: corner.taker, A: s })
-    set('corner', s, { no: no(header ?? corner.taker), scored: false, claim: !won }, 'ركنية', nm(won && header ? header : corner.taker), won ? 'رأسية فوق العارضة' : 'الحارس يمسك الكرة')
+    set('corner', s, { no: no(header ?? corner.taker), scored: false, claim: !won, v: seed() }, 'ركنية', nm(won && header ? header : corner.taker), won ? 'رأسية فوق العارضة' : 'الحارس يمسك الكرة')
     before('ركنية', nm(corner.taker), ctx.clubs[s])
     speak(won ? 'corner_header' : 'corner_claim', { key: 0.4, post: 0.7 })
     item(s, 'corner', nm(won && header ? header : corner.taker), won ? 'ركنية · رأسية' : 'ركنية')
