@@ -10,6 +10,11 @@ return [
         'tick_ms' => 3000, 'halftime_seconds' => 15,
         // A match between friends kicks off this long after the guest joins (both screens show the preview).
         'room_kickoff_ms' => 12000,
+        // A live minute is made this long before it starts, so both screens have it in time and play it together.
+        'live_lead_ms' => 1200,
+        // A coach's reactions in a match between friends: at most one this often.
+        'reaction_gap_ms' => 1200,
+        'reactions' => ['fire', 'clap', 'wow', 'laugh', 'angry', 'pray', 'unlucky', 'coming', 'easy', 'focus'],
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,

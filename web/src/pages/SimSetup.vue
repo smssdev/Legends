@@ -106,7 +106,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Crest from '../components/Crest.vue'
-import { clubColors, sim, type Club, type Side } from '../api/sim'
+import { clubColors, seats, sim, type Club, type Side } from '../api/sim'
 
 const router = useRouter()
 const sides: Side[] = ['home', 'away']
@@ -175,7 +175,9 @@ async function start() {
       control: { home: pick.home.control, away: pick.away.control },
       home: { tactics: { plan: pick.home.plan } }, away: { tactics: { plan: pick.away.plan } },
     })
-    router.push({ name: 'sim-match', params: { id: match.id }, query: settings.mode === 'live' ? { side: 'home' } : { speed: settings.speed } })
+    // A live match: this device holds home; the away seat goes in the friend's link.
+    if (match.seats) { seats.set(match.id, match.seats.home); seats.set(`${match.id}.friend`, match.seats.away) }
+    router.push({ name: 'sim-match', params: { id: match.id }, query: settings.mode === 'live' ? {} : { speed: settings.speed } })
   } catch (e: any) {
     error.value = e.message
     busy.value = false

@@ -25,15 +25,29 @@
       </TransitionGroup>
     </div>
 
-    <div class="moment" :class="{ on: sceneOn }">
+    <div class="moment" :class="{ on: sceneOn, tense }">
       <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
+        <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
+        <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
+          <i v-for="c in confetti" :key="c.i" :style="c.style" />
+          <span class="burst"><b>{{ party.who }}</b><small>{{ clubs[party.side] }}</small></span>
+        </div>
         <div class="lower" :style="{ '--c': barKit }">
-          <span class="ev">{{ cur?.head }}</span>
-          <span class="who"><b dir="auto">{{ cur?.who }}</b><span>{{ cur?.sub }}</span></span>
+          <span class="ev">{{ bar?.head }}</span>
+          <span class="who"><b dir="auto">{{ bar?.who }}</b><span>{{ bar?.sub }}</span></span>
           <span class="min" dir="ltr">{{ cur?.minute }}</span>
         </div>
       </div>
+    </div>
+
+    <!-- The coaches' reactions in a match between friends, rising from each side. -->
+    <div class="reacts" aria-live="polite">
+      <TransitionGroup name="rx">
+        <div v-for="r in reacts" :key="r.id" class="rx" :class="r.side" :style="{ '--c': kits[r.side].kit, '--x': r.x + '%' }">
+          <span class="e">{{ r.emoji }}</span><span v-if="r.text || r.who" class="t"><small>{{ r.who }}</small>{{ r.text }}</span>
+        </div>
+      </TransitionGroup>
     </div>
 
     <div class="mic" :class="{ on: bubbleOn }">
@@ -78,6 +92,20 @@ const host = ref<HTMLElement>(), stage = ref<HTMLElement>()
 const items = ref<any[]>([])
 const cur = ref<any>(null)
 const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false)
+// Until the key moment the lower bar tells only what is happening (a shot, a penalty), never how it ends.
+const revealed = ref(true), tense = ref(false)
+const bar = computed(() => (revealed.value || !cur.value?.pre ? cur.value : cur.value.pre))
+const party = ref(null)
+const confetti = Array.from({ length: 42 }, (_, i) => ({ i, style: { left: ((i * 37) % 100) + '%', animationDelay: ((i * 53) % 90) / 100 + 's', animationDuration: 1.6 + ((i * 29) % 10) / 10 + 's', background: ['var(--c)', 'var(--t)', '#F5B82E', '#fff'][i % 4], transform: `rotate(${(i * 47) % 360}deg)` } }))
+const reacts = ref([])
+let reactSeq = 0
+/** A coach's reaction (live): an emoji and a short word, rising from his side for a few seconds. */
+function react(side, emoji, text, who) {
+  const id = ++reactSeq
+  reacts.value.push({ id, side, emoji, text, who, x: 8 + ((id * 23) % 22) })
+  if (reacts.value.length > 6) reacts.value.shift()
+  setTimeout(() => (reacts.value = reacts.value.filter((r) => r.id !== id)), 3200)
+}
 const bubble = ref(''), enLine = ref('')
 const mom = ref(50)
 const barKit = computed(() => {
@@ -105,17 +133,23 @@ const compare = computed(() => [
 
 // ---------------------------------------------------------------- playing a minute
 let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0
-function play(tick) {
+// startAt (live): when the minute starts on performance.now(). The scene follows that clock
+// instead of counting frames, so two screens stay on the same instant even if one is slow.
+function play(tick, startAt = null) {
   finish()
   const s = story(tick, { players: players.value, clubs: props.clubs, seed: props.seed, mine: props.mine })
   const total = (tick.moment?.ms ?? 3000) / 1000
   const nominal = s.scene ? SCENE_TIME[s.scene][0] : 0
   // The scene takes most of the minute; the commentator sums it up after.
   const sceneT = s.scene ? Math.min(nominal, total * 0.72) : 0
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}` }
+  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
-  t = 0
+  revealed.value = !s.pre
+  // The stadium holds its breath before a penalty or a free kick on the edge of the box.
+  tense.value = s.scene === 'penalty' || s.scene === 'freekick'
+  party.value = null
+  t = startAt === null ? 0 : Math.max(0, (performance.now() - startAt) / 1000)
   if (s.scene) {
     scene = SCENES[s.scene]({ ...s.data, side: s.side })
     stage.value.replaceChildren(scene.svg)
@@ -127,9 +161,11 @@ function play(tick) {
     if (s.bubble && s.items.length) showBubble()
   }
 }
-function addItems() {
+// The scene is over: its cards join the timeline, and the page may tell the result (cue 'reveal').
+function addItems(tell = true) {
   if (!plan || plan.itemsAdded) return
   plan.itemsAdded = true
+  if (tell) emit('cue', 'reveal')
   for (const it of plan.s.items) items.value.unshift({ ...it, key: ++keySeq, score: it.goal ? plan.score : null })
   if (items.value.length > 40) items.value.length = 40
 }
@@ -144,32 +180,41 @@ function showBubble() {
 function finish() {
   if (!plan) return
   sceneOn.value = false
-  addItems()
+  tense.value = false
+  party.value = null
+  addItems(false)
   bubbleOn.value = false
   plan = null
 }
 function skip() { finish() }
-defineExpose({ play, skip })
+defineExpose({ play, skip, react })
 
 const SOUNDS = {
   goal: [[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']], save: [[0.3, 'kick'], ['key', 'groan']], miss: [[0.3, 'kick'], ['key', 'groan']], blocked: [['key', 'thud'], ['key', 'groan']],
-  penalty: [[0.05, 'whistle-long'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], ['key', 'kick'], ['key', 'roar']],
+  penalty: [[0.05, 'whistle-long'], [0.2, 'heart'], [0.3, 'heart'], [0.4, 'heart'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], [0.25, 'heart'], [0.37, 'heart'], ['key', 'kick'], ['key', 'roar']],
   card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
 }
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
   last = now
   if (plan) {
-    t += dt
+    t = plan.startAt === null ? t + dt : Math.max(0, (now - plan.startAt) / 1000)
     const { s, total, sceneT, rate, fired } = plan
     const fire = (k, fn) => { if (!fired.has(k)) { fired.add(k); fn() } }
+    // A line or a sound long past (the screen joined late) is dropped, not played out of time.
+    const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
     if (scene && t < sceneT) scene.update(t * rate)
     const keyT = s.keyAt * sceneT
     // Commentary: line times are fractions of the scene (or of the minute when there is none).
-    for (const [i, l] of s.lines.entries()) if (t >= l.at * (sceneT || total * 0.5)) fire('l' + i, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs)))
-    for (const [i, [at, name]] of (SOUNDS[s.scene] ?? []).entries()) if (t >= (at === 'key' ? keyT : at * sceneT)) fire('s' + i, () => emit('sound', name))
-    if (s.goal && t >= keyT) fire('goal', () => { emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500) })
-    if (scene && t >= sceneT) fire('end', () => { sceneOn.value = false; addItems(); showBubble() })
+    for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs))) }
+    for (const [i, [at, name]] of (SOUNDS[s.scene] ?? []).entries()) { const when = at === 'key' ? keyT : at * sceneT; if (t >= when) cue('s' + i, when, () => emit('sound', name)) }
+    if (s.scene === 'miss' && s.data.how === 'post' && t >= keyT) cue('post', keyT, () => emit('sound', 'post'))
+    if (t >= keyT) fire('key', () => { revealed.value = true; tense.value = false })
+    if (s.goal && t >= keyT) fire('goal', () => {
+      emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
+      party.value = { side: s.side, who: s.who }
+    })
+    if (scene && t >= sceneT) fire('end', () => { sceneOn.value = false; party.value = null; addItems(); showBubble() })
     if (t >= total) fire('done', () => { bubbleOn.value = false })
   }
   raf = requestAnimationFrame(frame)
@@ -287,5 +332,30 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .go { min-height: 50px; padding: 0 34px; border-radius: 14px; border: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px; color: #050D1F; background: linear-gradient(180deg, #FFD36B, #F5B82E); box-shadow: 0 10px 30px rgba(245,184,46,.35); cursor: pointer }
 .go:focus-visible { outline: 3px solid #fff; outline-offset: 2px }
 @container (max-width: 560px) { .keys { grid-template-columns: 1fr } }
-@media (prefers-reduced-motion: reduce) { .atmo::before, .wave i, .live i { animation: none } }
+
+/* Tension: the edges darken and pulse like a heartbeat until the kick. */
+.moment.tense .mbox { box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 0 2px rgba(239,68,68,.35); animation: beat 1.1s ease-in-out infinite }
+.moment.tense::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 70% at 50% 50%, transparent 55%, rgba(120,10,10,.45)); animation: beat 1.1s ease-in-out infinite }
+@keyframes beat { 0%, 100% { opacity: 1 } 15% { opacity: .65 } 30% { opacity: 1 } 45% { opacity: .8 } }
+
+.party { position: absolute; inset: 0 0 auto; aspect-ratio: 640 / 340; overflow: hidden; pointer-events: none }
+.party i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards }
+@keyframes fall { to { top: 105%; transform: rotate(540deg) translateX(30px) } }
+.party .burst { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); display: grid; justify-items: center; padding: 6px 18px; border-radius: 12px; background: color-mix(in srgb, var(--c) 80%, #071733); border: 2px solid #F5B82E; box-shadow: 0 10px 30px rgba(0,0,0,.5); animation: burst .6s cubic-bezier(.2,.9,.25,1.4) .35s both }
+.party .burst b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(16px, 4cqw, 26px); white-space: nowrap }
+.party .burst small { color: #FFD36B; font-weight: 700; font-size: 12px }
+@keyframes burst { from { opacity: 0; transform: translateX(-50%) scale(.4) } }
+
+.reacts { position: absolute; inset: 0; z-index: 11; pointer-events: none; overflow: hidden }
+.rx { position: absolute; bottom: 70px; display: flex; align-items: center; gap: 6px; padding: 4px 12px 4px 6px; border-radius: 999px; background: rgba(7,23,51,.9); border: 1px solid color-mix(in srgb, var(--c) 70%, #fff); box-shadow: 0 8px 22px rgba(0,0,0,.45); animation: rise 3.2s ease-out forwards }
+.rx.home { right: var(--x) }
+.rx.away { left: var(--x) }
+.rx .e { font-size: 30px; line-height: 1 }
+.rx .t { display: grid; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 14px; line-height: 1.25 }
+.rx .t small { color: #93A3BF; font-size: 11px; font-weight: 600 }
+@keyframes rise { 0% { opacity: 0; transform: translateY(20px) scale(.6) } 12% { opacity: 1; transform: translateY(0) scale(1.08) } 20% { transform: scale(1) } 80% { opacity: 1 } 100% { opacity: 0; transform: translateY(-160px) } }
+.rx-leave-active { transition: opacity .3s }
+.rx-leave-to { opacity: 0 }
+
+@media (prefers-reduced-motion: reduce) { .atmo::before, .wave i, .live i, .moment.tense .mbox, .moment.tense::after, .party i { animation: none } .party i { display: none } }
 </style>
