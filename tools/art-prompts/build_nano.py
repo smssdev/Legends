@@ -77,8 +77,9 @@ def plate_prompt(p, first, variant=False):
         v = p.split(CAM)[-1].strip()
         start = ('Use the attached image as the reference for the same stadium architecture, the same camera height and lens; the weather and light are as described here. ' if variant else
                  '' if first else 'Use the attached image as the reference: the same stadium, the same camera height and lens, the same light and colours. ')
+        same = '' if first else ' This must be exactly the same stadium as the attached image: the same roof, seats, LED ribbons, advertising boards, floodlights and colours.'
         return (f'{start}A wide 16:9 landscape photograph of a football stadium: {m.group(1)}, with a full crowd blurred in the stands. {v} {CAM} '
-                'The pitch is completely empty: no players, no people on the grass and no ball. Photorealistic and cinematic, like a live TV broadcast. ' + NOTEXT)
+                'The pitch is completely empty: no players, no people on the grass and no ball. Photorealistic and cinematic, like a live TV broadcast. ' + NOTEXT + same)
     body = p
     for junk in ['Same style as before.', 'Same stadium as before.', 'Same stadium and same light as before.', 'Photorealistic, cinematic, landscape 1536x1024.',
                  'Photorealistic, cinematic, landscape 1536x1024,', 'no logos, no text,', 'no logos, no text.', ', no logos, no text.', 'no logos, no text']:
