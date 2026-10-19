@@ -4,7 +4,7 @@ namespace App\Data;
 
 /**
  * Growth ceiling by age (docs/PLAN.md 2.8): young players have room to grow,
- * players over 30 barely any. A first rule, calibrated in Sprint 13.
+ * players over 30 barely any. A first rule, calibrated in Sprint 11.
  */
 class Potential
 {
