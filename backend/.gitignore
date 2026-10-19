@@ -26,6 +26,7 @@ Thumbs.db
 # The built web app (composer build-web)
 /public/index.html
 /public/assets
+/public/commentary
 /public/icon-192.png
 /public/favicon.png
 

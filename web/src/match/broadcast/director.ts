@@ -23,7 +23,7 @@ const first = (events, type) => events.find((e) => e.type === type)
 
 /**
  * tick: the minute from the API. ctx: { teams, seed, dirHome (1 when home attacks +x on screen) }.
- * Returns { kind, dur, A, actors, ball, cam, fx, cuts, slow, snd, cues, extraIn }.
+ * Returns { kind, dur, A, actors, ball, cam, fx, cuts, slow, snd, cues, say, extraIn }.
  */
 export function direct(tick, ctx) {
   const ev = tick.events
@@ -57,11 +57,16 @@ export function direct(tick, ctx) {
   const dist = (a, b) => (a && b ? Math.hypot(a[0] - b[0], a[1] - b[1]) : 999)
   const valid = (id, side) => (id !== undefined && id !== null && base[id] && players[id].side === side ? String(id) : null)
 
-  const s = { kind, dur: (tick.moment?.ms ?? 3000) / 1000, A, B, over: {}, poses: {}, ball: [], cam: [], fx: [], cuts: [], slow: [], snd: [], cues: [], extraIn: null }
+  const s = { kind, dur: (tick.moment?.ms ?? 3000) / 1000, A, B, over: {}, poses: {}, ball: [], cam: [], fx: [], cuts: [], slow: [], snd: [], cues: [], say: [], extraIn: null }
   const mv = (id, keys) => { if (id) s.over[id] = keys }
   const ps = (id, t0, t1, pose) => { if (id) (s.poses[id] ||= []).push([t0, t1, pose]) }
   const L = LANE[attack?.lane] ?? 34
   const min = tick.minute[1] ? `${tick.minute[0]}+${tick.minute[1]}'` : `${tick.minute[0]}'`
+  // English commentary (PLAN 2.21): [t, line, excited]. {A}/{B} are the clubs, {id} a player.
+  // Its own random stream, so a line never changes how the shot looks.
+  const RS = rng((ctx.seed || 1) * 31 + tick.tick * 977)
+  const say = (t, lines, excited = 0) => { const l = Array.isArray(lines) ? lines[Math.floor(RS() * lines.length)] : lines; if (l) s.say.push([t, l, excited]) }
+  const P = (id) => (id ? `{${id}}` : '')
 
   // ---------------------------------------------------------------- shots
   const T = {}
@@ -110,6 +115,13 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 3.5, t1: 4.8, type: 'ripple', x: 105 }, { t0: 3.6, t1: 5.1, type: 'center', text: 'هدف!', team: 'A' }, { t0: 4.8, t1: 8.2, type: 'banner', title: shooter, sub: creator && creator !== shooter ? ['صناعة', creator, min] : [min], team: 'A', goal: true })
     s.cuts.push({ t0: 6.8, t1: 8.0, type: 'crowd', team: 'A', mood: 'jump' }, { t0: 8.0, t1: 9.0, type: 'coach', team: 'A', mood: 'celebrate' }, { t0: 9.0, t1: 9.8, type: 'coach', team: 'B', mood: 'head' }, { t0: 9.8, t1: 12.8, type: 'replay', from: 2.4, to: 3.8 })
     s.snd.push([3.5, 'net'], [3.5, 'roar'])
+    say(0.3, carrier ? [`{A} on the move. ${P(carrier)} carries it forward.`, `${P(carrier)} drives {A} up the pitch.`] : '{A} on the move.')
+    if (creator && creator !== shooter) say(1.7, [`${P(creator)}, looking for a way through...`, `Now ${P(creator)}, into a dangerous area...`])
+    say(2.7, [`Here's ${P(shooter)}!`, `${P(shooter)}!`])
+    say(3.5, attack?.quality === 'header' ? [`GOAL! ${P(shooter)} with the header! Oh, what a goal!`, `GOAL! A thumping header from ${P(shooter)}!`] : [`GOAL! ${P(shooter)}! Oh, that is magnificent!`, `GOAL! ${P(shooter)} buries it! What a finish!`, `It's in! ${P(shooter)}! The keeper had no chance!`], 1)
+    say(5.1, creator && creator !== shooter ? `What a ball from ${P(creator)}, and what a finish from ${P(shooter)}!` : [`${P(shooter)} with a moment of real quality! The fans are on their feet!`], 1)
+    say(8.0, ['Look at the bench. They are loving it.', 'The manager is punching the air!'])
+    say(9.9, ["Let's see it again. Perfect timing, and a calm, calm finish.", "One more look. Just superb."])
     return 12.8
   }
   T.save = () => {
@@ -124,6 +136,10 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 2.2, t1: 3.0, type: 'tag', text: attack?.quality === 'big' ? 'فرصة محققة!' : 'تسديدة!', team: 'A' }, { t0: 3.7, t1: 5.4, type: 'banner', title: 'تصدٍّ رائع', sub: attack?.result === 'corner' ? [k, '· ركنية'] : [k], team: 'B' })
     s.cuts.push({ t0: 5.4, t1: 6.4, type: 'crowd', team: 'B', mood: 'jump' })
     s.snd.push([3.45, 'kick'], [3.5, 'groan'])
+    say(0.4, attack?.quality === 'big' ? [`{A} break through! ${P(shooter)} is clean through on goal!`] : ['{A} moving forward with purpose...', '{A} probing on the edge of the box...'])
+    say(2.75, [`${P(shooter)} shoots...`, `${P(shooter)} lets fly...`])
+    say(3.5, [`Saved! What a stop from ${P(k)}!`, `Oh, brilliant from ${P(k)}! He keeps it out!`], 1)
+    say(4.8, attack?.result === 'corner' ? 'Tipped behind for a corner.' : ['That is top class goalkeeping.', "He'll be very pleased with that one."])
     return 6.4
   }
   T.miss = () => {
@@ -143,6 +159,10 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 0.3, t1: 2.4, type: 'tag', text: 'هجمة خطيرة', team: 'A' }, { t0: 3.9, t1: 5.6, type: 'banner', title: blocked ? 'تسديدة محجوبة' : 'فرصة ضائعة', sub: ['تسديدة', shooter], team: 'A' })
     s.cuts.push({ t0: 5.6, t1: 7.0, type: 'coach', team: 'A', mood: 'head' })
     s.snd.push([3.5, 'groan'])
+    say(0.3, ['Dangerous from {A} here...', '{A} on the attack...'])
+    say(2.75, [`${P(shooter)} shoots...`, `${P(shooter)} goes for goal...`])
+    say(3.5, blocked ? [`Blocked! Brave defending from ${P(def)}!`, `Charged down by ${P(def)}!`] : ["Wide! What a chance that was!", "Oh, he's put it over the bar! He should have scored!", 'Just past the post! So close!'], 1)
+    say(5.6, ["The manager can't believe it.", 'He holds his head in his hands.'])
     return 7
   }
   T.offside = () => {
@@ -158,6 +178,9 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 2.0, t1: 2.5, type: 'whistle' }, { t0: 4.8, t1: 6.3, type: 'banner', title: 'تسلل', sub: [runner, 'متقدم بخطوة لحظة التمرير'], team: 'A' })
     s.cuts.push({ t0: 2.5, t1: 4.8, type: 'freeze', at: 0.4, lines: [[84, '#2F6FDB', 'آخر مدافع'], [85.2, '#EF4444', 'المهاجم']], label: 'تسلل', cam: [80, 34, 14] })
     s.snd.push([0.4, 'kick'], [2.0, 'whistle'])
+    say(0.4, [`Ball over the top for ${P(runner)}...`, `${P(passer)} picks out ${P(runner)}...`])
+    say(2.0, ['But the flag is up. Offside.', 'No! The linesman says offside.'])
+    say(2.9, "Let's freeze it. Yes, he went a step too early.")
     return 6.4
   }
   T.card = (red) => {
@@ -181,6 +204,16 @@ export function direct(tick, ctx) {
     s.cuts.push({ t0: 3.0, t1: 5.0, type: 'refcard', color: red ? 'red' : 'yellow', who: fouler, team: 'B' })
     if (red) s.cuts.push({ t0: 6.7, t1: 7.6, type: 'coach', team: 'B', mood: 'argue' })
     s.snd.push([0.05, 'kick'], [1.3, 'thud'], [1.55, 'whistle'], [3.1, 'whistle'], [3.15, red ? 'groan' : 'murmur'])
+    if (red) {
+      say(0.3, [`${P(victim)} is clean through...`, `${P(victim)} breaks away...`])
+      say(1.5, "And he's been brought down from behind!", 1)
+      say(3.1, [`It's red! ${P(fouler)} is sent off! {B} are down to ten men!`, `Straight red for ${P(fouler)}! {B} will have to play with ten!`], 1)
+      say(5.4, 'A long walk back to the dressing room.')
+    } else {
+      say(0.3, [`${P(victim)} running at the defence...`, `${P(victim)} on the ball...`])
+      say(1.35, [`Ooh, a late challenge from ${P(fouler)}!`, `${P(fouler)} goes in hard!`])
+      say(3.1, [`The referee reaches for his pocket. Yellow card for ${P(fouler)}.`, `That's a booking for ${P(fouler)}.`])
+    }
     return red ? 9 : 6.8
   }
   T.yellow = () => T.card(false)
@@ -213,6 +246,10 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 1.2, t1: 1.8, type: 'whistle' }, { t0: 3.3, t1: 4.4, type: 'tag', text: 'ضربة حرة مباشرة', team: 'A' }, { t0: 4.0, t1: 4.4, type: 'whistle' })
     s.cuts.push({ t0: 2.2, t1: 3.2, type: 'crowd', team: 'A', mood: 'quiet' })
     s.snd.push([0.05, 'kick'], [1.0, 'thud'], [1.2, 'whistle'], [4.0, 'whistle'], [4.45, 'kick'])
+    say(0.3, `${P(victim)} drives forward, and he's taken down!`)
+    say(2.3, ['Free kick, right on the edge of the box.', 'A great chance from the free kick here.'])
+    say(3.4, [`${P(taker)} stands over it...`, `${P(taker)} fancies this one...`])
+    say(5.35, goal ? [`Over the wall, and IN! A stunning free kick from ${P(taker)}!`, `GOAL! ${P(taker)} curls it into the top corner!`] : fk?.scored === false && fk?.keeper ? `Over the wall, but ${P(k)} gets across! Great save!` : 'Over the wall... and just wide!', 1)
     return goal ? 9.4 : 8.6
   }
   T.penalty = () => {
@@ -245,6 +282,12 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 1.6, t1: 2.4, type: 'whistle' }, { t0: 2.0, t1: 3.0, type: 'center', text: 'ركلة جزاء!', team: 'A', small: true }, { t0: 5.6, t1: 6.0, type: 'whistle' })
     s.cuts.push({ t0: 3.0, t1: 4.0, type: 'crowd', team: 'B', mood: 'quiet' })
     s.snd.push([0.05, 'kick'], [1.1, 'thud'], [1.6, 'whistle-long'], [3.0, 'hush'], [5.6, 'whistle'], [6.2, 'kick'])
+    say(0.4, `${P(victim)} into the area...`)
+    say(1.15, 'Down he goes!')
+    say(1.9, 'And the referee points to the spot! Penalty!', 1)
+    say(4.2, [`${P(taker)} to take it. The stadium goes quiet...`, `${P(taker)} steps up. Big moment.`])
+    say(5.9, 'Here it comes...')
+    say(goal ? 6.6 : 6.55, goal ? [`GOAL! ${P(taker)} sends the keeper the wrong way!`, `GOAL! Cool as you like from ${P(taker)}!`] : [`Saved! ${P(k)} guesses right! What a moment!`, `${P(k)} saves it! Incredible!`], 1)
     return goal ? 10.6 : 10
   }
   T.corner = () => {
@@ -263,6 +306,10 @@ export function direct(tick, ctx) {
     s.fx.push({ t0: 0, t1: 1.0, type: 'tag', text: 'ركنية', team: 'A' }, { t0: 2.6, t1: 4.5, type: 'banner', title: won ? 'رأسية فوق العارضة' : 'الحارس يمسك العرضية', sub: [won ? header : k], team: won ? 'A' : 'B' })
     s.cuts.push({ t0: 4.5, t1: 5.6, type: 'coach', team: 'A', mood: 'shout' })
     s.snd.push([1.0, 'kick'], [1.75, 'kick'], [2.1, won ? 'groan' : 'murmur'])
+    say(0.1, ['Corner for {A}. Bodies in the box.', 'A corner to {A}.'])
+    say(0.9, `${P(taker)} swings it in...`)
+    if (won) { say(1.65, `${P(header)} rises highest...`); say(2.25, ['Just over the bar!', 'Over! Inches away!'], 1) }
+    else say(2.1, `Comfortable for ${P(k)}. He claims it.`)
     return 5.6
   }
   T.sub = () => {
@@ -275,6 +322,8 @@ export function direct(tick, ctx) {
     s.cuts.push({ t0: 0, t1: 2.6, type: 'board', team: 'A', out: players[out]?.no, in: players[inId]?.no })
     s.fx.push({ t0: 2.8, t1: 5.4, type: 'banner', title: 'تبديل', sub: [inId, 'بدلاً من', out], team: 'A' })
     s.snd.push([0.1, 'beep'])
+    say(0.3, 'A change for {A}.')
+    say(2.9, inId && players[inId] ? `${P(inId)} comes on, replacing ${P(out)}.` : `${P(out)} makes way.`)
     return 5.6
   }
   T.injury = () => {
@@ -288,14 +337,23 @@ export function direct(tick, ctx) {
     if (sb) s.cuts.push({ t0: 4.0, t1: 6.0, type: 'board', team: 'A', out: players[sb.out]?.no, in: players[sb.in]?.no })
     else s.cuts.push({ t0: 4.0, t1: 6.0, type: 'coach', team: 'A', mood: 'head' })
     s.snd.push([0.6, 'thud'], [0.9, 'whistle'])
+    say(1.0, `${P(who)} is down, and he looks in some discomfort.`)
+    say(3.6, sb ? `He can't carry on. ${P(sb.in)} will replace him.` : 'The medical team are on.')
     return 6
   }
-  T.stoppage = () => { s.ball = [[0, 52, 34, 0]]; s.cam = [[0, 52, 50, 14]]; s.cuts.push({ t0: 0, t1: 2.4, type: 'board', team: 'A', plus: stoppage?.added ?? 3 }); s.snd.push([0.1, 'beep']); return 2.4 }
+  T.stoppage = () => { s.ball = [[0, 52, 34, 0]]; s.cam = [[0, 52, 50, 14]]; s.cuts.push({ t0: 0, t1: 2.4, type: 'board', team: 'A', plus: stoppage?.added ?? 3 }); s.snd.push([0.1, 'beep']); say(0.2, (stoppage?.added ?? 3) === 1 ? 'One minute of added time.' : `${stoppage?.added ?? 3} minutes of added time.`); return 2.4 }
   // Minor attacks, quiet minutes and the shootout run on the mini-map, from the server frames.
   const mini = (label) => { s.ball = [[0, 52.5, 34, 0]]; s.cam = [[0, 52.5, 34, 9]]; s.cuts.push({ t0: 0, t1: 99, type: 'minimap', label }); return s.dur }
-  T.attack = () => mini(attack ? { text: attack.result === 'foul' ? 'خطأ على ' : 'هجمة ', team: 'A', end: { lost: 'ضاعت الكرة', cleared: 'أبعدها الدفاع', foul: '', penalty: '' }[attack.result] ?? '' } : null)
-  T.quiet = () => mini(null)
-  T.shootout = () => mini({ text: 'ركلات الترجيح', team: 'A', end: '' })
+  const ATTACK_LINES = { lost: ['{A} try to build, but {B} win it back.', 'Good pressing from {B}. They take it away.'], cleared: ['{A} press forward, but the {B} defence clears.', 'Cleared! {B} deal with it.'], foul: ['Foul on the {A} attack.', 'The referee stops play. Free kick to {A}.'] }
+  T.attack = () => {
+    if (attack) say(0.2, ATTACK_LINES[attack.result] ?? '{A} on the attack.')
+    return mini(attack ? { text: attack.result === 'foul' ? 'خطأ على ' : 'هجمة ', team: 'A', end: { lost: 'ضاعت الكرة', cleared: 'أبعدها الدفاع', foul: '', penalty: '' }[attack.result] ?? '' } : null)
+  }
+  T.quiet = () => {
+    if (RS() < 0.4) say(0.3, ['Patient build up from {A}.', '{B} sitting deep, waiting for a mistake.', 'Nice and calm on the ball from {A}.', '{B} keeping their shape well.'])
+    return mini(null)
+  }
+  T.shootout = () => { say(0.2, 'Penalties. Nerves of steel needed now.'); return mini({ text: 'ركلات الترجيح', team: 'A', end: '' }) }
 
   const nominal = (T[kind] ?? T.quiet)()
   // Fit the shot to the server's length for this minute.
@@ -306,8 +364,13 @@ export function direct(tick, ctx) {
     for (const id in s.poses) s.poses[id] = s.poses[id].map(([a, b, p]) => [sc(a), sc(b), p])
     s.ball = s.ball.map(([t, ...r]) => [sc(t), ...r]); s.cam = s.cam.map(([t, ...r]) => [sc(t), ...r])
     s.fx.forEach((f) => { f.t0 = sc(f.t0); f.t1 = sc(f.t1) }); s.cuts.forEach((c) => { c.t0 = sc(c.t0); c.t1 = sc(c.t1); if (c.from !== undefined) { c.from = sc(c.from); c.to = sc(c.to) } if (c.at !== undefined) c.at = sc(c.at) })
-    s.slow = s.slow.map(([a, b, r]) => [sc(a), sc(b), r]); s.snd = s.snd.map(([t, n]) => [sc(t), n]); s.cues = s.cues.map(([t, n]) => [sc(t), n])
+    s.slow = s.slow.map(([a, b, r]) => [sc(a), sc(b), r]); s.snd = s.snd.map(([t, n]) => [sc(t), n]); s.cues = s.cues.map(([t, n]) => [sc(t), n]); s.say = s.say.map(([t, l, e]) => [sc(t), l, e])
   }
+
+  const period = first(ev, 'period')
+  if (tick.minute[0] === 1 && !tick.minute[1] && !s.say.some((l) => l[0] < 1.5)) s.say.unshift([0.1, "And we're under way!", 0])
+  if (period) s.say.push([Math.max(0, s.dur - 1.2), { halftime: 'The referee blows for half time.', fulltime: "And that's full time!", extra_time: "We're going to extra time!", penalties: "It's going to penalties!" }[period.name] ?? '', 1])
+  s.say = s.say.filter((l) => l[1])
 
   // ---------------------------------------------------------------- actors: scripted ones plus everybody drifting with the ball
   const ballAt = (t) => lerpKeys(s.ball, t) ?? [52.5, 34, 0]
