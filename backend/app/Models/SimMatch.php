@@ -15,7 +15,7 @@ class SimMatch extends Model
     {
         return [
             'setup' => 'array', 'control' => 'array', 'state' => 'array', 'ticks' => 'array',
-            'pending' => 'array', 'applied' => 'array', 'ball' => 'array', 'live' => 'array',
+            'pending' => 'array', 'applied' => 'array', 'ball' => 'array', 'live' => 'array', 'seats' => 'array',
         ];
     }
 }

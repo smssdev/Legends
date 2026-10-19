@@ -101,6 +101,54 @@ export class MatchSound {
     osc.stop(t + 0.2)
   }
 
+  /** A heartbeat before a penalty: two low thumps. */
+  heart() {
+    if (!this.ctx || !this.master) return
+    for (const [d, g] of [[0, 0.55], [0.18, 0.4]]) {
+      const t = this.ctx.currentTime + d
+      const osc = this.ctx.createOscillator()
+      const gain = this.ctx.createGain()
+      osc.frequency.setValueAtTime(70, t)
+      osc.frequency.exponentialRampToValueAtTime(40, t + 0.16)
+      gain.gain.setValueAtTime(g, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2)
+      osc.connect(gain).connect(this.master)
+      osc.start(t)
+      osc.stop(t + 0.25)
+    }
+  }
+
+  /** The ball hits the post: a short metallic ring. */
+  post() {
+    if (!this.ctx || !this.master) return
+    const t = this.ctx.currentTime
+    for (const f of [1180, 1730, 2650]) {
+      const osc = this.ctx.createOscillator()
+      const gain = this.ctx.createGain()
+      osc.frequency.value = f
+      gain.gain.setValueAtTime(0.08, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6)
+      osc.connect(gain).connect(this.master)
+      osc.start(t)
+      osc.stop(t + 0.65)
+    }
+  }
+
+  /** A friend's reaction arrives: a soft pop. */
+  pop() {
+    if (!this.ctx || !this.master) return
+    const t = this.ctx.currentTime
+    const osc = this.ctx.createOscillator()
+    const gain = this.ctx.createGain()
+    osc.frequency.setValueAtTime(520, t)
+    osc.frequency.exponentialRampToValueAtTime(980, t + 0.08)
+    gain.gain.setValueAtTime(0.12, t)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14)
+    osc.connect(gain).connect(this.master)
+    osc.start(t)
+    osc.stop(t + 0.16)
+  }
+
   stop() {
     this.ctx?.close()
     this.ctx = null

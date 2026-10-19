@@ -7,9 +7,15 @@
 return [
     'match' => [
         'half_length' => 45, 'extra_half_length' => 15,
-        'tick_ms' => 3000, 'halftime_seconds' => 15,
-        // A match between friends kicks off this long after the guest joins (both screens show the preview).
-        'room_kickoff_ms' => 12000,
+        'tick_ms' => 3000, 'halftime_seconds' => 30,
+        // A match between friends kicks off this long after it is made or started: both coaches see the
+        // preview and can change their plan before the whistle (the half-time break is as long).
+        'kickoff_ms' => 30000,
+        // A live minute is made this long before it starts, so both screens have it in time and play it together.
+        'live_lead_ms' => 1200,
+        // A coach's reactions in a match between friends: at most one this often.
+        'reaction_gap_ms' => 1200,
+        'reactions' => ['fire', 'clap', 'wow', 'laugh', 'angry', 'pray', 'unlucky', 'coming', 'easy', 'focus'],
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
@@ -23,7 +29,7 @@ return [
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
             'quiet' => 450, 'attack' => 1100, 'stoppage' => 2200, 'shootout' => 2600, 'whistle' => 3200, 'coach' => 4200,
-            'offside' => 4000, 'miss' => 3800, 'save' => 4600, 'corner' => 4200, 'goal' => 7400,
+            'offside' => 4000, 'miss' => 7000, 'save' => 7600, 'corner' => 4200, 'goal' => 8400,
             'yellow' => 4400, 'red' => 5600, 'free_kick' => 5800, 'free_kick_goal' => 7000,
             'penalty' => 6600, 'penalty_goal' => 7400, 'sub' => 3800, 'injury' => 3800,
         ],

@@ -58,12 +58,22 @@ class SimulatorController extends Controller
             'away.tactics' => $tactics,
         ]);
 
-        return response()->json($this->sim->view($this->sim->create($data)), 201);
+        $match = $this->sim->create($data);
+        $view = $this->sim->view($match, $match->seats ? 'home' : null);
+
+        // A live match made here: the maker holds home and sends the away seat to the friend.
+        return response()->json($view + ($match->seats ? ['seats' => $match->seats] : []), 201);
     }
 
-    public function show(SimMatch $match)
+    public function show(Request $request, SimMatch $match)
     {
-        return $this->sim->view($match);
+        return $this->sim->view($match, $this->you($request, $match));
+    }
+
+    /** The side the request's seat (X-Seat) manages in a live match. */
+    private function you(Request $request, SimMatch $match): ?string
+    {
+        return Simulator::seatSide($match, $request->header('X-Seat'));
     }
 
     public function order(Request $request, SimMatch $match)
@@ -78,6 +88,8 @@ class SimulatorController extends Controller
             'idempotency_key' => 'required|string|max:64',
         ]);
         abort_if($match->state['finished'], 409, 'انتهت المباراة.');
+        // A live match: each coach orders only his own side, from the device that holds its seat.
+        abort_if($match->live !== null && $this->you($request, $match) !== $data['team'], 403, 'لا تستطيع إدارة فريق صديقك.');
 
         $order = array_filter([
             'type' => $data['type'], 'team' => $data['team'], 'out' => $data['out'] ?? null, 'in' => $data['in'] ?? null,
@@ -96,12 +108,13 @@ class SimulatorController extends Controller
         return ['ticks' => $this->sim->advance($match, (int) ($data['count'] ?? 1))];
     }
 
-    public function start(SimMatch $match)
+    public function start(Request $request, SimMatch $match)
     {
         abort_if($match->live === null, 409, 'هذه ليست مباراة مباشرة.');
+        abort_if($this->you($request, $match) === null, 403, 'يبدأ المباراة أحد المدربين.');
         $this->sim->start($match);
 
-        return $this->sim->sync($match, $match->state['tick']);
+        return $this->sim->sync($match, $match->state['tick'], $this->you($request, $match));
     }
 
     public function live(Request $request, SimMatch $match)
@@ -109,7 +122,17 @@ class SimulatorController extends Controller
         abort_if($match->live === null, 409, 'هذه ليست مباراة مباشرة.');
         $since = (int) ($request->validate(['since' => 'nullable|integer|min:0'])['since'] ?? 0);
 
-        return $this->sim->sync($match, $since);
+        return $this->sim->sync($match, $since, $this->you($request, $match));
+    }
+
+    public function react(Request $request, SimMatch $match)
+    {
+        $data = $request->validate(['key' => ['required', Rule::in(config('game.match.reactions'))]]);
+        abort_if($match->live === null, 409, 'هذه ليست مباراة مباشرة.');
+        $side = $this->you($request, $match);
+        abort_if($side === null, 403, 'التفاعل للمدربين فقط.');
+
+        return response()->json($this->sim->react($match, $side, $data['key']), 201);
     }
 
     public function report(Request $request, SimMatch $match)
@@ -128,9 +151,10 @@ class SimulatorController extends Controller
             'name' => 'required|string|min:2|max:24',
             'club_id' => 'required|integer|exists:master_clubs,id',
         ]);
-        $room = SimRoom::create(['host_name' => trim($data['name']), 'host_club_id' => $data['club_id']]);
+        $room = SimRoom::create(['host_name' => trim($data['name']), 'host_club_id' => $data['club_id'], 'host_seat' => Simulator::newSeat()]);
 
-        return response()->json($this->room($room), 201);
+        // The seat is given once, to the host's device; it becomes the home seat of the match.
+        return response()->json($this->room($room) + ['seat' => $room->host_seat], 201);
     }
 
     public function roomShow(SimRoom $room)
@@ -144,9 +168,9 @@ class SimulatorController extends Controller
             'name' => 'required|string|min:2|max:24',
             'club_id' => ['required', 'integer', 'exists:master_clubs,id', Rule::notIn([$room->host_club_id])],
         ], ['club_id.not_in' => 'اختر نادياً غير نادي صديقك.']);
-        $this->sim->join($room, trim($data['name']), (int) $data['club_id']);
+        $seat = $this->sim->join($room, trim($data['name']), (int) $data['club_id']);
 
-        return $this->room($room->refresh());
+        return $this->room($room->refresh()) + ['seat' => $seat];
     }
 
     private function room(SimRoom $room): array
