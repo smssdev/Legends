@@ -8,8 +8,8 @@
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />
       <template v-if="live">
-        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />مباشر · تدير {{ mine ? view?.clubs[mine].name : '' }}</span>
-        <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? 'نُسخ الرابط' : 'رابط الصديق' }}</button>
+        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />مباشر · {{ mine ? 'تدير ' + view?.clubs[mine].name : 'مشاهدة' }}</span>
+        <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? 'نُسخ الرابط' : 'رابط الصديق' }}</button>
       </template>
       <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" aria-label="سرعة المحاكاة">
         <button type="button" class="size-10 rounded-sm bg-surface-raised" :aria-label="playing ? 'إيقاف مؤقت' : 'تشغيل'" @click="togglePlay">
@@ -30,10 +30,10 @@
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
-        <section v-if="live && !started" aria-label="بدء المباراة المباشرة" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
+        <section v-if="live && !started && mine" aria-label="بدء المباراة المباشرة" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
           <span class="font-display text-2xl font-extrabold">مباراة مباشرة مع صديق</span>
           <p class="max-w-md text-sm text-text-soft">أرسل الرابط لصديقك ليدير {{ view?.clubs[other].name }} من جهازه، ثم ابدأ حين يكون جاهزاً.</p>
-          <div class="flex w-full max-w-md gap-2">
+          <div v-if="friendLink" class="flex w-full max-w-md gap-2">
             <input :value="friendLink" readonly dir="ltr" aria-label="رابط الصديق" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
             <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? 'نُسخ' : 'نسخ' }}</button>
           </div>
@@ -57,6 +57,13 @@
             </div>
           </div>
 
+        </section>
+
+        <!-- Live: the two coaches cheer and tease each other; both screens see it at once. -->
+        <section v-if="live && mine && !finished" class="flex gap-1.5 overflow-x-auto rounded-xl bg-surface p-2" aria-label="تفاعل مع صديقك">
+          <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
+            <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
+          </button>
         </section>
       </div>
 
@@ -82,13 +89,14 @@
         <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
           <div class="flex items-center gap-2">
             <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ view.clubs[mine].name }}</span></h2>
+            <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">تكتيك {{ view.clubs[other].name }} سري</span>
             <div v-if="!live && view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="s in (['home', 'away'] as const)" :key="s" type="button" class="h-9 rounded-sm px-2 text-xs font-bold" :class="mine === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="chosen = s">{{ view.clubs[s].code }}</button>
             </div>
             <span v-if="mine" class="text-xs text-text-muted">التبديلات <b class="font-numbers text-base text-text" dir="ltr">{{ teams[mine].subs_used }}/{{ teams[mine].subs_max }}</b></span>
           </div>
 
-          <p v-if="!mine" class="text-sm text-text-muted">الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.</p>
+          <p v-if="!mine" class="text-sm text-text-muted">{{ live ? 'أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.' : 'الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.' }}</p>
 
           <template v-else>
             <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
@@ -160,17 +168,18 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, sim, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, seats, sim, type LiveSync, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
+const router = useRouter()
 
 const view = ref<MatchView | null>(null)
 const teams = ref<Record<Side, TeamSnapshot>>({} as any)
@@ -232,6 +241,7 @@ const bkits = computed(() => {
 })
 let pendingScore: Record<Side, number> | null = null
 function onCue(name: string) {
+  if (name === 'reveal') return reveal()
   if (name !== 'goal') return
   if (highlighting.value && hlScore) score.value = hlScore
   else if (pendingScore) { score.value = pendingScore; pendingScore = null }
@@ -243,6 +253,8 @@ function onSound(name: string) {
   else if (name === 'whistle-long') sound.whistle(1)
   else if (name === 'roar' || name === 'net') { if (name === 'roar') sound.roar() }
   else if (name === 'groan' || name === 'murmur') sound.groan()
+  else if (name === 'heart') sound.heart()
+  else if (name === 'post') sound.post()
 }
 
 // ---------------------------------------------------------------- studio and highlights
@@ -278,6 +290,7 @@ function momentMs(t?: Tick) {
 }
 function skipMoment() {
   pitch.value?.skip()
+  reveal()
   voice.stop()
   if (!live.value) { clearTimeout(timer); schedule(120) }
 }
@@ -289,7 +302,8 @@ const chosen = ref<Side | null>(null)
 const mine = computed<Side | null>(() => {
   const c = view.value?.control
   if (!c) return null
-  if (view.value?.mode === 'live') return route.query.side === 'away' ? 'away' : 'home'
+  // Live: only the side this device's seat manages (the server checks it on every order).
+  if (view.value?.mode === 'live') return view.value.you
   if (c.home === 'me' && c.away === 'me') return chosen.value ?? 'home'
   return c.home === 'me' ? 'home' : c.away === 'me' ? 'away' : null
 })
@@ -343,7 +357,7 @@ function sendSub(p: TeamPlayer) {
   order(`${p.name} بدلاً من ${out.name}`, { type: 'sub', out: out.id, in: p.id })
 }
 function applyDraft() {
-  const cur = teams.value[mine.value!].tactics as any
+  const cur = (teams.value[mine.value!].tactics ?? {}) as any
   const changes = Object.fromEntries(Object.entries(draft).filter(([k, v]) => cur[k] !== v))
   if (Object.keys(changes).length) sendTactics('تعديل التكتيك', changes as Partial<Tactics>)
 }
@@ -384,7 +398,19 @@ async function step() {
   if (!halftime.value && !finished.value) schedule(momentMs(t))
 }
 
-function show(t: Tick, animate = true) {
+// What a minute tells (the feed lines, the stats, the half-time card) waits until its
+// scene has played, so a shot's end is never known before the ball gets there.
+let pendingReveal: (() => void) | null = null
+function reveal() {
+  const r = pendingReveal
+  pendingReveal = null
+  r?.()
+}
+
+/** startAt (live): when the minute starts, on performance.now(), so the scene plays in step with the other screen. */
+function show(t: Tick, animate = true, startAt?: number) {
+  reveal()
+  intro.value = false
   last.value = t
   minute.value = t.minute
   if (pendingScore) score.value = pendingScore
@@ -392,12 +418,18 @@ function show(t: Tick, animate = true) {
   // The score changes when the ball crosses the line in the shot, not at the start of the minute.
   if (animate && t.events.some((e) => e.type === 'goal')) pendingScore = t.score
   else score.value = t.score
-  if (t.teams) teams.value = t.teams
-  momentum.value = [...momentum.value, t.danger]
-  if (animate) pitch.value?.play(t)
+  // Live: the next minute has started, so the half-time break is over.
+  if (live.value && halftime.value) { halftime.value = false; clearInterval(htTimer) }
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   sound.danger(t.danger)
+  pendingReveal = () => tell(t, animate)
+  if (animate) pitch.value?.play(t, startAt)
+  else reveal()
+}
 
+function tell(t: Tick, animate: boolean) {
+  if (t.teams) teams.value = t.teams
+  momentum.value = [...momentum.value, t.danger]
   for (const e of t.events) {
     const text = line(e, nameOf, clubName)
     const important = ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type)
@@ -415,20 +447,18 @@ function show(t: Tick, animate = true) {
   }
   pending.value = pending.value.filter((o) => t.tick < o.target)
   rejected.value = t.rejected.map((r) => `رُفض الأمر: ${({ no_subs_left: 'لا تبديلات متبقية', bad_players: 'اللاعب غير متاح', bad_tactics: 'تكتيك غير صالح', bad_formation: 'طريقة غير صالحة' } as Record<string, string>)[r.reason] ?? r.reason}`)
-  if (t.finished) { if (animate) window.setTimeout(() => (finished.value = true), momentMs(t)); else finished.value = true }
-  if (draft.plan === undefined && mine.value && teams.value[mine.value]) {
-    Object.assign(draft, teams.value[mine.value].tactics)
-    initial.value ??= { ...teams.value[mine.value].tactics }
+  if (t.finished) { if (animate) window.setTimeout(() => (finished.value = true), 1600); else finished.value = true }
+  const own = mine.value ? teams.value[mine.value]?.tactics : null
+  if (draft.plan === undefined && own) {
+    Object.assign(draft, own)
+    initial.value ??= { ...own }
   }
 }
 
 function startHalftime() {
   halftime.value = true
-  if (live.value) {
-    clearInterval(htTimer)
-    htTimer = window.setInterval(() => (halftimeLeft.value = Math.max(0, halftimeLeft.value - 1)), 1000)
-    return
-  }
+  // Live: the clock ticker counts down to the second half from the server's time.
+  if (live.value) return
   halftimeLeft.value = Math.round((view.value!.timing.halftime_seconds || 30) / speed.value)
   clearInterval(htTimer)
   htTimer = window.setInterval(() => {
@@ -469,16 +499,35 @@ async function skip() {
 }
 
 // ---------------------------------------------------------------- live (two devices)
-// The server keeps the clock; each screen polls it and plays the minutes as they come.
+// The server keeps the clock and makes each minute a moment before it starts,
+// with its start time (tick.at). Each screen knows the server's time (offset
+// below) and plays every minute at that instant: both screens show the same
+// scene together, neither ahead nor behind.
 const live = computed(() => view.value?.mode === 'live')
 const started = ref(true)
 const starting = ref(false)
 const countdown = ref(0)
 const copied = ref(false)
 const other = computed<Side>(() => (mine.value === 'away' ? 'home' : 'away'))
-const friendLink = computed(() => `${location.origin}/sim/${props.id}?side=${other.value}`)
+const friendSeat = seats.get(`${props.id}.friend`)
+const friendLink = computed(() => (friendSeat ? `${location.origin}/sim/${props.id}?seat=${friendSeat}` : ''))
 let seen = 0
 let pollTimer = 0
+let clockTimer = 0
+const playTimers = new Set<number>()
+
+// Server time = Date.now() + offset, from the reply that came back fastest.
+let offset = 0
+let bestRtt = Infinity
+const serverNow = () => Date.now() + offset
+function sample(sentAt: number, serverMs: number) {
+  const back = Date.now(), rtt = back - sentAt
+  bestRtt += 2 // older samples count a little less, so a drifting clock is followed
+  if (rtt <= bestRtt) { bestRtt = rtt; offset = serverMs - (sentAt + back) / 2 }
+}
+let kickoffAt = 0
+let resumeAt = 0
+let breakAhead = false
 
 async function share() {
   try {
@@ -494,7 +543,10 @@ async function share() {
 async function startLive() {
   starting.value = true
   try {
-    handleSync(await sim.start(props.id))
+    const sent = Date.now()
+    const r = await sim.start(props.id)
+    sample(sent, r.server_now)
+    handleSync(r)
   } catch (e: any) {
     error.value = e.message
   } finally {
@@ -505,34 +557,84 @@ async function startLive() {
 async function poll() {
   clearTimeout(pollTimer)
   if (finished.value) return
-  let wait = 1500
+  let wait = 1000
   try {
-    wait = handleSync(await sim.live(props.id, seen))
+    const sent = Date.now()
+    const r = await sim.live(props.id, seen)
+    sample(sent, r.server_now)
+    wait = handleSync(r)
   } catch (e: any) {
     error.value = e.message
   }
   if (!finished.value) pollTimer = window.setTimeout(poll, wait)
 }
 
-/** Plays new minutes and returns how long to wait before asking again. */
-function handleSync(r: import('../api/sim').LiveSync): number {
+/** Schedules the new minutes on the shared clock and returns how long to wait before asking again. */
+function handleSync(r: LiveSync): number {
   started.value = r.started
+  error.value = ''
   const fresh = r.ticks.filter((t) => t.tick > seen)
-  if (fresh.length) intro.value = false
-  // Behind (a slow phone, a locked screen): jump without animation, play only the last minute.
   fresh.forEach((t, i) => {
-    show(t, i === fresh.length - 1)
     seen = t.tick
+    // The second half starts with the first minute after the break.
+    if (breakAhead) { resumeAt = t.at ?? resumeAt; breakAhead = false }
+    if (t.events.some((e) => e.type === 'period' && e.name === 'halftime')) breakAhead = true
+    const at = t.at ?? serverNow()
+    const delay = at - serverNow()
+    const next = fresh[i + 1]
+    // Already over (a locked screen, a slow phone): its result at once, no scene. Only the minute playing now animates.
+    if (next?.at !== undefined && next.at <= serverNow()) return show(t, false)
+    const startAt = performance.now() + delay
+    if (delay <= 0) return show(t, true, startAt)
+    const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)
+    playTimers.add(id)
   })
-  if (r.tick > seen) seen = r.tick
-  if (fresh.length && halftime.value && !fresh.some((t) => t.events.some((e) => e.type === 'period' && e.name === 'halftime'))) {
-    halftime.value = false
-    clearInterval(htTimer)
+  if (r.tick === 0 && !fresh.length && seen === 0) kickoffAt = r.next_at ?? 0
+  else if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
+  if (breakAhead && r.next_at) resumeAt = r.next_at
+  for (const x of r.reactions ?? []) receive(x)
+  const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
+  return Math.min(1000, Math.max(250, left))
+}
+
+// Countdown to the kick-off and to the second half, on the shared clock.
+function clockTick() {
+  const now = serverNow()
+  countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
+  if (halftime.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
+}
+
+// ---------------------------------------------------------------- reactions (live)
+const REACTIONS = [
+  { key: 'fire', emoji: '🔥', text: '', label: 'نار' },
+  { key: 'clap', emoji: '👏', text: '', label: 'تصفيق' },
+  { key: 'wow', emoji: '😱', text: '', label: 'يا للهول' },
+  { key: 'laugh', emoji: '😂', text: '', label: 'ضحك' },
+  { key: 'angry', emoji: '😤', text: '', label: 'غضب' },
+  { key: 'pray', emoji: '🤲', text: '', label: 'يا رب' },
+  { key: 'unlucky', emoji: '😅', text: 'هاردلك', label: 'هاردلك' },
+  { key: 'coming', emoji: '⚽', text: 'جاي الهدف', label: 'جاي الهدف' },
+  { key: 'easy', emoji: '😎', text: 'سهلة', label: 'سهلة' },
+  { key: 'focus', emoji: '🧠', text: 'ركّز', label: 'ركّز' },
+]
+const shownReactions = new Set<number>()
+const reactWait = ref(false)
+function receive(x: { id: number; side: Side; key: string }) {
+  if (shownReactions.has(x.id)) return
+  shownReactions.add(x.id)
+  const r = REACTIONS.find((r) => r.key === x.key)
+  if (!r) return
+  pitch.value?.react(x.side, r.emoji, r.text, x.side === mine.value ? 'أنت' : view.value?.coaches?.[x.side] ?? view.value?.clubs[x.side].name)
+  if (x.side !== mine.value) sound.pop()
+}
+async function react(key: string) {
+  reactWait.value = true
+  window.setTimeout(() => (reactWait.value = false), 1300)
+  try {
+    receive(await sim.react(props.id, key))
+  } catch {
+    /* too soon: the button comes back in a moment */
   }
-  const left = r.next_at === null ? 1500 : r.next_at - r.server_now
-  countdown.value = r.started && r.tick === 0 && left > 0 ? Math.ceil(left / 1000) : 0
-  if (halftime.value) halftimeLeft.value = Math.max(0, Math.ceil(left / 1000))
-  return Math.min(1500, Math.max(250, left + 60))
 }
 
 function toggleSound() {
@@ -553,20 +655,28 @@ function readPref(): Lang | 'off' {
 }
 
 onMounted(async () => {
+  // A friend's link carries his seat once: keep it on this device and take it out of the address.
+  const linkSeat = route.query.seat
+  if (typeof linkSeat === 'string' && linkSeat) {
+    seats.set(props.id, linkSeat)
+    router.replace({ query: { ...route.query, seat: undefined } })
+  }
   try {
     view.value = await sim.show(props.id)
     teams.value = view.value.teams
     voice.prepare([view.value.clubs.home.name, view.value.clubs.away.name])
     score.value = view.value.score
-    if (mine.value) {
-      Object.assign(draft, teams.value[mine.value].tactics)
-      initial.value = { ...teams.value[mine.value].tactics }
+    const own = mine.value ? teams.value[mine.value].tactics : null
+    if (own) {
+      Object.assign(draft, own)
+      initial.value = { ...own }
     }
     finished.value = view.value.finished
     if (live.value) {
       intro.value = !view.value.started || view.value.tick === 0
       started.value = view.value.started
       seen = view.value.tick
+      clockTimer = window.setInterval(clockTick, 250)
       return poll()
     }
     await fetchNext()
@@ -580,6 +690,8 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   clearTimeout(timer)
   clearTimeout(pollTimer)
+  clearInterval(clockTimer)
+  playTimers.forEach((t) => clearTimeout(t))
   clearInterval(htTimer)
   clearTimeout(introTimer)
   highlighting.value = false
