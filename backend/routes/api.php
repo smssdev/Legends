@@ -18,4 +18,7 @@ Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::c
     Route::post('matches/{match}/start', 'start');
     Route::get('matches/{match}/live', 'live')->middleware('throttle:240,1');
     Route::get('matches/{match}/report', 'report');
+    Route::post('rooms', 'roomStore')->middleware('throttle:30,1');
+    Route::get('rooms/{room}', 'roomShow')->middleware('throttle:240,1');
+    Route::post('rooms/{room}/join', 'roomJoin')->middleware('throttle:30,1');
 });
