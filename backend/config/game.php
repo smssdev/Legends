@@ -8,6 +8,8 @@ return [
     'match' => [
         'half_length' => 45, 'extra_half_length' => 15,
         'tick_ms' => 3000, 'halftime_seconds' => 15,
+        // A match between friends kicks off this long after the guest joins (both screens show the preview).
+        'room_kickoff_ms' => 12000,
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,

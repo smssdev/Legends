@@ -6,6 +6,7 @@ use App\Engine\Formations;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
+use App\Models\SimRoom;
 use App\Simulator\Simulator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -117,5 +118,46 @@ class SimulatorController extends Controller
         abort_unless($match->state['finished'], 409, 'المباراة لم تنته بعد.');
 
         return $this->sim->report($match, $side);
+    }
+
+    // ---------------------------------------------------------------- rooms: a match between two friends
+
+    public function roomStore(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|min:2|max:24',
+            'club_id' => 'required|integer|exists:master_clubs,id',
+        ]);
+        $room = SimRoom::create(['host_name' => trim($data['name']), 'host_club_id' => $data['club_id']]);
+
+        return response()->json($this->room($room), 201);
+    }
+
+    public function roomShow(SimRoom $room)
+    {
+        return $this->room($room);
+    }
+
+    public function roomJoin(Request $request, SimRoom $room)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|min:2|max:24',
+            'club_id' => ['required', 'integer', 'exists:master_clubs,id', Rule::notIn([$room->host_club_id])],
+        ], ['club_id.not_in' => 'اختر نادياً غير نادي صديقك.']);
+        $this->sim->join($room, trim($data['name']), (int) $data['club_id']);
+
+        return $this->room($room->refresh());
+    }
+
+    private function room(SimRoom $room): array
+    {
+        $club = fn ($c) => $c ? $c->only(['id', 'name', 'code', 'color_primary', 'color_secondary', 'strength_cp']) : null;
+
+        return [
+            'id' => $room->id,
+            'host' => ['name' => $room->host_name, 'club' => $club($room->hostClub)],
+            'guest' => $room->guest_name ? ['name' => $room->guest_name, 'club' => $club($room->guestClub)] : null,
+            'match_id' => $room->sim_match_id,
+        ];
     }
 }

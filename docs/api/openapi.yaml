@@ -197,10 +197,57 @@ paths:
       responses:
         '200': { description: Reasons, verdict, man of the match, ratings, stats, thirds, momentum, timeline }
         '409': { description: The match has not finished }
+  /sim/rooms:
+    post:
+      tags: [simulator]
+      summary: Open a room for a match between two friends (the host picks a name and a club)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, club_id]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 24 }
+                club_id: { type: integer }
+      responses:
+        '201': { description: The room, content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /sim/rooms/{room}:
+    get:
+      tags: [simulator]
+      summary: Room status; the host polls it until match_id appears
+      parameters: [{ $ref: '#/components/parameters/Room' }]
+      responses:
+        '200': { description: The room, content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+  /sim/rooms/{room}/join:
+    post:
+      tags: [simulator]
+      summary: The friend joins with a name and another club; the live match is made and kicks off 12 s later
+      parameters: [{ $ref: '#/components/parameters/Room' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, club_id]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 24 }
+                club_id: { type: integer, description: Not the host's club }
+      responses:
+        '200': { description: The room with match_id (the guest manages away), content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
+        '422': { description: Same club as the host, or someone already joined, content: { application/json: { schema: { type: object } } } }
 components:
   parameters:
     Match:
       name: match
+      in: path
+      required: true
+      schema: { type: string, description: ULID }
+    Room:
+      name: room
       in: path
       required: true
       schema: { type: string, description: ULID }
@@ -215,6 +262,13 @@ components:
               message: { type: string }
               errors: { type: object, additionalProperties: { type: array, items: { type: string } } }
   schemas:
+    Room:
+      type: object
+      properties:
+        id: { type: string }
+        host: { type: object, properties: { name: { type: string }, club: { type: object } } }
+        guest: { type: object, nullable: true, properties: { name: { type: string }, club: { type: object } } }
+        match_id: { type: string, nullable: true, description: Set once the friend joins; the host manages home, the guest away }
     ClubSummary:
       type: object
       properties:
@@ -260,6 +314,7 @@ components:
         formations: { type: array, items: { type: string } }
         timing: { type: object }
         clubs: { type: object }
+        coaches: { type: object, description: "The coaches' names in a match between friends: {home, away}" }
         teams: { type: object }
         slots: { type: object }
     LiveSync:

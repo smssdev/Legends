@@ -12,131 +12,131 @@
 // voice never says names, the bubble does.
 export const LINES = {
   goal: {
-    pre: { en: ['{A} on the move...', 'Here comes {p}...', '{A} break forward...'], ar: ['هجمة خطيرة...', 'انطلاقة سريعة نحو المرمى...', 'الكرة تقترب من منطقة الجزاء...'] },
-    key: { x: 1, en: ['GOAL! {p}! What a finish!', 'GOAL! {p} buries it!', "It's in! {p}! Unstoppable!"], ar: ['جووول! هدف رائع!', 'هدف! الكرة في الشباك!', 'يا سلام! هدف خرافي!'] },
-    post: { en: ['What a ball from {q}, and what a finish from {p}!', 'The fans are on their feet!', '{A} have the lead, and the stadium is rocking!'], ar: ['المدرجات تشتعل فرحاً!', 'أي هدف هذا!', 'هدف يستحق التصفيق!'] },
+    pre: { en: ['{A} on the move...', 'Here comes {p}...', '{A} break forward...'], ar: ['هَجْمَةٌ خَطِيرَة...', 'اِنْطِلاقَةٌ سَرِيعَةٌ نَحْوَ المَرْمَى...', 'الكُرَةُ تَقْتَرِبُ مِنْ مَنْطِقَةِ الجَزَاء...'] },
+    key: { x: 1, en: ['GOAL! {p}! What a finish!', 'GOAL! {p} buries it!', "It's in! {p}! Unstoppable!"], ar: ['جُووول! هَدَفٌ رائِع!', 'هَدَف! الكُرَةُ فِي الشِّبَاك!', 'يا سَلام! هَدَفٌ خُرافِيّ!'] },
+    post: { en: ['What a ball from {q}, and what a finish from {p}!', 'The fans are on their feet!', '{A} have the lead, and the stadium is rocking!'], ar: ['المُدَرَّجاتُ تَشْتَعِلُ فَرَحاً!', 'أَيُّ هَدَفٍ هٰذا!', 'هَدَفٌ يَسْتَحِقُّ التَّصْفِيق!'] },
     bubble: ['هدف! {p} يسكنها الشباك بعد تمريرة من {q}!', 'ما أروعه! {p} يسجل والجماهير تنفجر فرحاً!', 'هدف رائع من {p}! {A} يحتفل!'],
   },
   header: {
-    pre: { en: ['The cross is coming in...', 'Ball into the box...'], ar: ['عرضية داخل المنطقة...', 'الكرة ترتفع داخل الصندوق...'] },
-    key: { x: 1, en: ['GOAL! A thumping header from {p}!', 'GOAL! {p} rises and heads it in!'], ar: ['هدف! رأسية قوية في الشباك!', 'هدف برأسية رائعة!'] },
-    post: { en: ['Unstoppable in the air!', 'What a leap that was!'], ar: ['لا أحد يوقفه في الهواء!', 'ارتقاء رائع!'] },
+    pre: { en: ['The cross is coming in...', 'Ball into the box...'], ar: ['عَرْضِيَّةٌ داخِلَ المَنْطِقَة...', 'الكُرَةُ تَرْتَفِعُ داخِلَ الصُّنْدُوق...'] },
+    key: { x: 1, en: ['GOAL! A thumping header from {p}!', 'GOAL! {p} rises and heads it in!'], ar: ['هَدَف! رَأْسِيَّةٌ قَوِيَّةٌ فِي الشِّبَاك!', 'هَدَفٌ بِرَأْسِيَّةٍ رائِعَة!'] },
+    post: { en: ['Unstoppable in the air!', 'What a leap that was!'], ar: ['لا أَحَدَ يُوقِفُهُ فِي الهَواء!', 'اِرْتِقاءٌ رائِع!'] },
     bubble: ['رأسية رائعة! {p} يرتقي ويسجل!', 'هدف برأس {p}! لا يُصد!'],
   },
   free_kick_goal: {
-    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضربة حرة على حدود المنطقة.', 'الحائط يتشكل... والجميع ينتظر.'] },
-    key: { x: 1, en: ['Over the wall, and IN! A stunning free kick from {p}!', 'GOAL! {p} curls it into the top corner!'], ar: ['فوق الحائط وفي الزاوية! هدف مذهل!', 'هدف من ضربة حرة! لوحة فنية!'] },
-    post: { en: ['The keeper had no chance!', 'What a strike!'], ar: ['الحارس لم يتحرك!', 'تسديدة لا تُصد!'] },
+    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضَرْبَةٌ حُرَّةٌ عَلَى حُدُودِ المَنْطِقَة.', 'الحائِطُ يَتَشَكَّل... والجَمِيعُ يَنْتَظِر.'] },
+    key: { x: 1, en: ['Over the wall, and IN! A stunning free kick from {p}!', 'GOAL! {p} curls it into the top corner!'], ar: ['فَوْقَ الحائِطِ وَفِي الزّاوِيَة! هَدَفٌ مُذْهِل!', 'هَدَفٌ مِنْ ضَرْبَةٍ حُرَّة! لَوْحَةٌ فَنِّيَّة!'] },
+    post: { en: ['The keeper had no chance!', 'What a strike!'], ar: ['الحارِسُ لَمْ يَتَحَرَّك!', 'تَسْدِيدَةٌ لا تُصَدّ!'] },
     bubble: ['ضربة حرة مذهلة من {p}! فوق الحائط وفي الزاوية!', '{p} يسجل من ضربة حرة رائعة!'],
   },
   free_kick_save: {
-    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضربة حرة على حدود المنطقة.', 'الحائط يتشكل... والجميع ينتظر.'] },
-    key: { x: 1, en: ['Over the wall, but {q} gets across! Great save!', 'Saved! {q} tips it over!'], ar: ['فوق الحائط... والحارس يطير ويبعدها!', 'تصدٍّ رائع للضربة الحرة!'] },
-    post: { en: ['So close!', 'That was nearly a goal.'], ar: ['كادت أن تكون هدفاً!', 'قريبة جداً!'] },
+    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضَرْبَةٌ حُرَّةٌ عَلَى حُدُودِ المَنْطِقَة.', 'الحائِطُ يَتَشَكَّل... والجَمِيعُ يَنْتَظِر.'] },
+    key: { x: 1, en: ['Over the wall, but {q} gets across! Great save!', 'Saved! {q} tips it over!'], ar: ['فَوْقَ الحائِط... والحارِسُ يَطِيرُ وَيُبْعِدُها!', 'تَصَدٍّ رائِعٌ لِلضَّرْبَةِ الحُرَّة!'] },
+    post: { en: ['So close!', 'That was nearly a goal.'], ar: ['كادَتْ أَنْ تَكُونَ هَدَفاً!', 'قَرِيبَةٌ جِدّاً!'] },
     bubble: ['{q} يطير ويبعد ضربة {p} الحرة!', 'تصدٍّ رائع من {q}!'],
   },
   free_kick_miss: {
-    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضربة حرة على حدود المنطقة.', 'الحائط يتشكل... والجميع ينتظر.'] },
-    key: { x: 1, en: ['Over the wall... and just wide!', 'Over the bar!'], ar: ['فوق العارضة!', 'بجانب القائم!'] },
-    post: { en: ['A wasted chance.'], ar: ['فرصة ضائعة.'] },
+    pre: { en: ['Free kick, right on the edge of the box.', '{p} stands over it...'], ar: ['ضَرْبَةٌ حُرَّةٌ عَلَى حُدُودِ المَنْطِقَة.', 'الحائِطُ يَتَشَكَّل... والجَمِيعُ يَنْتَظِر.'] },
+    key: { x: 1, en: ['Over the wall... and just wide!', 'Over the bar!'], ar: ['فَوْقَ العارِضَة!', 'بِجانِبِ القائِم!'] },
+    post: { en: ['A wasted chance.'], ar: ['فُرْصَةٌ ضائِعَة.'] },
     bubble: ['ضربة {p} الحرة تمر فوق العارضة.', 'محاولة {p} لم تصب المرمى.'],
   },
   penalty_goal: {
-    pre: { en: ['And the referee points to the spot! Penalty!', '{p} to take it. The stadium goes quiet...'], ar: ['ركلة جزاء! الحكم يشير إلى النقطة!', 'الملعب يحبس أنفاسه...'] },
-    key: { x: 1, en: ['GOAL! {p} sends the keeper the wrong way!', 'GOAL! Cool as you like from {p}!'], ar: ['هدف! الحارس في جهة والكرة في جهة!', 'هدف! تسديدة واثقة!'] },
-    post: { en: ['Nerves of steel!'], ar: ['أعصاب من حديد!'] },
+    pre: { en: ['And the referee points to the spot! Penalty!', '{p} to take it. The stadium goes quiet...'], ar: ['رَكْلَةُ جَزاء! الحَكَمُ يُشِيرُ إِلَى النُّقْطَة!', 'المَلْعَبُ يَحْبِسُ أَنْفاسَه...'] },
+    key: { x: 1, en: ['GOAL! {p} sends the keeper the wrong way!', 'GOAL! Cool as you like from {p}!'], ar: ['هَدَف! الحارِسُ فِي جِهَة، والكُرَةُ فِي جِهَة!', 'هَدَف! تَسْدِيدَةٌ واثِقَة!'] },
+    post: { en: ['Nerves of steel!'], ar: ['أَعْصابٌ مِنْ حَدِيد!'] },
     bubble: ['{p} يسجل ركلة الجزاء بثقة!', 'هدف من ركلة جزاء! {p} لا يرحم!'],
   },
   penalty_save: {
-    pre: { en: ['And the referee points to the spot! Penalty!', '{p} to take it. The stadium goes quiet...'], ar: ['ركلة جزاء! الحكم يشير إلى النقطة!', 'الملعب يحبس أنفاسه...'] },
-    key: { x: 1, en: ['Saved! {q} guesses right! What a moment!', '{q} saves it! Incredible!'], ar: ['تصدّى! الحارس يقرأها!', 'يا للروعة! الحارس يصد ركلة الجزاء!'] },
-    post: { en: ['A huge moment in this match!'], ar: ['لحظة كبيرة في المباراة!'] },
+    pre: { en: ['And the referee points to the spot! Penalty!', '{p} to take it. The stadium goes quiet...'], ar: ['رَكْلَةُ جَزاء! الحَكَمُ يُشِيرُ إِلَى النُّقْطَة!', 'المَلْعَبُ يَحْبِسُ أَنْفاسَه...'] },
+    key: { x: 1, en: ['Saved! {q} guesses right! What a moment!', '{q} saves it! Incredible!'], ar: ['تَصَدَّى! الحارِسُ يَقْرَؤُها!', 'يا لَلرَّوْعَة! الحارِسُ يَصُدُّ رَكْلَةَ الجَزاء!'] },
+    post: { en: ['A huge moment in this match!'], ar: ['لَحْظَةٌ كَبِيرَةٌ فِي المُباراة!'] },
     bubble: ['{q} يتصدى لركلة جزاء {p}!', 'بطل اللحظة: {q} يصد ركلة الجزاء!'],
   },
   save: {
-    pre: { en: ['{p} is through on goal!', '{p} shoots...', '{A} break through!'], ar: ['انفراد بالمرمى!', 'تسديدة قوية...', 'فرصة خطيرة!'] },
-    key: { x: 1, en: ['Saved! What a stop from {q}!', 'Oh, brilliant from {q}! He keeps it out!'], ar: ['تصدٍّ رائع من الحارس!', 'الحارس يطير ويبعدها!'] },
-    post: { en: ['That is top class goalkeeping.', "He'll be very pleased with that one."], ar: ['حارس عالمي!', 'إنقاذ يساوي هدفاً!'] },
+    pre: { en: ['{p} is through on goal!', '{p} shoots...', '{A} break through!'], ar: ['اِنْفِرادٌ بِالمَرْمَى!', 'تَسْدِيدَةٌ قَوِيَّة...', 'فُرْصَةٌ خَطِيرَة!'] },
+    key: { x: 1, en: ['Saved! What a stop from {q}!', 'Oh, brilliant from {q}! He keeps it out!'], ar: ['تَصَدٍّ رائِعٌ مِنَ الحارِس!', 'الحارِسُ يَطِيرُ وَيُبْعِدُها!'] },
+    post: { en: ['That is top class goalkeeping.', "He'll be very pleased with that one."], ar: ['حارِسٌ عالَمِيّ!', 'إِنْقاذٌ يُساوِي هَدَفاً!'] },
     bubble: ['{q} يتصدى ببراعة لتسديدة {p}!', 'إنقاذ رائع من {q}!'],
   },
   miss: {
-    pre: { en: ['{p} shoots...', '{p} goes for goal...', 'Dangerous from {A} here...'], ar: ['تسديدة...', 'محاولة على المرمى...', 'فرصة خطيرة!'] },
-    key: { x: 1, en: ['Wide! What a chance that was!', 'Just past the post! So close!', "Oh, he's put it over the bar!"], ar: ['بجانب القائم!', 'فوق العارضة!', 'كادت أن تكون هدفاً!'] },
-    post: { en: ["The manager can't believe it.", 'He holds his head in his hands.'], ar: ['المدرب لا يصدق!', 'فرصة لا تتكرر كثيراً!'] },
+    pre: { en: ['{p} shoots...', '{p} goes for goal...', 'Dangerous from {A} here...'], ar: ['تَسْدِيدَة...', 'مُحاوَلَةٌ عَلَى المَرْمَى...', 'فُرْصَةٌ خَطِيرَة!'] },
+    key: { x: 1, en: ['Wide! What a chance that was!', 'Just past the post! So close!', "Oh, he's put it over the bar!"], ar: ['بِجانِبِ القائِم!', 'فَوْقَ العارِضَة!', 'كادَتْ أَنْ تَكُونَ هَدَفاً!'] },
+    post: { en: ["The manager can't believe it.", 'He holds his head in his hands.'], ar: ['المُدَرِّبُ لا يُصَدِّق!', 'فُرْصَةٌ لا تَتَكَرَّرُ كَثِيراً!'] },
     bubble: ['فرصة ضائعة من {p}!', '{p} يسدد... بجانب المرمى!', 'يا لها من فرصة! {p} لم يوفق.'],
   },
   post: {
-    pre: { en: ['{p} tries his luck...'], ar: ['تسديدة قوية...'] },
-    key: { x: 1, en: ['Off the post! So close!'], ar: ['القائم! القائم يرد الكرة!'] },
-    post: { en: ['Inches away!'], ar: ['سنتيمترات حرمته من الهدف!'] },
+    pre: { en: ['{p} tries his luck...'], ar: ['تَسْدِيدَةٌ قَوِيَّة...'] },
+    key: { x: 1, en: ['Off the post! So close!'], ar: ['القائِم! القائِمُ يَرُدُّ الكُرَة!'] },
+    post: { en: ['Inches away!'], ar: ['سَنْتِيمِتْراتٌ حَرَمَتْهُ مِنَ الهَدَف!'] },
     bubble: ['القائم يحرم {p} من هدف أكيد!'],
   },
   blocked: {
-    pre: { en: ['{p} shoots...', '{p} lets fly...'], ar: ['تسديدة...', 'محاولة قوية...'] },
-    key: { x: 1, en: ['Blocked! Brave defending from {q}!', 'Charged down by {q}!'], ar: ['الدفاع يصد!', 'تدخل شجاع من المدافع!'] },
-    post: { en: ['Great defending.'], ar: ['دفاع رائع.'] },
+    pre: { en: ['{p} shoots...', '{p} lets fly...'], ar: ['تَسْدِيدَة...', 'مُحاوَلَةٌ قَوِيَّة...'] },
+    key: { x: 1, en: ['Blocked! Brave defending from {q}!', 'Charged down by {q}!'], ar: ['الدِّفاعُ يَصُدّ!', 'تَدَخُّلٌ شُجاعٌ مِنَ المُدافِع!'] },
+    post: { en: ['Great defending.'], ar: ['دِفاعٌ رائِع.'] },
     bubble: ['{q} يرتمي ويصد تسديدة {p}!', 'دفاع بطولي من {q}!'],
   },
   offside: {
-    pre: { en: ['Ball over the top for {p}...'], ar: ['كرة طويلة خلف الدفاع...'] },
-    key: { x: 0, en: ['But the flag is up. Offside.', 'No! The linesman says offside.'], ar: ['الراية مرفوعة. تسلل.', 'لا! تسلل.'] },
-    post: { en: ['He went a step too early.'], ar: ['تقدم بخطوة قبل التمرير.'] },
+    pre: { en: ['Ball over the top for {p}...'], ar: ['كُرَةٌ طَوِيلَةٌ خَلْفَ الدِّفاع...'] },
+    key: { x: 0, en: ['But the flag is up. Offside.', 'No! The linesman says offside.'], ar: ['الرّايَةُ مَرْفُوعَة. تَسَلُّل.', 'لا! تَسَلُّل.'] },
+    post: { en: ['He went a step too early.'], ar: ['تَقَدَّمَ بِخُطْوَةٍ قَبْلَ التَّمْرِير.'] },
     bubble: ['الراية ترتفع! {p} في موقف تسلل.', 'تسلل على {p}.'],
   },
   corner_header: {
-    pre: { en: ['Corner for {A}.', '{q} swings it in...'], ar: ['ركنية.', 'العرضية ترتفع...'] },
-    key: { x: 1, en: ['{p} rises highest... just over the bar!', 'Header! Over! Inches away!'], ar: ['رأسية! فوق العارضة بقليل!', 'رأسية قريبة جداً!'] },
-    post: { en: ['So close from the corner.'], ar: ['كادت الركنية أن تثمر.'] },
+    pre: { en: ['Corner for {A}.', '{q} swings it in...'], ar: ['رُكْنِيَّة.', 'العَرْضِيَّةُ تَرْتَفِع...'] },
+    key: { x: 1, en: ['{p} rises highest... just over the bar!', 'Header! Over! Inches away!'], ar: ['رَأْسِيَّة! فَوْقَ العارِضَةِ بِقَلِيل!', 'رَأْسِيَّةٌ قَرِيبَةٌ جِدّاً!'] },
+    post: { en: ['So close from the corner.'], ar: ['كادَتِ الرُّكْنِيَّةُ أَنْ تُثْمِر.'] },
     bubble: ['ركنية {q} ورأسية {p} فوق العارضة بقليل!', '{p} يرتقي... قريبة!'],
   },
   corner_claim: {
-    pre: { en: ['Corner for {A}.', '{q} swings it in...'], ar: ['ركنية.', 'العرضية ترتفع...'] },
-    key: { x: 0, en: ['Comfortable for the keeper. He claims it.'], ar: ['الحارس يمسك الكرة بثبات.'] },
-    post: { en: ['Danger over.'], ar: ['زال الخطر.'] },
+    pre: { en: ['Corner for {A}.', '{q} swings it in...'], ar: ['رُكْنِيَّة.', 'العَرْضِيَّةُ تَرْتَفِع...'] },
+    key: { x: 0, en: ['Comfortable for the keeper. He claims it.'], ar: ['الحارِسُ يُمْسِكُ الكُرَةَ بِثَبات.'] },
+    post: { en: ['Danger over.'], ar: ['زالَ الخَطَر.'] },
     bubble: ['ركنية لِ{A} والحارس يمسك الكرة.'],
   },
   yellow: {
-    pre: { en: ['Ooh, a late challenge from {p}!', '{p} goes in hard!'], ar: ['تدخل متأخر!', 'تدخل قوي!'] },
-    key: { x: 0, en: ["That's a booking for {p}.", 'Yellow card for {p}.'], ar: ['بطاقة صفراء.', 'الحكم يُشهر البطاقة الصفراء.'] },
-    post: { en: ['He has to be careful now.'], ar: ['عليه الحذر من الآن.'] },
+    pre: { en: ['Ooh, a late challenge from {p}!', '{p} goes in hard!'], ar: ['تَدَخُّلٌ مُتَأَخِّر!', 'تَدَخُّلٌ قَوِيّ!'] },
+    key: { x: 0, en: ["That's a booking for {p}.", 'Yellow card for {p}.'], ar: ['بِطاقَةٌ صَفْراء.', 'الحَكَمُ يُشْهِرُ البِطاقَةَ الصَّفْراء.'] },
+    post: { en: ['He has to be careful now.'], ar: ['عَلَيْهِ الحَذَرُ مِنَ الآن.'] },
     bubble: ['بطاقة صفراء لِ{p} بعد تدخل متأخر.', 'الحكم ينذر {p}.'],
   },
   red: {
-    pre: { en: ["And he's been brought down from behind!", 'A dreadful challenge!'], ar: ['تدخل عنيف من الخلف!', 'تدخل خطير!'] },
-    key: { x: 1, en: ["It's red! {p} is sent off!", 'Straight red for {p}!'], ar: ['بطاقة حمراء! طرد!', 'الحكم يطرده مباشرة!'] },
-    post: { en: ['{B} are down to ten men!', 'A long walk back to the dressing room.'], ar: ['فريقه يكمل بعشرة لاعبين!', 'خروج حزين إلى غرفة الملابس.'] },
+    pre: { en: ["And he's been brought down from behind!", 'A dreadful challenge!'], ar: ['تَدَخُّلٌ عَنِيفٌ مِنَ الخَلْف!', 'تَدَخُّلٌ خَطِير!'] },
+    key: { x: 1, en: ["It's red! {p} is sent off!", 'Straight red for {p}!'], ar: ['بِطاقَةٌ حَمْراء! طَرْد!', 'الحَكَمُ يَطْرُدُهُ مُباشَرَة!'] },
+    post: { en: ['{B} are down to ten men!', 'A long walk back to the dressing room.'], ar: ['فَرِيقُهُ يُكْمِلُ بِعَشَرَةِ لاعِبِين!', 'خُرُوجٌ حَزِينٌ إِلَى غُرْفَةِ المَلابِس.'] },
     bubble: ['بطاقة حمراء! {p} يُطرد و{B} يكمل بعشرة!', 'طرد {p}! المباراة تتغير الآن.'],
   },
   second_yellow: {
-    pre: { en: ['Another late challenge from {p}...'], ar: ['تدخل متأخر آخر...'] },
-    key: { x: 1, en: ["That's a second yellow! {p} is off!"], ar: ['الإنذار الثاني! طرد!'] },
-    post: { en: ['He only has himself to blame.'], ar: ['لا يلوم إلا نفسه.'] },
+    pre: { en: ['Another late challenge from {p}...'], ar: ['تَدَخُّلٌ مُتَأَخِّرٌ آخَر...'] },
+    key: { x: 1, en: ["That's a second yellow! {p} is off!"], ar: ['الإِنْذارُ الثّانِي! طَرْد!'] },
+    post: { en: ['He only has himself to blame.'], ar: ['لا يَلُومُ إِلّا نَفْسَه.'] },
     bubble: ['الإنذار الثاني لِ{p}! طرد!'],
   },
   sub: {
-    key: { x: 0, en: ['A change for {A}. {p} comes on, replacing {q}.', '{p} comes on for {q}.'], ar: ['تبديل.', 'تغيير في صفوف الفريق.'] },
-    post: { en: ['Fresh legs.'], ar: ['دماء جديدة.'] },
+    key: { x: 0, en: ['A change for {A}. {p} comes on, replacing {q}.', '{p} comes on for {q}.'], ar: ['تَبْدِيل.', 'تَغْيِيرٌ فِي صُفُوفِ الفَرِيق.'] },
+    post: { en: ['Fresh legs.'], ar: ['دِماءٌ جَدِيدَة.'] },
     bubble: ['تبديل لِ{A}: {p} بدلاً من {q}.'],
   },
   injury: {
-    key: { x: 0, en: ['{p} is down, and he looks in some discomfort.'], ar: ['لاعب على الأرض.', 'إصابة... والجهاز الطبي يدخل.'] },
-    post: { en: ['The medical team are on.'], ar: ['نتمنى ألا تكون خطيرة.'] },
+    key: { x: 0, en: ['{p} is down, and he looks in some discomfort.'], ar: ['لاعِبٌ عَلَى الأَرْض.', 'إِصابَة... والجِهازُ الطِّبِّيُّ يَدْخُل.'] },
+    post: { en: ['The medical team are on.'], ar: ['نَتَمَنَّى أَلّا تَكُونَ خَطِيرَة.'] },
     bubble: ['{p} مصاب، والجهاز الطبي في الملعب.'],
   },
   coach: {
-    key: { x: 0, en: ['The manager is making changes on the touchline.', 'Instructions from the bench.'], ar: ['المدرب يعطي تعليمات جديدة.', 'تغيير تكتيكي من الدكة.'] },
-    post: { en: ["Let's see if it makes a difference."], ar: ['لنرَ إن كان سيغير شيئاً.'] },
+    key: { x: 0, en: ['The manager is making changes on the touchline.', 'Instructions from the bench.'], ar: ['المُدَرِّبُ يُعْطِي تَعْلِيماتٍ جَدِيدَة.', 'تَغْيِيرٌ تَكْتِيكِيٌّ مِنَ الدَّكَّة.'] },
+    post: { en: ["Let's see if it makes a difference."], ar: ['لِنَرَ إِنْ كانَ سَيُغَيِّرُ شَيْئاً.'] },
     bubble: ['مدرب {A}: {p}', 'المدرب يتحرك: {p}'],
   },
-  kickoff: { key: { x: 0, en: ["And we're under way!"], ar: ['انطلقت المباراة!'] }, bubble: ['انطلقت المباراة! بالتوفيق للفريقين.'] },
-  halftime: { key: { x: 1, en: ['The referee blows for half time.'], ar: ['نهاية الشوط الأول.'] }, bubble: ['نهاية الشوط الأول. {n}'] },
-  fulltime: { key: { x: 1, en: ["And that's full time!"], ar: ['صافرة النهاية!'] }, bubble: ['صافرة النهاية! {n}'] },
-  extra_time: { key: { x: 1, en: ["We're going to extra time!"], ar: ['إلى الوقت الإضافي!'] }, bubble: ['التعادل مستمر... إلى الوقت الإضافي!'] },
-  penalties: { key: { x: 1, en: ["It's going to penalties!"], ar: ['إلى ركلات الترجيح!'] }, bubble: ['ركلات الترجيح ستحسم كل شيء!'] },
-  stoppage: { key: { x: 0, en: ['{n} minutes of added time.'], ar: ['وقت بدل ضائع.'] }, bubble: ['{n} دقائق وقتاً بدل ضائع.'] },
-  shootout: { key: { x: 1, en: ['Penalties. Nerves of steel needed now.'], ar: ['ركلات الترجيح... أعصاب من حديد.'] }, bubble: ['ركلات الترجيح: {n}'] },
+  kickoff: { key: { x: 0, en: ["And we're under way!"], ar: ['اِنْطَلَقَتِ المُباراة!'] }, bubble: ['انطلقت المباراة! بالتوفيق للفريقين.'] },
+  halftime: { key: { x: 1, en: ['The referee blows for half time.'], ar: ['نِهايَةُ الشَّوْطِ الأَوَّل.'] }, bubble: ['نهاية الشوط الأول. {n}'] },
+  fulltime: { key: { x: 1, en: ["And that's full time!"], ar: ['صافِرَةُ النِّهايَة!'] }, bubble: ['صافرة النهاية! {n}'] },
+  extra_time: { key: { x: 1, en: ["We're going to extra time!"], ar: ['إِلَى الوَقْتِ الإِضافِيّ!'] }, bubble: ['التعادل مستمر... إلى الوقت الإضافي!'] },
+  penalties: { key: { x: 1, en: ["It's going to penalties!"], ar: ['إِلَى رَكَلاتِ التَّرْجِيح!'] }, bubble: ['ركلات الترجيح ستحسم كل شيء!'] },
+  stoppage: { key: { x: 0, en: ['{n} minutes of added time.'], ar: ['وَقْتٌ بَدَلٌ ضائِع.'] }, bubble: ['{n} دقائق وقتاً بدل ضائع.'] },
+  shootout: { key: { x: 1, en: ['Penalties. Nerves of steel needed now.'], ar: ['رَكَلاتُ التَّرْجِيح... أَعْصابٌ مِنْ حَدِيد.'] }, bubble: ['ركلات الترجيح: {n}'] },
   attack: {
-    key: { x: 0, en: ['{A} on the attack.', '{A} press forward.', 'Good pressing from {A}.'], ar: ['هجمة منظمة.', 'ضغط متواصل.', 'محاولة لبناء الهجمة.'] },
+    key: { x: 0, en: ['{A} on the attack.', '{A} press forward.', 'Good pressing from {A}.'], ar: ['هَجْمَةٌ مُنَظَّمَة.', 'ضَغْطٌ مُتَواصِل.', 'مُحاوَلَةٌ لِبِناءِ الهَجْمَة.'] },
   },
 }
 
@@ -147,8 +147,8 @@ function rng(seed) {
 const first = (events, type) => events.find((e) => e.type === type)
 // The scene's own length in seconds, and when its key moment happens (see art.ts).
 export const SCENE_TIME = {
-  goal: [5.2, 1.85], save: [4.6, 1.6], penalty: [5.6, 2.75], freekick: [5.2, 2.65], card: [4.4, 1.2], coach: [4.6, 1.0], sub: [4.2, 0.8],
-  offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.8], miss: [4.2, 1.75], blocked: [4.0, 1.35], board: [3.0, 0.5],
+  goal: [5.2, 1.75], save: [4.6, 1.6], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
+  offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [4.2, 1.75], blocked: [4.0, 1.35], board: [3.0, 0.5],
 }
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 
@@ -209,7 +209,7 @@ export function story(tick, ctx) {
     Object.assign(vars, { p: sp.taker, q: sp.keeper ?? null, A: s })
     const isPen = kind === 'penalty'
     const result = scored ? 'goal' : sp.keeper ? 'save' : 'miss'
-    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored }, scored ? 'هدف' : isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), scored ? (isPen ? 'ركلة جزاء' : 'ضربة حرة مباشرة') : result === 'save' ? `تصدى ${nm(sp.keeper)}` : 'خارج المرمى')
+    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored, saved: result === 'save' }, scored ? 'هدف' : isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), scored ? (isPen ? 'ركلة جزاء' : 'ضربة حرة مباشرة') : result === 'save' ? `تصدى ${nm(sp.keeper)}` : 'خارج المرمى')
     speak(isPen ? (scored ? 'penalty_goal' : 'penalty_save') : `free_kick_${result}`, { key: isPen ? 0.49 : 0.51, post: 0.72 })
     if (foul?.player) item(other(s), 'foul', nm(foul.player), isPen ? 'تسبب في ركلة جزاء' : 'خطأ')
     item(s, scored ? 'goal' : isPen ? 'penalty' : 'miss', nm(sp.taker), scored ? (isPen ? 'هدف · ركلة جزاء' : 'هدف · ضربة حرة') : result === 'save' ? (isPen ? 'ركلة جزاء ضائعة' : 'ضربة حرة · تصدٍّ') : 'ضربة حرة ضائعة', { goal: scored })
@@ -276,7 +276,10 @@ export function story(tick, ctx) {
     const big = { halftime: 'استراحة', fulltime: 'النهاية', extra_time: 'وقت إضافي', extra_time_half: 'استراحة قصيرة', penalties: 'ركلات الترجيح' }[period.name] ?? ''
     const head = { halftime: 'نهاية الشوط الأول', fulltime: 'نهاية المباراة', extra_time: 'الوقت الإضافي', extra_time_half: 'منتصف الوقت الإضافي', penalties: 'ركلات الترجيح' }[period.name] ?? ''
     Object.assign(vars, { n: sc })
-    set('whistle', 'home', { big }, head, '', sc)
+    const st = (side) => tick.teams?.[side]?.stats ?? {}
+    const rows = [['الهجمات', 'attacks'], ['التسديدات', 'shots'], ['على المرمى', 'on_target'], ['الركنيات', 'corners']].map(([l, k]) => [l, st('home')[k] ?? 0, st('away')[k] ?? 0])
+    // The score reads left to right with home on the right, as on the scoreboard.
+    set('whistle', 'home', { big: head, score: `${tick.score.away} - ${tick.score.home}`, stats: rows }, big, '', sc)
     speak({ halftime: 'halftime', fulltime: 'fulltime', extra_time: 'extra_time', penalties: 'penalties' }[period.name] ?? 'halftime', { key: 0.25 })
     item('home', 'whistle', head, sc, { center: true })
   } else if (kind === 'stoppage' && stoppage) {

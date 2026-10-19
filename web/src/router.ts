@@ -5,6 +5,8 @@ export const router = createRouter({
   routes: [
     { path: '/', redirect: '/sim' },
     { path: '/sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
+    { path: '/sim/room', name: 'sim-room-new', component: () => import('./pages/SimRoom.vue') },
+    { path: '/sim/room/:room', name: 'sim-room', component: () => import('./pages/SimRoom.vue'), props: true },
     { path: '/sim/:id', name: 'sim-match', component: () => import('./pages/SimMatch.vue'), props: true },
     { path: '/sim/:id/report', name: 'sim-report', component: () => import('./pages/SimReport.vue'), props: true },
   ],
