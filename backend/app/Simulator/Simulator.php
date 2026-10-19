@@ -8,6 +8,7 @@ use App\Engine\Formations;
 use App\Engine\MatchSetup;
 use App\Models\MasterClub;
 use App\Models\SimMatch;
+use App\Models\SimRoom;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -27,6 +28,8 @@ class Simulator
         $seed = (int) ($in['seed'] ?? random_int(1, 999999));
         $setup = [
             'home_id' => $home->id, 'away_id' => $away->id,
+            // The coaches' names in a match between friends (shown on the scoreboard).
+            'names' => array_filter(['home' => $in['names']['home'] ?? null, 'away' => $in['names']['away'] ?? null]),
             'options' => [
                 'seed' => $seed,
                 'competition' => $in['competition'] ?? 'league',
@@ -59,6 +62,31 @@ class Simulator
             'applied' => [],
             'ball' => [525, 340],
         ]);
+    }
+
+    /**
+     * A friend joins a room: the guest's club and name are claimed with one
+     * conditional update (SQLite: no row locks), then the live match is made
+     * and kicks off once both screens have had time to show the preview.
+     */
+    public function join(SimRoom $room, string $name, int $clubId): SimMatch
+    {
+        return DB::transaction(function () use ($room, $name, $clubId) {
+            $claimed = SimRoom::whereKey($room->id)->whereNull('guest_name')
+                ->update(['guest_name' => $name, 'guest_club_id' => $clubId, 'updated_at' => GameClock::now()]);
+            if ($claimed !== 1) {
+                throw ValidationException::withMessages(['room' => 'دخل صديق آخر هذه الغرفة.']);
+            }
+            $room->refresh();
+            $match = $this->create([
+                'home_id' => $room->host_club_id, 'away_id' => $clubId, 'mode' => 'live',
+                'names' => ['home' => $room->host_name, 'away' => $name],
+            ]);
+            $room->update(['sim_match_id' => $match->id]);
+            $this->start($match, (int) config('game.match.room_kickoff_ms'));
+
+            return $match;
+        });
     }
 
     /** Queues an order for the next minute that has not been simulated yet. */
@@ -116,12 +144,12 @@ class Simulator
     }
 
     /** Starts a live match's clock a few seconds from now, so both screens are ready. */
-    public function start(SimMatch $match): void
+    public function start(SimMatch $match, int $delayMs = 3000): void
     {
-        DB::transaction(function () use ($match) {
+        DB::transaction(function () use ($match, $delayMs) {
             $m = SimMatch::findOrFail($match->id);
             if ($m->live !== null && $m->live['next_at'] === null) {
-                $m->live = ['next_at' => GameClock::nowMs() + 3000] + $m->live;
+                $m->live = ['next_at' => GameClock::nowMs() + $delayMs] + $m->live;
                 $m->save();
             }
         });
@@ -208,6 +236,7 @@ class Simulator
                 'halftime_seconds' => (int) $s['cfg']['match']['halftime_seconds'],
             ],
             'clubs' => ['home' => $s['teams']['home']['club'], 'away' => $s['teams']['away']['club']],
+            'coaches' => (object) ($match->setup['names'] ?? []),
             'teams' => self::teams($s),
             'slots' => [
                 'home' => Formations::slots($s['teams']['home']['formation']),

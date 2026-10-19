@@ -42,13 +42,9 @@
         </section>
 
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" aria-label="المباراة">
-          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @intro-done="endIntro" />
+          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @intro-done="endIntro" />
 
-          <div v-if="live && countdown > 0" dir="rtl" class="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <span class="font-numbers text-8xl text-gold drop-shadow-lg">{{ countdown }}</span>
-          </div>
-
-          <div v-if="(halftime || finished) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
+                    <div v-if="(halftime || finished) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
             <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : 'الاستراحة' }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
@@ -253,6 +249,8 @@ function onSound(name: string) {
 // The studio opens the match; the first minute starts when it closes.
 let introTimer = 0
 function endIntro() {
+  // The tap that closes the preview also turns the sound and the commentator on.
+  if (!soundOn.value) toggleSound()
   if (!intro.value || live.value) return
   intro.value = false
   clearTimeout(introTimer)

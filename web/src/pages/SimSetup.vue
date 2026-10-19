@@ -12,7 +12,7 @@
     </div>
 
     <div role="radiogroup" aria-label="نوع المباراة" class="grid grid-cols-2 gap-3">
-      <button v-for="m in modes" :key="m.v" type="button" role="radio" :aria-checked="settings.mode === m.v" class="flex min-h-20 flex-col items-start gap-1 rounded-xl border-2 p-4 text-start" :class="settings.mode === m.v ? 'border-gold bg-gold/10' : 'border-transparent bg-surface'" @click="settings.mode = m.v">
+      <button v-for="m in modes" :key="m.v" type="button" role="radio" :aria-checked="settings.mode === m.v" class="flex min-h-20 flex-col items-start gap-1 rounded-xl border-2 p-4 text-start" :class="settings.mode === m.v ? 'border-gold bg-gold/10' : 'border-transparent bg-surface'" @click="m.v === 'live' ? router.push({ name: 'sim-room-new' }) : (settings.mode = m.v)">
         <span class="font-display text-lg font-extrabold" :class="settings.mode === m.v ? 'text-gold' : ''">{{ m.label }}</span>
         <span class="text-xs text-text-muted">{{ m.hint }}</span>
       </button>
@@ -123,7 +123,7 @@ const pick = reactive({ home: { ...blank(), control: 'me' as 'me' | 'cpu' }, awa
 const settings = reactive<Record<string, any>>({ mode: 'solo', referee: 1, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
 const modes = [
   { v: 'solo', label: 'ضد الحاسوب', hint: 'على هذا الجهاز، مع السرعة والإيقاف والتخطي' },
-  { v: 'live', label: 'ضد صديق', hint: 'كل واحد من جهازه برابط تشاركه معه' },
+  { v: 'live', label: 'ضد صديق', hint: 'غرفة: تكتب اسمك وتختار فريقك، وصديقك كذلك من جهازه' },
 ] as const
 const groups = [
   { key: 'referee', label: 'الحكم', options: [{ v: 0, label: 'متساهل' }, { v: 1, label: 'متوسط' }, { v: 2, label: 'صارم' }] },
