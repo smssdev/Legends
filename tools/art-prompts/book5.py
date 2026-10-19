@@ -82,8 +82,8 @@ def cycle(style, frames=8):
     return seq
 STYLE = {
  'walk': dict(d='Walking calmly, upright', air=False),
- 'jog': dict(d='Jogging lightly, relaxed', air=True),
- 'run': dict(d='Running at speed', air=True),
+ 'jog': dict(d='Jogging lightly, relaxed (a slow run, not a walk: short strides, elbows bent)', air=True),
+ 'run': dict(d='Running fast (a real run, not a walk: long strides, body leaning slightly forward, elbows bent at a right angle and pumping)', air=True),
  'sprint': dict(d='Sprinting flat out, body leaning forward, arms pumping hard', air=True),
  'back': dict(d='Back-pedalling, moving backwards while still facing right, arms out for balance', air=False),
  'cel': dict(d='Running in celebration with both arms wide open, shouting with joy', air=True),
