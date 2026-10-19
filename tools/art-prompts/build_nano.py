@@ -75,10 +75,13 @@ def plate_prompt(p, first, variant=False):
     m = re.search(r'Photorealistic football stadium: (.*?), full crowd blurred in the stands', p)
     if m:
         v = p.split(CAM)[-1].strip()
+        high = 'This view is higher than the other views' in v   # the one raised view: no pitch-level camera line
+        cam = '' if high else CAM
         start = ('Use the attached image as the reference for the same stadium architecture, the same camera height and lens; the weather and light are as described here. ' if variant else
                  '' if first else 'Use the attached image as the reference: the same stadium, the same camera height and lens, the same light and colours. ')
+        if high: start = start.replace('the same camera height and lens, ', '').replace(', the same camera height and lens;', ';')
         same = '' if first else ' This must be exactly the same stadium as the attached image: the same roof, seats, LED ribbons, advertising boards, floodlights and colours.'
-        return (f'{start}A wide 16:9 landscape photograph of a football stadium: {m.group(1)}, with a full crowd blurred in the stands. {v} {CAM} '
+        return (f'{start}A wide 16:9 landscape photograph of a football stadium: {m.group(1)}, with a full crowd blurred in the stands. {v} {cam} '
                 'The pitch is completely empty: no players, no people on the grass and no ball. Photorealistic and cinematic, like a live TV broadcast. ' + NOTEXT + same)
     body = p
     for junk in ['Same style as before.', 'Same stadium as before.', 'Same stadium and same light as before.', 'Photorealistic, cinematic, landscape 1536x1024.',

@@ -14,7 +14,7 @@ COND = {
  'heat': ('في الحر', 'on a scorching hot afternoon, hard white sunlight, heat haze shimmering above the grass, deep shadows'),
 }
 STADIUMS = [
- ('arena', 'الأرينا', 'a huge modern two-tier bowl stadium with dark blue seats, a steel truss roof ring lined with rows of bright floodlights along its inner edge, a continuous rainbow-coloured LED ribbon running all the way around the bowl between the two tiers, and rainbow-coloured LED advertising boards around the pitch', 'night', ['rain', 'day']),
+ ('arena', 'الأرينا', 'a huge modern two-tier bowl stadium packed with fans, a dark steel truss roof ring lined with clusters of bright white floodlights along its inner edge, a continuous LED ribbon glowing in a soft gradient of blue, violet and pink running all the way around the bowl between the two tiers, and matching blue-violet-pink LED advertising boards around the pitch', 'night', ['rain', 'day']),
  ('classic', 'الكلاسيكي', 'an old classic European stadium with steep red-brick stands rising right behind the pitch, red seats, a dark green pitched steel roof on thin columns, four tall lattice floodlight towers in the corners and plain white advertising boards', 'day', ['night', 'snow']),
  ('gulf', 'الخليجي', 'a modern Gulf-style stadium with a white sculpted roof cut with Arabic geometric lattice patterns, white and gold seats, slim palm trees visible outside the bowl and warm white LED advertising boards', 'dusk', ['night', 'heat']),
  ('maghreb', 'المغاربي', 'a stadium with sandstone-coloured walls, a row of Moroccan horseshoe arches along the top of the stands, green ceramic tiles on the stand fronts, green seats and warm floodlights on tall masts', 'night', ['day', 'dusk']),
