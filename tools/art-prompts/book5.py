@@ -318,6 +318,74 @@ for g in ALLB:
     for b in g['boards']: b['ref'] = tidy(b['ref'])
 print(len(ALLB), sum(len(g['boards']) for g in ALLB))
 
+# ---------------- waves: the first item of every section, then the second, ... ----------------
+# Each wave is a playable slice: made as images, built into the simulator, checked, then the next.
+# A character's first wave takes its essential moves; the rest of its moves come in the next wave.
+SKEYS = [k for k, *_ in STADIUMS]
+CORE = {'البطاقة المرجعية', 'الجري بالاتجاهات', 'الكرة', 'الالتحام والسقوط', 'المشاعر', 'الاستعداد', 'الارتماء', 'الإمساك والإبعاد', 'الإشارات'}
+MAIN = {'المهاجم الرئيسي': 1, 'المدافع': 2, 'الجناح': 3, 'لاعب الوسط': 4}
+BALLW = {ar: i for i, (_, ar, _) in enumerate(BALLS, 1)}
+GOALW = {ar: i for i, (_, ar, _) in enumerate(GOALS, 1)}
+FXW = {'مؤثرات الأرض': 1, 'مؤثرات الطقس': 2, 'نار ودخان': 3, 'أضواء': 4, 'احتفال': 5, 'جمهور أمامي متحرك': 6}
+def wave_of(g):
+    t, p = g['t'], g['part']
+    head, _, fam = t.partition(': ')
+    if p in ('stadium', 'stadium-var'):
+        if t.startswith('أجواء'): return 2
+        key = g['folder'].split('/stadiums/')[1].split('/')[0]
+        return SKEYS.index(key) + (1 if p == 'stadium' else 2)
+    if p == 'players':
+        if head in MAIN: return MAIN[head] + (0 if fam.split(' (')[0] in CORE else 1)
+        return 5                                       # the striker's states and trick goals
+    if p == 'looks': return 2 + (int(re.search(r'\d+', t).group()) - 1) // 3
+    if p == 'keepers':
+        k = int(re.search(r'\d+', head).group())
+        return (1 if fam in CORE else 2) if k == 1 else k + 1
+    if p == 'officials':
+        if head == 'الحكم 1': return 1 if fam in CORE else 2
+        if head in ('الحكم المساعد', 'الحكم الرابع'): return 2
+        return int(re.search(r'\d+', head).group()) + 1
+    if p == 'situations':
+        if 'شجار' in t: return 4
+        return 3 if 'الفار' in t else 2
+    if p == 'moments':
+        if t.startswith('احتفالات الهدف'): return 1
+        return 4 if ('الكأس' in t or 'الترجيح' in t) else 2
+    if p == 'coaches': return int(re.search(r'\d+', head).group())
+    if p == 'bench': return 2
+    if p == 'crowd': return 1
+    if p == 'broadcast': return 3
+    if p == 'kit':
+        if head in BALLW: return BALLW[head]
+        if head in GOALW: return GOALW[head]
+        return 2                                       # flags, props, close-ups of the net
+    if p == 'fx': return FXW.get(fam, 6)
+    return 9
+for g in ALLB: g['wave'] = wave_of(g)
+
+# every attachment named: the exact earlier files to attach, not "the first board" or "the previous one"
+def path(g, b): return g['folder'] + b['f']
+for g in ALLB:
+    first, prev = None, None
+    for b in g['boards']:
+        r = b['ref']; att = []
+        if r is True:
+            att = [path(g, first)]
+        elif isinstance(r, str):
+            for part in r.split(' + '):
+                part = part.strip()
+                if part.startswith('art/'): att.append(part)
+                elif 'الأولى' in part: att.append(path(g, first))
+                elif 'السابقة' in part: att.append(path(g, prev))
+        b['attach'] = [a for i, a in enumerate(att) if a and a not in att[:i]]
+        if first is None: first = b
+        prev = b
+def attach_md(b):
+    return ('**ارفق:** ' + ' و'.join(f'`{a}`' for a in b['attach'])) if b['attach'] else '**بلا مرفق** (أول صورة)'
+WAVES = sorted({g['wave'] for g in ALLB})
+SPRINT_OF = {1: 'السبرنت 2 (الصور) و3 (المحاكاة)', 2: 'السبرنت 4', 3: 'السبرنت 5', 4: 'السبرنت 6', 5: 'السبرنت 7', 6: 'السبرنت 8', 7: 'السبرنت 8'}
+def sprint_of(w): return SPRINT_OF.get(w, 'السبرنت 9' if w <= 11 else 'السبرنت 10')
+
 # ---------------- write: one guide + one file per part ----------------
 OUT = os.path.join('..', '..', 'docs', 'art', 'images')
 os.makedirs(OUT, exist_ok=True)
@@ -339,8 +407,10 @@ W('- **البطاقة المرجعية لكل شخصية:** أمام وثلاث�
 W('- **الكرة تدور بـ12 إطاراً**، وتنضغط لحظة الركلة. **الشبكة تنتفخ بـ9 إطارات**، والقائم يهتز، والرايات ترفرف.')
 W('- **المؤثرات حلقات متكررة:** المطر، والثلج، والضباب، والشماريخ، والدخان، والقصاصات، والجمهور الأمامي يقفز ويلوّح.\n')
 W('## طريقة العمل\n')
+W('**الترتيب بالدفعات:** لا تصنع الكتاب جزءاً جزءاً. اتبع `00-waves.md`: الدفعة 1 (أول عنصر من كل قسم) صوراً ثم محاكاة ثم اعتماد، ثم الدفعة 2، وهكذا.\n')
 W('1. **ابدأ كل شخصية ببطاقتها المرجعية** (`ref.png`)، ولا ترفق معها شيئاً.')
 W('2. **كل مجموعة حركة في محادثة جديدة.** ارفق مع أول لوحة فيها البطاقة المرجعية.')
+W('   **المرفقات مكتوبة بأسمائها عند كل لوحة** (مثل «ارفق: `art/raw/striker/ref.png` و`art/raw/striker/run/run-side-01.png`»): ارفق هذه الملفات بالضبط، فهي صور صنعتها قبلها.')
 W('3. **من اللوحة الثانية في كل سلسلة:** ارفق البطاقة المرجعية **واللوحة السابقة** معاً، فيكمل الحركة من حيث توقفت بنفس الحجم ونفس خط الأرض.')
 W('4. **الملاعب:** أول صورة بلا مرفق، والباقي ترفق معه الأولى. وحالات الملعب (مطر، ثلج...) ترفق معها `shot.jpg` من حالته الأساسية.')
 W('5. **احفظ كل لوحة باسمها المكتوب** داخل مجلدها، ولا تقصها.')
@@ -401,18 +471,43 @@ for p in parts:
     for g in gs:
         gi += 1
         W(f'## المجموعة {gi}: {g["t"]}\n')
+        W(f'**الدفعة {g["wave"]}** ({sprint_of(g["wave"])})  ')
         W(f'**المجلد:** `{g["folder"]}`  ')
         W(f'**المحادثة:** جديدة. {g["note"]}\n')
         for j, b in enumerate(g['boards'], 1):
             W(f'### {gi}.{j} `{b["f"]}`\n')
             what = b.get('why') or b.get('names')
             extra = f' · **تُستخدم في:** {b["used"]}' if b.get('used') else ''
-            r = b['ref']
-            att = f'**ارفق: {r}**' if isinstance(r, str) and not r.startswith('art/') else (f'**ارفق `{r.split(" + ")[0]}`**' + (' **+ اللوحة السابقة**' if ' + ' in r else '') if isinstance(r, str) else ('**ارفق اللوحة الأولى**' if r else 'بلا مرفق'))
-            W(f'{what}{extra} · {att}\n')
+            W(f'{what}{extra}  ')
+            W(f'{attach_md(b)}\n')
             W('```\n' + b['p'] + '\n```\n')
     open(f'{OUT}/{fname[p]}', 'w').write('\n'.join(o) + '\n')
 print(len(ALLB), total, parts)
+
+# 00-waves.md: what to make in each wave, with where to find its prompts
+gnum = {id(g): i for i, g in enumerate(ALLB, 1)}
+o = ['# الدفعات: ترتيب صنع الصور\n',
+     'نصنع **أول عنصر من كل قسم** (ملعب، ولاعب، وحارس، وحكم، ومدرب، وكرة، ومرمى، ومؤثرات، وجمهور) فنضعه في المحاكاة ونتأكد أنه ممتاز، ثم **الثاني من كل قسم**، وهكذا حتى تكتمل كل الأقسام. '
+     'كل دفعة قطعة قابلة للعب: بعد أن تكتمل صورها نبني بها لقطات المحاكاة ونجربها، ولا نبدأ الدفعة التالية قبل اعتماد هذه.\n',
+     '## دورة كل دفعة\n',
+     '1. **الصور:** صاحب المشروع يصنع مجموعات الدفعة بـ Gemini ويرفعها إلى مجلداتها.',
+     '2. **الفحص:** Claude يراجع كل صورة، ويعطي جملة تصحيح لكل خطأ، حتى تُعتمد كلها.',
+     '3. **المحاكاة:** Claude يقصها ويجهزها ويضعها في لقطات المحاكي على الكمبيوتر والجوال.',
+     '4. **التجربة:** مباراة كاملة بالدفعة الجديدة، والملاحظات في ملف السبرنت.',
+     '5. **الاعتماد:** صاحب المشروع يعتمد، فتبدأ الدفعة التالية.\n',
+     '**الشخصيات:** في دفعتها الأولى تأخذ حركاتها الأساسية (البطاقة المرجعية، والجري، والكرة أو الارتماء، والسقوط، والمشاعر)، وباقي حركاتها في الدفعة التالية. والملعب في دفعته الأولى بكل زواياه، وحالاته الأخرى في الدفعة التالية.\n',
+     '## ملخص الدفعات\n', '| الدفعة | السبرنت | المجموعات | اللوحات |', '|---|---|---|---|']
+for w in WAVES:
+    gs = [g for g in ALLB if g['wave'] == w]
+    o.append(f'| {w} | {sprint_of(w)} | {len(gs)} | {sum(len(g["boards"]) for g in gs)} |')
+o.append('')
+for w in WAVES:
+    gs = [g for g in ALLB if g['wave'] == w]
+    o += [f'## الدفعة {w} ({sprint_of(w)})\n', '| القسم | المجموعة | اللوحات | الملف | المجلد |', '|---|---|---|---|---|']
+    for g in gs:
+        o.append(f'| {PN[g["part"]].split(": ", 1)[1]} | {gnum[id(g)]}. {g["t"]} | {len(g["boards"])} | [`{fname[g["part"]]}`]({fname[g["part"]]}) | `{g["folder"]}` |')
+    o.append('')
+open(os.path.join(OUT, '00-waves.md'), 'w').write('\n'.join(o) + '\n')
 
 # a README in every folder of art/raw/ naming the boards that go in it
 RAW = os.path.join('..', '..', 'art', 'raw')
@@ -428,16 +523,16 @@ for folder, entries in folders.items():
     o = [f'# {" · ".join(g["t"] for _, g, _ in entries)}\n',
          'احفظ هنا كل لوحة باسمها كما هي (لا تقصها). أوامرها في '
          + '، '.join(f'`docs/art/images/{f}` (المجموعة {i})' for i, _, f in entries) + '.\n',
+         f'**الدفعة:** {min(g["wave"] for _, g, _ in entries)}.\n',
          '| الملف | المحتوى | المرفق |', '|---|---|---|']
     for _, g, _ in entries:
         for b in g['boards']:
-            r = b['ref']
-            att = r if isinstance(r, str) else ('اللوحة الأولى' if r else '—')
+            att = ' و'.join(f'`{x}`' for x in b['attach']) if b['attach'] else 'بلا مرفق'
             o.append(f'| `{b["f"]}` | {b.get("why") or b.get("names")} | {att} |')
     open(os.path.join(path, 'README.md'), 'w').write('\n'.join(o) + '\n')
-idx = ['# الصور الخام\n', f'**{len(folders)} مجلداً.** كل مجلد فيه `README.md` بأسماء لوحاته. الشرح وطريقة العمل في `docs/art/images/00-guide.md`.\n',
-       '| المجلد | المحتوى | اللوحات |', '|---|---|---|']
-for folder, entries in sorted(folders.items()):
-    idx.append(f'| `{folder[len("art/raw/"):]}` | {" · ".join(g["t"] for _, g, _ in entries)} | {sum(len(g["boards"]) for _, g, _ in entries)} |')
+idx = ['# الصور الخام\n', f'**{len(folders)} مجلداً.** كل مجلد فيه `README.md` بأسماء لوحاته. الشرح في `docs/art/images/00-guide.md`، وترتيب الصنع بالدفعات في `docs/art/images/00-waves.md`.\n',
+       '| الدفعة | المجلد | المحتوى | اللوحات |', '|---|---|---|---|']
+for folder, entries in sorted(folders.items(), key=lambda kv: (min(g['wave'] for _, g, _ in kv[1]), kv[0])):
+    idx.append(f'| {min(g["wave"] for _, g, _ in entries)} | `{folder[len("art/raw/"):]}` | {" · ".join(g["t"] for _, g, _ in entries)} | {sum(len(g["boards"]) for _, g, _ in entries)} |')
 open(os.path.join(RAW, 'README.md'), 'w').write('\n'.join(idx) + '\n')
 print(len(folders), 'folders')

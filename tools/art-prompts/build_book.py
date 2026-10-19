@@ -52,36 +52,38 @@ def obj(first, what, items, bg=GREEN):
 # ---------------- stadiums ----------------
 VIEWS = {
  'shot': ('الكاميرا الرئيسية: التسديدة والحارس والهدف', 'L02 L03 L04 L08 L16 L20 L21',
-  'Side view along the edge of the penalty area. The whole goal in the right third of the image, seen from the side and slightly from the front so the goal mouth faces left towards the camera: both posts, the crossbar and the full net clearly visible, the goal line running from the near post towards the camera. The left two thirds: empty, well lit grass of the penalty area for the players, the penalty spot visible.'),
+  'Side view along the edge of the penalty area. The whole goal in the right third of the image, seen from the side and slightly from the front so the goal mouth faces left towards the camera: both posts, the crossbar and the full net clearly visible, the goal line running from the near post towards the camera. The left two thirds: empty, well lit grass of the penalty area for the players, the penalty spot visible. The goal is one simple white goal frame: two white posts, a white crossbar and a white net, nothing else beside it (no black poles, no padding, no extra posts, no cameras or equipment).'),
  'run': ('الجري والمراوغة والضغط في وسط الملعب', 'L02 L03 L06 L07 L11',
   'Side view of the middle of the pitch, the halfway line and part of the centre circle visible, no goal. Wide empty grass across the whole image for players running.'),
  'wing': ('الجناح على خط التماس والعرضية', 'L02 L03 L05',
-  'Side view along the touchline near the corner of the penalty area: the white touchline running across the foreground, the edge of the penalty area and the goal small in the far right, the advertising boards close behind.'),
+  'The camera stands on the touchline level with the edge of the penalty area and looks along the length of the pitch towards the right. The white touchline runs diagonally across the bottom of the image, the advertising boards close behind it on the left. Exactly ONE goal is visible: the near goal, small, at the far right edge of the image. The other half of the pitch is out of view, so no second goal appears anywhere.'),
  'shot-far': ('التسديدة البعيدة والضربة الحرة', 'L08 L16',
   'Side view from further back: the penalty area and the goal in the right quarter of the image, smaller and further away, the whole goal visible. Lots of empty grass on the left.'),
  'goal-front': ('الحارس من الأمام، والضربة الحرة بالحائط', 'L08 L09',
-  'View from just behind the penalty spot straight at the goal: the goal in the centre, filling the middle third of the image, the net and the crowd behind it, the penalty spot in the foreground.'),
+  'The camera stands just behind the penalty spot, only 11 metres in front of the goal, looking straight at it. The goal is large and close: its two posts stand at about one third and two thirds of the image width, the crossbar in the upper half, the whole net and the crowd behind it. The white penalty spot is in the bottom centre of the image.'),
  'behind-goal': ('ركلة الجزاء من خلف الشبكة، وإعادة الهدف', 'L03 L09 L22',
   'View from behind the goal at the height of a person: the back of the net in the foreground slightly out of focus, through it the goal mouth, the penalty spot in the middle of the image and the pitch beyond.'),
  'corner': ('الركنية والاحتفال عند الراية', 'L03 L10',
   'Corner flag area close up, the advertising boards and the front rows of the crowd right behind it, empty grass in front.'),
  'box-high': ('المنطقة من فوق قليلاً: الركنية والتسلل', 'L05 L10',
-  'Slightly raised camera on the side of the penalty area looking across the whole box and the goal, the six-yard box and penalty spot clearly visible, empty pitch.'),
+  'A raised camera in the first row of the stand, about six metres above the grass, close to the side of the penalty area and looking down across the box at the goal. Seen from above at an angle: the whole penalty box fills the lower half of the image, the goal is large and close in the centre with its net, and the six-yard box, the penalty arc and the penalty spot are sharp and easy to see. This view is higher than the other views: the horizon is near the top of the image.'),
  'bench': ('المدرب والبدلاء والتبديل', 'L02 L03 L12',
   'The touchline technical area: the coaches box marked on the grass and the team bench with empty seats behind it, no people.'),
  'touchline': ('الحكم الرابع ودخول البديل', 'L12 L13 L14',
   'The halfway line meeting the touchline seen from the side, the fourth official area and the bench far behind, empty.'),
  'monitor': ('شاشة الفار', 'L17 L19',
-  'The pitchside video review area next to the touchline: an empty review monitor on a stand under a small canopy, the pitch behind.'),
+  'An empty video review monitor on a stand under a small canopy, standing on the grass strip outside the touchline beside the pitch (never on the playing field), its screen blank and dark, the empty pitch behind it.'),
  'centre': ('البداية والاستراحة والنهاية', 'L15',
   'The centre circle and the centre spot seen from the side at pitch level, the stands behind, empty pitch.'),
  'tunnel-out': ('خروج اللاعبين من النفق', 'L15',
   'The players tunnel exit at pitch level, the tunnel opening and the stands around it, the pitch in front, no people.'),
 }
+FANS_LOOK = ('Fans wear many different plain colours (white, black, grey, yellow, green, blue, red, orange), no stripes, no club colours, no logos. '
+             'The faces are slightly out of focus, like a real TV shot.')
 CROWD = [
- ('crowd-joy.jpg', 'الجمهور يحتفل بالهدف', 'L03 L08 L09', 'Close-up of the home crowd in the stands celebrating a goal, scarves raised, arms up, some red flares, faces slightly blurred, generic colors.'),
- ('crowd-tense.jpg', 'ترقب قبل ركلة جزاء أو ضربة حرة', 'L08 L09', 'Close-up of the crowd in the stands, fans biting nails and holding their heads in tension, faces slightly blurred, generic colors.'),
- ('crowd-sad.jpg', 'تحسر بعد فرصة أو هدف ملغى', 'L02 L16 L17', 'Close-up of the crowd in the stands, disappointed fans with heads down and hands on heads, faces slightly blurred, generic colors.'),
+ ('crowd-joy.jpg', 'الجمهور يحتفل بالهدف', 'L03 L08 L09', 'Close-up of the home crowd in the stands celebrating a goal, scarves raised, arms up, two red flares glowing. ' + FANS_LOOK),
+ ('crowd-tense.jpg', 'ترقب قبل ركلة جزاء أو ضربة حرة', 'L08 L09', 'Close-up of the crowd in the stands, fans biting their nails and holding their heads in tension. ' + FANS_LOOK),
+ ('crowd-sad.jpg', 'تحسر بعد فرصة أو هدف ملغى', 'L02 L16 L17', 'Close-up of the crowd in the stands, disappointed fans with heads down and hands on their heads. ' + FANS_LOOK),
 ]
 def stadium(name, desc, cond, keys, crowd=True, extras=()):
     items = []
@@ -93,7 +95,7 @@ def stadium(name, desc, cond, keys, crowd=True, extras=()):
         items.append(('plate', f'{k}.jpg', why, used, p))
     if crowd:
         for f, why, used, view in CROWD:
-            items.append(('plate', f, why, used, f'Same stadium and same light as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view}'))
+            items.append(('plate', f, why, used, f'Same stadium and same light as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view} In the background, the same stadium as the attached image: {desc}.'))
     for f, why, used, view in extras:
         items.append(('plate', f, why, used, f'Same stadium as before. Photorealistic, cinematic, landscape 1536x1024, no logos, no text. {view}'))
     return items
