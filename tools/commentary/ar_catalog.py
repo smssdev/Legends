@@ -168,8 +168,25 @@ def story_lines():
     return rows
 
 
-def table(rows):
-    return ['| الملف | النبرة | النص |', '|---|---|---|'] + [f'| `{n}` | {t} | {x} |' for n, t, x in rows]
+PER_WAVE = 3   # clips of every group in each wave after the first
+
+
+def wave_of(i):
+    """Wave of the i-th clip (1-based) of a catalogue group: wave 1 is what the simulator says today."""
+    return 2 + (i - 1) // PER_WAVE
+
+
+SPRINT = {1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 8, 7: 9, 8: 9, 9: 9}
+
+
+def sprint(w):
+    return SPRINT.get(w, 10)
+
+
+def table(rows, waves=None):
+    if waves is None:
+        return ['| الملف | النبرة | النص |', '|---|---|---|'] + [f'| `{n}` | {t} | {x} |' for n, t, x in rows]
+    return ['| الدفعة | الملف | النبرة | النص |', '|---|---|---|---|'] + [f'| {w} | `{n}` | {t} | {x} |' for w, (n, t, x) in zip(waves, rows)]
 
 
 def write(path, lines):
@@ -193,6 +210,13 @@ def main():
         f'| `audio/raw/ar/story/` | ما يقوله المحاكي الآن (يُبنى بـ `python3 tools/commentary/arabic_voice.py build`) | {len(story)} |',
     ] + [f'| `audio/raw/ar/{prefix}/` | {title} | {len(rows)} |' for prefix, title, _, rows in cat] + [
         f'| `audio/raw/sfx/` | أصوات الملعب والمباراة | {len(SFX)} |', '',
+        '## الدفعات: نفس طريقة الصور\n',
+        'لا نسجل الكتالوج فئة فئة، بل **دفعة دفعة على كل الفئات**: كل دفعة تعطي كل اللحظات صوتاً، ثم نضعها في المحاكاة ونجربها ونعتمدها، ثم الدفعة التالية تزيد التنوع.\n',
+        '| الدفعة | المحتوى | السبرنت |', '|---|---|---|',
+        f'| 1 | كل `ar/story/` ({len(story)} مقطعاً): ما يقوله المحاكي الآن، فيعمل العربي كاملاً من أول دفعة | {sprint(1)} |',
+    ] + [f'| {w} | المقاطع {PER_WAVE * (w - 2) + 1} إلى {PER_WAVE * (w - 1)} من كل فئة ({sum(1 for *_, r in cat for i in range(1, len(r) + 1) if wave_of(i) == w)} مقطعاً) | {sprint(w)} |' for w in range(2, max(wave_of(len(r)) for *_, r in cat) + 1)] + [
+        '',
+        '**دورة كل دفعة:** صاحب المشروع يسجل أو يولّد المقاطع ويرفعها، وClaude يبنيها ويضعها في المحاكي، ثم مباراة كاملة بالعربي للتجربة، ثم الاعتماد والدفعة التالية.\n',
         '## التوليد أو التسجيل\n',
         '- **الصيغة:** WAV أحادي (mono) 44.1 أو 48 كيلوهرتز. mp3 أو m4a بنفس الاسم يعملان أيضاً.',
         '- **الصوت:** معلق عربي واحد لكل المقاطع، بالفصحى، بنفس الإعدادات من أول مقطع لآخر مقطع.',
@@ -214,7 +238,7 @@ def main():
                         '| الفئة | المجلد | متى تُقال | العدد |', '|---|---|---|---|'] + [
         f'| {title} | `audio/raw/ar/{prefix}/` | {when} | {len(rows)} |' for prefix, title, when, rows in cat] + ['']
     for prefix, title, when, rows in cat:
-        out += [f'### {title}\n', f'**المجلد:** `audio/raw/ar/{prefix}/` · **متى:** {when}\n'] + table(rows) + ['']
+        out += [f'### {title}\n', f'**المجلد:** `audio/raw/ar/{prefix}/` · **متى:** {when}\n'] + table(rows, [wave_of(i) for i in range(1, len(rows) + 1)]) + ['']
     out += [f'## الجزء 3: أصوات الملعب والمباراة ({len(SFX)} صوتاً)\n',
             '**المجلد:** `audio/raw/sfx/`. ليست صوت المعلق: تُسجَّل أو تُولَّد، بترخيص CC0 فقط. الحلقات (المكتوب عندها حلقة) تُصنع بحيث لا يُسمع مكان التكرار.\n',
             '| الملف | الصوت |', '|---|---|'] + [f'| `{k}.ogg` | {d} |' for k, d in SFX]
@@ -224,15 +248,15 @@ def main():
     write(os.path.join(RAW, 'README.md'), ['# الأصوات الخام\n', 'كل مجلد فيه `README.md` بأسماء ملفاته ونصوصها. القائمة الكاملة والشرح في `docs/audio/ARABIC_VOICE.md`.\n',
                                            '| المجلد | المحتوى | العدد |', '|---|---|---|', f'| `ar/story/` | ما يقوله المحاكي الآن | {len(story)} |'] +
           [f'| `ar/{prefix}/` | {title} | {len(rows)} |' for prefix, title, _, rows in cat] + [f'| `sfx/` | أصوات الملعب والمباراة | {len(SFX)} |'])
-    write(os.path.join(RAW, 'ar', 'story', 'README.md'), ['# ما يقوله المحاكي الآن\n', 'ضع هنا كل مقطع باسمه، ثم: `python3 tools/commentary/arabic_voice.py build`. القائمة نفسها في `files.txt`.\n'] + table(story))
+    write(os.path.join(RAW, 'ar', 'story', 'README.md'), ['# ما يقوله المحاكي الآن (الدفعة 1)\n', 'ضع هنا كل مقطع باسمه، ثم: `python3 tools/commentary/arabic_voice.py build`. القائمة نفسها في `files.txt`.\n'] + table(story))
     for prefix, title, when, rows in cat:
-        write(os.path.join(RAW, 'ar', prefix, 'README.md'), [f'# {title}\n', f'**متى:** {when}. ضع هنا كل مقطع باسمه.\n'] + table(rows))
+        write(os.path.join(RAW, 'ar', prefix, 'README.md'), [f'# {title}\n', f'**متى:** {when}. ضع هنا كل مقطع باسمه، دفعة دفعة (`docs/audio/ARABIC_VOICE.md`).\n'] + table(rows, [wave_of(i) for i in range(1, len(rows) + 1)]))
     write(os.path.join(RAW, 'sfx', 'README.md'), ['# أصوات الملعب والمباراة\n', 'بترخيص CC0 أو مولّدة. ضع هنا كل صوت باسمه.\n', '| الملف | الصوت |', '|---|---|'] + [f'| `{k}.ogg` | {d} |' for k, d in SFX])
     with open(os.path.join(RAW, 'ar', 'catalog.tsv'), 'w', encoding='utf-8') as f:
-        f.write('# كل مقاطع المعلق العربي (docs/audio/ARABIC_VOICE.md): المجلد\tالملف\tالنبرة\tالنص\n')
-        f.writelines(f'story\t{n}\t{t}\t{x}\n' for n, t, x in story)
+        f.write('# كل مقاطع المعلق العربي (docs/audio/ARABIC_VOICE.md): الدفعة\tالمجلد\tالملف\tالنبرة\tالنص\n')
+        f.writelines(f'1\tstory\t{n}\t{t}\t{x}\n' for n, t, x in story)
         for prefix, _, _, rows in cat:
-            f.writelines(f'{prefix}\t{n}\t{t}\t{x}\n' for n, t, x in rows)
+            f.writelines(f'{wave_of(i)}\t{prefix}\t{n}\t{t}\t{x}\n' for i, (n, t, x) in enumerate(rows, 1))
     print(total, 'lines,', len(SFX), 'sounds')
 
 

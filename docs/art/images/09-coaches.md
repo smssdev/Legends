@@ -49,12 +49,14 @@
 
 ## المجموعة 260: المدرب 1: البطاقة المرجعية
 
+**الدفعة 1** (السبرنت 2 (الصور) و3 (المحاكاة))  
 **المجلد:** `art/raw/coach-1/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 260.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -62,7 +64,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 260.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -70,12 +73,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 261: المدرب 1: الانطلاق والتوقف والدوران
 
+**الدفعة 1** (السبرنت 2 (الصور) و3 (المحاكاة))  
 **المجلد:** `art/raw/coach-1/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 261.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-1/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -83,7 +88,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 261.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-1/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-1/ref.png` و`art/raw/coach-1/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -91,12 +97,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 262: المدرب 1: الحركة
 
+**الدفعة 1** (السبرنت 2 (الصور) و3 (المحاكاة))  
 **المجلد:** `art/raw/coach-1/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 262.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-1/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -104,7 +112,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 262.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-1/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-1/ref.png` و`art/raw/coach-1/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -112,12 +121,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 263: المدرب 1: المشاعر
 
+**الدفعة 1** (السبرنت 2 (الصور) و3 (المحاكاة))  
 **المجلد:** `art/raw/coach-1/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 263.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-1/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -125,7 +136,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 263.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-1/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-1/ref.png` و`art/raw/coach-1/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -133,7 +145,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 263.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-1/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -141,7 +154,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 263.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-1/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-1/ref.png` و`art/raw/coach-1/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -149,7 +163,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 263.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-1/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-1/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -157,7 +172,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 263.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-1/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-1/ref.png` و`art/raw/coach-1/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing dark navy suit, white shirt, no tie, smart black shoes. Short grey hair, short grey beard, around 55 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -165,12 +181,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 264: المدرب 2: البطاقة المرجعية
 
+**الدفعة 2** (السبرنت 4)  
 **المجلد:** `art/raw/coach-2/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 264.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -178,7 +196,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 264.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -186,12 +205,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 265: المدرب 2: الانطلاق والتوقف والدوران
 
+**الدفعة 2** (السبرنت 4)  
 **المجلد:** `art/raw/coach-2/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 265.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-2/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -199,7 +220,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 265.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-2/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-2/ref.png` و`art/raw/coach-2/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -207,12 +229,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 266: المدرب 2: الحركة
 
+**الدفعة 2** (السبرنت 4)  
 **المجلد:** `art/raw/coach-2/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 266.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-2/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -220,7 +244,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 266.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-2/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-2/ref.png` و`art/raw/coach-2/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -228,12 +253,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 267: المدرب 2: المشاعر
 
+**الدفعة 2** (السبرنت 4)  
 **المجلد:** `art/raw/coach-2/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 267.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-2/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -241,7 +268,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 267.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-2/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-2/ref.png` و`art/raw/coach-2/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -249,7 +277,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 267.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-2/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -257,7 +286,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 267.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-2/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-2/ref.png` و`art/raw/coach-2/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -265,7 +295,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 267.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-2/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-2/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -273,7 +304,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 267.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-2/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-2/ref.png` و`art/raw/coach-2/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain black tracksuit jacket and trousers, black trainers. Shaved head, black stubble, around 40 years old, energetic. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -281,12 +313,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 268: المدرب 3: البطاقة المرجعية
 
+**الدفعة 3** (السبرنت 5)  
 **المجلد:** `art/raw/coach-3/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 268.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -294,7 +328,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 268.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -302,12 +337,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 269: المدرب 3: الانطلاق والتوقف والدوران
 
+**الدفعة 3** (السبرنت 5)  
 **المجلد:** `art/raw/coach-3/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 269.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-3/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -315,7 +352,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 269.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-3/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-3/ref.png` و`art/raw/coach-3/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -323,12 +361,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 270: المدرب 3: الحركة
 
+**الدفعة 3** (السبرنت 5)  
 **المجلد:** `art/raw/coach-3/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 270.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-3/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -336,7 +376,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 270.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-3/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-3/ref.png` و`art/raw/coach-3/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -344,12 +385,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 271: المدرب 3: المشاعر
 
+**الدفعة 3** (السبرنت 5)  
 **المجلد:** `art/raw/coach-3/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 271.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-3/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -357,7 +400,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 271.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-3/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-3/ref.png` و`art/raw/coach-3/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -365,7 +409,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 271.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-3/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -373,7 +418,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 271.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-3/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-3/ref.png` و`art/raw/coach-3/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -381,7 +427,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 271.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-3/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-3/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -389,7 +436,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 271.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-3/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-3/ref.png` و`art/raw/coach-3/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing dark grey suit, white shirt, thin black tie, black shoes. Black hair combed back, thick black moustache, around 50 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -397,12 +445,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 272: المدرب 4: البطاقة المرجعية
 
+**الدفعة 4** (السبرنت 6)  
 **المجلد:** `art/raw/coach-4/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 272.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -410,7 +460,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 272.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -418,12 +469,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 273: المدرب 4: الانطلاق والتوقف والدوران
 
+**الدفعة 4** (السبرنت 6)  
 **المجلد:** `art/raw/coach-4/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 273.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-4/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -431,7 +484,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 273.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-4/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-4/ref.png` و`art/raw/coach-4/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -439,12 +493,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 274: المدرب 4: الحركة
 
+**الدفعة 4** (السبرنت 6)  
 **المجلد:** `art/raw/coach-4/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 274.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-4/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -452,7 +508,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 274.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-4/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-4/ref.png` و`art/raw/coach-4/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -460,12 +517,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 275: المدرب 4: المشاعر
 
+**الدفعة 4** (السبرنت 6)  
 **المجلد:** `art/raw/coach-4/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 275.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-4/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -473,7 +532,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 275.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-4/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-4/ref.png` و`art/raw/coach-4/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -481,7 +541,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 275.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-4/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -489,7 +550,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 275.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-4/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-4/ref.png` و`art/raw/coach-4/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -497,7 +559,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 275.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-4/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-4/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -505,7 +568,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 275.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-4/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-4/ref.png` و`art/raw/coach-4/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing long black wool overcoat over a dark suit, a plain grey scarf, black shoes. Silver hair, clean shaven, around 65 years old, elegant. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -513,12 +577,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 276: المدرب 5: البطاقة المرجعية
 
+**الدفعة 5** (السبرنت 7)  
 **المجلد:** `art/raw/coach-5/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 276.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -526,7 +592,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 276.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -534,12 +601,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 277: المدرب 5: الانطلاق والتوقف والدوران
 
+**الدفعة 5** (السبرنت 7)  
 **المجلد:** `art/raw/coach-5/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 277.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-5/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -547,7 +616,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 277.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-5/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-5/ref.png` و`art/raw/coach-5/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -555,12 +625,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 278: المدرب 5: الحركة
 
+**الدفعة 5** (السبرنت 7)  
 **المجلد:** `art/raw/coach-5/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 278.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-5/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -568,7 +640,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 278.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-5/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-5/ref.png` و`art/raw/coach-5/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -576,12 +649,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 279: المدرب 5: المشاعر
 
+**الدفعة 5** (السبرنت 7)  
 **المجلد:** `art/raw/coach-5/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 279.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-5/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -589,7 +664,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 279.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-5/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-5/ref.png` و`art/raw/coach-5/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -597,7 +673,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 279.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-5/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -605,7 +682,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 279.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-5/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-5/ref.png` و`art/raw/coach-5/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -613,7 +691,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 279.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-5/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-5/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -621,7 +700,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 279.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-5/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-5/ref.png` و`art/raw/coach-5/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain navy quilted jacket, dark trousers, white trainers, a plain navy cap. Short beard, around 35 years old. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -629,12 +709,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 280: المدرب 6: البطاقة المرجعية
 
+**الدفعة 6** (السبرنت 8)  
 **المجلد:** `art/raw/coach-6/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 280.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -642,7 +724,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 280.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -650,12 +733,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 281: المدرب 6: الانطلاق والتوقف والدوران
 
+**الدفعة 6** (السبرنت 8)  
 **المجلد:** `art/raw/coach-6/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 281.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-6/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -663,7 +748,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 281.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-6/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-6/ref.png` و`art/raw/coach-6/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -671,12 +757,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 282: المدرب 6: الحركة
 
+**الدفعة 6** (السبرنت 8)  
 **المجلد:** `art/raw/coach-6/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 282.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-6/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -684,7 +772,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 282.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-6/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-6/ref.png` و`art/raw/coach-6/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -692,12 +781,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 283: المدرب 6: المشاعر
 
+**الدفعة 6** (السبرنت 8)  
 **المجلد:** `art/raw/coach-6/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 283.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-6/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -705,7 +796,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 283.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-6/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-6/ref.png` و`art/raw/coach-6/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -713,7 +805,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 283.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-6/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -721,7 +814,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 283.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-6/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-6/ref.png` و`art/raw/coach-6/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -729,7 +823,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 283.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-6/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-6/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -737,7 +832,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 283.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-6/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-6/ref.png` و`art/raw/coach-6/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain white shirt with rolled sleeves, dark waistcoat, dark trousers, brown shoes. Bald, glasses, around 45 years old, intense. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -745,12 +841,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 284: المدرب 7: البطاقة المرجعية
 
+**الدفعة 7** (السبرنت 8)  
 **المجلد:** `art/raw/coach-7/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 284.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -758,7 +856,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 284.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -766,12 +865,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 285: المدرب 7: الانطلاق والتوقف والدوران
 
+**الدفعة 7** (السبرنت 8)  
 **المجلد:** `art/raw/coach-7/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 285.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-7/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -779,7 +880,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 285.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-7/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-7/ref.png` و`art/raw/coach-7/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -787,12 +889,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 286: المدرب 7: الحركة
 
+**الدفعة 7** (السبرنت 8)  
 **المجلد:** `art/raw/coach-7/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 286.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-7/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -800,7 +904,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 286.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-7/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-7/ref.png` و`art/raw/coach-7/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -808,12 +913,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 287: المدرب 7: المشاعر
 
+**الدفعة 7** (السبرنت 8)  
 **المجلد:** `art/raw/coach-7/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 287.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-7/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -821,7 +928,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 287.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-7/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-7/ref.png` و`art/raw/coach-7/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -829,7 +937,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 287.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-7/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -837,7 +946,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 287.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-7/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-7/ref.png` و`art/raw/coach-7/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -845,7 +955,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 287.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-7/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-7/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -853,7 +964,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 287.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-7/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-7/ref.png` و`art/raw/coach-7/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain beige trench coat over a dark jumper, dark trousers, brown shoes. Long grey hair tied back, around 60 years old, philosopher look. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -861,12 +973,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 288: المدرب 8: البطاقة المرجعية
 
+**الدفعة 8** (السبرنت 9)  
 **المجلد:** `art/raw/coach-8/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 288.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -874,7 +988,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 288.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -882,12 +997,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 289: المدرب 8: الانطلاق والتوقف والدوران
 
+**الدفعة 8** (السبرنت 9)  
 **المجلد:** `art/raw/coach-8/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 289.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-8/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -895,7 +1012,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 289.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-8/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-8/ref.png` و`art/raw/coach-8/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -903,12 +1021,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 290: المدرب 8: الحركة
 
+**الدفعة 8** (السبرنت 9)  
 **المجلد:** `art/raw/coach-8/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 290.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-8/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -916,7 +1036,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 290.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-8/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-8/ref.png` و`art/raw/coach-8/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -924,12 +1045,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 291: المدرب 8: المشاعر
 
+**الدفعة 8** (السبرنت 9)  
 **المجلد:** `art/raw/coach-8/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 291.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-8/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -937,7 +1060,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 291.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-8/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-8/ref.png` و`art/raw/coach-8/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -945,7 +1069,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 291.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-8/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -953,7 +1078,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 291.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-8/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-8/ref.png` و`art/raw/coach-8/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -961,7 +1087,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 291.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-8/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-8/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -969,7 +1096,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 291.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-8/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-8/ref.png` و`art/raw/coach-8/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain black puffer jacket, black trousers, black trainers. Shaved head, thick black beard, around 45 years old, fiery. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -977,12 +1105,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 292: المدرب 9: البطاقة المرجعية
 
+**الدفعة 9** (السبرنت 9)  
 **المجلد:** `art/raw/coach-9/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 292.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -990,7 +1120,8 @@ A wide 3:2 landscape character reference card of a fictional female football hea
 
 ### 292.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -998,12 +1129,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 293: المدرب 9: الانطلاق والتوقف والدوران
 
+**الدفعة 9** (السبرنت 9)  
 **المجلد:** `art/raw/coach-9/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 293.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-9/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1011,7 +1144,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 293.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-9/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-9/ref.png` و`art/raw/coach-9/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1019,12 +1153,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 294: المدرب 9: الحركة
 
+**الدفعة 9** (السبرنت 9)  
 **المجلد:** `art/raw/coach-9/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 294.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-9/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1032,7 +1168,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 294.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-9/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-9/ref.png` و`art/raw/coach-9/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1040,12 +1177,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 295: المدرب 9: المشاعر
 
+**الدفعة 9** (السبرنت 9)  
 **المجلد:** `art/raw/coach-9/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 295.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-9/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1053,7 +1192,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 295.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-9/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-9/ref.png` و`art/raw/coach-9/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1061,7 +1201,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 295.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-9/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1069,7 +1210,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 295.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-9/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-9/ref.png` و`art/raw/coach-9/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1077,7 +1219,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 295.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-9/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-9/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1085,7 +1228,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 295.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-9/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-9/ref.png` و`art/raw/coach-9/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional female football head coach wearing dark navy blazer, white blouse, dark trousers, black shoes. Short dark bob haircut, around 45 years old, composed. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1093,12 +1237,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 296: المدرب 10: البطاقة المرجعية
 
+**الدفعة 10** (السبرنت 9)  
 **المجلد:** `art/raw/coach-10/`  
 **المحادثة:** جديدة. مدرب على خط التماس. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
 ### 296.1 `ref.png`
 
-البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف · بلا مرفق
+البطاقة المرجعية: أمام، ثلاثة أرباع، جانب، خلف  
+**بلا مرفق** (أول صورة)
 
 ```
 A wide 3:2 landscape character reference card of a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical.: four full body views side by side in one row at exactly the same scale, standing on the same ground line, relaxed with arms slightly away from the body. From left to right: front view facing the camera, three-quarter view facing right, side view facing right, back view. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1106,7 +1252,8 @@ A wide 3:2 landscape character reference card of a fictional football head coach
 
 ### 296.2 `faces.png`
 
-الوجه: تركيز، فرحة، حسرة، غضب · **ارفق اللوحة الأولى**
+الوجه: تركيز، فرحة، حسرة، غضب  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person. A wide 3:2 landscape image with four close-up portraits of him in a 2 by 2 grid, head and shoulders, three-quarter view facing right, each with a blurred night stadium and floodlights behind, separated by thin black lines. a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. Top left: focused and calm. Top right: screaming with joy. Bottom left: devastated, hands on head. Bottom right: angry, protesting. Photorealistic 3D render like a modern console football game, lit by cool stadium floodlights with a rim light on the hair. The image has no text, no numbers and no logos.
@@ -1114,12 +1261,14 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 297: المدرب 10: الانطلاق والتوقف والدوران
 
+**الدفعة 10** (السبرنت 9)  
 **المجلد:** `art/raw/coach-10/start/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 297.1 `idle-01.png`
 
-touchline idle: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-10/ref.png`**
+touchline idle: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Standing, arms crossed. Middle frame (frame 2): Shifting his weight. Right frame (frame 3): Hand on his chin, thinking. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1127,7 +1276,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 297.2 `idle-02.png`
 
-touchline idle: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-10/ref.png`** **+ اللوحة السابقة**
+touchline idle: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-10/ref.png` و`art/raw/coach-10/start/idle-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame touchline idle sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Arms crossed again. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1135,12 +1285,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 298: المدرب 10: الحركة
 
+**الدفعة 10** (السبرنت 9)  
 **المجلد:** `art/raw/coach-10/move/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 298.1 `instruct-01.png`
 
-shouting instructions: الإطارات 1 إلى 3 من 4 · **ارفق `art/raw/coach-10/ref.png`**
+shouting instructions: الإطارات 1 إلى 3 من 4  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping forward. Middle frame (frame 2): Pointing forward. Right frame (frame 3): Shouting, arm pointing. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1148,7 +1300,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 298.2 `instruct-02.png`
 
-shouting instructions: الإطارات 4 إلى 4 من 4 · **ارفق `art/raw/coach-10/ref.png`** **+ اللوحة السابقة**
+shouting instructions: الإطارات 4 إلى 4 من 4  
+**ارفق:** `art/raw/coach-10/ref.png` و`art/raw/coach-10/move/instruct-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 1 animation frame side by side in one row: frames 4 to 4 of a 4-frame shouting instructions sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Frame (frame 4): Hands cupped around his mouth, shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1156,12 +1309,14 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 299: المدرب 10: المشاعر
 
+**الدفعة 10** (السبرنت 9)  
 **المجلد:** `art/raw/coach-10/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
 ### 299.1 `celebrate-01.png`
 
-celebrating a goal: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-10/ref.png`**
+celebrating a goal: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Arms rising. Right frame (frame 3): Jumping with fists up. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1169,7 +1324,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 299.2 `celebrate-02.png`
 
-celebrating a goal: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-10/ref.png`** **+ اللوحة السابقة**
+celebrating a goal: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-10/ref.png` و`art/raw/coach-10/emotion/celebrate-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame celebrating a goal sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Landing, fist pump. Middle frame (frame 5): Turning to the bench, arms wide. Right frame (frame 6): Clapping. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1177,7 +1333,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 299.3 `despair-01.png`
 
-despair: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-10/ref.png`**
+despair: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Watching, tense. Middle frame (frame 2): Hands going to his head. Right frame (frame 3): Both hands on his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1185,7 +1342,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 299.4 `despair-02.png`
 
-despair: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-10/ref.png`** **+ اللوحة السابقة**
+despair: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-10/ref.png` و`art/raw/coach-10/emotion/despair-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame despair sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Turning away. Middle frame (frame 5): Crouching down. Right frame (frame 6): Standing, arms crossed, frowning. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1193,7 +1351,8 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ### 299.5 `argue-01.png`
 
-protesting: الإطارات 1 إلى 3 من 6 · **ارفق `art/raw/coach-10/ref.png`**
+protesting: الإطارات 1 إلى 3 من 6  
+**ارفق:** `art/raw/coach-10/ref.png`
 
 ```
 Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 1): Stepping towards the fourth official. Middle frame (frame 2): Arms wide open. Right frame (frame 3): Shouting. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
@@ -1201,7 +1360,8 @@ Use the attached reference card for this exact same person: the same face, hair,
 
 ### 299.6 `argue-02.png`
 
-protesting: الإطارات 4 إلى 6 من 6 · **ارفق `art/raw/coach-10/ref.png`** **+ اللوحة السابقة**
+protesting: الإطارات 4 إلى 6 من 6  
+**ارفق:** `art/raw/coach-10/ref.png` و`art/raw/coach-10/emotion/argue-01.png`
 
 ```
 Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame protesting sequence. The character is a fictional football head coach wearing plain grey hoodie and grey track trousers, white trainers, a plain grey cap. Glasses, short beard, around 38 years old, analytical. He is seen from the side, facing and moving to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time, so each frame moves on only slightly from the one before. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Left frame (frame 4): Pointing at the pitch. Middle frame (frame 5): Throwing his arms down. Right frame (frame 6): Walking back, shaking his head. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
