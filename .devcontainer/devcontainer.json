@@ -15,7 +15,7 @@
     "5173": { "label": "Vite dev server" }
   },
   "customizations": {
-    "codespaces": { "openFiles": ["docs/sprints/sprint-01.md"] },
+    "codespaces": { "openFiles": ["docs/sprints/sprint-02.md"] },
     "vscode": { "extensions": ["Vue.volar", "bmewburn.vscode-intelephense-client", "bradlc.vscode-tailwindcss"] }
   }
 }
