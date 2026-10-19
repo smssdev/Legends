@@ -341,7 +341,7 @@ export function direct(tick, ctx) {
     say(3.6, sb ? `He can't carry on. ${P(sb.in)} will replace him.` : 'The medical team are on.')
     return 6
   }
-  T.stoppage = () => { s.ball = [[0, 52, 34, 0]]; s.cam = [[0, 52, 50, 14]]; s.cuts.push({ t0: 0, t1: 2.4, type: 'board', team: 'A', plus: stoppage?.added ?? 3 }); s.snd.push([0.1, 'beep']); say(0.2, `${stoppage?.added ?? 3} minutes of added time.`); return 2.4 }
+  T.stoppage = () => { s.ball = [[0, 52, 34, 0]]; s.cam = [[0, 52, 50, 14]]; s.cuts.push({ t0: 0, t1: 2.4, type: 'board', team: 'A', plus: stoppage?.added ?? 3 }); s.snd.push([0.1, 'beep']); say(0.2, (stoppage?.added ?? 3) === 1 ? 'One minute of added time.' : `${stoppage?.added ?? 3} minutes of added time.`); return 2.4 }
   // Minor attacks, quiet minutes and the shootout run on the mini-map, from the server frames.
   const mini = (label) => { s.ball = [[0, 52.5, 34, 0]]; s.cam = [[0, 52.5, 34, 9]]; s.cuts.push({ t0: 0, t1: 99, type: 'minimap', label }); return s.dur }
   const ATTACK_LINES = { lost: ['{A} try to build, but {B} win it back.', 'Good pressing from {B}. They take it away.'], cleared: ['{A} press forward, but the {B} defence clears.', 'Cleared! {B} deal with it.'], foul: ['Foul on the {A} attack.', 'The referee stops play. Free kick to {A}.'] }

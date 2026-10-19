@@ -41,7 +41,7 @@
         </section>
 
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 16 / 9" aria-label="الملعب" dir="ltr">
-          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :commentary="commentaryOn" @cue="onCue" @sound="onSound" @say="(text, excited) => voice.say(text, excited)" />
+          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :commentary="commentaryOn" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" />
 
           <div dir="rtl" class="absolute end-3 top-3 z-10 flex items-stretch overflow-hidden rounded-md shadow-lg" aria-live="polite">
             <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.home, color: kits.homeText }">{{ view.clubs.home.name }}</span>
@@ -519,6 +519,7 @@ onMounted(async () => {
   try {
     view.value = await sim.show(props.id)
     teams.value = view.value.teams
+    voice.prepare([view.value.clubs.home.name, view.value.clubs.away.name])
     score.value = view.value.score
     if (mine.value) {
       Object.assign(draft, teams.value[mine.value].tactics)

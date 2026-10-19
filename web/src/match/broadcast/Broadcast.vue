@@ -32,9 +32,10 @@ import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { createWorld } from './world'
 import { animate, makePerson, setNear } from './people'
 import { direct, lerpKeys } from './director'
+import { phraseKey, slug, surname, type Line } from '../voice'
 
 const props = defineProps<{ kits: any; teams: any; seed: number; speed: number; minute: string; commentary?: boolean }>()
-const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [text: string, excited: boolean] }>()
+const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: Line] }>()
 const host = ref<HTMLDivElement>()
 const mini = ref<HTMLCanvasElement>()
 const hud = reactive<any>({})
@@ -109,16 +110,20 @@ if (location.search.includes('debug')) (window as any).__broadcast = { play: (tk
 // ---------------------------------------------------------------- per frame
 const rate = (tt) => { for (const [a, b, r] of script.slow) if (tt >= a && tt <= b) return r; return 1 }
 const name = (x) => (script.players[x] ? script.players[x].name : String(x))
-// Commentary lines: {A}/{B} become the clubs and {id} the player's surname, as a commentator says it.
-const PARTICLES = new Set(['de', 'da', 'di', 'do', 'dos', 'van', 'von', 'der', 'den', 'ten', 'le', 'la', 'el', 'al', 'ben', 'mac', 'bin'])
-function surname(full) {
-  const w = String(full).trim().split(/\s+/)
-  if (w.length < 2 || /^j(ú|u)nior$|^jr\.?$/i.test(w[w.length - 1])) return w.join(' ')
-  let i = w.length - 1
-  while (i > 0 && PARTICLES.has(w[i - 1].toLowerCase())) i--
-  return w.slice(i).join(' ')
+// Commentary lines: {A}/{B} become the clubs and {id} the player's surname, as a commentator
+// says it. The parts tell the commentator which recorded clips make up the line.
+const clubOf = (side) => props.kits[side].name
+function partsOf(l) {
+  const out = []
+  for (const piece of l.split(/(\{\w+\})/)) {
+    const m = piece.match(/^\{(\w+)\}$/)
+    if (m && (m[1] === 'A' || m[1] === 'B')) out.push({ club: slug(clubOf(script.sideOf(m[1]))), key: '@club' })
+    else if (m) { const p = script.players[m[1]]; if (p) out.push({ club: slug(clubOf(p.side)), key: surname(p.name) }) }
+    else if (/[A-Za-z]/.test(phraseKey(piece))) out.push({ key: phraseKey(piece) })
+  }
+  return out
 }
-const spoken = (l) => l.replace(/\{A\}/g, props.kits[script.sideOf('A')].name).replace(/\{B\}/g, props.kits[script.sideOf('B')].name).replace(/\{(\w+)\}/g, (_, id) => (script.players[id] ? surname(script.players[id].name) : ''))
+const spoken = (l) => l.replace(/\{A\}/g, clubOf(script.sideOf('A'))).replace(/\{B\}/g, clubOf(script.sideOf('B'))).replace(/\{(\w+)\}/g, (_, id) => (script.players[id] ? surname(script.players[id].name) : ''))
 const camTmp = { v: null }
 function project(v) { const p = v.clone().project(W.camera); return { x: ((p.x + 1) / 2) * 100, y: ((1 - p.y) / 2) * 100 } }
 function camKey(x, y, zoom) {
@@ -157,7 +162,7 @@ function frame(now) {
       t = Math.min(script.dur, t + real * r)
       for (const [ts, n] of script.snd) { const k = 's' + ts + n; if (t >= ts && !fired.has(k)) { fired.add(k); emit('sound', n) } }
       for (const [ts, n] of script.cues) { const k = 'c' + ts + n; if (t >= ts && !fired.has(k)) { fired.add(k); emit('cue', n) } }
-      for (const [ts, l, ex] of script.say) { const k = 'v' + ts; if (t >= ts && !fired.has(k)) { fired.add(k); emit('say', spoken(l), !!ex) } }
+      for (const [ts, l, ex] of script.say) { const k = 'v' + ts; if (t >= ts && !fired.has(k)) { fired.add(k); emit('say', { text: spoken(l), parts: partsOf(l), excited: !!ex }) } }
     }
     draw(t, real * r)
   }
