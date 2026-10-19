@@ -47,7 +47,8 @@ export interface TeamPlayer {
 
 export interface TeamSnapshot {
   formation: string
-  tactics: Tactics
+  /** null for the other side in a live match: its tactics stay private. */
+  tactics: Tactics | null
   subs_used: number
   subs_max: number
   stats: Record<string, number>
@@ -78,6 +79,8 @@ export interface Tick {
   finished: boolean
   frames: Frame[]
   moment?: { kind: string; ms: number }
+  /** Live matches: when this minute starts, on the server clock (ms). */
+  at?: number
   teams?: Record<Side, TeamSnapshot>
   debug?: { initiative?: { rate: number; home_share: number } }
 }
@@ -90,7 +93,10 @@ export interface LiveSync {
   next_at: number | null
   gap: boolean
   ticks: Tick[]
+  reactions: Reaction[]
 }
+
+export interface Reaction { id: number; side: Side; key: string; at: number }
 
 export interface MatchView {
   id: string
@@ -100,6 +106,9 @@ export interface MatchView {
   venue: 'home' | 'neutral'
   control: Record<Side, 'me' | 'cpu'>
   mode: 'solo' | 'live'
+  /** Live matches: the side this device's seat manages, or null for a viewer. */
+  you: Side | null
+  seats?: Record<Side, string>
   started: boolean
   tick: number
   finished: boolean
@@ -111,12 +120,20 @@ export interface MatchView {
   teams: Record<Side, TeamSnapshot>
 }
 
-export type Room = { id: string; host: { name: string; club: Club }; guest: { name: string; club: Club } | null; match_id: string | null }
+export type Room = { id: string; host: { name: string; club: Club }; guest: { name: string; club: Club } | null; match_id: string | null; seat?: string }
+
+// A live match's seat: the secret that lets this device manage its side. Kept per match in the browser.
+export const seats = {
+  get: (match: string) => { try { return localStorage.getItem(`legends.seat.${match}`) } catch { return null } },
+  set: (match: string, seat: string) => { try { localStorage.setItem(`legends.seat.${match}`, seat) } catch {} },
+}
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const match = path.match(/^\/matches\/([^/?]+)/)?.[1]
+  const seat = match ? seats.get(match) : null
   const res = await fetch(`/api/v1/sim${path}`, {
     method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(seat ? { 'X-Seat': seat } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!res.ok) {
@@ -146,6 +163,7 @@ export const sim = {
   room: (id: string) => call<Room>('GET', `/rooms/${id}`),
   openRoom: (name: string, clubId: number) => call<Room>('POST', '/rooms', { name, club_id: clubId }),
   joinRoom: (id: string, name: string, clubId: number) => call<Room>('POST', `/rooms/${id}/join`, { name, club_id: clubId }),
+  react: (id: string, key: string) => call<Reaction>('POST', `/matches/${id}/reactions`, { key }),
   report: (id: string, side: Side = 'home') => call<any>('GET', `/matches/${id}/report?side=${side}`),
 }
 

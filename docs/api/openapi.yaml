@@ -109,8 +109,8 @@ paths:
   /sim/matches/{match}/actions:
     post:
       tags: [simulator]
-      summary: Queue a coach order for the next minute
-      parameters: [{ $ref: '#/components/parameters/Match' }]
+      summary: Queue a coach order for the next minute. In a live match only the seat of that team may order (403 otherwise)
+      parameters: [{ $ref: '#/components/parameters/Match' }, { $ref: '#/components/parameters/Seat' }]
       requestBody:
         required: true
         content:
@@ -164,8 +164,8 @@ paths:
   /sim/matches/{match}/start:
     post:
       tags: [simulator]
-      summary: Start a live match (kick-off 3 s later)
-      parameters: [{ $ref: '#/components/parameters/Match' }]
+      summary: Start a live match (kick-off 30 s later, game.match.kickoff_ms); either coach's seat, 403 without one
+      parameters: [{ $ref: '#/components/parameters/Match' }, { $ref: '#/components/parameters/Seat' }]
       responses:
         '200':
           description: Same body as /live
@@ -180,13 +180,33 @@ paths:
       parameters:
         - { $ref: '#/components/parameters/Match' }
         - { name: since, in: query, schema: { type: integer, minimum: 0 }, description: Last minute this screen has shown }
+        - { $ref: '#/components/parameters/Seat' }
       responses:
         '200':
-          description: New minutes with their frames (the last 20 are kept)
+          description: New minutes with their frames (the last 20 are kept). The other side's tactics are null and its orders carry no tactics.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/LiveSync' }
         '409': { description: Not a live match }
+  /sim/matches/{match}/reactions:
+    post:
+      tags: [simulator]
+      summary: A coach's reaction in a live match (an emoji or a short word); both screens get it on their next /live
+      parameters: [{ $ref: '#/components/parameters/Match' }, { $ref: '#/components/parameters/Seat' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key]
+              properties:
+                key: { type: string, enum: [fire, clap, wow, laugh, angry, pray, unlucky, coming, easy, focus] }
+      responses:
+        '201': { description: The reaction, content: { application/json: { schema: { $ref: '#/components/schemas/Reaction' } } } }
+        '403': { description: No seat }
+        '409': { description: Not a live match }
+        '422': { description: Unknown key, or too soon after this coach's last one (game.match.reaction_gap_ms) }
   /sim/matches/{match}/report:
     get:
       tags: [simulator]
@@ -224,7 +244,7 @@ paths:
   /sim/rooms/{room}/join:
     post:
       tags: [simulator]
-      summary: The friend joins with a name and another club; the live match is made and kicks off 12 s later
+      summary: The friend joins with a name and another club; the live match is made and kicks off 30 s later (game.match.kickoff_ms)
       parameters: [{ $ref: '#/components/parameters/Room' }]
       requestBody:
         required: true
@@ -251,6 +271,11 @@ components:
       in: path
       required: true
       schema: { type: string, description: ULID }
+    Seat:
+      name: X-Seat
+      in: header
+      schema: { type: string }
+      description: A live match's secret seat (from POST /sim/rooms, /join, or the seats of a live POST /sim/matches). It names the side this device manages.
   responses:
     ValidationError:
       description: Validation failed (messages in Arabic)
@@ -269,6 +294,14 @@ components:
         host: { type: object, properties: { name: { type: string }, club: { type: object } } }
         guest: { type: object, nullable: true, properties: { name: { type: string }, club: { type: object } } }
         match_id: { type: string, nullable: true, description: Set once the friend joins; the host manages home, the guest away }
+        seat: { type: string, description: 'Only in the answer to POST /sim/rooms (the home seat) and to /join (the away seat): keep it on the device and send it as X-Seat' }
+    Reaction:
+      type: object
+      properties:
+        id: { type: integer }
+        side: { type: string, enum: [home, away] }
+        key: { type: string }
+        at: { type: integer, description: Server clock in ms }
     ClubSummary:
       type: object
       properties:
@@ -307,6 +340,8 @@ components:
         venue: { type: string }
         control: { type: object }
         mode: { type: string, enum: [solo, live] }
+        you: { type: [string, 'null'], enum: [home, away, null], description: 'Live: the side the request''s seat manages; null for a viewer. In a live match the other side''s tactics are null' }
+        seats: { type: object, description: 'Only in the answer to a live POST /sim/matches: {home, away} seats; the maker keeps home and sends away to the friend' }
         started: { type: boolean, description: Always true for solo matches }
         tick: { type: integer }
         finished: { type: boolean }
@@ -322,8 +357,9 @@ components:
       properties:
         started: { type: boolean }
         finished: { type: boolean }
-        tick: { type: integer, description: Last simulated minute }
+        tick: { type: integer, description: The minute playing now (minutes made ahead of time do not count yet) }
         server_now: { type: integer, description: Server clock in ms }
         next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
         gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
-        ticks: { type: array, items: { type: object } }
+        ticks: { type: array, items: { type: object }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
+        reactions: { type: array, items: { $ref: '#/components/schemas/Reaction' }, description: The last few seconds of reactions }
