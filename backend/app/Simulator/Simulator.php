@@ -11,6 +11,7 @@ use App\Models\SimMatch;
 use App\Models\SimRoom;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -18,6 +19,8 @@ use Illuminate\Validation\ValidationException;
  * as a league match. Solo matches: the client drives the clock (speed,
  * pause, skip). Live matches (two devices, one per coach): the server keeps
  * the clock and both screens poll it. The server computes every minute.
+ * In a live match each coach holds a secret seat: only it gives orders for
+ * its side, and the other side's tactics never reach it.
  */
 class Simulator
 {
@@ -55,7 +58,8 @@ class Simulator
             'seed' => $seed,
             'setup' => $setup,
             'control' => $live ? ['home' => 'me', 'away' => 'me'] : ['home' => $in['control']['home'] ?? 'me', 'away' => $in['control']['away'] ?? 'cpu'],
-            'live' => $live ? ['next_at' => null, 'recent' => []] : null,
+            'live' => $live ? ['next_at' => null, 'recent' => [], 'reactions' => []] : null,
+            'seats' => $live ? ['home' => $in['seats']['home'] ?? self::newSeat(), 'away' => $in['seats']['away'] ?? self::newSeat()] : null,
             'state' => $state,
             'ticks' => [],
             'pending' => [],
@@ -68,8 +72,9 @@ class Simulator
      * A friend joins a room: the guest's club and name are claimed with one
      * conditional update (SQLite: no row locks), then the live match is made
      * and kicks off once both screens have had time to show the preview.
+     * Returns the guest's seat: the host already holds the home one.
      */
-    public function join(SimRoom $room, string $name, int $clubId): SimMatch
+    public function join(SimRoom $room, string $name, int $clubId): string
     {
         return DB::transaction(function () use ($room, $name, $clubId) {
             $claimed = SimRoom::whereKey($room->id)->whereNull('guest_name')
@@ -78,15 +83,62 @@ class Simulator
                 throw ValidationException::withMessages(['room' => 'دخل صديق آخر هذه الغرفة.']);
             }
             $room->refresh();
+            $seat = self::newSeat();
             $match = $this->create([
                 'home_id' => $room->host_club_id, 'away_id' => $clubId, 'mode' => 'live',
                 'names' => ['home' => $room->host_name, 'away' => $name],
+                'seats' => ['home' => $room->host_seat ?? self::newSeat(), 'away' => $seat],
             ]);
             $room->update(['sim_match_id' => $match->id]);
-            $this->start($match, (int) config('game.match.room_kickoff_ms'));
+            $this->start($match);
 
-            return $match;
+            return $seat;
         });
+    }
+
+    public static function newSeat(): string
+    {
+        return Str::random(40);
+    }
+
+    /** The side a seat manages in a live match, or null (a viewer, or a solo match). */
+    public static function seatSide(SimMatch $match, ?string $seat): ?string
+    {
+        foreach ($match->seats ?? [] as $side => $secret) {
+            if ($seat !== null && $seat !== '' && hash_equals($secret, $seat)) {
+                return $side;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * What one side may see of a live minute: the other side's tactics and
+     * its orders' details stay hidden (CLAUDE.md, privacy in a match).
+     * $you is null for a viewer, who sees neither side's tactics.
+     */
+    public static function redact(array $data, ?string $you): array
+    {
+        foreach (['home', 'away'] as $side) {
+            if ($side !== $you && isset($data['teams'][$side])) {
+                $data['teams'][$side]['tactics'] = null;
+            }
+        }
+        if (isset($data['events'])) {
+            $data['events'] = array_map(function ($e) use ($you) {
+                if ($e['type'] === 'action' && ($e['team'] ?? null) !== $you) {
+                    unset($e['action']['tactics']);
+                }
+
+                return $e;
+            }, $data['events']);
+        }
+        if (isset($data['rejected'])) {
+            $data['rejected'] = array_values(array_filter($data['rejected'], fn ($r) => ($r['action']['team'] ?? null) === $you));
+        }
+
+        return $data;
     }
 
     /** Queues an order for the next minute that has not been simulated yet. */
@@ -143,9 +195,10 @@ class Simulator
         return $out;
     }
 
-    /** Starts a live match's clock a few seconds from now, so both screens are ready. */
-    public function start(SimMatch $match, int $delayMs = 3000): void
+    /** Starts a live match's clock: kick-off after the pre-match break (game.match.kickoff_ms). */
+    public function start(SimMatch $match, ?int $delayMs = null): void
     {
+        $delayMs ??= (int) config('game.match.kickoff_ms');
         DB::transaction(function () use ($match, $delayMs) {
             $m = SimMatch::findOrFail($match->id);
             if ($m->live !== null && $m->live['next_at'] === null) {
@@ -159,18 +212,22 @@ class Simulator
      * Live matches: simulates every minute that is due by the clock, then
      * returns the minutes after $since that are still kept with their frames.
      * Both screens call this; the write transaction makes one of them do the
-     * work and the other read the result.
+     * work and the other read the result. A minute is made a little before it
+     * starts (live_lead_ms) and carries its start time on the server clock
+     * (at), so both screens play it at the same instant, neither ahead nor
+     * behind. $you is the side of the screen asking (redact()).
      */
-    public function sync(SimMatch $match, int $since): array
+    public function sync(SimMatch $match, int $since, ?string $you = null): array
     {
-        return DB::transaction(function () use ($match, $since) {
+        return DB::transaction(function () use ($match, $since, $you) {
             $m = SimMatch::findOrFail($match->id);
             $live = $m->live;
             $now = GameClock::nowMs();
             $timing = $m->state['cfg']['match'];
+            $lead = (int) ($timing['live_lead_ms'] ?? 0);
 
-            for ($n = 0; $live['next_at'] !== null && $now >= $live['next_at'] && ! $m->state['finished'] && $n < 300; $n++) {
-                $tick = $this->advance($m, 1)[0];
+            for ($n = 0; $live['next_at'] !== null && $now + $lead >= $live['next_at'] && ! $m->state['finished'] && $n < 300; $n++) {
+                $tick = $this->advance($m, 1)[0] + ['at' => $live['next_at']];
                 $live['recent'] = array_slice([...$live['recent'], $tick], -20);
                 $live['next_at'] += $tick['moment']['ms'] + self::pauseMs($tick, $timing);
             }
@@ -178,17 +235,64 @@ class Simulator
             $m->save();
 
             $ticks = array_values(array_filter($live['recent'], fn ($t) => $t['tick'] > $since));
+            $now = self::playing($m, $now);
 
             return [
                 'started' => $live['next_at'] !== null,
-                'finished' => $m->state['finished'],
-                'tick' => $m->state['tick'],
-                'server_now' => $now,
+                'finished' => $now['finished'],
+                'tick' => $now['tick'],
+                'server_now' => $now['ms'],
                 'next_at' => $m->state['finished'] ? null : $live['next_at'],
                 // Older minutes were dropped from the buffer: the screen jumps to the latest.
                 'gap' => $ticks && $ticks[0]['tick'] > $since + 1,
-                'ticks' => $ticks,
+                'ticks' => array_map(fn ($t) => self::redact($t, $you), $ticks),
+                // The coaches' reactions of the last few seconds (each screen keeps the ids it has shown).
+                'reactions' => array_values(array_filter($live['reactions'] ?? [], fn ($r) => $r['at'] >= $now['ms'] - 8000)),
             ];
+        });
+    }
+
+    /**
+     * The minute a live match is playing at $ms: minutes made ahead of time
+     * do not count yet, so their score and their end stay unknown.
+     */
+    private static function playing(SimMatch $m, int $ms): array
+    {
+        $s = $m->state;
+        $recent = $m->live['recent'] ?? [];
+        $ahead = array_values(array_filter($recent, fn ($t) => ($t['at'] ?? 0) > $ms));
+        if (! $ahead) {
+            return ['ms' => $ms, 'tick' => $s['tick'], 'score' => $s['score'], 'finished' => $s['finished']];
+        }
+        $before = array_values(array_filter($recent, fn ($t) => ($t['at'] ?? 0) <= $ms));
+
+        return [
+            'ms' => $ms, 'tick' => $ahead[0]['tick'] - 1, 'finished' => false,
+            'score' => $before ? end($before)['score'] : ['home' => 0, 'away' => 0],
+        ];
+    }
+
+    /**
+     * A coach reacts (a cheer, a taunt): both screens show it on their next
+     * sync. At most one every reaction_gap_ms per side.
+     */
+    public function react(SimMatch $match, string $side, string $key): array
+    {
+        return DB::transaction(function () use ($match, $side, $key) {
+            $m = SimMatch::findOrFail($match->id);
+            $live = $m->live;
+            $now = GameClock::nowMs();
+            $list = $live['reactions'] ?? [];
+            $mine = array_filter($list, fn ($r) => $r['side'] === $side);
+            if ($mine && end($mine)['at'] > $now - (int) config('game.match.reaction_gap_ms')) {
+                throw ValidationException::withMessages(['key' => 'تمهّل قليلاً.']);
+            }
+            $reaction = ['id' => ($list ? end($list)['id'] : 0) + 1, 'side' => $side, 'key' => $key, 'at' => $now];
+            $live['reactions'] = array_slice([...$list, $reaction], -20);
+            $m->live = $live;
+            $m->save();
+
+            return $reaction;
         });
     }
 
@@ -212,10 +316,12 @@ class Simulator
         return Report::build($match->state, $match->ticks ?? [], $side);
     }
 
-    /** The match as the screen needs it at the start. */
-    public function view(SimMatch $match): array
+    /** The match as the screen needs it at the start; $you is the side of a live seat. */
+    public function view(SimMatch $match, ?string $you = null): array
     {
         $s = $match->state;
+        $live = $match->live !== null;
+        $now = $live ? self::playing($match, GameClock::nowMs()) : $s;
 
         return [
             'id' => $match->id,
@@ -224,11 +330,12 @@ class Simulator
             'referee' => $s['referee'],
             'venue' => $s['venue'],
             'control' => $match->control,
-            'mode' => $match->live === null ? 'solo' : 'live',
-            'started' => $match->live === null || $match->live['next_at'] !== null,
-            'tick' => $s['tick'],
-            'finished' => $s['finished'],
-            'score' => $s['score'],
+            'mode' => $live ? 'live' : 'solo',
+            'you' => $you,
+            'started' => ! $live || $match->live['next_at'] !== null,
+            'tick' => $now['tick'],
+            'finished' => $now['finished'],
+            'score' => $now['score'],
             'formations' => Formations::names(),
             'timing' => [
                 'tick_ms' => (int) $s['cfg']['match']['tick_ms'],
@@ -237,7 +344,7 @@ class Simulator
             ],
             'clubs' => ['home' => $s['teams']['home']['club'], 'away' => $s['teams']['away']['club']],
             'coaches' => (object) ($match->setup['names'] ?? []),
-            'teams' => self::teams($s),
+            'teams' => $live ? self::redact(['teams' => self::teams($s)], $you)['teams'] : self::teams($s),
             'slots' => [
                 'home' => Formations::slots($s['teams']['home']['formation']),
                 'away' => Formations::slots($s['teams']['away']['formation']),

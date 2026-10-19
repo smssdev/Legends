@@ -16,7 +16,8 @@ Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::c
     Route::post('matches/{match}/actions', 'order')->middleware('throttle:120,1');
     Route::post('matches/{match}/ticks', 'ticks');
     Route::post('matches/{match}/start', 'start');
-    Route::get('matches/{match}/live', 'live')->middleware('throttle:240,1');
+    Route::get('matches/{match}/live', 'live')->middleware('throttle:360,1');
+    Route::post('matches/{match}/reactions', 'react')->middleware('throttle:90,1');
     Route::get('matches/{match}/report', 'report');
     Route::post('rooms', 'roomStore')->middleware('throttle:30,1');
     Route::get('rooms/{room}', 'roomShow')->middleware('throttle:240,1');
