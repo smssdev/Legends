@@ -176,11 +176,11 @@ def wave_of(i):
     return 2 + (i - 1) // PER_WAVE
 
 
-SPRINT = {1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 8, 7: 9, 8: 9, 9: 9}
+SPRINT = {1: 3, 2: 46, 3: 47, 4: 48, 5: 49, 6: 50, 7: 51, 8: 51, 9: 51}  # wave 1 now, the rest after v1.1 (phase Z)
 
 
 def sprint(w):
-    return SPRINT.get(w, 10)
+    return SPRINT.get(w, 52)
 
 
 def table(rows, waves=None):

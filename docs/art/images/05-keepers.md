@@ -93,7 +93,7 @@ side shuffle along the goal line: الإطارات 1 إلى 3 من 6
 **ارفق:** `art/raw/keeper/ref.png`
 
 ```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black hair, tanned skin, clean shaven, tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black hair, tanned skin, clean shaven, tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ### 199.4 `shuffle-02.png`
@@ -102,7 +102,7 @@ side shuffle along the goal line: الإطارات 4 إلى 6 من 6
 **ارفق:** `art/raw/keeper/ref.png` و`art/raw/keeper/ready/shuffle-01.png`
 
 ```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black hair, tanned skin, clean shaven, tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black hair, tanned skin, clean shaven, tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ## المجموعة 200: حارس المرمى 1: الارتماء
@@ -332,7 +332,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 203: حارس المرمى 1: التوزيع
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/keeper/distribute/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -407,7 +407,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 205: حارس المرمى 1: ركلات الجزاء
 
-**الدفعة 2** (السبرنت 4)  
+**الدفعة 2** (السبرنت 46 (v1.2))  
 **المجلد:** `art/raw/keeper/penalty/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -494,7 +494,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 206: حارس المرمى 2: البطاقة المرجعية
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/`  
 **المحادثة:** جديدة. حارس بكل الحركات: من الجانب والأمام والخلف. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
@@ -518,7 +518,7 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 207: حارس المرمى 2: الاستعداد
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/ready/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -546,7 +546,7 @@ side shuffle along the goal line: الإطارات 1 إلى 3 من 6
 **ارفق:** `art/raw/keeper-2/ref.png`
 
 ```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), shaved head, dark brown skin, short black beard, very tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), shaved head, dark brown skin, short black beard, very tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ### 207.4 `shuffle-02.png`
@@ -555,12 +555,12 @@ side shuffle along the goal line: الإطارات 4 إلى 6 من 6
 **ارفق:** `art/raw/keeper-2/ref.png` و`art/raw/keeper-2/ready/shuffle-01.png`
 
 ```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), shaved head, dark brown skin, short black beard, very tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), shaved head, dark brown skin, short black beard, very tall goalkeeper build. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ## المجموعة 208: حارس المرمى 2: الارتماء
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/dive/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -656,7 +656,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 209: حارس المرمى 2: الإمساك والإبعاد
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/hands/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -761,7 +761,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 210: حارس المرمى 2: الالتحام والسقوط
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/ground/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -785,7 +785,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 211: حارس المرمى 2: التوزيع
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/distribute/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -836,7 +836,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 212: حارس المرمى 2: المشاعر
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -860,7 +860,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 213: حارس المرمى 2: ركلات الجزاء
 
-**الدفعة 3** (السبرنت 5)  
+**الدفعة 3** (السبرنت 47 (v1.3))  
 **المجلد:** `art/raw/keeper-2/penalty/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -947,7 +947,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 214: حارس المرمى 3: البطاقة المرجعية
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/`  
 **المحادثة:** جديدة. حارس بكل الحركات: من الجانب والأمام والخلف. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
@@ -971,7 +971,7 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 215: حارس المرمى 3: الاستعداد
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/ready/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -999,7 +999,7 @@ side shuffle along the goal line: الإطارات 1 إلى 3 من 6
 **ارفق:** `art/raw/keeper-3/ref.png`
 
 ```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), ginger hair in a short ponytail, pale skin, red beard, very tall. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), ginger hair in a short ponytail, pale skin, red beard, very tall. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ### 215.4 `shuffle-02.png`
@@ -1008,12 +1008,12 @@ side shuffle along the goal line: الإطارات 4 إلى 6 من 6
 **ارفق:** `art/raw/keeper-3/ref.png` و`art/raw/keeper-3/ready/shuffle-01.png`
 
 ```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), ginger hair in a short ponytail, pale skin, red beard, very tall. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), ginger hair in a short ponytail, pale skin, red beard, very tall. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ## المجموعة 216: حارس المرمى 3: الارتماء
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/dive/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1109,7 +1109,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 217: حارس المرمى 3: الإمساك والإبعاد
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/hands/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1214,7 +1214,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 218: حارس المرمى 3: الالتحام والسقوط
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/ground/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1238,7 +1238,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 219: حارس المرمى 3: التوزيع
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/distribute/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1289,7 +1289,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 220: حارس المرمى 3: المشاعر
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1313,7 +1313,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 221: حارس المرمى 3: ركلات الجزاء
 
-**الدفعة 4** (السبرنت 6)  
+**الدفعة 4** (السبرنت 48 (v1.4))  
 **المجلد:** `art/raw/keeper-3/penalty/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1400,7 +1400,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 222: حارس المرمى 4: البطاقة المرجعية
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/`  
 **المحادثة:** جديدة. حارس بكل الحركات: من الجانب والأمام والخلف. ابدأ بها: كل مجموعات هذه الشخصية ترفقها.
 
@@ -1424,7 +1424,7 @@ Use the attached reference card for this exact same person. A wide 3:2 landscape
 
 ## المجموعة 223: حارس المرمى 4: الاستعداد
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/ready/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1452,7 +1452,7 @@ side shuffle along the goal line: الإطارات 1 إلى 3 من 6
 **ارفق:** `art/raw/keeper-4/ref.png`
 
 ```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black curly hair, dark skin, clean shaven, very athletic. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black curly hair, dark skin, clean shaven, very athletic. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Ready stance. Middle frame (frame 2): Side step, feet apart. Right frame (frame 3): Feet together. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ### 223.4 `shuffle-02.png`
@@ -1461,12 +1461,12 @@ side shuffle along the goal line: الإطارات 4 إلى 6 من 6
 **ارفق:** `art/raw/keeper-4/ref.png` و`art/raw/keeper-4/ready/shuffle-01.png`
 
 ```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black curly hair, dark skin, clean shaven, very athletic. He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
+Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 6-frame side shuffle along the goal line sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male goalkeeper in a plain pure white long-sleeve shirt, white shorts, white socks, black boots and big black gloves, no logos or numbers (the game paints the keeper colours on the white), short black curly hair, dark skin, clean shaven, very athletic. He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Side step again. Middle frame (frame 5): Feet together. Right frame (frame 6): Set position. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos.
 ```
 
 ## المجموعة 224: حارس المرمى 4: الارتماء
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/dive/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1562,7 +1562,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 225: حارس المرمى 4: الإمساك والإبعاد
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/hands/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1667,7 +1667,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 226: حارس المرمى 4: الالتحام والسقوط
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/ground/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1691,7 +1691,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 227: حارس المرمى 4: التوزيع
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/distribute/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1742,7 +1742,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 228: حارس المرمى 4: المشاعر
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/emotion/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 
@@ -1766,7 +1766,7 @@ Use the attached images: the reference card for this exact same person (same fac
 
 ## المجموعة 229: حارس المرمى 4: ركلات الجزاء
 
-**الدفعة 5** (السبرنت 7)  
+**الدفعة 5** (السبرنت 49 (v1.5))  
 **المجلد:** `art/raw/keeper-4/penalty/`  
 **المحادثة:** جديدة. كل لوحة 3 إطارات متتالية (2 للحركات العريضة). ارفق البطاقة المرجعية، ومن الإطار الثاني فصاعداً ارفق معها اللوحة السابقة.
 

@@ -42,7 +42,7 @@ def anim_prompt(who, seq_title, total, frames, view, ref_mode):
     a = frames[0][0]
     span = (f'{n} animation frames side by side in one row: frames {a} to {a + n - 1} of {an(total)}-frame {seq_title} sequence'
             if n > 1 else f'one single animation frame, centred: frame {a} of {an(total)}-frame {seq_title} sequence')
-    if view in (VIEW['side'], VIEW['backwards']):   # in a side view the model cannot tell left from right: name the near and far limbs
+    if view in (VIEW['side'], VIEW['backwards'], VIEW['q-front'], VIEW['q-back']):   # in a side view the model cannot tell left from right: name the near and far limbs
         frames = [(i, re.sub(r'\bthe (right|left) (foot|leg|knee|arm|heel|thigh)', lambda m: f'the {"near" if m.group(1) == "right" else "far"} ({m.group(1)}) {m.group(2)}', d)) for i, d in frames]
     diff = ('Each frame is a clearly different pose from the others in this image; never repeat a pose. ' if n > 1 else '') + \
            ('Do not copy any pose from the attached previous image: draw the next poses of the motion. ' if ref_mode == 'prev' else '')
@@ -52,8 +52,8 @@ def anim_prompt(who, seq_title, total, frames, view, ref_mode):
 
 VIEW = {
  'side': 'He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right.',
- 'q-front': 'He is seen in three-quarter view, his body turned towards the camera and to the right; whenever he moves, he moves diagonally towards the camera and to the right.',
- 'q-back': 'He is seen in three-quarter view from behind, his back half turned to the camera; whenever he moves, he moves diagonally away from the camera and to the right.',
+ 'q-front': 'He is seen in three-quarter view, his body turned towards the camera and to the right, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally towards the camera and to the right.',
+ 'q-back': 'He is seen in three-quarter view from behind, his back half turned to the camera, so his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves diagonally away from the camera and to the right.',
  'front': 'He is seen from the front, facing the camera; whenever he moves, he moves straight towards the camera.',
  'back': 'He is seen from behind, his back to the camera; whenever he moves, he moves straight away from the camera.',
  'turn': 'He stays on the same spot and turns round on it; each frame says exactly which way he faces.',
@@ -68,7 +68,7 @@ def cycle(style, frames=8):
     for F, O in (('right', 'left'), ('left', 'right')):
         seq += [f'{style["d"]}: the {F} foot just touching down in front of the body heel first, the {O} leg stretched behind, the {O} arm forward.',
                 f'{style["d"]}: the {F} foot flat under the hips taking the weight, knee slightly bent, the {O} leg swinging forward low.',
-                f'{style["d"]}: the {F} leg pushing off behind, the {O} knee passing forward at hip height.',
+                f'{style["d"]}: only the toes of the {F} foot still touch the ground, far behind the hips, the {F} leg almost straight; the {O} knee is lifted high in front at hip height with its foot off the ground. This pose must look clearly different from the first frame of the stride.',
                 f'{style["d"]}: {up}, the {O} knee driven forward, the {F} leg extended behind.']
     if frames == 12:  # sprints: six phases per stride for a smoother cycle
         seq = []
@@ -410,8 +410,9 @@ for g in ALLB:
 def attach_md(b):
     return ('**ارفق:** ' + ' و'.join(f'`{a}`' for a in b['attach'])) if b['attach'] else '**بلا مرفق** (أول صورة)'
 WAVES = sorted({g['wave'] for g in ALLB})
-SPRINT_OF = {1: 'السبرنت 2 (الصور) و3 (المحاكاة)', 2: 'السبرنت 4', 3: 'السبرنت 5', 4: 'السبرنت 6', 5: 'السبرنت 7', 6: 'السبرنت 8', 7: 'السبرنت 8'}
-def sprint_of(w): return SPRINT_OF.get(w, 'السبرنت 9' if w <= 11 else 'السبرنت 10')
+# wave 1 now (sprints 2-3); the rest after v1.1, one version per sprint (phase Z, sprints 46-52)
+SPRINT_OF = {1: 'السبرنت 2 (الصور) و3 (المحاكاة)', 2: 'السبرنت 46 (v1.2)', 3: 'السبرنت 47 (v1.3)', 4: 'السبرنت 48 (v1.4)', 5: 'السبرنت 49 (v1.5)', 6: 'السبرنت 50 (v1.6)', 7: 'السبرنت 50 (v1.6)'}
+def sprint_of(w): return SPRINT_OF.get(w, 'السبرنت 51 (v1.7)' if w <= 11 else 'السبرنت 52 (v1.8)')
 
 # ---------------- write: one guide + one file per part ----------------
 OUT = os.path.join('..', '..', 'docs', 'art', 'images')
