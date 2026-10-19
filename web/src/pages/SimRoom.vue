@@ -82,7 +82,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Crest from '../components/Crest.vue'
-import { clubColors, sim, type Club, type Room } from '../api/sim'
+import { clubColors, seats, sim, type Club, type Room } from '../api/sim'
 
 const props = defineProps<{ room?: string }>()
 const router = useRouter()
@@ -119,11 +119,13 @@ async function go() {
     if (!room.value) {
       const r = await sim.openRoom(name.value.trim(), club.value!.id)
       write(`legends.room.${r.id}`, 'host')
+      write(`legends.roomseat.${r.id}`, r.seat!)
       await router.replace({ name: 'sim-room', params: { room: r.id } })
     } else {
       const r = await sim.joinRoom(room.value.id, name.value.trim(), club.value!.id)
       write(`legends.room.${r.id}`, 'guest')
-      await router.replace({ name: 'sim-match', params: { id: r.match_id! }, query: { side: 'away' } })
+      seats.set(r.match_id!, r.seat!)
+      await router.replace({ name: 'sim-match', params: { id: r.match_id! } })
     }
   } catch (e: any) {
     error.value = e.message
@@ -137,8 +139,12 @@ async function load() {
   if (!props.room) { room.value = null; return }
   try {
     room.value = await sim.room(props.room)
-    // Both sides go to the match once it exists: the host manages home, the guest away.
-    if (room.value.match_id && seat.value) return router.replace({ name: 'sim-match', params: { id: room.value.match_id }, query: { side: seat.value === 'host' ? 'home' : 'away' } })
+    // Both go to the match once it exists, each with his own seat: the host manages home, the guest away.
+    if (room.value.match_id && seat.value) {
+      const mine = read(`legends.roomseat.${props.room}`)
+      if (seat.value === 'host' && mine && !seats.get(room.value.match_id)) seats.set(room.value.match_id, mine)
+      return router.replace({ name: 'sim-match', params: { id: room.value.match_id } })
+    }
     if (isHost.value) timer = window.setTimeout(load, 1500)
   } catch (e: any) {
     error.value = e.message
