@@ -7,7 +7,7 @@
 return [
     'match' => [
         'half_length' => 45, 'extra_half_length' => 15,
-        'tick_ms' => 3000, 'halftime_seconds' => 30,
+        'tick_ms' => 3000, 'halftime_seconds' => 15,
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
@@ -19,10 +19,11 @@ return [
         'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
-            'quiet' => 900, 'attack' => 1600, 'stoppage' => 2400, 'shootout' => 3000,
-            'offside' => 6400, 'miss' => 7000, 'save' => 6400, 'corner' => 5600, 'goal' => 12800,
-            'yellow' => 6800, 'red' => 9000, 'free_kick' => 8600, 'free_kick_goal' => 9400,
-            'penalty' => 10000, 'penalty_goal' => 10600, 'sub' => 5600, 'injury' => 6000,
+            // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
+            'quiet' => 450, 'attack' => 1100, 'stoppage' => 2200, 'shootout' => 2600, 'whistle' => 3200, 'coach' => 4200,
+            'offside' => 4000, 'miss' => 3800, 'save' => 4600, 'corner' => 4200, 'goal' => 7400,
+            'yellow' => 4400, 'red' => 5600, 'free_kick' => 5800, 'free_kick_goal' => 7000,
+            'penalty' => 6600, 'penalty_goal' => 7400, 'sub' => 3800, 'injury' => 3800,
         ],
     ],
     'league' => [

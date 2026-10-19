@@ -21,7 +21,8 @@
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : 'تخطٍّ للنهاية' }}</button>
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="commentaryOn" @click="toggleCommentary">{{ commentaryOn ? 'التعليق الإنجليزي: يعمل' : 'التعليق الإنجليزي: متوقف' }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
+      <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
 
@@ -40,27 +41,21 @@
           <span class="text-xs text-text-muted">أي من المدربين يستطيع البدء.</span>
         </section>
 
-        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="aspect-ratio: 16 / 9" aria-label="الملعب" dir="ltr">
-          <Broadcast ref="pitch" :kits="bkits" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :commentary="commentaryOn" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" />
-
-          <div dir="rtl" class="absolute end-3 top-3 z-10 flex items-stretch overflow-hidden rounded-md shadow-lg" aria-live="polite">
-            <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.home, color: kits.homeText }">{{ view.clubs.home.name }}</span>
-            <span class="flex items-center bg-bg-deep px-3 py-1 font-numbers text-2xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
-            <span class="flex items-center px-3 font-display text-sm font-bold" :style="{ background: kits.away, color: kits.awayText }">{{ view.clubs.away.name }}</span>
-            <span class="flex items-center gap-1.5 bg-surface px-3 font-numbers text-xl text-gold"><span class="size-1.5 rounded-full bg-live" />{{ minuteText }}</span>
-          </div>
+        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" aria-label="المباراة">
+          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @intro-done="endIntro" />
 
           <div v-if="live && countdown > 0" dir="rtl" class="pointer-events-none absolute inset-0 flex items-center justify-center">
             <span class="font-numbers text-8xl text-gold drop-shadow-lg">{{ countdown }}</span>
           </div>
 
-          <div v-if="halftime || finished" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
+          <div v-if="(halftime || finished) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
             <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : 'الاستراحة' }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
             <div class="flex flex-wrap justify-center gap-2">
               <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
+              <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
               <RouterLink v-if="finished" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
               <RouterLink v-if="finished" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
             </div>
@@ -88,7 +83,7 @@
       </div>
 
       <aside class="row-start-2 flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <section class="flex flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
+        <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
           <div class="flex items-center gap-2">
             <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ view.clubs[mine].name }}</span></h2>
             <div v-if="!live && view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
@@ -170,13 +165,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute } from 'vue-router'
-import Broadcast from '../match/broadcast/Broadcast.vue'
+import MatchFeed from '../match/feed/MatchFeed.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, sim, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
-import { Commentator } from '../match/voice'
+import { Commentator, type Lang } from '../match/voice'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -201,15 +196,24 @@ const soundOn = ref(false)
 const pitch = ref<any>()
 const sound = new MatchSound()
 const voice = new Commentator()
-const commentaryOn = ref(readPref('legends.commentary', true))
+const commentary = ref<Lang | 'off'>(readPref())
+const intro = ref(true)
+const highlighting = ref(false)
+const keyTicks: Tick[] = []
 
 const buffer: Tick[] = []
 let fetching = false
 let timer = 0
 let htTimer = 0
+let waited = 0
 
 const minuteText = computed(() => (minute.value[1] ? `${minute.value[0]}+${minute.value[1]}'` : `${minute.value[0]}'`))
-// Score bug and stats colours follow the broadcast kits (with the away change kit on a clash).
+// The feed's kits: shirt, the ink on it and the trim, per side.
+const feedKits = computed(() => ({
+  home: { kit: bkits.value.home.shirt, ink: bkits.value.home.text, trim: bkits.value.home.trim, name: bkits.value.home.name },
+  away: { kit: bkits.value.away.shirt, ink: bkits.value.away.text, trim: bkits.value.away.trim, name: bkits.value.away.name },
+}))
+// Score bug and stats colours follow the kits (with the away change kit on a clash).
 const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))
 // Kits for the 3D broadcast: shirt and trim from the club colours, shorts from the trim when it contrasts.
 const bkits = computed(() => {
@@ -232,7 +236,9 @@ const bkits = computed(() => {
 })
 let pendingScore: Record<Side, number> | null = null
 function onCue(name: string) {
-  if (name === 'goal' && pendingScore) { score.value = pendingScore; pendingScore = null }
+  if (name !== 'goal') return
+  if (highlighting.value && hlScore) score.value = hlScore
+  else if (pendingScore) { score.value = pendingScore; pendingScore = null }
 }
 function onSound(name: string) {
   if (name === 'kick') sound.kick(true)
@@ -241,6 +247,33 @@ function onSound(name: string) {
   else if (name === 'whistle-long') sound.whistle(1)
   else if (name === 'roar' || name === 'net') { if (name === 'roar') sound.roar() }
   else if (name === 'groan' || name === 'murmur') sound.groan()
+}
+
+// ---------------------------------------------------------------- studio and highlights
+// The studio opens the match; the first minute starts when it closes.
+let introTimer = 0
+function endIntro() {
+  if (!intro.value || live.value) return
+  intro.value = false
+  clearTimeout(introTimer)
+  schedule(300)
+}
+// After the final whistle: the goals and the big moments again, scene by scene.
+const KEY_KINDS = ['goal', 'penalty', 'free_kick', 'red', 'save']
+let hlScore: Record<Side, number> | null = null
+async function highlights() {
+  highlighting.value = true
+  const finalScore = { ...score.value }
+  for (const t of keyTicks) {
+    if (!highlighting.value) break
+    minute.value = t.minute
+    hlScore = t.score
+    pitch.value?.play(t)
+    await new Promise((r) => window.setTimeout(r, momentMs(t) + 400))
+  }
+  pitch.value?.skip()
+  score.value = finalScore
+  highlighting.value = false
 }
 function momentMs(t?: Tick) {
   return (t?.moment?.ms ?? view.value?.timing.tick_ms ?? 3000) / speed.value
@@ -339,6 +372,10 @@ function schedule(ms: number) {
 
 async function step() {
   if (!playing.value || halftime.value || finished.value) return
+  // Let the commentator finish his sentence (a little), so lines are never cut short.
+  const talk = voice.remainingMs()
+  if (talk > 250 && waited < 2500) { waited += Math.min(talk, 500); return schedule(Math.min(talk, 500)) }
+  waited = 0
   if (!buffer.length) {
     await fetchNext()
     if (!buffer.length) return schedule(500)
@@ -359,7 +396,8 @@ function show(t: Tick, animate = true) {
   else score.value = t.score
   if (t.teams) teams.value = t.teams
   momentum.value = [...momentum.value, t.danger]
-  if (animate) pitch.value?.play(t, { dirHome: t.period === 2 || t.period === 4 ? -1 : 1 })
+  if (animate) pitch.value?.play(t)
+  if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   sound.danger(t.danger)
 
   for (const e of t.events) {
@@ -482,6 +520,7 @@ async function poll() {
 function handleSync(r: import('../api/sim').LiveSync): number {
   started.value = r.started
   const fresh = r.ticks.filter((t) => t.tick > seen)
+  if (fresh.length) intro.value = false
   // Behind (a slow phone, a locked screen): jump without animation, play only the last minute.
   fresh.forEach((t, i) => {
     show(t, i === fresh.length - 1)
@@ -502,17 +541,17 @@ function toggleSound() {
   sound.start()
   soundOn.value = !soundOn.value
   sound.setMuted(!soundOn.value)
-  voice.setOn(soundOn.value && commentaryOn.value)
+  voice.setOn(soundOn.value && commentary.value !== 'off')
   if (soundOn.value) sound.whistle()
 }
-// The commentator speaks when the sound is on; the subtitles show either way.
+// The commentator speaks when the sound is on: Arabic, English, or not at all.
 function toggleCommentary() {
-  commentaryOn.value = !commentaryOn.value
-  voice.setOn(soundOn.value && commentaryOn.value)
-  try { localStorage.setItem('legends.commentary', commentaryOn.value ? '1' : '0') } catch {}
+  commentary.value = ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value]
+  voice.setOn(soundOn.value && commentary.value !== 'off')
+  try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
-function readPref(key: string, fallback: boolean) {
-  try { const v = localStorage.getItem(key); return v === null ? fallback : v === '1' } catch { return fallback }
+function readPref(): Lang | 'off' {
+  try { const v = localStorage.getItem('legends.commentary'); return v === 'en' || v === 'off' ? v : 'ar' } catch { return 'ar' }
 }
 
 onMounted(async () => {
@@ -527,12 +566,14 @@ onMounted(async () => {
     }
     finished.value = view.value.finished
     if (live.value) {
+      intro.value = !view.value.started || view.value.tick === 0
       started.value = view.value.started
       seen = view.value.tick
       return poll()
     }
     await fetchNext()
-    schedule(1200)
+    if (view.value.tick > 0 || finished.value) { intro.value = false; schedule(300) }
+    else introTimer = window.setTimeout(endIntro, 11000)
   } catch (e: any) {
     error.value = e.message
   }
@@ -542,6 +583,8 @@ onBeforeUnmount(() => {
   clearTimeout(timer)
   clearTimeout(pollTimer)
   clearInterval(htTimer)
+  clearTimeout(introTimer)
+  highlighting.value = false
   sound.stop()
   voice.stop()
 })

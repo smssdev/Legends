@@ -28,6 +28,8 @@ class MomentClockTest extends TestCase
             'corner' => [['type' => 'corner', 'team' => 'home']],
             'sub' => [['type' => 'sub', 'team' => 'home']],
             'stoppage' => [['type' => 'stoppage', 'added' => 3]],
+            'coach' => [['type' => 'action', 'team' => 'home', 'action' => ['type' => 'tactics', 'tactics' => ['pressing' => 80]]], $attack('lost')],
+            'whistle' => [['type' => 'period', 'team' => null, 'name' => 'halftime']],
         ];
         foreach ($cases as $kind => $events) {
             $this->assertSame($kind, MomentClock::kind($events), $kind);
@@ -37,6 +39,8 @@ class MomentClockTest extends TestCase
     public function test_durations_come_from_the_config_and_scored_set_pieces_play_longer(): void
     {
         $this->assertSame(['kind' => 'quiet', 'ms' => 900], MomentClock::moment([], $this->match));
+        // A sub ordered by the coach plays the sub shot, not the coach's.
+        $this->assertSame('sub', MomentClock::kind([['type' => 'action', 'team' => 'home', 'action' => ['type' => 'sub']], ['type' => 'sub', 'team' => 'home']]));
         $pen = [['type' => 'penalty', 'team' => 'home', 'scored' => true], ['type' => 'goal', 'team' => 'home', 'kind' => 'penalty']];
         $this->assertSame(['kind' => 'penalty', 'ms' => 10600], MomentClock::moment($pen, $this->match));
         // Matches created before the table existed keep the fixed minute.
