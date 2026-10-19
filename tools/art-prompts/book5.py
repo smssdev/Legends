@@ -364,22 +364,26 @@ def wave_of(g):
     if p == 'players':
         if head in MAIN: return MAIN[head] + (0 if fam.split(' (')[0] in CORE else 1)
         return 5                                       # the striker's states and trick goals
-    if p == 'looks': return 2 + (int(re.search(r'\d+', t).group()) - 1) // 3
+    if p == 'looks':
+        n = int(re.search(r'\d+', t).group())
+        if n <= 2: return 1 if fam in CORE else 2     # two more faces in wave 1 (owner's decision, 2026-10-19)
+        return 2 + (n - 1) // 3
     if p == 'keepers':
         k = int(re.search(r'\d+', head).group())
         return (1 if fam in CORE else 2) if k == 1 else k + 1
     if p == 'officials':
-        if head == 'الحكم 1': return 1 if fam in CORE else 2
-        if head in ('الحكم المساعد', 'الحكم الرابع'): return 2
+        if head == 'الحكم 1': return 1 if fam in CORE or fam == 'الفار' else 2
+        if head in ('الحكم المساعد', 'الحكم الرابع'): return 1   # every engine event pictured from wave 1
         return int(re.search(r'\d+', head).group()) + 1
     if p == 'situations':
         if 'شجار' in t: return 4
+        if 'البطاقة' in t: return 1
         return 3 if 'الفار' in t else 2
     if p == 'moments':
         if t.startswith('احتفالات الهدف'): return 1
         return 4 if ('الكأس' in t or 'الترجيح' in t) else 2
     if p == 'coaches': return int(re.search(r'\d+', head).group())
-    if p == 'bench': return 2
+    if p == 'bench': return 1 if ('الطاقم الطبي' in t or 'البدلاء' in t) else 2
     if p == 'crowd': return 1
     if p == 'broadcast': return 3
     if p == 'kit':
