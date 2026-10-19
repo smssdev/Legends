@@ -155,10 +155,10 @@ situation('البطاقة الحمراء', 'art/raw/v4/cards/red/', 'الطرد:
 situation('الحكم: الأخطاء والقرارات', 'art/raw/v4/referee-calls/', 'إشارات الحكم الأخرى: ضربة حرة، استمرار، إصابة، حائط.', REFA, [
  ('calls-1.png', [('freekick-direct','Pointing his arm straight in the direction of a direct free kick.'),('freekick-indirect','Holding one arm straight up for an indirect free kick.'),('play-on','Both arms swept forward: play on.')], 'char'),
  ('calls-2.png', [('spray','Crouching and spraying a white foam line on the grass with a small spray can.'),('pace-wall','Pacing out the distance for the wall, arm stretched forward.'),('stop-play','Blowing the whistle, both arms crossed above his head to stop play for an injury.')], 'char'),
- ('calls-3.png', [('penalty-run','Running towards the box, pointing at the penalty spot.'),('dropped-ball','Dropping a ball between two players, crouched.'),('wave-medics','Waving the medical staff on with one arm.')], 'char'),
+ ('calls-3.png', [('penalty-run','Running towards the box, pointing at the penalty spot.'),('dropped-ball','Crouched, dropping a ball that is not shown from waist height, alone, no other people.'),('wave-medics','Waving the medical staff on with one arm.')], 'char'),
 ])
 situation('مراجعة الفار', 'art/raw/v4/var/', 'كل مراحل الفار: التواصل، الإشارة، الشاشة، القرار.', REFA, [
- ('steps-1.png', [('ear','Hand on his earpiece, listening, the other arm raised to stop play.'),('wait','Standing still, hand on his earpiece, players waiting around him unseen.'),('var-sign','Drawing a rectangle in the air with both index fingers, the video review sign.')], 'char'),
+ ('steps-1.png', [('ear','Hand on his earpiece, listening, the other arm raised to stop play.'),('wait','Standing still, hand on his earpiece, alone, no other people.'),('var-sign','Drawing a rectangle in the air with both index fingers, the video review sign.')], 'char'),
  ('steps-2.png', [('walk-monitor','Walking quickly towards the touchline.'),('watch-side','Bending forward, watching a screen in front of him, hands on hips, side view.'),('watch-back','Watching a screen, seen from behind over his shoulder.')], 'char'),
  ('steps-3.png', [('decision-no-goal','Waving both arms crossed low in front of him: no goal.'),('decision-penalty','Pointing firmly to the penalty spot after the review.'),('decision-card','Running back onto the pitch, reaching for his pocket.')], 'char'),
  ('close.png', [('close-ear','Close-up from the waist up: hand on his earpiece, eyes closed, concentrating.'),('close-screen','Close-up from the waist up: watching a screen, the screen glow lighting his face.'),('close-sign','Close-up from the waist up: drawing the review rectangle in the air.'),('close-decide','Close-up from the waist up: pointing firmly, decision made.')], 'half'),
@@ -171,7 +171,7 @@ G.append(dict(t='غرفة الفار والشاشات', f='art/raw/v4/var-room/'
   ('monitor-close.jpg', 'الشاشة عن قرب', 'L19', 'A close view of a blank glowing pitchside review screen, the hood around it, raindrops on top, stadium lights blurred behind.'),
  ]]))
 situation('شجار ودفع', 'art/raw/v4/scuffle/', 'التدافع بعد خطأ: الحكم يفصل بين اللاعبين.', f'Players wear plain pure white kits. {REF.replace("He wears", "The referee wears")}', [
- ('scuffle.png', [('push','Two players in white kits pushing each other chest to chest.'),('separate','A referee in black stepping between two players in white kits, arms out.'),('face-off','Two players in white kits face to face, foreheads almost touching, angry.'),('teammates-pull','Team-mates in white kits pulling an angry player away.')], 'duo'),
+ ('scuffle.png', [('push','Two players in white kits pushing each other chest to chest.'),('separate','A referee in black stepping between two players in white kits, arms out.'),('face-off','Two players in white kits face to face, foreheads almost touching, angry.'),('teammates-pull','Two team-mates in white kits pulling an angry third player away by his arms.')], 'duo'),
 ])
 
 # ---------------- celebrations and team moments ----------------
@@ -184,12 +184,12 @@ situation('احتفالات الهدف', 'art/raw/v4/celebrations/', 'احتفا
 ])
 situation('احتفالات جماعية', 'art/raw/v4/team-celebrations/', 'الفريق كله يحتفل.', f'{KIT} Players of the same team, fictional people with varied looks.', [
  ('team-1.png', [('pile','Five players piling onto the scorer on the ground.'),('lift','Two players lifting the scorer onto their shoulders.')], 'duo'),
- ('team-2.png', [('chain','Four players running together arm in arm.'),('bench-run','Substitutes in white bibs running onto the pitch to join a celebration.')], 'duo'),
+ ('team-2.png', [('chain','Four players running together arm in arm.'),('bench-run','Three substitutes in white bibs running side by side onto the pitch to join a celebration.')], 'duo'),
  ('team-3.png', [('coach-hug','The scorer hugging a coach in a dark suit on the touchline.'),('fans-run','The scorer running towards the crowd boards, arms wide, back view.')], 'duo'),
- ('final-whistle.png', [('win-circle','Players in a circle jumping together after the final whistle.'),('lose-sit','Three players sitting on the ground, heads down, after a defeat, a team-mate consoling them.')], 'duo'),
+ ('final-whistle.png', [('win-circle','Six players in a circle, arms on each other\'s shoulders, jumping together after the final whistle.'),('lose-sit','Three players sitting on the ground, heads down, after a defeat, a team-mate consoling them.')], 'duo'),
 ])
 situation('الكأس والتتويج', 'art/raw/v4/trophy/', 'نهاية الموسم والنهائيات.', f'{KIT} Players of the same team, fictional people with varied looks. The trophy is an original golden cup with two handles.', [
- ('lift.png', [('captain-lift','The captain lifting the golden trophy above his head, roaring, front view.'),('team-lift','The team gathered behind the captain lifting the trophy, confetti falling, front view.')], 'duo'),
+ ('lift.png', [('captain-lift','The captain lifting the golden trophy above his head, roaring, front view.'),('team-lift','Seven players gathered close behind the captain lifting the trophy, confetti falling, front view.')], 'duo'),
  ('moments.png', [('kiss','A player kissing the golden trophy.'),('medal','A player biting a gold medal on a ribbon, smiling.')], 'duo'),
 ])
 situation('ركلات الترجيح', 'art/raw/v4/shootout/', 'الأطقم بيضاء للفريقين، واللعبة تلوّن كل فريق.', f'{KIT} Players of two teams, all in pure white kits, fictional people with varied looks.', [
