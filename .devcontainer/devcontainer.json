@@ -8,7 +8,7 @@
   },
   "containerEnv": { "SIMULATOR_ENABLED": "true" },
   "postCreateCommand": "bash .devcontainer/setup.sh",
-  "postAttachCommand": "cd backend && php artisan serve --host=0.0.0.0 --port=8000",
+  "postAttachCommand": "bash .devcontainer/start.sh",
   "forwardPorts": [8000, 5173],
   "portsAttributes": {
     "8000": { "label": "Legends (built app + API)", "onAutoForward": "openBrowser" },
