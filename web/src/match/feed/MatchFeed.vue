@@ -1,52 +1,61 @@
 <template>
-  <div ref="host" class="feed-root" dir="rtl">
-    <canvas ref="bg" class="bg" aria-hidden="true" />
+  <div ref="host" class="mc" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
+    <div class="atmo" aria-hidden="true" />
 
-    <div class="board">
-      <div class="club"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b></div>
-      <div class="mid">
-        <span class="score" :class="{ pop }" dir="ltr">{{ score.home }} - {{ score.away }}</span>
-        <span class="clock" dir="ltr">{{ minute }}</span>
+    <div class="sb">
+      <div class="sb-in">
+        <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></span></div>
+        <div class="mid"><span class="score" :class="{ pop }" dir="ltr">{{ score.away }} - {{ score.home }}</span><span class="live" dir="ltr"><i />{{ minute }}</span></div>
+        <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></span></div>
       </div>
-      <div class="club away"><span class="crest" v-html="crestOf('away')" /><b>{{ clubs.away }}</b></div>
+      <div class="mom" dir="ltr"><i :style="{ width: 100 - mom + '%', background: kits.away.kit }" /><i :style="{ width: mom + '%', background: kits.home.kit }" /></div>
     </div>
 
-    <div class="feed" aria-label="مجريات المباراة" aria-live="polite">
+    <div class="tl" aria-label="مجريات المباراة" aria-live="polite">
       <div class="spine" />
       <TransitionGroup name="row" tag="div" class="list">
-        <div v-for="it in items" :key="it.key" class="row" :class="it.center ? 'center' : it.side">
-          <div v-if="it.center" class="ev mid-ev"><span class="ic" v-html="ICON[it.icon]" /><span class="tx"><b>{{ it.name }}</b><span>{{ it.label }}</span></span></div>
-          <template v-else>
-            <div class="ev" :class="[it.side, { goal: it.goal }]"><span class="ic" v-html="ICON[it.icon]" /><span class="tx"><b dir="auto">{{ it.name }}</b><span>{{ it.label }}</span></span></div>
-            <div class="node" dir="ltr">{{ it.minute }}</div>
-          </template>
+        <div v-for="it in items" :key="it.key" class="row" :class="it.center ? 'home' : it.side">
+          <div class="card" :class="{ goal: it.goal }" :style="{ '--c': it.center ? '#F5B82E' : kits[it.side].kit }">
+            <span class="ico" v-html="ICON[it.icon]" />
+            <span class="tx"><b dir="auto">{{ it.name }}</b><span>{{ it.label }}</span></span>
+            <span v-if="it.goal && it.score" class="chip" dir="ltr">{{ it.score }}</span>
+          </div>
+          <div class="node" dir="ltr">{{ it.minute }}</div>
         </div>
       </TransitionGroup>
     </div>
 
-    <div class="scene" :class="{ on: sceneOn }">
-      <div class="sbox">
+    <div class="moment" :class="{ on: sceneOn }">
+      <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
-        <div class="sbar" :style="{ '--kit': barKit }">
-          <span class="big">{{ cur?.head }}</span>
+        <div class="lower" :style="{ '--c': barKit }">
+          <span class="ev">{{ cur?.head }}</span>
           <span class="who"><b dir="auto">{{ cur?.who }}</b><span>{{ cur?.sub }}</span></span>
           <span class="min" dir="ltr">{{ cur?.minute }}</span>
         </div>
       </div>
     </div>
 
-    <div class="caster" :class="{ on: bubbleOn }">
-      <div class="bubble"><span>{{ bubble }}</span><span v-if="lang === 'en' && enLine" class="en" dir="ltr">{{ enLine }}</span></div>
-      <div class="who" v-html="casterSvg" />
+    <div class="mic" :class="{ on: bubbleOn }">
+      <span class="m" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#071733"><rect x="8" y="2" width="8" height="13" rx="4" /><path d="M5 11a7 7 0 0 0 14 0" fill="none" stroke="#071733" stroke-width="2" /><rect x="11" y="18" width="2" height="4" /></svg></span>
+      <span class="wave" aria-hidden="true"><i v-for="n in 7" :key="n" /></span>
+      <span class="tx"><b>{{ bubble }}</b><span v-if="lang === 'en' && enLine" dir="ltr">{{ enLine }}</span></span>
     </div>
 
-    <div v-if="intro" class="studio">
-      <div class="screen">LEGENDS</div>
-      <div class="desk" />
-      <div class="host a" v-html="hostA" />
-      <div class="host b" v-html="hostB" />
-      <div class="sbubble">{{ introLine }}</div>
-      <button type="button" class="go" @click="$emit('introDone')">{{ live ? 'بانتظار صافرة البداية' : 'ابدأ المباراة' }}</button>
+    <div v-if="intro" class="preview">
+      <span class="kick">{{ live ? 'مباراة بين صديقين' : 'ما قبل المباراة' }}</span>
+      <div class="teams">
+        <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></div>
+        <span class="vs">VS</span>
+        <div class="team"><span class="crest" v-html="crestOf('away')" /><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></div>
+      </div>
+      <div class="stats">
+        <div v-for="r in compare" :key="r.label" class="st"><span>{{ r.h }}</span><span class="bar"><i :style="{ width: r.hp + '%', background: kits.home.kit }" /><i :style="{ width: 100 - r.hp + '%', background: kits.away.kit }" /></span><span>{{ r.a }}</span><span class="lbl">{{ r.label }}</span></div>
+      </div>
+      <div class="keys">
+        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ star(s)?.name }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
+      </div>
+      <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? `البداية بعد ${countdown}` : 'شغّل الصوت وانتظر البداية') : 'ابدأ البث' }}</button>
     </div>
   </div>
 </template>
@@ -54,30 +63,31 @@
 <script setup lang="ts">
 // @ts-nocheck
 // The match feed (docs/MATCH_VIEW.md 4.6): each minute plays its scene first,
-// then its card joins the timeline and the commentator sums it up. The parent
-// calls play(tick) per minute; the minute's length is the server's (tick.moment.ms).
+// then its card joins the timeline and the commentator sums it up on the mic
+// bar. The parent calls play(tick) per minute; the minute's length is the
+// server's (tick.moment.ms).
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { CASTER, HOST_A, HOST_B, ICON, SCENES, crest, paintBg, person, setKits } from './art'
+import { ICON, SCENES, crest, setKits } from './art'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
-const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean }>()
+const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
 
-const host = ref<HTMLElement>(), bg = ref<HTMLCanvasElement>(), stage = ref<HTMLElement>()
+const host = ref<HTMLElement>(), stage = ref<HTMLElement>()
 const items = ref<any[]>([])
 const cur = ref<any>(null)
 const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false)
 const bubble = ref(''), enLine = ref('')
-const casterSvg = person(CASTER), hostA = person(HOST_A), hostB = person(HOST_B)
-// The caption bar takes the kit colour, unless it is too light for white text.
+const mom = ref(50)
 const barKit = computed(() => {
   const k = props.kits[cur.value?.side === 'away' ? 'away' : 'home'].kit, n = parseInt(k.slice(1), 16)
   return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) > 150 ? '#3A5F9E' : k
 })
 const crestOf = (s) => crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || ''])
+const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? 'أنت' : props.live ? '' : props.mine ? 'الحاسوب' : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
-watch(() => props.score, () => { pop.value = false; requestAnimationFrame(() => (pop.value = true)) }, { deep: true })
+watch(() => [props.score.home, props.score.away], () => { pop.value = false; requestAnimationFrame(() => (pop.value = true)) })
 
 // Every player of the match by id, for names and shirt numbers.
 const players = computed(() => {
@@ -85,6 +95,13 @@ const players = computed(() => {
   for (const side of ['home', 'away']) for (const p of props.teams?.[side]?.players ?? []) m[p.id] = { name: p.name, no: p.no, side }
   return m
 })
+// The pre-match card: strength, average rating of the starters, and each side's key player.
+const star = (s) => [...(props.teams?.[s]?.players ?? [])].filter((p) => p.on).sort((a, b) => b.ovr - a.ovr)[0]
+const avg = (s) => { const on = (props.teams?.[s]?.players ?? []).filter((p) => p.on); return on.length ? Math.round(on.reduce((t, p) => t + p.ovr, 0) / on.length) : 0 }
+const compare = computed(() => [
+  { label: 'القوة', h: Math.round(props.strength.home / 100), a: Math.round(props.strength.away / 100) },
+  { label: 'متوسط التشكيلة', h: avg('home'), a: avg('away') },
+].map((r) => ({ ...r, hp: r.h + r.a ? (r.h / (r.h + r.a)) * 100 : 50 })))
 
 // ---------------------------------------------------------------- playing a minute
 let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0
@@ -95,7 +112,8 @@ function play(tick) {
   const nominal = s.scene ? SCENE_TIME[s.scene][0] : 0
   // The scene takes most of the minute; the commentator sums it up after.
   const sceneT = s.scene ? Math.min(nominal, total * 0.72) : 0
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false }
+  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}` }
+  mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   t = 0
   if (s.scene) {
@@ -112,14 +130,14 @@ function play(tick) {
 function addItems() {
   if (!plan || plan.itemsAdded) return
   plan.itemsAdded = true
-  for (const it of plan.s.items) items.value.unshift({ ...it, key: ++keySeq })
+  for (const it of plan.s.items) items.value.unshift({ ...it, key: ++keySeq, score: it.goal ? plan.score : null })
   if (items.value.length > 40) items.value.length = 40
 }
 function showBubble() {
   const s = plan.s
   bubble.value = s.bubble
-  const en = s.lines.find((l) => l.x)?.en ?? s.lines[0]?.en
-  enLine.value = en ? voiceLine('en', { en, ar: null, x: false, vars: s.lines[0]?.vars ?? {} }, players.value, props.clubs)?.text ?? '' : ''
+  const l = s.lines.find((l) => l.x) ?? s.lines[0]
+  enLine.value = l?.en ? voiceLine('en', { ...l, x: false }, players.value, props.clubs)?.text ?? '' : ''
   bubbleOn.value = !!s.bubble
 }
 // Finish the minute at once: the next one is starting, or the viewer skipped.
@@ -135,8 +153,8 @@ defineExpose({ play, skip })
 
 const SOUNDS = {
   goal: [[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']], save: [[0.3, 'kick'], ['key', 'groan']], miss: [[0.3, 'kick'], ['key', 'groan']], blocked: [['key', 'thud'], ['key', 'groan']],
-  penalty: [[0.05, 'whistle-long'], [0.35, 'hush'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], ['key', 'kick'], ['key', 'roar']],
-  card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.15, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
+  penalty: [[0.05, 'whistle-long'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], ['key', 'kick'], ['key', 'roar']],
+  card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
 }
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
@@ -157,94 +175,117 @@ function frame(now) {
   raf = requestAnimationFrame(frame)
 }
 
-// ---------------------------------------------------------------- studio intro
-const INTRO = computed(() => [
-  `مساء الخير! الأجواء رائعة والمدرجات ممتلئة، والجميع ينتظر مواجهة ${props.clubs.home} و${props.clubs.away}.`,
-  'مواجهة بين مدربين يعرف كل منهما أسلوب الآخر. التكتيك سيحسم هذه المباراة.',
-  'كل شيء جاهز. لنذهب إلى الملعب!',
-])
-const introLine = ref('')
-let introTimer = 0, introI = 0
-function nextIntro() { introLine.value = INTRO.value[introI++ % INTRO.value.length]; introTimer = window.setTimeout(nextIntro, 3600) }
-watch(() => props.intro, (on) => { clearTimeout(introTimer); if (on) { introI = 0; nextIntro() } }, { immediate: true })
-
-let ro: ResizeObserver | null = null
-onMounted(() => {
-  ro = new ResizeObserver(() => bg.value && paintBg(bg.value))
-  ro.observe(host.value!)
-  raf = requestAnimationFrame((n) => { last = n; frame(n) })
-})
-onBeforeUnmount(() => { cancelAnimationFrame(raf); ro?.disconnect(); clearTimeout(introTimer) })
+onMounted(() => { raf = requestAnimationFrame((n) => { last = n; frame(n) }) })
+onBeforeUnmount(() => cancelAnimationFrame(raf))
 </script>
 
 <style scoped>
-.feed-root { position: absolute; inset: 0; overflow: hidden; isolation: isolate; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; container-type: size }
-.bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; filter: blur(2px) saturate(1.1) }
-.feed-root::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 50% 40%, rgba(5,12,28,.25), rgba(5,12,28,.82) 75%) }
+/* Brand navy and gold; each team's colour is light from its side. */
+.mc { position: absolute; inset: 0; overflow: hidden; isolation: isolate; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; container-type: size; background: #050D1F }
+.atmo { position: absolute; inset: 0; z-index: -1; background:
+  radial-gradient(60% 50% at 100% 20%, color-mix(in srgb, var(--H) 22%, transparent), transparent 70%),
+  radial-gradient(60% 50% at 0% 20%, color-mix(in srgb, var(--A) 26%, transparent), transparent 70%),
+  radial-gradient(90% 70% at 50% 110%, rgba(245,184,46,.14), transparent 60%),
+  linear-gradient(180deg, #0B2149, #050D1F 70%) }
+.atmo::before { content: ''; position: absolute; inset: -20%; background: repeating-linear-gradient(115deg, transparent 0 120px, rgba(255,255,255,.035) 120px 180px, transparent 180px 300px); animation: beams 18s linear infinite }
+@keyframes beams { to { transform: translateX(300px) } }
 
-.board { position: absolute; top: 8px; left: 8px; right: 8px; z-index: 5; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; background: linear-gradient(180deg, rgba(10,31,66,.96), rgba(7,23,51,.9)); border: 1px solid #23406E; border-radius: 16px; padding: 8px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.45) }
-.club { display: flex; align-items: center; gap: 8px; min-width: 0 }
-.club.away { flex-direction: row-reverse }
-.club b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 22px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.crest { width: clamp(30px, 6cqw, 50px); flex: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)) }
+.sb { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 6 }
+.sb-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; border-radius: 16px; overflow: hidden; background: rgba(16,40,79,.62); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.09); box-shadow: 0 18px 40px rgba(0,0,0,.45) }
+.side { display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-width: 0; position: relative }
+.side::before { content: ''; position: absolute; inset: 0; opacity: .22; background: linear-gradient(90deg, transparent, var(--c)) }
+.side.away { flex-direction: row-reverse; text-align: left }
+.side.away::before { background: linear-gradient(270deg, transparent, var(--c)) }
+.nm { position: relative; min-width: 0; display: grid }
+.nm b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 21px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.nm small { color: #93A3BF; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.crest { width: clamp(32px, 6cqw, 50px); flex: none; position: relative; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)) }
 .crest :deep(svg) { display: block; width: 100%; height: auto }
-.mid { display: grid; justify-items: center; gap: 2px }
-.score { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(24px, 6cqw, 40px); line-height: 1; font-variant-numeric: tabular-nums }
-.score.pop { animation: pop .6s }
-@keyframes pop { 30% { transform: scale(1.35); color: #F5B82E } }
-.clock { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 13px; background: #1B4FB8; border: 2px solid #8EB2F0; border-radius: 999px; padding: 1px 10px }
+.mid { display: grid; justify-items: center; align-content: center; padding: 4px 14px; background: linear-gradient(180deg, rgba(5,13,31,.75), rgba(5,13,31,.95)); border-inline: 1px solid rgba(255,255,255,.09) }
+.score { font-family: 'Barlow Condensed', 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(30px, 7.5cqw, 50px); line-height: .95; letter-spacing: .04em; color: #fff; font-variant-numeric: tabular-nums }
+.score.pop { animation: pop .7s }
+@keyframes pop { 25% { transform: scale(1.25); color: #FFD36B; text-shadow: 0 0 18px #F5B82E } }
+.live { display: flex; align-items: center; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .06em; color: #FFD36B }
+.live i { width: 7px; height: 7px; border-radius: 50%; background: #EF4444; animation: ping 1.4s infinite }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,.7) } 70% { box-shadow: 0 0 0 7px rgba(239,68,68,0) } }
+.mom { height: 3px; display: flex; margin: 0 14px; border-radius: 2px; overflow: hidden }
+.mom i { display: block; height: 100%; transition: width .8s }
 
-.feed { position: absolute; top: clamp(76px, 15cqw, 104px); bottom: 0; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent 0, #000 24px, #000 80%, transparent) }
-.spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 6px; transform: translateX(-50%); background: linear-gradient(180deg, #1B4FB8, #0D2C66); border-radius: 3px; opacity: .9 }
-.list { position: relative; padding: 24px 10px 0; display: grid; gap: 12px }
-.row { display: grid; grid-template-columns: 1fr 46px 1fr; align-items: center }
-.row.home .ev { grid-column: 1; grid-row: 1 }
-.row.away .ev { grid-column: 3; grid-row: 1; flex-direction: row-reverse; text-align: left }
+.tl { position: absolute; top: clamp(84px, 16cqw, 106px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
+.spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, rgba(245,184,46,.55) 10%, rgba(245,184,46,.15)) }
+.list { position: relative; padding: 22px 10px 0; display: grid; gap: 10px }
+.row { display: grid; grid-template-columns: 1fr 54px 1fr; align-items: center }
 .row .node { grid-column: 2; grid-row: 1 }
-.row.center { grid-template-columns: 1fr }
-.row.center .ev { justify-self: center; z-index: 1 }
-.row-enter-active { transition: all .5s cubic-bezier(.2,.9,.3,1.2) }
-.row-enter-from { opacity: 0; transform: translateY(-16px) }
-.node { width: 40px; height: 40px; margin: auto; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #3F7EF0, #163F94); border: 2px solid #8EB2F0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.4) }
-.ev { display: flex; align-items: center; gap: 8px; min-width: 0; background: rgba(10,31,66,.86); border: 1px solid #23406E; padding: 6px 10px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.35) }
-.ev .ic { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #1E4A8F, #0B2350); border: 2px solid rgba(255,255,255,.12) }
-.ev .ic :deep(svg) { width: 26px; height: 26px }
-.ev .tx { min-width: 0; display: grid }
-.ev .tx b { font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: clamp(13px, 2.6cqw, 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.ev .tx span { color: #A9B6CC; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.ev.goal { border-color: #F5B82E; background: linear-gradient(90deg, rgba(245,184,46,.22), rgba(10,31,66,.9)) }
-.ev.goal .tx span { color: #F5B82E; font-weight: 700 }
-.mid-ev { border-color: #8EB2F0 }
+.row .card { grid-row: 1; grid-column: 1 }
+.row.away .card { grid-column: 3; flex-direction: row-reverse; text-align: left; border-inline-start: 1px solid rgba(255,255,255,.09); border-inline-end: 3px solid var(--c) }
+.row-enter-active { transition: all .55s cubic-bezier(.2,.9,.25,1.15) }
+.row-enter-from { opacity: 0; transform: translateY(-14px) scale(.97) }
+.node { margin: auto; min-width: 46px; height: 26px; padding: 0 6px; border-radius: 13px; display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; color: #FFD36B; background: #071733; border: 1px solid rgba(245,184,46,.55); box-shadow: 0 0 14px rgba(245,184,46,.18) }
+.card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 11px; border-radius: 14px; background: rgba(16,40,79,.62); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); box-shadow: 0 10px 24px rgba(0,0,0,.35) }
+.ico { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09) }
+.ico :deep(svg) { width: 22px; height: 22px }
+.card .tx { min-width: 0; display: grid }
+.card .tx b { font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: clamp(13px, 2.7cqw, 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.card .tx span { color: #93A3BF; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.card.goal { background: linear-gradient(100deg, rgba(245,184,46,.28), rgba(16,40,79,.7) 60%); border-color: rgba(245,184,46,.5) }
+.card.goal .tx span { color: #FFD36B; font-weight: 700 }
+.chip { margin-inline-start: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 18px; color: #050D1F; background: #F5B82E; border-radius: 8px; padding: 0 8px }
+/* Phones: one column of full-width cards, minute first. */
+@container (max-width: 560px) {
+  .spine { left: auto; right: 36px }
+  .row, .row.away { grid-template-columns: 52px 1fr }
+  .row .node { grid-column: 1 }
+  .row .card, .row.away .card { grid-column: 2; flex-direction: row; text-align: right; border-inline-start: 3px solid var(--c); border-inline-end: 1px solid rgba(255,255,255,.09) }
+}
 
-.scene { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .3s }
-.scene.on { opacity: 1 }
-.scene::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.62); backdrop-filter: blur(3px) }
-.sbox { position: relative; width: min(94cqw, 620px, calc((100cqh - 60px) * 1.55)); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 24px 60px rgba(0,0,0,.6); transform: scale(.92); transition: transform .35s cubic-bezier(.2,.9,.3,1.25) }
-.scene.on .sbox { transform: none }
-.stage :deep(svg) { display: block; width: 100%; height: auto; background: #0B1730 }
+.moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .35s }
+.moment.on { opacity: 1 }
+.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7); backdrop-filter: blur(6px) }
+.mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(14px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.25,1.15) }
+.moment.on .mbox { transform: none }
+.stage :deep(svg) { display: block; width: 100%; height: auto }
 .stage.shake { animation: shake .45s }
 @keyframes shake { 20% { transform: translate(-6px, 3px) } 40% { transform: translate(5px, -4px) } 60% { transform: translate(-4px, 2px) } 80% { transform: translate(3px, -1px) } }
-.sbar { display: flex; align-items: center; gap: 12px; padding: 8px 14px 10px; background: linear-gradient(90deg, var(--kit, #1B4FB8), rgba(10,31,66,.98) 45%) }
-.sbar .big { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(18px, 4.4cqw, 28px) }
-.sbar .who { display: grid; min-width: 0 }
-.sbar .who b { font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.sbar .who span { color: #A9B6CC; font-size: 12px }
-.sbar .min { margin-inline-start: auto; font-family: 'Alexandria', sans-serif; font-weight: 800; color: #F5B82E }
+.lower { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #071733), #071733 55%); border-top: 1px solid rgba(255,255,255,.08) }
+.lower .ev { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4cqw, 27px); color: #FFD36B }
+.lower .who { display: grid; min-width: 0 }
+.lower .who b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(14px, 3cqw, 18px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.lower .who span { color: #C9D2E1; font-size: 12px }
+.lower .min { margin-inline-start: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; opacity: .9 }
 
-.caster { position: absolute; z-index: 9; bottom: 6px; right: 6px; left: 6px; display: flex; align-items: flex-end; justify-content: flex-start; pointer-events: none; transform: translateY(120%); transition: transform .45s cubic-bezier(.2,.9,.3,1.15) }
-.caster.on { transform: none }
-.caster .who { width: clamp(84px, 20cqw, 150px); flex: none; order: -1 }
-.caster .who :deep(svg) { display: block; width: 100%; height: auto }
-.bubble { margin-bottom: clamp(40px, 10cqw, 90px); margin-inline-start: -4px; max-width: min(520px, 70cqw); background: #fff; color: #172033; border-radius: 20px; padding: 10px 16px; font-size: clamp(13px, 2.8cqw, 17px); font-weight: 600; line-height: 1.7; box-shadow: 0 10px 28px rgba(0,0,0,.45) }
-.bubble .en { display: block; text-align: left; color: #9A6A00; font-size: .82em }
+.mic { position: absolute; z-index: 9; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-radius: 16px; background: linear-gradient(90deg, rgba(10,31,66,.94), rgba(7,23,51,.94)); border: 1px solid rgba(245,184,46,.35); box-shadow: 0 14px 30px rgba(0,0,0,.5); backdrop-filter: blur(10px); transform: translateY(140%); transition: transform .45s cubic-bezier(.2,.9,.25,1.1) }
+.mic.on { transform: none }
+.mic .m { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #FFD36B, #C08A0C) }
+.mic .m svg { width: 19px; height: 19px }
+.wave { display: flex; align-items: center; gap: 3px; height: 24px; flex: none }
+.wave i { width: 3px; border-radius: 2px; background: #F5B82E; height: 30%; animation: w .9s ease-in-out infinite }
+.wave i:nth-child(2n) { animation-delay: -.3s } .wave i:nth-child(3n) { animation-delay: -.6s } .wave i:nth-child(5n) { animation-delay: -.15s }
+@keyframes w { 50% { height: 100% } }
+.mic .tx { min-width: 0; display: grid; gap: 1px }
+.mic .tx b { font-weight: 600; font-size: clamp(13px, 2.8cqw, 16px); line-height: 1.55 }
+.mic .tx span { text-align: left; color: #FFD36B; font-size: 12px; font-weight: 600 }
 
-.studio { position: absolute; inset: 0; z-index: 12; background: radial-gradient(ellipse at 50% 85%, #1D4E9E 0, #0B214A 45%, #050C1C 80%) }
-.screen { position: absolute; left: 50%; top: 16%; transform: translateX(-50%); width: min(46%, 380px); aspect-ratio: 16/9; border-radius: 12px; background: linear-gradient(160deg, #10306A, #071733); border: 3px solid #2B4F8C; display: grid; place-items: center; font-family: 'Alexandria', sans-serif; font-weight: 900; color: #F5B82E; font-size: clamp(18px, 5cqw, 34px); box-shadow: 0 0 40px rgba(43,79,140,.6) }
-.desk { position: absolute; left: -10%; right: -10%; bottom: 0; height: 22%; background: radial-gradient(ellipse at 50% 0, #2C6BD8 0, #0F2E6B 40%, #071733 75%); border-top: 3px solid #5FA0FF; border-radius: 50% 50% 0 0 / 30% 30% 0 0 }
-.host { position: absolute; bottom: 4%; height: min(62%, 52cqw); aspect-ratio: 200 / 260 }
-.host :deep(svg) { width: 100%; height: 100% }
-.host.a { right: 4% }
-.host.b { left: 4% }
-.sbubble { position: absolute; top: 4%; left: 50%; transform: translateX(-50%); width: min(70%, 520px); background: #fff; color: #172033; border-radius: 20px; padding: 10px 16px; font-weight: 600; line-height: 1.7; font-size: clamp(13px, 2.8cqw, 17px); box-shadow: 0 10px 28px rgba(0,0,0,.45) }
-.go { position: absolute; left: 50%; bottom: 5%; transform: translateX(-50%); z-index: 2; min-height: 48px; padding: 0 28px; border-radius: 12px; background: linear-gradient(180deg, #5FB0FF, #2F7BE0); color: #fff; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px; border: 0; box-shadow: 0 8px 22px rgba(47,123,224,.45) }
+.preview { position: absolute; inset: 0; z-index: 12; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 16px; overflow-y: auto; background: radial-gradient(70% 60% at 50% 40%, rgba(245,184,46,.12), transparent 70%), linear-gradient(180deg, #0B2149, #050D1F) }
+.kick { font-family: 'Alexandria', sans-serif; font-weight: 700; color: #FFD36B; letter-spacing: .06em; font-size: 13px }
+.teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: clamp(10px, 4cqw, 40px); width: min(100%, 720px) }
+.team { display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0 }
+.team .crest { width: clamp(64px, 15cqw, 116px) }
+.team b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4.4cqw, 28px) }
+.team small { color: #93A3BF; font-weight: 600 }
+.vs { font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 800; font-size: clamp(32px, 9cqw, 62px); color: #F5B82E; text-shadow: 0 0 24px rgba(245,184,46,.35) }
+.stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09) }
+.st { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-align: center }
+.st > * { grid-row: 2 }
+.st .lbl { grid-column: 1 / -1; grid-row: 1; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 12px; color: #93A3BF; margin-bottom: -6px }
+.st .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); display: flex; overflow: hidden }
+.st .bar i { display: block; height: 100% }
+.keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(100%, 560px) }
+.key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
+.key .no { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; color: var(--c); width: 32px; text-align: center }
+.key b { font-family: 'Alexandria', sans-serif; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.key span span { color: #93A3BF; font-size: 12px }
+.go { min-height: 50px; padding: 0 34px; border-radius: 14px; border: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px; color: #050D1F; background: linear-gradient(180deg, #FFD36B, #F5B82E); box-shadow: 0 10px 30px rgba(245,184,46,.35); cursor: pointer }
+.go:focus-visible { outline: 3px solid #fff; outline-offset: 2px }
+@container (max-width: 560px) { .keys { grid-template-columns: 1fr } }
+@media (prefers-reduced-motion: reduce) { .atmo::before, .wave i, .live i { animation: none } }
 </style>

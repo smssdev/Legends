@@ -107,8 +107,11 @@ export interface MatchView {
   formations: string[]
   timing: { tick_ms: number; extra_time_tick_ms: number; halftime_seconds: number }
   clubs: Record<Side, Club>
+  coaches?: Partial<Record<Side, string>>
   teams: Record<Side, TeamSnapshot>
 }
+
+export type Room = { id: string; host: { name: string; club: Club }; guest: { name: string; club: Club } | null; match_id: string | null }
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(`/api/v1/sim${path}`, {
@@ -118,7 +121,7 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
   })
   if (!res.ok) {
     // On the free test server the disk is wiped on every restart, so an old match link can vanish.
-    if (res.status === 404 && path.startsWith('/matches/')) throw new Error('هذه المباراة لم تعد موجودة: أُعيد تشغيل سيرفر التجربة فمُسحت المباريات. ابدأ مباراة جديدة من صفحة المحاكي.')
+    if (res.status === 404 && (path.startsWith('/matches/') || path.startsWith('/rooms/'))) throw new Error('هذه المباراة لم تعد موجودة: أُعيد تشغيل سيرفر التجربة فمُسحت المباريات. ابدأ مباراة جديدة من صفحة المحاكي.')
     const data = await res.json().catch(() => ({}))
     throw new Error(data.message || `خطأ ${res.status}`)
   }
@@ -140,6 +143,9 @@ export const sim = {
       ...order,
       idempotency_key: crypto.randomUUID(),
     }),
+  room: (id: string) => call<Room>('GET', `/rooms/${id}`),
+  openRoom: (name: string, clubId: number) => call<Room>('POST', '/rooms', { name, club_id: clubId }),
+  joinRoom: (id: string, name: string, clubId: number) => call<Room>('POST', `/rooms/${id}/join`, { name, club_id: clubId }),
   report: (id: string, side: Side = 'home') => call<any>('GET', `/matches/${id}/report?side=${side}`),
 }
 
