@@ -43,6 +43,10 @@ class MomentClockTest extends TestCase
         $this->assertSame('sub', MomentClock::kind([['type' => 'action', 'team' => 'home', 'action' => ['type' => 'sub']], ['type' => 'sub', 'team' => 'home']]));
         $pen = [['type' => 'penalty', 'team' => 'home', 'scored' => true], ['type' => 'goal', 'team' => 'home', 'kind' => 'penalty']];
         $this->assertSame(['kind' => 'penalty', 'ms' => 10600], MomentClock::moment($pen, $this->match));
+        // The pause after a scene is added to it, not to the quiet minutes.
+        $paused = $this->match + ['scene_gap_ms' => 1500];
+        $this->assertSame(10600 + 1500, MomentClock::moment($pen, $paused)['ms']);
+        $this->assertSame(900, MomentClock::moment([], $paused)['ms']);
         // Matches created before the table existed keep the fixed minute.
         $this->assertSame(3000, MomentClock::moment([], ['tick_ms' => 3000])['ms']);
     }
