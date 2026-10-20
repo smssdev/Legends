@@ -2,8 +2,7 @@
   <main class="mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-3 px-3 py-3 md:px-5">
     <header class="flex flex-wrap items-center gap-2">
       <RouterLink to="/sim" class="flex items-center gap-2">
-        <img src="/icon-192.png" alt="" class="size-9 rounded-md" />
-        <span class="font-display text-lg font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
+        <BrandMark size="sm" />
       </RouterLink>
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />

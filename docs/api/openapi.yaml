@@ -13,6 +13,8 @@ tags:
       Accounts (docs/PLAN.md 2.17). The web signs in with Sanctum's session cookie: GET /sanctum/csrf-cookie first,
       then send the X-XSRF-TOKEN header. The app uses POST /auth/token or /auth/google/token and sends
       "Authorization: Bearer <token>"; tokens expire after 30 days. Sign-in attempts: 5 a minute per email, 20 per address.
+  - name: data
+    description: The real clubs and players (docs/PLAN.md 2.6), read-only and public. 120 requests a minute.
   - name: system
     description: Health and the test broadcast
   - name: simulator
@@ -220,6 +222,86 @@ paths:
         '202': { description: Done }
         '401': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /data/templates:
+    get:
+      tags: [data]
+      summary: The leagues a new league can copy, strongest first
+      security: []
+      responses:
+        '200':
+          description: Templates of the latest data version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data_version: { type: string }
+                  templates:
+                    type: array
+                    items:
+                      type: object
+                      required: [name, clubs, top_strength_cp, avg_strength_cp]
+                      properties:
+                        name: { type: string }
+                        clubs: { type: integer }
+                        top_strength_cp: { type: integer, description: The strongest club, in hundredths (8480 = 84.8) }
+                        avg_strength_cp: { type: integer }
+  /data/clubs:
+    get:
+      tags: [data]
+      summary: The clubs of one template, strongest first
+      security: []
+      parameters:
+        - { name: league, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Clubs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  league: { type: string }
+                  clubs: { type: array, items: { $ref: '#/components/schemas/DataClub' } }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /data/clubs/{club}:
+    get:
+      tags: [data]
+      summary: A club and its whole squad, with potential and value
+      security: []
+      parameters:
+        - { name: club, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The club
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/DataClub' }
+                  - type: object
+                    required: [squad_value, players]
+                    properties:
+                      squad_value: { type: integer, description: Club money }
+                      players: { type: array, items: { $ref: '#/components/schemas/DataPlayer' } }
+        '404': { $ref: '#/components/responses/Error' }
+  /data/clubs/{club}/crest.svg:
+    get:
+      tags: [data]
+      summary: The club's generated badge (SVG)
+      description: No real logos; a shape, a pattern and the club's letters in its colours, the same everywhere. Cached for a week, with an ETag.
+      security: []
+      parameters:
+        - { name: club, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The badge
+          content:
+            image/svg+xml:
+              schema: { type: string }
+        '304': { description: Not changed }
+        '404': { $ref: '#/components/responses/Error' }
   /health:
     get:
       tags: [system]
@@ -561,6 +643,35 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    DataClub:
+      type: object
+      required: [id, name, code, league, strength_cp, colors, crest_url]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string, description: Three letters }
+        league: { type: string }
+        strength_cp: { type: integer, description: The average of the best 18, in hundredths }
+        colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
+        crest_url: { type: string }
+    DataPlayer:
+      type: object
+      required: [id, name, position, line, age, overall, potential, value, attributes]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string, example: CM }
+        line: { type: string, enum: [gk, def, mid, att] }
+        age: { type: integer }
+        nationality: { type: string, nullable: true }
+        foot: { type: string, nullable: true }
+        overall: { type: integer }
+        potential: { type: integer, description: The most training can raise his rating }
+        value: { type: integer, description: Club money }
+        attributes:
+          type: object
+          description: pac, sho, pas, dri, def, phy for outfield players; diving, handling, kicking, positioning, reflexes for keepers
+          additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
       required: [id, name, email, email_verified, role, has_password, google]
