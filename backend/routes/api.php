@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\SimulatorController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,14 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('email/resend', 'resend')->middleware('throttle:3,1');
         Route::delete('token', 'revoke');
     });
+});
+
+// The real clubs and players [PLAN 2.6], read-only and public: league templates, squads, badges.
+Route::prefix('data')->controller(DataController::class)->middleware('throttle:120,1')->group(function () {
+    Route::get('templates', 'templates');
+    Route::get('clubs', 'clubs');
+    Route::get('clubs/{club}', 'show')->whereNumber('club');
+    Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
 });
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.
