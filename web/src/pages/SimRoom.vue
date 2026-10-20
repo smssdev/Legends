@@ -2,8 +2,7 @@
   <main class="mx-auto flex min-h-dvh max-w-xl flex-col gap-5 px-4 py-5">
     <header class="flex items-center gap-3">
       <RouterLink to="/sim" class="flex items-center gap-2">
-        <img src="/icon-192.png" alt="" class="size-10 rounded-md" />
-        <span class="font-display text-xl font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
+        <BrandMark />
       </RouterLink>
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">مباراة مع صديق</span>
     </header>
