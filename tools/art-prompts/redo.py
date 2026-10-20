@@ -67,7 +67,8 @@ def entry(book, code):
 def run(r):
     book = open(os.path.join(ROOT, r['book'])).read()
     rows = [(k, folder, *entry(book, k), why, fix) for k, folder, why, fix in r['redo']]
-    rows = [row for row in rows if f'{row[1]}/{row[2]}' not in REDONE_OK]
+    later = {k for x in REVIEWS[REVIEWS.index(r) + 1:] for k, *_ in x['redo']}   # a later review of the same board replaces this one
+    rows = [row for row in rows if f'{row[1]}/{row[2]}' not in REDONE_OK and row[0] not in later]
     o = []
     W = o.append
     W(f"# إعادة صور {r['title']} (مراجعة {r['date']})\n")
@@ -161,7 +162,25 @@ BALL = {
         ('48.19', 'striker/ball', 'ثلاث خطوات جري، والمطلوب: الكرة تموت عند قدمه (وقوف)، ثم يدفعها، ثم يبدأ الجري', 'Frame 4: standing over the ball that has stopped dead at his feet. Frame 5: pushing it forward with the right foot. Frame 6: the first running step. ' + DIFFERENT),
     ],
 }
-REVIEWS = [RUN_WALK, START, BALL]
+SCALE = ('Make it a wide 3:2 landscape image (like 1264x848), never square. Draw every figure as tall as in the attached '
+         'run-side-01.png: from the top of the head to the soles about four fifths of the image height. Keep exactly the poses '
+         'of your earlier square version, attached as the pose guide.')
+DRIBBLE_SCALE = {
+    'date': '2026-10-20', 'title': 'المهاجم: الدريبل بالمقياس الصحيح', 'book': 'docs/art/images/03-players.md',
+    'out': 'docs/art/redo/2026-10-20-striker-dribble-scale.md',
+    'ok': [],
+    'notes': [
+        '**الوضعيات صحيحة،** واعتُمدت أولاً. لكن اللوحتين مربعتان (1024x1024)، فرسم Gemini الأشكال أصغر: في اللعبة يصغر اللاعب حوالي 25% حين يبدأ الدريبل.',
+        '**الإصلاح:** نفس الوضعيات في صورة عريضة 3:2 وبطول الجري. ارفق نسختك المربعة القديمة (عندك على جهازك، وفي تاريخ git) دليلاً للوضعيات، و`run-side-01.png` دليلاً للحجم.',
+        '**أداة البناء** صارت تنبّه لأي لوحة ليست 3:2، وتوحّد دقة الصور (1024x687 و2528x1696 تُعامل مثل 1264x848).',
+    ],
+    'common': 'لوحة مربعة بدل 3:2، فالأشكال أصغر من باقي الحركات.',
+    'redo': [
+        ('48.1', 'striker/ball', 'مربعة 1:1، فالأشكال أصغر 25% من الجري (الوضعيات صحيحة)', SCALE + ' ' + LOOK_DOWN),
+        ('48.2', 'striker/ball', 'مربعة 1:1، فالأشكال أصغر 25% من الجري (الوضعيات صحيحة)', SCALE + ' ' + LOOK_DOWN),
+    ],
+}
+REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE]
 
 # Boards approved before these reviews (wave 1), in docs/sprints/sprint-02-days.md.
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']
@@ -170,8 +189,8 @@ APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run',
 # Boards rejected in a review, made again and approved afterwards (path: day of approval).
 # They leave their redo list, and a rerun never removes them.
 REDONE_OK = {
-    'striker/ball/dribble-01.png': '2026-10-20',
-    'striker/ball/dribble-02.png': '2026-10-20',
+    'striker/run/run-q-front-02.png': '2026-10-20',
+    'striker/run/run-q-front-03.png': '2026-10-20',
 }
 
 
