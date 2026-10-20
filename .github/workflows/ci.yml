@@ -50,6 +50,10 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      # The TypeScript client comes from docs/api/openapi.yaml: this fails on an invalid contract,
+      # or when a route changed without `npm run api` in the same PR (CLAUDE.md: the API contract).
+      - name: API client matches the contract
+        run: npm run api && git diff --exit-code -- src/api/schema.d.ts
       - run: npm run build
 
   docker:
