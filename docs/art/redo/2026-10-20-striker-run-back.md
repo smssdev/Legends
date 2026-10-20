@@ -49,26 +49,15 @@ Use the attached reference card: exactly the same man, same face, hair and body,
 
 إن لم ينجح الأمر الواحد، كل صورة بأمرها تحت.
 
-## تحتاج إعادة (4)
+## تحتاج إعادة (3)
 
 **أكثر مشكلة تكررت:** الرجل الواقفة تتبدل كل إطار بدل أن تبقى نفسها في الإطارات 1 إلى 3 و5 إلى 7، وإطارات الطيران على الأرض.
 
 | اللوحة | الملف | المشكلة |
 |---|---|---|
-| 45.10 | `art/raw/striker/run/run-front-01.png` | الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف) |
 | 45.13 | `art/raw/striker/run/run-back-01.png` | الرجل الواقفة تتبدل كل إطار (يسرى، يمنى، يسرى)، والمطلوب اليمنى في الثلاثة |
 | 45.14 | `art/raw/striker/run/run-back-02.png` | الإطار 4 بقدمين على الأرض والمطلوب طيران، والإطاران 5 و6 على رجلين مختلفتين |
 | 45.15 | `art/raw/striker/run/run-back-03.png` | الإطاران 7 و8 متطابقان تقريباً، والإطار 8 ليس طيراناً |
-
-### 45.10 `run-front-01.png`
-
-**المشكلة:** الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف)  
-**المجلد:** `art/raw/striker/run/`  
-**ارفق:** `art/raw/striker/ref.png` و`art/raw/striker/run/run-front-02.png`
-
-```
-Use the attached reference card: exactly the same man, same face, hair and body, same plain white kit (shirt, shorts, socks) and black boots, no logos or numbers. ONE wide 3:2 landscape image (not square, not separate panels) with exactly 3 figures of him in one row, left to right, all the same size, feet on the same ground line, each figure about four fifths of the image height, clear space between them, nothing cut off. Background: one flat solid chroma green (#00FF00) only: no floor, no shadows, no lights, no text. Photorealistic 3D render like a modern console football game. No ball. Camera: straight from the front. He faces the camera and runs straight towards it. Because he faces us, his RIGHT leg is on the LEFT side of the image and his LEFT leg is on the RIGHT side. Match the size and style of the attached run-front-02.png. He is sprinting in every figure: body leaning forward, both elbows bent at 90 degrees and pumping, never arms hanging down, never walking. Every figure is a different pose. Figure 1: his right foot (on the LEFT side of the image) landing on the ground in front of him; his left foot (on the RIGHT side of the image) lifted off the ground behind him; his left arm forward. Figure 2: his weight on his right foot (LEFT side of the image), flat under his body, knee slightly bent; his left foot (RIGHT side) off the ground, passing forward low next to the standing ankle. Figure 3: his right foot (LEFT side) pushing off on its toes; his left knee (RIGHT side) lifted high in front at hip height. In all three figures he stands on the leg on the LEFT side of the image, and the foot on the RIGHT side of the image is off the ground.
-```
 
 ### 45.13 `run-back-01.png`
 
