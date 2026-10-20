@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { SECTIONS } from './layouts/nav'
+import { useAuth } from './stores/auth'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -12,6 +13,19 @@ export const router = createRouter({
         { path: '', name: 'home', component: () => import('./pages/Home.vue') },
         ...SECTIONS.filter((s) => s.sprint).map((s) => ({ path: s.path.slice(1), name: s.name, component: () => import('./pages/ComingSoon.vue') })),
         { path: 'sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
+        { path: 'profile', name: 'profile', component: () => import('./pages/Profile.vue'), meta: { auth: true } },
+      ],
+    },
+    // Signing in (Sprint 10), outside the navigation
+    {
+      path: '/',
+      component: () => import('./layouts/AuthLayout.vue'),
+      meta: { guest: true },
+      children: [
+        { path: 'login', name: 'login', component: () => import('./pages/auth/Login.vue') },
+        { path: 'register', name: 'register', component: () => import('./pages/auth/Register.vue') },
+        { path: 'forgot-password', name: 'forgot-password', component: () => import('./pages/auth/ForgotPassword.vue') },
+        { path: 'reset-password', name: 'reset-password', component: () => import('./pages/auth/ResetPassword.vue'), meta: { any: true } },
       ],
     },
     // The match and its report fill the screen
@@ -22,4 +36,13 @@ export const router = createRouter({
     // W14b: developer preview of the match art, not in production builds
     ...(import.meta.env.DEV ? [{ path: '/dev/art', name: 'dev-art', component: () => import('./pages/ArtPreview.vue') }] : []),
   ],
+})
+
+// Screens for the signed-in only send guests to the login (and back after); the login and
+// sign-up screens send the signed-in home.
+router.beforeEach(async (to) => {
+  const auth = useAuth()
+  await auth.ready()
+  if (to.meta.auth && !auth.signedIn) return { name: 'login', query: { next: to.fullPath } }
+  if (to.meta.guest && !to.meta.any && auth.signedIn) return { name: 'home' }
 })

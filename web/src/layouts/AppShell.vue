@@ -5,9 +5,12 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
+import { useAuth } from '../stores/auth'
 import { SECTIONS, TABS } from './nav'
 
 const route = useRoute()
+const auth = useAuth()
+const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
 const more = ref(false)
 const sections = computed(() => SECTIONS)
 const tabs = computed(() => TABS.map((n) => SECTIONS.find((s) => s.name === n)!))
@@ -38,13 +41,29 @@ watch(() => route.fullPath, () => (more.value = false))
           <span v-if="s.dev" class="rounded-pill bg-gold/15 px-2 text-xs text-gold">للمطور</span>
         </RouterLink>
       </nav>
+      <RouterLink v-if="auth.user" to="/profile" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface p-3 hover:bg-surface-raised">
+        <span class="flex size-10 items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold">{{ initial }}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-bold">{{ auth.user.name }}</span>
+          <span class="block text-xs text-text-muted">حسابي</span>
+        </span>
+      </RouterLink>
+      <div v-else class="flex flex-col gap-2">
+        <RouterLink to="/login" class="flex h-touch items-center justify-center rounded-lg bg-gold font-bold text-on-gold">دخول</RouterLink>
+        <RouterLink to="/register" class="flex h-touch items-center justify-center rounded-lg border border-text/15 font-bold">إنشاء حساب</RouterLink>
+      </div>
     </aside>
 
     <div class="flex min-w-0 flex-1 flex-col">
       <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-text/5 bg-bg/95 px-4 py-3 backdrop-blur md:hidden">
         <img src="/icon-192.png" alt="" class="size-8 rounded-md" />
         <span class="font-display text-lg font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
+        <RouterLink v-if="auth.user" to="/profile" class="ms-auto flex size-touch items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">{{ initial }}</RouterLink>
+        <RouterLink v-else-if="auth.loaded" to="/login" class="ms-auto flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">دخول</RouterLink>
       </header>
+      <RouterLink v-if="auth.user && !auth.user.email_verified && route.name !== 'profile'" to="/profile" class="block bg-warning/15 px-4 py-2 text-center text-sm">
+        بريدك غير مؤكد بعد. <span class="font-bold text-gold">أكّده من صفحة حسابي</span>
+      </RouterLink>
       <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-5 pb-28 md:px-8 md:pb-8">
         <RouterView />
       </main>
