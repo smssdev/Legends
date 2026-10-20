@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     port: 5173,
     // The Laravel API from `php artisan serve` (see backend composer dev).
-    proxy: { '/api': 'http://127.0.0.1:8000' },
+    // and the links that open in the browser: Sanctum's cookie, Google, the email confirmation.
+    proxy: Object.fromEntries(['/api', '/sanctum', '/auth/google', '/email/verify'].map((p) => [p, 'http://127.0.0.1:8000'])),
   },
 })

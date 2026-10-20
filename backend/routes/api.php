@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\SimulatorController;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,28 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('health', [HealthController::class, 'show']);
 Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throttle:10,1');
+
+// Accounts [PLAN 2.17]: the web by session cookie, the app by token. Login attempts are limited
+// per email and per address (AppServiceProvider, "auth").
+Route::prefix('auth')->controller(AuthController::class)->group(function () {
+    Route::middleware('throttle:auth')->group(function () {
+        Route::post('register', 'register');
+        Route::post('login', 'login');
+        Route::post('token', 'token');
+        Route::post('google/token', 'googleToken');
+        Route::post('forgot-password', 'forgot');
+        Route::post('reset-password', 'reset');
+    });
+    Route::post('logout', 'logout');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('me', 'me');
+        Route::patch('me', 'update');
+        Route::delete('me', 'destroy')->middleware('throttle:auth');
+        Route::put('password', 'password')->middleware('throttle:auth');
+        Route::post('email/resend', 'resend')->middleware('throttle:3,1');
+        Route::delete('token', 'revoke');
+    });
+});
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.
 Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::class)->group(function () {

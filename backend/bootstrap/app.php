@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // The web app signs in with Sanctum's session cookie; the app sends a Bearer token.
+        $middleware->statefulApi();
         $middleware->alias(['simulator' => SimulatorEnabled::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

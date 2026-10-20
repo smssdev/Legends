@@ -73,5 +73,12 @@ return [
         'target_tick' => 'الدقيقة المستهدفة',
         'idempotency_key' => 'مفتاح العملية',
         'q' => 'البحث',
+        'terms' => 'الشروط',
+        'current_password' => 'كلمة المرور الحالية',
+        'device_name' => 'اسم الجهاز',
+        'id_token' => 'رمز جوجل',
+        'token' => 'الرمز',
+        'confirm' => 'التأكيد',
+        'remember' => 'تذكرني',
     ],
 ];
