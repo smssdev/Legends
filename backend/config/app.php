@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // The API's version, shown by GET /api/v1/health.
+    'version' => env('APP_VERSION', '0.1.0'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -78,7 +81,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'ar'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
