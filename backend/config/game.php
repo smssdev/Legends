@@ -25,7 +25,7 @@ return [
         // كل النسب بنقاط الأساس (10000 = 100%) لأن المحرك يعمل بأرقام صحيحة فقط
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
-        'home_base_bp' => 250,                     // ميزة أساسية لكل فريق على أرضه
+        'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
         'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
@@ -71,11 +71,38 @@ return [
     ],
     'training' => ['slots' => 4, 'tick_hours' => 8, 'progress_scale' => 10000,
         'season_gain_target' => [3, 5]],
+    // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
+    // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
+    'balance' => [
+        'league' => 'Premier League',
+        'nightly' => (bool) env('GAME_NIGHTLY_BALANCE', false),   // the home server turns it on (docs/HOME_SERVER.md)
+        'favourite_gap_points' => 18,          // the strongest club against one this many points weaker
+        'targets' => [
+            'goals/match' => [2.6, 2.9],
+            '0-0_%' => [6, 9],
+            'home_win_%' => [42, 48], 'draw_%' => [22, 28], 'away_win_%' => [27, 33],
+            'shots/team' => [10.5, 13.5], 'on_target/team' => [4, 5],
+            'yellow/match' => [3.5, 4.5], 'red/match' => [0.07, 0.15],
+            'penalties/match' => [0.2, 0.3], 'injuries/match' => [0.2, 0.3], 'offsides/match' => [2, 4],
+            'late_goals_%' => [22, 27],
+            'favourite_win_%' => [65, 70],
+        ],
+        // Knob isolation (ENGINE 9.2): moving one knob from low to high on equal teams must move these the
+        // given way (+1 up, -1 down) and leave the win rate within max_win_shift points.
+        'knobs' => [
+            'pressing' => ['from' => 0, 'to' => 100, 'expect' => ['presses_won_home' => 1, 'yellow_home' => 1, 'fitness_65_home_%' => -1]],
+            'tempo' => ['from' => 0, 'to' => 100, 'expect' => ['attacks_home' => 1, 'fitness_65_home_%' => -1]],
+            'tackling' => ['from' => 0, 'to' => 3, 'expect' => ['yellow_home' => 1, 'red_home_%' => 1]],
+            'style' => ['from' => 0, 'to' => 100, 'expect' => ['goals_home' => 1, 'counters_away' => 1]],
+            'trap' => ['from' => 0, 'to' => 1, 'against' => ['plan' => 'long'], 'expect' => ['offsides_away' => 1]],
+        ],
+        'max_win_shift' => 3,
+    ],
     'engine' => [
-        'version' => 1,
+        'version' => 2,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
-        'attack_rate_bp' => 5300,                 // هجمات في الدقيقة للفريقين معاً
+        'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
         'phase_floor_bp' => 800, 'phase_ceiling_bp' => 9200,
         'funnel_target_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 7500],
         'matchup_cp' => [                         // خطة الهجوم × شكل دفاع الخصم (عالٍ، متوسط، منخفض)، بمئات النقطة
@@ -83,7 +110,7 @@ return [
             'passing' => [-100, 200, -100], 'wings' => [-200, 0, 200],
             'long_shots' => [-200, -100, 300],
         ],
-        'tackling_bonus_cp' => [0, 50, 100, 200], // قانوني، عادي، حماس، خشونة
+        'tackling_bonus_cp' => [0, 20, 30, 40],   // قانوني، عادي، حماس، خشونة
         'fitness_drain_base' => 28, 'fitness_drain_pressing_max' => 17, 'fitness_drain_tempo_max' => 8,
         'red_card_drain_bp' => 11500,
         'trailing_push_from_minute' => 60,
@@ -91,12 +118,14 @@ return [
         'live_reading_every_minutes' => 15,
         // Phase duels: success = base + slope × (attack − defence in rating points), clamped to floor..ceiling
         'phase_base_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 8200, 'header' => 3500],
-        'phase_slope_bp' => 22,              // per rating point of difference
-        'share_slope_bp' => 40,              // initiative share per point of midfield difference
-        'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 360, 'header' => 450],
-        'goal_slope_bp' => 18,               // per point of shooter − keeper
+        'phase_slope_bp' => 17,              // per rating point of difference
+        'share_slope_bp' => 30,              // initiative share per point of midfield difference
+        'home_share_bp' => 450,              // the home side has the ball more (of 10000, on its own ground)
+        'style_share_bp' => 5,               // initiative share per point of attacking style over the opponent's
+        'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 1000, 'header' => 450],
+        'goal_slope_bp' => 12,               // per point of shooter − keeper
         'penalty_goal_bp' => 7600, 'free_kick_goal_bp' => 700,
-        'on_target_bp' => 4600, 'corner_after_save_bp' => 3000,
+        'on_target_bp' => 3700, 'corner_after_save_bp' => 3000,
         'press_bonus_cp' => 4,               // defence bonus in build-up per pressing point above 50
         'tempo_precision_cp' => 3,           // own precision loss per tempo point above 50
         'counter_base_bp' => 3200, 'counter_plan_bp' => 1600, 'counter_bonus_cp' => 150,
@@ -104,11 +133,14 @@ return [
         'foul_bp' => [800, 1300, 1900, 2700], // per lost duel, by tackling level
         'card_bp' => [1300, 1950, 2850, 3900], // per foul, by tackling level
         'referee_bp' => [7000, 10000, 13500], // soft, medium, strict
-        'dogso_red_bp' => 300,
+        'dogso_red_bp' => 120,
+        'second_yellow_spare_bp' => 8000,    // a booked player's next yellow is let go this often
         'midfield_foul_bp' => 2300,          // per quiet minute: ordinary fouls away from danger
-        'penalty_share_bp' => 700,          // fouls at the box that are inside it
-        'offside_bp' => ['long' => 1500, 'counter' => 1200, 'passing' => 450, 'wings' => 350, 'shots' => 200],
-        'injury_bp' => [200, 300, 450, 700],
+        'midfield_card_pct' => 110,           // of the card chance for a foul near goal (card_bp)
+        'penalty_share_bp' => 700,           // fouls at the box that are inside it
+        'progress_free_kick_bp' => 5000,     // fouls in midfield that still leave a free kick in range
+        'offside_bp' => ['long' => 1900, 'counter' => 1500, 'passing' => 560, 'wings' => 440, 'shots' => 250],
+        'injury_bp' => [170, 250, 380, 600],
         'man_down_cp' => 350,
         'captain_cp' => 80,
         'trailing_push_bp_per_minute' => 50,
