@@ -9,8 +9,9 @@ One command, run from anywhere. Needs Python 3 with Pillow, numpy and scipy
 3. marks the white kit in a separate mask, so the game tints it with any club's colours;
 4. brings every board to the standard canvas height first (Gemini's 3:2 is 1264x848, but a
    downloaded copy can be 1024x687 or 2528x1696), so a smaller file never makes a smaller player;
-5. scales every character by its reference card, and keeps one ground line per
-   sequence, so a frame in the air stays in the air;
+5. scales every character by its reference card; in a cycle (run, walk, dribble) a board drawn smaller
+   or bigger is brought to the size of the sequence's first board, and every board keeps its own ground
+   line (its lowest foot), so a frame in the air stays in the air;
 6. packs the frames into atlases at two sizes (hd for computers, sd for phones)
    with a manifest the scene engine reads.
 
@@ -30,6 +31,7 @@ PLATE_W = {'hd': 1376, 'sd': 688}
 ATLAS_W = 2048
 FPS = 12                              # animation frames a second (MATCH_VIEW 4.7)
 BOARD_H = 848                         # the standard board height (3:2 at 1264x848): every board is resized to it
+CYCLE = re.compile(r'/(run|walk|sprint|jog|backpedal|dribble)')   # sequences whose figures are the same height on every board
 RANGE = re.compile(r'(?:الإطارات )?(\d+) إلى (\d+) من (\d+)')
 
 
@@ -214,17 +216,27 @@ class Atlas:
 def build():
     cut = {}                                               # (char, seq) -> list of frames
     scales = {}
+    seq_height = {}                                        # (char, seq) -> median figure height of its first board
     for char, seq, path, first, last, total in boards():
         if char not in scales: scales[char] = ref_height(char)
-        rgba, kind = key(board(path))
+        im = board(path)
+        rgba, kind = key(im)
         n = last - first + 1
         boxes, owners = figures(rgba, n, owned=True)
         if len(boxes) != n:
             print(f'! {os.path.relpath(path, ROOT)}: found {len(boxes)} figures, expected {n}', file=sys.stderr); continue
+        # A cycle (run, walk, dribble...) has the same height on every board: one drawn smaller is brought to the first one's size.
+        med = float(np.median([y1 - y0 for x0, y0, x1, y1 in boxes]))
+        if CYCLE.search(seq) and (char, seq) in seq_height and abs(seq_height[(char, seq)] / med - 1) > 0.03:
+            r = seq_height[(char, seq)] / med
+            rgba, kind = key(im.resize((round(im.size[0] * r), round(im.size[1] * r)), Image.LANCZOS))
+            boxes, owners = figures(rgba, n, owned=True)
+        seq_height.setdefault((char, seq), med)
+        ground = max(y1 for x0, y0, x1, y1 in boxes)           # every board has its own ground line: its lowest foot
         for i, (x0, y0, x1, y1) in enumerate(boxes):
             fr = rgba[y0:y1, x0:x1].copy()
             fr[..., 3] = np.where(owners[i][y0:y1, x0:x1], fr[..., 3], 0)
-            cut.setdefault((char, seq), {'total': total, 'frames': {}, 'kind': kind})['frames'][first + i] = (fr, y1, torso_x(fr))
+            cut.setdefault((char, seq), {'total': total, 'frames': {}, 'kind': kind})['frames'][first + i] = (fr, ground - y1, torso_x(fr))
     manifest = {'fps': FPS, 'sizes': {}, 'sequences': {}, 'plates': {}}
     for size, H in SIZES.items():
         folder = os.path.join(OUT, size); os.makedirs(folder, exist_ok=True)
@@ -232,16 +244,15 @@ def build():
         for (char, seq), s in sorted(cut.items()):
             ref = scales.get(char) or max(f[0].shape[0] for f in s['frames'].values())
             k = H / ref
-            ground = max(b for _, b, _ in s['frames'].values())   # one ground line for the whole sequence
             frames = []
             for idx in sorted(s['frames']):
-                fr, bottom, ax = s['frames'][idx]
+                fr, lift, ax = s['frames'][idx]                   # lift: how far its feet are above its board's ground
                 w, h = max(1, round(fr.shape[1] * k)), max(1, round(fr.shape[0] * k))
                 img = np.asarray(Image.fromarray(fr).resize((w, h), Image.LANCZOS))
                 page, x, y = atlas.add(img, kit_mask(img))
                 frames.append({'i': idx, 'page': page, 'x': x, 'y': y, 'w': w, 'h': h,
                                'ax': round(ax * k, 1),               # anchor x: the torso
-                               'ay': round(h + (ground - bottom) * k, 1)})  # anchor y: the sequence's ground line
+                               'ay': round(h + lift * k, 1)})            # anchor y: the ground line, so a frame in the air stays in the air
             name = seq
             missing = [i for i in range(1, s['total'] + 1) if i not in s['frames']]
             manifest['sequences'].setdefault(name, {'total': s['total'], 'missing': missing, 'frames': {}})['frames'][size] = frames
