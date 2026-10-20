@@ -56,6 +56,9 @@ def image_redo():
 
 
 
+# Redo boards Sliman chose to leave for later (2026-10-20): they go to the end of today's list.
+LATER = {'45.13', '45.14', '45.15'}
+
 # Things only Sliman can unblock: keep this list current (remove a line once it is done).
 OPEN_DECISIONS = [
     ('D0 / D1', 'اعتماد نظام التصميم وشاشات السبرنتات 9 و10 و11 (المكونات، والحساب، والفريق)', 'الشاشات المكتوبة تنتظره، ولا تُكتب شاشة جديدة قبل تصميمها'),
@@ -169,6 +172,7 @@ def write_slieman():
     for i, s in enumerate(steps, 1):
         W(f'{i}. {s}')
     W('')
+    r1 = [b for b in r1 if b[1] not in LATER] + [b for b in r1 if b[1] in LATER]
     nxt = (r1 + t1)[:rates.IMG_PER_DAY]
     if nxt:
         W(f'**صور اليوم ({len(nxt)}):**\n')
