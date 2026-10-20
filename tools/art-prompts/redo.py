@@ -5,6 +5,7 @@ book with a correction line at the end. Rejected boards are taken out of art/raw
 plan (days.py) counts them as not done; their old copies stay in git history.
 Edit REVIEW below after each review, then run this and days.py.
 """
+import datetime as _dt
 import os, re
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
@@ -100,7 +101,8 @@ def main(r=REVIEW):
     removed = 0
     for k, folder, f, *_ in rows:
         p = os.path.join(ROOT, 'art', 'raw', 'striker', folder, f)
-        if os.path.exists(p):
+        # only the rejected board: one uploaded again after the review stays
+        if os.path.exists(p) and os.path.getmtime(p) < _dt.datetime.fromisoformat(r['date'] + 'T23:59:59').timestamp():
             os.remove(p)
             removed += 1
     print(f'{len(rows)} to redo, {removed} removed from art/raw -> {r["out"]}')
