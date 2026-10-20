@@ -6,9 +6,13 @@ writes docs/audio/ARABIC_VOICE.md (every clip in one file), audio/raw/ar/catalog
 README in each folder of audio/raw/ naming the files that go in it. The lines in story.ts
 (audio/raw/ar/story/files.txt) are what the simulator says today; the catalogue adds the full
 set, so every moment has many variants and the voice rarely repeats itself. Same rules as files.txt: no player or club names, one line per file.
+The text of every line comes from ar_egyptian.py: Egyptian Arabic as it is said, without diacritics.
 Tones: هادئ (normal commentary), متحمس (big moment), صاخب (the peak: goal, last-minute winner).
 """
-import os
+import os, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ar_egyptian as EG  # noqa: E402  the Egyptian text of every line (owner's decision, 2026-10-20)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 H, X, P = 'هادئ', 'متحمس', 'صاخب'
@@ -164,7 +168,7 @@ def story_lines():
             if line.startswith('#') or not line.strip():
                 continue
             name, tone, text = line.rstrip('\n').split('\t')
-            rows.append((name, tone, text))
+            rows.append((name, tone, EG.STORY.get(name[:-4], EG.plain(text))))
     return rows
 
 
@@ -192,12 +196,15 @@ def table(rows, waves=None):
 def write(path, lines):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(lines) + '\n')
+        f.write(EG.plain('\n'.join(lines)) + '\n')          # no diacritics anywhere (owner's decision, 2026-10-20)
 
 
 def main():
     story = story_lines()
-    cat = [(prefix, title, when, [(f'{prefix}-{i:02d}.wav', tone, text) for i, (tone, text) in enumerate(items, 1)]) for prefix, title, when, items in CATALOG]
+    for prefix, _, _, items in CATALOG:
+        assert len(EG.CATALOG[prefix]) == len(items), f'{prefix}: {len(EG.CATALOG[prefix])} Egyptian lines for {len(items)} clips'
+    cat = [(prefix, title, when, [(f'{prefix}-{i:02d}.wav', tone, EG.CATALOG[prefix][i - 1]) for i, (tone, _) in enumerate(items, 1)])
+           for prefix, title, when, items in CATALOG]
     n_cat = sum(len(r) for *_, r in cat)
     total = len(story) + n_cat
 
@@ -219,12 +226,13 @@ def main():
         '**دورة كل دفعة:** صاحب المشروع يسجل أو يولّد المقاطع ويرفعها، وClaude يبنيها ويضعها في المحاكي، ثم مباراة كاملة بالعربي للتجربة، ثم الاعتماد والدفعة التالية.\n',
         '## التوليد أو التسجيل\n',
         '- **الصيغة:** WAV أحادي (mono) 44.1 أو 48 كيلوهرتز. mp3 أو m4a بنفس الاسم يعملان أيضاً.',
-        '- **الصوت:** معلق عربي واحد لكل المقاطع، بالفصحى، بنفس الإعدادات من أول مقطع لآخر مقطع.',
+        '- **الصوت:** معلق عربي واحد لكل المقاطع، **باللهجة المصرية** (قرار صاحب المشروع، 2026-10-20)، بنفس الصوت والإعدادات من أول مقطع لآخر مقطع. النص هنا مكتوب بالمصرية كما يُقال، بلا تشكيل. جملة واحدة لكل مقطع بلا جمل من مقطع آخر، والمقطع الذي قبل اللحظة (pre) لا يكشف النتيجة.',
+        '- **قوائم العمل:** `docs/audio/todo/`، فيها لكل دفعة ما اعتُمد وما يُعاد وما لم يُسجَّل، بالملف والمكان والنبرة والنص.',
         '- **النبرات:**',
         '  - **هادئ:** تعليق عادي بسرعة متوسطة.',
         '  - **متحمس:** صوت مرتفع وأسرع، للحظات الكبيرة.',
         '  - **صاخب:** أعلى صوت ممكن مع مدّ الكلمة، للهدف والطرد والفوز القاتل.',
-        '- **في أداة التوليد:** ثبّت الصوت والإعدادات لكل نبرة، وولّد المقاطع نبرة نبرة. انسخ النص كما هو بالتشكيل، فالتشكيل يضبط النطق.',
+        '- **في أداة التوليد:** ثبّت الصوت والإعدادات لكل نبرة، وولّد المقاطع نبرة نبرة. انسخ النص كما هو، وقله بالنطق المصري.',
         '- **الصمت:** نصف ثانية قبل الكلام وبعده. أداة البناء تقص الزائد وتوحد مستوى الصوت.',
         '- **ممنوع:** أسماء لاعبين أو أندية، وأي موسيقى تحت الصوت.\n',
         '## كيف يستخدمها المحاكي\n',
