@@ -27,7 +27,7 @@ SIZES = {'hd': 384, 'sd': 192}         # a standing player's height in pixels at
 PLATE_W = {'hd': 1376, 'sd': 688}
 ATLAS_W = 2048
 FPS = 12                              # animation frames a second (MATCH_VIEW 4.7)
-RANGE = re.compile(r'الإطارات (\d+) إلى (\d+) من (\d+)')
+RANGE = re.compile(r'(?:الإطارات )?(\d+) إلى (\d+) من (\d+)')
 
 
 # ---------------------------------------------------------------- keying
@@ -140,7 +140,7 @@ def torso_x(rgba):
 
 # ---------------------------------------------------------------- boards
 def boards():
-    """Every animation board named in a README: (character, sequence, file, first, last, total)."""
+    """Every animation board named in a README: (character, sequence name, file, first, last, total)."""
     found = []
     for d, _, files in os.walk(RAW):
         if 'README.md' not in files or os.sep + 'stadiums' in d: continue
@@ -150,9 +150,10 @@ def boards():
             r = RANGE.search(m.group(2))
             path = os.path.join(d, m.group(1))
             if not r or not os.path.exists(path): continue
-            rel = os.path.relpath(path, RAW).replace(os.sep, '/')
-            char = rel.split('/')[0] if not rel.startswith('players/') else '/'.join(rel.split('/')[:2])
-            seq = re.sub(r'-\d+\.png$', '', m.group(1))
+            folder = os.path.relpath(d, RAW).replace(os.sep, '/')
+            char = folder                                # the character: the nearest folder up with a reference card
+            while '/' in char and not os.path.exists(os.path.join(RAW, char, 'ref.png')): char = char.rsplit('/', 1)[0]
+            seq = folder + '/' + re.sub(r'-\d+\.png$', '', m.group(1))   # e.g. striker/run/run-side, balls/classic/spin
             found.append((char, seq, path, int(r.group(1)), int(r.group(2)), int(r.group(3))))
     return sorted(found)
 
@@ -228,7 +229,7 @@ def build():
                 frames.append({'i': idx, 'page': page, 'x': x, 'y': y, 'w': w, 'h': h,
                                'ax': round(ax * k, 1),               # anchor x: the torso
                                'ay': round(h + (ground - bottom) * k, 1)})  # anchor y: the sequence's ground line
-            name = f'{char}/{seq}'
+            name = seq
             missing = [i for i in range(1, s['total'] + 1) if i not in s['frames']]
             manifest['sequences'].setdefault(name, {'total': s['total'], 'missing': missing, 'frames': {}})['frames'][size] = frames
         manifest['sizes'][size] = {'player': H, 'pages': atlas.save(folder)}
