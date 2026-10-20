@@ -7,9 +7,11 @@ One command, run from anywhere. Needs Python 3 with Pillow, numpy and scipy
    with soft edges and the green spill taken off the figure;
 2. cuts the board into exactly the frames its README names ("الإطارات a إلى b من N");
 3. marks the white kit in a separate mask, so the game tints it with any club's colours;
-4. scales every character by its reference card, and keeps one ground line per
+4. brings every board to the standard canvas height first (Gemini's 3:2 is 1264x848, but a
+   downloaded copy can be 1024x687 or 2528x1696), so a smaller file never makes a smaller player;
+5. scales every character by its reference card, and keeps one ground line per
    sequence, so a frame in the air stays in the air;
-5. packs the frames into atlases at two sizes (hd for computers, sd for phones)
+6. packs the frames into atlases at two sizes (hd for computers, sd for phones)
    with a manifest the scene engine reads.
 
 Stadium plates become webp at the same two sizes. Output: web/public/match-art/.
@@ -27,6 +29,7 @@ SIZES = {'hd': 384, 'sd': 192}         # a standing player's height in pixels at
 PLATE_W = {'hd': 1376, 'sd': 688}
 ATLAS_W = 2048
 FPS = 12                              # animation frames a second (MATCH_VIEW 4.7)
+BOARD_H = 848                         # the standard board height (3:2 at 1264x848): every board is resized to it
 RANGE = re.compile(r'(?:الإطارات )?(\d+) إلى (\d+) من (\d+)')
 
 
@@ -158,11 +161,21 @@ def boards():
     return sorted(found)
 
 
+def board(path):
+    """A board at the standard height, and a warning when it is not the 3:2 the prompts ask for:
+    figures on another shape are drawn at another scale, and the board needs making again."""
+    im = Image.open(path)
+    w, h = im.size
+    if abs(w / h - 1.5) > 0.06:
+        print(f'! {os.path.relpath(path, ROOT)}: {w}x{h} is not 3:2, so its figures are not at the standard scale', file=sys.stderr)
+    return im if h == BOARD_H else im.resize((round(w * BOARD_H / h), BOARD_H), Image.LANCZOS)
+
+
 def ref_height(char):
     """A character's standing height on the reference card, the scale for all its boards."""
     path = os.path.join(RAW, char, 'ref.png')
     if not os.path.exists(path): return None
-    rgba, _ = key(Image.open(path))
+    rgba, _ = key(board(path))
     hs = [y1 - y0 for x0, y0, x1, y1 in figures(rgba, 4)]
     return float(np.median(hs))
 
@@ -203,7 +216,7 @@ def build():
     scales = {}
     for char, seq, path, first, last, total in boards():
         if char not in scales: scales[char] = ref_height(char)
-        rgba, kind = key(Image.open(path))
+        rgba, kind = key(board(path))
         n = last - first + 1
         boxes, owners = figures(rgba, n, owned=True)
         if len(boxes) != n:
