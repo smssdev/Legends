@@ -1,10 +1,5 @@
 <template>
-  <main class="mx-auto flex min-h-dvh max-w-6xl flex-col gap-5 px-4 py-5 md:px-6">
-    <header class="flex flex-wrap items-center gap-3">
-      <img src="/icon-192.png" alt="" class="size-10 rounded-md" />
-      <span class="font-display text-xl font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
-      <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">المحاكي</span>
-    </header>
+  <div class="flex flex-col gap-5">
 
     <div>
       <h1 class="font-display text-3xl font-extrabold">مباراة في المحاكي</h1>
@@ -99,7 +94,7 @@
       <span v-if="notReady" class="text-sm font-bold text-warning">{{ notReady }}</span>
       <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 5 دقائق بسرعة ×1' }}</span>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
