@@ -83,6 +83,18 @@ def run(r):
     W('|---|---|')
     for k, f in r['ok']:
         W(f'| {k} | ✅ `art/raw/{f}` |')
+    if r.get('chains'):
+        W('\n## أمر واحد لكل حركة (الأسهل)\n')
+        W('> **محادثة جديدة لكل حركة.** ارفق الملفات، والصق الأمر. يرسم Gemini الصور واحدة بعد الأخرى بنفس الشخص والمقياس. '
+          'وإن رسم صورة واحدة فقط وتوقف، اكتب **next** فيرسم التالية في نفس المحادثة. احفظ كل صورة باسمها المكتوب في الأمر (IMAGE 1 = الاسم الأول).\n')
+        for title, attach, prompt in r['chains']:
+            W(f'### {title}\n')
+            W('**ارفق:** ' + ' و'.join(f'`{a}`' for a in attach) + '\n')
+            W('```')
+            W(prompt)
+            W('```\n')
+        W('## أو صورة صورة\n')
+        W('إن لم ينجح الأمر الواحد، كل صورة بأمرها تحت.')
     W(f"\n## تحتاج إعادة ({len(rows)})\n")
     W('**أكثر مشكلة تكررت:** ' + r['common'] + '\n')
     W('| اللوحة | الملف | المشكلة |')
@@ -94,9 +106,14 @@ def run(r):
         W(f'### {k} `{f}`\n')
         W(f'**المشكلة:** {why}  ')
         W(f'**المجلد:** `art/raw/{folder}/`  ')
-        W(att + '\n')
-        W('```')
-        W(prompt + ' ' + fix)
+        if isinstance(fix, dict):            # a prompt written again from scratch, clearer than the book's
+            W('**ارفق:** ' + ' و'.join(f'`{a}`' for a in fix['attach']) + '\n')
+            W('```')
+            W(fix['prompt'])
+        else:
+            W(att + '\n')
+            W('```')
+            W(prompt + ' ' + fix)
         W('```\n')
     out = os.path.join(ROOT, r['out'])
     os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -180,36 +197,100 @@ DRIBBLE_SCALE = {
         ('48.2', 'striker/ball', 'مربعة 1:1، فالأشكال أصغر 25% من الجري (الوضعيات صحيحة)', SCALE + ' ' + LOOK_DOWN),
     ],
 }
-RUNNING = 'A real fast run in every frame: the body leaning forward, both elbows bent at a right angle and pumping, never hanging down.'
-FRONT_STANCE = ('He faces the camera, so his RIGHT leg is on the LEFT side of the image. In frames 1, 2 and 3 his weight is always '
-                'on his RIGHT leg (left side of the image): it is that foot that lands, carries him and pushes off. His LEFT foot '
-                '(right side of the image) is the one off the ground in all three frames, swinging from behind to a high knee in front.')
-BACK_123 = ('We see his back, so his RIGHT leg is on the RIGHT side of the image. In frames 1, 2 and 3 his weight is always on his '
-            'RIGHT leg (right side of the image): it lands, carries him and pushes off. His LEFT foot (left side of the image) is the '
-            'one off the ground in all three frames.')
-BACK_456 = ('We see his back, so his LEFT leg is on the LEFT side of the image. Frame 4: both feet clearly off the ground, in the '
-            'air between steps. Frames 5 and 6: his weight is on his LEFT leg (left side of the image), and his RIGHT foot (right '
-            'side) is the one off the ground.')
-BACK_78 = ('We see his back. Frame 7: only the toes of his LEFT foot (left side of the image) still touch the ground behind him, '
-           'and his RIGHT knee (right side) is driven up in front. Frame 8: both feet clearly off the ground, in the air, the right '
-           'knee forward; frame 8 must look different from frame 7.')
+HEADER = ('Use the attached reference card: exactly the same man, same face, hair and body, same plain white kit '
+          '(shirt, shorts, socks) and black boots, no logos or numbers. ')
+LOOK = ('ONE wide 3:2 landscape image (not square, not separate panels) with exactly {n} figures of him in one row, '
+        'left to right, all the same size, feet on the same ground line, each figure about four fifths of the image '
+        'height, clear space between them, nothing cut off. '
+        'Background: one flat solid chroma green (#00FF00) only: no floor, no shadows, no lights, no text. '
+        'Photorealistic 3D render like a modern console football game. No ball. ')
+SPRINT = ('He is sprinting in every figure: body leaning forward, both elbows bent at 90 degrees and pumping, '
+          'never arms hanging down, never walking. Every figure is a different pose. ')
+
+
+def clear(n, view, figures, rule=''):
+    """A short prompt written from scratch: who, how the image looks, then one line per figure."""
+    lines = [f'Figure {i}: {f}' for i, f in enumerate(figures, 1)]
+    return HEADER + LOOK.format(n=n) + f'{view} ' + SPRINT + ' '.join(lines) + (' ' + rule if rule else '')
+
+
+def chain(view, images):
+    """One message that makes a whole motion, image after image: [(file, frames, figures, rule)]."""
+    total = len(images)
+    parts = [HEADER, f'Make {total} separate images, one after another, in this order: each one continues the same run '
+             'from the last pose of the one before, with the same man, the same camera, the same size and the same ground line. ',
+             'Every image: ' + LOOK.format(n='the given number of') + f'{view} ' + SPRINT]
+    for i, (name, frames, figures, rule) in enumerate(images, 1):
+        lines = ' '.join(f'Figure {j}: {f}' for j, f in enumerate(figures, 1))
+        parts.append(f'IMAGE {i} of {total} ({name}, frames {frames}, exactly {len(figures)} figures): {lines}' + (f' {rule}' if rule else '') + ' ')
+    parts.append(f'If you can only make one image per answer: make IMAGE 1 now, then stop; each time I write "next", make the next image, until IMAGE {total}.')
+    return ''.join(parts)
+
+
+Q_BACK = ('Camera: three-quarter view from behind. We see his back and the back of his head, his face is hidden, '
+          'and he runs away from the camera diagonally to the right, exactly like the attached run-q-back-01.png.')
+BACK = ('Camera: straight from behind. We see only his back and the back of his head, and he runs straight away '
+        'from the camera. Because we see his back, his RIGHT leg is on the RIGHT side of the image and his LEFT leg '
+        'is on the LEFT side.')
+FRONT = ('Camera: straight from the front. He faces the camera and runs straight towards it. Because he faces us, '
+         'his RIGHT leg is on the LEFT side of the image and his LEFT leg is on the RIGHT side.')
+AIR = 'in the air: BOTH boots clearly off the ground, with a visible gap of green under each boot'
+TOE_VS_AIR = 'The two figures must look clearly different: in the first one toe touches the ground, in the second nothing touches the ground.'
+# The figures of each board, shared by its own prompt and by the one-message prompt for the whole motion.
+QB2 = (['%s; the left knee driven forward, the right leg stretched out behind.' % AIR,
+        'the left foot just landing on the ground in front of him, heel first; the right leg stretched behind; the right arm swinging forward.',
+        'standing on the left foot, flat, right under his hips, knee slightly bent; the right foot off the ground, swinging forward low next to the left ankle.'],
+       'Figures 2 and 3 must look clearly different: in figure 2 the feet are far apart, in figure 3 they are close together.')
+QB3 = (['pushing off: only the toes of the left foot still touch the ground far behind him, the left leg almost straight; the right knee lifted high in front at hip height, the right foot off the ground.',
+        '%s; the right knee driven forward, the left leg stretched out behind.' % AIR], TOE_VS_AIR)
+F1 = (['his right foot (on the LEFT side of the image) landing on the ground in front of him; his left foot (on the RIGHT side of the image) lifted off the ground behind him; his left arm forward.',
+       'his weight on his right foot (LEFT side of the image), flat under his body, knee slightly bent; his left foot (RIGHT side) off the ground, passing forward low next to the standing ankle.',
+       'his right foot (LEFT side) pushing off on its toes; his left knee (RIGHT side) lifted high in front at hip height.'],
+      'In all three figures he stands on the leg on the LEFT side of the image, and the foot on the RIGHT side of the image is off the ground.')
+B1 = (['his right foot (RIGHT side of the image) landing on the ground; his left foot (LEFT side) kicked up behind him, the sole of the boot visible.',
+       'his weight on his right foot (RIGHT side), flat under his body, knee slightly bent; his left foot (LEFT side) off the ground, swinging forward low.',
+       'his right foot (RIGHT side) pushing off on its toes; his left knee (LEFT side) lifted high in front of him, so his left lower leg is partly hidden by his body.'],
+      'In all three figures he stands on the leg on the RIGHT side of the image, and the foot on the LEFT side of the image is off the ground.')
+B2 = (['%s; his left knee forward, his right foot (RIGHT side of the image) kicked up behind him, the sole of the boot visible.' % AIR,
+       'his left foot (LEFT side of the image) landing on the ground; his right foot (RIGHT side) kicked up behind him, the sole visible.',
+       'his weight on his left foot (LEFT side), flat under his body, knee slightly bent; his right foot (RIGHT side) off the ground, swinging forward low.'],
+      'In figures 2 and 3 he stands on the leg on the LEFT side of the image, and the foot on the RIGHT side is off the ground.')
+B3 = (['his left foot (LEFT side of the image) pushing off on its toes behind him; his right knee (RIGHT side) lifted high in front, so his right lower leg is partly hidden by his body.',
+       '%s; his right knee forward, his left foot (LEFT side) kicked up behind him, the sole of the boot visible.' % AIR], TOE_VS_AIR)
+REF = 'art/raw/striker/ref.png'
+RUN = 'art/raw/striker/run/'
 RUN_BACK = {
     'date': '2026-10-20', 'title': 'المهاجم: الجري ثلاثة أرباع من الخلف، ومن الأمام، ومن الخلف (الإعادة الأولى)', 'book': 'docs/art/images/03-players.md',
     'out': 'docs/art/redo/2026-10-20-striker-run-back.md',
     'ok': [('45.7', 'striker/run/run-q-back-01.png')],
     'notes': [
         '**تحسن واضح:** الزوايا كلها صحيحة الآن، والخلفية سادة، والأشباح اختفت. run-q-back-01 معتمدة.',
-        '**المشكلة الجديدة في الأمام والخلف: الرجل الواقفة تتبدل كل إطار.** في الإطارات 1 و2 و3 يجب أن يقف على نفس الرجل (هبوط، ثم حمل، ثم دفع)، والإطار 4 والإطار 8 طيران. لو تبدلت كل إطار، يبدو في اللعبة كأنه يرتجف في مكانه. سطر التصحيح يحدد الرجل بجهتها في الصورة، لأن Gemini يخلط اليمين واليسار من الخلف.',
+        '**المشكلة الجديدة في الأمام والخلف: الرجل الواقفة تتبدل كل إطار.** في الإطارات 1 و2 و3 يجب أن يقف على نفس الرجل (هبوط، ثم حمل، ثم دفع)، والإطار 4 والإطار 8 طيران. لو تبدلت كل إطار، يبدو في اللعبة كأنه يرتجف في مكانه. الأوامر الجديدة تحدد كل رجل بجهتها في الصورة، لأن Gemini يخلط اليمين واليسار من الخلف.',
+        '**الأوامر مكتوبة من جديد** أقصر وأوضح: من هو، وشكل الصورة، ثم سطر لكل شكل.',
         '**الصيغة:** الصور كلها JPEG بدقة 1024x687. أداة البناء توحّد المقياس، لكن الأفضل تنزيل الصورة بحجمها الكامل وحفظها PNG.',
+    ],
+    'chains': [
+        ('الجري ثلاثة أرباع من الخلف: run-q-back-02 ثم run-q-back-03', [REF, RUN + 'run-q-back-01.png'],
+         chain(Q_BACK, [('run-q-back-02', '4 to 6', *QB2), ('run-q-back-03', '7 to 8', *QB3)])),
+        ('الجري من الأمام: run-front-01 وحدها', [REF, RUN + 'run-front-02.png'],
+         clear(3, FRONT + ' Match the size and style of the attached run-front-02.png.', *F1)),
+        ('الجري من الخلف: run-back-01 ثم run-back-02 ثم run-back-03', [REF],
+         chain(BACK, [('run-back-01', '1 to 3', *B1), ('run-back-02', '4 to 6', *B2), ('run-back-03', '7 to 8', *B3)])),
     ],
     'common': 'الرجل الواقفة تتبدل كل إطار بدل أن تبقى نفسها في الإطارات 1 إلى 3 و5 إلى 7، وإطارات الطيران على الأرض.',
     'redo': [
-        ('45.8', 'striker/run', 'الإطاران 5 و6 بذراعين متدليتين فيبدوان مشياً، وهما شبه متطابقين', RUNNING + ' Frame 6 is clearly different from frame 5: the weight is on the far (left) leg right under the hips, and the near (right) leg swings forward low.'),
-        ('45.9', 'striker/run', 'الإطار 8 ليس طيراناً ويكاد يكرر الإطار 7', RUNNING + ' Frame 8: both feet clearly off the ground, in the air, the near (right) knee driven forward; it must look different from frame 7.'),
-        ('45.10', 'striker/run', 'الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف)', FRONT_STANCE + ' ' + RUNNING),
-        ('45.13', 'striker/run', 'الرجل الواقفة تتبدل كل إطار (يسرى، يمنى، يسرى)، والمطلوب اليمنى في الثلاثة', BACK_123 + ' ' + RUNNING),
-        ('45.14', 'striker/run', 'الإطار 4 بقدمين على الأرض والمطلوب طيران، والإطاران 5 و6 على رجلين مختلفتين', BACK_456 + ' ' + RUNNING),
-        ('45.15', 'striker/run', 'الإطاران 7 و8 متطابقان تقريباً، والإطار 8 ليس طيراناً', BACK_78 + ' ' + RUNNING),
+        ('45.8', 'striker/run', 'الإطاران 5 و6 بذراعين متدليتين فيبدوان مشياً، وهما شبه متطابقين',
+         {'attach': [REF, RUN + 'run-q-back-01.png'], 'prompt': clear(3, Q_BACK, *QB2)}),
+        ('45.9', 'striker/run', 'الإطار 8 ليس طيراناً ويكاد يكرر الإطار 7',
+         {'attach': [REF, RUN + 'run-q-back-02.png'], 'prompt': clear(2, Q_BACK.replace('run-q-back-01.png', 'run-q-back-02.png'), *QB3)}),
+        ('45.10', 'striker/run', 'الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف)',
+         {'attach': [REF, RUN + 'run-front-02.png'], 'prompt': clear(3, FRONT + ' Match the size and style of the attached run-front-02.png.', *F1)}),
+        ('45.13', 'striker/run', 'الرجل الواقفة تتبدل كل إطار (يسرى، يمنى، يسرى)، والمطلوب اليمنى في الثلاثة',
+         {'attach': [REF], 'prompt': clear(3, BACK, *B1)}),
+        ('45.14', 'striker/run', 'الإطار 4 بقدمين على الأرض والمطلوب طيران، والإطاران 5 و6 على رجلين مختلفتين',
+         {'attach': [REF, RUN + 'run-back-01.png'], 'prompt': clear(3, BACK + ' Continue the attached run-back-01.png at the same size.', *B2)}),
+        ('45.15', 'striker/run', 'الإطاران 7 و8 متطابقان تقريباً، والإطار 8 ليس طيراناً',
+         {'attach': [REF, RUN + 'run-back-02.png'], 'prompt': clear(2, BACK + ' Continue the attached run-back-02.png at the same size.', *B3)}),
     ],
 }
 REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK]
