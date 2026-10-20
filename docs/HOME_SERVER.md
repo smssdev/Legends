@@ -25,6 +25,7 @@
 
 - **اللعبة تبدأ مع تشغيل ويندوز**، وتُعاد وحدها لو توقفت (مهمة مجدولة اسمها `Legends Web`).
 - **المجدول كل دقيقة** (`Legends Scheduler`)، ومنه **نسخة احتياطية يومية الساعة 4 فجراً بتوقيت القاهرة** في `C:\Legends\backend\database\backups\` (يحتفظ بآخر 14 نسخة).
+- **معايرة المحرك كل ليلة** (`GAME_NIGHTLY_BALANCE=true` في `.env`): الساعة 3 فجراً `sim:balance` بـ 5000 مباراة، ثم `sim:knobs` و`sim:matrix` كاملة. النتيجة في `backend/storage/app/balance/latest.json` والسجل في `backend/storage/logs/balance.log`. وتأخذ قرابة 20 دقيقة من المعالج.
 - **الجهاز لا ينام** وهو موصول بالكهرباء.
 - **الرابط ثابت** ولا يتغير مع إعادة التشغيل.
 

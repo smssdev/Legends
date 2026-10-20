@@ -36,6 +36,53 @@ jobs:
       - run: vendor/bin/pint --test
       - run: php artisan test
 
+  engine:
+    name: Engine balance (short run)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, mbstring, intl
+          coverage: none
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-8.4-${{ hashFiles('backend/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate && php artisan migrate --force && php artisan data:import
+      # docs/ENGINE.md 9: the same targets as the nightly 5000-match run, on fixed seeds and a short sample
+      # (each target allows two standard errors of the sample). The full runs are nightly on the home server.
+      - run: php artisan sim:balance --n=760 --favourite=300
+      - run: php artisan sim:knobs --n=300
+      - run: php artisan sim:matrix --n=100
+      - run: php artisan sim:golden
+
+  arm:
+    name: Engine on ARM (golden matches)
+    # The repository is private, so no hosted ARM runner: the official arm64 PHP image under QEMU.
+    # The same golden matches as x86, minute for minute (docs/SPRINTS.md S12 B4). Only the golden test runs: it is quick.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: backend
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Golden matches on arm64
+        run: |
+          docker run --rm --platform linux/arm64 -v "$PWD/backend:/app" -w /app php:8.4-cli \
+            sh -c 'uname -m && php vendor/bin/phpunit tests/Unit/EngineGoldenTest.php'
+
   web:
     name: Web
     runs-on: ubuntu-latest
