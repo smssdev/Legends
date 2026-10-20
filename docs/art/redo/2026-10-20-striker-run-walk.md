@@ -21,14 +21,12 @@
 | 45.11 | ✅ `art/raw/striker/run/run-front-02.png` |
 | 45.12 | ✅ `art/raw/striker/run/run-front-03.png` |
 
-## تحتاج إعادة (18)
+## تحتاج إعادة (16)
 
 **أكثر مشكلة تكررت:** صور المشي كلها وصور الانطلاق صُنعت كثلاث لوحات ملصوقة، وخلفيتها خضراء متدرجة فيها كشافات، فلا تُقص. والمطلوب صورة واحدة عريضة بخلفية خضراء واحدة سادة (#00FF00). وأكثر من نصفها جاء بزاوية جانبية بدل المطلوبة.
 
 | اللوحة | الملف | المشكلة |
 |---|---|---|
-| 45.16 | `art/raw/striker/run/sprint-01.png` | الخلفية فيها كشافات وتدرج أخضر (لا تُقص)، ودقتها نصف المطلوب، وشبه مطابقة لـ sprint-02 |
-| 45.17 | `art/raw/striker/run/sprint-02.png` | نسخة شبه مطابقة من sprint-01، والخلفية فيها كشافات |
 | 45.18 | `art/raw/striker/run/sprint-03.png` | الزاوية خطأ (ثلاثة أرباع من الخلف بدل الجانب)، وفيها شكلان بدل ثلاثة، والخلفية فيها كشافات |
 | 45.19 | `art/raw/striker/run/sprint-04.png` | الخلفية فيها كشافات وتدرج أخضر، ودقتها نصف المطلوب |
 | 46.1 | `art/raw/striker/walk/jog-01.png` | ثلاث لوحات ملصوقة بخطوط فاصلة، والخلفية فيها كشافات وتدرج، والإطار الثالث ركبة عالية لا هرولة |
@@ -45,26 +43,6 @@
 | 46.12 | `art/raw/striker/walk/walk-back-03.png` | الزاوية خطأ (جانبية)، وفيها 3 أشكال والمطلوب 2 |
 | 46.13 | `art/raw/striker/walk/backpedal-01.png` | يمشي للأمام لا للخلف، والخلفية فيها كشافات |
 | 46.14 | `art/raw/striker/walk/backpedal-02.png` | نفس المشكلة: مشي للأمام، والخلفية فيها كشافات |
-
-### 45.16 `sprint-01.png`
-
-**المشكلة:** الخلفية فيها كشافات وتدرج أخضر (لا تُقص)، ودقتها نصف المطلوب، وشبه مطابقة لـ sprint-02  
-**المجلد:** `art/raw/striker/run/`  
-**ارفق:** `art/raw/striker/ref.png`
-
-```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of a 12-frame sprinting sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male footballer in a plain pure white kit (white shirt, white shorts, white socks) and black boots, no logos or numbers (the game paints the team colours on the white), short dark brown hair, light olive skin, light stubble, athletic striker build. He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Sprinting flat out, body leaning forward, arms pumping hard: the near (right) foot striking the ground under the knee, the far (left) heel kicked up high behind. Middle frame (frame 2): Sprinting flat out, body leaning forward, arms pumping hard: the near (right) foot flat, knee bent, absorbing the landing, the far (left) knee coming through low. Right frame (frame 3): Sprinting flat out, body leaning forward, arms pumping hard: the body passing over the near (right) foot, the far (left) thigh swinging forward. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos. Make it ONE single wide image, not separate panels stitched together. The background is one flat, solid chroma-key green (#00FF00) from edge to edge: no floodlights, no lamps, no gradient, no floor, no shadows. The floodlights only light him; they are never visible in the picture.
-```
-
-### 45.17 `sprint-02.png`
-
-**المشكلة:** نسخة شبه مطابقة من sprint-01، والخلفية فيها كشافات  
-**المجلد:** `art/raw/striker/run/`  
-**ارفق:** `art/raw/striker/ref.png` و`art/raw/striker/run/sprint-01.png`
-
-```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of a 12-frame sprinting sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male footballer in a plain pure white kit (white shirt, white shorts, white socks) and black boots, no logos or numbers (the game paints the team colours on the white), short dark brown hair, light olive skin, light stubble, athletic striker build. He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Sprinting flat out, body leaning forward, arms pumping hard: the near (right) leg driving off the toes, nearly straight, the far (left) knee high in front. Middle frame (frame 5): Sprinting flat out, body leaning forward, arms pumping hard: both feet off the ground just after the push, the far (left) knee at its highest, the near (right) leg trailing. Right frame (frame 6): Sprinting flat out, body leaning forward, arms pumping hard: still in the air, the far (left) foot reaching down to land, the near (right) heel folding up behind. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos. Make it ONE single wide image, not separate panels stitched together. The background is one flat, solid chroma-key green (#00FF00) from edge to edge: no floodlights, no lamps, no gradient, no floor, no shadows. The floodlights only light him; they are never visible in the picture. Each frame here continues from the last frame of the attached sprint-01.png; it must not repeat its poses.
-```
 
 ### 45.18 `sprint-03.png`
 
