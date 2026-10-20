@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Data\ClubIdentity;
 use App\Data\Potential;
+use App\Support\GameClock;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -56,7 +57,7 @@ class DataImport extends Command
 
         DB::transaction(function () use ($kept, $version) {
             DB::table('master_clubs')->where('data_version', $version)->delete();
-            $now = now();
+            $now = GameClock::now();
 
             foreach ($kept as $name => $club) {
                 $overalls = array_column($club['players'], 'overall');
