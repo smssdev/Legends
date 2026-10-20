@@ -4,7 +4,7 @@
 
 **الإيقاع:** 5 ساعات، و5 صور معتمدة في الساعة = **25 صورة يومياً** [SPRINTS، المرحلة 0]. ما لم يُنجز في يومه ينتقل لأول اليوم التالي، والملف يعيد التوزيع كلما شُغّل.
 
-**الدفعة 1:** 268 صورة. **المنجز:** 24. **الباقي:** 244، أي 10 أيام.
+**الدفعة 1:** 268 صورة. **المنجز:** 26. **الباقي:** 242، أي 10 أيام.
 
 **تعلمناه حتى الآن:** إذا أعاد Gemini نفس الصورة بلا تغيير، نعيدها في محادثة جديدة. وClaude يرسل ملفات المرفقات مع كل أمر.
 
@@ -36,6 +36,8 @@
 | ✅ | 45.4 | `art/raw/striker/run/run-q-front-01.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.11 | `art/raw/striker/run/run-front-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.12 | `art/raw/striker/run/run-front-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ✅ | 48.6 | `art/raw/striker/ball/shoot-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
+| ✅ | 48.16 | `art/raw/striker/ball/cross-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 
 ## اليوم 1: 2026-10-20 (25 صورة)
 
@@ -59,22 +61,20 @@
 | ⬜ | 48.3 | `art/raw/striker/ball/dribble-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.4 | `art/raw/striker/ball/shoot-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.5 | `art/raw/striker/ball/shoot-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
-| ⬜ | 48.6 | `art/raw/striker/ball/shoot-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.7 | `art/raw/striker/ball/pass-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.8 | `art/raw/striker/ball/pass-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.9 | `art/raw/striker/ball/header-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.10 | `art/raw/striker/ball/header-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.11 | `art/raw/striker/ball/header-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.12 | `art/raw/striker/ball/volley-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
+| ⬜ | 48.13 | `art/raw/striker/ball/volley-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 
 ## اليوم 2: 2026-10-21 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 48.13 | `art/raw/striker/ball/volley-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.14 | `art/raw/striker/ball/chip-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.15 | `art/raw/striker/ball/chip-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
-| ⬜ | 48.16 | `art/raw/striker/ball/cross-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.17 | `art/raw/striker/ball/cross-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.18 | `art/raw/striker/ball/control-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.19 | `art/raw/striker/ball/control-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
@@ -96,13 +96,13 @@
 | ⬜ | 50.1 | `art/raw/striker/emotion/celebrate-01.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 | ⬜ | 50.2 | `art/raw/striker/emotion/celebrate-02.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 | ⬜ | 50.3 | `art/raw/striker/emotion/celebrate-03.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
+| ⬜ | 50.4 | `art/raw/striker/emotion/sad-01.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
+| ⬜ | 50.5 | `art/raw/striker/emotion/sad-02.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 
 ## اليوم 3: 2026-10-22 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 50.4 | `art/raw/striker/emotion/sad-01.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
-| ⬜ | 50.5 | `art/raw/striker/emotion/sad-02.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 | ⬜ | 50.6 | `art/raw/striker/emotion/knee-slide-01.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 | ⬜ | 50.7 | `art/raw/striker/emotion/knee-slide-02.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
 | ⬜ | 50.8 | `art/raw/striker/emotion/knee-slide-03.png` | 50. المهاجم الرئيسي: المشاعر | `03-players.md` |
@@ -126,13 +126,13 @@
 | ⬜ | 81.5 | `art/raw/players/look-1/ball/shoot-02.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 | ⬜ | 81.6 | `art/raw/players/look-1/ball/shoot-03.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 | ⬜ | 81.7 | `art/raw/players/look-1/ball/pass-01.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
+| ⬜ | 81.8 | `art/raw/players/look-1/ball/pass-02.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
+| ⬜ | 81.9 | `art/raw/players/look-1/ball/header-01.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 
 ## اليوم 4: 2026-10-23 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 81.8 | `art/raw/players/look-1/ball/pass-02.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
-| ⬜ | 81.9 | `art/raw/players/look-1/ball/header-01.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 | ⬜ | 81.10 | `art/raw/players/look-1/ball/header-02.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 | ⬜ | 81.11 | `art/raw/players/look-1/ball/header-03.png` | 81. شكل لاعب 1: الكرة | `04-looks.md` |
 | ⬜ | 82.1 | `art/raw/players/look-1/ground/tackle-01.png` | 82. شكل لاعب 1: الالتحام والسقوط | `04-looks.md` |
@@ -156,13 +156,13 @@
 | ⬜ | 85.4 | `art/raw/players/look-2/run/sprint-01.png` | 85. شكل لاعب 2: الجري بالاتجاهات | `04-looks.md` |
 | ⬜ | 85.5 | `art/raw/players/look-2/run/sprint-02.png` | 85. شكل لاعب 2: الجري بالاتجاهات | `04-looks.md` |
 | ⬜ | 85.6 | `art/raw/players/look-2/run/sprint-03.png` | 85. شكل لاعب 2: الجري بالاتجاهات | `04-looks.md` |
+| ⬜ | 85.7 | `art/raw/players/look-2/run/sprint-04.png` | 85. شكل لاعب 2: الجري بالاتجاهات | `04-looks.md` |
+| ⬜ | 87.1 | `art/raw/players/look-2/ball/dribble-01.png` | 87. شكل لاعب 2: الكرة | `04-looks.md` |
 
 ## اليوم 5: 2026-10-24 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 85.7 | `art/raw/players/look-2/run/sprint-04.png` | 85. شكل لاعب 2: الجري بالاتجاهات | `04-looks.md` |
-| ⬜ | 87.1 | `art/raw/players/look-2/ball/dribble-01.png` | 87. شكل لاعب 2: الكرة | `04-looks.md` |
 | ⬜ | 87.2 | `art/raw/players/look-2/ball/dribble-02.png` | 87. شكل لاعب 2: الكرة | `04-looks.md` |
 | ⬜ | 87.3 | `art/raw/players/look-2/ball/dribble-03.png` | 87. شكل لاعب 2: الكرة | `04-looks.md` |
 | ⬜ | 87.4 | `art/raw/players/look-2/ball/shoot-01.png` | 87. شكل لاعب 2: الكرة | `04-looks.md` |
@@ -186,13 +186,13 @@
 | ⬜ | 89.3 | `art/raw/players/look-2/emotion/celebrate-03.png` | 89. شكل لاعب 2: المشاعر | `04-looks.md` |
 | ⬜ | 89.4 | `art/raw/players/look-2/emotion/sad-01.png` | 89. شكل لاعب 2: المشاعر | `04-looks.md` |
 | ⬜ | 89.5 | `art/raw/players/look-2/emotion/sad-02.png` | 89. شكل لاعب 2: المشاعر | `04-looks.md` |
+| ⬜ | 198.1 | `art/raw/keeper/ref.png` | 198. حارس المرمى 1: البطاقة المرجعية | `05-keepers.md` |
+| ⬜ | 198.2 | `art/raw/keeper/faces.png` | 198. حارس المرمى 1: البطاقة المرجعية | `05-keepers.md` |
 
 ## اليوم 6: 2026-10-25 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 198.1 | `art/raw/keeper/ref.png` | 198. حارس المرمى 1: البطاقة المرجعية | `05-keepers.md` |
-| ⬜ | 198.2 | `art/raw/keeper/faces.png` | 198. حارس المرمى 1: البطاقة المرجعية | `05-keepers.md` |
 | ⬜ | 199.1 | `art/raw/keeper/ready/ready-01.png` | 199. حارس المرمى 1: الاستعداد | `05-keepers.md` |
 | ⬜ | 199.2 | `art/raw/keeper/ready/ready-02.png` | 199. حارس المرمى 1: الاستعداد | `05-keepers.md` |
 | ⬜ | 199.3 | `art/raw/keeper/ready/shuffle-01.png` | 199. حارس المرمى 1: الاستعداد | `05-keepers.md` |
@@ -216,13 +216,13 @@
 | ⬜ | 201.7 | `art/raw/keeper/hands/tip-over-01.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
 | ⬜ | 201.8 | `art/raw/keeper/hands/tip-over-02.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
 | ⬜ | 201.9 | `art/raw/keeper/hands/tip-over-03.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
+| ⬜ | 201.10 | `art/raw/keeper/hands/save-land-01.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
+| ⬜ | 201.11 | `art/raw/keeper/hands/save-land-02.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
 
 ## اليوم 7: 2026-10-26 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 201.10 | `art/raw/keeper/hands/save-land-01.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
-| ⬜ | 201.11 | `art/raw/keeper/hands/save-land-02.png` | 201. حارس المرمى 1: الإمساك والإبعاد | `05-keepers.md` |
 | ⬜ | 202.1 | `art/raw/keeper/ground/getup-01.png` | 202. حارس المرمى 1: الالتحام والسقوط | `05-keepers.md` |
 | ⬜ | 202.2 | `art/raw/keeper/ground/getup-02.png` | 202. حارس المرمى 1: الالتحام والسقوط | `05-keepers.md` |
 | ⬜ | 204.1 | `art/raw/keeper/emotion/celebrate-01.png` | 204. حارس المرمى 1: المشاعر | `05-keepers.md` |
@@ -246,13 +246,13 @@
 | ⬜ | 234.1 | `art/raw/referee-1/var/var-01.png` | 234. الحكم 1: الفار | `06-officials.md` |
 | ⬜ | 234.2 | `art/raw/referee-1/var/var-02.png` | 234. الحكم 1: الفار | `06-officials.md` |
 | ⬜ | 234.3 | `art/raw/referee-1/var/monitor-01.png` | 234. الحكم 1: الفار | `06-officials.md` |
+| ⬜ | 234.4 | `art/raw/referee-1/var/monitor-02.png` | 234. الحكم 1: الفار | `06-officials.md` |
+| ⬜ | 245.1 | `art/raw/linesman/ref.png` | 245. الحكم المساعد: البطاقة المرجعية | `06-officials.md` |
 
 ## اليوم 8: 2026-10-27 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 234.4 | `art/raw/referee-1/var/monitor-02.png` | 234. الحكم 1: الفار | `06-officials.md` |
-| ⬜ | 245.1 | `art/raw/linesman/ref.png` | 245. الحكم المساعد: البطاقة المرجعية | `06-officials.md` |
 | ⬜ | 246.1 | `art/raw/linesman/move/side-run-01.png` | 246. الحكم المساعد: الحركة | `06-officials.md` |
 | ⬜ | 246.2 | `art/raw/linesman/move/side-run-02.png` | 246. الحكم المساعد: الحركة | `06-officials.md` |
 | ⬜ | 246.3 | `art/raw/linesman/move/flag-01.png` | 246. الحكم المساعد: الحركة | `06-officials.md` |
@@ -276,13 +276,13 @@
 | ⬜ | 256.4 | `art/raw/celebrations/solo-4.png` | 256. احتفالات الهدف (وضعيات ثابتة) | `08-moments.md` |
 | ⬜ | 260.1 | `art/raw/coach-1/ref.png` | 260. المدرب 1: البطاقة المرجعية | `09-coaches.md` |
 | ⬜ | 260.2 | `art/raw/coach-1/faces.png` | 260. المدرب 1: البطاقة المرجعية | `09-coaches.md` |
+| ⬜ | 261.1 | `art/raw/coach-1/start/idle-01.png` | 261. المدرب 1: الانطلاق والتوقف والدوران | `09-coaches.md` |
+| ⬜ | 261.2 | `art/raw/coach-1/start/idle-02.png` | 261. المدرب 1: الانطلاق والتوقف والدوران | `09-coaches.md` |
 
 ## اليوم 9: 2026-10-28 (25 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 261.1 | `art/raw/coach-1/start/idle-01.png` | 261. المدرب 1: الانطلاق والتوقف والدوران | `09-coaches.md` |
-| ⬜ | 261.2 | `art/raw/coach-1/start/idle-02.png` | 261. المدرب 1: الانطلاق والتوقف والدوران | `09-coaches.md` |
 | ⬜ | 262.1 | `art/raw/coach-1/move/instruct-01.png` | 262. المدرب 1: الحركة | `09-coaches.md` |
 | ⬜ | 262.2 | `art/raw/coach-1/move/instruct-02.png` | 262. المدرب 1: الحركة | `09-coaches.md` |
 | ⬜ | 263.1 | `art/raw/coach-1/emotion/celebrate-01.png` | 263. المدرب 1: المشاعر | `09-coaches.md` |
@@ -306,13 +306,13 @@
 | ⬜ | 302.9 | `art/raw/crowd/foreground.png` | 302. الجمهور | `11-crowd.md` |
 | ⬜ | 304.1 | `art/raw/balls/classic/spin-01.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
 | ⬜ | 304.2 | `art/raw/balls/classic/spin-02.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
+| ⬜ | 304.3 | `art/raw/balls/classic/spin-03.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
+| ⬜ | 304.4 | `art/raw/balls/classic/spin-04.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
 
-## اليوم 10: 2026-10-29 (19 صورة)
+## اليوم 10: 2026-10-29 (17 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 304.3 | `art/raw/balls/classic/spin-03.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
-| ⬜ | 304.4 | `art/raw/balls/classic/spin-04.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
 | ⬜ | 304.5 | `art/raw/balls/classic/kick-01.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
 | ⬜ | 304.6 | `art/raw/balls/classic/kick-02.png` | 304. الكرة الكلاسيكية | `13-kit.md` |
 | ⬜ | 310.1 | `art/raw/goals/standard/bulge-01.png` | 310. المرمى العادي: حركة الشبكة | `13-kit.md` |
