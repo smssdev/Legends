@@ -7,6 +7,9 @@ done, to redo (with why) or missing. Rejected clips are taken out of audio/raw/ 
 keeps the old voice for them until they are recorded again.
 Edit REVIEW after each review of the recordings, then run this again.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from ar_egyptian import plain  # noqa: E402  the voice lists carry no diacritics (owner's decision, 2026-10-20)
 import os, re
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
@@ -98,7 +101,7 @@ def write(path, title, intro, rows):
             for _, folder, name, tone, text, why in part:
                 o.append(f'| `{name}` | `audio/raw/{folder}/` | {tone} | {text} |')
         o.append('')
-    open(path, 'w', encoding='utf-8').write('\n'.join(o) + '\n')
+    open(path, 'w', encoding='utf-8').write(plain('\n'.join(o)) + '\n')
     return counts
 
 
@@ -114,7 +117,7 @@ def main():
                 os.remove(base + ext)
     rows = catalog()
     rule = ('**طريقة التسجيل (قرار صاحب المشروع، 2026-10-20):**\n'
-            '- **اللهجة:** باللهجة المصرية، بنفس الصوت ونفس الإعدادات من أول مقطع لآخر مقطع، مثل مقاطع الدفعة الأولى المعتمدة. النص المكتوب بالفصحى هو المعنى المطلوب، قله بالمصرية بطريقتك.\n'
+            '- **اللهجة:** باللهجة المصرية، بنفس الصوت ونفس الإعدادات من أول مقطع لآخر مقطع، مثل مقاطع الدفعة الأولى المعتمدة. النص مكتوب بالمصرية كما يُقال، بلا تشكيل، فاقرأه كما هو.\n'
             '- **الطول:** جملة واحدة، بلا جمل إضافية من مقطع آخر، وبلا تكرار طويل. والمقطع الذي قبل اللحظة (pre) لا يكشف النتيجة.\n'
             '- **الحفظ:** في المجلد المكتوب باسم الملف بالضبط. والصيغة WAV أو MP3 أو M4A.\n'
             '- **بعد الرفع:** Claude يراجع، ثم `python3 tools/commentary/todo.py` يحدّث هذه القوائم.')
@@ -132,7 +135,7 @@ def main():
          '| القائمة | الملف | المجموع | ✅ | 🔁 | 👂 | ⬜ |', '|---|---|---|---|---|---|---|']
     for name, f, n, c in summary:
         o.append(f"| {name} | [`{f}`]({f}) | {n} | {c['done']} | {c['redo']} | {c['check']} | {c['missing']} |")
-    open(os.path.join(OUT, 'README.md'), 'w', encoding='utf-8').write('\n'.join(o) + '\n')
+    open(os.path.join(OUT, 'README.md'), 'w', encoding='utf-8').write(plain('\n'.join(o)) + '\n')
     for name, f, n, c in summary[:1] + summary[-1:]:
         print(name, c)
 
