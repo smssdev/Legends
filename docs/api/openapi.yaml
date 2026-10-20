@@ -8,9 +8,53 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: system
+    description: Health and the test broadcast
   - name: simulator
     description: Development simulator (docs/MATCH_VIEW.md 8). Returns 404 unless the simulator is enabled.
 paths:
+  /health:
+    get:
+      tags: [system]
+      summary: The API's version, the oldest app it still serves, and the game time
+      description: The app compares its own version with min_app_version and asks the player to update when it is older.
+      responses:
+        '200':
+          description: The server is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, version, min_app_version, engine_version, time, clock_offset, broadcast]
+                properties:
+                  status: { type: string, enum: [ok] }
+                  version: { type: string, example: 0.1.0 }
+                  min_app_version: { type: string, example: 1.0.0 }
+                  engine_version: { type: integer }
+                  time: { type: string, format: date-time, description: The game time (GameClock) in UTC }
+                  clock_offset: { type: integer, description: Seconds the game clock is ahead of real time (clock:travel, development only; 0 in production) }
+                  broadcast:
+                    type: object
+                    description: Where the test event of POST /health/ping arrives
+                    properties:
+                      channel: { type: string, example: system }
+                      event: { type: string, example: ping }
+  /health/ping:
+    post:
+      tags: [system]
+      summary: Broadcast the test event
+      description: Sends "ping" on the public "system" channel, so a screen can check live broadcasting end to end. 10 a minute.
+      responses:
+        '202':
+          description: Sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent: { type: boolean }
+                  at: { type: string, format: date-time }
+        '429': { $ref: '#/components/responses/Error' }
   /sim/leagues:
     get:
       tags: [simulator]
@@ -277,16 +321,31 @@ components:
       schema: { type: string }
       description: A live match's secret seat (from POST /sim/rooms, /join, or the seats of a live POST /sim/matches). It names the side this device manages.
   responses:
+    Error:
+      description: Any error, in one shape with an Arabic message
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
     ValidationError:
       description: Validation failed (messages in Arabic)
       content:
         application/json:
-          schema:
-            type: object
-            properties:
-              message: { type: string }
-              errors: { type: object, additionalProperties: { type: array, items: { type: string } } }
+          schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Error:
+      type: object
+      required: [message, code]
+      description: Every API error has this shape (app/Http/Errors/ApiErrors.php).
+      properties:
+        message: { type: string, description: In Arabic, ready to show, example: غير موجود. }
+        code:
+          type: string
+          description: For the code to act on, never shown
+          enum: [bad_request, unauthenticated, forbidden, not_found, method_not_allowed, conflict, gone, too_large, session_expired, validation, update_required, too_many_requests, server_error, unavailable]
+        errors:
+          type: object
+          description: Only when code is validation; each field's messages in Arabic
+          additionalProperties: { type: array, items: { type: string } }
     Room:
       type: object
       properties:

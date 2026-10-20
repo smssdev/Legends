@@ -27,7 +27,7 @@ COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
  && cp .env.example .env \
- && sed -i 's/^APP_ENV=.*/APP_ENV=demo/; s/^APP_DEBUG=.*/APP_DEBUG=false/' .env \
+ && sed -i 's/^APP_ENV=.*/APP_ENV=demo/; s/^APP_DEBUG=.*/APP_DEBUG=false/; s/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env \
  && echo "SIMULATOR_ENABLED=true" >> .env \
  && php artisan key:generate --force \
  && php artisan migrate --force \

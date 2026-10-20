@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\SimulatorController;
 use Illuminate\Support\Facades\Route;
 
 // Every route here is served under /api/v1 (see bootstrap/app.php) and is
 // documented in docs/api/openapi.yaml in the same PR.
+
+Route::get('health', [HealthController::class, 'show']);
+Route::post('health/ping', [HealthController::class, 'ping'])->middleware('throttle:10,1');
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.
 Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::class)->group(function () {
