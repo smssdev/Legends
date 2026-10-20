@@ -1,14 +1,16 @@
 """Sprint 2 day plan (docs/sprints/sprint-02-days.md): python3 tools/art-prompts/days.py
 
-Splits the wave 1 boards that are not done yet into days of 25, in the order of
+Splits the wave 1 boards that are not done yet into days (tools/plan/rates.py), in the order of
 docs/art/images/00-waves.md. A board counts as done when its file is in art/raw/ or
 it is marked ✅ in the current plan, so running it again keeps the progress.
 """
-import re, os, datetime as dt
+import re, os, sys, datetime as dt
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'plan'))
+import rates  # noqa: E402
 IMG = os.path.join(ROOT, 'docs', 'art', 'images')
 OUT = os.path.join(ROOT, 'docs', 'sprints', 'sprint-02-days.md')
-PER_DAY, START = 25, dt.date(2026, 10, 20)
+PER_DAY, START = rates.IMG_PER_DAY, rates.PLAN_START
 
 waves = open(os.path.join(IMG, '00-waves.md')).read()
 w1 = waves[waves.index('## الدفعة 1 '):waves.index('## الدفعة 2')]
@@ -26,9 +28,9 @@ rem = [b for b in boards if b not in done]
 
 o = []; W = o.append
 W('# Sprint 2: خطة الأيام (الدفعة 1 من الصور)\n')
-W('> **كل يوم جلسة جديدة.** في أول الجلسة قل: «اليوم N» (أو «نكمل»)، وClaude يقرأ هذا الملف، ويبدأ من أول صورة غير منجزة، ويعطي أمر كل صورة كاملاً من ملف الجزء المذكور ومعه ملفات المرفقات وروابطها. وبعد اعتماد كل صورة يحفظها في مجلدها ويشغّل `python3 tools/art-prompts/days.py` فتصير ✅ هنا. وفي آخر الجلسة يدمج عمل اليوم في `main`.\n')
-W(f'**الإيقاع:** 5 ساعات، و5 صور معتمدة في الساعة = **{PER_DAY} صورة يومياً** [SPRINTS، المرحلة 0]. ما لم يُنجز في يومه ينتقل لأول اليوم التالي، والملف يعيد التوزيع كلما شُغّل.\n')
-W(f'**الدفعة 1:** {len(boards)} صورة. **المنجز:** {len(done)}. **الباقي:** {len(rem)}، أي {-(-len(rem) // PER_DAY)} أيام.\n')
+W('> **سليمان يصنع الصور بنفسه بالتوازي مع السبرنتات (قرار 2026-10-20)، ومرجعه اليومي `docs/SLIEMAN.md`.** الصور المرفوضة تبدأ من ملفات الإعادة في `docs/art/redo/`، والجديدة من هنا بالترتيب. وبعد اعتماد كل صورة تُحفظ في مجلدها ويُشغَّل `python3 tools/art-prompts/days.py` فتصير ✅ هنا.\n')
+W(f'**الإيقاع:** للصور {rates.IMG_HOURS} من {rates.DAY_HOURS} ساعات كل يوم = **{PER_DAY} صورة معتمدة يومياً**، والباقي للكود. ما لم يُنجز في يومه ينتقل لأول اليوم التالي، والملف يعيد التوزيع كلما شُغّل.\n')
+W(f'**الدفعة 1:** {len(boards)} صورة. **المنجز:** {len(done)}. **الباقي:** {len(rem)}، أي {-(-len(rem) // PER_DAY)} {rates.days_word(-(-len(rem) // PER_DAY))}.\n')
 W('**تعلمناه حتى الآن:** إذا أعاد Gemini نفس الصورة بلا تغيير، نعيدها في محادثة جديدة. وClaude يرسل ملفات المرفقات مع كل أمر.\n')
 W('## المنجز\n')
 W('| | اللوحة | الملف | المجموعة | الأوامر |'); W('|---|---|---|---|---|')
@@ -42,6 +44,6 @@ for d in range(0, len(rem), PER_DAY):
     W('')
 last = START + dt.timedelta(days=-(-len(rem) // PER_DAY) - 1)
 W(f'## بعد آخر يوم\n')
-W(f'صور الدفعة 1 كلها معتمدة، فينتهي السبرنت 2 ({last.isoformat()})، ويبدأ السبرنت 3: محرك المشهد والدفعة 1 في المحاكاة.')
+W(f'صور الدفعة 1 كلها معتمدة ({last.isoformat()})، فتبدأ سبرنتات المحاكاة المصورة (3 إلى 8) حين يكتمل صوتها أيضاً (`docs/SCHEDULE.md`). والصور تكمل بالدفعة 2.')
 open(OUT, 'w').write('\n'.join(o) + '\n')
 print(len(boards), len(done), len(rem))
