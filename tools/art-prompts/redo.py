@@ -310,6 +310,7 @@ REDONE_OK = {
     'striker/run/run-q-back-03.png': '2026-10-20',   # drawn running to the left; each figure mirrored in place
     'striker/run/run-front-01.png': '2026-10-20',    # 4 figures drawn: kept figure 1 (mirrored), 3 and 4, to stand on one leg
     'striker/run/sprint-01.png': '2026-10-20',
+    'striker/run/sprint-02.png': '2026-10-20',       # figure 3 redrawn in the same chat
 }
 
 
