@@ -34,10 +34,10 @@
 | ✅ | 45.2 | `art/raw/striker/run/run-side-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.3 | `art/raw/striker/run/run-side-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.4 | `art/raw/striker/run/run-q-front-01.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ✅ | 45.5 | `art/raw/striker/run/run-q-front-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ✅ | 45.6 | `art/raw/striker/run/run-q-front-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.11 | `art/raw/striker/run/run-front-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ✅ | 45.12 | `art/raw/striker/run/run-front-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
-| ✅ | 48.1 | `art/raw/striker/ball/dribble-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
-| ✅ | 48.2 | `art/raw/striker/ball/dribble-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ✅ | 48.6 | `art/raw/striker/ball/shoot-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ✅ | 48.16 | `art/raw/striker/ball/cross-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 
@@ -45,8 +45,6 @@
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 45.5 | `art/raw/striker/run/run-q-front-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
-| ⬜ | 45.6 | `art/raw/striker/run/run-q-front-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ⬜ | 45.7 | `art/raw/striker/run/run-q-back-01.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ⬜ | 45.8 | `art/raw/striker/run/run-q-back-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ⬜ | 45.9 | `art/raw/striker/run/run-q-back-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
@@ -57,12 +55,14 @@
 | ⬜ | 45.16 | `art/raw/striker/run/sprint-01.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ⬜ | 45.17 | `art/raw/striker/run/sprint-02.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
 | ⬜ | 45.18 | `art/raw/striker/run/sprint-03.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ⬜ | 45.19 | `art/raw/striker/run/sprint-04.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ⬜ | 48.1 | `art/raw/striker/ball/dribble-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 
 ## اليوم 2: 2026-10-22 (12 صورة)
 
 | | اللوحة | الملف | المجموعة | الأوامر |
 |---|---|---|---|---|
-| ⬜ | 45.19 | `art/raw/striker/run/sprint-04.png` | 45. المهاجم الرئيسي: الجري بالاتجاهات | `03-players.md` |
+| ⬜ | 48.2 | `art/raw/striker/ball/dribble-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.3 | `art/raw/striker/ball/dribble-03.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.4 | `art/raw/striker/ball/shoot-01.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
 | ⬜ | 48.5 | `art/raw/striker/ball/shoot-02.png` | 48. المهاجم الرئيسي: الكرة | `03-players.md` |
