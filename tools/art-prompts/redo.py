@@ -68,7 +68,7 @@ def run(r):
     book = open(os.path.join(ROOT, r['book'])).read()
     rows = [(k, folder, *entry(book, k), why, fix) for k, folder, why, fix in r['redo']]
     later = {k for x in REVIEWS[REVIEWS.index(r) + 1:] for k, *_ in x['redo']}   # a later review of the same board replaces this one
-    rows = [row for row in rows if f'{row[1]}/{row[2]}' not in REDONE_OK and row[0] not in later]
+    rows = [row for row in rows if f'{row[1]}/{row[2]}' not in approved() and row[0] not in later]   # never list or remove an approved board
     o = []
     W = o.append
     W(f"# إعادة صور {r['title']} (مراجعة {r['date']})\n")
@@ -180,7 +180,39 @@ DRIBBLE_SCALE = {
         ('48.2', 'striker/ball', 'مربعة 1:1، فالأشكال أصغر 25% من الجري (الوضعيات صحيحة)', SCALE + ' ' + LOOK_DOWN),
     ],
 }
-REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE]
+RUNNING = 'A real fast run in every frame: the body leaning forward, both elbows bent at a right angle and pumping, never hanging down.'
+FRONT_STANCE = ('He faces the camera, so his RIGHT leg is on the LEFT side of the image. In frames 1, 2 and 3 his weight is always '
+                'on his RIGHT leg (left side of the image): it is that foot that lands, carries him and pushes off. His LEFT foot '
+                '(right side of the image) is the one off the ground in all three frames, swinging from behind to a high knee in front.')
+BACK_123 = ('We see his back, so his RIGHT leg is on the RIGHT side of the image. In frames 1, 2 and 3 his weight is always on his '
+            'RIGHT leg (right side of the image): it lands, carries him and pushes off. His LEFT foot (left side of the image) is the '
+            'one off the ground in all three frames.')
+BACK_456 = ('We see his back, so his LEFT leg is on the LEFT side of the image. Frame 4: both feet clearly off the ground, in the '
+            'air between steps. Frames 5 and 6: his weight is on his LEFT leg (left side of the image), and his RIGHT foot (right '
+            'side) is the one off the ground.')
+BACK_78 = ('We see his back. Frame 7: only the toes of his LEFT foot (left side of the image) still touch the ground behind him, '
+           'and his RIGHT knee (right side) is driven up in front. Frame 8: both feet clearly off the ground, in the air, the right '
+           'knee forward; frame 8 must look different from frame 7.')
+RUN_BACK = {
+    'date': '2026-10-20', 'title': 'المهاجم: الجري ثلاثة أرباع من الخلف، ومن الأمام، ومن الخلف (الإعادة الأولى)', 'book': 'docs/art/images/03-players.md',
+    'out': 'docs/art/redo/2026-10-20-striker-run-back.md',
+    'ok': [('45.7', 'striker/run/run-q-back-01.png')],
+    'notes': [
+        '**تحسن واضح:** الزوايا كلها صحيحة الآن، والخلفية سادة، والأشباح اختفت. run-q-back-01 معتمدة.',
+        '**المشكلة الجديدة في الأمام والخلف: الرجل الواقفة تتبدل كل إطار.** في الإطارات 1 و2 و3 يجب أن يقف على نفس الرجل (هبوط، ثم حمل، ثم دفع)، والإطار 4 والإطار 8 طيران. لو تبدلت كل إطار، يبدو في اللعبة كأنه يرتجف في مكانه. سطر التصحيح يحدد الرجل بجهتها في الصورة، لأن Gemini يخلط اليمين واليسار من الخلف.',
+        '**الصيغة:** الصور كلها JPEG بدقة 1024x687. أداة البناء توحّد المقياس، لكن الأفضل تنزيل الصورة بحجمها الكامل وحفظها PNG.',
+    ],
+    'common': 'الرجل الواقفة تتبدل كل إطار بدل أن تبقى نفسها في الإطارات 1 إلى 3 و5 إلى 7، وإطارات الطيران على الأرض.',
+    'redo': [
+        ('45.8', 'striker/run', 'الإطاران 5 و6 بذراعين متدليتين فيبدوان مشياً، وهما شبه متطابقين', RUNNING + ' Frame 6 is clearly different from frame 5: the weight is on the far (left) leg right under the hips, and the near (right) leg swings forward low.'),
+        ('45.9', 'striker/run', 'الإطار 8 ليس طيراناً ويكاد يكرر الإطار 7', RUNNING + ' Frame 8: both feet clearly off the ground, in the air, the near (right) knee driven forward; it must look different from frame 7.'),
+        ('45.10', 'striker/run', 'الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف)', FRONT_STANCE + ' ' + RUNNING),
+        ('45.13', 'striker/run', 'الرجل الواقفة تتبدل كل إطار (يسرى، يمنى، يسرى)، والمطلوب اليمنى في الثلاثة', BACK_123 + ' ' + RUNNING),
+        ('45.14', 'striker/run', 'الإطار 4 بقدمين على الأرض والمطلوب طيران، والإطاران 5 و6 على رجلين مختلفتين', BACK_456 + ' ' + RUNNING),
+        ('45.15', 'striker/run', 'الإطاران 7 و8 متطابقان تقريباً، والإطار 8 ليس طيراناً', BACK_78 + ' ' + RUNNING),
+    ],
+}
+REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK]
 
 # Boards approved before these reviews (wave 1), in docs/sprints/sprint-02-days.md.
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']
