@@ -2,9 +2,10 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
+import BrandMark from './components/BrandMark.vue'
 import { router } from './router'
 
-createApp(App).use(createPinia()).use(router).mount('#app')
+createApp(App).component('BrandMark', BrandMark).use(createPinia()).use(router).mount('#app')
 
 // Installable as an app (PWA). Only the built site: in development it would cache stale code.
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

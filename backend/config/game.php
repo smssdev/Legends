@@ -57,6 +57,18 @@ return [
         'round_base_income' => null, 'win_bonus' => null, 'draw_bonus' => null,
         'salary_ratio_per_round' => null,   // تُحدد بعد الاستيراد
     ],
+    // A player's value in club money [PLAN 2.6]: from his rating, then his age, line and room to grow.
+    // Integers only; each multiplier in basis points. Calibrated in Sprint 11 (docs/sprints/sprint-11.md).
+    'valuation' => [
+        // rating => value; between two points the value runs in a straight line
+        'by_overall' => [40 => 10_000, 50 => 30_000, 55 => 60_000, 60 => 120_000, 65 => 250_000, 70 => 500_000,
+            75 => 1_100_000, 80 => 2_500_000, 85 => 6_000_000, 88 => 11_000_000, 91 => 20_000_000, 99 => 45_000_000],
+        // age => multiplier from that age up
+        'age_bp' => [0 => 13000, 20 => 12500, 22 => 11500, 24 => 10000, 28 => 9000, 30 => 8000, 31 => 7000, 32 => 6000, 33 => 5000, 34 => 4000],
+        'line_bp' => ['gk' => 8000, 'def' => 9000, 'mid' => 10000, 'att' => 11000],
+        'potential_bp_per_point' => 150,      // each point of room to grow
+        'round_to' => [100_000 => 1_000, 1_000_000 => 10_000, PHP_INT_MAX => 100_000],
+    ],
     'training' => ['slots' => 4, 'tick_hours' => 8, 'progress_scale' => 10000,
         'season_gain_target' => [3, 5]],
     'engine' => [
@@ -107,6 +119,8 @@ return [
     ],
     'clock' => ['dev_round_minutes' => 1, 'file' => storage_path('app/game-clock.json')],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
+    // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
+    'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     'monitoring' => ['ntfy_topic' => env('NTFY_TOPIC')],
     'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18],

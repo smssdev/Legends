@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Data\ClubIdentity;
+use App\Data\PlayerValuation;
 use App\Data\Potential;
 use App\Support\GameClock;
 use Illuminate\Console\Command;
@@ -34,8 +35,11 @@ class DataImport extends Command
         'ST' => 'att', 'LW' => 'att', 'RW' => 'att',
     ];
 
+    private PlayerValuation $valuation;
+
     public function handle(): int
     {
+        $this->valuation = PlayerValuation::fromConfig();
         $version = (string) $this->option('data-version');
         $path = $this->option('path') ?: base_path('../data/ea-fc26');
 
@@ -129,7 +133,8 @@ class DataImport extends Command
             'nationality' => $r['nationality'] ?: null,
             'preferred_foot' => $r['preferredFoot'] ?: null,
             'overall' => (int) $r['overallRating'],
-            'potential' => Potential::for((int) $r['overallRating'], (int) $r['age']),
+            'potential' => $potential = Potential::for((int) $r['overallRating'], (int) $r['age']),
+            'value' => $this->valuation->value((int) $r['overallRating'], (int) $r['age'], self::LINES[$r['position']] ?? 'mid', $potential),
             'pac' => $int('pac'), 'sho' => $int('sho'), 'pas' => $int('pas'),
             'dri' => $int('dri'), 'def' => $int('def'), 'phy' => $int('phy'),
             'gk_diving' => $int('gkDiving'), 'gk_handling' => $int('gkHandling'),
