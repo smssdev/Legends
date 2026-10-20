@@ -14,6 +14,8 @@ export const router = createRouter({
         ...SECTIONS.filter((s) => s.sprint).map((s) => ({ path: s.path.slice(1), name: s.name, component: () => import('./pages/ComingSoon.vue') })),
         { path: 'sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
         { path: 'profile', name: 'profile', component: () => import('./pages/Profile.vue'), meta: { auth: true } },
+        // Sprint 11: the component library on a real club
+        { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },
       ],
     },
     // Signing in (Sprint 10), outside the navigation

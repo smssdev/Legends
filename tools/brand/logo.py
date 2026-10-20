@@ -28,19 +28,19 @@ def shield(cx=256, top=150, w=300, h=318):
             f'L{f(l)} {f(top + 18)} Q{f(l)} {f(top)} {f(l + 18)} {f(top)} Z')
 
 
-def crown(cx=256, base=158, w=176, h=92):
+def crown(cx=256, base=158, w=176, h=92, gold=GOLD, line=NAVY_DEEP, pearl=GOLD_LIGHT, gem=NAVY):
     """Three points with pearls; the band sits across the shield's top edge."""
     l, r = cx - w / 2, cx + w / 2
     pts = [(l, base), (l - 6, base - h * 0.78), (cx - w * 0.24, base - h * 0.42), (cx, base - h), (cx + w * 0.24, base - h * 0.42), (r + 6, base - h * 0.78), (r, base)]
     pearls = [(l - 6, base - h * 0.78), (cx, base - h), (r + 6, base - h * 0.78)]
-    band = f'<rect x="{f(l)}" y="{f(base - 4)}" width="{f(w)}" height="22" rx="6" fill="{GOLD}" stroke="{NAVY_DEEP}" stroke-width="5"/>'
-    gems = ''.join(f'<circle cx="{f(cx + dx)}" cy="{f(base + 7)}" r="5" fill="{NAVY}"/>' for dx in (-48, 0, 48))
-    return (f'<path d="{poly(pts)}" fill="{GOLD}" stroke="{NAVY_DEEP}" stroke-width="5" stroke-linejoin="round"/>'
-            + ''.join(f'<circle cx="{f(x)}" cy="{f(y)}" r="11" fill="{GOLD_LIGHT}" stroke="{NAVY_DEEP}" stroke-width="5"/>' for x, y in pearls)
+    band = f'<rect x="{f(l)}" y="{f(base - 4)}" width="{f(w)}" height="22" rx="6" fill="{gold}" stroke="{line}" stroke-width="5"/>'
+    gems = ''.join(f'<circle cx="{f(cx + dx)}" cy="{f(base + 7)}" r="5" fill="{gem}"/>' for dx in (-48, 0, 48))
+    return (f'<path d="{poly(pts)}" fill="{gold}" stroke="{line}" stroke-width="5" stroke-linejoin="round"/>'
+            + ''.join(f'<circle cx="{f(x)}" cy="{f(y)}" r="11" fill="{pearl}" stroke="{line}" stroke-width="5"/>' for x, y in pearls)
             + band + gems)
 
 
-def ball(cx=256, cy=300, r=82):
+def ball(cx=256, cy=300, r=82, panel=NAVY, fill="url(#ballFill)", edge=NAVY_DEEP):
     """A football: the middle pentagon, five more at its corners cut by the rim, and the seams between."""
     def pent(x, y, s, rot):
         return [(x + s * math.sin(rot + i * 2 * math.pi / 5), y - s * math.cos(rot + i * 2 * math.pi / 5)) for i in range(5)]
@@ -59,10 +59,10 @@ def ball(cx=256, cy=300, r=82):
         seams.append(f'M{f(p[4][0])} {f(p[4][1])} L{f(q[1][0])} {f(q[1][1])}')
     clip = '<clipPath id="ballClip"><circle cx="{0}" cy="{1}" r="{2}"/></clipPath>'.format(f(cx), f(cy), f(r))
     return (clip
-            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="url(#ballFill)"/>'
-            + f'<g clip-path="url(#ballClip)"><g fill="{NAVY}">' + ''.join(f'<path d="{poly(p)}"/>' for p in outer + [mid]) + '</g>'
-            + f'<path d="{" ".join(seams)}" stroke="{NAVY}" stroke-width="{f(r * 0.05)}" stroke-linecap="round" fill="none"/></g>'
-            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="none" stroke="{NAVY_DEEP}" stroke-width="6"/>')
+            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="{fill}"/>'
+            + f'<g clip-path="url(#ballClip)"><g fill="{panel}">' + ''.join(f'<path d="{poly(p)}"/>' for p in outer + [mid]) + '</g>'
+            + f'<path d="{" ".join(seams)}" stroke="{panel}" stroke-width="{f(r * 0.05)}" stroke-linecap="round" fill="none"/></g>'
+            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="none" stroke="{edge}" stroke-width="6"/>')
 
 
 def laurel(cx=256, cy=304, r=112, side=1, n=8):
@@ -107,7 +107,18 @@ def svg(body, w=512, h=512, bg=None, rx=0):
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">{DEFS}{back}{body}</svg>\n'
 
 
+def coin():
+    """الكوينز, the premium currency: a gold coin with the ball and the crown struck in it."""
+    return (f'<circle cx="256" cy="256" r="236" fill="{GOLD_DARK}"/>'
+            f'<circle cx="256" cy="248" r="226" fill="url(#rim)"/>'
+            f'<circle cx="256" cy="248" r="184" fill="{GOLD}" stroke="{GOLD_DARK}" stroke-width="10"/>'
+            + ball(cy=290, r=88, panel=GOLD_DARK, fill=GOLD_LIGHT, edge=GOLD_DARK)
+            + crown(base=196, w=150, h=78, gold=GOLD_LIGHT, line=GOLD_DARK, pearl=GOLD_LIGHT, gem=GOLD_DARK)
+            + '<ellipse cx="170" cy="130" rx="64" ry="22" fill="#FFFFFF" opacity=".28" transform="rotate(-32 170 130)"/>')
+
+
 FILES = {
+    'coin.svg': svg(coin()),
     # the emblem on a clear background, for anything already dark
     'emblem.svg': svg(emblem()),
     # the app icon: the emblem on navy, with a safe margin for round (maskable) masks
