@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // Google sign-in [PLAN 2.17]: the web client (Socialite) and every client id whose id_token
+    // the API accepts (web and Android). Free, from a Google Cloud project.
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+        'audiences' => array_values(array_filter(array_map('trim', explode(',', (string) env('GOOGLE_CLIENT_ID').','.env('GOOGLE_ANDROID_CLIENT_IDS', ''))))),
+        'certs_url' => 'https://www.googleapis.com/oauth2/v3/certs',
+    ],
+
 ];
