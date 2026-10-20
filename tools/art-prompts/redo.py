@@ -228,7 +228,9 @@ def chain(view, images):
 
 
 Q_BACK = ('Camera: three-quarter view from behind. We see his back and the back of his head, his face is hidden, '
-          'and he runs away from the camera diagonally to the right, exactly like the attached run-q-back-01.png.')
+          'and he runs away from the camera diagonally to the right, with the same camera angle as the attached run-q-back-01.png. '
+          'That image shows the EARLIER frames 1 to 3, which are already made: use it only for the angle and the size, and never '
+          'redraw its poses. Every figure here is a NEW pose that comes after them.')
 BACK = ('Camera: straight from behind. We see only his back and the back of his head, and he runs straight away '
         'from the camera. Because we see his back, his RIGHT leg is on the RIGHT side of the image and his LEFT leg '
         'is on the LEFT side.')
@@ -282,7 +284,7 @@ RUN_BACK = {
         ('45.8', 'striker/run', 'الإطاران 5 و6 بذراعين متدليتين فيبدوان مشياً، وهما شبه متطابقين',
          {'attach': [REF, RUN + 'run-q-back-01.png'], 'prompt': clear(3, Q_BACK, *QB2)}),
         ('45.9', 'striker/run', 'الإطار 8 ليس طيراناً ويكاد يكرر الإطار 7',
-         {'attach': [REF, RUN + 'run-q-back-02.png'], 'prompt': clear(2, Q_BACK.replace('run-q-back-01.png', 'run-q-back-02.png'), *QB3)}),
+         {'attach': [REF, RUN + 'run-q-back-02.png'], 'prompt': clear(2, Q_BACK.replace('run-q-back-01.png', 'run-q-back-02.png').replace('frames 1 to 3', 'frames 4 to 6'), *QB3)}),
         ('45.10', 'striker/run', 'الإطار 2 يقف على الرجل اليسرى، والمطلوب نفس الرجل اليمنى في الإطارات الثلاثة (وإلا يرتجف)',
          {'attach': [REF, RUN + 'run-front-02.png'], 'prompt': clear(3, FRONT + ' Match the size and style of the attached run-front-02.png.', *F1)}),
         ('45.13', 'striker/run', 'الرجل الواقفة تتبدل كل إطار (يسرى، يمنى، يسرى)، والمطلوب اليمنى في الثلاثة',
