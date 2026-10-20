@@ -1,6 +1,6 @@
 # قوائم عمل الصوت (حمزة)
 
-> يولّدها `tools/commentary/todo.py` من `audio/raw/ar/catalog.tsv` وما في `audio/raw/`. آخر مراجعة: 2026-10-20.
+> يولدها `tools/commentary/todo.py` من `audio/raw/ar/catalog.tsv` وما في `audio/raw/`. آخر مراجعة: 2026-10-20.
 > ابدأ بالدفعة 1: 🔁 ثم 👂 ثم ⬜. كل ملف فيه اسم المقطع ومكانه ونبرته ونصه.
 
 | القائمة | الملف | المجموع | ✅ | 🔁 | 👂 | ⬜ |
