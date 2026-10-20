@@ -306,6 +306,7 @@ APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run',
 REDONE_OK = {
     'striker/run/run-q-front-02.png': '2026-10-20',
     'striker/run/run-q-front-03.png': '2026-10-20',
+    'striker/run/run-q-back-02.png': '2026-10-20',
 }
 
 
