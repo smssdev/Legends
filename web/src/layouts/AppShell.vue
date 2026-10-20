@@ -24,8 +24,7 @@ watch(() => route.fullPath, () => (more.value = false))
   <div class="min-h-dvh md:flex">
     <aside class="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-2 border-s border-text/5 bg-bg-deep p-4 md:flex" aria-label="الأقسام">
       <RouterLink to="/" class="mb-4 flex items-center gap-3 px-2">
-        <img src="/icon-192.png" alt="" class="size-10 rounded-md" />
-        <span class="font-display text-xl font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
+        <BrandMark />
       </RouterLink>
       <nav class="flex flex-1 flex-col gap-1 overflow-y-auto">
         <RouterLink
@@ -56,8 +55,7 @@ watch(() => route.fullPath, () => (more.value = false))
 
     <div class="flex min-w-0 flex-1 flex-col">
       <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-text/5 bg-bg/95 px-4 py-3 backdrop-blur md:hidden">
-        <img src="/icon-192.png" alt="" class="size-8 rounded-md" />
-        <span class="font-display text-lg font-extrabold tracking-wide text-gold" dir="ltr">LEGENDS</span>
+        <BrandMark size="sm" />
         <RouterLink v-if="auth.user" to="/profile" class="ms-auto flex size-touch items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">{{ initial }}</RouterLink>
         <RouterLink v-else-if="auth.loaded" to="/login" class="ms-auto flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">دخول</RouterLink>
       </header>

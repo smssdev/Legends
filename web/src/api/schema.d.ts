@@ -475,6 +475,186 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/data/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The leagues a new league can copy, strongest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Templates of the latest data version */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data_version?: string;
+                            templates?: {
+                                name: string;
+                                clubs: number;
+                                /** @description The strongest club */
+                                top_strength_cp: number;
+                                avg_strength_cp: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/data/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The clubs of one template, strongest first */
+        get: {
+            parameters: {
+                query: {
+                    league: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clubs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            league?: string;
+                            clubs?: components["schemas"]["DataClub"][];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/data/clubs/{club}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A club and its whole squad, with potential and value */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    club: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The club */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DataClub"] & {
+                            /** @description Club money */
+                            squad_value: number;
+                            players: components["schemas"]["DataPlayer"][];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/data/clubs/{club}/crest.svg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The club's generated badge (SVG)
+         * @description No real logos; a shape, a pattern and the club's letters in its colours, the same everywhere. Cached for a week, with an ETag.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    club: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The badge */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/svg+xml": string;
+                    };
+                };
+                /** @description Not changed */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1292,6 +1472,37 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        DataClub: {
+            id: number;
+            name: string;
+            /** @description Three letters */
+            code: string;
+            league: string;
+            /** @description The average of the best 18 */
+            strength_cp: number;
+            colors: string[];
+            crest_url: string;
+        };
+        DataPlayer: {
+            id: number;
+            name: string;
+            /** @example CM */
+            position: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            age: number;
+            nationality?: string | null;
+            foot?: string | null;
+            overall: number;
+            /** @description The most training can raise his rating */
+            potential: number;
+            /** @description Club money */
+            value: number;
+            /** @description pac, sho, pas, dri, def, phy for outfield players; diving, handling, kicking, positioning, reflexes for keepers */
+            attributes: {
+                [key: string]: number | null;
+            };
+        };
         Account: {
             id: number;
             name: string;
