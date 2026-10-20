@@ -307,6 +307,7 @@ REDONE_OK = {
     'striker/run/run-q-front-02.png': '2026-10-20',
     'striker/run/run-q-front-03.png': '2026-10-20',
     'striker/run/run-q-back-02.png': '2026-10-20',
+    'striker/run/run-q-back-03.png': '2026-10-20',   # drawn running to the left; each figure mirrored in place
 }
 
 
