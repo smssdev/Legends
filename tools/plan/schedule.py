@@ -51,25 +51,35 @@ def phase(n):
     return next(p for a, b, p in [(1, 8, '0. المحاكي'), (9, 17, 'أ. الأساس'), (18, 21, 'ب. المباراة المباشرة'), (22, 31, 'ج. مزايا OSM'),
                                   (32, 36, 'د. دورة الحياة'), (37, 40, 'هـ. إطلاق الويب'), (41, 45, 'و. Flutter'), (46, 52, 'ز. الصور الكاملة')] if a <= n <= b)
 # Owner's decision (2026-10-20): the photo simulator sprints (3 to 8) wait for wave 1's images and voice;
-# the code goes on with the foundation (9 to 11) meanwhile, then comes back to them.
-ORDER = [2, 9, 10, 11, 3, 4, 5, 6, 7, 8] + list(range(12, 53))
+# the code goes on with the other sprints meanwhile, and takes up 3 to 8 as soon as the art is ready.
+# DONE: sprints whose code is finished, with the day it was: they take no more days.
+DONE = {2: dt.date(2026, 10, 20), 9: dt.date(2026, 10, 20), 10: dt.date(2026, 10, 20), 11: dt.date(2026, 10, 20)}
+SIM = [3, 4, 5, 6, 7, 8]
 READY = next(b for w, n, a, b in track if w == 'صوت 1')   # wave 1 complete, images and voice
-rows, summary, day = [], [], START
-for n in ORDER:
-    if n == 3 and day <= READY: day = READY + dt.timedelta(days=1)   # never before its art
-    title, tasks, sizes = sprints[n]
-    d = LEN.get(n) or max(4, min(8, round(sum(sizes) / 110)))
-    first = day
-    tot = sum(sizes) or 1; edges = []; acc = 0
-    for (c, t), z in zip(tasks, sizes):
-        edges.append((acc / tot * d, (acc + z) / tot * d, c, t)); acc += z
-    for i in range(d):
-        today = [f'{c} {t}' for a, b, c, t in edges if a < i + 1 and b > i]
-        if n == 2: today = ['W14 أداة الصور', 'W14b صفحة المعاينة (منجزان)']
-        if i == d - 1: today.append('تعريف الانتهاء والدمج')
-        rows.append((day, n, ' · '.join(today)))
-        day += dt.timedelta(days=1)
-    summary.append((n, phase(n), title, d, first, day - dt.timedelta(days=1)))
+rows, summary, day = [], [], START + dt.timedelta(days=1) if DONE else START
+for n in sorted(DONE):
+    summary.append((n, phase(n), sprints[n][0], 0, DONE[n], DONE[n]))
+queue = [n for n in [9, 10, 11] + list(range(12, 53)) if n not in DONE]
+sim_placed = False
+while queue or not sim_placed:
+    if not sim_placed and (day > READY or not queue):
+        batch, sim_placed = SIM, True
+        day = max(day, READY + dt.timedelta(days=1))   # never before its art
+    else:
+        batch = [queue.pop(0)]
+    for n in batch:
+        title, tasks, sizes = sprints[n]
+        d = LEN.get(n) or max(4, min(8, round(sum(sizes) / 110)))
+        first = day
+        tot = sum(sizes) or 1; edges = []; acc = 0
+        for (c, t), z in zip(tasks, sizes):
+            edges.append((acc / tot * d, (acc + z) / tot * d, c, t)); acc += z
+        for i in range(d):
+            today = [f'{c} {t}' for a, b, c, t in edges if a < i + 1 and b > i]
+            if i == d - 1: today.append('تعريف الانتهاء والدمج')
+            rows.append((day, n, ' · '.join(today)))
+            day += dt.timedelta(days=1)
+        summary.append((n, phase(n), title, d, first, day - dt.timedelta(days=1)))
 
 MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
 def ar(d): return f'{d.day} {MONTHS[d.month - 1]} {d.year}'
@@ -79,7 +89,7 @@ def days(k):  # Arabic counted noun: 100 يوم، 104 أيام، 145 يوماً
 o = []; W = o.append
 W('# Legends: الخطة كاملة بالأيام\n')
 W('> يولّده `tools/plan/schedule.py` من `docs/SPRINTS.md`. **5 ساعات عمل كل يوم**، بلا أيام راحة. مدة كل سبرنت تقدير: سبرنتات الصور بعدد الصور (25 صورة معتمدة يومياً)، وسبرنتات الكود بحجم مهامها (4 إلى 8 أيام). يُعاد توليده في نهاية كل سبرنت بتاريخ بدء التالي، فتتحرك التواريخ بالواقع.\n')
-W(f'**البداية:** {START.isoformat()} (السبرنت 1 منجز). **النهاية:** {summary[-1][5].isoformat()}. **المجموع:** {len(rows)} {days(len(rows))} عمل.\n')
+W(f'**البداية:** {START.isoformat()} (السبرنت 1 منجز، وكود 2 و9 و10 و11 منجز {START.isoformat()}). **النهاية:** {summary[-1][5].isoformat()}. **المجموع:** {len(rows)} {days(len(rows))} عمل.\n')
 W('## متى تخرج كل نسخة\n')
 W(f'**المشروع كاملاً: {len(rows)} {days(len(rows))} عمل** بواقع 5 ساعات يومياً، من {ar(START)} إلى **{ar(summary[-1][5])}**. وبيوم راحة في الأسبوع يصير قرابة {round(len(rows) * 7 / 6)} يوماً.\n')
 W('| النسخة | ماذا فيها | بعد السبرنت | التاريخ | بعد |'); W('|---|---|---|---|---|')
