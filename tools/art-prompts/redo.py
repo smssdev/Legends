@@ -67,6 +67,7 @@ def entry(book, code):
 def run(r):
     book = open(os.path.join(ROOT, r['book'])).read()
     rows = [(k, folder, *entry(book, k), why, fix) for k, folder, why, fix in r['redo']]
+    rows = [row for row in rows if f'{row[1]}/{row[2]}' not in REDONE_OK]
     o = []
     W = o.append
     W(f"# إعادة صور {r['title']} (مراجعة {r['date']})\n")
@@ -166,9 +167,17 @@ REVIEWS = [RUN_WALK, START, BALL]
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']
 
 
+# Boards rejected in a review, made again and approved afterwards (path: day of approval).
+# They leave their redo list, and a rerun never removes them.
+REDONE_OK = {
+    'striker/ball/dribble-01.png': '2026-10-20',
+    'striker/ball/dribble-02.png': '2026-10-20',
+}
+
+
 def approved():
     """Every board that passed review, as paths under art/raw/."""
-    return set(APPROVED_BEFORE) | {path for r in REVIEWS for _, path in r['ok']}
+    return set(APPROVED_BEFORE) | set(REDONE_OK) | {path for r in REVIEWS for _, path in r['ok']}
 
 
 def main():

@@ -17,14 +17,12 @@
 | 48.6 | ✅ `art/raw/striker/ball/shoot-03.png` |
 | 48.16 | ✅ `art/raw/striker/ball/cross-01.png` |
 
-## تحتاج إعادة (17)
+## تحتاج إعادة (15)
 
 **أكثر مشكلة تكررت:** الخلفية فيها كشافات وتدرج، والوضعيات مكررة. لكل لوحة سطر تصحيح يذكر وضعية كل إطار.
 
 | اللوحة | الملف | المشكلة |
 |---|---|---|
-| 48.1 | `art/raw/striker/ball/dribble-01.png` | جري عادي بلا نظر للكرة، والإطاران 1 و2 شبه متطابقين |
-| 48.2 | `art/raw/striker/ball/dribble-02.png` | الإطاران 4 و5 يكرران dribble-01، والإطار 6 مشي منتصب |
 | 48.3 | `art/raw/striker/ball/dribble-03.png` | الإطاران 7 و8 متطابقان تقريباً |
 | 48.4 | `art/raw/striker/ball/shoot-01.png` | الإطاران 1 و2 متطابقان، واللوحة كلها تكاد تطابق pass-01 |
 | 48.5 | `art/raw/striker/ball/shoot-02.png` | بدل القدم المزروعة ثم الرجل المسحوبة ثم لحظة الضربة: خطوتا جري مكررتان ثم ركلة |
@@ -40,26 +38,6 @@
 | 48.17 | `art/raw/striker/ball/cross-02.png` | الإطاران 4 و5 جري مكرر، والمطلوب: لحظة لمس الكرة من تحتها، ثم المتابعة بذراعين مفتوحتين، ثم مراقبة العرضية |
 | 48.18 | `art/raw/striker/ball/control-01.png` | لوحات ملصوقة، والخلفية فيها كشافات |
 | 48.19 | `art/raw/striker/ball/control-02.png` | ثلاث خطوات جري، والمطلوب: الكرة تموت عند قدمه (وقوف)، ثم يدفعها، ثم يبدأ الجري |
-
-### 48.1 `dribble-01.png`
-
-**المشكلة:** جري عادي بلا نظر للكرة، والإطاران 1 و2 شبه متطابقين  
-**المجلد:** `art/raw/striker/ball/`  
-**ارفق:** `art/raw/striker/ref.png`
-
-```
-Use the attached reference card for this exact same person: the same face, hair, body and clothes, at the same scale. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 1 to 3 of an 8-frame dribbling sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male footballer in a plain pure white kit (white shirt, white shorts, white socks) and black boots, no logos or numbers (the game paints the team colours on the white), short dark brown hair, light olive skin, light stubble, athletic striker build. He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Left frame (frame 1): Dribbling at speed, looking down at a ball that is not shown: the near (right) foot just touching the ball down in front of the body heel first, the far (left) leg stretched behind, the far (left) arm forward. Middle frame (frame 2): Dribbling at speed, looking down at a ball that is not shown: the near (right) foot flat under the hips taking the weight, knee slightly bent, the far (left) leg swinging forward low. Right frame (frame 3): Dribbling at speed, looking down at a ball that is not shown: only the toes of the near (right) foot still touch the ground, far behind the hips, the near (right) leg almost straight; the far (left) knee is lifted high in front at hip height with its foot off the ground. This pose must look clearly different from the first frame of the stride. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos. He looks down at the ball that is not drawn, his head tilted forward. The three frames are three clearly different poses in the order described; none repeats a pose from this image or from the attached earlier image.
-```
-
-### 48.2 `dribble-02.png`
-
-**المشكلة:** الإطاران 4 و5 يكرران dribble-01، والإطار 6 مشي منتصب  
-**المجلد:** `art/raw/striker/ball/`  
-**ارفق:** `art/raw/striker/ref.png` و`art/raw/striker/ball/dribble-01.png`
-
-```
-Use the attached images: the reference card for this exact same person (same face, hair, body and clothes) and the previous frames, to continue the same motion at the same scale and on the same ground line. A wide 3:2 landscape image with 3 animation frames side by side in one row: frames 4 to 6 of an 8-frame dribbling sequence. The image shows exactly 3 figures of this same one person, one per frame, from left to right in frame order: no more, no fewer, and no other people. The character is a fictional male footballer in a plain pure white kit (white shirt, white shorts, white socks) and black boots, no logos or numbers (the game paints the team colours on the white), short dark brown hair, light olive skin, light stubble, athletic striker build. He is seen exactly from the side, his body and face turned to the right, so the camera sees his right side: his right leg and right arm are the near ones, closest to the camera, and his left leg and left arm are the far ones; whenever he moves, he moves to the right. These are consecutive animation frames for a 2D game sprite sheet, evenly spaced in time: each frame moves on one clear step of the motion from the one before, like a real animation cycle, and no two frames are the same. Every frame shows the whole figure from head to feet at exactly the same scale, standing on the same invisible ground line (the ground line is at the same height in every frame), with clear space between frames and nothing cut off. Each frame is a clearly different pose from the others in this image; never repeat a pose. Do not copy any pose from the attached previous image: draw the next poses of the motion. Left frame (frame 4): Dribbling at speed, looking down at a ball that is not shown: both feet off the ground, the far (left) knee driven forward, the near (right) leg extended behind. Middle frame (frame 5): Dribbling at speed, looking down at a ball that is not shown: the far (left) foot just touching the ball down in front of the body heel first, the near (right) leg stretched behind, the near (right) arm forward. Right frame (frame 6): Dribbling at speed, looking down at a ball that is not shown: the far (left) foot flat under the hips taking the weight, knee slightly bent, the near (right) leg swinging forward low. There is no ball anywhere in the image, because the game draws the ball itself: where a pose mentions the ball, the body moves exactly as if the ball were there, but the ball is not drawn. Photorealistic 3D render in the style of a modern console football game, lit by night stadium floodlights from high above and slightly behind: cool bluish white light with a bright rim light on the head, shoulders and arms, and slightly darker lower legs. Correct, natural anatomy in every pose: knees and elbows bend the natural way, both legs and both arms complete, feet pointing where the body moves, five fingers on each hand. The background is one flat, solid chroma-key green (#00FF00) with nothing else on it, no floor and no shadows, so each figure is easy to cut out. The image has no text, no numbers and no logos. He looks down at the ball that is not drawn, his head tilted forward. Frame 4 has both feet off the ground. The three frames are three clearly different poses in the order described; none repeats a pose from this image or from the attached earlier image.
-```
 
 ### 48.3 `dribble-03.png`
 
