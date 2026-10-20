@@ -21,8 +21,17 @@
 
 ## الأوامر
 
-- من `backend/`: `composer setup` (أول مرة)، `composer dev` (الـ API على 8000 + الطابور + المجدول + الويب على 5173)، `composer test`، `composer fresh` (يمسح الملفات الثلاثة ثم يهاجر)، `vendor/bin/pint`.
-- من `web/`: `npm run dev`، `npm run build` (يولّد `src/styles/tokens.css` من `docs/design/tokens.json` تلقائياً).
+- من `backend/`:
+  - `composer setup` أول مرة.
+  - `composer dev` يشغّل الـ API على 8000، والطابور، والمجدول، وReverb على 8080، والويب على 5173.
+  - `composer test`، و`composer fresh` (يمسح الملفات الثلاثة ثم يهاجر)، و`vendor/bin/pint`.
+  - `php artisan clock:travel +8h` يقدّم وقت اللعبة (ويقبل `-30m` و`+2d` و`reset` و`--status`). للتطوير فقط، والإنتاج يرفضه.
+- من `web/`:
+  - `npm run dev`.
+  - `npm run build` يولّد `src/styles/tokens.css` من `docs/design/tokens.json` تلقائياً.
+  - `npm run api` يولّد `src/api/schema.d.ts` من `docs/api/openapi.yaml`. يُشغَّل بعد أي تغيير في العقد، وCI يفشل إن لم يكن محدّثاً.
+- ملف `.env` يحتاج متغيرات Reverb من `.env.example` ليعمل البث. وبـ `BROADCAST_CONNECTION=log` يعمل كل شيء إلا البث.
+- الصور: `python3 tools/art/build.py` يبني `art/raw/` إلى `web/public/match-art/`، والمعاينة في `/dev/art`.
 - PHP 8.4 مستحسن. على 8.3 تفتح المعاملات بـ `BEGIN IMMEDIATE` عبر `App\Database\ImmediatePdo` (Laravel لا يطبق `transaction_mode` قبل 8.4)، واختبار `ImmediateTransactionTest` يتحقق من ذلك. المشروع يُبنى من الصفر، ولا يُنسخ كود من مستودع `smssdev/coach`.
 
 ## الستاك (محسوم)
@@ -33,12 +42,14 @@
 - الموبايل **بعد v1.0 (المرحلة و، السبرنتات 41 إلى 45):** **Flutter** (`mobile/`) تطبيق أصلي لـ Android على نفس الـ API بتوكن Sanctum: Riverpod + go_router + dio + عميل Dart مولّد من OpenAPI، وFCM وGoogle Sign-In والروابط العميقة والتخزين الآمن. **iOS بعد v1** من نفس كود Flutter (يحتاج حساب Apple مدفوعاً). متصفح الموبايل يعرض نسخة Vue المتجاوبة.
 - **لا منطق لعبة في الواجهة:** كل القواعد والحسابات في الـ API، حتى يأتي تطبيق Flutter فيستخدم نفس الـ API ونفس التصاميم والرموز (`docs/design/tokens.json`) بلا إعادة كتابة للمنطق.
 - **مجاني بالكامل في v1:** لا تضف خدمة أو مكتبة تحتاج اشتراكاً أو دفعاً.
-- عقد الـ API: `docs/api/openapi.yaml`، يُحدَّث في نفس PR أي تغيير في المسارات، ومنه يُولَّد عميل TypeScript للويب وعميل Dart للتطبيق. أحداث المباراة في `docs/api/match-events.md`.
+- عقد الـ API: `docs/api/openapi.yaml`، يُحدَّث في نفس PR أي تغيير في المسارات، ومنه يُولَّد عميل TypeScript للويب (`web/src/api/client.ts` فوق `schema.d.ts`) وعميل Dart للتطبيق. أحداث المباراة في `docs/api/match-events.md`.
+- **الأخطاء:** كل خطأ من الـ API بشكل واحد `{message, code, errors?}` ورسالة عربية جاهزة للعرض (`app/Http/Errors/ApiErrors.php`). اكتب رسالة `abort()` بالعربية، ورسائل التحقق في `lang/ar/validation.php`، والواجهة تعرض `message` كما هي.
+- `GET /api/v1/health`: الإصدار، وأدنى إصدار للتطبيق (`game.app.min_version`)، ووقت اللعبة. والبث التجريبي في `POST /api/v1/health/ping` على القناة العامة `system`.
 - SQLite بوضع WAL (+ busy_timeout + foreign keys)، بثلاثة ملفات منفصلة: البيانات، والكاش، والطابور.
 - Reverb للبث اللحظي (Echo في الويب، و`dart_pusher_channels` في Flutter) · Queues (database) · Scheduler كل دقيقة.
 - الدخول: إيميل + باسورد، وجوجل (ربط آمن فقط مع إيميل مؤكد من الطرفين). الويب بكوكيز Sanctum، ومسار التوكن بمدة انتهاء جاهز للتطبيق. لا رقم هاتف.
 - الأوقات تُخزن UTC، وتُجدول بـ `Africa/Cairo`، وتُعرض بتوقيت جهاز المستخدم.
-- **الوقت دائماً من `GameClock`، لا من `now()`.** في التطوير: `clock:travel +8h` ودوري تطوير بجولة كل دقيقة.
+- **الوقت دائماً من `GameClock`، لا من `now()`.** اختبار `NoWallClockTest` يرفض `now()` و`time()` و`date()` و`Carbon::now()` في `app/`. في التطوير: `clock:travel +8h` ودوري تطوير بجولة كل دقيقة.
 
 ## قواعد ثابتة
 
@@ -52,6 +63,7 @@
 - **الأرقام القابلة للمعايرة** في `config/game.php`، لا داخل الكود.
 - كل نصوص الواجهة ورسائل الأخطاء بالعربية. حقول البريد وكلمة المرور والأكواد `dir="ltr"`.
 - الواجهة للموبايل أولاً، والأزرار القابلة للمس 44px على الأقل.
+- **شاشات اللعبة داخل الهيكل** (`web/src/layouts/AppShell.vue`): شريط جانبي على الكمبيوتر، وشريط سفلي على الجوال. والأقسام في `web/src/layouts/nav.ts`. شاشة المباراة وتقريرها تملآن الشاشة خارجه.
 - الألوان من `brand/README.md` و`docs/design/tokens.json` فقط، والشاشات حسب نظام التصميم [PLAN 2.23]. لا تُكتب شاشة قبل تصميمها المعتمد (مهمة D0).
 - لا تُنسخ نصوص أو رسوم أو شخصيات من OSM. الآليات حرة، والصياغة والرسم من عندنا.
 
