@@ -105,7 +105,7 @@ return [
         'stoppage' => [1 => [1, 3], 2 => [2, 6], 3 => [0, 2], 4 => [0, 2]],
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
-    'clock' => ['dev_round_minutes' => 1],
+    'clock' => ['dev_round_minutes' => 1, 'file' => storage_path('app/game-clock.json')],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     'monitoring' => ['ntfy_topic' => env('NTFY_TOPIC')],

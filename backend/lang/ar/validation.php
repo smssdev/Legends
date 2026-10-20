@@ -1,0 +1,77 @@
+<?php
+
+// Arabic validation messages for the API [CLAUDE.md: every error in Arabic].
+// The rules the game uses; add a line here when a new rule appears.
+
+return [
+    'accepted' => 'يجب قبول :attribute.',
+    'array' => 'يجب أن يكون :attribute قائمة.',
+    'between' => [
+        'numeric' => 'يجب أن يكون :attribute بين :min و:max.',
+        'string' => 'يجب أن يكون طول :attribute بين :min و:max حرفاً.',
+        'array' => 'يجب أن يحتوي :attribute بين :min و:max عناصر.',
+    ],
+    'boolean' => 'يجب أن يكون :attribute نعم أو لا.',
+    'confirmed' => 'تأكيد :attribute غير مطابق.',
+    'current_password' => 'كلمة المرور غير صحيحة.',
+    'date' => 'يجب أن يكون :attribute تاريخاً صحيحاً.',
+    'different' => 'يجب أن يختلف :attribute عن :other.',
+    'digits' => 'يجب أن يكون :attribute :digits أرقام.',
+    'distinct' => 'في :attribute قيمة مكررة.',
+    'email' => 'اكتب بريداً إلكترونياً صحيحاً.',
+    'exists' => ':attribute غير موجود.',
+    'in' => 'قيمة :attribute غير مسموحة.',
+    'integer' => 'يجب أن يكون :attribute رقماً صحيحاً.',
+    'lowercase' => 'يجب أن يكون :attribute بأحرف صغيرة.',
+    'max' => [
+        'numeric' => 'يجب ألا يزيد :attribute على :max.',
+        'string' => 'يجب ألا يزيد :attribute على :max حرفاً.',
+        'array' => 'يجب ألا يحتوي :attribute أكثر من :max عناصر.',
+        'file' => 'يجب ألا يزيد حجم :attribute على :max كيلوبايت.',
+    ],
+    'min' => [
+        'numeric' => 'يجب ألا يقل :attribute عن :min.',
+        'string' => 'يجب ألا يقل :attribute عن :min أحرف.',
+        'array' => 'يجب أن يحتوي :attribute :min عناصر على الأقل.',
+        'file' => 'يجب ألا يقل حجم :attribute عن :min كيلوبايت.',
+    ],
+    'not_in' => 'قيمة :attribute غير مسموحة.',
+    'numeric' => 'يجب أن يكون :attribute رقماً.',
+    'password' => [
+        'letters' => 'يجب أن تحتوي :attribute حرفاً واحداً على الأقل.',
+        'mixed' => 'يجب أن تحتوي :attribute حرفاً كبيراً وحرفاً صغيراً.',
+        'numbers' => 'يجب أن تحتوي :attribute رقماً واحداً على الأقل.',
+        'symbols' => 'يجب أن تحتوي :attribute رمزاً واحداً على الأقل.',
+        'uncompromised' => 'ظهرت :attribute في تسريب بيانات، اختر غيرها.',
+    ],
+    'present' => 'يجب أن يكون :attribute موجوداً.',
+    'prohibited' => ':attribute غير مسموح.',
+    'regex' => 'صيغة :attribute غير صحيحة.',
+    'required' => ':attribute مطلوب.',
+    'required_if' => ':attribute مطلوب في هذه الحالة.',
+    'required_with' => ':attribute مطلوب مع :values.',
+    'same' => 'يجب أن يطابق :attribute :other.',
+    'size' => [
+        'numeric' => 'يجب أن يكون :attribute :size.',
+        'string' => 'يجب أن يكون طول :attribute :size أحرف.',
+        'array' => 'يجب أن يحتوي :attribute :size عناصر.',
+    ],
+    'string' => 'يجب أن يكون :attribute نصاً.',
+    'unique' => ':attribute مستخدم من قبل.',
+    'url' => 'اكتب رابطاً صحيحاً في :attribute.',
+    'uuid' => 'صيغة :attribute غير صحيحة.',
+
+    'attributes' => [
+        'name' => 'الاسم',
+        'email' => 'البريد الإلكتروني',
+        'password' => 'كلمة المرور',
+        'club_id' => 'النادي',
+        'team' => 'الفريق',
+        'seed' => 'البذرة',
+        'tactics' => 'التكتيك',
+        'formation' => 'الطريقة',
+        'target_tick' => 'الدقيقة المستهدفة',
+        'idempotency_key' => 'مفتاح العملية',
+        'q' => 'البحث',
+    ],
+];
