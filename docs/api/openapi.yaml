@@ -8,11 +8,218 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: auth
+    description: |
+      Accounts (docs/PLAN.md 2.17). The web signs in with Sanctum's session cookie: GET /sanctum/csrf-cookie first,
+      then send the X-XSRF-TOKEN header. The app uses POST /auth/token or /auth/google/token and sends
+      "Authorization: Bearer <token>"; tokens expire after 30 days. Sign-in attempts: 5 a minute per email, 20 per address.
   - name: system
     description: Health and the test broadcast
   - name: simulator
     description: Development simulator (docs/MATCH_VIEW.md 8). Returns 404 unless the simulator is enabled.
 paths:
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Create an account
+      description: Sends the confirmation email. The web is signed in by session; with device_name the app gets a token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, terms]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 40 }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
+                terms: { type: boolean, description: Must be true }
+                device_name: { type: string, maxLength: 100, description: The device name }
+      responses:
+        '201': { $ref: '#/components/responses/AccountToken' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Sign in on the web (session cookie)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                remember: { type: boolean }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '400': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Sign out on the web
+      responses:
+        '200': { description: Done }
+  /auth/token:
+    post:
+      tags: [auth]
+      summary: Sign in from the app (a token that expires)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, device_name]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                device_name: { type: string, maxLength: 100, description: The device name }
+      responses:
+        '200': { $ref: '#/components/responses/AccountToken' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [auth]
+      summary: Sign out from the app (revokes this token)
+      responses:
+        '200': { description: Done }
+        '401': { $ref: '#/components/responses/Error' }
+  /auth/google/token:
+    post:
+      tags: [auth]
+      summary: Sign in from the app with Google Sign-In
+      description: The app sends the id_token from Google. Linked to an existing account only when Google says the email is verified; an account whose email was never confirmed loses its password, tokens and sessions first. The web signs in with Google at GET /auth/google/redirect (outside /api/v1).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_token, device_name]
+              properties:
+                id_token: { type: string }
+                device_name: { type: string, maxLength: 100, description: The device name }
+      responses:
+        '200': { $ref: '#/components/responses/AccountToken' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      summary: Email a link to choose a new password
+      description: The same answer whether or not the email has an account.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '202': { description: Sent if the email has an account }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      summary: Choose a new password with the emailed token
+      description: Signs the account out everywhere and confirms its email.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password]
+              properties:
+                token: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
+      responses:
+        '200': { description: Done }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: The signed-in account
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+    patch:
+      tags: [auth]
+      summary: Change the name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 40 }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [auth]
+      summary: Delete the account
+      description: Asks for the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password: { type: string }
+                confirm: { type: string, description: The email of an account without a password }
+      responses:
+        '200': { description: Done }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /auth/password:
+    put:
+      tags: [auth]
+      summary: Change the password, or set the first one for a Google-only account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                current_password: { type: string, description: Required when the account has a password }
+                password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /auth/email/resend:
+    post:
+      tags: [auth]
+      summary: Send the confirmation email again (3 a minute)
+      responses:
+        '202': { description: Done }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /health:
     get:
       tags: [system]
@@ -320,7 +527,29 @@ components:
       in: header
       schema: { type: string }
       description: A live match's secret seat (from POST /sim/rooms, /join, or the seats of a live POST /sim/matches). It names the side this device manages.
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
+    token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    Account:
+      description: The account
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user: { $ref: '#/components/schemas/Account' }
+    AccountToken:
+      description: The account, and for the app its token
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [user]
+            properties:
+              user: { $ref: '#/components/schemas/Account' }
+              token: { type: string, description: Only when device_name was sent (the app) }
+              expires_at: { type: string, format: date-time }
     Error:
       description: Any error, in one shape with an Arabic message
       content:
@@ -332,6 +561,18 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Account:
+      type: object
+      required: [id, name, email, email_verified, role, has_password, google]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        email_verified: { type: boolean }
+        role: { type: string, enum: [user, admin] }
+        has_password: { type: boolean, description: False for an account made with Google only }
+        google: { type: boolean, description: Linked to a Google account }
+        created_at: { type: string, format: date-time }
     Error:
       type: object
       required: [message, code]

@@ -1,23 +1,40 @@
 // The API client, typed from docs/api/openapi.yaml (`npm run api` regenerates schema.d.ts;
 // CI fails when it is out of date). Every error comes back in one shape, in Arabic (ApiErrors.php).
+// The web signs in with Sanctum's session cookie: every request carries the XSRF token.
 import createClient, { type Middleware } from 'openapi-fetch'
 import type { components, paths } from './schema'
 
 export type ApiErrorBody = components['schemas']['Error']
+export type Account = components['schemas']['Account']
 
 export class ApiError extends Error {
   readonly status: number
   readonly code: string
   readonly errors: Record<string, string[]>
-  constructor(status: number, body: Partial<ApiErrorBody>) {
+  constructor(status: number, body: { message?: string; code?: string; errors?: Record<string, string[]> }) {
     super(body.message ?? 'حدث خطأ غير متوقع، حاول مجدداً.')
     this.status = status
     this.code = body.code ?? 'server_error'
     this.errors = body.errors ?? {}
   }
+
+  /** The first message for a field, for under its input. */
+  field(name: string): string {
+    return this.errors[name]?.[0] ?? ''
+  }
 }
 
-const errors: Middleware = {
+function cookie(name: string): string {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'))
+  return m ? decodeURIComponent(m[1]) : ''
+}
+
+const session: Middleware = {
+  onRequest({ request }) {
+    const xsrf = cookie('XSRF-TOKEN')
+    if (xsrf) request.headers.set('X-XSRF-TOKEN', xsrf)
+    return request
+  },
   async onResponse({ response }) {
     if (response.ok) return response
     const body = await response.clone().json().catch(() => ({}))
@@ -25,10 +42,17 @@ const errors: Middleware = {
   },
 }
 
-export const api = createClient<paths>({ baseUrl: '/api/v1', headers: { Accept: 'application/json' } })
-api.use(errors)
+export const api = createClient<paths>({ baseUrl: '/api/v1', headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+api.use(session)
+
+/** Sanctum's XSRF cookie, once, before the first request that changes something. */
+let csrf: Promise<unknown> | null = null
+export function ensureCsrf(): Promise<unknown> {
+  if (!cookie('XSRF-TOKEN')) csrf = null
+  return (csrf ??= fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' }))
+}
 
 /** For a network failure (no answer at all), the same Arabic error the screens show. */
 export function asApiError(e: unknown): ApiError {
-  return e instanceof ApiError ? e : new ApiError(0, { message: 'تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.', code: 'offline' as never })
+  return e instanceof ApiError ? e : new ApiError(0, { message: 'تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.', code: 'offline' })
 }
