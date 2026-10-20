@@ -53,7 +53,7 @@ def phase(n):
 # Owner's decision (2026-10-20): the photo simulator sprints (3 to 8) wait for wave 1's images and voice;
 # the code goes on with the other sprints meanwhile, and takes up 3 to 8 as soon as the art is ready.
 # DONE: sprints whose code is finished, with the day it was: they take no more days.
-DONE = {2: dt.date(2026, 10, 20), 9: dt.date(2026, 10, 20), 10: dt.date(2026, 10, 20), 11: dt.date(2026, 10, 20)}
+DONE = {2: dt.date(2026, 10, 20), 9: dt.date(2026, 10, 20), 10: dt.date(2026, 10, 20), 11: dt.date(2026, 10, 20), 12: dt.date(2026, 10, 20)}
 SIM = [3, 4, 5, 6, 7, 8]
 READY = next(b for w, n, a, b in track if w == 'صوت 1')   # wave 1 complete, images and voice
 rows, summary, day = [], [], START + dt.timedelta(days=1) if DONE else START
@@ -89,7 +89,7 @@ def days(k):  # Arabic counted noun: 100 يوم، 104 أيام، 145 يوماً
 o = []; W = o.append
 W('# Legends: الخطة كاملة بالأيام\n')
 W('> يولّده `tools/plan/schedule.py` من `docs/SPRINTS.md`. **5 ساعات عمل كل يوم**، بلا أيام راحة. مدة كل سبرنت تقدير: سبرنتات الصور بعدد الصور (25 صورة معتمدة يومياً)، وسبرنتات الكود بحجم مهامها (4 إلى 8 أيام). يُعاد توليده في نهاية كل سبرنت بتاريخ بدء التالي، فتتحرك التواريخ بالواقع.\n')
-W(f'**البداية:** {START.isoformat()} (السبرنت 1 منجز، وكود 2 و9 و10 و11 منجز {START.isoformat()}). **النهاية:** {summary[-1][5].isoformat()}. **المجموع:** {len(rows)} {days(len(rows))} عمل.\n')
+W(f'**البداية:** {START.isoformat()} (السبرنت 1 منجز، وكود 2 و9 و10 و11 و12 منجز {START.isoformat()}). **النهاية:** {summary[-1][5].isoformat()}. **المجموع:** {len(rows)} {days(len(rows))} عمل.\n')
 W('## متى تخرج كل نسخة\n')
 W(f'**المشروع كاملاً: {len(rows)} {days(len(rows))} عمل** بواقع 5 ساعات يومياً، من {ar(START)} إلى **{ar(summary[-1][5])}**. وبيوم راحة في الأسبوع يصير قرابة {round(len(rows) * 7 / 6)} يوماً.\n')
 W('| النسخة | ماذا فيها | بعد السبرنت | التاريخ | بعد |'); W('|---|---|---|---|---|')
