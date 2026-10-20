@@ -230,6 +230,8 @@ def build():
         if CYCLE.search(seq) and (char, seq) in seq_height and abs(seq_height[(char, seq)] / med - 1) > 0.03:
             r = seq_height[(char, seq)] / med
             rgba, kind = key(im.resize((round(im.size[0] * r), round(im.size[1] * r)), Image.LANCZOS))
+            if r > 1.1:                                    # enlarging widens the green fringe: trim the edge back
+                rgba = rgba.copy(); rgba[..., 3] = ndimage.grey_erosion(rgba[..., 3], size=(1 + round(r), 1 + round(r)))
             boxes, owners = figures(rgba, n, owned=True)
         seq_height.setdefault((char, seq), med)
         ground = max(y1 for x0, y0, x1, y1 in boxes)           # every board has its own ground line: its lowest foot
