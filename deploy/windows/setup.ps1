@@ -64,6 +64,7 @@ if (-not (Test-Path '.env')) {
     Copy-Item '.env.example' '.env'
     (Get-Content '.env') -replace '^APP_ENV=.*', 'APP_ENV=production' -replace '^APP_DEBUG=.*', 'APP_DEBUG=false' | Set-Content '.env'
     Add-Content '.env' 'SIMULATOR_ENABLED=true'
+    Add-Content '.env' 'GAME_NIGHTLY_BALANCE=true'
     php artisan key:generate --force
 }
 php artisan migrate --force

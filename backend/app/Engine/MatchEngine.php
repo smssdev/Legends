@@ -185,8 +185,9 @@ final class MatchEngine
 
         $midDiff = $this->ability('home', 'build', Ability::LINES['passing']) - $this->ability('away', 'build', Ability::LINES['passing']);
         $share = 5000 + intdiv($midDiff * (int) $this->eng['share_slope_bp'], 100)
-            + ($home['tactics']['style'] - $away['tactics']['style']) * 12
-            + $this->gameState('home') - $this->gameState('away');
+            + ($home['tactics']['style'] - $away['tactics']['style']) * (int) $this->eng['style_share_bp']
+            + $this->gameState('home') - $this->gameState('away')
+            + ($this->s['venue'] === 'home' ? (int) $this->eng['home_share_bp'] : 0);
         $share = max(2000, min(8000, $share));
 
         $roll = $this->rng->int(10000);
@@ -266,7 +267,7 @@ final class MatchEngine
         $this->stat($atk, 'attacks');
         $this->danger = $atk === 'home' ? 1 : -1;
         $tempoLoss = max(0, $ta['tempo'] - 50) * (int) $this->eng['tempo_precision_cp'];
-        $tackleBonus = [0, 50, 100, 200][$td['tackling']];
+        $tackleBonus = (int) $this->eng['tackling_bonus_cp'][$td['tackling']];
 
         if (! $counter) {
             // Build-up against the press.
@@ -313,7 +314,9 @@ final class MatchEngine
         $marker = $this->pickPlayer($def, ['def' => 3, 'mid' => 1], 'def');
         $createBonus = 0;
 
-        if (! $td['trap'] && $this->rng->chance((int) ($this->eng['offside_bp'][$plan] ?? 300))) {
+        // The trap replaces the ordinary offsides only against balls in behind (long balls and counters).
+        $trapped = $td['trap'] && in_array($plan, ['long', 'counter'], true);
+        if (! $trapped && $this->rng->chance((int) ($this->eng['offside_bp'][$plan] ?? 300))) {
             $phases[] = ['n' => 'offside', 'ok' => false];
             $this->stat($atk, 'offsides');
             $this->attackEvent($atk, $plan, $counter, $phases, 'offside', ['carrier' => $carrier, 'receiver' => $receiver, 'defender' => $marker]);
@@ -321,7 +324,7 @@ final class MatchEngine
             return;
         }
 
-        if ($td['trap'] && in_array($plan, ['long', 'counter'], true)) {
+        if ($trapped) {
             $paceGap = $this->lineAttr($def, 'def', 'pac') - $this->lineAttr($atk, 'att', 'pac');
             $trapP = (int) $this->eng['trap_base_bp'] + $paceGap * 40;
             if ($this->rng->chance(max(1500, min(6000, $trapP)))) {
@@ -453,7 +456,12 @@ final class MatchEngine
         $this->stat($def, 'fouls');
         $this->rate($def, $fouler, -5, 'fouls');
         $penalty = $where === 'create' && $this->rng->chance((int) $this->eng['penalty_share_bp']);
-        $this->attackEvent($atk, $plan, $counter, $phases, $penalty ? 'penalty' : 'foul', ['carrier' => $victim, 'defender' => $fouler]);
+        // A foul at the box always gives a free kick in shooting range, further out only sometimes;
+        // otherwise the attackers take it quickly and the attack goes on, so fouling never stops an attack for free.
+        $setPiece = $penalty || $where === 'create' || ($where === 'progress' && $this->rng->chance((int) $this->eng['progress_free_kick_bp']));
+        if ($setPiece) {
+            $this->attackEvent($atk, $plan, $counter, $phases, $penalty ? 'penalty' : 'foul', ['carrier' => $victim, 'defender' => $fouler]);
+        }
         $this->event('foul', $def, ['player' => $fouler, 'victim' => $victim, 'penalty' => $penalty]);
 
         $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
@@ -463,17 +471,23 @@ final class MatchEngine
             $this->card($def, $fouler, 'yellow');
         }
 
-        if ($this->rng->chance((int) $this->eng['injury_bp'][$level])) {
+        $injured = $this->rng->chance((int) $this->eng['injury_bp'][$level]);
+        if ($injured) {
             $this->injure($atk, $victim);
         }
 
-        if ($penalty) {
-            $taker = $this->firstOn($atk, $this->s['teams'][$atk]['takers']['penalty'] ?? 0) ?? $victim;
-            $this->setPiece($atk, $taker, 'penalty');
-        } elseif ($where === 'progress' && $this->rng->chance(2500)) {
-            $taker = $this->firstOn($atk, $this->s['teams'][$atk]['takers']['free_kick'] ?? 0) ?? $victim;
-            $this->setPiece($atk, $taker, 'free_kick');
+        if (! $setPiece) {
+            if (! $injured) {
+                return false;
+            }
+            // Play stops for the injured player: the attack ends here.
+            $this->attackEvent($atk, $plan, $counter, $phases, 'foul', ['carrier' => $victim, 'defender' => $fouler]);
+
+            return true;
         }
+        $kind = $penalty ? 'penalty' : 'free_kick';
+        $taker = $this->firstOn($atk, $this->s['teams'][$atk]['takers'][$kind] ?? 0) ?? $victim;
+        $this->setPiece($atk, $taker, $kind);
 
         return true;
     }
@@ -494,7 +508,7 @@ final class MatchEngine
         $this->event('foul', $side, ['player' => $fouler, 'victim' => $victim, 'penalty' => false]);
         $level = $this->s['teams'][$side]['tactics']['tackling'];
         $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
-        if ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref * 6, 100000))) {
+        if ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref * (int) $this->eng['midfield_card_pct'], 1000000))) {
             $this->card($side, $fouler, 'yellow');
         }
     }
@@ -621,7 +635,7 @@ final class MatchEngine
         }
         $p = &$this->s['teams'][$side]['players'][$i];
         // A booked player plays carefully and referees think twice about a second yellow.
-        if ($color === 'yellow' && $p['yc'] === 1 && $this->rng->chance(6500)) {
+        if ($color === 'yellow' && $p['yc'] === 1 && $this->rng->chance((int) $this->eng['second_yellow_spare_bp'])) {
             return;
         }
         if ($color === 'yellow') {
