@@ -11,7 +11,7 @@ START = dt.date(2026, 10, 20)        # first working day of sprint 2
 S = open(os.path.join(ROOT, 'docs', 'SPRINTS.md')).read()
 
 # working days per sprint: images at 25 a day; code sprints by the size of their tasks
-LEN = {2: 10, 3: 5, 4: 4, 5: 4, 6: 4, 7: 4, 8: 5,
+LEN = {2: 1, 3: 5, 4: 4, 5: 4, 6: 4, 7: 4, 8: 5,
        40: 14,                                     # the trial season is played in real days
        41: 7, 42: 5, 43: 6, 44: 8, 45: 5,          # Flutter rebuilds every screen
        46: 4, 47: 4, 48: 4, 49: 3, 50: 5, 51: 5, 52: 4}  # phase Z only builds images already made in the image track
@@ -41,16 +41,22 @@ for n in range(46, 53):
     sprints[n] = (f'الصور الكاملة: {VERSIONS[n][1]}', [('W', f'بناء صور الدفعة ({IMAGES[n]}) وصوتها في اللعبة'), ('X', 'مباراة كاملة للتجربة ونشر النسخة')], [3, 1])
 
 # the image track: the images are made in parallel with the code, 25 a day, from day 1
-WAVES = [(1, 246), (2, 279), (3, 364), (4, 348), (5, 250), ('6 و7', 322), ('8 إلى 11', 213), ('12 إلى 16', 94)]
+# wave 1's Arabic voice (98 clips) comes right after its images: the simulator sprints need both
+WAVES = [(1, 246), ('صوت 1', 'audio'), (2, 279), (3, 364), (4, 348), (5, 250), ('6 و7', 322), ('8 إلى 11', 213), ('12 إلى 16', 94)]
 track, d0 = [], START
 for w, n in WAVES:
-    k = -(-n // 25); track.append((w, n, d0, d0 + dt.timedelta(days=k - 1))); d0 += dt.timedelta(days=k)
+    k = 3 if n == 'audio' else -(-n // 25); track.append((w, n, d0, d0 + dt.timedelta(days=k - 1))); d0 += dt.timedelta(days=k)
 
 def phase(n):
     return next(p for a, b, p in [(1, 8, '0. المحاكي'), (9, 17, 'أ. الأساس'), (18, 21, 'ب. المباراة المباشرة'), (22, 31, 'ج. مزايا OSM'),
                                   (32, 36, 'د. دورة الحياة'), (37, 40, 'هـ. إطلاق الويب'), (41, 45, 'و. Flutter'), (46, 52, 'ز. الصور الكاملة')] if a <= n <= b)
+# Owner's decision (2026-10-20): the photo simulator sprints (3 to 8) wait for wave 1's images and voice;
+# the code goes on with the foundation (9 to 11) meanwhile, then comes back to them.
+ORDER = [2, 9, 10, 11, 3, 4, 5, 6, 7, 8] + list(range(12, 53))
+READY = next(b for w, n, a, b in track if w == 'صوت 1')   # wave 1 complete, images and voice
 rows, summary, day = [], [], START
-for n in range(2, 53):
+for n in ORDER:
+    if n == 3 and day <= READY: day = READY + dt.timedelta(days=1)   # never before its art
     title, tasks, sizes = sprints[n]
     d = LEN.get(n) or max(4, min(8, round(sum(sizes) / 110)))
     first = day
@@ -59,7 +65,7 @@ for n in range(2, 53):
         edges.append((acc / tot * d, (acc + z) / tot * d, c, t)); acc += z
     for i in range(d):
         today = [f'{c} {t}' for a, b, c, t in edges if a < i + 1 and b > i]
-        if n == 2: today = [f'صور اليوم {i + 1} (25، في `sprint-02-days.md`)'] + (['W14 أداة القص والأطلس'] if i < 6 else ['W14b صفحة المعاينة'])
+        if n == 2: today = ['W14 أداة الصور', 'W14b صفحة المعاينة (منجزان)']
         if i == d - 1: today.append('تعريف الانتهاء والدمج')
         rows.append((day, n, ' · '.join(today)))
         day += dt.timedelta(days=1)
@@ -83,16 +89,16 @@ for n, (v, what) in VERSIONS.items():
     b = '**' if v in BIG else ''
     W(f'| **{v}** | {b}{what}{b} | {n} | {b}{ar(end)}{b} | {k} {days(k)} |')
 W('\n### كيف حُسبت المدد\n')
-W('- **الصور:** 25 صورة معتمدة يومياً في مسارها الموازي. السبرنت 2 ينتظر الدفعة 1 لأن المحاكاة تُبنى بها، وسبرنتات المرحلة ز للبناء فقط لأن صورها جاهزة قبلها.')
+W('- **الصور:** 25 صورة معتمدة يومياً في مسارها الموازي (حمزة)، والصوت العربي للدفعة 1 بعد صورها مباشرة. سبرنتات المحاكاة المصورة (3 إلى 8) تنتظر الدفعة 1 صوراً وصوتاً، فالكود يكمل الأساس (9 إلى 11) قبلها ثم يرجع لها. وسبرنتات المرحلة ز للبناء فقط لأن صورها جاهزة قبلها.')
 W('- **سبرنتات الكود:** من 4 إلى 8 أيام حسب حجم مهامها. Claude يكتب الكود، وصاحب المشروع يراجع ويجرّب ويعتمد.')
 W('- **الموسم التجريبي قبل v1.0:** 14 يوماً، لأن المباريات تُلعب بأيام حقيقية مع الأصدقاء.')
 W('- **سبرنتات Flutter:** أطول، لأن كل شاشة تُبنى من جديد في التطبيق.')
 W('- **تقديرات:** يُعاد توليد الملف في نهاية كل سبرنت بالتاريخ الفعلي. وأكبر عامل يغيّرها نسبة إعادة الصور.')
 W('\n## مسار الصور (بالتوازي مع الكود)\n')
 W('**قرار صاحب المشروع (2026-10-20):** صانع الصور (حمزة) يصنع كل الدفعات بلا توقف من اليوم الأول، 25 صورة معتمدة يومياً، والصوت العربي معها، بالتوازي مع سبرنتات الكود. فتكون كل الصور جاهزة قبل المرحلة ز، وسبرنتاتها للبناء والتجربة والنشر فقط.\n')
-W('| الدفعة | الصور | من | إلى | تُبنى في |'); W('|---|---|---|---|---|')
-BUILT = {1: '2 و3 (v0.1)', 2: '46 (v1.2)', 3: '47 (v1.3)', 4: '48 (v1.4)', 5: '49 (v1.5)', '6 و7': '50 (v1.6)', '8 إلى 11': '51 (v1.7)', '12 إلى 16': '52 (v1.8)'}
-for w, n, a, b in track: W(f'| {w} | {n} | {ar(a)} | {ar(b)} | السبرنت {BUILT[w]} |')
+W('| الدفعة | العدد | من | إلى | تُبنى في |'); W('|---|---|---|---|---|')
+BUILT = {1: '3 إلى 8 (v0.1)', 'صوت 1': '3 و7 (v0.1)', 2: '46 (v1.2)', 3: '47 (v1.3)', 4: '48 (v1.4)', 5: '49 (v1.5)', '6 و7': '50 (v1.6)', '8 إلى 11': '51 (v1.7)', '12 إلى 16': '52 (v1.8)'}
+for w, n, a, b in track: W(f'| {w} | {"98 مقطعاً" if n == "audio" else n} | {ar(a)} | {ar(b)} | السبرنت {BUILT[w]} |')
 W(f'\n**كل الصور جاهزة:** {ar(track[-1][3])}.')
 W('\n## السبرنتات\n')
 W('| السبرنت | المرحلة | العنوان | الأيام | من | إلى |'); W('|---|---|---|---|---|---|')
