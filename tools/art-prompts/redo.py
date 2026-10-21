@@ -313,6 +313,7 @@ REDONE_OK = {
     'striker/run/sprint-02.png': '2026-10-20',       # figure 3 redrawn in the same chat
     'striker/run/sprint-03.png': '2026-10-20',       # made in ChatGPT (Gemini at its limit); poses 8-9 corrected in the same chat
     'striker/ball/dribble-01.png': '2026-10-21',    # 3:2 at run scale (Gemini Pro); a floating hand removed in the same chat
+    'striker/ball/dribble-02.png': '2026-10-21',    # 3:2 at run scale (Gemini Pro); poses of the old square board after one correction
 }
 
 
