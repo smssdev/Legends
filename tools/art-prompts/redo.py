@@ -315,6 +315,7 @@ REDONE_OK = {
     'striker/ball/dribble-01.png': '2026-10-21',    # 3:2 at run scale (Gemini Pro); a floating hand removed in the same chat
     'striker/ball/dribble-02.png': '2026-10-21',    # 3:2 at run scale (Gemini Pro); poses of the old square board after one correction
     'striker/ball/dribble-03.png': '2026-10-21',    # Gemini (free account); 2 distinct frames, completes the 8-frame cycle at run scale
+    'striker/ball/shoot-01.png': '2026-10-21',      # Gemini (free account); three distinct approach strides, arms open in frame 3
 }
 
 
