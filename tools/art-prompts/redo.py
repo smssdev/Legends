@@ -317,6 +317,7 @@ REDONE_OK = {
     'striker/ball/dribble-03.png': '2026-10-21',    # Gemini (free account); 2 distinct frames, completes the 8-frame cycle at run scale
     'striker/ball/shoot-01.png': '2026-10-21',      # Gemini (free account); three distinct approach strides, arms open in frame 3
     'striker/ball/header-01.png': '2026-10-21',     # Gemini (free account), approved poses of the old board without floodlights; figures enlarged 16% evenly to run scale
+    'striker/ball/header-02.png': '2026-10-21',     # Gemini (free account), approved poses of the old board without floodlights, at header-01 scale
 }
 
 
