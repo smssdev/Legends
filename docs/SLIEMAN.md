@@ -11,15 +11,15 @@
 
 **الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.
 
-1. **⏳ 1 صورة مرفوعة تنتظر المراجعة:** قل لـ Claude «راجع» أول الجلسة.
-2. **🔁 أعد 15 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
-3. **⬜ ثم الجديدة بالترتيب (212 باقية في الدفعة 1):** من [`sprint-02-days.md`](sprints/sprint-02-days.md). أول 12 في الجدول تحت.
+1. **🔁 أعد 16 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
+2. **⬜ ثم الجديدة بالترتيب (212 باقية في الدفعة 1):** من [`sprint-02-days.md`](sprints/sprint-02-days.md). أول 12 في الجدول تحت.
 
 **صور اليوم (12):**
 
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
 | 🔁 | 45.19 | `art/raw/striker/run/sprint-04.png` | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 🔁 | 48.5 | `art/raw/striker/ball/shoot-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.7 | `art/raw/striker/ball/pass-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.8 | `art/raw/striker/ball/pass-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.10 | `art/raw/striker/ball/header-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
@@ -30,7 +30,6 @@
 | 🔁 | 48.15 | `art/raw/striker/ball/chip-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.17 | `art/raw/striker/ball/cross-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.18 | `art/raw/striker/ball/control-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.19 | `art/raw/striker/ball/control-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 
 ### 2. الكود (3 ساعات): Sprint 13، الدوريات والانضمام
 
@@ -101,7 +100,7 @@
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تُصنع |
 |---|---|---|---|---|---|
-| 1 | 268 | 40 | 1 | 15 | 212 |
+| 1 | 268 | 40 | 0 | 16 | 212 |
 | 2 | 279 | 2 | 0 | 20 | 257 |
 | 3 | 364 | 0 | 0 | 0 | 364 |
 | 4 | 348 | 0 | 0 | 0 | 348 |
@@ -117,7 +116,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **2138** | **42** | **1** | **35** | **2060** |
+| **الكل** | **2138** | **42** | **0** | **36** | **2060** |
 
 ### الصوت (حمزة)
 
