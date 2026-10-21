@@ -11,7 +11,7 @@
 
 **الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.
 
-1. **🔁 أعد 21 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
+1. **🔁 أعد 20 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
 2. **⬜ ثم الجديدة بالترتيب (212 باقية في الدفعة 1):** من [`sprint-02-days.md`](sprints/sprint-02-days.md). أول 12 في الجدول تحت.
 
 **صور اليوم (12):**
@@ -19,7 +19,6 @@
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
 | 🔁 | 45.19 | `art/raw/striker/run/sprint-04.png` | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
-| 🔁 | 48.1 | `art/raw/striker/ball/dribble-01.png` | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) |
 | 🔁 | 48.2 | `art/raw/striker/ball/dribble-02.png` | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) |
 | 🔁 | 48.3 | `art/raw/striker/ball/dribble-03.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.4 | `art/raw/striker/ball/shoot-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
@@ -30,6 +29,7 @@
 | 🔁 | 48.10 | `art/raw/striker/ball/header-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.11 | `art/raw/striker/ball/header-03.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.12 | `art/raw/striker/ball/volley-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.13 | `art/raw/striker/ball/volley-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 
 ### 2. الكود (3 ساعات): Sprint 13، الدوريات والانضمام
 
@@ -100,7 +100,7 @@
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تُصنع |
 |---|---|---|---|---|---|
-| 1 | 268 | 35 | 0 | 21 | 212 |
+| 1 | 268 | 36 | 0 | 20 | 212 |
 | 2 | 279 | 2 | 0 | 20 | 257 |
 | 3 | 364 | 0 | 0 | 0 | 364 |
 | 4 | 348 | 0 | 0 | 0 | 348 |
@@ -116,7 +116,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **2138** | **37** | **0** | **41** | **2060** |
+| **الكل** | **2138** | **38** | **0** | **40** | **2060** |
 
 ### الصوت (حمزة)
 
