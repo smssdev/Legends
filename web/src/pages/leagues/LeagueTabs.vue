@@ -1,0 +1,148 @@
+<script setup lang="ts">
+// The league's three tabs (Sprint 15 W1), after the draft MobileLeague: the table (with "played" and
+// "rests" when the count is odd), the calendar in the device's own time, and the cup's bracket.
+import { computed, onMounted, ref } from 'vue'
+import { api, asApiError } from '../../api/client'
+import type { components } from '../../api/schema'
+import ClubCrest from '../../components/ui/ClubCrest.vue'
+import UiChip from '../../components/ui/UiChip.vue'
+
+type Fixture = components['schemas']['Fixture']
+type Season = components['schemas']['SeasonCalendar']
+type Row = { position: number; id: number; name: string; code: string; crest_url: string; coach?: string | null; played: number; goal_difference: number; points: number; rests_next: boolean }
+type Stage = { stage: string; scheduled_at: string; ties: { id: number; slot: number; home?: { name: string; code: string; crest_url: string } | null; away?: { name: string; code: string; crest_url: string } | null; next?: { slot: number; side: string } | null }[] }
+
+const props = defineProps<{ leagueId: number; myClubId?: number | null; teamCount: number }>()
+const tab = ref<'table' | 'fixtures' | 'cup'>('table')
+const table = ref<Row[]>([])
+const fixtures = ref<Fixture[]>([])
+const stages = ref<Stage[]>([])
+const season = ref<Season | null>(null)
+const error = ref('')
+
+const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
+
+onMounted(async () => {
+  const path = { league: props.leagueId }
+  try {
+    const [t, f, c] = await Promise.all([
+      api.GET('/leagues/{league}/standings', { params: { path } }),
+      api.GET('/leagues/{league}/fixtures', { params: { path } }),
+      api.GET('/leagues/{league}/cup', { params: { path } }),
+    ])
+    table.value = t.data!.table as Row[]
+    season.value = t.data!.season
+    fixtures.value = f.data!.fixtures
+    stages.value = c.data!.stages as Stage[]
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+})
+
+const day = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long' })
+const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' })
+const dayKey = (iso: string) => new Date(iso).toDateString()
+
+/** The calendar by the device's own days; the winter day shows as a day with no matches. */
+const days = computed(() => {
+  const out: { key: string; label: string; items: Fixture[] }[] = []
+  for (const f of fixtures.value) {
+    const key = dayKey(f.scheduled_at)
+    if (out[out.length - 1]?.key !== key) out.push({ key, label: day.format(new Date(f.scheduled_at)), items: [] })
+    out[out.length - 1].items.push(f)
+  }
+  return out
+})
+const winter = computed(() => (season.value?.winter_break_on ? day.format(new Date(season.value.winter_break_on + 'T12:00:00')) : ''))
+const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
+</script>
+
+<template>
+  <section class="flex flex-col gap-3 rounded-xl bg-surface p-3 md:p-5" aria-label="الدوري">
+    <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-sunk p-1" role="tablist">
+      <button
+        v-for="(label, key) in { table: 'الترتيب', fixtures: 'المباريات', cup: 'الكأس' }"
+        :key="key"
+        type="button"
+        role="tab"
+        class="h-12 rounded-lg font-display text-lg font-extrabold"
+        :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'"
+        :aria-selected="tab === key"
+        @click="tab = key"
+      >{{ label }}</button>
+    </div>
+    <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+
+    <template v-if="tab === 'table'">
+      <p v-if="season" class="text-sm text-text-muted">
+        الجولة <span class="font-numbers">{{ season.rounds_played }}</span> من <span class="font-numbers">{{ season.rounds }}</span> · منطقة القفل من الجولة
+        <span class="font-numbers">{{ season.lock_from_round }}</span>
+      </p>
+      <table class="w-full text-sm">
+        <thead class="text-text-muted">
+          <tr>
+            <th class="w-8 py-2 text-start font-normal">#</th>
+            <th class="py-2 text-start font-normal">النادي</th>
+            <th class="w-10 py-2 font-normal">لعب</th>
+            <th class="w-10 py-2 font-normal">+/-</th>
+            <th class="w-12 py-2 font-normal">نقاط</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="r in table" :key="r.id" :class="r.id === myClubId ? 'bg-surface-raised' : ''">
+            <td class="py-2 font-numbers text-lg text-text-soft">{{ r.position }}</td>
+            <td class="py-2">
+              <span class="flex items-center gap-2">
+                <ClubCrest :url="r.crest_url" :code="r.code" :size="28" />
+                <span class="truncate font-bold">{{ r.name }}</span>
+                <span class="truncate text-xs text-text-muted">{{ r.id === myClubId ? 'أنت' : r.coach }}</span>
+                <UiChip v-if="r.rests_next" tone="neutral">استراحة</UiChip>
+              </span>
+            </td>
+            <td class="text-center font-numbers text-base">{{ r.played }}</td>
+            <td class="text-center font-numbers text-base" dir="ltr">{{ r.goal_difference > 0 ? '+' : '' }}{{ r.goal_difference }}</td>
+            <td class="text-center font-numbers text-lg font-bold text-gold">{{ r.points }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+
+    <template v-else-if="tab === 'fixtures'">
+      <p class="text-xs text-text-muted">بتوقيت جهازك ({{ zone }}).<template v-if="winter"> يوم الراحة الشتوي بلا مباريات: {{ winter }}.</template></p>
+      <div v-for="d in days" :key="d.key" class="flex flex-col gap-1">
+        <h3 class="mt-2 font-bold text-text-soft">{{ d.label }}</h3>
+        <div v-for="f in d.items" :key="f.id" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm" :class="(f.home?.id === myClubId || f.away?.id === myClubId) && myClubId ? 'border border-gold/40' : ''">
+          <span class="w-12 shrink-0 font-numbers text-base" dir="ltr">{{ time.format(new Date(f.scheduled_at)) }}</span>
+          <UiChip :tone="f.competition === 'cup' ? 'gold' : 'neutral'">
+            {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : `الجولة ${f.round}` }}
+          </UiChip>
+          <span v-if="f.is_bye" class="text-text-muted">استراحة: {{ f.home?.name }}</span>
+          <span v-else class="flex min-w-0 flex-1 items-center justify-center gap-2">
+            <span class="flex-1 text-end">{{ f.home?.name ?? 'يتحدد' }}</span>
+            <span class="font-numbers text-text-muted">{{ f.status === 'finished' ? `${f.home_goals} - ${f.away_goals}` : '-' }}</span>
+            <span class="flex-1">{{ f.away?.name ?? 'يتحدد' }}</span>
+          </span>
+          <UiChip v-if="f.competition === 'league' && season && f.round >= season.lock_from_round" tone="warning">قفل</UiChip>
+        </div>
+      </div>
+    </template>
+
+    <template v-else>
+      <p class="text-xs text-text-muted">خروج المغلوب من مباراة واحدة. الأقوى معفون من الدور التمهيدي، والقرعة عشوائية.</p>
+      <div class="flex gap-3 overflow-x-auto pb-2">
+        <div v-for="s in stages" :key="s.stage" class="flex min-w-48 flex-col gap-2">
+          <h3 class="font-display font-extrabold text-gold">{{ STAGES[s.stage] }}</h3>
+          <p class="text-xs text-text-muted">{{ day.format(new Date(s.scheduled_at)) }} · <span dir="ltr">{{ time.format(new Date(s.scheduled_at)) }}</span></p>
+          <div class="flex flex-1 flex-col justify-around gap-2">
+            <div v-for="t in s.ties" :key="t.id" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-2 text-sm">
+              <span v-for="side in ['home', 'away'] as const" :key="side" class="flex items-center gap-2">
+                <ClubCrest v-if="t[side]" :url="t[side]!.crest_url" :code="t[side]!.code" :size="22" />
+                <span :class="t[side] ? 'font-bold' : 'text-text-muted'" class="truncate">{{ t[side]?.name ?? 'الفائز من الدور السابق' }}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </section>
+</template>

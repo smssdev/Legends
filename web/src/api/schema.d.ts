@@ -1273,6 +1273,179 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/fixtures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The season's calendar
+         * @description Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (docs/PLAN.md 2.4).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The calendar */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            season: components["schemas"]["SeasonCalendar"];
+                            fixtures: components["schemas"]["Fixture"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/standings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The league table */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The table, first place first */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            season: components["schemas"]["SeasonCalendar"];
+                            next_round?: number | null;
+                            table: (components["schemas"]["FixtureClub"] & {
+                                position: number;
+                                played: number;
+                                won: number;
+                                drawn: number;
+                                lost: number;
+                                goals_for: number;
+                                goals_against: number;
+                                goal_difference: number;
+                                points: number;
+                                /** @description Rests in the next round (odd team count) */
+                                rests_next: boolean;
+                            })[];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/cup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The cup's bracket
+         * @description Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (docs/PLAN.md 2.5).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The bracket */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            stages: {
+                                /** @enum {string} */
+                                stage: "preliminary" | "r16" | "qf" | "sf" | "final";
+                                /** Format: date-time */
+                                scheduled_at: string;
+                                ties: {
+                                    id: number;
+                                    slot: number;
+                                    home?: components["schemas"]["FixtureClub"] | null;
+                                    away?: components["schemas"]["FixtureClub"] | null;
+                                    winner_id?: number | null;
+                                    status: string;
+                                    home_goals?: number | null;
+                                    away_goals?: number | null;
+                                    next?: {
+                                        slot: number;
+                                        /** @enum {string} */
+                                        side: "home" | "away";
+                                    } | null;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/clubs": {
         parameters: {
             query?: never;
@@ -2225,6 +2398,58 @@ export interface components {
                 lock_from_round?: number;
                 join_open?: boolean;
             } | null;
+        };
+        FixtureClub: {
+            id: number;
+            name: string;
+            code: string;
+            strength_cp: number;
+            crest_url: string;
+            coach?: string | null;
+        };
+        Fixture: {
+            id: number;
+            /** @enum {string} */
+            competition: "league" | "cup";
+            /** @description League: the round. Cup: the stage order */
+            round: number;
+            /** @enum {string|null} */
+            stage?: "preliminary" | "r16" | "qf" | "sf" | "final" | null;
+            /** Format: date-time */
+            scheduled_at: string;
+            home?: components["schemas"]["FixtureClub"] | null;
+            away?: components["schemas"]["FixtureClub"] | null;
+            /** @description A league rest (only home is set) */
+            is_bye: boolean;
+            status: string;
+            home_goals?: number | null;
+            away_goals?: number | null;
+        };
+        SeasonCalendar: {
+            number: number;
+            status: string;
+            rounds: number;
+            rounds_played: number;
+            lock_from_round: number;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at?: string | null;
+            /**
+             * Format: date
+             * @description The day with no matches (Cairo date)
+             */
+            winter_break_on?: string | null;
+            /** @description Season length ÷ 37 days, in basis points (docs/PLAN.md 2.10) */
+            timer_scale?: number | null;
+            windows: {
+                /** @enum {string} */
+                kind: "summer" | "winter";
+                /** Format: date-time */
+                opens_at: string;
+                /** Format: date-time */
+                closes_at: string;
+            }[];
         };
         JoinRequest: {
             id: number;

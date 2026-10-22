@@ -51,7 +51,7 @@ class LeagueFactory
                 'is_dev' => $settings['is_dev'] ?? false,
             ]);
             $rounds = self::rounds($settings['team_count']);
-            Season::create([
+            $season = Season::create([
                 'league_id' => $league->id, 'number' => 1, 'starts_at' => $settings['starts_at'],
                 'rounds' => $rounds, 'lock_from_round' => self::lockFromRound($rounds),
             ]);
@@ -76,6 +76,7 @@ class LeagueFactory
                     $chosen = $clubId;
                 }
             }
+            SeasonScheduler::build($league->fresh(), $season->fresh());
             Joining::claim($owner, $league->fresh(), $chosen);
 
             return $league->fresh();
