@@ -556,6 +556,101 @@ paths:
         '200': { $ref: '#/components/responses/JoinRequest' }
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/fixtures:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: The season's calendar
+      description: Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (docs/PLAN.md 2.4).
+      responses:
+        '200':
+          description: The calendar
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [season, fixtures]
+                properties:
+                  season: { $ref: '#/components/schemas/SeasonCalendar' }
+                  fixtures: { type: array, items: { $ref: '#/components/schemas/Fixture' } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/standings:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: The league table
+      responses:
+        '200':
+          description: The table, first place first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [season, table]
+                properties:
+                  season: { $ref: '#/components/schemas/SeasonCalendar' }
+                  next_round: { type: integer, nullable: true }
+                  table:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/FixtureClub'
+                        - type: object
+                          required: [position, played, won, drawn, lost, goals_for, goals_against, goal_difference, points, rests_next]
+                          properties:
+                            position: { type: integer }
+                            played: { type: integer }
+                            won: { type: integer }
+                            drawn: { type: integer }
+                            lost: { type: integer }
+                            goals_for: { type: integer }
+                            goals_against: { type: integer }
+                            goal_difference: { type: integer }
+                            points: { type: integer }
+                            rests_next: { type: boolean, description: Rests in the next round (odd team count) }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/cup:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: The cup's bracket
+      description: Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (docs/PLAN.md 2.5).
+      responses:
+        '200':
+          description: The bracket
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [stages]
+                properties:
+                  stages:
+                    type: array
+                    items:
+                      type: object
+                      required: [stage, scheduled_at, ties]
+                      properties:
+                        stage: { type: string, enum: [preliminary, r16, qf, sf, final] }
+                        scheduled_at: { type: string, format: date-time }
+                        ties:
+                          type: array
+                          items:
+                            type: object
+                            required: [id, slot, status]
+                            properties:
+                              id: { type: integer }
+                              slot: { type: integer }
+                              home: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }
+                              away: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }
+                              winner_id: { type: integer, nullable: true }
+                              status: { type: string }
+                              home_goals: { type: integer, nullable: true }
+                              away_goals: { type: integer, nullable: true }
+                              next: { type: object, nullable: true, required: [slot, side], properties: { slot: { type: integer }, side: { type: string, enum: [home, away] } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -1021,6 +1116,53 @@ components:
             rounds_played: { type: integer }
             lock_from_round: { type: integer, description: No new coach from this round on (the last 25%) }
             join_open: { type: boolean }
+    FixtureClub:
+      type: object
+      required: [id, name, code, strength_cp, crest_url]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        strength_cp: { type: integer }
+        crest_url: { type: string }
+        coach: { type: string, nullable: true }
+    Fixture:
+      type: object
+      required: [id, competition, round, scheduled_at, is_bye, status]
+      properties:
+        id: { type: integer }
+        competition: { type: string, enum: [league, cup] }
+        round: { type: integer, description: 'League: the round. Cup: the stage order' }
+        stage: { type: string, nullable: true, enum: [preliminary, r16, qf, sf, final, null] }
+        scheduled_at: { type: string, format: date-time }
+        home: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }
+        away: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }
+        is_bye: { type: boolean, description: A league rest (only home is set) }
+        status: { type: string }
+        home_goals: { type: integer, nullable: true }
+        away_goals: { type: integer, nullable: true }
+    SeasonCalendar:
+      type: object
+      required: [number, status, rounds, rounds_played, lock_from_round, starts_at, windows]
+      properties:
+        number: { type: integer }
+        status: { type: string }
+        rounds: { type: integer }
+        rounds_played: { type: integer }
+        lock_from_round: { type: integer }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time, nullable: true }
+        winter_break_on: { type: string, format: date, nullable: true, description: The day with no matches (Cairo date) }
+        timer_scale: { type: integer, nullable: true, description: 'Season length ÷ 37 days, in basis points (docs/PLAN.md 2.10)' }
+        windows:
+          type: array
+          items:
+            type: object
+            required: [kind, opens_at, closes_at]
+            properties:
+              kind: { type: string, enum: [summer, winter] }
+              opens_at: { type: string, format: date-time }
+              closes_at: { type: string, format: date-time }
     JoinRequest:
       type: object
       required: [id, league_id, status]

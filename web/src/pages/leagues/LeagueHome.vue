@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// One league (Sprint 13 W1, Sprint 14 W1): its card, the invite to share, my club, my presence and holiday,
+// One league (Sprints 13 to 15): the table, calendar and cup (LeagueTabs), its card, the invite to share, my club, my presence and holiday,
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
 import { computed, onMounted, ref } from 'vue'
@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import { budget, END_MODES, STATUS, when, type JoinRequest, type League, type LeagueClub } from '../../api/leagues'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
+import LeagueTabs from './LeagueTabs.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
 import UiChip from '../../components/ui/UiChip.vue'
@@ -148,6 +149,8 @@ onMounted(load)
         </div>
       </header>
 
+      <LeagueTabs v-if="clubs.length" :league-id="leagueId" :my-club-id="league.my_club_id" :team-count="league.team_count" />
+
       <div class="grid gap-4 md:grid-cols-2">
         <UiCard v-if="league.code" title="ادعُ أصحابك">
           <p class="text-sm text-text-muted">الرابط يفتح صفحة الانضمام بالكود جاهزاً: يرسلون طلباً، وتوافق أنت، ثم يختارون فرقهم.</p>
@@ -267,7 +270,7 @@ onMounted(load)
             <span class="w-12 text-end font-numbers text-lg font-bold text-gold">{{ strength(c.strength_cp) }}</span>
           </li>
         </ul>
-        <p class="text-xs text-text-muted"><span class="font-numbers">{{ coaches.length }}</span> مدربين، والباقي يديره الحاسوب. الترتيب والمباريات والكأس تأتي مع الجدول.</p>
+        <p class="text-xs text-text-muted"><span class="font-numbers">{{ coaches.length }}</span> مدربين، والباقي يديره الحاسوب.</p>
       </UiCard>
     </template>
     <p v-else-if="!error" class="text-text-muted">جارٍ التحميل…</p>
