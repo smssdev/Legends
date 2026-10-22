@@ -118,7 +118,7 @@ def images_left():
     out = {}
     for b in boards:
         if st[b[2]] in ('redo', 'todo'):
-            k = (b[0], rates.image_owner(b[0], b[2]))
+            k = (b[0], who_makes(b, st))
             out[k] = out.get(k, 0) + 1
     return out
 
@@ -149,9 +149,15 @@ def link(path):
     return f'[`{os.path.basename(path)}`]({rel})'
 
 
-def owned(boards, who):
-    """The boards of the image waves one person makes (tools/plan/rates.py)."""
-    return [b for b in boards if rates.image_owner(b[0], b[2]) == who]
+def who_makes(b, st):
+    """Who makes a board: its owner (tools/plan/rates.py), but every redo is Sliman's (owner, 2026-10-22):
+    Hamza never draws an image twice, he only makes new ones."""
+    return 'slieman' if st[b[2]] == 'redo' else rates.image_owner(b[0], b[2])
+
+
+def owned(boards, st, who):
+    """The boards one person makes."""
+    return [b for b in boards if who_makes(b, st) == who]
 
 
 def next_images(boards, redo, st, n):
@@ -206,9 +212,9 @@ def image_counts(W, boards, st, waves):
 def write_slieman():
     boards, redo, st = image_states()
     waves = sorted({b[0] for b in boards})
-    mine = owned(boards, 'slieman')
+    mine = owned(boards, st, 'slieman')
     my_waves = sorted({b[0] for b in mine})
-    hamza = owned(boards, 'hamza')
+    hamza = owned(boards, st, 'hamza')
     rows, versions = schedule_rows()
     done_sprints = {int(r[0]) for r in rows if r[3] == '0'}
     upcoming = [r for r in rows if r[3] != '0']
@@ -221,7 +227,7 @@ def write_slieman():
     W('# دليل سليمان: الصور والسبرنتات\n')
     W('> **مرجعك اليومي.** منه تعرف ماذا تعمل اليوم، وما ينتظر قرارك، وما القادم بتواريخه.')
     W('> يولّده `python3 tools/team.py` بعد كل مراجعة وكل دمج، فلا يُعدَّل يدوياً. والخطة كاملة في [`SCHEDULE.md`](SCHEDULE.md).\n')
-    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات {rates.HAMZA_FROM_WAVE} إلى {waves[-1]} التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). يومك {rates.DAY_HOURS} ساعات: **للصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، وللكود {rates.CODE_HOURS}** مع Claude. والأرقام في `tools/plan/rates.py`.\n')
+    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات، و**كل صورة تحتاج إعادة** من أي دفعة. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات {rates.HAMZA_FROM_WAVE} إلى {waves[-1]} التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). يومك {rates.DAY_HOURS} ساعات: **للصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، وللكود {rates.CODE_HOURS}** مع Claude. والأرقام في `tools/plan/rates.py`.\n')
 
     # ------------------------------------------------------------ today
     W('## يومك بالترتيب\n')
@@ -316,7 +322,7 @@ def write_slieman():
 def write_hamza():
     clips, vst, sfx, sst = voice_states()
     boards, redo, st = image_states()
-    mine = owned(boards, 'hamza')
+    mine = owned(boards, st, 'hamza')
     my_waves = sorted({b[0] for b in mine})
     vwaves = sorted({c[0] for c in clips})
     vcount = {w: {k: sum(1 for c in clips if c[0] == w and vst[(c[1], c[2])] == k) for k in ('done', 'redo', 'check', 'missing')} for w in vwaves}
@@ -326,7 +332,7 @@ def write_hamza():
     W('# دليل حمزة: الصوت والصور\n')
     W('> **مرجعك الوحيد.** منه تعرف ما المطلوب الآن، وكيف تسجله أو ترسمه، وأين تضعه، وكم أُنجز.')
     W('> يولّده `python3 tools/team.py` بعد كل مراجعة، فلا يُعدَّل يدوياً.\n')
-    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت على الصوت أولاً (المعلق العربي وأصوات الملعب)، ثم **صور الملاعب كلها** من أي دفعة، و**صور الدفعات {rates.HAMZA_FROM_WAVE} إلى {my_waves[-1]}** التي تُبنى آخر الخطة (السبرنتات 49 إلى 52). وسليمان يصنع باقي صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} التي تحتاجها اللعبة أولاً ([`SLIEMAN.md`](SLIEMAN.md)).\n')
+    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت على الصوت أولاً (المعلق العربي وأصوات الملعب)، ثم **صور الملاعب كلها** من أي دفعة، و**صور الدفعات {rates.HAMZA_FROM_WAVE} إلى {my_waves[-1]}** التي تُبنى آخر الخطة (السبرنتات 49 إلى 52). وأنت تصنع **الجديدة فقط**: ما ترفضه المراجعة يعيده سليمان، ومعه باقي صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} التي تحتاجها اللعبة أولاً ([`SLIEMAN.md`](SLIEMAN.md)).\n')
     W('## المطلوب الآن، بالترتيب\n')
     W('**الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تحتاج صوتها كاملاً مع صورها.\n')
     steps = []
@@ -346,7 +352,7 @@ def write_hamza():
         steps.append(f"**⏳ {len(pending)} صورة مرفوعة تنتظر المراجعة:** قل لـ Claude «راجع».")
     left = [b for b in mine if st[b[2]] in ('redo', 'todo')]
     if left:
-        steps.append(f"**ثم الصور بترتيب الدفعات ({len(left)} صورة):** ملاعب الدفعات {rates.HAMZA_FROM_WAVE - 1} وما قبلها أولاً، ثم الدفعات {rates.HAMZA_FROM_WAVE} إلى {my_waves[-1]}. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول {rates.HAMZA_IMG_PER_DAY} في الجدول تحت.")
+        steps.append(f"**ثم الصور بترتيب الدفعات ({len(left)} صورة):** الجديدة فقط: ملاعب الدفعات {rates.HAMZA_FROM_WAVE - 1} وما قبلها أولاً، ثم الدفعات {rates.HAMZA_FROM_WAVE} إلى {my_waves[-1]}. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول {rates.HAMZA_IMG_PER_DAY} في الجدول تحت.")
     for i, s in enumerate(steps, 1):
         W(f'{i}. {s}')
     W(f'\n**الإيقاع:** حوالي {rates.VOICE_PER_DAY} مقطعاً معتمداً يومياً، ثم {rates.HAMZA_IMG_PER_DAY} صورة معتمدة يومياً. وتواريخ كل دفعة في [`SCHEDULE.md`](SCHEDULE.md)، قسما «مسار الصوت» و«مسار الصور».\n')
@@ -371,7 +377,7 @@ def write_hamza():
     W(f"| أصوات الملعب | {len(sfx)} | {scount['done']} | {scount['redo']} | {scount['check']} | {scount['missing']} | [`sfx.md`](audio/todo/sfx.md) |")
     tot = {k: sum(vcount[w][k] for w in vwaves) for k in ('done', 'redo', 'check', 'missing')}
     W(f"| **المعلق كله** | **{sum(tot.values())}** | **{tot['done']}** | **{tot['redo']}** | **{tot['check']}** | **{tot['missing']}** | |\n")
-    W('### الصور (الملاعب كلها، والدفعات 5 إلى 16)\n')
+    W('### الصور (الجديدة من الملاعب كلها والدفعات 5 إلى 16، والإعادة عند سليمان)\n')
     image_counts(W, mine, st, my_waves)
     W('## كل الملفات\n')
     W('| الملف | ما فيه |'); W('|---|---|')
