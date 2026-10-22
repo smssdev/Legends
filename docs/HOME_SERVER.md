@@ -25,7 +25,7 @@
 
 - **اللعبة تبدأ مع تشغيل ويندوز**، وتُعاد وحدها لو توقفت (مهمة مجدولة اسمها `Legends Web`).
 - **البث المباشر** (`Legends Live`، خادم Reverb) و**الطابور** (`Legends Queue`، رسائل البريد) يبدآن معها. والبث يعمل على نفس الرابط: `wss://اسم-الجهاز...ts.net/app/...`، وReverb نفسه لا يُفتح إلا على الجهاز.
-- **مشغّل المباريات** (`Legends Matches`، `php artisan matches:run`) يلعب المباريات الحية دقيقة بدقيقة، ولو توقف يكمل من آخر حالة محفوظة بنفس النتيجة. و`update.ps1` ينتظر انتهاء المباريات الحية (`php artisan matches:live` = 0) قبل أن يحدّث.
+- **مشغّل المباريات** (`Legends Matches`، `php artisan matches:run`) يلعب المباريات الحية دقيقة بدقيقة، ولو توقف يكمل من آخر حالة محفوظة بنفس النتيجة. و`update.ps1` ينتظر انتهاء المباريات الحية (`php artisan matches:live` = 0) قبل أن يحدّث. ولقياس قدرة الجهاز: أوقف مهمة `Legends Matches`، ثم `php artisan matches:load-test` (50 مباراة حية في حوالي 6 دقائق، ويحذف ما صنعه بعدها)، ثم شغّلها من جديد.
 - **رابط الدعوة** `https://اسم-الجهاز...ts.net/join/الكود` يظهر في واتساب ببطاقة الدوري (السبرنت 14).
 - **المجدول كل دقيقة** (`Legends Scheduler`)، ومنه **نسخة احتياطية يومية الساعة 4 فجراً بتوقيت القاهرة** في `C:\Legends\backend\database\backups\` (يحتفظ بآخر 14 نسخة).
 - **معايرة المحرك كل ليلة** (`GAME_NIGHTLY_BALANCE=true` في `.env`): الساعة 3 فجراً `sim:balance` بـ 5000 مباراة، ثم `sim:knobs` و`sim:matrix` كاملة. النتيجة في `backend/storage/app/balance/latest.json` والسجل في `backend/storage/logs/balance.log`. وتأخذ قرابة 20 دقيقة من المعالج.

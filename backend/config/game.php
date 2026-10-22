@@ -56,6 +56,10 @@ return [
         'runner_sleep_ms' => 200,         // how often matches:run looks at the clock
         // A live match more than this behind (the runner was stopped) goes on from now.
         'stalled_ms' => 5000,
+        // A coach whose screen has not asked for his match in this long is away: his assistant manages [ENGINE 7].
+        'assistant_after_ms' => 30000,
+        // One runner at a time: another one waits this long after the first one stops before it takes over.
+        'claim_seconds' => 10,
     ],
     'economy' => [
         'starting_budget' => 3_000_000,
@@ -114,7 +118,7 @@ return [
         'max_win_shift' => 3,
     ],
     'engine' => [
-        'version' => 3,
+        'version' => 4,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً

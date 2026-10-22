@@ -876,6 +876,89 @@ paths:
       responses:
         '200': { description: Like the simulator's live sync (started, finished, tick, server_now, next_at, gap, ticks) }
         '404': { $ref: '#/components/responses/Error' }
+  /matches/{match}/actions:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: An order from a side's coach while the match is played
+      description: |
+        A substitution, tactics, or a formation (the 24 or one of the coach's own, `custom:N`). It goes into the next minute
+        not yet made (`target_tick`); one that arrives while a minute is being made goes in the one after. The engine checks
+        it there, and a rejected order comes back in that minute's `rejected` for its own coach only. The same
+        `idempotency_key` again changes nothing (200, `duplicate`). While the coach's screen is away, his assistant manages.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, idempotency_key]
+              properties:
+                type: { type: string, enum: [sub, tactics, formation] }
+                out: { type: integer, description: The player going off (sub) }
+                in: { type: integer, description: The player coming on (sub) }
+                tactics: { type: object, additionalProperties: true, description: The tactics that change (the engine's keys) }
+                formation: { type: string }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '202':
+          description: Queued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchOrderResult' }
+        '200':
+          description: This key was given already
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchOrderResult' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /matches/{match}/replay:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: A finished match again
+      description: Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side.
+      responses:
+        '200':
+          description: The minutes, or the events
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [replayable, ticks, events]
+                properties:
+                  replayable: { type: boolean }
+                  ticks: { type: array, nullable: true, items: { type: object, additionalProperties: true } }
+                  events: { type: array, nullable: true, items: { type: object, additionalProperties: true } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /matches/live:
+    get:
+      tags: [matches]
+      summary: My matches being played now, in every league
+      description: For the viewer's switcher when a coach has more than one live match.
+      responses:
+        '200':
+          description: The live matches of my clubs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [matches]
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, home, away, competition]
+                      properties:
+                        id: { type: integer }
+                        home: { type: string, description: The home club's code }
+                        away: { type: string }
+                        competition: { type: string, enum: [league, cup] }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -1317,6 +1400,12 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    MatchOrderResult:
+      type: object
+      required: [target_tick, duplicate]
+      properties:
+        target_tick: { type: integer, description: Not before this minute }
+        duplicate: { type: boolean }
     League:
       type: object
       required: [id, name, template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, starting_budget, fair_league, is_dev, status, locked, is_owner, coaches, members, departures]
