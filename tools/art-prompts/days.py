@@ -19,6 +19,7 @@ for r in w1.split('\n'):
     if not r.startswith('| ') or 'القسم' in r: continue
     c = [x.strip() for x in r.strip('|').split('|')]
     num = int(c[1].split('.')[0]); md = re.search(r'\((.*?)\)', c[3]).group(1); folder = c[4].strip('`')
+    if md in rates.MANUAL_BOOKS: continue   # made by hand outside the plan (docs/SLIEMAN2.md)
     t = open(os.path.join(IMG, md), encoding='utf-8').read()
     a = t.index(f'## المجموعة {num}:'); b = t.find('\n## ', a + 5); g = t[a:b if b > 0 else None]
     boards += [(k, folder + f, md, c[1]) for k, f in re.findall(r'### (\d+\.\d+) `([^`]+)`', g)]

@@ -17,10 +17,15 @@ VOICE_PER_DAY = 30                   # Hamza's approved clips a day
 HAMZA_FROM_WAVE = 5                  # image waves from this one on are Hamza's, the ones before it Sliman's
 HAMZA_IMG_PER_DAY = 12               # Hamza's approved images a day, once his voice is done
 HAMZA_FOLDERS = ('stadiums/',)       # folders under art/raw/ that are Hamza's in every wave
+# Owner's decision (2026-10-22): the boards of these image book files Sliman makes by hand, outside the plan,
+# and uploads himself when they are ready, for a later review (docs/SLIEMAN2.md). They are in no one's daily list.
+MANUAL_BOOKS = ('08-moments.md', '09-coaches.md')
 
 
-def image_owner(wave, path=''):
-    """Who makes an image: 'hamza' or 'slieman', by its wave and its path under art/raw/."""
+def image_owner(wave, path='', book=''):
+    """Who makes an image: 'manual', 'hamza' or 'slieman', by its book file, its wave and its path under art/raw/."""
+    if book in MANUAL_BOOKS:
+        return 'manual'
     folder = path.removeprefix('art/raw/')
     return 'hamza' if wave >= HAMZA_FROM_WAVE or folder.startswith(HAMZA_FOLDERS) else 'slieman'
 
