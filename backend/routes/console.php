@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('leagues:start')->everyMinute()->withoutOverlapping();
 // Absence [PLAN 2.2]: a warning at 48 hours, and 3 days away hands the club back to a bot.
 Schedule::command('leagues:absence')->everyMinute()->withoutOverlapping();
+// Before each match: the referee at 30 minutes, the lock (with the automatic fix) at 5 [PLAN 2.13].
+Schedule::command('matches:prepare')->everyMinute()->withoutOverlapping();
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');

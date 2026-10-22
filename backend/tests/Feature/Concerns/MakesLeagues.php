@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 trait MakesLeagues
 {
     /** @return list<int> master club ids, strongest first */
-    protected function template(int $clubs = 20, string $league = 'Test League'): array
+    protected function template(int $clubs = 20, string $league = 'Test League', bool $full = false): array
     {
         $ids = [];
         for ($c = 0; $c < $clubs; $c++) {
@@ -19,11 +19,15 @@ trait MakesLeagues
                 'data_version' => '2026', 'name' => "Club {$c}", 'code' => sprintf('C%02d', $c), 'league_name' => $league,
                 'strength_cp' => $ovr * 100, 'color_primary' => '#C8102E', 'color_secondary' => '#FFFFFF',
             ]);
-            foreach (['GK', 'CB', 'CM', 'ST'] as $i => $pos) {
+            // Four players, or a whole squad of 18 (two keepers) for the lineup tests.
+            $positions = $full ? ['GK', 'GK', 'RB', 'CB', 'CB', 'LB', 'CB', 'CDM', 'CM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST', 'ST', 'CM'] : ['GK', 'CB', 'CM', 'ST'];
+            $lines = ['GK' => 'gk', 'RB' => 'def', 'CB' => 'def', 'LB' => 'def', 'CDM' => 'mid', 'CM' => 'mid', 'CAM' => 'mid', 'RM' => 'mid', 'LM' => 'mid', 'RW' => 'att', 'LW' => 'att', 'ST' => 'att'];
+            foreach ($positions as $i => $pos) {
                 DB::table('master_players')->insert([
-                    'data_version' => '2026', 'external_id' => $id * 10 + $i, 'master_club_id' => $id, 'name' => "Player {$c}-{$i}",
-                    'position' => $pos, 'line' => ['GK' => 'gk', 'CB' => 'def', 'CM' => 'mid', 'ST' => 'att'][$pos],
-                    'age' => 24, 'overall' => $ovr, 'potential' => $ovr + 2, 'value' => 1_000_000 + $c,
+                    'data_version' => '2026', 'external_id' => $id * 100 + $i, 'master_club_id' => $id, 'name' => "Player {$c}-{$i}",
+                    'position' => $pos, 'line' => $lines[$pos], 'age' => 20 + $i,
+                    'overall' => $full ? $ovr - intdiv($i, 3) : $ovr, 'potential' => $ovr + 2, 'value' => 1_000_000 + $c,
+                    'pac' => 70, 'sho' => 65, 'pas' => 70, 'dri' => 70, 'def' => 65, 'phy' => 70, 'penalties' => 50 + $i, 'free_kick' => 60 - $i, 'crossing' => 40 + $i,
                 ]);
             }
             $ids[] = $id;
