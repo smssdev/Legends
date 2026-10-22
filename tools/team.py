@@ -235,6 +235,13 @@ def write_slieman():
         W(f'الدفعة 1 اكتملت، فصورك الآن من الدفعة {w}.\n')
     image_table(W, 'صور اليوم', nxt, redo)
 
+    later_redo = [b for b in boards if b[0] > 1 and st[b[2]] == 'redo']
+    if later_redo:
+        W(f'**إعادة من الدفعات اللاحقة ({len(later_redo)}):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.\n')
+        W('| الدفعة | اللوحة | الملف | المشكلة | الأمر في |'); W('|---|---|---|---|---|')
+        for wave, code, path, md, group in later_redo:
+            W(f'| {wave} | {code} | `{path}` | {redo[path][1]} | {link(redo[path][0])} |')
+        W('')
     W(f'### 2. الكود ({rates.CODE_HOURS} ساعات): Sprint {current}، {title}\n')
     if goal:
         W(f'**الهدف:** {goal}\n')
@@ -336,7 +343,7 @@ def write_hamza():
     image_table(W, f'أول صورك بعد الصوت، من الدفعة {w}', nxt, redo)
     W('## طريقة التسجيل\n')
     W('1. **باللهجة المصرية،** بنفس الصوت ونفس الإعدادات من أول مقطع لآخر مقطع (قرار 2026-10-20).')
-    W('2. **النص المكتوب بالفصحى هو المعنى،** وتقوله بالمصرية بطريقتك.')
+    W('2. **النص مكتوب بالمصرية كما يُقال، بلا تشكيل:** اقرأه كما هو.')
     W('3. **جملة واحدة لكل مقطع،** بلا جملة من مقطع آخر وبلا تكرار طويل. والمقطع الذي قبل اللحظة (pre) لا يكشف النتيجة.')
     W('4. **الحفظ:** باسم الملف وفي المجلد المكتوبين في قائمة الدفعة. والصيغة WAV أو MP3 أو M4A.')
     W('5. **أصوات الملعب:** بترخيص CC0 أو مولّدة، والحلقات لا يُسمع مكان تكرارها.\n')
@@ -363,7 +370,7 @@ def write_hamza():
     W('| [`art/images/00-waves.md`](art/images/00-waves.md) | كل دفعات الصور ومجموعاتها ومجلداتها |')
     W('| [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |')
     W('| `art/raw/<المجلد>/README.md` | أسماء صور كل مجلد ومرفقاتها |')
-    open(os.path.join(ROOT, 'docs', 'HAMZA.md'), 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
+    open(os.path.join(ROOT, 'docs', 'HAMZA.md'), 'w', encoding='utf-8', newline='\n').write(voice.plain('\n'.join(o)) + '\n')
     return vcount[1]
 
 

@@ -11,7 +11,7 @@
 
 **الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.
 
-1. **🔁 أعد 21 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
+1. **🔁 أعد 13 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md)، [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md).
 2. **⬜ ثم الجديدة بالترتيب (212 باقية في الدفعة 1):** من [`sprint-02-days.md`](sprints/sprint-02-days.md). أول 12 في الجدول تحت.
 
 **صور اليوم (12):**
@@ -19,17 +19,45 @@
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
 | 🔁 | 45.19 | `art/raw/striker/run/sprint-04.png` | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
-| 🔁 | 48.1 | `art/raw/striker/ball/dribble-01.png` | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) |
-| 🔁 | 48.2 | `art/raw/striker/ball/dribble-02.png` | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) |
-| 🔁 | 48.3 | `art/raw/striker/ball/dribble-03.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.4 | `art/raw/striker/ball/shoot-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.5 | `art/raw/striker/ball/shoot-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.7 | `art/raw/striker/ball/pass-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.8 | `art/raw/striker/ball/pass-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.9 | `art/raw/striker/ball/header-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.10 | `art/raw/striker/ball/header-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.11 | `art/raw/striker/ball/header-03.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
-| 🔁 | 48.12 | `art/raw/striker/ball/volley-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.13 | `art/raw/striker/ball/volley-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.14 | `art/raw/striker/ball/chip-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.15 | `art/raw/striker/ball/chip-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.17 | `art/raw/striker/ball/cross-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.18 | `art/raw/striker/ball/control-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 48.19 | `art/raw/striker/ball/control-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
+| 🔁 | 45.13 | `art/raw/striker/run/run-back-01.png` | [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md) |
+| 🔁 | 45.14 | `art/raw/striker/run/run-back-02.png` | [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md) |
+
+**إعادة من الدفعات اللاحقة (23):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.
+
+| الدفعة | اللوحة | الملف | المشكلة | الأمر في |
+|---|---|---|---|---|
+| 2 | 2.3 | `art/raw/stadiums/classic/day/wing.jpg` | لا يظهر أي مرمى. المطلوب مرمى واحد صغير على الحافة اليمنى (عرضيات الجناح تتجه إليه) | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) |
+| 2 | 46.1 | `art/raw/striker/walk/jog-01.png` | ثلاث لوحات ملصوقة بخطوط فاصلة، والخلفية فيها كشافات وتدرج، والإطار الثالث ركبة عالية لا هرولة | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.2 | `art/raw/striker/walk/jog-02.png` | نفس مشكلة الخلفية واللوحات، وتكاد تطابق jog-03 | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.3 | `art/raw/striker/walk/jog-03.png` | نفس مشكلة الخلفية واللوحات، وشبه مطابقة لـ jog-02 وwalk-03، وفيها 3 أشكال والمطلوب 2 | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.4 | `art/raw/striker/walk/walk-01.png` | ثلاث لوحات ملصوقة، والخلفية فيها كشافات، والإطار الثالث ركبة عالية لا مشي | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.5 | `art/raw/striker/walk/walk-02.png` | نفس المشكلة، والإطار الأول ركبة عالية | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.6 | `art/raw/striker/walk/walk-03.png` | نفس المشكلة، وفيها 3 أشكال والمطلوب 2، وفيها ركبتان عاليتان | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.7 | `art/raw/striker/walk/walk-front-01.png` | الزاوية صحيحة (من الأمام)، لكن الخلفية فيها كشافات وتدرج واللوحات ملصوقة | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.8 | `art/raw/striker/walk/walk-front-02.png` | الزاوية خطأ (جانبية والمطلوب من الأمام)، والخلفية فيها كشافات | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.9 | `art/raw/striker/walk/walk-front-03.png` | الزاوية خطأ (جانبية)، وتكاد تطابق walk-front-02، وفيها 3 أشكال والمطلوب 2 | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.10 | `art/raw/striker/walk/walk-back-01.png` | الزاوية صحيحة (من الخلف)، لكن الخلفية فيها كشافات واللوحات ملصوقة | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.11 | `art/raw/striker/walk/walk-back-02.png` | الزاوية خطأ (جانبية والوجه ظاهر)، وفيها ركبة عالية | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.12 | `art/raw/striker/walk/walk-back-03.png` | الزاوية خطأ (جانبية)، وفيها 3 أشكال والمطلوب 2 | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.13 | `art/raw/striker/walk/backpedal-01.png` | يمشي للأمام لا للخلف، والخلفية فيها كشافات | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 46.14 | `art/raw/striker/walk/backpedal-02.png` | نفس المشكلة: مشي للأمام، والخلفية فيها كشافات | [`2026-10-20-striker-run-walk.md`](art/redo/2026-10-20-striker-run-walk.md) |
+| 2 | 47.2 | `art/raw/striker/start/start-02.png` | الإطار 4 وقوف (يكرر الإطار 1 من start-01)، والمطلوب الخطوة الثانية فالثالثة فالجري الكامل | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 2 | 47.3 | `art/raw/striker/start/stop-01.png` | الإطاران 1 و2 شبه متطابقين، والإطار 1 ليس جرياً بأقصى سرعة، والإطار 3 وقوف | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 2 | 47.4 | `art/raw/striker/start/stop-02.png` | الإطار 4 خطوة جري (رجوع للخلف في الحركة)، والمطلوب: شبه متوقف بركبتين منثنيتين، ثم يستعيد توازنه، ثم يقف | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 2 | 47.5 | `art/raw/striker/start/turn-01.png` | الترتيب معكوس: يبدأ من الأمام وينتهي جانبياً، والمطلوب العكس (جانبي، ثم ثلاثة أرباع، ثم من الأمام). واسم الملف خطأ | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 2 | 47.6 | `art/raw/striker/start/turn-02.png` | الزوايا خطأ: من الخلف وجانبي لليمين، والمطلوب: ثلاثة أرباع لليسار، ثم جانبي لليسار، ثم واقف لليسار | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 2 | 47.7 | `art/raw/striker/start/idle-01.png` | الخلفية فيها كشافات وتدرج أخضر فلا تُقص | [`2026-10-20-striker-start.md`](art/redo/2026-10-20-striker-start.md) |
+| 4 | 4.5 | `art/raw/stadiums/maghreb/night/goal-front.jpg` | لوحات الإعلانات خلف المرمى فيها كتابة وشعارات، والمطلوب بلا أي نص | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) |
+| 5 | 5.3 | `art/raw/stadiums/coast/dusk/wing.jpg` | نسخة من لوحة التسديدة (المرمى كبير في الوسط)، والمطلوب منظر خط التماس والمرمى صغير بعيد | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) |
 
 ### 2. الكود (3 ساعات): Sprint 13، الدوريات والانضمام
 
@@ -70,16 +98,16 @@
 |---|---|---|---|---|
 | 13 | الدوريات والانضمام | 12 | 2026-10-21 | 2026-11-01 |
 | 14 | الدعوة والغياب والإشراف | 7 | 2026-11-02 | 2026-11-08 |
-| 15 | الجدول والكأس | 9 | 2026-11-09 | 2026-11-17 |
-| 3 | محرك المشهد المصور، الدفعة 1 في المحاكاة | 9 | 2026-11-18 | 2026-11-26 |
-| 4 | محاكاة الويب | 7 | 2026-11-27 | 2026-12-03 |
-| 5 | محاكاة الموبايل | 7 | 2026-12-04 | 2026-12-10 |
-| 6 | المعلق الإنجليزي الافتراضي | 7 | 2026-12-11 | 2026-12-17 |
-| 7 | المعلق العربي وأصوات الملعب | 7 | 2026-12-18 | 2026-12-24 |
-| 8 | السلاسة والاعتماد | 9 | 2026-12-25 | 2027-01-02 |
+| 3 | محرك المشهد المصور، الدفعة 1 في المحاكاة | 9 | 2026-11-09 | 2026-11-17 |
+| 4 | محاكاة الويب | 7 | 2026-11-18 | 2026-11-24 |
+| 5 | محاكاة الموبايل | 7 | 2026-11-25 | 2026-12-01 |
+| 6 | المعلق الإنجليزي الافتراضي | 7 | 2026-12-02 | 2026-12-08 |
+| 7 | المعلق العربي وأصوات الملعب | 7 | 2026-12-09 | 2026-12-15 |
+| 8 | السلاسة والاعتماد | 9 | 2026-12-16 | 2026-12-24 |
+| 15 | الجدول والكأس | 9 | 2026-12-25 | 2027-01-02 |
 | 16 | التشكيلة ومنفذو الكرات الثابتة | 7 | 2027-01-03 | 2027-01-09 |
 
-**النسخ:** v0.1 في 2 يناير 2027، v0.2 في 11 فبراير 2027، v1.0 في 13 مايو 2027، v1.1 في 13 يونيو 2027، v1.8 في 12 يوليو 2027.
+**النسخ:** v0.1 في 24 ديسمبر 2026، v0.2 في 9 فبراير 2027، v1.0 في 11 مايو 2027، v1.1 في 11 يونيو 2027، v1.8 في 10 يوليو 2027.
 
 ## طريقة صنع الصورة
 
@@ -101,13 +129,13 @@
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تُصنع |
 |---|---|---|---|---|---|
-| 1 | 268 | 35 | 0 | 21 | 212 |
-| 2 | 279 | 2 | 0 | 20 | 257 |
+| 1 | 268 | 43 | 0 | 13 | 212 |
+| 2 | 279 | 17 | 0 | 21 | 241 |
 | 3 | 364 | 0 | 0 | 0 | 364 |
-| 4 | 348 | 0 | 0 | 0 | 348 |
-| **الكل** | **1259** | **37** | **0** | **41** | **1181** |
+| 4 | 348 | 15 | 0 | 1 | 332 |
+| **الكل** | **1259** | **75** | **0** | **35** | **1149** |
 
-**صور حمزة (الدفعات 5 إلى 16):** 0 من 879 معتمدة. التفاصيل في [`HAMZA.md`](HAMZA.md).
+**صور حمزة (الدفعات 5 إلى 16):** 15 من 879 معتمدة. التفاصيل في [`HAMZA.md`](HAMZA.md).
 
 ### الصوت (حمزة)
 
@@ -127,6 +155,7 @@
 | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) | إعادة: المهاجم: الكرة (2026-10-20) |
 | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) | إعادة: المهاجم: الدريبل بالمقياس الصحيح (2026-10-20) |
 | [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md) | إعادة: المهاجم: الجري ثلاثة أرباع من الخلف، ومن الأمام، ومن الخلف (الإعادة الأولى) (2026-10-20) |
+| [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) | إعادة: الملاعب: الكلاسيكي نهاراً، والمغاربي ليلاً، والساحلي عند الغروب (حمزة) (2026-10-22) |
 | [`art/images/00-waves.md`](art/images/00-waves.md) | كل الدفعات ومجموعاتها ومجلداتها |
 | [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |
 | [`HAMZA.md`](HAMZA.md) | مرجع حمزة: الصوت، وصور الدفعات الأخيرة |

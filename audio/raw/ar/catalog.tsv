@@ -1,429 +1,429 @@
 # كل مقاطع المعلق العربي (docs/audio/ARABIC_VOICE.md): الدفعة	المجلد	الملف	النبرة	النص
-1	story	goal-pre-1.wav	هادئ	هَجْمَةٌ خَطِيرَة...
-1	story	goal-pre-2.wav	هادئ	اِنْطِلاقَةٌ سَرِيعَةٌ نَحْوَ المَرْمَى...
-1	story	goal-pre-3.wav	هادئ	الكُرَةُ تَقْتَرِبُ مِنْ مَنْطِقَةِ الجَزَاء...
-1	story	goal-key-1.wav	متحمس	جُووول! هَدَفٌ رائِع!
-1	story	goal-key-2.wav	متحمس	هَدَف! الكُرَةُ فِي الشِّبَاك!
-1	story	goal-key-3.wav	متحمس	يا سَلام! هَدَفٌ خُرافِيّ!
-1	story	goal-post-1.wav	هادئ	المُدَرَّجاتُ تَشْتَعِلُ فَرَحاً!
-1	story	goal-post-2.wav	هادئ	أَيُّ هَدَفٍ هٰذا!
-1	story	goal-post-3.wav	هادئ	هَدَفٌ يَسْتَحِقُّ التَّصْفِيق!
-1	story	header-pre-1.wav	هادئ	عَرْضِيَّةٌ داخِلَ المَنْطِقَة...
-1	story	header-pre-2.wav	هادئ	الكُرَةُ تَرْتَفِعُ داخِلَ الصُّنْدُوق...
-1	story	header-key-1.wav	متحمس	هَدَف! رَأْسِيَّةٌ قَوِيَّةٌ فِي الشِّبَاك!
-1	story	header-key-2.wav	متحمس	هَدَفٌ بِرَأْسِيَّةٍ رائِعَة!
-1	story	header-post-1.wav	هادئ	لا أَحَدَ يُوقِفُهُ فِي الهَواء!
-1	story	header-post-2.wav	هادئ	اِرْتِقاءٌ رائِع!
-1	story	free_kick_goal-pre-1.wav	هادئ	ضَرْبَةٌ حُرَّةٌ عَلَى حُدُودِ المَنْطِقَة.
-1	story	free_kick_goal-pre-2.wav	هادئ	الحائِطُ يَتَشَكَّل... والجَمِيعُ يَنْتَظِر.
-1	story	free_kick_goal-key-1.wav	متحمس	فَوْقَ الحائِطِ وَفِي الزّاوِيَة! هَدَفٌ مُذْهِل!
-1	story	free_kick_goal-key-2.wav	متحمس	هَدَفٌ مِنْ ضَرْبَةٍ حُرَّة! لَوْحَةٌ فَنِّيَّة!
-1	story	free_kick_goal-post-1.wav	هادئ	الحارِسُ لَمْ يَتَحَرَّك!
-1	story	free_kick_goal-post-2.wav	هادئ	تَسْدِيدَةٌ لا تُصَدّ!
-1	story	free_kick_save-key-1.wav	متحمس	فَوْقَ الحائِط... والحارِسُ يَطِيرُ وَيُبْعِدُها!
-1	story	free_kick_save-key-2.wav	متحمس	تَصَدٍّ رائِعٌ لِلضَّرْبَةِ الحُرَّة!
-1	story	free_kick_save-post-1.wav	هادئ	كادَتْ أَنْ تَكُونَ هَدَفاً!
-1	story	free_kick_save-post-2.wav	هادئ	قَرِيبَةٌ جِدّاً!
-1	story	free_kick_miss-key-1.wav	متحمس	فَوْقَ العارِضَة!
-1	story	free_kick_miss-key-2.wav	متحمس	بِجانِبِ القائِم!
-1	story	free_kick_miss-post-1.wav	هادئ	فُرْصَةٌ ضائِعَة.
-1	story	penalty_goal-pre-1.wav	هادئ	رَكْلَةُ جَزاء! الحَكَمُ يُشِيرُ إِلَى النُّقْطَة!
-1	story	penalty_goal-pre-2.wav	هادئ	المَلْعَبُ يَحْبِسُ أَنْفاسَه...
-1	story	penalty_goal-key-1.wav	متحمس	هَدَف! الحارِسُ فِي جِهَة، والكُرَةُ فِي جِهَة!
-1	story	penalty_goal-key-2.wav	متحمس	هَدَف! تَسْدِيدَةٌ واثِقَة!
-1	story	penalty_goal-post-1.wav	هادئ	أَعْصابٌ مِنْ حَدِيد!
-1	story	penalty_save-key-1.wav	متحمس	تَصَدَّى! الحارِسُ يَقْرَؤُها!
-1	story	penalty_save-key-2.wav	متحمس	يا لَلرَّوْعَة! الحارِسُ يَصُدُّ رَكْلَةَ الجَزاء!
-1	story	penalty_save-post-1.wav	هادئ	لَحْظَةٌ كَبِيرَةٌ فِي المُباراة!
-1	story	save-pre-1.wav	هادئ	اِنْفِرادٌ بِالمَرْمَى!
-1	story	save-pre-2.wav	هادئ	تَسْدِيدَةٌ قَوِيَّة...
-1	story	save-pre-3.wav	هادئ	فُرْصَةٌ خَطِيرَة!
-1	story	save-key-1.wav	متحمس	تَصَدٍّ رائِعٌ مِنَ الحارِس!
-1	story	save-key-2.wav	متحمس	الحارِسُ يَطِيرُ وَيُبْعِدُها!
-1	story	save-post-1.wav	هادئ	حارِسٌ عالَمِيّ!
-1	story	save-post-2.wav	هادئ	إِنْقاذٌ يُساوِي هَدَفاً!
-1	story	miss-pre-1.wav	هادئ	تَسْدِيدَة...
-1	story	miss-pre-2.wav	هادئ	مُحاوَلَةٌ عَلَى المَرْمَى...
-1	story	miss-key-3.wav	متحمس	كادَتْ أَنْ تَكُونَ هَدَفاً!
-1	story	miss-post-1.wav	هادئ	المُدَرِّبُ لا يُصَدِّق!
-1	story	miss-post-2.wav	هادئ	فُرْصَةٌ لا تَتَكَرَّرُ كَثِيراً!
-1	story	post-key-1.wav	متحمس	القائِم! القائِمُ يَرُدُّ الكُرَة!
-1	story	post-post-1.wav	هادئ	سَنْتِيمِتْراتٌ حَرَمَتْهُ مِنَ الهَدَف!
-1	story	blocked-pre-2.wav	هادئ	مُحاوَلَةٌ قَوِيَّة...
-1	story	blocked-key-1.wav	متحمس	الدِّفاعُ يَصُدّ!
-1	story	blocked-key-2.wav	متحمس	تَدَخُّلٌ شُجاعٌ مِنَ المُدافِع!
-1	story	blocked-post-1.wav	هادئ	دِفاعٌ رائِع.
-1	story	offside-pre-1.wav	هادئ	كُرَةٌ طَوِيلَةٌ خَلْفَ الدِّفاع...
-1	story	offside-key-1.wav	هادئ	الرّايَةُ مَرْفُوعَة. تَسَلُّل.
-1	story	offside-key-2.wav	هادئ	لا! تَسَلُّل.
-1	story	offside-post-1.wav	هادئ	تَقَدَّمَ بِخُطْوَةٍ قَبْلَ التَّمْرِير.
-1	story	corner_header-pre-1.wav	هادئ	رُكْنِيَّة.
-1	story	corner_header-pre-2.wav	هادئ	العَرْضِيَّةُ تَرْتَفِع...
-1	story	corner_header-key-1.wav	متحمس	رَأْسِيَّة! فَوْقَ العارِضَةِ بِقَلِيل!
-1	story	corner_header-key-2.wav	متحمس	رَأْسِيَّةٌ قَرِيبَةٌ جِدّاً!
-1	story	corner_header-post-1.wav	هادئ	كادَتِ الرُّكْنِيَّةُ أَنْ تُثْمِر.
-1	story	corner_claim-key-1.wav	هادئ	الحارِسُ يُمْسِكُ الكُرَةَ بِثَبات.
-1	story	corner_claim-post-1.wav	هادئ	زالَ الخَطَر.
-1	story	yellow-pre-1.wav	هادئ	تَدَخُّلٌ مُتَأَخِّر!
-1	story	yellow-pre-2.wav	هادئ	تَدَخُّلٌ قَوِيّ!
-1	story	yellow-key-1.wav	هادئ	بِطاقَةٌ صَفْراء.
-1	story	yellow-key-2.wav	هادئ	الحَكَمُ يُشْهِرُ البِطاقَةَ الصَّفْراء.
-1	story	yellow-post-1.wav	هادئ	عَلَيْهِ الحَذَرُ مِنَ الآن.
-1	story	red-pre-1.wav	هادئ	تَدَخُّلٌ عَنِيفٌ مِنَ الخَلْف!
-1	story	red-pre-2.wav	هادئ	تَدَخُّلٌ خَطِير!
-1	story	red-key-1.wav	متحمس	بِطاقَةٌ حَمْراء! طَرْد!
-1	story	red-key-2.wav	متحمس	الحَكَمُ يَطْرُدُهُ مُباشَرَة!
-1	story	red-post-1.wav	هادئ	فَرِيقُهُ يُكْمِلُ بِعَشَرَةِ لاعِبِين!
-1	story	red-post-2.wav	هادئ	خُرُوجٌ حَزِينٌ إِلَى غُرْفَةِ المَلابِس.
-1	story	second_yellow-pre-1.wav	هادئ	تَدَخُّلٌ مُتَأَخِّرٌ آخَر...
-1	story	second_yellow-key-1.wav	متحمس	الإِنْذارُ الثّانِي! طَرْد!
-1	story	second_yellow-post-1.wav	هادئ	لا يَلُومُ إِلّا نَفْسَه.
-1	story	sub-key-1.wav	هادئ	تَبْدِيل.
-1	story	sub-key-2.wav	هادئ	تَغْيِيرٌ فِي صُفُوفِ الفَرِيق.
-1	story	sub-post-1.wav	هادئ	دِماءٌ جَدِيدَة.
-1	story	injury-key-1.wav	هادئ	لاعِبٌ عَلَى الأَرْض.
-1	story	injury-key-2.wav	هادئ	إِصابَة... والجِهازُ الطِّبِّيُّ يَدْخُل.
-1	story	injury-post-1.wav	هادئ	نَتَمَنَّى أَلّا تَكُونَ خَطِيرَة.
-1	story	coach-key-1.wav	هادئ	المُدَرِّبُ يُعْطِي تَعْلِيماتٍ جَدِيدَة.
-1	story	coach-key-2.wav	هادئ	تَغْيِيرٌ تَكْتِيكِيٌّ مِنَ الدَّكَّة.
-1	story	coach-post-1.wav	هادئ	لِنَرَ إِنْ كانَ سَيُغَيِّرُ شَيْئاً.
-1	story	kickoff-key-1.wav	هادئ	اِنْطَلَقَتِ المُباراة!
-1	story	halftime-key-1.wav	متحمس	نِهايَةُ الشَّوْطِ الأَوَّل.
-1	story	fulltime-key-1.wav	متحمس	صافِرَةُ النِّهايَة!
-1	story	extra_time-key-1.wav	متحمس	إِلَى الوَقْتِ الإِضافِيّ!
-1	story	penalties-key-1.wav	متحمس	إِلَى رَكَلاتِ التَّرْجِيح!
-1	story	stoppage-key-1.wav	هادئ	وَقْتٌ بَدَلٌ ضائِع.
-1	story	shootout-key-1.wav	متحمس	رَكَلاتُ التَّرْجِيح... أَعْصابٌ مِنْ حَدِيد.
-1	story	attack-key-1.wav	هادئ	هَجْمَةٌ مُنَظَّمَة.
-1	story	attack-key-2.wav	هادئ	ضَغْطٌ مُتَواصِل.
-1	story	attack-key-3.wav	هادئ	مُحاوَلَةٌ لِبِناءِ الهَجْمَة.
-2	intro	intro-01.wav	هادئ	مَساءُ الخَيْرِ وَأَهْلاً بِكُمْ في لِقاءٍ مُرْتَقَب.
-2	intro	intro-02.wav	هادئ	أَهْلاً بِكُمْ، المُدَرَّجاتُ مُمْتَلِئَةٌ والأَجْواءُ رائِعَة.
-2	intro	intro-03.wav	هادئ	لِقاءٌ كَبِيرٌ يَنْتَظِرُنا اللَّيْلَة.
-3	intro	intro-04.wav	هادئ	الفَرِيقانِ يَدْخُلانِ أَرْضِيَّةَ المَلْعَب.
-3	intro	intro-05.wav	هادئ	كُلُّ شَيْءٍ جاهِزٌ لِصافِرَةِ البِدايَة.
-3	intro	intro-06.wav	هادئ	مُواجَهَةٌ لا تَقْبَلُ القِسْمَةَ عَلَى اثْنَيْن.
-4	intro	intro-07.wav	هادئ	الجَماهِيرُ تَهْتِفُ قَبْلَ انْطِلاقِ المُباراة.
-4	intro	intro-08.wav	هادئ	التَّشْكِيلَتانِ عَلَى الشّاشَة، والمُدَرِّبانِ جاهِزان.
-4	intro	intro-09.wav	هادئ	لَيْلَةٌ كُرَوِيَّةٌ بامْتِياز.
-5	intro	intro-10.wav	هادئ	نَتَمَنَّى لَكُمْ مُشاهَدَةً مُمْتِعَة.
-5	intro	intro-11.wav	هادئ	الأَرْضُ صَعْبَةٌ عَلَى الضُّيُوف، والجُمْهُورُ لا يَهْدَأ.
-5	intro	intro-12.wav	هادئ	مُباراةٌ قَدْ تُغَيِّرُ شَكْلَ التَّرْتِيب.
-6	intro	intro-13.wav	هادئ	المَطَرُ يَتَساقَطُ، والعُشْبُ زَلِق.
-6	intro	intro-14.wav	هادئ	بَرْدٌ قارِسٌ هٰذا المَساء.
-6	intro	intro-15.wav	هادئ	حَرارَةٌ عالِيَة، واللِّياقَةُ سَتَكُونُ حاسِمَة.
-2	kickoff	kickoff-01.wav	متحمس	اِنْطَلَقَتِ المُباراة!
-2	kickoff	kickoff-02.wav	متحمس	صافِرَةُ البِدايَة، وَعَلَى بَرَكَةِ الله!
-2	kickoff	kickoff-03.wav	هادئ	الكُرَةُ تَتَحَرَّكُ مِنْ نُقْطَةِ المُنْتَصَف.
-3	kickoff	kickoff-04.wav	هادئ	بَدَأَ الشَّوْطُ الثّانِي.
-3	kickoff	kickoff-05.wav	هادئ	عادَ الفَرِيقانِ مِنْ غُرْفَةِ المَلابِس.
-3	kickoff	kickoff-06.wav	هادئ	شَوْطٌ ثانٍ جَدِيد، وَكُلُّ شَيْءٍ مُمْكِن.
-4	kickoff	kickoff-07.wav	هادئ	هَلْ نَرَى تَغْيِيراً في الشَّوْطِ الثّانِي؟
-2	calm	calm-01.wav	هادئ	تَدْوِيرٌ لِلكُرَةِ في الوَسَط.
-2	calm	calm-02.wav	هادئ	بِناءٌ هادِئٌ مِنَ الخَلْف.
-2	calm	calm-03.wav	هادئ	الفَرِيقُ يَبْحَثُ عَنْ ثَغْرَة.
-3	calm	calm-04.wav	هادئ	تَمْرِيراتٌ قَصِيرَةٌ وَصَبْر.
-3	calm	calm-05.wav	هادئ	الضَّغْطُ عالٍ في وَسَطِ المَلْعَب.
-3	calm	calm-06.wav	هادئ	الكُرَةُ تَعُودُ إِلَى الحارِس.
-4	calm	calm-07.wav	هادئ	لَعِبٌ عَلَى الأَطْراف.
-4	calm	calm-08.wav	هادئ	نَقْلٌ لِلَّعِبِ مِنْ جِهَةٍ لِأُخْرَى.
-4	calm	calm-09.wav	هادئ	الدِّفاعُ مُتَماسِك.
-5	calm	calm-10.wav	هادئ	إِيقاعٌ بَطِيءٌ في هٰذِهِ الدَّقائِق.
-5	calm	calm-11.wav	هادئ	المُباراةُ تَبْحَثُ عَنْ شَرارَة.
-5	calm	calm-12.wav	هادئ	سَيْطَرَةٌ عَلَى الكُرَة، لٰكِنْ بِلا خُطُورَة.
-6	calm	calm-13.wav	هادئ	صِراعٌ عَلَى الكُرَةِ في الوَسَط.
-6	calm	calm-14.wav	هادئ	الكُرَةُ تَخْرُجُ لِرَمْيَةِ تَماس.
-6	calm	calm-15.wav	هادئ	الحَكَمُ يُتابِعُ عَنْ قُرْب.
-7	calm	calm-16.wav	هادئ	المُدَرِّبُ يُوَجِّهُ لاعِبِيهِ مِنَ الخَطّ.
-7	calm	calm-17.wav	هادئ	الجُمْهُورُ يُطالِبُ بِالهُجُوم.
-7	calm	calm-18.wav	هادئ	هُدُوءٌ يَسْبِقُ العاصِفَة؟
-8	calm	calm-19.wav	هادئ	كُلُّ فَرِيقٍ يَحْتَرِمُ الآخَر.
-8	calm	calm-20.wav	هادئ	الاِسْتِحْواذُ لِصاحِبِ الأَرْض.
-8	calm	calm-21.wav	هادئ	الضُّيُوفُ يَنْتَظِرُونَ المُرْتَدَّة.
-9	calm	calm-22.wav	هادئ	كُرَةٌ طَوِيلَةٌ إِلَى الأَمام.
-9	calm	calm-23.wav	هادئ	اِعْتِراضٌ جَيِّدٌ في الوَسَط.
-9	calm	calm-24.wav	هادئ	خَطَأٌ بَسِيطٌ في التَّمْرِير.
-10	calm	calm-25.wav	هادئ	اللِّياقَةُ تَبْدَأُ بِالظُّهُور.
-10	calm	calm-26.wav	هادئ	المَساحاتُ تَضِيق.
-10	calm	calm-27.wav	هادئ	الفَرِيقُ يَرْفَعُ خُطُوطَه.
-11	calm	calm-28.wav	هادئ	العَوْدَةُ لِلدِّفاعِ بِسُرْعَة.
-11	calm	calm-29.wav	هادئ	لا شَيْءَ يُذْكَرُ حَتَّى الآن.
-11	calm	calm-30.wav	هادئ	المُباراةُ مُتَكافِئَة.
-12	calm	calm-31.wav	هادئ	الأَعْصابُ مَشْدُودَة.
-12	calm	calm-32.wav	هادئ	كُلُّ دَقِيقَةٍ تَزِيدُ الضَّغْط.
-2	attack	attack-01.wav	هادئ	هَجْمَةٌ خَطِيرَة...
-2	attack	attack-02.wav	هادئ	اِنْطِلاقَةٌ سَرِيعَةٌ نَحْوَ المَرْمَى...
-2	attack	attack-03.wav	هادئ	الكُرَةُ تَقْتَرِبُ مِنْ مَنْطِقَةِ الجَزاء...
-3	attack	attack-04.wav	هادئ	تَمْرِيرَةٌ بَيْنِيَّة...
-3	attack	attack-05.wav	هادئ	مُراوَغَةٌ عَلَى الخَطّ...
-3	attack	attack-06.wav	هادئ	عَرْضِيَّةٌ نَحْوَ المَنْطِقَة...
-4	attack	attack-07.wav	متحمس	اِنْفِرادٌ بِالحارِس!
-4	attack	attack-08.wav	متحمس	المَساحَةُ مَفْتُوحَة!
-4	attack	attack-09.wav	هادئ	لَعِبٌ ثُنائِيٌّ جَمِيل...
-5	attack	attack-10.wav	هادئ	تَسَلُّلٌ مِنَ الجِهَةِ اليُسْرَى...
-5	attack	attack-11.wav	هادئ	تَوَغُّلٌ مِنَ اليَمِين...
-5	attack	attack-12.wav	متحمس	وَحِيدٌ أَمامَ المَرْمَى!
-6	attack	attack-13.wav	هادئ	يُراوِغُ الأَوَّلَ... وَالثّانِي...
-6	attack	attack-14.wav	هادئ	الدِّفاعُ يَتَراجَع...
-6	attack	attack-15.wav	متحمس	فُرْصَةٌ سانِحَة!
-7	attack	attack-16.wav	هادئ	يَرْفَعُ رَأْسَهُ وَيَبْحَثُ عَنْ زَمِيل...
-2	counter	counter-01.wav	متحمس	هَجْمَةٌ مُرْتَدَّة!
-2	counter	counter-02.wav	متحمس	مُرْتَدَّةٌ سَرِيعَةٌ جِدّاً!
-2	counter	counter-03.wav	هادئ	قَطْعٌ لِلكُرَة، وَالطَّرِيقُ مَفْتُوح...
-3	counter	counter-04.wav	متحمس	ثَلاثَةٌ ضِدَّ اثْنَيْن!
-3	counter	counter-05.wav	هادئ	الضَّغْطُ يُثْمِرُ عَنْ كُرَة...
-3	counter	counter-06.wav	متحمس	الدِّفاعُ مَكْشُوف!
-4	counter	counter-07.wav	هادئ	تَحَوُّلٌ سَرِيعٌ مِنَ الدِّفاعِ لِلهُجُوم...
-2	shot	shot-01.wav	متحمس	يُسَدِّد!
-2	shot	shot-02.wav	متحمس	تَسْدِيدَة!
-2	shot	shot-03.wav	متحمس	سَدَّدَها قَوِيَّة!
-3	shot	shot-04.wav	متحمس	مِنْ بَعِيد!
-3	shot	shot-05.wav	متحمس	يُجَرِّبُ حَظَّه!
-3	shot	shot-06.wav	متحمس	بِالرَّأْس!
-4	shot	shot-07.wav	متحمس	عَلَى الطّائِر!
-4	shot	shot-08.wav	متحمس	بِالكَعْب!
-2	goal	goal-01.wav	صاخب	جُووووول!
-2	goal	goal-02.wav	صاخب	هَدَف! هَدَف! هَدَف!
-2	goal	goal-03.wav	صاخب	جُووول! هَدَفٌ رائِع!
-3	goal	goal-04.wav	صاخب	فِي الشِّباك!
-3	goal	goal-05.wav	صاخب	يا سَلام! هَدَفٌ خُرافِيّ!
-3	goal	goal-06.wav	صاخب	هَدَفٌ وَلا أَرْوَع!
-4	goal	goal-07.wav	صاخب	الكُرَةُ تُعانِقُ الشِّباك!
-4	goal	goal-08.wav	صاخب	جُووول! المَلْعَبُ يَنْفَجِر!
-4	goal	goal-09.wav	صاخب	هَدَفٌ مِنْ عالَمٍ آخَر!
-5	goal	goal-10.wav	صاخب	لا يُصَدَّق! هَدَف!
-5	goal	goal-11.wav	صاخب	سَجَّلَ! سَجَّلَ! سَجَّلَ!
-5	goal	goal-12.wav	صاخب	هَدَفٌ تارِيخِيّ!
-6	goal	goal-13.wav	صاخب	فِي الزّاوِيَةِ العُلْيا!
-6	goal	goal-14.wav	صاخب	فِي الزّاوِيَةِ البَعِيدَة!
-6	goal	goal-15.wav	صاخب	مِنْ تَحْتِ الحارِس!
-7	goal	goal-16.wav	صاخب	قَذِيفَةٌ لا تُرَدّ!
-2	goal-after	goal-after-01.wav	متحمس	المُدَرَّجاتُ تَشْتَعِلُ فَرَحاً!
-2	goal-after	goal-after-02.wav	هادئ	أَيُّ هَدَفٍ هٰذا!
-2	goal-after	goal-after-03.wav	هادئ	هَدَفٌ يَسْتَحِقُّ التَّصْفِيق.
-3	goal-after	goal-after-04.wav	هادئ	لَنْ يَنْساهُ الجُمْهُور.
-3	goal-after	goal-after-05.wav	هادئ	لِنُشاهِدِ الإِعادَة...
-3	goal-after	goal-after-06.wav	هادئ	اُنْظُرُوا إِلَى هٰذِهِ اللَّمْسَة...
-4	goal-after	goal-after-07.wav	هادئ	الحارِسُ لَمْ يَكُنْ لَهُ أَيُّ فُرْصَة.
-4	goal-after	goal-after-08.wav	هادئ	تَمْرِيرَةٌ حاسِمَةٌ مِنْ ذَهَب.
-4	goal-after	goal-after-09.wav	متحمس	الاِحْتِفالُ عِنْدَ الرّايَة!
-5	goal-after	goal-after-10.wav	هادئ	الزُّمَلاءُ يَحْتَضِنُونَ الهَدّاف.
-5	goal-after	goal-after-11.wav	هادئ	المُدَرِّبُ يَحْتَفِلُ عَلَى الخَطّ.
-5	goal-after	goal-after-12.wav	هادئ	هٰذا الهَدَفُ يُغَيِّرُ كُلَّ شَيْء.
-6	goal-after	goal-after-13.wav	هادئ	رَدُّ فِعْلٍ سَرِيعٌ مَطْلُوبٌ الآن.
-6	goal-after	goal-after-14.wav	هادئ	صَمْتٌ في مُدَرَّجاتِ الضُّيُوف.
-2	score	score-01.wav	متحمس	التَّعادُل!
-2	score	score-02.wav	متحمس	عادَ الفَرِيقُ إِلَى المُباراة!
-2	score	score-03.wav	متحمس	تَقَدُّمٌ مُسْتَحَقّ!
-3	score	score-04.wav	متحمس	يُضاعِفُ النَّتِيجَة!
-3	score	score-05.wav	متحمس	ثُلاثِيَّة!
-3	score	score-06.wav	متحمس	عَوْدَةٌ تارِيخِيَّة!
-4	score	score-07.wav	متحمس	قَلَبَ الطّاوِلَة!
-4	score	score-08.wav	هادئ	النَّتِيجَةُ ما زالَتْ مَفْتُوحَة.
-4	score	score-09.wav	هادئ	هَدَفٌ واحِدٌ يَفْصِلُ بَيْنَ الفَرِيقَيْن.
-5	score	score-10.wav	هادئ	الفارِقُ يَتَّسِع.
-5	score	score-11.wav	هادئ	هَلْ يَعُودُ الخاسِرُ إِلَى المُباراة؟
-5	score	score-12.wav	هادئ	التَّعادُلُ يُرْضِي أَحَداً؟
-2	late	late-01.wav	صاخب	فِي الوَقْتِ القاتِل!
-2	late	late-02.wav	صاخب	فِي الثَّوانِي الأَخِيرَة! هَدَف!
-2	late	late-03.wav	صاخب	هَدَفٌ قاتِل! لا يُصَدَّق!
-3	late	late-04.wav	متحمس	دِراما في آخِرِ الدَّقائِق!
-3	late	late-05.wav	متحمس	قَلْبٌ لِلنَّتِيجَةِ في الوَقْتِ بَدَلِ الضّائِع!
-3	late	late-06.wav	هادئ	لا تُغادِرُوا مَقاعِدَكُمْ قَبْلَ الصّافِرَة.
-2	header	header-01.wav	هادئ	عَرْضِيَّةٌ داخِلَ المَنْطِقَة...
-2	header	header-02.wav	هادئ	الكُرَةُ تَرْتَفِعُ داخِلَ الصُّنْدُوق...
-2	header	header-03.wav	صاخب	هَدَف! رَأْسِيَّةٌ قَوِيَّةٌ في الشِّباك!
-3	header	header-04.wav	صاخب	هَدَفٌ بِرَأْسِيَّةٍ رائِعَة!
-3	header	header-05.wav	متحمس	رَأْسِيَّةٌ فَوْقَ العارِضَة!
-3	header	header-06.wav	متحمس	رَأْسِيَّةٌ في أَحْضانِ الحارِس!
-4	header	header-07.wav	هادئ	لا أَحَدَ يُوقِفُهُ في الهَواء.
-4	header	header-08.wav	هادئ	اِرْتِقاءٌ رائِع.
-2	miss	miss-01.wav	متحمس	بِجانِبِ القائِم!
-2	miss	miss-02.wav	متحمس	فَوْقَ العارِضَة!
-2	miss	miss-03.wav	متحمس	آه! ضاعَتْ!
-3	miss	miss-04.wav	متحمس	كانَتْ هَدَفاً مُحَقَّقاً!
-3	miss	miss-05.wav	متحمس	سَنْتِيمِتْراتٌ فَقَط!
-3	miss	miss-06.wav	متحمس	لا يُصَدَّق! كَيْفَ ضاعَتْ؟
-4	miss	miss-07.wav	هادئ	فُرْصَةٌ ضائِعَة.
-4	miss	miss-08.wav	هادئ	لَمْ يُحْسِنِ التَّسْدِيد.
-4	miss	miss-09.wav	هادئ	التَّرْكِيزُ خانَهُ في اللَّحْظَةِ الأَخِيرَة.
-5	miss	miss-10.wav	هادئ	سَيَنْدَمُ عَلَى هٰذِهِ الفُرْصَة.
-5	miss	miss-11.wav	هادئ	الجُمْهُورُ يَضَعُ يَدَيْهِ عَلَى رَأْسِه.
-5	miss	miss-12.wav	هادئ	المُدَرِّبُ لا يُصَدِّقُ ما يَرَى.
-2	blocked	blocked-01.wav	متحمس	صَدَّها المُدافِع!
-2	blocked	blocked-02.wav	متحمس	جَسَدُ المُدافِعِ في الطَّرِيق!
-2	blocked	blocked-03.wav	هادئ	تَضْحِيَةٌ دِفاعِيَّة.
-3	blocked	blocked-04.wav	هادئ	الكُرَةُ تَرْتَدُّ لِرُكْنِيَّة.
-2	post	post-01.wav	متحمس	القائِم!
-2	post	post-02.wav	متحمس	العارِضَة!
-2	post	post-03.wav	متحمس	تَرْتَطِمُ بِالقائِمِ وَتَخْرُج!
-3	post	post-04.wav	متحمس	القائِمُ يُنْقِذُ الحارِس!
-3	post	post-05.wav	هادئ	الحَظُّ يَقِفُ ضِدَّه.
-3	post	post-06.wav	هادئ	القائِمُ يَهْتَزّ.
-2	save	save-01.wav	متحمس	تَصَدٍّ رائِع!
-2	save	save-02.wav	متحمس	الحارِسُ يَطِيرُ وَيُبْعِدُها!
-2	save	save-03.wav	متحمس	يا لَهُ مِنْ حارِس!
-3	save	save-04.wav	متحمس	بِأَطْرافِ أَصابِعِه!
-3	save	save-05.wav	متحمس	فَوْقَ العارِضَة بِلَمْسَةٍ سِحْرِيَّة!
-3	save	save-06.wav	متحمس	يُمْسِكُها بِثِقَة!
-4	save	save-07.wav	متحمس	تَصَدٍّ مُزْدَوَج!
-4	save	save-08.wav	متحمس	جِدارٌ في المَرْمَى!
-4	save	save-09.wav	هادئ	الحارِسُ في يَوْمِه.
-5	save	save-10.wav	هادئ	رَدُّ فِعْلٍ سَرِيع.
-5	save	save-11.wav	هادئ	كانَتْ في طَرِيقِها لِلشِّباك.
-5	save	save-12.wav	هادئ	الحارِسُ يَصْرُخُ عَلَى دِفاعِه.
-2	line	line-01.wav	متحمس	يُبْعِدُها مِنْ عَلَى الخَطّ!
-2	line	line-02.wav	متحمس	إِنْقاذٌ في اللَّحْظَةِ الأَخِيرَة!
-2	line	line-03.wav	هادئ	كانَتْ سَتَعْبُرُ الخَطّ.
-2	own	own-01.wav	متحمس	هَدَفٌ عَكْسِيّ!
-2	own	own-02.wav	متحمس	يُسَجِّلُ في مَرْماه!
-2	own	own-03.wav	هادئ	لَحْظَةٌ صَعْبَةٌ عَلَى المُدافِع.
-3	own	own-04.wav	هادئ	كانَ يُحاوِلُ الإِبْعاد.
-2	offside	offside-01.wav	متحمس	الرّايَةُ مَرْفُوعَة!
-2	offside	offside-02.wav	هادئ	تَسَلُّل.
-2	offside	offside-03.wav	هادئ	كانَ مُتَقَدِّماً بِخُطْوَة.
-3	offside	offside-04.wav	هادئ	مِصْيَدَةُ تَسَلُّلٍ ناجِحَة.
-3	offside	offside-05.wav	هادئ	الحَكَمُ المُساعِدُ كانَ في مَكانِه.
-3	offside	offside-06.wav	هادئ	لَوْلا التَّسَلُّل...
-2	foul	foul-01.wav	متحمس	عَرْقَلَة!
-2	foul	foul-02.wav	هادئ	خَطَأٌ واضِح.
-2	foul	foul-03.wav	هادئ	تَدَخُّلٌ قَوِيّ.
-3	foul	foul-04.wav	هادئ	الحَكَمُ يُطْلِقُ صافِرَتَه.
-3	foul	foul-05.wav	هادئ	اللّاعِبُ يَسْقُطُ مُتَأَلِّماً.
-3	foul	foul-06.wav	هادئ	تَدَخُّلٌ مُتَأَخِّر.
-4	foul	foul-07.wav	هادئ	كانَ يُمْكِنُ تَجَنُّبُه.
-4	foul	foul-08.wav	هادئ	الحَكَمُ يَتْرُكُ اللَّعِبَ يَسْتَمِرّ... أَفْضَلِيَّة.
-2	yellow	yellow-01.wav	متحمس	بِطاقَةٌ صَفْراء!
-2	yellow	yellow-02.wav	هادئ	إِنْذار.
-2	yellow	yellow-03.wav	هادئ	الحَكَمُ يُخْرِجُ البِطاقَةَ الصَّفْراء.
-3	yellow	yellow-04.wav	هادئ	إِنْذارٌ مُسْتَحَقّ.
-3	yellow	yellow-05.wav	هادئ	عَلَيْهِ الحَذَرُ الآن.
-3	yellow	yellow-06.wav	هادئ	يَعْتَرِض، لٰكِنَّ القَرارَ واضِح.
-4	yellow	yellow-07.wav	هادئ	بِطاقَةٌ لِإِيقافِ الهَجْمَة.
-2	red	red-01.wav	صاخب	بِطاقَةٌ حَمْراء!
-2	red	red-02.wav	متحمس	طَرْد!
-2	red	red-03.wav	متحمس	الإِنْذارُ الثّانِي... وَالطَّرْد!
-3	red	red-04.wav	هادئ	الفَرِيقُ يُكْمِلُ بِعَشَرَةِ لاعِبِين.
-3	red	red-05.wav	هادئ	قَرارٌ قاسٍ، لٰكِنَّهُ صَحِيح.
-3	red	red-06.wav	هادئ	يُغادِرُ المَلْعَبَ مُطَأْطِئَ الرَّأْس.
-4	red	red-07.wav	هادئ	هٰذا يُغَيِّرُ شَكْلَ المُباراة.
-2	freekick	freekick-01.wav	هادئ	ضَرْبَةٌ حُرَّةٌ عَلَى حُدُودِ المَنْطِقَة.
-2	freekick	freekick-02.wav	هادئ	الحائِطُ يَتَشَكَّل... وَالجَمِيعُ يَنْتَظِر.
-2	freekick	freekick-03.wav	هادئ	مَسافَةٌ مِثالِيَّةٌ لِلتَّسْدِيد.
-3	freekick	freekick-04.wav	صاخب	فَوْقَ الحائِطِ وَفي الزّاوِيَة! هَدَفٌ مُذْهِل!
-3	freekick	freekick-05.wav	صاخب	هَدَفٌ مِنْ ضَرْبَةٍ حُرَّة! لَوْحَةٌ فَنِّيَّة!
-3	freekick	freekick-06.wav	متحمس	تَصَدٍّ رائِعٌ لِلضَّرْبَةِ الحُرَّة!
-4	freekick	freekick-07.wav	متحمس	في الحائِط!
-4	freekick	freekick-08.wav	متحمس	فَوْقَ العارِضَة بِقَلِيل!
-4	freekick	freekick-09.wav	هادئ	الحارِسُ لَمْ يَتَحَرَّك.
-2	penalty	penalty-01.wav	صاخب	رَكْلَةُ جَزاء!
-2	penalty	penalty-02.wav	متحمس	الحَكَمُ يُشِيرُ إِلَى النُّقْطَة!
-2	penalty	penalty-03.wav	هادئ	المَلْعَبُ يَحْبِسُ أَنْفاسَه...
-3	penalty	penalty-04.wav	هادئ	المُنَفِّذُ يَضَعُ الكُرَة...
-3	penalty	penalty-05.wav	هادئ	الحارِسُ يَتَحَرَّكُ عَلَى خَطِّه...
-3	penalty	penalty-06.wav	هادئ	لَحْظَةُ الحَقِيقَة...
-4	penalty	penalty-07.wav	صاخب	هَدَف! الحارِسُ في جِهَة، وَالكُرَةُ في جِهَة!
-4	penalty	penalty-08.wav	صاخب	هَدَف! تَسْدِيدَةٌ واثِقَة!
-4	penalty	penalty-09.wav	صاخب	تَصَدّى لَها! الحارِسُ بَطَل!
-5	penalty	penalty-10.wav	متحمس	أَضاعَها! فَوْقَ العارِضَة!
-5	penalty	penalty-11.wav	متحمس	في القائِم!
-5	penalty	penalty-12.wav	هادئ	أَعْصابٌ مِنْ حَدِيد.
-6	penalty	penalty-13.wav	هادئ	الحَكَمُ يَأْمُرُ بِإِعادَتِها.
-2	shootout	shootout-01.wav	هادئ	إِلَى رَكَلاتِ التَّرْجِيح.
-2	shootout	shootout-02.wav	هادئ	القُرْعَةُ تُحَدِّدُ مَنْ يَبْدَأ.
-2	shootout	shootout-03.wav	هادئ	الرَّكْلَةُ الأُولَى...
-3	shootout	shootout-04.wav	هادئ	كُلُّ رَكْلَةٍ بِمَثابَةِ نِهائِيّ.
-3	shootout	shootout-05.wav	متحمس	سَجَّل!
-3	shootout	shootout-06.wav	متحمس	أَضاع!
-4	shootout	shootout-07.wav	متحمس	الحارِسُ يَتَصَدّى!
-4	shootout	shootout-08.wav	صاخب	فازَ بِرَكَلاتِ التَّرْجِيح!
-4	shootout	shootout-09.wav	هادئ	الضَّغْطُ هائِلٌ عَلَى المُنَفِّذ.
-5	shootout	shootout-10.wav	هادئ	رَكْلَةٌ حاسِمَة...
-2	corner	corner-01.wav	هادئ	رُكْنِيَّة.
-2	corner	corner-02.wav	هادئ	الجَمِيعُ داخِلَ المَنْطِقَة.
-2	corner	corner-03.wav	هادئ	الرُّكْنِيَّةُ تُرْفَعُ عالِياً...
-3	corner	corner-04.wav	هادئ	رُكْنِيَّةٌ قَصِيرَة.
-3	corner	corner-05.wav	متحمس	الحارِسُ يَخْرُجُ وَيَلْكُمُها!
-3	corner	corner-06.wav	هادئ	الدِّفاعُ يُبْعِد.
-2	var	var-01.wav	هادئ	الحَكَمُ يَتَواصَلُ مَعَ حُكّامِ الفِيدْيُو.
-2	var	var-02.wav	هادئ	لَحَظات... مُراجَعَة.
-2	var	var-03.wav	هادئ	الحَكَمُ يَتَّجِهُ إِلَى الشّاشَة.
-3	var	var-04.wav	هادئ	الجَمِيعُ يَنْتَظِرُ القَرار.
-3	var	var-05.wav	متحمس	الهَدَفُ مُلْغًى!
-3	var	var-06.wav	متحمس	الهَدَفُ صَحِيح!
-4	var	var-07.wav	متحمس	رَكْلَةُ جَزاءٍ بَعْدَ المُراجَعَة!
-4	var	var-08.wav	متحمس	تَحَوَّلَتْ إِلَى بِطاقَةٍ حَمْراء!
-4	var	var-09.wav	هادئ	لا شَيْءَ بَعْدَ المُراجَعَة.
-5	var	var-10.wav	هادئ	لَمْسَةُ يَدٍ واضِحَةٌ في الإِعادَة.
-5	var	var-11.wav	هادئ	تَسَلُّلٌ بِفارِقٍ ضَئِيل.
-5	var	var-12.wav	هادئ	التِّقْنِيَةُ تَحْسِمُ الجَدَل.
-2	injury	injury-01.wav	هادئ	لاعِبٌ عَلَى الأَرْض.
-2	injury	injury-02.wav	هادئ	الحَكَمُ يُوقِفُ اللَّعِب.
-2	injury	injury-03.wav	هادئ	الطّاقِمُ الطِّبِّيُّ يَدْخُلُ المَلْعَب.
-3	injury	injury-04.wav	هادئ	نَتَمَنَّى أَلّا تَكُونَ إِصابَةً خَطِيرَة.
-3	injury	injury-05.wav	هادئ	يَبْدُو أَنَّهُ لَنْ يُكْمِل.
-3	injury	injury-06.wav	هادئ	يَعُودُ لِلمَلْعَب، أَخْبارٌ جَيِّدَة.
-2	sub	sub-01.wav	هادئ	تَبْدِيل.
-2	sub	sub-02.wav	هادئ	المُدَرِّبُ يُجْرِي تَغْيِيراً.
-2	sub	sub-03.wav	هادئ	دِماءٌ جَدِيدَةٌ في المَلْعَب.
-3	sub	sub-04.wav	هادئ	تَبْدِيلٌ هُجُومِيّ.
-3	sub	sub-05.wav	هادئ	تَبْدِيلٌ دِفاعِيٌّ لِلحِفاظِ عَلَى النَّتِيجَة.
-3	sub	sub-06.wav	هادئ	الجُمْهُورُ يُصَفِّقُ لِلخارِج.
-4	sub	sub-07.wav	هادئ	تَبْدِيلٌ اضْطِرارِيّ.
-2	coach	coach-01.wav	هادئ	المُدَرِّبُ يُغَيِّرُ الخُطَّة.
-2	coach	coach-02.wav	هادئ	تَعْلِيماتٌ جَدِيدَةٌ مِنَ الخَطّ.
-2	coach	coach-03.wav	هادئ	الفَرِيقُ يَتَقَدَّمُ لِلهُجُوم.
-3	coach	coach-04.wav	هادئ	تَحَفُّظٌ دِفاعِيٌّ الآن.
-3	coach	coach-05.wav	هادئ	ضَغْطٌ أَعْلَى مِنَ الآن.
-3	coach	coach-06.wav	هادئ	المُدَرِّبُ غاضِبٌ عَلَى الخَطّ.
-4	coach	coach-07.wav	هادئ	المُدَرِّبُ يُصَفِّقُ لِلاعِبِيه.
-2	stoppage	stoppage-01.wav	هادئ	الوَقْتُ بَدَلُ الضّائِع.
-2	stoppage	stoppage-02.wav	هادئ	الحَكَمُ الرّابِعُ يَرْفَعُ اللَّوْحَة.
-2	stoppage	stoppage-03.wav	هادئ	دَقائِقُ قَلِيلَةٌ مُتَبَقِّيَة.
-3	stoppage	stoppage-04.wav	متحمس	الفُرْصَةُ الأَخِيرَة!
-2	half	half-01.wav	هادئ	نِهايَةُ الشَّوْطِ الأَوَّل.
-2	half	half-02.wav	هادئ	الحَكَمُ يُطْلِقُ صافِرَةَ الاسْتِراحَة.
-2	half	half-03.wav	هادئ	شَوْطٌ أَوَّلُ مُثِير.
-3	half	half-04.wav	هادئ	شَوْطٌ أَوَّلُ مُغْلَق.
-3	half	half-05.wav	هادئ	المُدَرِّبانِ أَمامَهُما الكَثِيرُ لِيُراجِعاه.
-2	full	full-01.wav	متحمس	نِهايَةُ المُباراة!
-2	full	full-02.wav	متحمس	الحَكَمُ يُطْلِقُ صافِرَةَ النِّهايَة!
-2	full	full-03.wav	متحمس	فَوْزٌ ثَمِين!
-3	full	full-04.wav	هادئ	تَعادُلٌ عادِل.
-3	full	full-05.wav	متحمس	مُفاجَأَةُ المَوْسِم!
-3	full	full-06.wav	هادئ	الخاسِرُ قَدَّمَ مُباراةً مُشَرِّفَة.
-4	full	full-07.wav	هادئ	نَقاطٌ مُهِمَّةٌ في سِباقِ الصَّدارَة.
-4	full	full-08.wav	هادئ	شُكْراً لِمُتابَعَتِكُم.
-4	full	full-09.wav	هادئ	إِلَى اللِّقاءِ في مُباراةٍ قادِمَة.
-2	trophy	trophy-01.wav	صاخب	الأَبْطال!
-2	trophy	trophy-02.wav	صاخب	الكَأْسُ في الأَحْضان!
-2	trophy	trophy-03.wav	متحمس	القائِدُ يَرْفَعُ الكَأْس!
-3	trophy	trophy-04.wav	هادئ	مَوْسِمٌ تارِيخِيٌّ يُتَوَّجُ بِاللَّقَب.
-3	trophy	trophy-05.wav	هادئ	لَيْلَةٌ لَنْ تُنْسَى.
-2	crowd	crowd-01.wav	هادئ	الجُمْهُورُ يُشْعِلُ المُدَرَّجات.
-2	crowd	crowd-02.wav	هادئ	الأَهازِيجُ لا تَتَوَقَّف.
-2	crowd	crowd-03.wav	هادئ	المُدَرَّجاتُ تَهْتَزّ.
-3	crowd	crowd-04.wav	هادئ	صَمْتٌ رَهِيب.
-3	crowd	crowd-05.wav	هادئ	صافِرَاتُ اسْتِهْجان.
-3	crowd	crowd-06.wav	هادئ	تَصْفِيقٌ حارّ.
-4	crowd	crowd-07.wav	هادئ	المَطَرُ لا يُوقِفُ الحَماس.
-4	crowd	crowd-08.wav	هادئ	الثَّلْجُ يُغَطِّي أَطْرافَ المَلْعَب.
-4	crowd	crowd-09.wav	هادئ	الضَّبابُ يُخْفِي المُدَرَّجاتِ البَعِيدَة.
-2	skill	skill-01.wav	صاخب	مِقَصِّيَّة! هَدَفٌ أُسْطُورِيّ!
-2	skill	skill-02.wav	صاخب	بِالكَعْب! يا لِلْمَهارَة!
-2	skill	skill-03.wav	صاخب	صارُوخٌ مِنْ بَعِيد!
-3	skill	skill-04.wav	متحمس	مَراوَغَةٌ ساحِرَة!
-3	skill	skill-05.wav	متحمس	لَمْسَةٌ بِالكَعْب!
-3	skill	skill-06.wav	متحمس	يَمُرُّ مِنْ بَيْنِ قَدَمَيْه!
-4	skill	skill-07.wav	هادئ	مَهارَةٌ عالِيَة.
-4	skill	skill-08.wav	هادئ	هٰذا ما يَجْعَلُ الكُرَةَ جَمِيلَة.
-2	scuffle	scuffle-01.wav	متحمس	تَوَتُّرٌ بَيْنَ اللّاعِبِين!
-2	scuffle	scuffle-02.wav	هادئ	الحَكَمُ يَتَدَخَّلُ لِلفَصْل.
-2	scuffle	scuffle-03.wav	هادئ	الأَعْصابُ مُتَوَتِّرَة.
-3	scuffle	scuffle-04.wav	هادئ	يَجِبُ أَنْ يَهْدَأَ الجَمِيع.
-2	studio	studio-01.wav	هادئ	لِنُحَلِّلْ ما حَدَث في الشَّوْطِ الأَوَّل.
-2	studio	studio-02.wav	هادئ	الأَرْقامُ تَقُولُ الكَثِير.
-2	studio	studio-03.wav	هادئ	الاِسْتِحْواذُ لا يَعْنِي الفَوْز.
-3	studio	studio-04.wav	هادئ	رَجُلُ المُباراةِ بِلا مُنازِع.
-3	studio	studio-05.wav	هادئ	أَداءٌ جَماعِيٌّ مُمْتاز.
-3	studio	studio-06.wav	هادئ	التَّبْدِيلاتُ صَنَعَتِ الفارِق.
+1	story	goal-pre-1.wav	هادئ	هجمة خطيرة...
+1	story	goal-pre-2.wav	هادئ	انطلاقة سريعة على المرمى...
+1	story	goal-pre-3.wav	هادئ	الكورة بتقرب من منطقة الجزا...
+1	story	goal-key-1.wav	متحمس	جووول! جون جامد!
+1	story	goal-key-2.wav	متحمس	جون! الكورة في الشبكة!
+1	story	goal-key-3.wav	متحمس	يا سلام! جون خرافي!
+1	story	goal-post-1.wav	هادئ	المدرجات ولعت فرحة!
+1	story	goal-post-2.wav	هادئ	إيه الجون ده!
+1	story	goal-post-3.wav	هادئ	جون يستاهل التسقيف!
+1	story	header-pre-1.wav	هادئ	عرضية جوه المنطقة...
+1	story	header-pre-2.wav	هادئ	الكورة عالية جوه الصندوق...
+1	story	header-key-1.wav	متحمس	جون! راسية قوية في الشبكة!
+1	story	header-key-2.wav	متحمس	جون براسية ولا أروع!
+1	story	header-post-1.wav	هادئ	محدش يقدر يوقفه في الهوا!
+1	story	header-post-2.wav	هادئ	طلعة حلوة أوي!
+1	story	free_kick_goal-pre-1.wav	هادئ	فاول على حدود المنطقة.
+1	story	free_kick_goal-pre-2.wav	هادئ	الحيطة اتعملت... والكل مستني.
+1	story	free_kick_goal-key-1.wav	متحمس	فوق الحيطة وفي الزاوية! جون يجنن!
+1	story	free_kick_goal-key-2.wav	متحمس	جون من فاول! لوحة فنية!
+1	story	free_kick_goal-post-1.wav	هادئ	الحارس متحركش!
+1	story	free_kick_goal-post-2.wav	هادئ	شوطة متتصدش!
+1	story	free_kick_save-key-1.wav	متحمس	فوق الحيطة... والحارس طار وبعدها!
+1	story	free_kick_save-key-2.wav	متحمس	تصدي جامد للفاول!
+1	story	free_kick_save-post-1.wav	هادئ	كانت هتبقى جون!
+1	story	free_kick_save-post-2.wav	هادئ	قريبة أوي!
+1	story	free_kick_miss-key-1.wav	متحمس	فوق العارضة!
+1	story	free_kick_miss-key-2.wav	متحمس	جنب القائم!
+1	story	free_kick_miss-post-1.wav	هادئ	فرصة ضاعت.
+1	story	penalty_goal-pre-1.wav	هادئ	ضربة جزا! الحكم بيشاور على النقطة!
+1	story	penalty_goal-pre-2.wav	هادئ	الملعب كله حابس نفسه...
+1	story	penalty_goal-key-1.wav	متحمس	جون! الحارس في حتة والكورة في حتة!
+1	story	penalty_goal-key-2.wav	متحمس	جون! شوطة واثقة!
+1	story	penalty_goal-post-1.wav	هادئ	أعصاب حديد!
+1	story	penalty_save-key-1.wav	متحمس	صدها! الحارس قراها!
+1	story	penalty_save-key-2.wav	متحمس	يا سلام! الحارس صد ضربة الجزا!
+1	story	penalty_save-post-1.wav	هادئ	لحظة كبيرة في الماتش!
+1	story	save-pre-1.wav	هادئ	انفراد بالمرمى!
+1	story	save-pre-2.wav	هادئ	شوطة قوية...
+1	story	save-pre-3.wav	هادئ	فرصة خطيرة!
+1	story	save-key-1.wav	متحمس	تصدي جامد من الحارس!
+1	story	save-key-2.wav	متحمس	الحارس طار وبعدها!
+1	story	save-post-1.wav	هادئ	حارس عالمي!
+1	story	save-post-2.wav	هادئ	إنقاذ بجون!
+1	story	miss-pre-1.wav	هادئ	شوطة...
+1	story	miss-pre-2.wav	هادئ	محاولة على المرمى...
+1	story	miss-key-3.wav	متحمس	كانت هتبقى جون!
+1	story	miss-post-1.wav	هادئ	المدرب مش مصدق!
+1	story	miss-post-2.wav	هادئ	فرصة مبتتكررش كتير!
+1	story	post-key-1.wav	متحمس	القائم! القائم رجع الكورة!
+1	story	post-post-1.wav	هادئ	سنتيمترات حرمته من الجون!
+1	story	blocked-pre-2.wav	هادئ	محاولة قوية...
+1	story	blocked-key-1.wav	متحمس	الدفاع صدها!
+1	story	blocked-key-2.wav	متحمس	تدخل شجاع من المدافع!
+1	story	blocked-post-1.wav	هادئ	دفاع جامد.
+1	story	offside-pre-1.wav	هادئ	كورة طويلة ورا الدفاع...
+1	story	offside-key-1.wav	هادئ	الراية اترفعت. أوفسايد.
+1	story	offside-key-2.wav	هادئ	لأ! أوفسايد.
+1	story	offside-post-1.wav	هادئ	كان متقدم بخطوة قبل التمريرة.
+1	story	corner_header-pre-1.wav	هادئ	كورنر.
+1	story	corner_header-pre-2.wav	هادئ	العرضية عالية...
+1	story	corner_header-key-1.wav	متحمس	راسية! فوق العارضة بشوية!
+1	story	corner_header-key-2.wav	متحمس	راسية قريبة أوي!
+1	story	corner_header-post-1.wav	هادئ	الكورنر كان هيجيب جون.
+1	story	corner_claim-key-1.wav	هادئ	الحارس ماسك الكورة كويس.
+1	story	corner_claim-post-1.wav	هادئ	الخطر راح.
+1	story	yellow-pre-1.wav	هادئ	تدخل متأخر!
+1	story	yellow-pre-2.wav	هادئ	تدخل جامد!
+1	story	yellow-key-1.wav	هادئ	كارت أصفر.
+1	story	yellow-key-2.wav	هادئ	الحكم طلع الكارت الأصفر.
+1	story	yellow-post-1.wav	هادئ	لازم ياخد باله من دلوقتي.
+1	story	red-pre-1.wav	هادئ	تدخل عنيف من ورا!
+1	story	red-pre-2.wav	هادئ	تدخل خطير!
+1	story	red-key-1.wav	متحمس	كارت أحمر! طرد!
+1	story	red-key-2.wav	متحمس	الحكم طرده على طول!
+1	story	red-post-1.wav	هادئ	فريقه هيكمل بعشرة!
+1	story	red-post-2.wav	هادئ	خروج حزين على أوضة اللبس.
+1	story	second_yellow-pre-1.wav	هادئ	تدخل متأخر تاني...
+1	story	second_yellow-key-1.wav	متحمس	الإنذار التاني! طرد!
+1	story	second_yellow-post-1.wav	هادئ	ميلومش غير نفسه.
+1	story	sub-key-1.wav	هادئ	تغيير.
+1	story	sub-key-2.wav	هادئ	تغيير في الفريق.
+1	story	sub-post-1.wav	هادئ	دم جديد في الملعب.
+1	story	injury-key-1.wav	هادئ	لاعب واقع على الأرض.
+1	story	injury-key-2.wav	هادئ	إصابة... والجهاز الطبي داخل.
+1	story	injury-post-1.wav	هادئ	نتمنى متكونش خطيرة.
+1	story	coach-key-1.wav	هادئ	المدرب بيدي تعليمات جديدة.
+1	story	coach-key-2.wav	هادئ	تغيير تكتيكي من الدكة.
+1	story	coach-post-1.wav	هادئ	نشوف هيغير حاجة ولا لأ.
+1	story	kickoff-key-1.wav	هادئ	الماتش بدأ!
+1	story	halftime-key-1.wav	متحمس	نهاية الشوط الأول.
+1	story	fulltime-key-1.wav	متحمس	صافرة النهاية!
+1	story	extra_time-key-1.wav	متحمس	على الوقت الإضافي!
+1	story	penalties-key-1.wav	متحمس	على ضربات الترجيح!
+1	story	stoppage-key-1.wav	هادئ	وقت بدل ضايع.
+1	story	shootout-key-1.wav	متحمس	ضربات الترجيح... أعصاب حديد.
+1	story	attack-key-1.wav	هادئ	هجمة منظمة.
+1	story	attack-key-2.wav	هادئ	ضغط مستمر.
+1	story	attack-key-3.wav	هادئ	بيحاولوا يبنوا الهجمة.
+2	intro	intro-01.wav	هادئ	مسا الخير وأهلا بيكم في ماتش منتظر.
+2	intro	intro-02.wav	هادئ	أهلا بيكم، المدرجات مليانة والجو تحفة.
+2	intro	intro-03.wav	هادئ	ماتش كبير مستنينا الليلة.
+3	intro	intro-04.wav	هادئ	الفريقين داخلين أرض الملعب.
+3	intro	intro-05.wav	هادئ	كله جاهز لصافرة البداية.
+3	intro	intro-06.wav	هادئ	ماتش مفيهوش قسمة على اتنين.
+4	intro	intro-07.wav	هادئ	الجماهير بتهتف قبل ما الماتش يبدأ.
+4	intro	intro-08.wav	هادئ	التشكيلتين على الشاشة، والمدربين جاهزين.
+4	intro	intro-09.wav	هادئ	ليلة كورة بجد.
+5	intro	intro-10.wav	هادئ	نتمنالكم فرجة ممتعة.
+5	intro	intro-11.wav	هادئ	الملعب صعب على الضيوف، والجمهور مش بيهدى.
+5	intro	intro-12.wav	هادئ	ماتش ممكن يغير شكل الترتيب.
+6	intro	intro-13.wav	هادئ	المطر نازل، والنجيلة بتزحلق.
+6	intro	intro-14.wav	هادئ	برد جامد الليلة.
+6	intro	intro-15.wav	هادئ	الحر شديد، واللياقة هتفرق.
+2	kickoff	kickoff-01.wav	متحمس	الماتش بدأ!
+2	kickoff	kickoff-02.wav	متحمس	صافرة البداية، وعلى بركة الله!
+2	kickoff	kickoff-03.wav	هادئ	الكورة بتتحرك من نص الملعب.
+3	kickoff	kickoff-04.wav	هادئ	الشوط التاني بدأ.
+3	kickoff	kickoff-05.wav	هادئ	الفريقين رجعوا من أوضة اللبس.
+3	kickoff	kickoff-06.wav	هادئ	شوط تاني جديد، وكل حاجة ممكنة.
+4	kickoff	kickoff-07.wav	هادئ	يا ترى هنشوف تغيير في الشوط التاني؟
+2	calm	calm-01.wav	هادئ	تدوير للكورة في النص.
+2	calm	calm-02.wav	هادئ	بنا هادي من ورا.
+2	calm	calm-03.wav	هادئ	الفريق بيدور على ثغرة.
+3	calm	calm-04.wav	هادئ	باصات قصيرة وصبر.
+3	calm	calm-05.wav	هادئ	الضغط عالي في نص الملعب.
+3	calm	calm-06.wav	هادئ	الكورة راجعة للحارس.
+4	calm	calm-07.wav	هادئ	لعب على الأطراف.
+4	calm	calm-08.wav	هادئ	نقل اللعب من ناحية للتانية.
+4	calm	calm-09.wav	هادئ	الدفاع متماسك.
+5	calm	calm-10.wav	هادئ	الإيقاع بطيء في الدقايق دي.
+5	calm	calm-11.wav	هادئ	الماتش محتاج شرارة.
+5	calm	calm-12.wav	هادئ	استحواذ على الكورة، بس من غير خطورة.
+6	calm	calm-13.wav	هادئ	صراع على الكورة في النص.
+6	calm	calm-14.wav	هادئ	الكورة طلعت رمية تماس.
+6	calm	calm-15.wav	هادئ	الحكم متابع من قريب.
+7	calm	calm-16.wav	هادئ	المدرب بيوجه لاعيبته من على الخط.
+7	calm	calm-17.wav	هادئ	الجمهور عايز هجوم.
+7	calm	calm-18.wav	هادئ	هدوء قبل العاصفة؟
+8	calm	calm-19.wav	هادئ	كل فريق عامل حساب التاني.
+8	calm	calm-20.wav	هادئ	الاستحواذ لصاحب الأرض.
+8	calm	calm-21.wav	هادئ	الضيوف مستنيين المرتدة.
+9	calm	calm-22.wav	هادئ	كورة طويلة لقدام.
+9	calm	calm-23.wav	هادئ	قطع حلو في النص.
+9	calm	calm-24.wav	هادئ	غلطة بسيطة في التمريرة.
+10	calm	calm-25.wav	هادئ	اللياقة بدأت تبان.
+10	calm	calm-26.wav	هادئ	المساحات بتضيق.
+10	calm	calm-27.wav	هادئ	الفريق بيطلع لقدام.
+11	calm	calm-28.wav	هادئ	رجوع للدفاع بسرعة.
+11	calm	calm-29.wav	هادئ	مفيش حاجة تذكر لحد دلوقتي.
+11	calm	calm-30.wav	هادئ	الماتش متكافئ.
+12	calm	calm-31.wav	هادئ	الأعصاب مشدودة.
+12	calm	calm-32.wav	هادئ	كل دقيقة الضغط بيزيد.
+2	attack	attack-01.wav	هادئ	هجمة خطيرة...
+2	attack	attack-02.wav	هادئ	انطلاقة سريعة على المرمى...
+2	attack	attack-03.wav	هادئ	الكورة بتقرب من منطقة الجزا...
+3	attack	attack-04.wav	هادئ	تمريرة بينية...
+3	attack	attack-05.wav	هادئ	مراوغة على الخط...
+3	attack	attack-06.wav	هادئ	عرضية على المنطقة...
+4	attack	attack-07.wav	متحمس	انفراد بالحارس!
+4	attack	attack-08.wav	متحمس	المساحة فاضية!
+4	attack	attack-09.wav	هادئ	لعب تنائي حلو...
+5	attack	attack-10.wav	هادئ	اختراق من الشمال...
+5	attack	attack-11.wav	هادئ	توغل من اليمين...
+5	attack	attack-12.wav	متحمس	لوحده قدام المرمى!
+6	attack	attack-13.wav	هادئ	بيراوغ الأول... والتاني...
+6	attack	attack-14.wav	هادئ	الدفاع بيرجع لورا...
+6	attack	attack-15.wav	متحمس	فرصة سانحة!
+7	attack	attack-16.wav	هادئ	رافع راسه وبيدور على زميل...
+2	counter	counter-01.wav	متحمس	هجمة مرتدة!
+2	counter	counter-02.wav	متحمس	مرتدة سريعة جدا!
+2	counter	counter-03.wav	هادئ	قطع للكورة، والطريق مفتوح...
+3	counter	counter-04.wav	متحمس	تلاتة ضد اتنين!
+3	counter	counter-05.wav	هادئ	الضغط جاب كورة...
+3	counter	counter-06.wav	متحمس	الدفاع مكشوف!
+4	counter	counter-07.wav	هادئ	تحول سريع من الدفاع للهجوم...
+2	shot	shot-01.wav	متحمس	بيشوط!
+2	shot	shot-02.wav	متحمس	شوطة!
+2	shot	shot-03.wav	متحمس	شاطها جامدة!
+3	shot	shot-04.wav	متحمس	من بعيد!
+3	shot	shot-05.wav	متحمس	بيجرب حظه!
+3	shot	shot-06.wav	متحمس	براسه!
+4	shot	shot-07.wav	متحمس	على الطاير!
+4	shot	shot-08.wav	متحمس	بالكعب!
+2	goal	goal-01.wav	صاخب	جوووووول!
+2	goal	goal-02.wav	صاخب	جون! جون! جون!
+2	goal	goal-03.wav	صاخب	جووول! جون جامد!
+3	goal	goal-04.wav	صاخب	في الشبكة!
+3	goal	goal-05.wav	صاخب	يا سلام! جون خرافي!
+3	goal	goal-06.wav	صاخب	جون ولا أروع!
+4	goal	goal-07.wav	صاخب	الكورة في حضن الشبكة!
+4	goal	goal-08.wav	صاخب	جووول! الملعب ولع!
+4	goal	goal-09.wav	صاخب	جون من عالم تاني!
+5	goal	goal-10.wav	صاخب	مش معقول! جون!
+5	goal	goal-11.wav	صاخب	جاب جون! جاب جون! جاب جون!
+5	goal	goal-12.wav	صاخب	جون تاريخي!
+6	goal	goal-13.wav	صاخب	في الزاوية العليا!
+6	goal	goal-14.wav	صاخب	في الزاوية البعيدة!
+6	goal	goal-15.wav	صاخب	من تحت الحارس!
+7	goal	goal-16.wav	صاخب	صاروخ ميترجعش!
+2	goal-after	goal-after-01.wav	متحمس	المدرجات ولعت فرحة!
+2	goal-after	goal-after-02.wav	هادئ	إيه الجون ده!
+2	goal-after	goal-after-03.wav	هادئ	جون يستاهل التسقيف.
+3	goal-after	goal-after-04.wav	هادئ	الجمهور مش هينساه.
+3	goal-after	goal-after-05.wav	هادئ	تعالوا نشوف الإعادة...
+3	goal-after	goal-after-06.wav	هادئ	بصوا اللمسة دي...
+4	goal-after	goal-after-07.wav	هادئ	الحارس ملوش أي فرصة.
+4	goal-after	goal-after-08.wav	هادئ	تمريرة الجون دي دهب.
+4	goal-after	goal-after-09.wav	متحمس	الاحتفال عند الراية!
+5	goal-after	goal-after-10.wav	هادئ	زمايله بيحضنوه.
+5	goal-after	goal-after-11.wav	هادئ	المدرب بيحتفل على الخط.
+5	goal-after	goal-after-12.wav	هادئ	الجون ده بيغير كل حاجة.
+6	goal-after	goal-after-13.wav	هادئ	لازم رد فعل سريع دلوقتي.
+6	goal-after	goal-after-14.wav	هادئ	سكوت في مدرجات الضيوف.
+2	score	score-01.wav	متحمس	التعادل!
+2	score	score-02.wav	متحمس	الفريق رجع للماتش!
+2	score	score-03.wav	متحمس	تقدم مستحق!
+3	score	score-04.wav	متحمس	بيضاعف النتيجة!
+3	score	score-05.wav	متحمس	هاتريك!
+3	score	score-06.wav	متحمس	رجوع تاريخي!
+4	score	score-07.wav	متحمس	قلب الترابيزة!
+4	score	score-08.wav	هادئ	النتيجة لسه مفتوحة.
+4	score	score-09.wav	هادئ	جون واحد بس بين الفريقين.
+5	score	score-10.wav	هادئ	الفرق بيكبر.
+5	score	score-11.wav	هادئ	يا ترى الخسران هيرجع للماتش؟
+5	score	score-12.wav	هادئ	التعادل يرضي حد؟
+2	late	late-01.wav	صاخب	في الوقت القاتل!
+2	late	late-02.wav	صاخب	في آخر ثواني! جون!
+2	late	late-03.wav	صاخب	جون قاتل! مش معقول!
+3	late	late-04.wav	متحمس	دراما في آخر دقايق!
+3	late	late-05.wav	متحمس	قلب النتيجة في الوقت بدل الضايع!
+3	late	late-06.wav	هادئ	محدش يقوم من مكانه قبل الصافرة.
+2	header	header-01.wav	هادئ	عرضية جوه المنطقة...
+2	header	header-02.wav	هادئ	الكورة عالية جوه الصندوق...
+2	header	header-03.wav	صاخب	جون! راسية قوية في الشبكة!
+3	header	header-04.wav	صاخب	جون براسية ولا أروع!
+3	header	header-05.wav	متحمس	راسية فوق العارضة!
+3	header	header-06.wav	متحمس	راسية في حضن الحارس!
+4	header	header-07.wav	هادئ	محدش يقدر يوقفه في الهوا.
+4	header	header-08.wav	هادئ	طلعة حلوة أوي.
+2	miss	miss-01.wav	متحمس	جنب القائم!
+2	miss	miss-02.wav	متحمس	فوق العارضة!
+2	miss	miss-03.wav	متحمس	آه! ضاعت!
+3	miss	miss-04.wav	متحمس	كانت جون أكيد!
+3	miss	miss-05.wav	متحمس	سنتيمترات بس!
+3	miss	miss-06.wav	متحمس	مش معقول! ضاعت إزاي؟
+4	miss	miss-07.wav	هادئ	فرصة ضاعت.
+4	miss	miss-08.wav	هادئ	مشاطهاش كويس.
+4	miss	miss-09.wav	هادئ	التركيز خانه في آخر لحظة.
+5	miss	miss-10.wav	هادئ	هيندم على الفرصة دي.
+5	miss	miss-11.wav	هادئ	الجمهور حاطط إيده على راسه.
+5	miss	miss-12.wav	هادئ	المدرب مش مصدق اللي شايفه.
+2	blocked	blocked-01.wav	متحمس	المدافع صدها!
+2	blocked	blocked-02.wav	متحمس	جسم المدافع في الطريق!
+2	blocked	blocked-03.wav	هادئ	تضحية دفاعية.
+3	blocked	blocked-04.wav	هادئ	الكورة رجعت كورنر.
+2	post	post-01.wav	متحمس	القائم!
+2	post	post-02.wav	متحمس	العارضة!
+2	post	post-03.wav	متحمس	خبطت في القائم وطلعت!
+3	post	post-04.wav	متحمس	القائم أنقذ الحارس!
+3	post	post-05.wav	هادئ	الحظ واقف ضده.
+3	post	post-06.wav	هادئ	القائم بيترج.
+2	save	save-01.wav	متحمس	تصدي جامد!
+2	save	save-02.wav	متحمس	الحارس طار وبعدها!
+2	save	save-03.wav	متحمس	إيه الحارس ده!
+3	save	save-04.wav	متحمس	بأطراف صوابعه!
+3	save	save-05.wav	متحمس	فوق العارضة بلمسة سحرية!
+3	save	save-06.wav	متحمس	مسكها بثقة!
+4	save	save-07.wav	متحمس	تصدي مزدوج!
+4	save	save-08.wav	متحمس	حيطة في المرمى!
+4	save	save-09.wav	هادئ	الحارس في يومه.
+5	save	save-10.wav	هادئ	رد فعل سريع.
+5	save	save-11.wav	هادئ	كانت رايحة الشبكة.
+5	save	save-12.wav	هادئ	الحارس بيزعق في دفاعه.
+2	line	line-01.wav	متحمس	شالها من على الخط!
+2	line	line-02.wav	متحمس	إنقاذ في آخر لحظة!
+2	line	line-03.wav	هادئ	كانت هتعدي الخط.
+2	own	own-01.wav	متحمس	جون في مرماه!
+2	own	own-02.wav	متحمس	جاب جون في نفسه!
+2	own	own-03.wav	هادئ	لحظة صعبة على المدافع.
+3	own	own-04.wav	هادئ	كان بيحاول يشيلها.
+2	offside	offside-01.wav	متحمس	الراية اترفعت!
+2	offside	offside-02.wav	هادئ	أوفسايد.
+2	offside	offside-03.wav	هادئ	كان متقدم بخطوة.
+3	offside	offside-04.wav	هادئ	مصيدة أوفسايد ناجحة.
+3	offside	offside-05.wav	هادئ	الحكم المساعد كان في مكانه.
+3	offside	offside-06.wav	هادئ	لولا الأوفسايد...
+2	foul	foul-01.wav	متحمس	عرقلة!
+2	foul	foul-02.wav	هادئ	فاول واضح.
+2	foul	foul-03.wav	هادئ	تدخل جامد.
+3	foul	foul-04.wav	هادئ	الحكم صفر.
+3	foul	foul-05.wav	هادئ	اللاعب وقع وبيتألم.
+3	foul	foul-06.wav	هادئ	تدخل متأخر.
+4	foul	foul-07.wav	هادئ	كان ممكن يتجنبه.
+4	foul	foul-08.wav	هادئ	الحكم سايب اللعب يكمل... أفضلية.
+2	yellow	yellow-01.wav	متحمس	كارت أصفر!
+2	yellow	yellow-02.wav	هادئ	إنذار.
+2	yellow	yellow-03.wav	هادئ	الحكم طلع الكارت الأصفر.
+3	yellow	yellow-04.wav	هادئ	إنذار مستحق.
+3	yellow	yellow-05.wav	هادئ	لازم ياخد باله دلوقتي.
+3	yellow	yellow-06.wav	هادئ	بيعترض، بس القرار واضح.
+4	yellow	yellow-07.wav	هادئ	كارت عشان يوقف الهجمة.
+2	red	red-01.wav	صاخب	كارت أحمر!
+2	red	red-02.wav	متحمس	طرد!
+2	red	red-03.wav	متحمس	الإنذار التاني... وطرد!
+3	red	red-04.wav	هادئ	الفريق هيكمل بعشرة.
+3	red	red-05.wav	هادئ	قرار قاسي، بس صح.
+3	red	red-06.wav	هادئ	خارج من الملعب وراسه في الأرض.
+4	red	red-07.wav	هادئ	ده بيغير شكل الماتش.
+2	freekick	freekick-01.wav	هادئ	فاول على حدود المنطقة.
+2	freekick	freekick-02.wav	هادئ	الحيطة اتعملت... والكل مستني.
+2	freekick	freekick-03.wav	هادئ	مسافة مثالية للتسديد.
+3	freekick	freekick-04.wav	صاخب	فوق الحيطة وفي الزاوية! جون يجنن!
+3	freekick	freekick-05.wav	صاخب	جون من فاول! لوحة فنية!
+3	freekick	freekick-06.wav	متحمس	تصدي جامد للفاول!
+4	freekick	freekick-07.wav	متحمس	في الحيطة!
+4	freekick	freekick-08.wav	متحمس	فوق العارضة بشوية!
+4	freekick	freekick-09.wav	هادئ	الحارس متحركش.
+2	penalty	penalty-01.wav	صاخب	ضربة جزا!
+2	penalty	penalty-02.wav	متحمس	الحكم بيشاور على النقطة!
+2	penalty	penalty-03.wav	هادئ	الملعب كله حابس نفسه...
+3	penalty	penalty-04.wav	هادئ	اللي هيشوط بيحط الكورة...
+3	penalty	penalty-05.wav	هادئ	الحارس بيتحرك على خطه...
+3	penalty	penalty-06.wav	هادئ	لحظة الحقيقة...
+4	penalty	penalty-07.wav	صاخب	جون! الحارس في حتة والكورة في حتة!
+4	penalty	penalty-08.wav	صاخب	جون! شوطة واثقة!
+4	penalty	penalty-09.wav	صاخب	صدها! الحارس بطل!
+5	penalty	penalty-10.wav	متحمس	ضيعها! فوق العارضة!
+5	penalty	penalty-11.wav	متحمس	في القائم!
+5	penalty	penalty-12.wav	هادئ	أعصاب حديد.
+6	penalty	penalty-13.wav	هادئ	الحكم بيقول تتعاد.
+2	shootout	shootout-01.wav	هادئ	على ضربات الترجيح.
+2	shootout	shootout-02.wav	هادئ	القرعة هتحدد مين يبدأ.
+2	shootout	shootout-03.wav	هادئ	الضربة الأولى...
+3	shootout	shootout-04.wav	هادئ	كل ضربة كأنها نهائي.
+3	shootout	shootout-05.wav	متحمس	جابها!
+3	shootout	shootout-06.wav	متحمس	ضيعها!
+4	shootout	shootout-07.wav	متحمس	الحارس صدها!
+4	shootout	shootout-08.wav	صاخب	كسب بضربات الترجيح!
+4	shootout	shootout-09.wav	هادئ	الضغط رهيب على اللي بيشوط.
+5	shootout	shootout-10.wav	هادئ	ضربة حاسمة...
+2	corner	corner-01.wav	هادئ	كورنر.
+2	corner	corner-02.wav	هادئ	الكل جوه المنطقة.
+2	corner	corner-03.wav	هادئ	الكورنر اتلعب عالي...
+3	corner	corner-04.wav	هادئ	كورنر قصير.
+3	corner	corner-05.wav	متحمس	الحارس طلع وبعدها بإيده!
+3	corner	corner-06.wav	هادئ	الدفاع شالها.
+2	var	var-01.wav	هادئ	الحكم بيكلم حكام الفيديو.
+2	var	var-02.wav	هادئ	لحظات... مراجعة.
+2	var	var-03.wav	هادئ	الحكم رايح للشاشة.
+3	var	var-04.wav	هادئ	الكل مستني القرار.
+3	var	var-05.wav	متحمس	الجون اتلغى!
+3	var	var-06.wav	متحمس	الجون صحيح!
+4	var	var-07.wav	متحمس	ضربة جزا بعد المراجعة!
+4	var	var-08.wav	متحمس	اتحولت لكارت أحمر!
+4	var	var-09.wav	هادئ	مفيش حاجة بعد المراجعة.
+5	var	var-10.wav	هادئ	إيد واضحة في الإعادة.
+5	var	var-11.wav	هادئ	أوفسايد بفرق بسيط.
+5	var	var-12.wav	هادئ	التكنولوجيا حسمت الجدل.
+2	injury	injury-01.wav	هادئ	لاعب واقع على الأرض.
+2	injury	injury-02.wav	هادئ	الحكم وقف اللعب.
+2	injury	injury-03.wav	هادئ	الجهاز الطبي داخل الملعب.
+3	injury	injury-04.wav	هادئ	نتمنى متكونش إصابة خطيرة.
+3	injury	injury-05.wav	هادئ	شكله مش هيكمل.
+3	injury	injury-06.wav	هادئ	راجع للملعب، أخبار حلوة.
+2	sub	sub-01.wav	هادئ	تغيير.
+2	sub	sub-02.wav	هادئ	المدرب بيعمل تغيير.
+2	sub	sub-03.wav	هادئ	دم جديد في الملعب.
+3	sub	sub-04.wav	هادئ	تغيير هجومي.
+3	sub	sub-05.wav	هادئ	تغيير دفاعي عشان يحافظ على النتيجة.
+3	sub	sub-06.wav	هادئ	الجمهور بيسقف للي خارج.
+4	sub	sub-07.wav	هادئ	تغيير اضطراري.
+2	coach	coach-01.wav	هادئ	المدرب بيغير الخطة.
+2	coach	coach-02.wav	هادئ	تعليمات جديدة من على الخط.
+2	coach	coach-03.wav	هادئ	الفريق طالع للهجوم.
+3	coach	coach-04.wav	هادئ	تحفظ دفاعي دلوقتي.
+3	coach	coach-05.wav	هادئ	ضغط أعلى من دلوقتي.
+3	coach	coach-06.wav	هادئ	المدرب متعصب على الخط.
+4	coach	coach-07.wav	هادئ	المدرب بيسقف للاعيبته.
+2	stoppage	stoppage-01.wav	هادئ	الوقت بدل الضايع.
+2	stoppage	stoppage-02.wav	هادئ	الحكم الرابع رافع اللوحة.
+2	stoppage	stoppage-03.wav	هادئ	فاضل دقايق قليلة.
+3	stoppage	stoppage-04.wav	متحمس	آخر فرصة!
+2	half	half-01.wav	هادئ	نهاية الشوط الأول.
+2	half	half-02.wav	هادئ	الحكم صفر للاستراحة.
+2	half	half-03.wav	هادئ	شوط أول مثير.
+3	half	half-04.wav	هادئ	شوط أول مقفول.
+3	half	half-05.wav	هادئ	المدربين قدامهم حاجات كتير يراجعوها.
+2	full	full-01.wav	متحمس	نهاية الماتش!
+2	full	full-02.wav	متحمس	الحكم صفر صافرة النهاية!
+2	full	full-03.wav	متحمس	فوز غالي!
+3	full	full-04.wav	هادئ	تعادل عادل.
+3	full	full-05.wav	متحمس	مفاجأة الموسم!
+3	full	full-06.wav	هادئ	الخسران قدم ماتش مشرف.
+4	full	full-07.wav	هادئ	نقط مهمة في سباق الصدارة.
+4	full	full-08.wav	هادئ	شكرا إنكم كنتم معانا.
+4	full	full-09.wav	هادئ	نتقابل في ماتش جاي.
+2	trophy	trophy-01.wav	صاخب	الأبطال!
+2	trophy	trophy-02.wav	صاخب	الكاس في الحضن!
+2	trophy	trophy-03.wav	متحمس	الكابتن بيرفع الكاس!
+3	trophy	trophy-04.wav	هادئ	موسم تاريخي بيتختم باللقب.
+3	trophy	trophy-05.wav	هادئ	ليلة مش هتتنسي.
+2	crowd	crowd-01.wav	هادئ	الجمهور مولع المدرجات.
+2	crowd	crowd-02.wav	هادئ	الأغاني مش بتقف.
+2	crowd	crowd-03.wav	هادئ	المدرجات بتترج.
+3	crowd	crowd-04.wav	هادئ	سكوت رهيب.
+3	crowd	crowd-05.wav	هادئ	صفارات استهجان.
+3	crowd	crowd-06.wav	هادئ	تسقيف جامد.
+4	crowd	crowd-07.wav	هادئ	المطر مش موقف الحماس.
+4	crowd	crowd-08.wav	هادئ	التلج مغطي أطراف الملعب.
+4	crowd	crowd-09.wav	هادئ	الشبورة مخبية المدرجات البعيدة.
+2	skill	skill-01.wav	صاخب	مقصية! جون أسطوري!
+2	skill	skill-02.wav	صاخب	بالكعب! إيه المهارة دي!
+2	skill	skill-03.wav	صاخب	صاروخ من بعيد!
+3	skill	skill-04.wav	متحمس	مراوغة سحرية!
+3	skill	skill-05.wav	متحمس	لمسة بالكعب!
+3	skill	skill-06.wav	متحمس	عداها من بين رجليه!
+4	skill	skill-07.wav	هادئ	مهارة عالية.
+4	skill	skill-08.wav	هادئ	هي دي الكورة الحلوة.
+2	scuffle	scuffle-01.wav	متحمس	شد بين اللاعيبة!
+2	scuffle	scuffle-02.wav	هادئ	الحكم بيدخل يفضها.
+2	scuffle	scuffle-03.wav	هادئ	الأعصاب مشدودة.
+3	scuffle	scuffle-04.wav	هادئ	لازم الكل يهدى.
+2	studio	studio-01.wav	هادئ	تعالوا نحلل اللي حصل في الشوط الأول.
+2	studio	studio-02.wav	هادئ	الأرقام بتقول كتير.
+2	studio	studio-03.wav	هادئ	الاستحواذ مش معناه الفوز.
+3	studio	studio-04.wav	هادئ	نجم الماتش من غير منافس.
+3	studio	studio-05.wav	هادئ	أداء جماعي ممتاز.
+3	studio	studio-06.wav	هادئ	التغييرات هي اللي فرقت.
