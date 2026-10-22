@@ -3,6 +3,7 @@
 namespace App\League;
 
 use App\Engine\AutoPick;
+use App\Messages\Inbox;
 use App\Models\Club;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +26,13 @@ class MatchPrep
             ->whereNotNull('home_id')->whereNotNull('away_id')
             ->where('scheduled_at', '<=', $now->copy()->addMinutes(config('game.match.referee_minutes_before')))->pluck('id');
         foreach ($due as $id) {
-            $refs += DB::table('fixtures')->where('id', $id)->whereNull('referee_strictness')
-                ->update(['referee_strictness' => Tactics::REFEREES[random_int(0, 2)], 'referee_at' => $now, 'updated_at' => $now]);
+            $strictness = Tactics::REFEREES[random_int(0, 2)];
+            $drawn = DB::table('fixtures')->where('id', $id)->whereNull('referee_strictness')
+                ->update(['referee_strictness' => $strictness, 'referee_at' => $now, 'updated_at' => $now]);
+            $refs += $drawn;
+            if ($drawn) {
+                self::tellCoaches($id, $strictness);
+            }
         }
         $locks = 0;
         $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
@@ -36,6 +42,18 @@ class MatchPrep
         }
 
         return [$refs, $locks];
+    }
+
+    /** The referee goes to both coaches' inboxes [PLAN 2.13, Sprint 22 B2]. */
+    private static function tellCoaches(int $fixtureId, string $strictness): void
+    {
+        $f = DB::table('fixtures')->join('seasons', 'seasons.id', '=', 'fixtures.season_id')->join('leagues', 'leagues.id', '=', 'seasons.league_id')
+            ->where('fixtures.id', $fixtureId)->select('fixtures.*', 'leagues.id as league_id', 'leagues.name as league')->first();
+        $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
+        foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
+            Inbox::send(Inbox::coachOf($club), 'referee', ['league' => $f->league, 'opponent' => $names[$other] ?? '',
+                'strictness' => $strictness, 'fixture_id' => $f->id, 'at' => $f->scheduled_at], $f->league_id, $club);
+        }
     }
 
     /** Lock one fixture: fix and freeze both sides. False when another run got there first. */

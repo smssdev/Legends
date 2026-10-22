@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Messages\Inbox;
 use App\Models\LeagueMembership;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
@@ -68,8 +69,13 @@ class Presence
             if ($quiet >= $leaveAfter) {
                 $gone += Leaving::leave($m, 'absent') ? 1 : 0;
             } elseif ($quiet >= $warnAfter && $m->absence_warned_at === null) {
-                $warned += DB::table('league_memberships')->where('id', $m->id)->whereNull('absence_warned_at')
+                $told = DB::table('league_memberships')->where('id', $m->id)->whereNull('absence_warned_at')
                     ->update(['absence_warned_at' => $now]);
+                $warned += $told;
+                if ($told) {
+                    Inbox::send($m->user_id, 'absence_warning', ['league' => DB::table('leagues')->where('id', $m->league_id)->value('name'),
+                        'league_id' => $m->league_id], $m->league_id, $m->club_id);
+                }
             }
         }
 

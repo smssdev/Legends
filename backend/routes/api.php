@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MatchController;
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\TeamController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,14 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
     Route::get('{match}/replay', 'replay')->whereNumber('match')->middleware('throttle:30,1,match-replay');
     Route::get('{match}/report', 'report')->whereNumber('match')->middleware('throttle:60,1,match-report');
+});
+
+// The inbox [Sprint 22]: the account's messages; new ones and reads also arrive on App.Models.User.{id}.
+Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'])->controller(MessageController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('unread', 'unread');
+    Route::post('read-all', 'readAll');
+    Route::post('{message}/read', 'read')->whereNumber('message');
 });
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.

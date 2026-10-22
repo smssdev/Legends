@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Messages\Inbox;
 use App\Simulator\Report;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -18,15 +19,22 @@ class MatchReport
     public static function store(int $matchId, array $state): void
     {
         $f = DB::table('fixtures')->join('matches', 'matches.fixture_id', '=', 'fixtures.id')->where('matches.id', $matchId)
-            ->select('fixtures.home_id', 'fixtures.away_id')->first();
+            ->join('seasons', 'seasons.id', '=', 'fixtures.season_id')->select('fixtures.home_id', 'fixtures.away_id', 'seasons.league_id')->first();
         $club = ['home' => $f->home_id, 'away' => $f->away_id];
         $timeline = self::timeline($matchId, $club);
         foreach ($club as $side => $clubId) {
             $report = self::build(MatchFacts::of($state, $side), $timeline);
             $report['readings'] = DB::table('match_readings')->where('match_id', $matchId)->where('club_id', $clubId)
                 ->orderBy('tick')->get(['minute', 'kind', 'text'])->map(fn ($r) => (array) $r)->all();
-            DB::table('match_reports')->insertOrIgnore(['match_id' => $matchId, 'club_id' => $clubId,
+            $new = DB::table('match_reports')->insertOrIgnore(['match_id' => $matchId, 'club_id' => $clubId,
                 'report' => json_encode($report), 'created_at' => GameClock::now()]);
+            if ($new) {
+                // The coach hears his report is ready [Sprint 22].
+                $other = $side === 'home' ? 'away' : 'home';
+                Inbox::send(Inbox::coachOf($clubId), 'match_report', ['match_id' => $matchId, 'result' => $report['result'],
+                    'opponent' => $state['teams'][$other]['club']['name'], 'score' => $state['score'][$side].' - '.$state['score'][$other]],
+                    $f->league_id, $clubId);
+            }
         }
     }
 
