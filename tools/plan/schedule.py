@@ -84,7 +84,7 @@ def code_hours(day):
 # Owner's decision (2026-10-20): the photo simulator sprints (3 to 8) wait for wave 1's images and voice;
 # the code goes on with the other sprints meanwhile, and takes up 3 to 8 as soon as the art is ready.
 # DONE: sprints whose code is finished, with the day it was: they take no more days.
-DONE = {2: dt.date(2026, 10, 20), 9: dt.date(2026, 10, 20), 10: dt.date(2026, 10, 20), 11: dt.date(2026, 10, 20), 12: dt.date(2026, 10, 20), 13: dt.date(2026, 10, 22), 14: dt.date(2026, 10, 22), 15: dt.date(2026, 10, 22), 16: dt.date(2026, 10, 22), 17: dt.date(2026, 10, 22), 18: dt.date(2026, 10, 22)}
+DONE = {2: dt.date(2026, 10, 20), 9: dt.date(2026, 10, 20), 10: dt.date(2026, 10, 20), 11: dt.date(2026, 10, 20), 12: dt.date(2026, 10, 20), 13: dt.date(2026, 10, 22), 14: dt.date(2026, 10, 22), 15: dt.date(2026, 10, 22), 16: dt.date(2026, 10, 22), 17: dt.date(2026, 10, 22), 18: dt.date(2026, 10, 22), 19: dt.date(2026, 10, 22)}
 CALENDAR = {40}                      # the trial season is played in real days, whatever the hours
 SIM = [3, 4, 5, 6, 7, 8]
 READY = max(img1, voice1)            # wave 1 complete, images and voice

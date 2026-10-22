@@ -81,10 +81,13 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
 });
 
-// League matches for the viewer [Sprint 18]: the league's members only.
+// League matches [Sprints 18, 19]: the viewer for the league's members, and each coach's orders for his side.
 Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchController::class)->group(function () {
+    Route::get('live', 'mine')->middleware('throttle:120,1');
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1');
     Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:360,1');
+    Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1');
+    Route::get('{match}/replay', 'replay')->whereNumber('match')->middleware('throttle:30,1');
 });
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.

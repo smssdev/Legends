@@ -25,6 +25,11 @@
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
 
+    <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" aria-label="مبارياتك المباشرة">
+      <span class="text-sm text-text-muted">مبارياتك الآن:</span>
+      <RouterLink v-for="o in others" :key="o.id" :to="{ name: 'league-match', params: { id: o.id } }" class="flex h-touch items-center rounded-md px-3 font-numbers text-sm" :class="String(o.id) === id ? 'bg-gold text-on-gold' : 'bg-surface'" :aria-current="String(o.id) === id ? 'page' : undefined" dir="ltr">{{ o.home }} - {{ o.away }}</RouterLink>
+    </nav>
+
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -99,8 +104,6 @@
 
           <p v-if="!mine" class="text-sm text-text-muted">{{ live ? 'أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.' : 'الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.' }}</p>
 
-          <p v-else-if="league" class="text-sm text-text-muted">تشاهد مباراتك بتشكيلتك وتكتيكك المقفلين. التبديل وتغيير التكتيك أثناء المباراة قريباً.</p>
-
           <template v-else>
             <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-sm text-sm font-bold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">{{ t.label }}</button>
@@ -146,7 +149,7 @@
             </div>
 
             <div v-if="tab === 'shape'" class="flex flex-wrap gap-2">
-              <button v-for="f in view.formations" :key="f" type="button" class="h-11 rounded-md border px-3 font-numbers text-lg" :class="teams[mine].formation === f ? 'border-gold bg-gold/15 text-gold' : 'border-text/10 bg-surface-sunk'" dir="ltr" :disabled="finished" @click="sendFormation(f)">{{ f }}</button>
+              <button v-for="f in view.formations" :key="f" type="button" class="h-11 rounded-md border px-3 font-numbers text-lg" :class="teams[mine].formation === f ? 'border-gold bg-gold/15 text-gold' : 'border-text/10 bg-surface-sunk'" dir="ltr" :disabled="finished" @click="sendFormation(f)">{{ formationLabel(f) }}</button>
             </div>
 
             <div v-for="o in pending" :key="o.key" class="flex items-center gap-3 rounded-lg border border-gold/45 bg-gold/10 px-3 py-2 text-sm">
@@ -342,20 +345,34 @@ const pending = ref<{ key: string; label: string; target: number }[]>([])
 const applied = ref<{ key: string; label: string; minute: string }[]>([])
 const rejected = ref<string[]>([])
 
+// The coach's other live matches (a league and a cup, or two leagues), to switch between them.
+const others = ref<{ id: number; home: string; away: string }[]>([])
+let othersTimer = 0
+async function loadOthers() {
+  if (!props.league) return
+  othersTimer ||= window.setInterval(loadOthers, 30000)
+  try {
+    others.value = await leagueMatch.mine()
+  } catch {
+    /* the switcher is optional */
+  }
+}
+
 const lineClass = (l: string) => ({ gk: 'bg-line-gk text-line-gk-fg', def: 'bg-line-def text-line-def-fg', mid: 'bg-line-mid text-line-mid-fg', att: 'bg-line-att text-line-att-fg' })[l] ?? ''
 const fitClass = (f: number) => (f >= 75 ? 'text-success' : f >= 60 ? 'text-gold' : 'text-warning')
 
 async function order(label: string, body: Record<string, unknown>) {
   if (!mine.value || finished.value) return
   try {
-    const r = await sim.order(props.id, { team: mine.value, ...body })
+    const r = props.league ? await leagueMatch.order(props.id, body) : await sim.order(props.id, { team: mine.value, ...body })
     pending.value.push({ key: crypto.randomUUID(), label, target: r.target_tick })
   } catch (e: any) {
     error.value = e.message
   }
 }
 const sendTactics = (label: string, tactics: Partial<Tactics>) => order(label, { type: 'tactics', tactics })
-const sendFormation = (f: string) => order(`الطريقة ${f}`, { type: 'formation', formation: f })
+const formationLabel = (f: string) => (f.startsWith('custom:') ? `خاصة ${f.slice(7)}` : f)
+const sendFormation = (f: string) => order(`الطريقة ${formationLabel(f)}`, { type: 'formation', formation: f })
 function sendSub(p: TeamPlayer) {
   const out = subOut.value!
   subOut.value = null
@@ -666,6 +683,7 @@ onMounted(async () => {
     seats.set(props.id, linkSeat)
     router.replace({ query: { ...route.query, seat: undefined } })
   }
+  loadOthers()
   try {
     view.value = await source.value.show(props.id)
     teams.value = view.value.teams
@@ -693,6 +711,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  window.clearInterval(othersTimer)
   clearTimeout(timer)
   clearTimeout(pollTimer)
   clearInterval(clockTimer)
