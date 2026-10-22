@@ -131,6 +131,21 @@ FILES = {
         f'<text x="512" y="860" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="150" letter-spacing="18" fill="{GOLD}">LEGENDS</text>'
         f'<text x="512" y="985" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="700" font-size="96" fill="{IVORY}" direction="rtl">الأساطير</text>',
         w=1024, h=1060, bg=NAVY),
+    # the invite card for WhatsApp and other link previews (1200x630): the emblem on the left, the
+    # invitation in Arabic on the right 45% (with direction=rtl, "start" is the right edge). The league's own name and owner are the preview's text
+    # (og:title, og:description, from InviteController), so one picture serves every league.
+    'og-invite.svg': svg(
+        f'<defs><linearGradient id="ogFill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16376F"/><stop offset="1" stop-color="{NAVY_DEEP}"/></linearGradient></defs>'
+        f'<rect width="1200" height="630" fill="url(#ogFill)"/>'
+        f'<circle cx="330" cy="315" r="250" fill="{GOLD}" opacity=".07"/>'
+        f'<g transform="translate(110 95) scale(.86)">{emblem()}</g>'
+        f'<rect x="660" y="120" width="6" height="390" rx="3" fill="{GOLD}" opacity=".5"/>'
+        f'<text x="1110" y="215" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="72" fill="{IVORY}" direction="rtl">دعوة لدوري</text>'
+        f'<text x="1110" y="305" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="72" fill="{GOLD}" direction="rtl">مع أصحابك</text>'
+        f'<text x="1110" y="385" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="700" font-size="34" fill="{IVORY}" opacity=".8" direction="rtl">اختر ناديك وأدِره ضدهم</text>'
+        f'<text x="1110" y="480" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="44" fill="{GOLD}" direction="rtl">الأساطير</text>'
+        f'<text x="1110" y="525" text-anchor="end" font-family="Alexandria, sans-serif" font-weight="800" font-size="22" letter-spacing="8" fill="{IVORY}" opacity=".6">LEGENDS</text>',
+        w=1200, h=630),
 }
 
 if __name__ == '__main__':

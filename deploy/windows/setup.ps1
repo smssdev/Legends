@@ -4,12 +4,14 @@
 # It installs PHP 8.4, Composer, Node, Git and Tailscale, downloads the game,
 # builds it, starts it with Windows (and again if it stops), schedules the daily
 # database backup, keeps the PC awake on mains power, and opens a public HTTPS
-# link through Tailscale Funnel. Running it again is safe: it never deletes data.
+# link through Tailscale Funnel, with the live connection (Reverb) on the same link.
+# Running it again is safe: it never deletes data.
 
 param(
     [string]$Root = 'C:\Legends',
     [string]$PhpDir = 'C:\php84',
     [int]$Port = 8000,
+    [int]$ReverbPort = 8080,
     [string]$Repo = 'https://github.com/smssdev/Legends.git'
 )
 
@@ -67,6 +69,11 @@ if (-not (Test-Path '.env')) {
     Add-Content '.env' 'GAME_NIGHTLY_BALANCE=true'
     php artisan key:generate --force
 }
+# Reverb listens on this machine only, with its own secret (also for installs made before it).
+if (-not (Select-String -Path '.env' -Pattern '^REVERB_SERVER_HOST=' -Quiet)) {
+    (Get-Content '.env') -replace '^REVERB_APP_SECRET=legends-dev-secret$', ('REVERB_APP_SECRET=' + [guid]::NewGuid().ToString('N')) -replace '^REVERB_HOST=.*', 'REVERB_HOST=127.0.0.1' | Set-Content '.env'
+    Add-Content '.env' 'REVERB_SERVER_HOST=127.0.0.1'
+}
 php artisan migrate --force
 $clubs = php artisan tinker --execute="echo App\Models\MasterClub::count();" 2>$null
 if ("$clubs".Trim() -eq '0' -or -not "$clubs".Trim()) { php artisan data:import }
@@ -88,7 +95,13 @@ Register-ScheduledTask -TaskName 'Legends Web' -Action $web -Trigger (New-Schedu
 $sched = New-ScheduledTaskAction -Execute $php -Argument 'artisan schedule:run' -WorkingDirectory "$Root\backend"
 $every = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval (New-TimeSpan -Minutes 1)
 Register-ScheduledTask -TaskName 'Legends Scheduler' -Action $sched -Trigger $every -Settings $settings -Principal $system -Force | Out-Null
-Start-ScheduledTask -TaskName 'Legends Web'
+# Live updates (Reverb, PLAN 2.19): on this machine only; the public link reaches it on /app (below).
+$reverb = New-ScheduledTaskAction -Execute $php -Argument "artisan reverb:start --host=127.0.0.1 --port=$ReverbPort" -WorkingDirectory "$Root\backend"
+Register-ScheduledTask -TaskName 'Legends Live' -Action $reverb -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
+# The queue: emails (confirmation, password) and later the match jobs.
+$queue = New-ScheduledTaskAction -Execute $php -Argument 'artisan queue:work --sleep=1 --tries=3 --max-time=3600' -WorkingDirectory "$Root\backend"
+Register-ScheduledTask -TaskName 'Legends Queue' -Action $queue -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue') { Start-ScheduledTask -TaskName $task }
 
 Step 'Keeping the PC awake on mains power'
 powercfg /change standby-timeout-ac 0
@@ -98,8 +111,21 @@ Step 'Public link with Tailscale Funnel (a sign-in page opens the first time)'
 $ts = "$env:ProgramFiles\Tailscale\tailscale.exe"
 & $ts up
 & $ts funnel --bg $Port
+# The live connection on the same address: wss://<name>.ts.net/app/... goes to Reverb (web/src/lib/echo.ts
+# connects to the page's own host on 443 when no VITE_REVERB_* is set).
+& $ts funnel --bg --set-path /app "http://127.0.0.1:$ReverbPort/app"
 Write-Host ''
 & $ts funnel status
+
+# Links in emails and the invite card use the public address.
+$name = ((& $ts status --json | ConvertFrom-Json).Self.DNSName).TrimEnd('.')
+if ($name) {
+    Set-Location "$Root\backend"
+    (Get-Content '.env') -replace '^APP_URL=.*', "APP_URL=https://$name" | Set-Content '.env'
+    php artisan config:clear
+    Stop-ScheduledTask -TaskName 'Legends Web'
+    Start-ScheduledTask -TaskName 'Legends Web'
+}
 
 Write-Host "`nDone. Open the https://...ts.net link above and add /sim" -ForegroundColor Green
 Write-Host "Local check: http://127.0.0.1:$Port/sim" -ForegroundColor Green

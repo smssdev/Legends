@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountLinkController;
+use App\Http\Controllers\InviteController;
 use Illuminate\Support\Facades\Route;
 
 // The interface is the Vue app in web/. In development Vite serves it; in a
@@ -19,6 +20,9 @@ Route::get('/email/verify/{id}/{hash}', [AccountLinkController::class, 'verify']
     ->middleware(['signed', 'throttle:12,1'])->whereNumber('id')->name('verification.verify');
 Route::get('/auth/google/redirect', [AccountLinkController::class, 'googleRedirect'])->middleware('throttle:20,1');
 Route::get('/auth/google/callback', [AccountLinkController::class, 'googleCallback'])->middleware('throttle:20,1');
+
+// The invite link shared on WhatsApp: the app, with the league's card for the link preview [Sprint 14 B2].
+Route::get('/join/{code}', [InviteController::class, 'show'])->middleware('throttle:60,1')->where('code', '[A-Za-z0-9#-]{1,16}');
 
 Route::get('/', $spa);
 Route::fallback(function () use ($spa) {

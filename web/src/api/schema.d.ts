@@ -1046,6 +1046,115 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/vacation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a holiday
+         * @description 1 to 7 days, once a season. Absence is not counted meanwhile (docs/PLAN.md 2.2).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        days: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        /**
+         * Come back early
+         * @description The holiday ends now and still counts as this season's one.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/members/{membership}/kick": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                membership: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a coach away (owner)
+         * @description The reason shows to every member. The club goes back to a bot as it is; the coach cannot come back this season.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    membership: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/requests": {
         parameters: {
             query?: never;
@@ -2054,6 +2163,56 @@ export interface components {
             coaches: number;
             /** @description Clubs a coach can still take */
             free_clubs?: number;
+            /** @description The invite link (/join/CODE) with its WhatsApp card; for the owner and approved coaches */
+            invite_url?: string | null;
+            /** @description My place this season, when I coach here */
+            me?: {
+                membership_id: number;
+                on_holiday: boolean;
+                /** Format: date-time */
+                vacation_until?: string | null;
+                /** @description The season's one holiday is taken */
+                vacation_used: boolean;
+                /** @description 48 hours quiet; cleared by any visit */
+                absence_warning: boolean;
+                /**
+                 * Format: date-time
+                 * @description When the club goes back to a bot if I stay away; null before the season and on holiday
+                 */
+                away_deadline?: string | null;
+            } | null;
+            /** @description Coaches this season */
+            members: {
+                /** @description Membership id (for the kick) */
+                id: number;
+                user: {
+                    id: number;
+                    name: string;
+                };
+                club?: {
+                    id: number;
+                    name: string;
+                } | null;
+                is_owner: boolean;
+                on_holiday: boolean;
+                /** Format: date-time */
+                joined_at: string;
+                /**
+                 * Format: date-time
+                 * @description For the owner only
+                 */
+                last_active_at?: string | null;
+            }[];
+            /** @description Who left this season and why; a kick's reason is shown to every member */
+            departures: {
+                user: string;
+                club?: string | null;
+                /** @enum {string} */
+                reason: "resigned" | "absent" | "kicked" | "deleted";
+                kick_reason?: string | null;
+                /** Format: date-time */
+                left_at: string;
+            }[];
             /** @description Waiting join requests; for the owner only */
             pending_requests?: number | null;
             season?: {
