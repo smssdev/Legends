@@ -471,6 +471,56 @@ paths:
       responses:
         '200': { description: Cancelled }
         '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/vacation:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [leagues]
+      summary: Start a holiday
+      description: 1 to 7 days, once a season. Absence is not counted meanwhile (docs/PLAN.md 2.2).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [days]
+              properties:
+                days: { type: integer, minimum: 1, maximum: 7 }
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [leagues]
+      summary: Come back early
+      description: The holiday ends now and still counts as this season's one.
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/members/{membership}/kick:
+    parameters:
+      - $ref: '#/components/parameters/League'
+      - { name: membership, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: Send a coach away (owner)
+      description: The reason shows to every member. The club goes back to a bot as it is; the coach cannot come back this season.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 3, maxLength: 200 }
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /leagues/{league}/requests:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -898,7 +948,7 @@ components:
   schemas:
     League:
       type: object
-      required: [id, name, template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, starting_budget, fair_league, is_dev, status, locked, is_owner, coaches]
+      required: [id, name, template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, starting_budget, fair_league, is_dev, status, locked, is_owner, coaches, members, departures]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -921,6 +971,45 @@ components:
         my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
         coaches: { type: integer, description: Clubs with a coach }
         free_clubs: { type: integer, description: Clubs a coach can still take }
+        invite_url: { type: string, nullable: true, description: 'The invite link (/join/CODE) with its WhatsApp card; for the owner and approved coaches' }
+        me:
+          type: object
+          nullable: true
+          description: My place this season, when I coach here
+          required: [membership_id, on_holiday, vacation_used, absence_warning]
+          properties:
+            membership_id: { type: integer }
+            on_holiday: { type: boolean }
+            vacation_until: { type: string, format: date-time, nullable: true }
+            vacation_used: { type: boolean, description: The season's one holiday is taken }
+            absence_warning: { type: boolean, description: 48 hours quiet; cleared by any visit }
+            away_deadline: { type: string, format: date-time, nullable: true, description: When the club goes back to a bot if I stay away; null before the season and on holiday }
+        members:
+          type: array
+          description: Coaches this season
+          items:
+            type: object
+            required: [id, user, is_owner, on_holiday, joined_at]
+            properties:
+              id: { type: integer, description: Membership id (for the kick) }
+              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+              club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+              is_owner: { type: boolean }
+              on_holiday: { type: boolean }
+              joined_at: { type: string, format: date-time }
+              last_active_at: { type: string, format: date-time, nullable: true, description: For the owner only }
+        departures:
+          type: array
+          description: Who left this season and why; a kick's reason is shown to every member
+          items:
+            type: object
+            required: [user, reason, left_at]
+            properties:
+              user: { type: string }
+              club: { type: string, nullable: true }
+              reason: { type: string, enum: [resigned, absent, kicked, deleted] }
+              kick_reason: { type: string, nullable: true }
+              left_at: { type: string, format: date-time }
         pending_requests: { type: integer, nullable: true, description: Waiting join requests; for the owner only }
         season:
           type: object

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// One league (Sprint 13 W1): its card, the code to share, my club, and for the owner the join requests
-// to approve or reject. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
+// One league (Sprint 13 W1, Sprint 14 W1): its card, the invite to share, my club, my presence and holiday,
+// the coaches (the owner can send one away with a reason), who left and why, and the join requests.
+// Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -54,13 +55,15 @@ async function decide(r: JoinRequest, approve: boolean) {
   }
 }
 
+// The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
+const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في الأساطير واختر ناديك: ${league.value.invite_url}` : ''))
+const whatsapp = computed(() => `https://wa.me/?text=${encodeURIComponent(inviteText.value)}`)
 async function share() {
-  if (!league.value?.code) return
-  const text = `انضم لدوري «${league.value.name}» في الأساطير بالكود: ${league.value.code}`
+  if (!league.value?.invite_url) return
   try {
-    if (navigator.share) await navigator.share({ text })
+    if (navigator.share) await navigator.share({ text: inviteText.value })
     else {
-      await navigator.clipboard.writeText(league.value.code)
+      await navigator.clipboard.writeText(league.value.invite_url)
       copied.value = true
       window.setTimeout(() => (copied.value = false), 2000)
     }
@@ -68,6 +71,47 @@ async function share() {
     // The share sheet was closed: nothing to do.
   }
 }
+
+// A holiday of up to 7 days, once a season [PLAN 2.2].
+const days = ref(3)
+async function holiday(start: boolean) {
+  error.value = ''
+  try {
+    await ensureCsrf()
+    const path = { league: leagueId.value }
+    const { data } = start
+      ? await api.POST('/leagues/{league}/vacation', { params: { path }, body: { days: days.value } })
+      : await api.DELETE('/leagues/{league}/vacation', { params: { path } })
+    league.value = data!.league
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+}
+
+// The owner sends a coach away with a reason every member sees [PLAN 2.1].
+const kicking = ref<number | null>(null)
+const reason = ref('')
+const reasonError = ref('')
+async function kick(membership: number) {
+  reasonError.value = ''
+  try {
+    await ensureCsrf()
+    const { data } = await api.POST('/leagues/{league}/members/{membership}/kick', {
+      params: { path: { league: leagueId.value, membership } },
+      body: { reason: reason.value.trim() },
+    })
+    league.value = data!.league
+    kicking.value = null
+    reason.value = ''
+    await load()
+  } catch (e) {
+    const err = asApiError(e)
+    reasonError.value = err.field('reason') || err.message
+  }
+}
+
+const LEFT = { resigned: 'استقال', absent: 'غاب 3 أيام', kicked: 'طرده المنشئ', deleted: 'حذف حسابه' } as const
+const since = (iso?: string | null) => (iso ? when(iso) : '—')
 
 async function startNow() {
   try {
@@ -105,11 +149,12 @@ onMounted(load)
       </header>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <UiCard v-if="league.code" title="كود الدوري">
-          <p class="text-sm text-text-muted">شاركه مع أصحابك: يرسلون طلباً، وتوافق أنت، ثم يختارون فرقهم.</p>
-          <div class="flex items-center gap-3">
-            <span class="flex-1 rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold" dir="ltr">{{ league.code }}</span>
-            <UiButton variant="outline" @click="share">{{ copied ? 'نُسخ' : 'شارك' }}</UiButton>
+        <UiCard v-if="league.code" title="ادعُ أصحابك">
+          <p class="text-sm text-text-muted">الرابط يفتح صفحة الانضمام بالكود جاهزاً: يرسلون طلباً، وتوافق أنت، ثم يختارون فرقهم.</p>
+          <span class="rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold" dir="ltr">{{ league.code }}</span>
+          <div class="grid grid-cols-2 gap-2">
+            <a :href="whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center rounded-lg bg-success font-display font-extrabold text-on-gold">واتساب</a>
+            <UiButton variant="outline" @click="share">{{ copied ? 'نُسخ الرابط' : 'شارك الرابط' }}</UiButton>
           </div>
         </UiCard>
 
@@ -129,6 +174,64 @@ onMounted(load)
           <UiButton v-if="isDev && league.is_owner && !league.locked" variant="quiet" @click="startNow">ابدأ الآن (للتطوير)</UiButton>
         </UiCard>
       </div>
+
+      <UiCard v-if="league.me" title="حضورك">
+        <p v-if="league.me.on_holiday" class="rounded-lg bg-gold/15 px-3 py-2 text-sm">
+          أنت في إجازة حتى {{ since(league.me.vacation_until) }}. لا يُحسب غيابك، والمساعد يدير فريقك.
+        </p>
+        <p v-else-if="league.me.away_deadline" class="text-sm text-text-muted">
+          كل دخول للدوري يُحسب حضوراً. لو غبت 3 أيام متواصلة يعود فريقك للحاسوب: آخر موعد الآن {{ since(league.me.away_deadline) }}.
+        </p>
+        <p v-else class="text-sm text-text-muted">عداد الغياب يبدأ مع بداية الموسم.</p>
+        <UiButton v-if="league.me.on_holiday" variant="quiet" @click="holiday(false)">عدت مبكراً، أنهِ الإجازة</UiButton>
+        <form v-else-if="!league.me.vacation_used" class="flex flex-wrap items-end gap-2" @submit.prevent="holiday(true)">
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-bold">إجازة (مرة في الموسم)</span>
+            <select v-model.number="days" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4">
+              <option v-for="d in 7" :key="d" :value="d">{{ d === 1 ? 'يوم' : d === 2 ? 'يومان' : `${d} أيام` }}</option>
+            </select>
+          </label>
+          <UiButton type="submit" variant="outline">فعّل الإجازة</UiButton>
+        </form>
+        <p v-else class="text-sm text-text-muted">استخدمت إجازة هذا الموسم.</p>
+      </UiCard>
+
+      <UiCard v-if="league.members.length" title="المدربون">
+        <ul class="flex flex-col gap-2">
+          <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
+            <div class="flex min-h-touch flex-wrap items-center gap-3">
+              <span class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate font-bold">{{ m.user.name }} <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
+                <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
+              </span>
+              <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>
+            </div>
+            <form v-if="kicking === m.id" class="flex flex-col gap-2" @submit.prevent="kick(m.id)">
+              <label class="flex flex-col gap-1.5">
+                <span class="text-sm font-bold">سبب الطرد (يراه كل أعضاء الدوري)</span>
+                <textarea v-model="reason" rows="2" maxlength="200" class="rounded-lg border border-text/10 bg-surface p-3" :aria-invalid="!!reasonError" />
+              </label>
+              <p v-if="reasonError" class="text-sm text-[#FF8A8A]" role="alert">{{ reasonError }}</p>
+              <p class="text-xs text-text-muted">يعود فريقه للحاسوب بحالته، ولا يعود للدوري هذا الموسم.</p>
+              <div class="flex gap-2">
+                <UiButton type="submit" variant="danger">اطرد {{ m.user.name }}</UiButton>
+                <UiButton variant="quiet" @click="kicking = null">إلغاء</UiButton>
+              </div>
+            </form>
+          </li>
+        </ul>
+      </UiCard>
+
+      <UiCard v-if="league.departures.length" title="غادروا هذا الموسم">
+        <ul class="flex flex-col gap-2 text-sm">
+          <li v-for="(d, i) in league.departures" :key="i" class="rounded-lg bg-surface-sunk p-3">
+            <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>: {{ LEFT[d.reason] }}
+            <span v-if="d.kick_reason" class="mt-1 block">السبب: «{{ d.kick_reason }}»</span>
+            <span class="block text-xs text-text-muted">{{ since(d.left_at) }}</span>
+          </li>
+        </ul>
+      </UiCard>
 
       <UiCard v-if="league.is_owner" title="طلبات الانضمام">
         <template #action><UiChip v-if="waiting.length" tone="live">{{ waiting.length }} بانتظارك</UiChip></template>

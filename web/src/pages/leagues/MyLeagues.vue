@@ -70,11 +70,15 @@ function link(l: League) {
           </div>
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ STATUS[l.status] }}</UiChip>
         </div>
+        <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">
+          لم تدخل هذا الدوري منذ يومين. ادخله قبل {{ l.me.away_deadline ? when(l.me.away_deadline) : 'نهاية اليوم الثالث' }} وإلا يعود فريقك للحاسوب.
+        </p>
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <UiChip v-if="l.is_owner" tone="gold">أنشأته</UiChip>
           <UiChip v-if="l.my_request === 'pending'" tone="warning">بانتظار الموافقة</UiChip>
           <UiChip v-else-if="!l.my_club_id" tone="gold">اختر فريقك</UiChip>
           <UiChip v-if="l.is_owner && l.pending_requests" tone="live">{{ l.pending_requests }} طلبات</UiChip>
+          <UiChip v-if="l.me?.on_holiday" tone="warning">في إجازة</UiChip>
           <span class="text-text-muted">البداية: {{ when(l.starts_at) }}</span>
         </div>
       </RouterLink>
