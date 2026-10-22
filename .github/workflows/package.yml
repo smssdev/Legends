@@ -75,8 +75,13 @@ jobs:
           printf '@echo off\r\ncd /d "%%~dp0backend"\r\necho Open http://127.0.0.1:8000/sim\r\nphp artisan serve --port=8000\r\n' > out/legends/run.bat
           chmod +x out/legends/run.sh
 
+      # Pull requests build and smoke-test the copy only: uploading 7,000+ files on every PR filled the
+      # repository's artifact storage. main and manual runs upload it, kept a few days; a full quota
+      # warns instead of failing, because the copy is a convenience, not a check.
       - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
         with:
           name: legends-${{ github.sha }}
           path: out
-          retention-days: 14
+          retention-days: 3
