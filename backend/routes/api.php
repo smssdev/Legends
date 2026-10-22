@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LeagueController;
+use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\TeamController;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,12 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
+});
+
+// League matches for the viewer [Sprint 18]: the league's members only.
+Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchController::class)->group(function () {
+    Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1');
+    Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:360,1');
 });
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.
