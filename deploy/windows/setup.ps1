@@ -101,7 +101,10 @@ Register-ScheduledTask -TaskName 'Legends Live' -Action $reverb -Trigger (New-Sc
 # The queue: emails (confirmation, password) and later the match jobs.
 $queue = New-ScheduledTaskAction -Execute $php -Argument 'artisan queue:work --sleep=1 --tries=3 --max-time=3600' -WorkingDirectory "$Root\backend"
 Register-ScheduledTask -TaskName 'Legends Queue' -Action $queue -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
-foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue') { Start-ScheduledTask -TaskName $task }
+# The match runner (PLAN 2.12): plays the live matches minute by minute; it resumes where it stopped.
+$runner = New-ScheduledTaskAction -Execute $php -Argument 'artisan matches:run' -WorkingDirectory "$Root\backend"
+Register-ScheduledTask -TaskName 'Legends Matches' -Action $runner -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') { Start-ScheduledTask -TaskName $task }
 
 Step 'Keeping the PC awake on mains power'
 powercfg /change standby-timeout-ac 0

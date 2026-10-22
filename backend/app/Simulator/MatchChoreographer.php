@@ -3,6 +3,7 @@
 namespace App\Simulator;
 
 use App\Engine\Formations;
+use App\Engine\MatchSetup;
 use App\Engine\SeededRandom;
 
 /**
@@ -140,7 +141,7 @@ class MatchChoreographer
         $best = [];
         foreach (['home', 'away'] as $side) {
             $team = $state['teams'][$side];
-            $slots = Formations::slots($team['formation']);
+            $slots = MatchSetup::slots($team);
             $dir = $side === 'home' ? 1 : -1;
             $attacking = $possession === $side;
             foreach ($team['players'] as $p) {

@@ -1815,6 +1815,8 @@ export interface paths {
                         "application/json": {
                             match?: {
                                 fixture_id: number;
+                                /** @description Once it kicks off: watch it at GET /matches/{id} */
+                                match_id?: number | null;
                                 /** @enum {string} */
                                 competition: "league" | "cup";
                                 round: number;
@@ -1866,6 +1868,92 @@ export interface paths {
                     };
                 };
                 403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * A league match for the viewer
+         * @description The same shape as the simulator's live match (docs/api/match-events.md). The league's members only (404 otherwise). Each side's tactics reach only its own coach (`you`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The match */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The minutes made after `since`, with their frames
+         * @description The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    since?: number;
+                };
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Like the simulator's live sync (started */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
             };
         };
         put?: never;

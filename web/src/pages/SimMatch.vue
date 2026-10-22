@@ -1,10 +1,10 @@
 <template>
   <main class="mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-3 px-3 py-3 md:px-5">
     <header class="flex flex-wrap items-center gap-2">
-      <RouterLink to="/sim" class="flex items-center gap-2">
+      <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-2">
         <BrandMark size="sm" />
       </RouterLink>
-      <span class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
+      <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />
       <template v-if="live">
         <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />مباشر · {{ mine ? 'تدير ' + view?.clubs[mine].name : 'مشاهدة' }}</span>
@@ -22,7 +22,7 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
+      <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
@@ -52,8 +52,9 @@
               <a v-if="halftime && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
-              <RouterLink v-if="finished" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
-              <RouterLink v-if="finished" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
+              <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
+              <RouterLink v-if="finished && league" to="/match" class="flex h-12 items-center rounded-md bg-surface-raised px-5">المباراة القادمة</RouterLink>
+              <RouterLink v-if="finished && !league" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
             </div>
           </div>
 
@@ -97,6 +98,8 @@
           </div>
 
           <p v-if="!mine" class="text-sm text-text-muted">{{ live ? 'أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.' : 'الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.' }}</p>
+
+          <p v-else-if="league" class="text-sm text-text-muted">تشاهد مباراتك بتشكيلتك وتكتيكك المقفلين. التبديل وتغيير التكتيك أثناء المباراة قريباً.</p>
 
           <template v-else>
             <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
@@ -172,12 +175,14 @@ import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, seats, sim, type LiveSync, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
 
-const props = defineProps<{ id: string }>()
+// league: a league match from /api/v1/matches (Sprint 18), played by the server's clock; no orders yet (Sprint 19).
+const props = defineProps<{ id: string; league?: boolean }>()
+const source = computed(() => (props.league ? leagueMatch : sim))
 const route = useRoute()
 const router = useRouter()
 
@@ -446,7 +451,7 @@ function tell(t: Tick, animate: boolean) {
     window.setTimeout(() => (applied.value = applied.value.filter((a) => a.key !== p.key)), 4000)
   }
   pending.value = pending.value.filter((o) => t.tick < o.target)
-  rejected.value = t.rejected.map((r) => `رُفض الأمر: ${({ no_subs_left: 'لا تبديلات متبقية', bad_players: 'اللاعب غير متاح', bad_tactics: 'تكتيك غير صالح', bad_formation: 'طريقة غير صالحة' } as Record<string, string>)[r.reason] ?? r.reason}`)
+  rejected.value = (t.rejected ?? []).map((r) => `رُفض الأمر: ${({ no_subs_left: 'لا تبديلات متبقية', bad_players: 'اللاعب غير متاح', bad_tactics: 'تكتيك غير صالح', bad_formation: 'طريقة غير صالحة' } as Record<string, string>)[r.reason] ?? r.reason}`)
   if (t.finished) { if (animate) window.setTimeout(() => (finished.value = true), 1600); else finished.value = true }
   const own = mine.value ? teams.value[mine.value]?.tactics : null
   if (draft.plan === undefined && own) {
@@ -560,7 +565,7 @@ async function poll() {
   let wait = 1000
   try {
     const sent = Date.now()
-    const r = await sim.live(props.id, seen)
+    const r = await source.value.live(props.id, seen)
     sample(sent, r.server_now)
     wait = handleSync(r)
   } catch (e: any) {
@@ -662,7 +667,7 @@ onMounted(async () => {
     router.replace({ query: { ...route.query, seat: undefined } })
   }
   try {
-    view.value = await sim.show(props.id)
+    view.value = await source.value.show(props.id)
     teams.value = view.value.teams
     voice.prepare([view.value.clubs.home.name, view.value.clubs.away.name])
     score.value = view.value.score

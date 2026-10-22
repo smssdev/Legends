@@ -23,6 +23,8 @@ tags:
       rounds, the settings locked since the start.
   - name: team
     description: 'My club in a league (Sprint 16): squad, lineup, own formations, set-piece takers. 403 without a club there.'
+  - name: matches
+    description: 'League matches (Sprint 18): played live by the server, watched with the simulator''s viewer.'
   - name: system
     description: Health and the test broadcast
   - name: simulator
@@ -815,6 +817,7 @@ paths:
                     required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, opponent]
                     properties:
                       fixture_id: { type: integer }
+                      match_id: { type: integer, nullable: true, description: 'Once it kicks off: watch it at GET /matches/{id}' }
                       competition: { type: string, enum: [league, cup] }
                       round: { type: integer }
                       venue: { type: string, enum: [home, away] }
@@ -853,6 +856,26 @@ paths:
                           tactics: { $ref: '#/components/schemas/TacticsSet' }
                           fixes: { type: array, items: { type: object, properties: { slot: { type: integer }, out: { type: integer, nullable: true }, in: { type: integer }, out_name: { type: string, nullable: true }, in_name: { type: string, nullable: true } } } }
         '403': { $ref: '#/components/responses/Error' }
+  /matches/{match}:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: A league match for the viewer
+      description: The same shape as the simulator's live match (docs/api/match-events.md). The league's members only (404 otherwise). Each side's tactics reach only its own coach (`you`).
+      responses:
+        '200': { description: The match, its clubs, teams (tactics only for your side) and the slots of both formations }
+        '404': { $ref: '#/components/responses/Error' }
+  /matches/{match}/live:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: The minutes made after `since`, with their frames
+      description: The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own.
+      parameters:
+        - { name: since, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        '200': { description: Like the simulator's live sync (started, finished, tick, server_now, next_at, gap, ticks) }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
