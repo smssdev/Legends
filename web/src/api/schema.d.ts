@@ -1931,7 +1931,11 @@ export interface paths {
         };
         /**
          * The minutes made after `since`, with their frames
-         * @description The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own.
+         * @description The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private
+         *     channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own. Every
+         *     event carries its Arabic commentary line in `text` (the same for everyone). After a gap (the last 20 minutes are
+         *     kept whole), `missed` gives the events of the minutes in between, so nothing is lost. `readings` is the
+         *     assistant's notes to you, the coach (also sent on `club.{id}`, event `reading`); other members get none.
          */
         get: {
             parameters: {
@@ -1946,14 +1950,121 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Like the simulator's live sync (started */
+                /** @description Like the simulator's live sync, with the missed minutes and your readings */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            started: boolean;
+                            finished: boolean;
+                            tick: number;
+                            server_now: number;
+                            next_at: number | null;
+                            gap: boolean;
+                            missed: {
+                                tick: number;
+                                /** @description The minute as shown (45+2 is 47) */
+                                minute: number;
+                                events: {
+                                    [key: string]: unknown;
+                                }[];
+                            }[];
+                            ticks: {
+                                [key: string]: unknown;
+                            }[];
+                            readings: components["schemas"]["MatchReading"][];
+                            reactions?: {
+                                [key: string]: unknown;
+                            }[];
+                        };
+                    };
                 };
                 404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * Why you won or lost, for a coach of either side
+         * @description Built when the match ends, from the public events and your own side only: it never reads the other side's hidden
+         *     tactics. The top reasons with their numbers, one thing to improve, the assistant's verdict, the man of the match,
+         *     the ratings, the stats, the thirds and the momentum, the timeline, and the readings he gave you during the match.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Your report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            side: "home" | "away";
+                            /** @enum {string} */
+                            result: "win" | "draw" | "loss";
+                            score: {
+                                [key: string]: number;
+                            };
+                            shootout?: {
+                                [key: string]: number;
+                            } | null;
+                            reasons: {
+                                [key: string]: unknown;
+                            }[];
+                            improve?: {
+                                [key: string]: unknown;
+                            } | null;
+                            verdict: {
+                                [key: string]: unknown;
+                            }[];
+                            man_of_the_match?: {
+                                [key: string]: unknown;
+                            } | null;
+                            ratings: {
+                                [key: string]: unknown;
+                            };
+                            stats: {
+                                [key: string]: unknown;
+                            };
+                            thirds?: number[];
+                            momentum?: number[];
+                            timeline: {
+                                [key: string]: unknown;
+                            }[];
+                            readings: components["schemas"]["MatchReading"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
             };
         };
         put?: never;
@@ -2998,6 +3109,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only */
+        MatchReading: {
+            id?: number;
+            tick?: number;
+            minute: number;
+            /** @description goal_for, goal_against, red_for, red_against, tired, build_lost, press_won, finishing, danger, counters_for, counters_against, offside, cards, fitness, on_top */
+            kind: string;
+            text: string;
+        };
         MatchOrderResult: {
             /** @description Not before this minute */
             target_tick: number;

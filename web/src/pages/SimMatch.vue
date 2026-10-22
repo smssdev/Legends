@@ -58,11 +58,16 @@
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
               <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
+              <RouterLink v-if="finished && league && mine" :to="{ name: 'league-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
               <RouterLink v-if="finished && league" to="/match" class="flex h-12 items-center rounded-md bg-surface-raised px-5">المباراة القادمة</RouterLink>
               <RouterLink v-if="finished && !league" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
             </div>
+            <!-- The league's half-time: room kept for an advert (none in v1). -->
+            <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">مساحة إعلانية</div>
           </div>
 
+          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" @done="replayTick = null" />
+          <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء</p>
         </section>
 
         <!-- Live: the two coaches cheer and tease each other; both screens see it at once. -->
@@ -160,6 +165,15 @@
           </template>
         </section>
 
+        <section v-if="league && mine" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" aria-label="قراءة المساعد" aria-live="polite">
+          <h2 class="font-display text-base font-bold">قراءة المساعد</h2>
+          <p v-if="!readings.length" class="text-sm text-text-muted">يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.</p>
+          <div v-for="r in readings" :key="r.id" class="flex gap-3 rounded-md bg-surface-sunk px-3 py-2 text-sm" :class="r.kind.startsWith('goal') || r.kind.startsWith('red') ? 'border-s-2 border-gold' : ''">
+            <span class="w-8 shrink-0 font-numbers text-base text-gold">{{ r.minute }}'</span>
+            <span>{{ r.text }}</span>
+          </div>
+        </section>
+
         <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" aria-label="مجريات المباراة">
           <h2 class="mb-1 font-display text-base font-bold">مجريات المباراة</h2>
           <div v-for="(f, i) in feed" :key="i" class="flex gap-3 border-b border-text/5 py-2 text-sm">
@@ -176,14 +190,16 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
+import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
 
-// league: a league match from /api/v1/matches (Sprint 18), played by the server's clock; no orders yet (Sprint 19).
+// league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
+// the server's commentary, his assistant's readings, and catching up after a lost connection.
 const props = defineProps<{ id: string; league?: boolean }>()
 const source = computed(() => (props.league ? leagueMatch : sim))
 const route = useRoute()
@@ -302,6 +318,20 @@ function skipMoment() {
   voice.stop()
   if (!live.value) { clearTimeout(timer); schedule(120) }
 }
+// The server's commentary line (Sprint 20 B1); the simulator's own table for a minute that has none.
+const say = (e: MatchEvent) => e.text ?? line(e, nameOf, clubName)
+// The goal replay (live) and its players by id.
+const replayTick = shallowRef<Tick | null>(null)
+let lastGoal: Tick | null = null
+const LOW_END = (navigator.hardwareConcurrency ?? 8) <= 4
+const playersById = computed(() => {
+  const m: Record<number, { name: string; no: number; side: Side }> = {}
+  for (const side of ['home', 'away'] as const) for (const p of teams.value[side]?.players ?? []) m[p.id] = { name: p.name, no: p.no, side }
+  return m
+})
+// The assistant's notes to this coach (league), newest first.
+const readings = ref<Reading[]>([])
+const offline = ref(false)
 const nameOf = (side: Side, id?: number) => teams.value[side]?.players.find((p) => p.id === id)?.name ?? ''
 const clubName = (side: Side) => view.value?.clubs[side].name ?? ''
 
@@ -443,6 +473,9 @@ function show(t: Tick, animate = true, startAt?: number) {
   // Live: the next minute has started, so the half-time break is over.
   if (live.value && halftime.value) { halftime.value = false; clearInterval(htTimer) }
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
+  // Live: the goal again in a small frame while the next minute plays (not on a slow phone).
+  if (live.value && animate && lastGoal && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
+  lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
   pendingReveal = () => tell(t, animate)
   if (animate) pitch.value?.play(t, startAt)
@@ -453,7 +486,7 @@ function tell(t: Tick, animate: boolean) {
   if (t.teams) teams.value = t.teams
   momentum.value = [...momentum.value, t.danger]
   for (const e of t.events) {
-    const text = line(e, nameOf, clubName)
+    const text = say(e)
     const important = ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type)
     if (text) feed.value.unshift({ minute: minuteText.value, text, important })
     if (e.type === 'period') {
@@ -584,17 +617,35 @@ async function poll() {
     const sent = Date.now()
     const r = await source.value.live(props.id, seen)
     sample(sent, r.server_now)
+    offline.value = false
     wait = handleSync(r)
   } catch (e: any) {
-    error.value = e.message
+    // A lost connection: keep asking. The server keeps every minute, so coming back loses nothing (Sprint 20 W2).
+    if (navigator.onLine === false || e instanceof TypeError) { offline.value = true; wait = 2000 }
+    else error.value = e.message
   }
   if (!finished.value) pollTimer = window.setTimeout(poll, wait)
+}
+// Back on the page (a locked phone, another tab): catch up at once.
+function onVisible() {
+  if (document.visibilityState === 'visible' && live.value && !finished.value) poll()
 }
 
 /** Schedules the new minutes on the shared clock and returns how long to wait before asking again. */
 function handleSync(r: LiveSync): number {
   started.value = r.started
   error.value = ''
+  // Back after a gap: the minutes missed tell their events in the feed, then the latest minutes play on.
+  for (const m of r.missed ?? []) {
+    if (m.tick <= seen) continue
+    seen = m.tick
+    for (const e of m.events) {
+      const text = say(e)
+      if (text) feed.value.unshift({ minute: `${m.minute}'`, text, important: ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type) })
+      if (e.type === 'shootout') shootout.value = e.score
+    }
+  }
+  for (const x of r.readings ?? []) if (!readings.value.some((y) => y.id === x.id)) readings.value.unshift(x)
   const fresh = r.ticks.filter((t) => t.tick > seen)
   fresh.forEach((t, i) => {
     seen = t.tick
@@ -684,6 +735,8 @@ onMounted(async () => {
     router.replace({ query: { ...route.query, seat: undefined } })
   }
   loadOthers()
+  document.addEventListener('visibilitychange', onVisible)
+  window.addEventListener('online', onVisible)
   try {
     view.value = await source.value.show(props.id)
     teams.value = view.value.teams
@@ -711,6 +764,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', onVisible)
+  window.removeEventListener('online', onVisible)
   window.clearInterval(othersTimer)
   clearTimeout(timer)
   clearTimeout(pollTimer)

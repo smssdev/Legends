@@ -2,7 +2,9 @@
 
 namespace App\League;
 
+use App\Events\ClubReading;
 use App\Events\MatchMinute;
+use App\Simulator\Commentary;
 use App\Simulator\MatchChoreographer;
 use App\Simulator\MomentClock;
 use App\Simulator\Runner;
@@ -160,6 +162,7 @@ class MatchRunner
         }
         $n = 0;
         $timing = $live['state']['cfg']['match'];
+        $fixture = self::fixtureOf($id);
         while (! $live['state']['finished'] && GameClock::nowMs() + self::lead() >= $live['next_at'] && $n < 120) {
             $next = $live['state']['tick'] + 1;
             // After a restart the minutes already made are made again with the orders they had; then new ones.
@@ -174,7 +177,8 @@ class MatchRunner
             $live['recent'] = array_slice([...$live['recent'], $tick], -20);
             $live['next_at'] += $tick['moment']['ms'] + self::pause($tick, $timing);
             $n++;
-            MatchMinute::dispatch(self::fixtureOf($id), $id, Simulator::redact($tick, null));
+            MatchMinute::dispatch($fixture, $id, Simulator::redact($tick, null));
+            $live['said'] = self::readings($id, $fixture, $state, $tick, $live['control'], $live['said'] ?? null);
             $halftime = collect($tick['events'])->contains(fn ($e) => $e['type'] === 'period' && $e['name'] === 'halftime');
             if ($halftime || $state['finished']) {
                 self::save($id, $state, $live['events']);
@@ -196,6 +200,45 @@ class MatchRunner
      * The first minute, or the runner was stopped and its cache lost: back to the last saved state, playing on
      * from now. The orders that went in after it go in again at the same minutes, so nothing changes.
      */
+    /**
+     * The assistant's live reading for each coach [ENGINE 8.2]: from MatchFacts only, kept (a minute made again
+     * after a restart gives it once) and sent on the club's own channel. Returns what each side was told.
+     */
+    private static function readings(int $id, object $f, array $state, array $tick, array $control, ?array $said): array
+    {
+        $said ??= self::said($id, $f);
+        foreach (['home', 'away'] as $side) {
+            if ($control[$side] !== 'coach') {
+                continue;
+            }
+            [$reading, $said[$side]] = Readings::next(MatchFacts::of($state, $side), $tick['events'], $said[$side] ?? []);
+            if (! $reading) {
+                continue;
+            }
+            $club = $side === 'home' ? $f->home_id : $f->away_id;
+            $new = DB::table('match_readings')->insertOrIgnore(['match_id' => $id, 'club_id' => $club, 'tick' => $reading['tick'],
+                'minute' => min(255, $reading['minute']), 'kind' => $reading['kind'], 'text' => $reading['text'], 'created_at' => GameClock::now()]);
+            if ($new) {
+                ClubReading::dispatch($club, $id, $reading);
+            }
+        }
+
+        return $said;
+    }
+
+    /** What each coach was told so far, from the kept readings (the cache was lost). */
+    private static function said(int $id, object $f): array
+    {
+        $said = ['home' => [], 'away' => []];
+        foreach (DB::table('match_readings')->where('match_id', $id)->orderBy('tick')->get() as $r) {
+            $side = $r->club_id === $f->home_id ? 'home' : 'away';
+            $said[$side][$r->kind] = $r->minute;
+            $said[$side]['last'] = $r->minute;
+        }
+
+        return $said;
+    }
+
     private static function resume(int $id): array
     {
         $m = DB::table('matches')->where('id', $id)->first();
@@ -214,7 +257,7 @@ class MatchRunner
         $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
         // The engine's debug values are for the simulator's developer panel only. A rejected order reaches
         // its own coach only (Simulator::redact), never the broadcast.
-        $tick = array_diff_key($state['out'], ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
+        $tick = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
             'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
 
         return [$state, $choreo['ball'], $tick];

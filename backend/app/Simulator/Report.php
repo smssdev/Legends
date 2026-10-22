@@ -72,7 +72,7 @@ class Report
         $facts = [];
 
         $facts[] = ['weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => 'بناء مقطوع',
-            'title' => $m['presses_won'] >= $t['presses_won'] ? 'ضغطك أفسد بناءهم' : 'ضغطهم أفسد بناءك',
+            'title' => $m['presses_won'] >= $t['presses_won'] ? 'قطعت بناءهم كثيراً' : 'بناؤك قُطع كثيراً',
             'text' => sprintf('قطعت %d من %d بناءً لهم، وقطعوا %d من %d بناءً لك.', $m['presses_won'], $t['builds'], $t['presses_won'], $m['builds'])];
 
         $facts[] = ['weight' => ($m['big_chances'] - $t['big_chances']) * 5, 'big' => $m['big_chances'].' / '.$t['big_chances'], 'unit' => 'فرص محققة',

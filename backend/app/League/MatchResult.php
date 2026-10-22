@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\DB;
  *  - on the players: those who played end with the fitness they finished with, those who rested get some
  *    back; then every injury and suspension of these two clubs counts this match down by one, and the
  *    new ones begin (an injury lasts 1 to 3 of the club's matches, from the match's seed; a red card 1).
- *    "The next match" is the club's next match in any competition.
+ *    "The next match" is the club's next match in any competition;
+ *  - each coach's report, "why you won or lost" (MatchReport).
  */
 class MatchResult
 {
@@ -43,6 +44,7 @@ class MatchResult
             ]);
             self::players($club[$side], $team, $m->seed, $matchId);
         }
+        MatchReport::store($matchId, $state);
     }
 
     private static function players(int $clubId, array $team, int $seed, int $matchId): void
