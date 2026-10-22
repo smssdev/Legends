@@ -3,7 +3,7 @@
 > **مرجعك الوحيد.** منه تعرف ما المطلوب الآن، وكيف تسجله أو ترسمه، وأين تضعه، وكم أنجز.
 > يولده `python3 tools/team.py` بعد كل مراجعة، فلا يعدل يدويا.
 
-**تقسيم العمل (قرار 2026-10-22):** أنت على الصوت أولا (المعلق العربي وأصوات الملعب)، ثم صور الدفعات 5 إلى 16، وهي التي تبنى آخر الخطة (السبرنتات 49 إلى 52). وسليمان يصنع صور الدفعات 1 إلى 4 التي تحتاجها اللعبة أولا ([`SLIEMAN.md`](SLIEMAN.md)).
+**تقسيم العمل (قرار 2026-10-22):** أنت على الصوت أولا (المعلق العربي وأصوات الملعب)، ثم **صور الملاعب كلها** من أي دفعة، و**صور الدفعات 5 إلى 16** التي تبنى آخر الخطة (السبرنتات 49 إلى 52). وسليمان يصنع باقي صور الدفعات 1 إلى 4 التي تحتاجها اللعبة أولا ([`SLIEMAN.md`](SLIEMAN.md)).
 
 ## المطلوب الآن، بالترتيب
 
@@ -14,26 +14,25 @@
 3. **ثم الدفعات 2 إلى 12 بالترتيب (330 مقطعا):** كل دفعة في قائمتها، أولها [`audio/todo/wave-02.md`](audio/todo/wave-02.md).
 4. **ثم أصوات الملعب (44):** [`audio/todo/sfx.md`](audio/todo/sfx.md).
 5. **⏳ 16 صورة مرفوعة تنتظر المراجعة:** قل ل Claude «راجع».
-6. **ثم الصور: الدفعات 5 إلى 16 بالترتيب (848 صورة):** من كتاب الصور، كل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
+6. **ثم الصور بترتيب الدفعات (896 صورة):** ملاعب الدفعات 4 وما قبلها أولا، ثم الدفعات 5 إلى 16. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
 
 **الإيقاع:** حوالي 30 مقطعا معتمدا يوميا، ثم 12 صورة معتمدة يوميا. وتواريخ كل دفعة في [`SCHEDULE.md`](SCHEDULE.md)، قسما «مسار الصوت» و«مسار الصور».
 
-**أول صورك بعد الصوت، من الدفعة 5 (12):**
+**أول صورك بعد الصوت، من الدفعة 2 (11):**
 
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
-| 🔁 | 5.3 | `art/raw/stadiums/coast/dusk/wing.jpg` | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) |
-| ⬜ | 23.1 | `art/raw/stadiums/maghreb/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 23.2 | `art/raw/stadiums/maghreb/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 23.3 | `art/raw/stadiums/maghreb/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 23.4 | `art/raw/stadiums/maghreb/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 23.5 | `art/raw/stadiums/maghreb/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 24.1 | `art/raw/stadiums/maghreb/dusk/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 24.2 | `art/raw/stadiums/maghreb/dusk/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 24.3 | `art/raw/stadiums/maghreb/dusk/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 24.4 | `art/raw/stadiums/maghreb/dusk/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 24.5 | `art/raw/stadiums/maghreb/dusk/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 62.1 | `art/raw/midfielder/walk/jog-01.png` | [`03-players.md`](art/images/03-players.md) |
+| 🔁 | 2.3 | `art/raw/stadiums/classic/day/wing.jpg` | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) |
+| ⬜ | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 
 ## طريقة التسجيل
 
@@ -83,10 +82,14 @@
 | أصوات الملعب | 44 | 0 | 0 | 0 | 44 | [`sfx.md`](audio/todo/sfx.md) |
 | **المعلق كله** | **428** | **65** | **3** | **1** | **359** | |
 
-### الصور
+### الصور (الملاعب كلها، والدفعات 5 إلى 16)
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تصنع |
 |---|---|---|---|---|---|
+| 1 | 16 | 16 | 0 | 0 | 0 |
+| 2 | 26 | 15 | 0 | 1 | 10 |
+| 3 | 26 | 0 | 0 | 0 | 26 |
+| 4 | 26 | 15 | 0 | 1 | 10 |
 | 5 | 250 | 15 | 0 | 1 | 234 |
 | 6 | 167 | 0 | 16 | 0 | 151 |
 | 7 | 155 | 0 | 0 | 0 | 155 |
@@ -99,7 +102,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **879** | **15** | **16** | **1** | **847** |
+| **الكل** | **973** | **61** | **16** | **3** | **893** |
 
 ## كل الملفات
 
