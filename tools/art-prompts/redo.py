@@ -65,7 +65,7 @@ def entry(book, code):
 
 
 def run(r):
-    book = open(os.path.join(ROOT, r['book'])).read()
+    book = open(os.path.join(ROOT, r['book']), encoding='utf-8').read()
     rows = [(k, folder, *entry(book, k), why, fix) for k, folder, why, fix in r['redo']]
     later = {k for x in REVIEWS[REVIEWS.index(r) + 1:] for k, *_ in x['redo']}   # a later review of the same board replaces this one
     rows = [row for row in rows if f'{row[1]}/{row[2]}' not in approved() and row[0] not in later]   # never list or remove an approved board
@@ -117,7 +117,7 @@ def run(r):
         W('```\n')
     out = os.path.join(ROOT, r['out'])
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    open(out, 'w').write('\n'.join(o) + '\n')
+    open(out, 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
     removed = 0
     for k, folder, f, *_ in rows:
         p = os.path.join(ROOT, 'art', 'raw', folder, f)
