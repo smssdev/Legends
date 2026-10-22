@@ -182,6 +182,13 @@ def write_slieman():
             W(f"| {'🔁' if path in redo else '⬜'} | {code} | `{path}` | {where} |")
         W('')
 
+    later_redo = [b for b in boards if b[0] > 1 and st[b[2]] == 'redo']
+    if later_redo:
+        W(f'**إعادة من الدفعات اللاحقة ({len(later_redo)}):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.\n')
+        W('| الدفعة | اللوحة | الملف | المشكلة | الأمر في |'); W('|---|---|---|---|---|')
+        for wave, code, path, md, group in later_redo:
+            W(f'| {wave} | {code} | `{path}` | {redo[path][1]} | {link(redo[path][0])} |')
+        W('')
     W(f'### 2. الكود ({rates.CODE_HOURS} ساعات): Sprint {current}، {title}\n')
     if goal:
         W(f'**الهدف:** {goal}\n')

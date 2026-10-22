@@ -295,7 +295,31 @@ RUN_BACK = {
          {'attach': [REF, RUN + 'run-back-02.png'], 'prompt': clear(2, BACK + ' Continue the attached run-back-02.png at the same size.', *B3)}),
     ],
 }
-REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK]
+PLATES = ['shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor',
+          'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad']
+NUM = {n: i for i, n in enumerate(PLATES, 1)}
+_STADIUM_REDO = {('classic/day', 'wing'), ('maghreb/night', 'goal-front'), ('coast/dusk', 'wing')}
+STADIUMS = {
+    'date': '2026-10-22', 'title': 'الملاعب: الكلاسيكي نهاراً، والمغاربي ليلاً، والساحلي عند الغروب (حمزة)', 'book': 'docs/art/images/01-stadium.md',
+    'out': 'docs/art/redo/2026-10-22-stadiums.md',
+    'ok': [(f'{g}.{NUM[n]}', f'stadiums/{folder}/{n}.jpg') for g, folder in ((2, 'classic/day'), (4, 'maghreb/night'), (5, 'coast/dusk'))
+           for n in PLATES if (folder, n) not in _STADIUM_REDO],
+    'notes': [
+        '**مستوى عالٍ:** 45 من 48 لوحة معتمدة. كل ملعب هو نفسه في لوحاته الـ16، والملعب فارغ، والزوايا كما في الكتاب.',
+        '**المجلد الخطأ:** اللوحات المرفوعة في `stadiums/gulf/dusk/` هي **ملعب الكلاسيكي نهاراً** (المجموعة 2: طوب أحمر، ومقاعد حمراء، وسقف أخضر، وأبراج إنارة، وشمس). نُقلت إلى `stadiums/classic/day/`. **ملعب الخليجي عند الغروب (المجموعة 3) لم يُصنع بعد.**',
+        '**الصيغة:** الصور WEBP بامتداد `.jpg`. أداة البناء تقرؤها، والأفضل حفظها JPG فعلاً.',
+    ],
+    'common': 'لوحة «الجناح» بلا المرمى الصغير على الحافة اليمنى، أو نسخة من «التسديدة».',
+    'redo': [
+        ('2.3', 'stadiums/classic/day', 'لا يظهر أي مرمى. المطلوب مرمى واحد صغير على الحافة اليمنى (عرضيات الجناح تتجه إليه)',
+         'Exactly ONE goal must be visible: the near goal, small, at the far right edge of the image, both white posts and the net visible. Everything else stays exactly like the attached shot.jpg: the same stadium, light and camera height.'),
+        ('4.5', 'stadiums/maghreb/night', 'لوحات الإعلانات خلف المرمى فيها كتابة وشعارات، والمطلوب بلا أي نص',
+         'The advertising boards behind the goal show only plain warm LED light in soft colours: no letters, no words, no logos and no numbers anywhere on them.'),
+        ('5.3', 'stadiums/coast/dusk', 'نسخة من لوحة التسديدة (المرمى كبير في الوسط)، والمطلوب منظر خط التماس والمرمى صغير بعيد',
+         'This is NOT the view of the attached shot.jpg: the camera stands on the touchline level with the edge of the penalty area and looks along the length of the pitch towards the right. The white touchline runs diagonally across the bottom of the image, the advertising boards close behind it on the left, and the only goal is small and far away at the right edge.'),
+    ],
+}
+REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK, STADIUMS]
 
 # Boards approved before these reviews (wave 1), in docs/sprints/sprint-02-days.md.
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']
