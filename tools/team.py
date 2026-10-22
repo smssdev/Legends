@@ -5,7 +5,7 @@ voice, then makes the image waves built last (tools/plan/rates.py).
 - docs/SLIEMAN.md: Sliman's day (his images, then the current sprint), what waits on his decisions, the next
   sprints with their dates, how to make and hand in an image, and the numbers.
 - docs/HAMZA.md: the voice, then his images, in order, with how to record and draw them and the numbers.
-- docs/SLIEMAN2.md: the moments and coaches boards (rates.MANUAL_BOOKS) Sliman makes by hand outside the plan.
+  It also lists the moments and coaches boards (rates.MANUAL_BOOKS) Sliman makes by hand beside the daily ones.
 Both come from what is in art/raw/ and audio/raw/, the image book (docs/art/images/), the image reviews
 (tools/art-prompts/redo.py), the voice lists (tools/commentary/todo.py), docs/SPRINTS.md and docs/SCHEDULE.md.
 Run it after every review and every merged sprint.
@@ -153,7 +153,7 @@ def link(path):
 def who_makes(b, st):
     """Who makes a board: its owner (tools/plan/rates.py), but every redo is Sliman's (owner, 2026-10-22):
     Hamza never draws an image twice, he only makes new ones. A redo from the hand-made books is listed in
-    docs/SLIEMAN.md too (owner, 2026-10-22: every redo goes there), and stays in docs/SLIEMAN2.md."""
+    docs/SLIEMAN.md's redo table too (owner, 2026-10-22: every redo goes there)."""
     return 'slieman' if st[b[2]] == 'redo' else rates.image_owner(b[0], b[2], b[3])
 
 
@@ -229,7 +229,7 @@ def write_slieman():
     W('# دليل سليمان: الصور والسبرنتات\n')
     W('> **مرجعك اليومي.** منه تعرف ماذا تعمل اليوم، وما ينتظر قرارك، وما القادم بتواريخه.')
     W('> يولّده `python3 tools/team.py` بعد كل مراجعة وكل دمج، فلا يُعدَّل يدوياً. والخطة كاملة في [`SCHEDULE.md`](SCHEDULE.md).\n')
-    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات، و**كل صورة تحتاج إعادة** من أي دفعة. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات {rates.HAMZA_FROM_WAVE} إلى {waves[-1]} التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). وصور اللحظات والمدربين تصنعها يدوياً خارج هذه القائمة ([`SLIEMAN2.md`](SLIEMAN2.md)). يومك {rates.DAY_HOURS} ساعات: **للصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، وللكود {rates.CODE_HOURS}** مع Claude. والأرقام في `tools/plan/rates.py`.\n')
+    W(f'**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات، و**كل صورة تحتاج إعادة** من أي دفعة. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات {rates.HAMZA_FROM_WAVE} إلى {waves[-1]} التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). وصور اللحظات والمدربين تصنعها يدوياً بجانبها (قسمها تحت). يومك {rates.DAY_HOURS} ساعات: **للصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، وللكود {rates.CODE_HOURS}** مع Claude. والأرقام في `tools/plan/rates.py`.\n')
 
     # ------------------------------------------------------------ today
     W('## يومك بالترتيب\n')
@@ -277,6 +277,8 @@ def write_slieman():
     W('- **الكود:** Claude يفتح PR، وبعد نجاح CI يُدمج في `main`.')
     W('- **الخطة:** بعد كل مراجعة أو دمج تتحدث `SCHEDULE.md` وهذا الملف تلقائياً.\n')
 
+    manual_section(W, boards, redo, st)
+
     # ------------------------------------------------------------ decisions
     W('## ينتظر قرارك\n')
     W('| الموضوع | المطلوب | لماذا يهم |'); W('|---|---|---|')
@@ -317,7 +319,6 @@ def write_slieman():
     W('| [`art/images/00-waves.md`](art/images/00-waves.md) | كل الدفعات ومجموعاتها ومجلداتها |')
     W('| [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |')
     W('| [`HAMZA.md`](HAMZA.md) | مرجع حمزة: الصوت، وصور الدفعات الأخيرة |')
-    W('| [`SLIEMAN2.md`](SLIEMAN2.md) | صور اللحظات والمدربين: تصنعها يدوياً خارج الخطة |')
     open(os.path.join(ROOT, 'docs', 'SLIEMAN.md'), 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
     return current, {w: count[w] for w in my_waves[:2]}
 
@@ -394,54 +395,42 @@ def write_hamza():
     return vcount[1]
 
 
-def write_slieman2():
-    boards, redo, st = image_states()
+def manual_section(W, boards, redo, st):
+    """The moments and coaches boards (rates.MANUAL_BOOKS) Sliman makes by hand: every one not approved yet."""
     mine = [b for b in boards if b[3] in rates.MANUAL_BOOKS]
     n = {k: sum(1 for b in mine if st[b[2]] == k) for k in ('done', 'pending', 'redo', 'todo')}
     mark = {'done': '✅', 'pending': '⏳', 'redo': '🔁', 'todo': '⬜'}
-    o = []
-    W = o.append
-    W('# دليل سليمان 2: صور اللحظات والمدربين (يدوياً)\n')
-    W('> يولّده `python3 tools/team.py`، فلا يُعدَّل يدوياً. وتتحدث العلامات فيه كلما رفعت صوراً أو رُوجعت.\n')
-    W('**قرار صاحب المشروع (2026-10-22):** صور هذين الجزأين من كتاب الصور يصنعها سليمان **يدوياً خارج الخطة اليومية**، '
-      'ويرفعها بنفسه حين تجهز، ثم تُراجع لاحقاً. فهي ليست في [`HAMZA.md`](HAMZA.md) ولا في قائمة صور اليوم في [`SLIEMAN.md`](SLIEMAN.md):\n')
-    for md in rates.MANUAL_BOOKS:
-        k = sum(1 for b in mine if b[3] == md)
-        W(f'- [`{md}`](art/images/{md}): {k} صورة.')
-    W('')
-    W('## طريقة العمل\n')
-    W('1. **الأمر** في ملف الجزء، ابحث برقم اللوحة مثل `### 256.1`، ومعه المرفقات المكتوبة تحت «ارفق».')
-    W('2. **احفظ كل صورة PNG حقيقياً** باسمها في المسار المكتوب في الجدول تحت (وفي `README.md` المجلد).')
-    W('3. **ارفعها إلى `art/raw/`** بنفسك متى جهزت، دفعة أو مجموعة، ثم شغّل `python3 tools/art/build.py` وشاهدها في `/dev/art`.')
-    W('4. **المراجعة لاحقاً:** حين تريد، قل لـ Claude «راجع اللحظات والمدربين». المعتمد يصير ✅، والمرفوض يُحذف وتأتيك إعادته بسطر التصحيح.')
-    W('5. **كل إعادة (🔁) تظهر أيضاً في [`SLIEMAN.md`](SLIEMAN.md)** مع باقي الإعادات، وتبقى هنا بعلامتها.\n')
-    W('## الحالة\n')
-    W(f"**{len(mine)} صورة:** ✅ {n['done']} معتمدة · ⏳ {n['pending']} مرفوعة تنتظر المراجعة · 🔁 {n['redo']} للإعادة · ⬜ {n['todo']} لم تُرفع.\n")
+    W('## صور اللحظات والمدربين (يدوياً، خارج صور اليوم)\n')
+    W('**قرار صاحب المشروع (2026-10-22):** صور ' + ' و'.join(f'[`{md}`](art/images/{md})' for md in rates.MANUAL_BOOKS)
+      + ' تصنعها يدوياً بجانب صور اليوم، وترفعها بنفسك متى جهزت، ثم قل «راجع اللحظات والمدربين». وليست عند حمزة.\n')
+    W(f"**{len(mine)} صورة:** ✅ {n['done']} معتمدة · ⏳ {n['pending']} تنتظر المراجعة · 🔁 {n['redo']} للإعادة · ⬜ {n['todo']} لم تُصنع.\n")
+    W('1. **الأمر** في ملف الجزء، ابحث برقم اللوحة مثل `### 256.1`، ومعه المرفقات المكتوبة تحت «ارفق». والإعادة من ملف الإعادة بسطر تصحيحها.')
+    W('2. **احفظ كل صورة PNG حقيقياً، عريضة 3:2،** باسمها في المسار المكتوب تحت، وارفعها إلى `art/raw/`.\n')
     W('| الجزء | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |'); W('|---|---|---|---|---|---|---|')
     for md in rates.MANUAL_BOOKS:
         for w in sorted({b[0] for b in mine if b[3] == md}):
             c = {k: sum(1 for b in mine if b[3] == md and b[0] == w and st[b[2]] == k) for k in mark}
             W(f"| `{md}` | {w} | {sum(c.values())} | {c['done']} | {c['pending']} | {c['redo']} | {c['todo']} |")
     W('')
-    for md in rates.MANUAL_BOOKS:
-        W(f'## [`{md}`](art/images/{md})\n')
-        group = None
-        for wave, code, path, _, g in [b for b in mine if b[3] == md]:
-            if g != group:
-                if group is not None:
-                    W('')
-                group = g
-                W(f'### {g} (الدفعة {wave})\n')
-                W('| | اللوحة | الملف |'); W('|---|---|---|')
-            fix = f' · إعادة: {redo[path][1]} ({link(redo[path][0])})' if st[path] == 'redo' else ''
-            W(f'| {mark[st[path]]} | {code} | `{path}`{fix} |')
-        W('')
-    open(os.path.join(ROOT, 'docs', 'SLIEMAN2.md'), 'w', encoding='utf-8', newline='\n').write('\n'.join(o))
-    return len(mine), n
+    left = [b for b in mine if st[b[2]] != 'done']
+    if not left:
+        return
+    W(f'### ما بقي منها ({len(left)})، بالترتيب\n')
+    W('🔁 = إعادة (بأمرها في ملف الإعادة)، ⏳ = مرفوعة تنتظر المراجعة، ⬜ = لم تُصنع (بأمرها في الكتاب). والمعتمد لا يظهر هنا.\n')
+    group = None
+    for wave, code, path, md, g in left:
+        if g != group:
+            if group is not None:
+                W('')
+            group = g
+            W(f'#### {g} (الدفعة {wave}، [`{md}`](art/images/{md}))\n')
+            W('| | اللوحة | الملف | الأمر في |'); W('|---|---|---|---|')
+        where = f'{link(redo[path][0])}: {redo[path][1]}' if st[path] == 'redo' else f'[`{md}`](art/images/{md})'
+        W(f'| {mark[st[path]]} | {code} | `{path}` | {where} |')
+    W('')
 
 
 if __name__ == '__main__':
     cur, img = write_slieman()
     v1 = write_hamza()
-    m = write_slieman2()
-    print('docs/SLIEMAN.md: sprint', cur, img, '· docs/HAMZA.md voice wave 1:', v1, '· docs/SLIEMAN2.md:', m)
+    print('docs/SLIEMAN.md: sprint', cur, img, '· docs/HAMZA.md voice wave 1:', v1)
