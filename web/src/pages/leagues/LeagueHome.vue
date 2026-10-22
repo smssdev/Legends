@@ -8,6 +8,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import { budget, END_MODES, STATUS, when, type JoinRequest, type League, type LeagueClub } from '../../api/leagues'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import LeagueTabs from './LeagueTabs.vue'
+import { rememberLeague } from '../../lib/currentLeague'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
 import UiChip from '../../components/ui/UiChip.vue'
@@ -31,6 +32,7 @@ async function load() {
   try {
     const { data } = await api.GET('/leagues/{league}', { params: { path: { league: leagueId.value } } })
     league.value = data!.league
+    if (league.value.my_club_id) rememberLeague(league.value.id)
     if (league.value.is_owner || league.value.my_request === 'approved') {
       clubs.value = (await api.GET('/leagues/{league}/clubs', { params: { path: { league: leagueId.value } } })).data!.clubs
     }

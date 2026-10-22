@@ -1,0 +1,136 @@
+<script setup lang="ts">
+// Tactics (Sprint 17 W1), after the draft MobileTactics: the plan, three sliders, tackling, the positions
+// of each line, the trap and marking, with tips in our own words. Tips explain how the engine plays them;
+// they change no number [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent.
+import { computed, onMounted, ref } from 'vue'
+import { api, asApiError, ensureCsrf } from '../../api/client'
+import type { components } from '../../api/schema'
+import UiButton from '../../components/ui/UiButton.vue'
+import { currentLeague } from '../../lib/currentLeague'
+
+type T = Required<components['schemas']['TacticsSet']>
+const leagueId = ref<number | null>(null)
+const t = ref<T | null>(null)
+const saved = ref('')
+const tips = ref<string[]>([])
+const referee = ref<string | null>(null)
+const message = ref('')
+const loaded = ref(false)
+
+const PLANS = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' } as const
+const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
+const SLIDERS = [
+  { key: 'pressing', label: 'الضغط على الخصم', low: 'منخفض', high: 'عالٍ' },
+  { key: 'style', label: 'الأسلوب', low: 'دفاعي', high: 'هجومي' },
+  { key: 'tempo', label: 'إيقاع اللعب', low: 'هادئ', high: 'سريع' },
+] as const
+const LINES = [
+  { key: 'att', label: 'الهجوم', color: 'bg-[#F08A3C]', options: { back: 'ارتداد', support: 'مساندة الوسط', only: 'هجوم فقط' } },
+  { key: 'mid', label: 'الوسط', color: 'bg-[#22A35A]', options: { def: 'مساندة الدفاع', stay: 'بقاء', push: 'اندفاع' } },
+  { key: 'def', label: 'الدفاع', color: 'bg-[#3B82F6]', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
+] as const
+const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
+const dirty = computed(() => !!t.value && JSON.stringify(t.value) !== saved.value)
+
+async function load() {
+  leagueId.value = await currentLeague()
+  if (!leagueId.value) {
+    loaded.value = true
+    return
+  }
+  const { data } = await api.GET('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } } })
+  apply(data!)
+  loaded.value = true
+}
+function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null }) {
+  t.value = { ...(d.tactics as T) }
+  saved.value = JSON.stringify(t.value)
+  tips.value = d.tips
+  referee.value = d.referee ?? null
+}
+async function save() {
+  if (!leagueId.value || !t.value) return
+  message.value = ''
+  try {
+    await ensureCsrf()
+    const { data } = await api.PUT('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } }, body: t.value })
+    apply(data!)
+    message.value = 'حُفظ التكتيك.'
+  } catch (e) {
+    message.value = asApiError(e).message
+  }
+}
+onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (loaded.value = true))))
+</script>
+
+<template>
+  <div class="flex flex-col gap-4 pb-6">
+    <div v-if="loaded && !leagueId" class="rounded-xl bg-surface p-8 text-center">
+      <p class="mb-3 text-text-muted">ليس لديك فريق بعد.</p>
+      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink>
+    </div>
+    <template v-else-if="t">
+      <header class="flex items-start justify-between gap-3">
+        <div>
+          <h1 class="font-display text-3xl font-extrabold">التكتيك</h1>
+          <p class="text-sm text-text-muted">الحكم: {{ referee ? REFEREE[referee] : 'يُعيَّن قبل المباراة بنصف ساعة' }} · الضغط والأسلوب والإيقاع والتمركز لا يراها الخصم</p>
+        </div>
+        <UiButton :disabled="!dirty" @click="save">حفظ</UiButton>
+      </header>
+      <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ message }}</p>
+
+      <section class="flex flex-col gap-2 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-tips">
+        <h2 id="h-tips" class="text-sm text-text-muted">الأثر المتوقع في المباراة{{ dirty ? ' (يتحدث بعد الحفظ)' : '' }}</h2>
+        <ul class="flex flex-col gap-1.5 text-sm">
+          <li v-for="(tip, i) in tips" :key="i" class="rounded-lg bg-surface-sunk px-3 py-2">{{ tip }}</li>
+        </ul>
+      </section>
+
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 font-bold">خطة اللعب <span class="text-xs font-normal text-text-muted">(يراها الخصم بعد القفل)</span></legend>
+        <div class="flex flex-wrap gap-2">
+          <button v-for="(label, k) in PLANS" :key="k" type="button" class="h-12 rounded-xl border px-4 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k">{{ label }}</button>
+        </div>
+      </fieldset>
+
+      <section class="flex flex-col gap-4 rounded-xl bg-surface p-4">
+        <label v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
+          <span class="flex items-center justify-between font-bold">{{ s.label }} <span class="font-numbers text-2xl text-gold">{{ t[s.key] }}</span></span>
+          <input v-model.number="t[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" />
+          <span class="flex justify-between text-xs text-text-muted"><span>{{ s.low }}</span><span>{{ s.high }}</span></span>
+        </label>
+      </section>
+
+      <fieldset>
+        <legend class="mb-2 font-bold">قطع الكرة <span class="text-xs font-normal text-text-muted">(يراه الخصم بعد القفل)</span></legend>
+        <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1">
+          <button v-for="(label, i) in TACKLING" :key="i" type="button" class="h-12 rounded-lg font-bold" :class="t.tackling === i ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.tackling === i" @click="t.tackling = i">{{ label }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 font-bold">التمركز</legend>
+        <div v-for="l in LINES" :key="l.key" class="flex items-center gap-2">
+          <span class="flex w-20 shrink-0 items-center gap-1.5 text-sm"><span class="size-2.5 rounded-full" :class="l.color" />{{ l.label }}</span>
+          <div class="grid flex-1 grid-cols-3 gap-1 rounded-xl bg-surface p-1">
+            <button v-for="(label, k) in l.options" :key="k" type="button" class="min-h-11 rounded-lg px-1 text-sm font-bold" :class="t[l.key] === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t[l.key] === k" @click="(t as Record<string, unknown>)[l.key] = k">{{ label }}</button>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="grid gap-2 md:grid-cols-2">
+        <label class="flex min-h-touch cursor-pointer items-center justify-between gap-3 rounded-xl bg-surface p-3">
+          <span><span class="block font-bold">مصيدة التسلل</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span>
+          <input type="checkbox" role="switch" class="size-6 accent-success" :checked="t.trap === 1" @change="t.trap = ($event.target as HTMLInputElement).checked ? 1 : 0" />
+        </label>
+        <div class="flex items-center justify-between gap-3 rounded-xl bg-surface p-3">
+          <span><span class="block font-bold">الرقابة</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span>
+          <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1">
+            <button v-for="(label, k) in { zone: 'منطقة', man: 'رجل لرجل' }" :key="k" type="button" class="h-10 rounded-md px-3 text-sm font-bold" :class="t.marking === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.marking === k" @click="t.marking = k">{{ label }}</button>
+          </div>
+        </div>
+      </div>
+    </template>
+    <p v-else class="text-text-muted">{{ message || 'جارٍ التحميل…' }}</p>
+  </div>
+</template>
