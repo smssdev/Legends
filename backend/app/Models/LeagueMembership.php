@@ -15,7 +15,7 @@ class LeagueMembership extends Model
     protected function casts(): array
     {
         return [
-            'joined_at' => 'datetime', 'left_at' => 'datetime', 'last_active_at' => 'datetime',
+            'joined_at' => 'datetime', 'left_at' => 'datetime', 'last_active_at' => 'datetime', 'absence_warned_at' => 'datetime',
             'vacation_from' => 'datetime', 'vacation_until' => 'datetime',
         ];
     }

@@ -44,7 +44,7 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
 });
 
 // Private leagues [PLAN 2.1, 2.3]: make one, ask to join by its code, the owner approves, take a club.
-Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1'])->controller(LeagueController::class)->group(function () {
+Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.activity'])->controller(LeagueController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store')->middleware('throttle:league-create');
     Route::post('join', 'join')->middleware('throttle:league-code');
@@ -55,6 +55,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1'])->contro
     Route::get('{league}/requests', 'requests')->whereNumber('league');
     Route::post('{league}/requests/{joinRequest}/approve', 'approve')->whereNumber(['league', 'joinRequest']);
     Route::post('{league}/requests/{joinRequest}/reject', 'reject')->whereNumber(['league', 'joinRequest']);
+    Route::post('{league}/vacation', 'vacation')->whereNumber('league');
+    Route::delete('{league}/vacation', 'endVacation')->whereNumber('league');
+    Route::post('{league}/members/{membership}/kick', 'kick')->whereNumber(['league', 'membership']);
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);

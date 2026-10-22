@@ -12,7 +12,8 @@ import UiChip from '../../components/ui/UiChip.vue'
 
 const route = useRoute()
 const router = useRouter()
-const code = ref(String(route.query.code ?? '').toUpperCase())
+// The invite link /join/CODE (Sprint 14) or ?code=.
+const code = ref(String(route.params.code || route.query.code || '').toUpperCase())
 const league = ref<League | null>(null)
 const status = ref<'pending' | 'approved' | 'rejected' | null>(null)
 const error = ref('')

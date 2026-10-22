@@ -12,8 +12,8 @@ Step 'Backing up the databases'
 php artisan db:backup
 
 Step 'Stopping the game'
-Stop-ScheduledTask -TaskName 'Legends Web' -ErrorAction SilentlyContinue
-Get-CimInstance Win32_Process -Filter "Name = 'php.exe'" | Where-Object { $_.CommandLine -like '*artisan serve*' -or $_.CommandLine -like '*server.php*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue') { Stop-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue }
+Get-CimInstance Win32_Process -Filter "Name = 'php.exe'" | Where-Object { $_.CommandLine -match 'artisan serve|server\.php|reverb:start|queue:work' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
 
 Step 'Getting the latest version'
 git -C $Root pull --ff-only
@@ -30,5 +30,9 @@ Set-Location "$Root\backend"
 php artisan web:publish
 
 Step 'Starting the game'
-Start-ScheduledTask -TaskName 'Legends Web'
+# Older installs have no live or queue task yet: setup.ps1 adds them (it is safe to run again).
+if (-not (Get-ScheduledTask -TaskName 'Legends Live' -ErrorAction SilentlyContinue)) {
+    Write-Host 'Run setup.ps1 once more to add the live connection (Reverb) and the queue.' -ForegroundColor Yellow
+}
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue') { Start-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue }
 Write-Host "`nUpdated. Your link is the same as before." -ForegroundColor Green

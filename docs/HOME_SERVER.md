@@ -24,6 +24,8 @@
 ## ماذا يحدث بعدها تلقائياً
 
 - **اللعبة تبدأ مع تشغيل ويندوز**، وتُعاد وحدها لو توقفت (مهمة مجدولة اسمها `Legends Web`).
+- **البث المباشر** (`Legends Live`، خادم Reverb) و**الطابور** (`Legends Queue`، رسائل البريد) يبدآن معها. والبث يعمل على نفس الرابط: `wss://اسم-الجهاز...ts.net/app/...`، وReverb نفسه لا يُفتح إلا على الجهاز.
+- **رابط الدعوة** `https://اسم-الجهاز...ts.net/join/الكود` يظهر في واتساب ببطاقة الدوري (السبرنت 14).
 - **المجدول كل دقيقة** (`Legends Scheduler`)، ومنه **نسخة احتياطية يومية الساعة 4 فجراً بتوقيت القاهرة** في `C:\Legends\backend\database\backups\` (يحتفظ بآخر 14 نسخة).
 - **معايرة المحرك كل ليلة** (`GAME_NIGHTLY_BALANCE=true` في `.env`): الساعة 3 فجراً `sim:balance` بـ 5000 مباراة، ثم `sim:knobs` و`sim:matrix` كاملة. النتيجة في `backend/storage/app/balance/latest.json` والسجل في `backend/storage/logs/balance.log`. وتأخذ قرابة 20 دقيقة من المعالج.
 - **الجهاز لا ينام** وهو موصول بالكهرباء.
@@ -45,5 +47,6 @@ powershell -ExecutionPolicy Bypass -File C:\Legends\deploy\windows\update.ps1
 
 ## لو لم يعمل شيء
 
-- افتح `http://127.0.0.1:8000/sim` على نفس الجهاز: لو فتح، فالمشكلة في Tailscale (`tailscale funnel status`).
+- افتح `http://127.0.0.1:8000/sim` على نفس الجهاز: لو فتح، فالمشكلة في Tailscale (`tailscale funnel status`، ويجب أن يظهر فيه `/` على المنفذ 8000 و`/app` على 8080).
+- **البث لا يصل** (زر «جرّب البث» في الرئيسية): تأكد أن المهمة `Legends Live` تعمل. والتثبيت القديم (قبل السبرنت 14) يحتاج تشغيل `setup.ps1` مرة أخرى ليضيفها، وهو آمن ولا يمسح شيئاً.
 - سجل الأخطاء: `C:\Legends\backend\storage\logs\laravel.log`.
