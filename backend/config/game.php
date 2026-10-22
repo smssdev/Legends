@@ -42,9 +42,14 @@ return [
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
         'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
+        // What the owner may choose [PLAN 2.3]
+        'prep_days' => [1, 3], 'rounds_per_day' => [1, 2], 'starts_within_days' => 7,
+        // Tries at a league code per account each minute [PLAN 2.1]
+        'join_attempts_per_minute' => 10,
     ],
     'economy' => [
         'starting_budget' => 3_000_000,
+        'starting_budget_min' => 1_000_000, 'starting_budget_max' => 10_000_000,   // what the owner may choose
         'handover_min' => 500_000,               // والحد الأعلى = starting_budget
         // من جهة المدرب
         'buy_from_pool_bp' => 10000, 'sell_to_pool_bp' => 7000,
