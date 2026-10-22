@@ -65,7 +65,7 @@ def entry(book, code):
 
 
 def run(r):
-    book = open(os.path.join(ROOT, r['book'])).read()
+    book = open(os.path.join(ROOT, r['book']), encoding='utf-8').read()
     rows = [(k, folder, *entry(book, k), why, fix) for k, folder, why, fix in r['redo']]
     later = {k for x in REVIEWS[REVIEWS.index(r) + 1:] for k, *_ in x['redo']}   # a later review of the same board replaces this one
     rows = [row for row in rows if f'{row[1]}/{row[2]}' not in approved() and row[0] not in later]   # never list or remove an approved board
@@ -117,7 +117,7 @@ def run(r):
         W('```\n')
     out = os.path.join(ROOT, r['out'])
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    open(out, 'w').write('\n'.join(o) + '\n')
+    open(out, 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
     removed = 0
     for k, folder, f, *_ in rows:
         p = os.path.join(ROOT, 'art', 'raw', folder, f)
@@ -311,6 +311,7 @@ REDONE_OK = {
     'striker/run/run-front-01.png': '2026-10-20',    # 4 figures drawn: kept figure 1 (mirrored), 3 and 4, to stand on one leg
     'striker/run/sprint-01.png': '2026-10-20',
     'striker/run/sprint-02.png': '2026-10-20',       # figure 3 redrawn in the same chat
+    'striker/run/sprint-03.png': '2026-10-22',
 }
 
 

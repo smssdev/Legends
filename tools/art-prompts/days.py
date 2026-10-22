@@ -12,17 +12,17 @@ IMG = os.path.join(ROOT, 'docs', 'art', 'images')
 OUT = os.path.join(ROOT, 'docs', 'sprints', 'sprint-02-days.md')
 PER_DAY, START = rates.IMG_PER_DAY, rates.PLAN_START
 
-waves = open(os.path.join(IMG, '00-waves.md')).read()
+waves = open(os.path.join(IMG, '00-waves.md'), encoding='utf-8').read()
 w1 = waves[waves.index('## الدفعة 1 '):waves.index('## الدفعة 2')]
 boards = []
 for r in w1.split('\n'):
     if not r.startswith('| ') or 'القسم' in r: continue
     c = [x.strip() for x in r.strip('|').split('|')]
     num = int(c[1].split('.')[0]); md = re.search(r'\((.*?)\)', c[3]).group(1); folder = c[4].strip('`')
-    t = open(os.path.join(IMG, md)).read()
+    t = open(os.path.join(IMG, md), encoding='utf-8').read()
     a = t.index(f'## المجموعة {num}:'); b = t.find('\n## ', a + 5); g = t[a:b if b > 0 else None]
     boards += [(k, folder + f, md, c[1]) for k, f in re.findall(r'### (\d+\.\d+) `([^`]+)`', g)]
-marked = set(re.findall(r'\| ✅ \| [\d.]+ \| `([^`]+)`', open(OUT).read())) if os.path.exists(OUT) else set()
+marked = set(re.findall(r'\| ✅ \| [\d.]+ \| `([^`]+)`', open(OUT, encoding='utf-8').read())) if os.path.exists(OUT) else set()
 done = [b for b in boards if b[1] in marked or os.path.exists(os.path.join(ROOT, b[1]))]
 rem = [b for b in boards if b not in done]
 
@@ -45,5 +45,5 @@ for d in range(0, len(rem), PER_DAY):
 last = START + dt.timedelta(days=-(-len(rem) // PER_DAY) - 1)
 W(f'## بعد آخر يوم\n')
 W(f'صور الدفعة 1 كلها معتمدة ({last.isoformat()})، فتبدأ سبرنتات المحاكاة المصورة (3 إلى 8) حين يكتمل صوتها أيضاً (`docs/SCHEDULE.md`). والصور تكمل بالدفعة 2.')
-open(OUT, 'w').write('\n'.join(o) + '\n')
+open(OUT, 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
 print(len(boards), len(done), len(rem))

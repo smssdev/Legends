@@ -1,8 +1,9 @@
-"""The working pace both plans use (docs/SLIEMAN.md, docs/SCHEDULE.md, sprint-02-days.md).
+"""The working pace both plans use (docs/SLIEMAN.md, docs/HAMZA.md, docs/SCHEDULE.md, sprint-02-days.md).
 
-Owner's decision (2026-10-20): Sliman makes all the images himself, in parallel with the
-code sprints; Hamza records the voice only. Change a number here and re-run
-tools/plan/schedule.py, tools/art-prompts/days.py and tools/team.py.
+Owner's decision (2026-10-22): Sliman makes the images the game needs first (waves 1 to 4) in parallel
+with the code sprints; Hamza records the voice, then makes the images built last (waves 5 to 16, in
+sprints 49 to 52). Change a number here and re-run tools/plan/schedule.py, tools/art-prompts/days.py
+and tools/team.py.
 """
 import datetime as dt
 
@@ -12,6 +13,13 @@ IMG_HOURS = 2                        # of them on images while there are images 
 IMG_PER_DAY = 12                     # approved images in those hours
 CODE_HOURS = DAY_HOURS - IMG_HOURS   # the rest on the current code sprint
 VOICE_PER_DAY = 30                   # Hamza's approved clips a day
+HAMZA_FROM_WAVE = 5                  # image waves from this one on are Hamza's, the ones before it Sliman's
+HAMZA_IMG_PER_DAY = 12               # Hamza's approved images a day, once his voice is done
+
+
+def image_owner(wave):
+    """Who makes a wave of images: 'hamza' or 'slieman'."""
+    return 'hamza' if wave >= HAMZA_FROM_WAVE else 'slieman'
 
 
 def days_word(k):
