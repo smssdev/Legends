@@ -152,9 +152,9 @@ def link(path):
 
 def who_makes(b, st):
     """Who makes a board: its owner (tools/plan/rates.py), but every redo is Sliman's (owner, 2026-10-22):
-    Hamza never draws an image twice, he only makes new ones. The hand-made books stay 'manual' either way."""
-    owner = rates.image_owner(b[0], b[2], b[3])
-    return 'slieman' if owner == 'hamza' and st[b[2]] == 'redo' else owner
+    Hamza never draws an image twice, he only makes new ones. A redo from the hand-made books is listed in
+    docs/SLIEMAN.md too (owner, 2026-10-22: every redo goes there), and stays in docs/SLIEMAN2.md."""
+    return 'slieman' if st[b[2]] == 'redo' else rates.image_owner(b[0], b[2], b[3])
 
 
 def owned(boards, st, who):
@@ -236,8 +236,8 @@ def write_slieman():
     W(f'### 1. الصور ({rates.IMG_HOURS} من {rates.DAY_HOURS} ساعات تقريباً)\n')
     W('**الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.\n')
     p_all = [b for b in mine if st[b[2]] == 'pending']
-    r1 = [b for b in boards if b[0] == 1 and st[b[2]] == 'redo']
-    t1 = [b for b in boards if b[0] == 1 and st[b[2]] == 'todo']
+    r1 = [b for b in mine if b[0] == 1 and st[b[2]] == 'redo']
+    t1 = [b for b in mine if b[0] == 1 and st[b[2]] == 'todo']
     steps = []
     if p_all:
         steps.append(f"**⏳ {len(p_all)} صورة مرفوعة تنتظر المراجعة:** قل لـ Claude «راجع» أول الجلسة.")
@@ -254,7 +254,7 @@ def write_slieman():
         W(f'الدفعة 1 اكتملت، فصورك الآن من الدفعة {w}.\n')
     image_table(W, 'صور اليوم', nxt, redo)
 
-    later_redo = [b for b in boards if b[0] > 1 and st[b[2]] == 'redo']
+    later_redo = [b for b in mine if b[0] > 1 and st[b[2]] == 'redo']
     if later_redo:
         W(f'**إعادة من الدفعات اللاحقة ({len(later_redo)}):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.\n')
         W('| الدفعة | اللوحة | الملف | المشكلة | الأمر في |'); W('|---|---|---|---|---|')
@@ -396,7 +396,7 @@ def write_hamza():
 
 def write_slieman2():
     boards, redo, st = image_states()
-    mine = owned(boards, st, 'manual')
+    mine = [b for b in boards if b[3] in rates.MANUAL_BOOKS]
     n = {k: sum(1 for b in mine if st[b[2]] == k) for k in ('done', 'pending', 'redo', 'todo')}
     mark = {'done': '✅', 'pending': '⏳', 'redo': '🔁', 'todo': '⬜'}
     o = []
@@ -413,7 +413,8 @@ def write_slieman2():
     W('1. **الأمر** في ملف الجزء، ابحث برقم اللوحة مثل `### 256.1`، ومعه المرفقات المكتوبة تحت «ارفق».')
     W('2. **احفظ كل صورة PNG حقيقياً** باسمها في المسار المكتوب في الجدول تحت (وفي `README.md` المجلد).')
     W('3. **ارفعها إلى `art/raw/`** بنفسك متى جهزت، دفعة أو مجموعة، ثم شغّل `python3 tools/art/build.py` وشاهدها في `/dev/art`.')
-    W('4. **المراجعة لاحقاً:** حين تريد، قل لـ Claude «راجع اللحظات والمدربين». المعتمد يصير ✅، والمرفوض يُحذف وتأتيك إعادته بسطر التصحيح.\n')
+    W('4. **المراجعة لاحقاً:** حين تريد، قل لـ Claude «راجع اللحظات والمدربين». المعتمد يصير ✅، والمرفوض يُحذف وتأتيك إعادته بسطر التصحيح.')
+    W('5. **كل إعادة (🔁) تظهر أيضاً في [`SLIEMAN.md`](SLIEMAN.md)** مع باقي الإعادات، وتبقى هنا بعلامتها.\n')
     W('## الحالة\n')
     W(f"**{len(mine)} صورة:** ✅ {n['done']} معتمدة · ⏳ {n['pending']} مرفوعة تنتظر المراجعة · 🔁 {n['redo']} للإعادة · ⬜ {n['todo']} لم تُرفع.\n")
     W('| الجزء | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |'); W('|---|---|---|---|---|---|---|')
