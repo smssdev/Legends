@@ -21,6 +21,8 @@ tags:
       the owner approves, then take a club no coach has. Up to 4 active clubs per account, one per league.
       Errors a screen shows as they are (409): the club was taken, the limit of 4, the last quarter of the
       rounds, the settings locked since the start.
+  - name: team
+    description: 'My club in a league (Sprint 16): squad, lineup, own formations, set-piece takers. 403 without a club there.'
   - name: system
     description: Health and the test broadcast
   - name: simulator
@@ -308,6 +310,23 @@ paths:
               schema: { type: string }
         '304': { description: Not changed }
         '404': { $ref: '#/components/responses/Error' }
+  /data/formations:
+    get:
+      tags: [data]
+      summary: The 24 formations
+      security: []
+      responses:
+        '200':
+          description: Every formation with its slots, and the limits of a custom one
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [formations, limits]
+                properties:
+                  formations: { type: array, items: { $ref: '#/components/schemas/Formation' } }
+                  limits: { type: object, additionalProperties: { type: array, items: { type: integer } } }
+                  grid: { type: object }
   /health:
     get:
       tags: [system]
@@ -651,6 +670,105 @@ paths:
                               next: { type: object, nullable: true, required: [slot, side], properties: { slot: { type: integer }, side: { type: string, enum: [home, away] } } }
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: My club, its squad and its team sheet
+      description: 403 without a club in this league.
+      responses:
+        '200': { $ref: '#/components/responses/Team' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/suggestion:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '"تحسين": the best lineup now (not saved)'
+      responses:
+        '200':
+          description: The suggested lineup
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [lineup]
+                properties:
+                  lineup: { $ref: '#/components/schemas/Lineup' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/lineup:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: Save my lineup
+      description: A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every rule is checked here with an Arabic message.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [formation, starters, bench]
+              properties:
+                formation: { type: string, example: 4-3-3A }
+                starters: { type: array, items: { type: integer }, minItems: 11, maxItems: 11 }
+                bench: { type: array, items: { type: integer }, maxItems: 7 }
+      responses:
+        '200': { $ref: '#/components/responses/Team' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [team]
+      summary: Back to the automatic lineup
+      responses:
+        '200': { $ref: '#/components/responses/Team' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/formations/{number}:
+    parameters:
+      - $ref: '#/components/parameters/League'
+      - { name: number, in: path, required: true, schema: { type: integer, minimum: 1, maximum: 3 } }
+    put:
+      tags: [team]
+      summary: Save one of my own formations (1 to 3)
+      description: Ten outfield cells [row, column]; rows def, dm, am, att (the midfield has two rows), columns 1 (right) to 5 (left). Defence 3 to 6, midfield 2 to 6, attack 1 to 5.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, cells]
+              properties:
+                name: { type: string, maxLength: 30 }
+                cells:
+                  type: array
+                  minItems: 10
+                  maxItems: 10
+                  items: { type: array, items: { oneOf: [{ type: string, enum: [def, dm, am, att] }, { type: integer, minimum: 1, maximum: 5 }] } }
+      responses:
+        '200': { $ref: '#/components/responses/Team' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/takers:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: Choose the captain and set-piece takers
+      description: Starters only; null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                captain: { type: integer, nullable: true }
+                penalty: { type: integer, nullable: true }
+                free_kick: { type: integer, nullable: true }
+                corner: { type: integer, nullable: true }
+      responses:
+        '200': { $ref: '#/components/responses/Team' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -992,6 +1110,46 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    Team:
+      description: My club and its team sheet
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [club, squad_value, players, lineup, takers, custom_formations]
+            properties:
+              club:
+                type: object
+                required: [id, name, code, strength_cp, balance, crest_url]
+                properties:
+                  id: { type: integer }
+                  name: { type: string }
+                  code: { type: string }
+                  strength_cp: { type: integer }
+                  balance: { type: integer }
+                  crest_url: { type: string }
+              squad_value: { type: integer }
+              players: { type: array, items: { $ref: '#/components/schemas/SquadPlayer' } }
+              lineup: { $ref: '#/components/schemas/Lineup' }
+              takers:
+                type: object
+                description: captain, penalty, free_kick, corner
+                additionalProperties:
+                  type: object
+                  required: [auto]
+                  properties:
+                    player_id: { type: integer, nullable: true }
+                    auto: { type: boolean }
+              custom_formations:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Formation'
+                    - type: object
+                      required: [number, cells]
+                      properties:
+                        number: { type: integer }
+                        cells: { type: array, items: { type: array, items: { oneOf: [{ type: string }, { type: integer }] } } }
     League:
       description: The league
       content:
@@ -1116,6 +1274,53 @@ components:
             rounds_played: { type: integer }
             lock_from_round: { type: integer, description: No new coach from this round on (the last 25%) }
             join_open: { type: boolean }
+    Slot:
+      type: object
+      required: [role, line, x, y]
+      properties:
+        role: { type: string, example: CB }
+        line: { type: string, enum: [gk, def, mid, att] }
+        x: { type: integer, description: Depth towards the opponent's goal, decimetres (0 to 1050) }
+        y: { type: integer, description: Across the pitch, decimetres (0 far touchline, 680 near); right-sided roles sit high }
+    Formation:
+      type: object
+      required: [name, label, slots, lines]
+      properties:
+        name: { type: string, example: 4-3-3A }
+        label: { type: string, example: 4-3-3 A }
+        slots: { type: array, items: { $ref: '#/components/schemas/Slot' } }
+        lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    Lineup:
+      type: object
+      required: [formation, auto, slots, starters, bench, lines]
+      properties:
+        formation: { type: string }
+        auto: { type: boolean, description: Not saved by the coach; picked automatically ("تحسين") }
+        slots: { type: array, items: { $ref: '#/components/schemas/Slot' } }
+        starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
+        bench: { type: array, items: { type: integer } }
+        lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    SquadPlayer:
+      type: object
+      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        alt_positions: { type: string, nullable: true }
+        line: { type: string, enum: [gk, def, mid, att] }
+        age: { type: integer }
+        nationality: { type: string, nullable: true }
+        foot: { type: string, nullable: true }
+        overall: { type: integer }
+        potential: { type: integer }
+        value: { type: integer }
+        fitness: { type: integer }
+        injured_matches: { type: integer }
+        suspended_matches: { type: integer }
+        available: { type: boolean }
+        attributes: { type: object, additionalProperties: { type: integer, nullable: true } }
+        role: { type: string, enum: [starter, bench, reserve] }
     FixtureClub:
       type: object
       required: [id, name, code, strength_cp, crest_url]

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\SimulatorController;
+use App\Http\Controllers\Api\TeamController;
 use Illuminate\Support\Facades\Route;
 
 // Every route here is served under /api/v1 (see bootstrap/app.php) and is
@@ -42,6 +43,7 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
 });
+Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1');
 
 // Private leagues [PLAN 2.1, 2.3]: make one, ask to join by its code, the owner approves, take a club.
 Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.activity'])->controller(LeagueController::class)->group(function () {
@@ -62,6 +64,15 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
+    // My club: the squad, the lineup and the set-piece takers [Sprint 16].
+    Route::controller(TeamController::class)->prefix('{league}/team')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::get('suggestion', 'suggestion');
+        Route::put('lineup', 'saveLineup');
+        Route::delete('lineup', 'resetLineup');
+        Route::put('formations/{number}', 'saveFormation')->whereNumber('number');
+        Route::put('takers', 'saveTakers');
+    });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
 });
