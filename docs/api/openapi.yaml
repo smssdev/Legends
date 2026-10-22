@@ -15,6 +15,12 @@ tags:
       "Authorization: Bearer <token>"; tokens expire after 30 days. Sign-in attempts: 5 a minute per email, 20 per address.
   - name: data
     description: The real clubs and players (docs/PLAN.md 2.6), read-only and public. 120 requests a minute.
+  - name: leagues
+    description: |
+      Private leagues (docs/PLAN.md 2.1, 2.3). Make one, ask to join with its 8-letter code (10 tries a minute),
+      the owner approves, then take a club no coach has. Up to 4 active clubs per account, one per league.
+      Errors a screen shows as they are (409): the club was taken, the limit of 4, the last quarter of the
+      rounds, the settings locked since the start.
   - name: system
     description: Health and the test broadcast
   - name: simulator
@@ -344,6 +350,219 @@ paths:
                   sent: { type: boolean }
                   at: { type: string, format: date-time }
         '429': { $ref: '#/components/responses/Error' }
+  /leagues:
+    get:
+      tags: [leagues]
+      summary: My leagues
+      description: The leagues I made, coach in, or asked to join (and was not turned down).
+      responses:
+        '200':
+          description: My leagues
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [leagues, active_teams, max_active_teams]
+                properties:
+                  leagues: { type: array, items: { $ref: '#/components/schemas/League' } }
+                  active_teams: { type: integer }
+                  max_active_teams: { type: integer, example: 4 }
+        '401': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [leagues]
+      summary: Make a league
+      description: |
+        Copies the strongest team_count clubs of the template with their players, funds each with the starting
+        budget, and gives the owner the club they chose. Every other club is a bot. 10 a minute.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, club_id]
+              properties:
+                name: { type: string, maxLength: 60, nullable: true, description: 'Empty: the template and the code, like "Premier League #K7F2QX9M"' }
+                template: { type: string, description: A name from GET /data/templates }
+                team_count: { type: integer, minimum: 4, maximum: 20 }
+                rounds_per_day: { type: integer, minimum: 1, maximum: 2 }
+                round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM per round, Cairo time }
+                prep_days: { type: integer, minimum: 1, maximum: 3 }
+                season_end_mode: { type: string, enum: [renew, end] }
+                starts_at: { type: string, format: date-time, description: From now up to 7 days }
+                starting_budget: { type: integer, minimum: 1000000, maximum: 10000000, default: 3000000 }
+                fair_league: { type: boolean, default: false, description: Locks spending coins inside this league }
+                is_dev: { type: boolean, description: Development league; ignored in production }
+                club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
+      responses:
+        '201': { $ref: '#/components/responses/League' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /leagues/join:
+    post:
+      tags: [leagues]
+      summary: Ask to join with a code
+      description: Spaces, a "#" and lower case are forgiven. Asking again returns the same request (200).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, example: K7F2QX9M }
+      responses:
+        '200': { $ref: '#/components/responses/JoinRequest' }
+        '201': { $ref: '#/components/responses/JoinRequest' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /leagues/{league}:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: One league
+      description: For its owner, its coaches, and who asked to join. Anyone else gets 404.
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '404': { $ref: '#/components/responses/Error' }
+    patch:
+      tags: [leagues]
+      summary: Change the settings before the start
+      description: The owner only, until the league starts (409 after). rounds_per_day and round_times go together. The team count, template and budget are fixed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 60, nullable: true }
+                rounds_per_day: { type: integer, minimum: 1, maximum: 2 }
+                round_times: { type: array, items: { type: string } }
+                prep_days: { type: integer, minimum: 1, maximum: 3 }
+                season_end_mode: { type: string, enum: [renew, end] }
+                starts_at: { type: string, format: date-time }
+                fair_league: { type: boolean }
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/start:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [leagues]
+      summary: Start now (development only)
+      description: The owner's "start now" button. 404 in production; there the scheduler starts each league at its time.
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/request:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    delete:
+      tags: [leagues]
+      summary: Take back my waiting request
+      responses:
+        '200': { description: Cancelled }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/requests:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: Join requests (owner)
+      description: Waiting ones first. A request never expires; it waits for the owner.
+      responses:
+        '200':
+          description: The requests
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [requests]
+                properties:
+                  requests: { type: array, items: { $ref: '#/components/schemas/JoinRequest' } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/requests/{request}/approve:
+    parameters: [{ $ref: '#/components/parameters/League' }, { $ref: '#/components/parameters/JoinRequest' }]
+    post:
+      tags: [leagues]
+      summary: Approve a request (owner)
+      responses:
+        '200': { $ref: '#/components/responses/JoinRequest' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/requests/{request}/reject:
+    parameters: [{ $ref: '#/components/parameters/League' }, { $ref: '#/components/parameters/JoinRequest' }]
+    post:
+      tags: [leagues]
+      summary: Reject a request (owner)
+      responses:
+        '200': { $ref: '#/components/responses/JoinRequest' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/clubs:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: Every club of the league
+      description: For the owner and approved coaches. Clubs with a coach show as taken (bot false).
+      responses:
+        '200':
+          description: The clubs, strongest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [clubs]
+                properties:
+                  clubs: { type: array, items: { $ref: '#/components/schemas/LeagueClub' } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/clubs/{club}:
+    parameters: [{ $ref: '#/components/parameters/League' }, { $ref: '#/components/parameters/Club' }]
+    get:
+      tags: [leagues]
+      summary: One club with its squad
+      responses:
+        '200':
+          description: The club and its players
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/LeagueClub'
+                  - type: object
+                    required: [players]
+                    properties:
+                      players: { type: array, items: { $ref: '#/components/schemas/LeaguePlayer' } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/clubs/{club}/claim:
+    parameters: [{ $ref: '#/components/parameters/League' }, { $ref: '#/components/parameters/Club' }]
+    post:
+      tags: [leagues]
+      summary: Take a club no coach has
+      description: |
+        One conditional update: of many coaches at once exactly one gets it, the others get 409 "الفريق أُخذ" and
+        go back to the list. Its money is brought between 500,000 and the starting budget.
+      responses:
+        '201':
+          description: The club is mine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  club: { $ref: '#/components/schemas/LeagueClub' }
+                  joined_at: { type: string, format: date-time }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /sim/leagues:
     get:
       tags: [simulator]
@@ -594,6 +813,21 @@ paths:
         '422': { description: Same club as the host, or someone already joined, content: { application/json: { schema: { type: object } } } }
 components:
   parameters:
+    League:
+      name: league
+      in: path
+      required: true
+      schema: { type: integer }
+    JoinRequest:
+      name: request
+      in: path
+      required: true
+      schema: { type: integer }
+    Club:
+      name: club
+      in: path
+      required: true
+      schema: { type: integer }
     Match:
       name: match
       in: path
@@ -613,6 +847,25 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    League:
+      description: The league
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [league]
+            properties:
+              league: { $ref: '#/components/schemas/League' }
+    JoinRequest:
+      description: The join request
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [request]
+            properties:
+              request: { $ref: '#/components/schemas/JoinRequest' }
+              league: { $ref: '#/components/schemas/League' }
     Account:
       description: The account
       content:
@@ -643,6 +896,82 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    League:
+      type: object
+      required: [id, name, template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, starting_budget, fair_league, is_dev, status, locked, is_owner, coaches]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        template: { type: string }
+        code: { type: string, nullable: true, description: For the owner and approved coaches only }
+        team_count: { type: integer }
+        rounds_per_day: { type: integer }
+        round_times: { type: array, items: { type: string } }
+        prep_days: { type: integer }
+        season_end_mode: { type: string, enum: [renew, end] }
+        starts_at: { type: string, format: date-time }
+        starting_budget: { type: integer }
+        fair_league: { type: boolean }
+        is_dev: { type: boolean }
+        status: { type: string, enum: [waiting, running, finished] }
+        locked: { type: boolean, description: Settings are locked once the league starts }
+        owner: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        is_owner: { type: boolean }
+        my_club_id: { type: integer, nullable: true }
+        my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
+        coaches: { type: integer, description: Clubs with a coach }
+        free_clubs: { type: integer, description: Clubs a coach can still take }
+        pending_requests: { type: integer, nullable: true, description: Waiting join requests; for the owner only }
+        season:
+          type: object
+          nullable: true
+          properties:
+            number: { type: integer }
+            status: { type: string, enum: [upcoming, running, finished] }
+            rounds: { type: integer }
+            rounds_played: { type: integer }
+            lock_from_round: { type: integer, description: No new coach from this round on (the last 25%) }
+            join_open: { type: boolean }
+    JoinRequest:
+      type: object
+      required: [id, league_id, status]
+      properties:
+        id: { type: integer }
+        league_id: { type: integer }
+        status: { type: string, enum: [pending, approved, rejected] }
+        user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        created_at: { type: string, format: date-time }
+        decided_at: { type: string, format: date-time, nullable: true }
+    LeagueClub:
+      type: object
+      required: [id, name, code, colors, crest_url, strength_cp, bot, balance, squad_value, players_count]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
+        crest_url: { type: string }
+        strength_cp: { type: integer, description: At the league's making, in hundredths }
+        coach: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        bot: { type: boolean, description: No coach; a bot runs it and it can be taken }
+        balance: { type: integer, description: Club money }
+        squad_value: { type: integer }
+        players_count: { type: integer }
+    LeaguePlayer:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        line: { type: string, enum: [gk, def, mid, att] }
+        age: { type: integer }
+        nationality: { type: string, nullable: true }
+        overall: { type: integer }
+        potential: { type: integer }
+        value: { type: integer }
+        fitness: { type: integer }
+        injured_matches: { type: integer }
+        suspended_matches: { type: integer }
     DataClub:
       type: object
       required: [id, name, code, league, strength_cp, colors, crest_url]

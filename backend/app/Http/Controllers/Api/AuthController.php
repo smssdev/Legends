@@ -122,6 +122,9 @@ class AuthController extends Controller
             $user->tokens()->delete();
             DB::table('sessions')->where('user_id', $user->id)->delete();
             DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+            // Its clubs go back to the bots (clubs.user_id empties with the account) [PLAN 2.2].
+            DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')
+                ->update(['left_at' => GameClock::now(), 'left_reason' => 'deleted']);
             $user->delete();
         });
         Auth::guard('web')->logout();

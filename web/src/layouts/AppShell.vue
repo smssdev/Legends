@@ -15,7 +15,8 @@ const more = ref(false)
 const sections = computed(() => SECTIONS)
 const tabs = computed(() => TABS.map((n) => SECTIONS.find((s) => s.name === n)!))
 const rest = computed(() => SECTIONS.filter((s) => !TABS.includes(s.name)))
-const active = (path: string) => (path === '/' ? route.path === '/' : route.path.startsWith(path))
+// '/league' must not light up on '/leagues': a section owns its path and what is under it.
+const active = (path: string) => (path === '/' ? route.path === '/' : route.path === path || route.path.startsWith(path + '/'))
 const moreActive = computed(() => rest.value.some((s) => active(s.path)))
 watch(() => route.fullPath, () => (more.value = false))
 </script>

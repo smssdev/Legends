@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\SimulatorController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,23 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
+});
+
+// Private leagues [PLAN 2.1, 2.3]: make one, ask to join by its code, the owner approves, take a club.
+Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1'])->controller(LeagueController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store')->middleware('throttle:league-create');
+    Route::post('join', 'join')->middleware('throttle:league-code');
+    Route::get('{league}', 'show')->whereNumber('league');
+    Route::patch('{league}', 'update')->whereNumber('league');
+    Route::post('{league}/start', 'start')->whereNumber('league');
+    Route::delete('{league}/request', 'cancel')->whereNumber('league');
+    Route::get('{league}/requests', 'requests')->whereNumber('league');
+    Route::post('{league}/requests/{joinRequest}/approve', 'approve')->whereNumber(['league', 'joinRequest']);
+    Route::post('{league}/requests/{joinRequest}/reject', 'reject')->whereNumber(['league', 'joinRequest']);
+    Route::get('{league}/clubs', 'clubs')->whereNumber('league');
+    Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
+    Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
 });
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.

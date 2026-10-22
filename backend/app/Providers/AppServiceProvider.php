@@ -33,6 +33,12 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by('email:'.Str::lower((string) $request->input('email', $request->user()?->email)).'|'.$request->ip()),
             Limit::perMinute(20)->by('ip:'.$request->ip()),
         ]);
+
+        // Tries at a league code, per account [PLAN 2.1]: guessing codes stays slow.
+        RateLimiter::for('league-code', fn (Request $request) => Limit::perMinute(config('game.league.join_attempts_per_minute'))
+            ->by('league-code:'.($request->user()?->id ?? $request->ip())));
+        // Named, so it counts apart from the general limit on the same routes.
+        RateLimiter::for('league-create', fn (Request $request) => Limit::perMinute(10)->by('league-create:'.($request->user()?->id ?? $request->ip())));
     }
 
     /**

@@ -69,7 +69,7 @@ async function sendPing() {
   <div class="flex flex-col gap-5">
     <div>
       <h1 class="font-display text-3xl font-extrabold">أهلاً في الأساطير</h1>
-      <p class="mt-1 text-text-muted">الدوريات تبدأ قريباً. حتى ذلك الحين: حالة الخادم، والبث المباشر، والمحاكي.</p>
+      <p class="mt-1 text-text-muted">دورياتك، وحالة الخادم، والبث المباشر، والمحاكي.</p>
     </div>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
@@ -115,6 +115,14 @@ async function sendPing() {
         <p v-else-if="ping === 'failed'" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ pingNote }}</p>
       </section>
     </div>
+
+    <RouterLink to="/leagues" class="flex min-h-touch items-center justify-between rounded-xl border border-gold/30 bg-surface p-4 hover:bg-surface-raised">
+      <span>
+        <span class="block font-display text-lg font-extrabold">دورياتي</span>
+        <span class="text-sm text-text-muted">أنشئ دورياً لأصحابك، أو انضم بكود دوري.</span>
+      </span>
+      <span class="text-gold" aria-hidden="true">‹</span>
+    </RouterLink>
 
     <RouterLink to="/sim" class="flex min-h-touch items-center justify-between rounded-xl bg-surface p-4 hover:bg-surface-raised">
       <span>
