@@ -1964,6 +1964,183 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/matches/{match}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * An order from a side's coach while the match is played
+         * @description A substitution, tactics, or a formation (the 24 or one of the coach's own, `custom:N`). It goes into the next minute
+         *     not yet made (`target_tick`); one that arrives while a minute is being made goes in the one after. The engine checks
+         *     it there, and a rejected order comes back in that minute's `rejected` for its own coach only. The same
+         *     `idempotency_key` again changes nothing (200, `duplicate`). While the coach's screen is away, his assistant manages.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        type: "sub" | "tactics" | "formation";
+                        /** @description The player going off (sub) */
+                        out?: number;
+                        /** @description The player coming on (sub) */
+                        in?: number;
+                        /** @description The tactics that change (the engine's keys) */
+                        tactics?: {
+                            [key: string]: unknown;
+                        };
+                        formation?: string;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description This key was given already */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MatchOrderResult"];
+                    };
+                };
+                /** @description Queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MatchOrderResult"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/replay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * A finished match again
+         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The minutes, or the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            replayable: boolean;
+                            ticks: {
+                                [key: string]: unknown;
+                            }[] | null;
+                            events: {
+                                [key: string]: unknown;
+                            }[] | null;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My matches being played now, in every league
+         * @description For the viewer's switcher when a coach has more than one live match.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The live matches of my clubs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            matches: {
+                                id: number;
+                                /** @description The home club's code */
+                                home: string;
+                                away: string;
+                                /** @enum {string} */
+                                competition: "league" | "cup";
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/clubs": {
         parameters: {
             query?: never;
@@ -2821,6 +2998,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        MatchOrderResult: {
+            /** @description Not before this minute */
+            target_tick: number;
+            duplicate: boolean;
+        };
         League: {
             id: number;
             name: string;

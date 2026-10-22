@@ -11,6 +11,7 @@ use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Plays the league's matches [PLAN 2.12]. One step looks at the clock and:
@@ -25,23 +26,68 @@ use Illuminate\Support\Facades\DB;
  */
 class MatchRunner
 {
+    /** Steps of a match that failed in this process, and the last messages (matches:load-test reads them). */
+    public static int $failures = 0;
+
+    public static array $lastErrors = [];
+
     public static function step(): array
     {
         MatchPrep::run();
         $started = 0;
         foreach (DB::table('fixtures')->where('status', 'locked')->where('scheduled_at', '<=', GameClock::now())->orderBy('scheduled_at')->pluck('id') as $id) {
-            $started += self::start($id) ? 1 : 0;
+            $started += self::guarded(fn () => self::start($id) ? 1 : 0);
         }
         $minutes = 0;
         foreach (DB::table('matches')->where('status', 'live')->where('next_at', '<=', GameClock::nowMs() + self::lead())->pluck('id') as $id) {
-            $minutes += self::play($id);
+            $minutes += self::guarded(fn () => self::play($id));
         }
         $published = 0;
         foreach (DB::table('matches')->where('status', 'done')->where('publish_at', '<=', GameClock::now())->pluck('id') as $id) {
-            $published += self::publish($id) ? 1 : 0;
+            $published += self::guarded(fn () => self::publish($id) ? 1 : 0);
         }
 
         return [$started, $minutes, $published];
+    }
+
+    /**
+     * Only one runner plays at a time (two would make the same minute twice): the one that holds this claim,
+     * renewed every step. A second one waits; it takes over within seconds if the first one stops.
+     */
+    public static function claim(string $token): bool
+    {
+        $ttl = (int) config('game.matches.claim_seconds');
+        if (Cache::add('matches-runner', $token, $ttl)) {
+            return true;
+        }
+        if (Cache::get('matches-runner') === $token) {
+            Cache::put('matches-runner', $token, $ttl);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function release(string $token): void
+    {
+        if (Cache::get('matches-runner') === $token) {
+            Cache::forget('matches-runner');
+        }
+    }
+
+    /** One match's trouble (a busy database, a broken state) is logged and never holds up the others. */
+    private static function guarded(callable $work): int
+    {
+        try {
+            return $work();
+        } catch (Throwable $e) {
+            report($e);
+            self::$failures++;
+            self::$lastErrors = array_slice([...self::$lastErrors, $e->getMessage()], -20);
+
+            return 0;
+        }
     }
 
     private static function lead(): int
@@ -71,7 +117,9 @@ class MatchRunner
                 'started_at' => $now, 'created_at' => $now, 'updated_at' => $now,
             ]);
             if (! $live) {
-                self::instant($id, $state, $at, $late);
+                // Nobody follows an instant match: the assistant manages a coach's side, the computer a bot's.
+                $managers = array_map(fn ($c) => $c === 'coach' ? 'assistant' : 'cpu', MatchOrders::control($f));
+                self::instant($id, $state, $managers, $at, $late);
             }
 
             return true;
@@ -79,15 +127,21 @@ class MatchRunner
     }
 
     /** Bot against bot (or long missed): the whole match now. */
-    private static function instant(int $id, array $state, Carbon $from, bool $missed): void
+    private static function instant(int $id, array $state, array $managers, Carbon $from, bool $missed): void
     {
         $ball = [525, 340];
         $events = [];
+        $orders = [];
         $ms = 0;
         while (! $state['finished']) {
-            [$state, $ball, $tick] = self::minute($state, $ball);
+            [$actions, $rows] = MatchOrders::auto($id, $state, $managers);
+            $orders = [...$orders, ...$rows];
+            [$state, $ball, $tick] = self::minute($state, $ball, $actions);
             $events = [...$events, ...self::tagged($tick)];
             $ms += $tick['moment']['ms'] + self::pause($tick, $state['cfg']['match']);
+        }
+        foreach (array_chunk($orders, 200) as $chunk) {
+            DB::table('match_actions')->insert($chunk);
         }
         self::save($id, $state, $events);
         // Bot against bot shows at its natural end; a long missed match is already over, so at once.
@@ -107,7 +161,12 @@ class MatchRunner
         $n = 0;
         $timing = $live['state']['cfg']['match'];
         while (! $live['state']['finished'] && GameClock::nowMs() + self::lead() >= $live['next_at'] && $n < 120) {
-            [$state, $ball, $tick] = self::minute($live['state'], $live['ball']);
+            $next = $live['state']['tick'] + 1;
+            // After a restart the minutes already made are made again with the orders they had; then new ones.
+            $actions = isset($live['redo']) && $next <= $live['redo_until']
+                ? ($live['redo'][$next] ?? [])
+                : MatchOrders::forMinute($id, $live['state'], MatchOrders::managers($id, $live['control']));
+            [$state, $ball, $tick] = self::minute($live['state'], $live['ball'], $actions);
             $tick['at'] = $live['next_at'];
             $live['state'] = $state;
             $live['ball'] = $ball;
@@ -133,21 +192,29 @@ class MatchRunner
         return $n;
     }
 
-    /** The runner was stopped and its cache lost: back to the last saved state, playing on from now. */
+    /**
+     * The first minute, or the runner was stopped and its cache lost: back to the last saved state, playing on
+     * from now. The orders that went in after it go in again at the same minutes, so nothing changes.
+     */
     private static function resume(int $id): array
     {
         $m = DB::table('matches')->where('id', $id)->first();
+        $state = json_decode($m->state, true);
+        $redo = array_filter(MatchOrders::byTick($id), fn ($t) => $t > $state['tick'], ARRAY_FILTER_USE_KEY);
 
-        return ['state' => json_decode($m->state, true), 'ball' => [525, 340], 'events' => [], 'recent' => [], 'next_at' => GameClock::nowMs()];
+        return ['state' => $state, 'ball' => [525, 340], 'events' => [], 'recent' => [], 'next_at' => GameClock::nowMs(),
+            'control' => MatchOrders::control(DB::table('fixtures')->where('id', $m->fixture_id)->first()),
+            'redo' => $redo, 'redo_until' => $redo ? max(array_keys($redo)) : 0];
     }
 
     /** One minute, as the simulator plays it: the engine, then the frames and the scene's length. */
-    private static function minute(array $state, array $ball): array
+    private static function minute(array $state, array $ball, array $actions = []): array
     {
-        $state = Runner::tick($state);
+        $state = Runner::tick($state, $actions);
         $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
-        // The engine's debug values are for the simulator's developer panel only.
-        $tick = array_diff_key($state['out'], ['debug' => 1, 'rejected' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
+        // The engine's debug values are for the simulator's developer panel only. A rejected order reaches
+        // its own coach only (Simulator::redact), never the broadcast.
+        $tick = array_diff_key($state['out'], ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
             'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
 
         return [$state, $choreo['ball'], $tick];

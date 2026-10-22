@@ -89,14 +89,16 @@ final class AutoPick
     /** Penalty (hundredths of a point) for a player in a slot. */
     public static function misfit(array $p, array $slot): int
     {
-        if (in_array($p['pos'], $slot['fits'], true)) {
+        // A league formation's slot (App\League\FormationBook) names its role only.
+        $fits = $slot['fits'] ?? [$slot['role']];
+        if (in_array($p['pos'], $fits, true)) {
             return 0;
         }
         if ($slot['line'] === 'gk' || $p['line'] === 'gk') {
             return 6000;
         }
         $alt = array_map('trim', explode(',', (string) ($p['alt'] ?? '')));
-        if (array_intersect($alt, $slot['fits'])) {
+        if (array_intersect($alt, $fits)) {
             return 200;
         }
 
