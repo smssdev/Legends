@@ -5,6 +5,54 @@
 
 **تقسيم العمل (قرار صاحب المشروع، 2026-10-22):** **الصوت كله عند حمزة.** والصور: **الكم الأكبر عندك** (كل الصور ما عدا الملاعب، 1776 صورة)، و**كل صورة تحتاج إعادة** من أي دفعة. و**جزء بسيط عند حمزة:** لوحات الملاعب (362 صورة) ([`HAMZA.md`](HAMZA.md)). يومك 5 ساعات: **للصور 2 منها (12 صورة معتمدة)، وللكود 3** مع Claude. والتقرير الكامل لكل صورة آخر هذا الملف.
 
+## ⭐ الأولوية الآن: الدفعة 1 (المحاكي المصور)
+
+**المحاكي المصور (السبرنتات 3 إلى 8) يُبنى بالدفعة 1 وحدها ولا يبدأ قبل اكتمال صورها وصوتها.** فكل ما تحت يسبق أي عمل من دفعة أخرى.
+
+**صورك في الدفعة 1:** ✅ 43 مكتملة · ⏳ 0 تنتظر المراجعة · 🔁 9 يجب إعادتها · ⬜ 200 لم يُعمل عليها. وبوتيرة 12 يومياً تحتاج 18 يوماً.
+
+**الطريقة:** مجلداً مجلداً بالترتيب. افتح ملف رسالته، وارفق المكتوب فيه، والصق الرسالة كلها في محادثة Gemini جديدة. الإعادة أولاً في كل مجلد.
+
+| | المجلد | 🔁 | ⬜ | ⏳ | الرسالة |
+|---|---|---|---|---|---|
+| 1 | `striker/run/` | 3 | 0 | 0 | [`striker-run.md`](art/folders/striker-run.md) |
+| 2 | `striker/ball/` | 6 | 0 | 0 | [`striker-ball.md`](art/folders/striker-ball.md) |
+| 3 | `striker/ground/` | 0 | 15 | 0 | [`striker-ground.md`](art/folders/striker-ground.md) |
+| 4 | `striker/emotion/` | 0 | 12 | 0 | [`striker-emotion.md`](art/folders/striker-emotion.md) |
+| 5 | `players/look-1/` | 0 | 2 | 0 | [`players-look-1.md`](art/folders/players-look-1.md) |
+| 6 | `players/look-1/run/` | 0 | 7 | 0 | [`players-look-1-run.md`](art/folders/players-look-1-run.md) |
+| 7 | `players/look-1/ball/` | 0 | 11 | 0 | [`players-look-1-ball.md`](art/folders/players-look-1-ball.md) |
+| 8 | `players/look-1/ground/` | 0 | 8 | 0 | [`players-look-1-ground.md`](art/folders/players-look-1-ground.md) |
+| 9 | `players/look-1/emotion/` | 0 | 5 | 0 | [`players-look-1-emotion.md`](art/folders/players-look-1-emotion.md) |
+| 10 | `players/look-2/` | 0 | 2 | 0 | [`players-look-2.md`](art/folders/players-look-2.md) |
+| 11 | `players/look-2/run/` | 0 | 7 | 0 | [`players-look-2-run.md`](art/folders/players-look-2-run.md) |
+| 12 | `players/look-2/ball/` | 0 | 11 | 0 | [`players-look-2-ball.md`](art/folders/players-look-2-ball.md) |
+| 13 | `players/look-2/ground/` | 0 | 8 | 0 | [`players-look-2-ground.md`](art/folders/players-look-2-ground.md) |
+| 14 | `players/look-2/emotion/` | 0 | 5 | 0 | [`players-look-2-emotion.md`](art/folders/players-look-2-emotion.md) |
+| 15 | `keeper/` | 0 | 2 | 0 | [`keeper.md`](art/folders/keeper.md) |
+| 16 | `keeper/ready/` | 0 | 4 | 0 | [`keeper-ready.md`](art/folders/keeper-ready.md) |
+| 17 | `keeper/dive/` | 0 | 10 | 0 | [`keeper-dive.md`](art/folders/keeper-dive.md) |
+| 18 | `keeper/hands/` | 0 | 11 | 0 | [`keeper-hands.md`](art/folders/keeper-hands.md) |
+| 19 | `keeper/ground/` | 0 | 2 | 0 | [`keeper-ground.md`](art/folders/keeper-ground.md) |
+| 20 | `keeper/emotion/` | 0 | 2 | 0 | [`keeper-emotion.md`](art/folders/keeper-emotion.md) |
+| 21 | `referee-1/` | 0 | 2 | 0 | [`referee-1.md`](art/folders/referee-1.md) |
+| 22 | `referee-1/run/` | 0 | 6 | 0 | [`referee-1-run.md`](art/folders/referee-1-run.md) |
+| 23 | `referee-1/signals/` | 0 | 8 | 0 | [`referee-1-signals.md`](art/folders/referee-1-signals.md) |
+| 24 | `referee-1/var/` | 0 | 4 | 0 | [`referee-1-var.md`](art/folders/referee-1-var.md) |
+| 25 | `linesman/` | 0 | 1 | 0 | [`linesman.md`](art/folders/linesman.md) |
+| 26 | `linesman/move/` | 0 | 4 | 0 | [`linesman-move.md`](art/folders/linesman-move.md) |
+| 27 | `fourth/` | 0 | 1 | 0 | [`fourth.md`](art/folders/fourth.md) |
+| 28 | `fourth/move/` | 0 | 2 | 0 | [`fourth-move.md`](art/folders/fourth-move.md) |
+| 29 | `cards/yellow/` | 0 | 5 | 0 | [`cards-yellow.md`](art/folders/cards-yellow.md) |
+| 30 | `cards/red/` | 0 | 5 | 0 | [`cards-red.md`](art/folders/cards-red.md) |
+| 31 | `celebrations/` | 0 | 4 | 0 | [`celebrations.md`](art/folders/celebrations.md) |
+| 32 | `medics/` | 0 | 2 | 0 | [`medics.md`](art/folders/medics.md) |
+| 33 | `bench/` | 0 | 2 | 0 | [`bench.md`](art/folders/bench.md) |
+| 34 | `crowd/` | 0 | 9 | 0 | [`crowd.md`](art/folders/crowd.md) |
+| 35 | `balls/classic/` | 0 | 6 | 0 | [`balls-classic.md`](art/folders/balls-classic.md) |
+| 36 | `goals/standard/` | 0 | 7 | 0 | [`goals-standard.md`](art/folders/goals-standard.md) |
+| 37 | `fx/ground/` | 0 | 8 | 0 | [`fx-ground.md`](art/folders/fx-ground.md) |
+
 ## يومك بالترتيب
 
 ### 1. الصور (2 من 5 ساعات تقريباً)

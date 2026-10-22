@@ -210,6 +210,56 @@ def image_counts(W, boards, st, waves):
     return count
 
 
+def wave1_images(W, boards, redo, st, who):
+    """The first priority: every wave 1 image one person still has to make, folder by folder, each with
+    its one-message file (docs/art/folders/), in the order of the plan."""
+    import folders
+    left = [b for b in boards if b[0] == 1 and st[b[2]] != 'done' and who_makes(b, st) == who]
+    done = sum(1 for b in boards if b[0] == 1 and st[b[2]] == 'done' and who_makes(b, st) == who)
+    W('## ⭐ الأولوية الآن: الدفعة 1 (المحاكي المصور)\n')
+    W('**المحاكي المصور (السبرنتات 3 إلى 8) يُبنى بالدفعة 1 وحدها ولا يبدأ قبل اكتمال صورها وصوتها.** فكل ما تحت يسبق أي عمل من دفعة أخرى.\n')
+    if not left:
+        W(f'✅ صورك من الدفعة 1 كلها مكتملة ({done}).\n')
+        return
+    c = {k: sum(1 for b in left if st[b[2]] == k) for k in ('pending', 'redo', 'todo')}
+    W(f"**صورك في الدفعة 1:** ✅ {done} مكتملة · ⏳ {c['pending']} تنتظر المراجعة · 🔁 {c['redo']} يجب إعادتها · ⬜ {c['todo']} لم يُعمل عليها. "
+      f"وبوتيرة {rates.IMG_PER_DAY} يومياً تحتاج {-(-(c['redo'] + c['todo']) // rates.IMG_PER_DAY)} {rates.days_word(-(-(c['redo'] + c['todo']) // rates.IMG_PER_DAY))}.\n")
+    W('**الطريقة:** مجلداً مجلداً بالترتيب. افتح ملف رسالته، وارفق المكتوب فيه، والصق الرسالة كلها في محادثة Gemini جديدة. الإعادة أولاً في كل مجلد.\n')
+    order = []
+    for b in left:
+        f = os.path.dirname(b[2])
+        if f not in order:
+            order.append(f)
+    W('| | المجلد | 🔁 | ⬜ | ⏳ | الرسالة |'); W('|---|---|---|---|---|---|')
+    for i, f in enumerate(order, 1):
+        k = {s: sum(1 for b in left if os.path.dirname(b[2]) == f and st[b[2]] == s) for s in ('redo', 'todo', 'pending')}
+        msg = f'[`{folders.slug(f)}.md`](art/folders/{folders.slug(f)}.md)' if k['redo'] or k['todo'] else 'تنتظر المراجعة'
+        W(f"| {i} | `{f.removeprefix('art/raw/')}/` | {k['redo']} | {k['todo']} | {k['pending']} | {msg} |")
+    W('')
+
+
+def wave1_voice(W, clips, vst):
+    """The first priority for the voice: every wave 1 clip not approved yet, with its text."""
+    left = [c for c in clips if c[0] == 1 and vst[(c[1], c[2])] != 'done']
+    done = sum(1 for c in clips if c[0] == 1 and vst[(c[1], c[2])] == 'done')
+    W('## ⭐ الأولوية الآن: الدفعة 1 (المحاكي المصور)\n')
+    W('**المحاكي المصور (السبرنتات 3 إلى 8) يُبنى بالدفعة 1 وحدها ولا يبدأ قبل اكتمال صوتها وصورها.** فكل ما تحت يسبق أي مقطع أو صورة من دفعة أخرى.\n')
+    if not left:
+        W(f'✅ صوت الدفعة 1 كله مكتمل ({done}).\n')
+        return
+    word = {'redo': '🔁 يجب إعادته', 'check': '👂 تأكد بالسمع', 'missing': '⬜ لم يُسجَّل'}
+    c = {k: sum(1 for x in left if vst[(x[1], x[2])] == k) for k in word}
+    W(f"**الدفعة 1:** ✅ {done} مكتملة · 🔁 {c['redo']} يجب إعادتها · 👂 {c['check']} تأكد بالسمع · ⬜ {c['missing']} لم تُسجَّل. "
+      f"الباقي {len(left)} مقطعاً، أي يوم أو يومان بوتيرة {rates.VOICE_PER_DAY} يومياً.\n")
+    W('| | الحالة | الملف | النبرة | النص | ملاحظة |'); W('|---|---|---|---|---|---|')
+    order = sorted(left, key=lambda x: ('redo', 'check', 'missing').index(vst[(x[1], x[2])]))
+    for i, x in enumerate(order, 1):
+        W(f"| {i} | {word[vst[(x[1], x[2])]]} | `audio/raw/{x[1]}/{x[2]}` | {x[3]} | {x[4]} | {voice.status(x[1], x[2])[1]} |")
+    boards, _, st = image_states()
+    img = [b for b in boards if b[0] == 1 and who_makes(b, st) == 'hamza' and st[b[2]] in ('redo', 'todo')]
+    W(f'\n**صورك في الدفعة 1:** {len(img)} باقية.' + (' فلا صور عليك قبل انتهاء صوت الدفعة 1.\n' if not img else ' تأتي بعد صوت الدفعة 1 مباشرة.\n'))
+
+
 def write_slieman():
     boards, redo, st = image_states()
     waves = sorted({b[0] for b in boards})
@@ -229,6 +279,8 @@ def write_slieman():
     W('> **مرجعك اليومي.** منه تعرف ماذا تعمل اليوم، وما ينتظر قرارك، وما القادم بتواريخه.')
     W('> يولّده `python3 tools/team.py` بعد كل مراجعة وكل دمج، فلا يُعدَّل يدوياً. والخطة كاملة في [`SCHEDULE.md`](SCHEDULE.md).\n')
     W(f'**تقسيم العمل (قرار صاحب المشروع، 2026-10-22):** **الصوت كله عند حمزة.** والصور: **الكم الأكبر عندك** (كل الصور ما عدا الملاعب، {len(mine)} صورة)، و**كل صورة تحتاج إعادة** من أي دفعة. و**جزء بسيط عند حمزة:** لوحات الملاعب ({len(hamza)} صورة) ([`HAMZA.md`](HAMZA.md)). يومك {rates.DAY_HOURS} ساعات: **للصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، وللكود {rates.CODE_HOURS}** مع Claude. والتقرير الكامل لكل صورة آخر هذا الملف.\n')
+
+    wave1_images(W, boards, redo, st, 'slieman')
 
     # ------------------------------------------------------------ today
     W('## يومك بالترتيب\n')
@@ -338,6 +390,7 @@ def write_hamza():
     W('> **مرجعك الوحيد.** منه تعرف ما المطلوب الآن، وكيف تسجله أو ترسمه، وأين تضعه، وكم أُنجز.')
     W('> يولّده `python3 tools/team.py` بعد كل مراجعة، فلا يُعدَّل يدوياً.\n')
     W(f'**تقسيم العمل (قرار صاحب المشروع، 2026-10-22):** **الصوت كله عندك** (المعلق العربي وأصوات الملعب). ومن الصور **جزء بسيط:** لوحات الملاعب من كل الدفعات ({len(mine)} صورة)، بعد الصوت. وباقي الصور وكل إعادة عند سليمان ([`SLIEMAN.md`](SLIEMAN.md)). والتقرير الكامل لكل مقطع ولكل صورة لك آخر هذا الملف.\n')
+    wave1_voice(W, clips, vst)
     W('## المطلوب الآن، بالترتيب\n')
     W('**الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تحتاج صوتها كاملاً مع صورها.\n')
     steps = []

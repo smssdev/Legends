@@ -68,7 +68,7 @@ def main():
     index = []
     for folder, bs in folders.items():
         left = [b for b in bs if st[b[2]] in ('redo', 'todo')]
-        left = [b for b in left if st[b[2]] == 'redo'] + [b for b in left if st[b[2]] == 'todo']
+        left = sorted(left, key=lambda b: (b[0], st[b[2]] != 'redo'))   # wave 1 first, then redo before new
         count = {k: sum(1 for b in bs if st[b[2]] == k) for k in WORD}
         owners = sorted({team.NAME[team.who_makes(b, st)] for b in (left or bs)})
         index.append((min(b[0] for b in bs), folder, owners, count, len(bs), bool(left)))
