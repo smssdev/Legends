@@ -72,6 +72,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1', 'league.
         Route::delete('lineup', 'resetLineup');
         Route::put('formations/{number}', 'saveFormation')->whereNumber('number');
         Route::put('takers', 'saveTakers');
+        Route::get('tactics', 'tactics');
+        Route::put('tactics', 'saveTactics');
+        Route::get('next-match', 'nextMatch');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);

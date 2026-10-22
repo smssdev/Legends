@@ -769,6 +769,90 @@ paths:
         '200': { $ref: '#/components/responses/Team' }
         '403': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/tactics:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: My tactics and tips
+      description: Tips explain the engine's mechanisms in Arabic (docs/ENGINE.md 5); they never change a number.
+      responses:
+        '200': { $ref: '#/components/responses/Tactics' }
+        '403': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [team]
+      summary: Change my tactics
+      description: Any of the keys; 409 from the lock (5 minutes before a match) until it ends.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TacticsSet' }
+      responses:
+        '200': { $ref: '#/components/responses/Tactics' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/next-match:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: My next match
+      description: |
+        When and where, the referee once drawn (30 minutes before), and the opponent. After the lock (5 minutes
+        before) the opponent's eleven, formation and only four tactics: tackling, marking, plan and trap.
+        Pressing, style, tempo, positions and the defensive shape are never sent (docs/PLAN.md 2.13).
+      responses:
+        '200':
+          description: The next match, or null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  match:
+                    type: object
+                    nullable: true
+                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, opponent]
+                    properties:
+                      fixture_id: { type: integer }
+                      competition: { type: string, enum: [league, cup] }
+                      round: { type: integer }
+                      venue: { type: string, enum: [home, away] }
+                      scheduled_at: { type: string, format: date-time }
+                      status: { type: string, enum: [scheduled, locked, live] }
+                      referee_at: { type: string, format: date-time }
+                      lock_at: { type: string, format: date-time }
+                      referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+                      opponent:
+                        type: object
+                        required: [id, name, code, strength_cp, crest_url]
+                        properties:
+                          id: { type: integer }
+                          name: { type: string }
+                          code: { type: string }
+                          strength_cp: { type: integer }
+                          crest_url: { type: string }
+                          coach: { type: string, nullable: true }
+                          sheet:
+                            type: object
+                            nullable: true
+                            description: Only after the lock
+                            required: [formation, starters, tactics]
+                            properties:
+                              formation: { type: string }
+                              starters: { type: array, items: { type: object, properties: { id: { type: integer }, name: { type: string, nullable: true } } } }
+                              tactics: { $ref: '#/components/schemas/PublicTactics' }
+                      mine:
+                        type: object
+                        nullable: true
+                        description: My frozen sheet after the lock, with who came in for whom
+                        properties:
+                          formation: { type: string }
+                          starters: { type: array, items: { type: integer } }
+                          bench: { type: array, items: { type: integer } }
+                          tactics: { $ref: '#/components/schemas/TacticsSet' }
+                          fixes: { type: array, items: { type: object, properties: { slot: { type: integer }, out: { type: integer, nullable: true }, in: { type: integer }, out_name: { type: string, nullable: true }, in_name: { type: string, nullable: true } } } }
+        '403': { $ref: '#/components/responses/Error' }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -1110,6 +1194,17 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    Tactics:
+      description: My tactics, the tips, and the next referee once drawn
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tactics, tips]
+            properties:
+              tactics: { $ref: '#/components/schemas/TacticsSet' }
+              tips: { type: array, items: { type: string } }
+              referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
     Team:
       description: My club and its team sheet
       content:
@@ -1274,6 +1369,29 @@ components:
             rounds_played: { type: integer }
             lock_from_round: { type: integer, description: No new coach from this round on (the last 25%) }
             join_open: { type: boolean }
+    TacticsSet:
+      type: object
+      description: The engine's own keys (docs/ENGINE.md 5)
+      properties:
+        plan: { type: string, enum: [counter, long, passing, wings, shots] }
+        tackling: { type: integer, minimum: 0, maximum: 3, description: 0 legal, 1 normal, 2 eager, 3 hard }
+        pressing: { type: integer, minimum: 0, maximum: 100 }
+        style: { type: integer, minimum: 0, maximum: 100, description: 0 defensive to 100 attacking }
+        tempo: { type: integer, minimum: 0, maximum: 100 }
+        att: { type: string, enum: [back, support, only] }
+        mid: { type: string, enum: [def, stay, push] }
+        def: { type: string, enum: [stay, fullbacks, mid] }
+        trap: { type: integer, minimum: 0, maximum: 1 }
+        marking: { type: string, enum: [zone, man] }
+    PublicTactics:
+      type: object
+      description: The only tactics the opponent ever sees
+      required: [tackling, marking, plan, trap]
+      properties:
+        tackling: { type: integer }
+        marking: { type: string, enum: [zone, man] }
+        plan: { type: string, enum: [counter, long, passing, wings, shots] }
+        trap: { type: integer }
     Slot:
       type: object
       required: [role, line, x, y]

@@ -161,6 +161,7 @@ class TeamSheet
     /** Save the coach's lineup: a formation, eleven players in its slots, and up to seven on the bench. */
     public static function save(Club $club, string $formation, array $starters, array $bench): void
     {
+        MatchPrep::assertOpen($club);
         $formations = self::formations($club);
         if (! isset($formations[$formation])) {
             throw ValidationException::withMessages(['formation' => 'هذه الطريقة غير موجودة.']);
@@ -238,6 +239,7 @@ class TeamSheet
     /** The coach's takers; null for a role leaves it automatic ("تحسين" clears them all). */
     public static function saveTakers(Club $club, array $takers): void
     {
+        MatchPrep::assertOpen($club);
         $on = array_flip(array_filter(self::current($club)['starters']));
         foreach ($takers as $role => $id) {
             if ($id !== null && ! isset($on[$id])) {

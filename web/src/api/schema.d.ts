@@ -1720,6 +1720,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/tactics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My tactics and tips
+         * @description Tips explain the engine's mechanisms in Arabic (docs/ENGINE.md 5); they never change a number.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+            };
+        };
+        /**
+         * Change my tactics
+         * @description Any of the keys; 409 from the lock (5 minutes before a match) until it ends.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TacticsSet"];
+                };
+            };
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/next-match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My next match
+         * @description When and where, the referee once drawn (30 minutes before), and the opponent. After the lock (5 minutes
+         *     before) the opponent's eleven, formation and only four tactics: tackling, marking, plan and trap.
+         *     Pressing, style, tempo, positions and the defensive shape are never sent (docs/PLAN.md 2.13).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The next match, or null */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            match?: {
+                                fixture_id: number;
+                                /** @enum {string} */
+                                competition: "league" | "cup";
+                                round: number;
+                                /** @enum {string} */
+                                venue: "home" | "away";
+                                /** Format: date-time */
+                                scheduled_at: string;
+                                /** @enum {string} */
+                                status: "scheduled" | "locked" | "live";
+                                /** Format: date-time */
+                                referee_at: string;
+                                /** Format: date-time */
+                                lock_at: string;
+                                /** @enum {string|null} */
+                                referee?: "lenient" | "medium" | "strict" | null;
+                                opponent: {
+                                    id: number;
+                                    name: string;
+                                    code: string;
+                                    strength_cp: number;
+                                    crest_url: string;
+                                    coach?: string | null;
+                                    /** @description Only after the lock */
+                                    sheet?: {
+                                        formation: string;
+                                        starters: {
+                                            id?: number;
+                                            name?: string | null;
+                                        }[];
+                                        tactics: components["schemas"]["PublicTactics"];
+                                    } | null;
+                                };
+                                /** @description My frozen sheet after the lock, with who came in for whom */
+                                mine?: {
+                                    formation?: string;
+                                    starters?: number[];
+                                    bench?: number[];
+                                    tactics?: components["schemas"]["TacticsSet"];
+                                    fixes?: {
+                                        slot?: number;
+                                        out?: number | null;
+                                        in?: number;
+                                        out_name?: string | null;
+                                        in_name?: string | null;
+                                    }[];
+                                } | null;
+                            } | null;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/clubs": {
         parameters: {
             query?: never;
@@ -2673,6 +2829,35 @@ export interface components {
                 join_open?: boolean;
             } | null;
         };
+        /** @description The engine's own keys (docs/ENGINE.md 5) */
+        TacticsSet: {
+            /** @enum {string} */
+            plan?: "counter" | "long" | "passing" | "wings" | "shots";
+            /** @description 0 legal */
+            tackling?: number;
+            pressing?: number;
+            /** @description 0 defensive to 100 attacking */
+            style?: number;
+            tempo?: number;
+            /** @enum {string} */
+            att?: "back" | "support" | "only";
+            /** @enum {string} */
+            mid?: "def" | "stay" | "push";
+            /** @enum {string} */
+            def?: "stay" | "fullbacks" | "mid";
+            trap?: number;
+            /** @enum {string} */
+            marking?: "zone" | "man";
+        };
+        /** @description The only tactics the opponent ever sees */
+        PublicTactics: {
+            tackling: number;
+            /** @enum {string} */
+            marking: "zone" | "man";
+            /** @enum {string} */
+            plan: "counter" | "long" | "passing" | "wings" | "shots";
+            trap: number;
+        };
         Slot: {
             /** @example CB */
             role: string;
@@ -2998,6 +3183,20 @@ export interface components {
         };
     };
     responses: {
+        /** @description My tactics, the tips, and the next referee once drawn */
+        Tactics: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    tactics: components["schemas"]["TacticsSet"];
+                    tips: string[];
+                    /** @enum {string|null} */
+                    referee?: "lenient" | "medium" | "strict" | null;
+                };
+            };
+        };
         /** @description My club and its team sheet */
         Team: {
             headers: {

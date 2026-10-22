@@ -7,10 +7,10 @@ export interface Section { name: string; path: string; label: string; icon: keyo
 export const SECTIONS: Section[] = [
   { name: 'home', path: '/', label: 'الرئيسية', icon: 'home' },
   { name: 'leagues', path: '/leagues', label: 'دورياتي', icon: 'leagues' },
-  { name: 'match', path: '/match', label: 'المباراة', icon: 'match', sprint: 20 },
+  { name: 'match', path: '/match', label: 'المباراة', icon: 'match' },
   { name: 'team', path: '/team', label: 'الفريق', icon: 'team' },
   { name: 'lineup', path: '/lineup', label: 'التشكيلة', icon: 'lineup' },
-  { name: 'tactics', path: '/tactics', label: 'التكتيك', icon: 'tactics', sprint: 17 },
+  { name: 'tactics', path: '/tactics', label: 'التكتيك', icon: 'tactics' },
   { name: 'training', path: '/training', label: 'التدريب', icon: 'training', sprint: 27 },
   { name: 'market', path: '/market', label: 'السوق', icon: 'market', sprint: 24 },
   { name: 'scout', path: '/scout', label: 'الكشاف', icon: 'scout', sprint: 26 },

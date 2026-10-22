@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\League\FormationBook;
+use App\League\MatchPrep;
+use App\League\Tactics;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -74,7 +77,9 @@ class TeamController extends Controller
     /** Go back to the automatic lineup ("تحسين" kept up to date for me). */
     public function resetLineup(Request $request, League $league): JsonResponse
     {
-        DB::table('lineups')->where('club_id', $this->club($request->user(), $league)->id)->delete();
+        $club = $this->club($request->user(), $league);
+        MatchPrep::assertOpen($club);
+        DB::table('lineups')->where('club_id', $club->id)->delete();
 
         return $this->show($request, $league);
     }
@@ -101,6 +106,81 @@ class TeamController extends Controller
         TeamSheet::saveTakers($club, $data);
 
         return $this->show($request, $league);
+    }
+
+    /** My tactics, with tips for the next referee when he is known [PLAN 2.14]. */
+    public function tactics(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $t = Tactics::of($club);
+        $next = $this->nextFixture($club);
+
+        return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness]);
+    }
+
+    public function saveTactics(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $rules = [];
+        foreach (Tactics::RULES as $key => $rule) {
+            $rules[$key] = is_int($rule[0]) ? ['sometimes', 'integer', "between:{$rule[0]},{$rule[1]}"] : ['sometimes', Rule::in($rule)];
+        }
+        $data = array_map(fn ($v) => is_numeric($v) ? (int) $v : $v, $request->validate($rules));
+        Tactics::save($club, $data);
+
+        return $this->tactics($request, $league);
+    }
+
+    /**
+     * My next match [PLAN 2.13]: when, where, the referee once drawn, and the opponent. Before the lock the
+     * opponent is only a club; after it, his eleven, formation and four tactics (tackling, marking, plan,
+     * trap) are shown. Pressing, style, tempo, positions and the defensive shape are never sent.
+     */
+    public function nextMatch(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $f = $this->nextFixture($club);
+        if (! $f) {
+            return response()->json(['match' => null]);
+        }
+        $home = $f->home_id === $club->id;
+        $opponent = Club::with('user')->find($home ? $f->away_id : $f->home_id);
+        $sheets = DB::table('fixture_sheets')->where('fixture_id', $f->id)->get()->keyBy('club_id');
+        $names = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->whereIn('players.club_id', [$club->id, $opponent->id])->pluck('master_players.name', 'players.id');
+        $mine = $sheets[$club->id] ?? null;
+        $theirs = $sheets[$opponent->id] ?? null;
+        $at = Carbon::parse($f->scheduled_at, 'UTC');
+
+        return response()->json(['match' => [
+            'fixture_id' => $f->id, 'competition' => $f->competition, 'round' => $f->round, 'venue' => $home ? 'home' : 'away',
+            'scheduled_at' => $at->toIso8601ZuluString(), 'status' => $f->status,
+            'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
+            'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
+            'referee' => $f->referee_strictness,
+            'opponent' => [
+                'id' => $opponent->id, 'name' => $opponent->name, 'code' => $opponent->code, 'strength_cp' => (int) $opponent->strength_snapshot,
+                'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name,
+                // Only after the lock, and only these.
+                'sheet' => $theirs ? [
+                    'formation' => $theirs->formation,
+                    'starters' => collect(json_decode($theirs->starters))->map(fn ($id) => ['id' => $id, 'name' => $names[$id] ?? null])->all(),
+                    'tactics' => Tactics::public(json_decode($theirs->tactics, true)),
+                ] : null,
+            ],
+            'mine' => $mine ? [
+                'formation' => $mine->formation, 'starters' => json_decode($mine->starters), 'bench' => json_decode($mine->bench),
+                'tactics' => json_decode($mine->tactics, true),
+                'fixes' => collect(json_decode($mine->fixes, true))->map(fn ($x) => $x + ['out_name' => $names[$x['out']] ?? null, 'in_name' => $names[$x['in']] ?? null])->all(),
+            ] : null,
+        ]]);
+    }
+
+    private function nextFixture(Club $club): ?object
+    {
+        return DB::table('fixtures')->whereIn('status', ['scheduled', 'locked', 'live'])->where('is_bye', false)
+            ->where(fn ($q) => $q->where('home_id', $club->id)->orWhere('away_id', $club->id))
+            ->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('scheduled_at')->first();
     }
 
     /** My club in this league; 403 without one. */

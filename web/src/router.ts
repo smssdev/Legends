@@ -21,6 +21,9 @@ export const router = createRouter({
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
         // Sprint 16: my club in the current league
         { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true } },
+        // Sprint 17: tactics and the next match (the live match comes in Sprints 18 to 20)
+        { path: 'tactics', name: 'tactics', component: () => import('./pages/team/TacticsPage.vue'), meta: { auth: true } },
+        { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true } },
         { path: 'lineup', name: 'lineup', component: () => import('./pages/team/Lineup.vue'), meta: { auth: true } },
         { path: 'join/:code?', name: 'join', component: () => import('./pages/leagues/JoinLeague.vue'), meta: { auth: true } },
         // Sprint 11: the component library on a real club
