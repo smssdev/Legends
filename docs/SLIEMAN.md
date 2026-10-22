@@ -11,14 +11,13 @@
 
 **الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.
 
-1. **🔁 أعد 10 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md).
+1. **🔁 أعد 9 صورة من الدفعة 1** رفضتها المراجعة، بأمرها وسطر تصحيحها في: [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md)، [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md).
 2. **⬜ ثم الجديدة بالترتيب (212 باقية في الدفعة 1):** من [`sprint-02-days.md`](sprints/sprint-02-days.md). أول 12 في الجدول تحت.
 
 **صور اليوم (12):**
 
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
-| 🔁 | 48.8 | `art/raw/striker/ball/pass-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.13 | `art/raw/striker/ball/volley-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.14 | `art/raw/striker/ball/chip-01.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
 | 🔁 | 48.15 | `art/raw/striker/ball/chip-02.png` | [`2026-10-20-striker-ball.md`](art/redo/2026-10-20-striker-ball.md) |
@@ -30,6 +29,7 @@
 | 🔁 | 45.15 | `art/raw/striker/run/run-back-03.png` | [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md) |
 | ⬜ | 49.1 | `art/raw/striker/ground/tackle-01.png` | [`03-players.md`](art/images/03-players.md) |
 | ⬜ | 49.2 | `art/raw/striker/ground/tackle-02.png` | [`03-players.md`](art/images/03-players.md) |
+| ⬜ | 49.3 | `art/raw/striker/ground/tackle-03.png` | [`03-players.md`](art/images/03-players.md) |
 
 **إعادة من الدفعات اللاحقة (23):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.
 
@@ -129,12 +129,12 @@
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تُصنع |
 |---|---|---|---|---|---|
-| 1 | 252 | 30 | 0 | 10 | 212 |
+| 1 | 252 | 31 | 0 | 9 | 212 |
 | 2 | 254 | 2 | 0 | 21 | 231 |
 | 3 | 338 | 0 | 0 | 0 | 338 |
 | 4 | 323 | 0 | 0 | 1 | 322 |
 | 5 | 1 | 0 | 0 | 1 | 0 |
-| **الكل** | **1168** | **32** | **0** | **33** | **1103** |
+| **الكل** | **1168** | **33** | **0** | **32** | **1103** |
 
 **صور حمزة (الملاعب كلها، والدفعات 5 إلى 16):** 61 من 970 معتمدة. التفاصيل في [`HAMZA.md`](HAMZA.md).
 
