@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: messages
+    description: The inbox (Sprint 22)
   - name: auth
     description: |
       Accounts (docs/PLAN.md 2.17). The web signs in with Sanctum's session cookie: GET /sanctum/csrf-cookie first,
@@ -1081,6 +1083,64 @@ paths:
                   joined_at: { type: string, format: date-time }
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /messages:
+    get:
+      tags: [messages]
+      summary: The account's messages, newest first
+      description: |
+        What the game tells the coach (Sprint 22): the referee before his match, the absence warning, leaving for absence,
+        a kick and its reason, a join request (to the owner) and its answer, a match report ready. The words (title, body)
+        and where it leads (link, a web path) are made on the server, so the app shows the same. A new message also
+        arrives on the private channel `App.Models.User.{id}` (event `message`, with `unread`), and reads made on another
+        screen on the same channel (event `messages-read`, with `ids` and `unread`).
+      parameters:
+        - { name: before, in: query, schema: { type: integer }, description: Messages older than this id (the next page) }
+        - { name: limit, in: query, schema: { type: integer, default: 30, maximum: 50 } }
+      responses:
+        '200':
+          description: A page of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [messages, more, unread]
+                properties:
+                  messages: { type: array, items: { $ref: '#/components/schemas/Message' } }
+                  more: { type: boolean }
+                  unread: { type: integer }
+        '401': { $ref: '#/components/responses/Error' }
+  /messages/unread:
+    get:
+      tags: [messages]
+      summary: How many messages are unread (the badge)
+      responses:
+        '200':
+          description: The count
+          content:
+            application/json:
+              schema: { type: object, required: [unread], properties: { unread: { type: integer } } }
+  /messages/{message}/read:
+    parameters: [{ name: message, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [messages]
+      summary: Mark one message read (on every screen of the account)
+      responses:
+        '200':
+          description: Read
+          content:
+            application/json:
+              schema: { type: object, required: [unread], properties: { unread: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /messages/read-all:
+    post:
+      tags: [messages]
+      summary: Mark every message read
+      responses:
+        '200':
+          description: Read
+          content:
+            application/json:
+              schema: { type: object, required: [read, unread], properties: { read: { type: integer }, unread: { type: integer } } }
   /sim/leagues:
     get:
       tags: [simulator]
@@ -1465,6 +1525,18 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Message:
+      type: object
+      required: [id, type, read, created_at, title, body, link]
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [referee, absence_warning, left_absent, kicked, join_request, join_approved, join_rejected, match_report] }
+        league_id: { type: integer, nullable: true }
+        read: { type: boolean }
+        created_at: { type: string, format: date-time }
+        title: { type: string }
+        body: { type: string }
+        link: { type: string, nullable: true, description: A web path to open (the app maps it to its own screen) }
     MatchReading:
       type: object
       description: The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only

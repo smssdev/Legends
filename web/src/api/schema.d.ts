@@ -2397,6 +2397,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The account's messages, newest first
+         * @description What the game tells the coach (Sprint 22): the referee before his match, the absence warning, leaving for absence,
+         *     a kick and its reason, a join request (to the owner) and its answer, a match report ready. The words (title, body)
+         *     and where it leads (link, a web path) are made on the server, so the app shows the same. A new message also
+         *     arrives on the private channel `App.Models.User.{id}` (event `message`, with `unread`), and reads made on another
+         *     screen on the same channel (event `messages-read`, with `ids` and `unread`).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Messages older than this id (the next page) */
+                    before?: number;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of messages */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            messages: components["schemas"]["Message"][];
+                            more: boolean;
+                            unread: number;
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messages/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How many messages are unread (the badge) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The count */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            unread: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messages/{message}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark one message read (on every screen of the account) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Read */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            unread: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messages/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark every message read */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Read */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            read: number;
+                            unread: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sim/leagues": {
         parameters: {
             query?: never;
@@ -3109,6 +3281,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Message: {
+            id: number;
+            /** @enum {string} */
+            type: "referee" | "absence_warning" | "left_absent" | "kicked" | "join_request" | "join_approved" | "join_rejected" | "match_report";
+            league_id?: number | null;
+            read: boolean;
+            /** Format: date-time */
+            created_at: string;
+            title: string;
+            body: string;
+            /** @description A web path to open (the app maps it to its own screen) */
+            link: string | null;
+        };
         /** @description The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only */
         MatchReading: {
             id?: number;

@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Messages\Inbox;
 use App\Models\LeagueMembership;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,13 @@ class Leaving
             }
             DB::table('clubs')->where('id', $membership->club_id)->where('user_id', $membership->user_id)
                 ->update(['user_id' => null, 'updated_at' => $now]);
+            // The coach is told why [Sprint 22 B2]; one who resigned or deleted the account knows.
+            if (in_array($reason, ['absent', 'kicked'], true)) {
+                Inbox::send($membership->user_id, $reason === 'absent' ? 'left_absent' : 'kicked', [
+                    'league' => DB::table('leagues')->where('id', $membership->league_id)->value('name'),
+                    'club' => DB::table('clubs')->where('id', $membership->club_id)->value('name'), 'reason' => $kickReason,
+                ], $membership->league_id);
+            }
 
             return true;
         });
