@@ -13,6 +13,7 @@ const OUT = [
   ['icon.svg', 512, 'icon-512.png'], ['icon.svg', 192, 'icon-192.png'], ['icon.svg', 180, 'apple-touch-icon.png'],
   ['favicon.svg', 48, 'favicon-48.png'], ['favicon.svg', 32, 'favicon-32.png'], ['favicon.svg', 16, 'favicon-16.png'],
   ['logo.svg', 1024, 'logo-1024.png'], ['logo.svg', 512, 'logo-512.png'],
+  ['og-invite.svg', 1200, 'og-invite.png'],
   ['coin.svg', 512, 'coin-512.png'], ['coin.svg', 128, 'coin-128.png'], ['coin.svg', 48, 'coin-48.png'], ['coin.svg', 24, 'coin-24.png'],
 ]
 const b = await chromium.launch(process.argv[2] ? { executablePath: process.argv[2] } : {})

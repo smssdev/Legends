@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Schedule;
 // The scheduler runs every minute on the server (Windows Task Scheduler or cron).
 // Leagues start at the time their owner chose [PLAN 2.1].
 Schedule::command('leagues:start')->everyMinute()->withoutOverlapping();
+// Absence [PLAN 2.2]: a warning at 48 hours, and 3 days away hands the club back to a bot.
+Schedule::command('leagues:absence')->everyMinute()->withoutOverlapping();
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');

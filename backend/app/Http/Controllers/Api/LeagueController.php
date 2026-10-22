@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
+use App\League\Leaving;
+use App\League\Presence;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\LeagueJoinRequest;
@@ -103,6 +105,33 @@ class LeagueController extends Controller
             'request' => $this->requestData($joinRequest),
             'league' => $this->leagueData($league->load('owner'), $request->user()),
         ], $joinRequest->wasRecentlyCreated ? 201 : 200);
+    }
+
+    /** A holiday of 1 to 7 days, once a season: absence is not counted meanwhile [PLAN 2.2]. */
+    public function vacation(Request $request, League $league): JsonResponse
+    {
+        $data = $request->validate(['days' => ['required', 'integer', 'between:1,'.config('game.league.vacation_max_days')]]);
+        Presence::startHoliday($this->membership($request->user(), $league), (int) $data['days']);
+
+        return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
+    }
+
+    public function endVacation(Request $request, League $league): JsonResponse
+    {
+        Presence::endHoliday($this->membership($request->user(), $league));
+
+        return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
+    }
+
+    /** The owner sends a coach away with a written reason that every member sees [PLAN 2.1]. */
+    public function kick(Request $request, League $league, LeagueMembership $membership): JsonResponse
+    {
+        $this->owner($request->user(), $league);
+        abort_unless($membership->league_id === $league->id, 404);
+        $data = $request->validate(['reason' => ['required', 'string', 'min:3', 'max:200']]);
+        Leaving::kick($membership, trim($data['reason']));
+
+        return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
     }
 
     /** Take back my request while it waits. */
@@ -226,6 +255,16 @@ class LeagueController extends Controller
         return $data;
     }
 
+    /** My place in this league's current season. */
+    private function membership(User $user, League $league): LeagueMembership
+    {
+        $m = LeagueMembership::where('league_id', $league->id)->where('season_id', $league->season->id)
+            ->where('user_id', $user->id)->whereNull('left_at')->first();
+        abort_unless($m, 403, 'ليس لديك فريق في هذا الدوري.');
+
+        return $m;
+    }
+
     private function owner(User $user, League $league): void
     {
         abort_unless($league->isOwner($user), 403, 'هذا لمنشئ الدوري فقط.');
@@ -266,12 +305,63 @@ class LeagueController extends Controller
             'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'free_clubs' => $l->team_count - $coaches,
             'pending_requests' => $l->isOwner($user) ? LeagueJoinRequest::where('league_id', $l->id)->where('status', 'pending')->count() : null,
+            'invite_url' => $approved ? url('/join/'.$l->code) : null,
+            'me' => $this->presence($l, $user),
+            // Coaches this season, and who left and why: every member sees a kick's reason [PLAN 2.1].
+            'members' => $approved ? $this->members($l, $season?->id, $l->isOwner($user)) : [],
+            'departures' => $approved ? $this->departures($season?->id) : [],
             'season' => $season ? [
                 'number' => $season->number, 'status' => $season->status, 'rounds' => $season->rounds,
                 'rounds_played' => $season->rounds_played, 'lock_from_round' => $season->lock_from_round,
                 'join_open' => $l->status !== 'finished' && ! $season->inLastQuarter(),
             ] : null,
         ];
+    }
+
+    private function presence(League $l, User $user): ?array
+    {
+        $m = $l->season ? LeagueMembership::where('league_id', $l->id)->where('season_id', $l->season->id)->where('user_id', $user->id)->whereNull('left_at')->first() : null;
+        if (! $m) {
+            return null;
+        }
+
+        return [
+            'membership_id' => $m->id,
+            'on_holiday' => Presence::onHoliday($m),
+            'vacation_until' => $m->vacation_until?->toIso8601ZuluString(),
+            'vacation_used' => $m->vacation_from !== null,
+            'absence_warning' => $m->absence_warned_at !== null,
+            // When the club goes back to a bot if nothing changes: only once the season counts absence.
+            'away_deadline' => ($since = Presence::quietSince($m, $l->season->starts_at))
+                ? $since->copy()->addDays(config('game.league.absence_days'))->toIso8601ZuluString() : null,
+        ];
+    }
+
+    private function members(League $l, ?int $seasonId, bool $owner): array
+    {
+        return LeagueMembership::where('season_id', $seasonId)->whereNull('left_at')->with('user', 'club')->orderBy('joined_at')->get()
+            ->map(fn (LeagueMembership $m) => [
+                'id' => $m->id,
+                'user' => ['id' => $m->user_id, 'name' => $m->user?->name],
+                'club' => $m->club ? ['id' => $m->club->id, 'name' => $m->club->name] : null,
+                'is_owner' => $m->user_id === $l->owner_id,
+                'on_holiday' => Presence::onHoliday($m),
+                'joined_at' => $m->joined_at->toIso8601ZuluString(),
+                // The owner sees who has been quiet; coaches do not watch each other.
+                'last_active_at' => $owner ? $m->last_active_at?->toIso8601ZuluString() : null,
+            ])->all();
+    }
+
+    private function departures(?int $seasonId): array
+    {
+        return LeagueMembership::where('season_id', $seasonId)->whereNotNull('left_at')->with('user', 'club')->orderByDesc('left_at')->get()
+            ->map(fn (LeagueMembership $m) => [
+                'user' => $m->user?->name ?? 'حساب محذوف',
+                'club' => $m->club?->name,
+                'reason' => $m->left_reason,
+                'kick_reason' => $m->kick_reason,
+                'left_at' => $m->left_at->toIso8601ZuluString(),
+            ])->all();
     }
 
     private function clubData(Club $c): array
