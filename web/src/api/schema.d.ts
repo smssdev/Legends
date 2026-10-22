@@ -760,6 +760,555 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My leagues
+         * @description The leagues I made, coach in, or asked to join (and was not turned down).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description My leagues */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            leagues: components["schemas"]["League"][];
+                            active_teams: number;
+                            /** @example 4 */
+                            max_active_teams: number;
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * Make a league
+         * @description Copies the strongest team_count clubs of the template with their players, funds each with the starting
+         *     budget, and gives the owner the club they chose. Every other club is a bot. 10 a minute.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Empty: the template and the code, like "Premier League #K7F2QX9M" */
+                        name?: string | null;
+                        /** @description A name from GET /data/templates */
+                        template: string;
+                        team_count: number;
+                        rounds_per_day: number;
+                        /** @description One HH:MM per round */
+                        round_times: string[];
+                        prep_days: number;
+                        /** @enum {string} */
+                        season_end_mode: "renew" | "end";
+                        /**
+                         * Format: date-time
+                         * @description From now up to 7 days
+                         */
+                        starts_at: string;
+                        /** @default 3000000 */
+                        starting_budget?: number;
+                        /**
+                         * @description Locks spending coins inside this league
+                         * @default false
+                         */
+                        fair_league?: boolean;
+                        /** @description Development league; ignored in production */
+                        is_dev?: boolean;
+                        /** @description The owner's club */
+                        club_id: number;
+                    };
+                };
+            };
+            responses: {
+                201: components["responses"]["League"];
+                401: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask to join with a code
+         * @description Spaces, a "#" and lower case are forgiven. Asking again returns the same request (200).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @example K7F2QX9M */
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["JoinRequest"];
+                201: components["responses"]["JoinRequest"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * One league
+         * @description For its owner, its coaches, and who asked to join. Anyone else gets 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["League"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change the settings before the start
+         * @description The owner only, until the league starts (409 after). rounds_per_day and round_times go together. The team count, template and budget are fixed.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string | null;
+                        rounds_per_day?: number;
+                        round_times?: string[];
+                        prep_days?: number;
+                        /** @enum {string} */
+                        season_end_mode?: "renew" | "end";
+                        /** Format: date-time */
+                        starts_at?: string;
+                        fair_league?: boolean;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        trace?: never;
+    };
+    "/leagues/{league}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start now (development only)
+         * @description The owner's "start now" button. 404 in production; there the scheduler starts each league at its time.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Take back my waiting request */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Join requests (owner)
+         * @description Waiting ones first. A request never expires; it waits for the owner.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requests */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            requests: components["schemas"]["JoinRequest"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/requests/{request}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                request: components["parameters"]["JoinRequest"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a request (owner) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    request: components["parameters"]["JoinRequest"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["JoinRequest"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/requests/{request}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                request: components["parameters"]["JoinRequest"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a request (owner) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    request: components["parameters"]["JoinRequest"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["JoinRequest"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Every club of the league
+         * @description For the owner and approved coaches. Clubs with a coach show as taken (bot false).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The clubs, strongest first */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            clubs: components["schemas"]["LeagueClub"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/clubs/{club}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                club: components["parameters"]["Club"];
+            };
+            cookie?: never;
+        };
+        /** One club with its squad */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    club: components["parameters"]["Club"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The club and its players */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LeagueClub"] & {
+                            players: components["schemas"]["LeaguePlayer"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/clubs/{club}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                club: components["parameters"]["Club"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Take a club no coach has
+         * @description One conditional update: of many coaches at once exactly one gets it, the others get 409 "الفريق أُخذ" and
+         *     go back to the list. Its money is brought between 500,000 and the starting budget.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    club: components["parameters"]["Club"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The club is mine */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            club?: components["schemas"]["LeagueClub"];
+                            /** Format: date-time */
+                            joined_at?: string;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sim/leagues": {
         parameters: {
             query?: never;
@@ -1472,6 +2021,100 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        League: {
+            id: number;
+            name: string;
+            template: string;
+            /** @description For the owner and approved coaches only */
+            code?: string | null;
+            team_count: number;
+            rounds_per_day: number;
+            round_times: string[];
+            prep_days: number;
+            /** @enum {string} */
+            season_end_mode: "renew" | "end";
+            /** Format: date-time */
+            starts_at: string;
+            starting_budget: number;
+            fair_league: boolean;
+            is_dev: boolean;
+            /** @enum {string} */
+            status: "waiting" | "running" | "finished";
+            /** @description Settings are locked once the league starts */
+            locked: boolean;
+            owner?: {
+                id: number;
+                name: string;
+            } | null;
+            is_owner: boolean;
+            my_club_id?: number | null;
+            /** @enum {string|null} */
+            my_request?: "pending" | "approved" | "rejected" | null;
+            /** @description Clubs with a coach */
+            coaches: number;
+            /** @description Clubs a coach can still take */
+            free_clubs?: number;
+            /** @description Waiting join requests; for the owner only */
+            pending_requests?: number | null;
+            season?: {
+                number?: number;
+                /** @enum {string} */
+                status?: "upcoming" | "running" | "finished";
+                rounds?: number;
+                rounds_played?: number;
+                /** @description No new coach from this round on (the last 25%) */
+                lock_from_round?: number;
+                join_open?: boolean;
+            } | null;
+        };
+        JoinRequest: {
+            id: number;
+            league_id: number;
+            /** @enum {string} */
+            status: "pending" | "approved" | "rejected";
+            user?: {
+                id: number;
+                name: string;
+            } | null;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            decided_at?: string | null;
+        };
+        LeagueClub: {
+            id: number;
+            name: string;
+            code: string;
+            colors: string[];
+            crest_url: string;
+            /** @description At the league's making */
+            strength_cp: number;
+            coach?: {
+                id: number;
+                name: string;
+            } | null;
+            /** @description No coach; a bot runs it and it can be taken */
+            bot: boolean;
+            /** @description Club money */
+            balance: number;
+            squad_value: number;
+            players_count: number;
+        };
+        LeaguePlayer: {
+            id?: number;
+            name?: string;
+            position?: string;
+            /** @enum {string} */
+            line?: "gk" | "def" | "mid" | "att";
+            age?: number;
+            nationality?: string | null;
+            overall?: number;
+            potential?: number;
+            value?: number;
+            fitness?: number;
+            injured_matches?: number;
+            suspended_matches?: number;
+        };
         DataClub: {
             id: number;
             name: string;
@@ -1638,6 +2281,29 @@ export interface components {
         };
     };
     responses: {
+        /** @description The league */
+        League: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    league: components["schemas"]["League"];
+                };
+            };
+        };
+        /** @description The join request */
+        JoinRequest: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    request: components["schemas"]["JoinRequest"];
+                    league?: components["schemas"]["League"];
+                };
+            };
+        };
         /** @description The account */
         Account: {
             headers: {
@@ -1684,6 +2350,9 @@ export interface components {
         };
     };
     parameters: {
+        League: number;
+        JoinRequest: number;
+        Club: number;
         Match: string;
         Room: string;
         /** @description A live match's secret seat (from POST /sim/rooms, /join, or the seats of a live POST /sim/matches). It names the side this device manages. */

@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Schedule;
 
 // The scheduler runs every minute on the server (Windows Task Scheduler or cron).
+// Leagues start at the time their owner chose [PLAN 2.1].
+Schedule::command('leagues:start')->everyMinute()->withoutOverlapping();
+
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');
 
