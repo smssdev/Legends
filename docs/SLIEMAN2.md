@@ -16,15 +16,15 @@
 
 ## الحالة
 
-**148 صورة:** ✅ 0 معتمدة · ⏳ 0 مرفوعة تنتظر المراجعة · 🔁 0 للإعادة · ⬜ 148 لم تُرفع.
+**148 صورة:** ✅ 28 معتمدة · ⏳ 0 مرفوعة تنتظر المراجعة · 🔁 3 للإعادة · ⬜ 117 لم تُرفع.
 
 | الجزء | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |
 |---|---|---|---|---|---|---|
 | `08-moments.md` | 1 | 4 | 0 | 0 | 0 | 4 |
-| `08-moments.md` | 2 | 20 | 0 | 0 | 0 | 20 |
+| `08-moments.md` | 2 | 20 | 16 | 0 | 0 | 4 |
 | `08-moments.md` | 4 | 4 | 0 | 0 | 0 | 4 |
-| `09-coaches.md` | 1 | 12 | 0 | 0 | 0 | 12 |
-| `09-coaches.md` | 2 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 1 | 12 | 12 | 0 | 0 | 0 |
+| `09-coaches.md` | 2 | 12 | 0 | 0 | 3 | 9 |
 | `09-coaches.md` | 3 | 12 | 0 | 0 | 0 | 12 |
 | `09-coaches.md` | 4 | 12 | 0 | 0 | 0 | 12 |
 | `09-coaches.md` | 5 | 12 | 0 | 0 | 0 | 12 |
@@ -49,22 +49,22 @@
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 255.1 | `art/raw/team/hug-01.png` |
-| ⬜ | 255.2 | `art/raw/team/hug-02.png` |
-| ⬜ | 255.3 | `art/raw/team/high-five-01.png` |
-| ⬜ | 255.4 | `art/raw/team/high-five-02.png` |
-| ⬜ | 255.5 | `art/raw/team/header-duel-01.png` |
-| ⬜ | 255.6 | `art/raw/team/header-duel-02.png` |
-| ⬜ | 255.7 | `art/raw/team/header-duel-03.png` |
-| ⬜ | 255.8 | `art/raw/team/tackle-duel-01.png` |
-| ⬜ | 255.9 | `art/raw/team/tackle-duel-02.png` |
-| ⬜ | 255.10 | `art/raw/team/tackle-duel-03.png` |
-| ⬜ | 255.11 | `art/raw/team/pile-01.png` |
-| ⬜ | 255.12 | `art/raw/team/pile-02.png` |
-| ⬜ | 255.13 | `art/raw/team/shake-01.png` |
-| ⬜ | 255.14 | `art/raw/team/shake-02.png` |
-| ⬜ | 255.15 | `art/raw/team/push-01.png` |
-| ⬜ | 255.16 | `art/raw/team/push-02.png` |
+| ✅ | 255.1 | `art/raw/team/hug-01.png` |
+| ✅ | 255.2 | `art/raw/team/hug-02.png` |
+| ✅ | 255.3 | `art/raw/team/high-five-01.png` |
+| ✅ | 255.4 | `art/raw/team/high-five-02.png` |
+| ✅ | 255.5 | `art/raw/team/header-duel-01.png` |
+| ✅ | 255.6 | `art/raw/team/header-duel-02.png` |
+| ✅ | 255.7 | `art/raw/team/header-duel-03.png` |
+| ✅ | 255.8 | `art/raw/team/tackle-duel-01.png` |
+| ✅ | 255.9 | `art/raw/team/tackle-duel-02.png` |
+| ✅ | 255.10 | `art/raw/team/tackle-duel-03.png` |
+| ✅ | 255.11 | `art/raw/team/pile-01.png` |
+| ✅ | 255.12 | `art/raw/team/pile-02.png` |
+| ✅ | 255.13 | `art/raw/team/shake-01.png` |
+| ✅ | 255.14 | `art/raw/team/shake-02.png` |
+| ✅ | 255.15 | `art/raw/team/push-01.png` |
+| ✅ | 255.16 | `art/raw/team/push-02.png` |
 
 ### 257. احتفالات جماعية (وضعيات ثابتة) (الدفعة 2)
 
@@ -95,46 +95,46 @@
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 260.1 | `art/raw/coach-1/ref.png` |
-| ⬜ | 260.2 | `art/raw/coach-1/faces.png` |
+| ✅ | 260.1 | `art/raw/coach-1/ref.png` |
+| ✅ | 260.2 | `art/raw/coach-1/faces.png` |
 
 ### 261. المدرب 1: الانطلاق والتوقف والدوران (الدفعة 1)
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 261.1 | `art/raw/coach-1/start/idle-01.png` |
-| ⬜ | 261.2 | `art/raw/coach-1/start/idle-02.png` |
+| ✅ | 261.1 | `art/raw/coach-1/start/idle-01.png` |
+| ✅ | 261.2 | `art/raw/coach-1/start/idle-02.png` |
 
 ### 262. المدرب 1: الحركة (الدفعة 1)
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 262.1 | `art/raw/coach-1/move/instruct-01.png` |
-| ⬜ | 262.2 | `art/raw/coach-1/move/instruct-02.png` |
+| ✅ | 262.1 | `art/raw/coach-1/move/instruct-01.png` |
+| ✅ | 262.2 | `art/raw/coach-1/move/instruct-02.png` |
 
 ### 263. المدرب 1: المشاعر (الدفعة 1)
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 263.1 | `art/raw/coach-1/emotion/celebrate-01.png` |
-| ⬜ | 263.2 | `art/raw/coach-1/emotion/celebrate-02.png` |
-| ⬜ | 263.3 | `art/raw/coach-1/emotion/despair-01.png` |
-| ⬜ | 263.4 | `art/raw/coach-1/emotion/despair-02.png` |
-| ⬜ | 263.5 | `art/raw/coach-1/emotion/argue-01.png` |
-| ⬜ | 263.6 | `art/raw/coach-1/emotion/argue-02.png` |
+| ✅ | 263.1 | `art/raw/coach-1/emotion/celebrate-01.png` |
+| ✅ | 263.2 | `art/raw/coach-1/emotion/celebrate-02.png` |
+| ✅ | 263.3 | `art/raw/coach-1/emotion/despair-01.png` |
+| ✅ | 263.4 | `art/raw/coach-1/emotion/despair-02.png` |
+| ✅ | 263.5 | `art/raw/coach-1/emotion/argue-01.png` |
+| ✅ | 263.6 | `art/raw/coach-1/emotion/argue-02.png` |
 
 ### 264. المدرب 2: البطاقة المرجعية (الدفعة 2)
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 264.1 | `art/raw/coach-2/ref.png` |
-| ⬜ | 264.2 | `art/raw/coach-2/faces.png` |
+| 🔁 | 264.1 | `art/raw/coach-2/ref.png` · إعادة: الوجه شبيه جداً بمدرب حقيقي مشهور، والمطلوب شخص مخترع ([`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md)) |
+| 🔁 | 264.2 | `art/raw/coach-2/faces.png` · إعادة: تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة ([`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md)) |
 
 ### 265. المدرب 2: الانطلاق والتوقف والدوران (الدفعة 2)
 
 | | اللوحة | الملف |
 |---|---|---|
-| ⬜ | 265.1 | `art/raw/coach-2/start/idle-01.png` |
+| 🔁 | 265.1 | `art/raw/coach-2/start/idle-01.png` · إعادة: تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة ([`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md)) |
 | ⬜ | 265.2 | `art/raw/coach-2/start/idle-02.png` |
 
 ### 266. المدرب 2: الحركة (الدفعة 2)

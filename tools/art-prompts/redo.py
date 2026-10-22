@@ -319,7 +319,43 @@ STADIUMS = {
          'This is NOT the view of the attached shot.jpg: the camera stands on the touchline level with the edge of the penalty area and looks along the length of the pitch towards the right. The white touchline runs diagonally across the bottom of the image, the advertising boards close behind it on the left, and the only goal is small and far away at the right edge.'),
     ],
 }
-REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK, STADIUMS]
+NOT_REAL = ('He is an invented person and must not look like any real football coach or famous person: a rounder, '
+            'fuller face, a short dark full beard (not stubble), thick dark eyebrows and a slightly heavier build. '
+            'Keep the shaved head, the plain black tracksuit and the age around 40.')
+COACHES = {
+    'date': '2026-10-22', 'title': 'المدربان 1 و2 (يدوياً، SLIEMAN2)', 'book': 'docs/art/images/09-coaches.md',
+    'out': 'docs/art/redo/2026-10-22-coaches.md',
+    'ok': [('260.1', 'coach-1/ref.png'), ('260.2', 'coach-1/faces.png'), ('261.1', 'coach-1/start/idle-01.png'),
+           ('261.2', 'coach-1/start/idle-02.png'), ('262.1', 'coach-1/move/instruct-01.png'), ('262.2', 'coach-1/move/instruct-02.png'),
+           ('263.1', 'coach-1/emotion/celebrate-01.png'), ('263.2', 'coach-1/emotion/celebrate-02.png'),
+           ('263.3', 'coach-1/emotion/despair-01.png'), ('263.4', 'coach-1/emotion/despair-02.png'),
+           ('263.5', 'coach-1/emotion/argue-01.png'), ('263.6', 'coach-1/emotion/argue-02.png')],
+    'notes': [
+        '**المدرب 1 كاملاً معتمد (12 من 12):** نفس الرجل في كل اللوحات، من الجانب متجهاً لليمين، وكل إطار وضعية مختلفة بالترتيب.',
+        '**المقياس:** لوحات المدرب 1 جاءت 16:9 (1376x768) والرجل يملأ 88% من ارتفاعها، أي أطول بنحو الثلث من اللاعبين بعد البناء. أُضيف لها أخضر من حولها حتى صارت 3:2 والرجل بنسبة اللاعبين (65%)، بلا لمس للرجل نفسه. في الباقي اطلب 3:2، أو أرسلها كما هي وتُعدَّل هكذا.',
+        '**المدرب 2 مرفوض كله (3 لوحات):** وجهه شبيه جداً بمدرب حقيقي مشهور، والشخصيات يجب أن تكون مخترعة. وكانت الصور JPEG باسم png. تبدأ من البطاقة المرجعية الجديدة، ثم الوجوه والوقوف بإرفاقها.',
+    ],
+    'common': 'المدرب 2 يشبه مدرباً حقيقياً معروفاً.',
+    'redo': [
+        ('264.1', 'coach-2', 'الوجه شبيه جداً بمدرب حقيقي مشهور، والمطلوب شخص مخترع', NOT_REAL),
+        ('264.2', 'coach-2', 'تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة', 'Use the NEW attached reference card: exactly that man. ' + NOT_REAL),
+        ('265.1', 'coach-2/start', 'تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة', 'Use the NEW attached reference card: exactly that man. ' + NOT_REAL),
+    ],
+}
+MOMENTS = {
+    'date': '2026-10-22', 'title': 'لحظات جماعية متحركة (يدوياً، SLIEMAN2)', 'book': 'docs/art/images/08-moments.md',
+    'out': 'docs/art/redo/2026-10-22-moments.md',
+    'ok': [(f'255.{i}', f'team/{n}.png') for i, n in enumerate(
+        ['hug-01', 'hug-02', 'high-five-01', 'high-five-02', 'header-duel-01', 'header-duel-02', 'header-duel-03',
+         'tackle-duel-01', 'tackle-duel-02', 'tackle-duel-03', 'pile-01', 'pile-02', 'shake-01', 'shake-02', 'push-01', 'push-02'], 1)],
+    'notes': [
+        '**المجموعة 255 كاملة معتمدة (16 من 16):** كل لوحة إطاران بالترتيب المكتوب، والأخضر سادة، واللاعبون بنفس المقياس في اللوحات كلها.',
+        '**push-02:** كانت JPEG باسم png وبمقاس 1200x896. حُفظت PNG وقُصّ الأخضر الزائد أعلاها وأسفلها إلى 1200x800 مثل أخواتها، بلا لمس للأشخاص.',
+    ],
+    'common': '',
+    'redo': [],
+}
+REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK, STADIUMS, COACHES, MOMENTS]
 
 # Boards approved before these reviews (wave 1), in docs/sprints/sprint-02-days.md.
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']

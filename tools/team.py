@@ -236,8 +236,8 @@ def write_slieman():
     W(f'### 1. الصور ({rates.IMG_HOURS} من {rates.DAY_HOURS} ساعات تقريباً)\n')
     W('**الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تُبنى بها وحدها وتنتظرها. لا تبدأ الدفعة 2 قبل إكمالها.\n')
     p_all = [b for b in mine if st[b[2]] == 'pending']
-    r1 = [b for b in boards if b[0] == 1 and st[b[2]] == 'redo']
-    t1 = [b for b in boards if b[0] == 1 and st[b[2]] == 'todo']
+    r1 = [b for b in mine if b[0] == 1 and st[b[2]] == 'redo']
+    t1 = [b for b in mine if b[0] == 1 and st[b[2]] == 'todo']
     steps = []
     if p_all:
         steps.append(f"**⏳ {len(p_all)} صورة مرفوعة تنتظر المراجعة:** قل لـ Claude «راجع» أول الجلسة.")
@@ -254,7 +254,7 @@ def write_slieman():
         W(f'الدفعة 1 اكتملت، فصورك الآن من الدفعة {w}.\n')
     image_table(W, 'صور اليوم', nxt, redo)
 
-    later_redo = [b for b in boards if b[0] > 1 and st[b[2]] == 'redo']
+    later_redo = [b for b in mine if b[0] > 1 and st[b[2]] == 'redo']
     if later_redo:
         W(f'**إعادة من الدفعات اللاحقة ({len(later_redo)}):** بعد صور الدفعة 1، أو حين تصل دفعتها. لكل صورة أمرها وسطر تصحيحها في ملف الإعادة.\n')
         W('| الدفعة | اللوحة | الملف | المشكلة | الأمر في |'); W('|---|---|---|---|---|')
