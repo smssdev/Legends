@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Messages\Inbox;
 use App\Models\League;
 use App\Models\LeagueJoinRequest;
 use App\Models\LeagueMembership;
@@ -34,7 +35,10 @@ class Joining
         self::assertCanTakeAnother($user);
 
         try {
-            return LeagueJoinRequest::create(['league_id' => $league->id, 'user_id' => $user->id, 'status' => 'pending']);
+            $request = LeagueJoinRequest::create(['league_id' => $league->id, 'user_id' => $user->id, 'status' => 'pending']);
+            Inbox::send($league->owner_id, 'join_request', ['league' => $league->name, 'league_id' => $league->id, 'user' => $user->name], $league->id);
+
+            return $request;
         } catch (UniqueConstraintViolationException) {
             // The same request sent twice at once: the first one stands.
             return LeagueJoinRequest::where('league_id', $league->id)->where('user_id', $user->id)->firstOrFail();
@@ -49,6 +53,8 @@ class Joining
         if ($changed !== 1) {
             throw new HttpException(409, 'تم البت في هذا الطلب من قبل.');
         }
+        $league = League::find($request->league_id);
+        Inbox::send($request->user_id, $approve ? 'join_approved' : 'join_rejected', ['league' => $league->name, 'league_id' => $league->id], $league->id);
 
         return $request->fresh();
     }

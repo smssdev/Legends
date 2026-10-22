@@ -3,6 +3,9 @@
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
 import { ref } from 'vue'
+import { ensureCsrf } from '../api/client'
+
+const xsrf = () => decodeURIComponent(document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/)?.[1] ?? '')
 
 declare global {
   interface Window {
@@ -28,6 +31,25 @@ export function live(): Echo<'reverb'> {
     wssPort: Number(env.VITE_REVERB_PORT ?? 443),
     forceTLS: scheme === 'https',
     enabledTransports: ['ws', 'wss'],
+    // Private channels (a match, a club, the account's inbox) are signed by the API with the session cookie
+    // and the XSRF token, read fresh on every subscription.
+    authorizer: (channel: { name: string }) => ({
+      authorize: async (socketId: string, done: (error: Error | null, data: any) => void) => {
+        try {
+          await ensureCsrf()
+          const res = await fetch('/broadcasting/auth', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': xsrf() },
+            body: JSON.stringify({ socket_id: socketId, channel_name: channel.name }),
+          })
+          if (!res.ok) throw new Error(`auth ${res.status}`)
+          done(null, await res.json())
+        } catch (e) {
+          done(e as Error, null)
+        }
+      },
+    }),
   })
   const conn = (echo.connector as any).pusher.connection
   conn.bind('state_change', (s: { current: LiveState }) => (liveState.value = s.current))

@@ -17,7 +17,7 @@ export const SECTIONS: Section[] = [
   { name: 'stadium', path: '/stadium', label: 'الملعب', icon: 'stadium', sprint: 29 },
   { name: 'finance', path: '/finance', label: 'المالية', icon: 'finance', sprint: 23 },
   { name: 'league', path: '/league', label: 'الدوري والكأس', icon: 'league', sprint: 15 },
-  { name: 'inbox', path: '/inbox', label: 'الرسائل', icon: 'inbox', sprint: 22 },
+  { name: 'inbox', path: '/inbox', label: 'الرسائل', icon: 'inbox' },
   { name: 'sim', path: '/sim', label: 'المحاكي', icon: 'sim', dev: true },
 ]
 

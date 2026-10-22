@@ -101,6 +101,9 @@ class MatchCommentaryTest extends TestCase
         $this->assertNotEmpty($report['reasons']);
         $this->assertCount($readings->count(), $report['readings']);
         $this->assertSame(2, DB::table('match_reports')->where('match_id', $match->id)->count());
+        // And a message tells the coach it is ready [Sprint 22].
+        $links = collect($this->getJson('/api/v1/messages')->json('messages'))->where('type', 'match_report')->pluck('link');
+        $this->assertContains("/live/{$match->id}/report", $links);
         $text = json_encode([$report, $readings->map->broadcastWith()->all()], JSON_UNESCAPED_UNICODE);
         foreach (self::HIDDEN as $hidden) {
             $this->assertStringNotContainsString($hidden, $text, $hidden);

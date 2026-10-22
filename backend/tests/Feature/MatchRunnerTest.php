@@ -218,6 +218,10 @@ class MatchRunnerTest extends TestCase
         DB::table('players')->where('id', $players[17])->update(['injured_matches' => 2]);
         DB::table('players')->where('id', $players[16])->update(['suspended_matches' => 1]);
         DB::table('players')->where('id', $players[15])->update(['fitness' => 50]);
+        // Only this match counts: the development league's next rounds (a minute apart, with their own random
+        // lengths) could end first and count the injury down twice.
+        DB::table('fixtures')->where('id', '!=', $this->fixture->id)->where('scheduled_at', '>', $this->fixture->scheduled_at)
+            ->update(['scheduled_at' => Carbon::parse($this->fixture->scheduled_at, 'UTC')->addDay()]);
         $match = $this->kickOff();
         while (DB::table('matches')->where('id', $match->id)->value('status') === 'live') {
             $this->step(2000);
