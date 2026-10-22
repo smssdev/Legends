@@ -8,7 +8,7 @@ dates every version and both art tracks. Lengths are estimates: re-run it after 
 """
 import re, os, sys, datetime as dt
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
-S = open(os.path.join(ROOT, 'docs', 'SPRINTS.md')).read()
+S = open(os.path.join(ROOT, 'docs', 'SPRINTS.md'), encoding='utf-8').read()
 
 # working days per sprint: images at 25 a day; code sprints by the size of their tasks
 LEN = {2: 1, 3: 5, 4: 4, 5: 4, 6: 4, 7: 4, 8: 5,
@@ -40,21 +40,14 @@ for m in re.finditer(r'\n### Sprint (\d+): ([^\n]*)\n(.*?)(?=\n### Sprint |\n## 
 for n in range(46, 53):
     sprints[n] = (f'الصور الكاملة: {VERSIONS[n][1]}', [('W', f'بناء صور الدفعة ({IMAGES[n]}) وصوتها في اللعبة'), ('X', 'مباراة كاملة للتجربة ونشر النسخة')], [3, 1])
 
-# Owner's decision (2026-10-20, tools/plan/rates.py): Sliman makes the images himself beside the code, a few
-# hours a day, and Hamza records the voice. The code moves at CODE_HOURS a day while images are left, and full time after.
+# Owner's decision (2026-10-22, tools/plan/rates.py): Sliman makes the first image waves beside the code, a few
+# hours a day, and Hamza records the voice, then makes the image waves built last. The code moves at CODE_HOURS a
+# day while Sliman has images left, and full time after.
 sys.path[:0] = [os.path.join(ROOT, 'tools', 'plan'), os.path.join(ROOT, 'tools')]
 import rates  # noqa: E402
 import team   # noqa: E402
 START = rates.PLAN_START
 img_left, voice_left = team.left_by_wave()
-GROUPS = [(1, [1]), (2, [2]), (3, [3]), (4, [4]), (5, [5]), ('6 و7', [6, 7]), ('8 إلى 11', [8, 9, 10, 11]), ('12 إلى 16', [12, 13, 14, 15, 16])]
-track, d0 = [], START
-for name, ws in GROUPS:
-    n = sum(img_left.get(w, 0) for w in ws)
-    k = max(1, -(-n // rates.IMG_PER_DAY)) if n else 0
-    track.append((name, n, d0, d0 + dt.timedelta(days=k - 1) if k else d0 - dt.timedelta(days=1)))
-    d0 += dt.timedelta(days=k)
-IMAGES_END = track[-1][3]
 vtrack, v0 = [], START
 VGROUPS = [('صوت 1', [1]), ('صوت 2', [2]), ('صوت 3', [3]), ('صوت 4', [4]), ('صوت 5', [5]), ('صوت 6 إلى 12', list(range(6, 13))), ('أصوات الملعب', ['أصوات الملعب'])]
 for name, ws in VGROUPS:
@@ -65,7 +58,20 @@ for name, ws in VGROUPS:
     vtrack.append((name, n, v0, v0 + dt.timedelta(days=k - 1)))
     v0 += dt.timedelta(days=k)
 voice1 = next((b for nm, n, a, b in vtrack if nm == 'صوت 1'), START - dt.timedelta(days=1))
-img1 = next(b for nm, n, a, b in track if nm == 1)
+GROUPS = [(1, [1]), (2, [2]), (3, [3]), (4, [4]), (5, [5]), ('6 و7', [6, 7]), ('8 إلى 11', [8, 9, 10, 11]), ('12 إلى 16', [12, 13, 14, 15, 16])]
+WHO = {'slieman': 'سليمان', 'hamza': 'حمزة'}
+PER_DAY = {'slieman': rates.IMG_PER_DAY, 'hamza': rates.HAMZA_IMG_PER_DAY}
+track, nxt = [], {'slieman': START, 'hamza': v0}   # Sliman from day one, Hamza once his voice is done
+for name, ws in GROUPS:
+    who = rates.image_owner(ws[0])
+    n = sum(img_left.get(w, 0) for w in ws)
+    k = max(1, -(-n // PER_DAY[who])) if n else 0
+    d0 = nxt[who]
+    track.append((name, n, d0, d0 + dt.timedelta(days=k - 1) if k else d0 - dt.timedelta(days=1), who))
+    nxt[who] += dt.timedelta(days=k)
+IMAGES_END = max((b for nm, n, a, b, who in track if who == 'slieman'), default=START - dt.timedelta(days=1))   # Sliman's last image day
+ALL_IMAGES_END = max(b for nm, n, a, b, who in track)
+img1 = next(b for nm, n, a, b, who in track if nm == 1)
 
 def phase(n):
     return next(p for a, b, p in [(1, 8, '0. المحاكي'), (9, 17, 'أ. الأساس'), (18, 21, 'ب. المباراة المباشرة'), (22, 31, 'ج. مزايا OSM'),
@@ -113,10 +119,7 @@ while queue or not sim_placed:
         summary.append((n, phase(n), title, d, first, cal[-1]))
 
 def images_on(date):
-    for nm, n, a, b in track:
-        if n and a <= date <= b:
-            return f'الدفعة {nm} ({rates.IMG_PER_DAY})'
-    return ''
+    return ' · '.join(f'{WHO[who]}: الدفعة {nm} ({PER_DAY[who]})' for nm, n, a, b, who in track if n and a <= date <= b)
 
 MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
 def ar(d): return f'{d.day} {MONTHS[d.month - 1]} {d.year}'
@@ -128,9 +131,9 @@ total = (summary[-1][5] - START).days + 1
 W('# Legends: الخطة كاملة بالأيام\n')
 W(f'> يولّده `tools/plan/schedule.py` من `docs/SPRINTS.md` وحالة الصور والصوت الحالية، ووتيرة العمل في `tools/plan/rates.py`. يُعاد في نهاية كل سبرنت وبعد كل مراجعة، فتتحرك التواريخ بالواقع. ومرجع سليمان اليومي `docs/SLIEMAN.md`، ومرجع حمزة `docs/HAMZA.md`.\n')
 W(f'**البداية:** {START.isoformat()} (السبرنت 1 منجز، وكود 2 و9 إلى 12 منجز). **النهاية:** {summary[-1][5].isoformat()}. **المجموع:** {total} {days(total)}.\n')
-W('**تقسيم العمل (قرار صاحب المشروع، 2026-10-20):**')
-W(f'- **سليمان:** {rates.DAY_HOURS} ساعات كل يوم: الصور {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، والكود الباقي ({rates.CODE_HOURS}) مع Claude. وبعد آخر صورة ({IMAGES_END.isoformat()}) يصير اليوم كله للكود.')
-W(f'- **حمزة:** الصوت وحده، {rates.VOICE_PER_DAY} مقطعاً معتمداً يومياً.\n')
+W('**تقسيم العمل (قرار صاحب المشروع، 2026-10-22):**')
+W(f'- **سليمان:** {rates.DAY_HOURS} ساعات كل يوم: صور الدفعات 1 إلى {rates.HAMZA_FROM_WAVE - 1} في {rates.IMG_HOURS} منها ({rates.IMG_PER_DAY} صورة معتمدة)، والكود الباقي ({rates.CODE_HOURS}) مع Claude. وبعد آخر صورة له ({IMAGES_END.isoformat()}) يصير اليوم كله للكود.')
+W(f'- **حمزة:** الصوت أولاً ({rates.VOICE_PER_DAY} مقطعاً معتمداً يومياً)، ثم صور الدفعات {rates.HAMZA_FROM_WAVE} إلى 16 التي تُبنى آخر الخطة ({rates.HAMZA_IMG_PER_DAY} صورة معتمدة يومياً).\n')
 W('## متى تخرج كل نسخة\n')
 W('| النسخة | ماذا فيها | بعد السبرنت | التاريخ | بعد |'); W('|---|---|---|---|---|')
 BIG = {'v1.0', 'v1.1', 'v1.8'}
@@ -144,12 +147,12 @@ W('- **المحاكاة المصورة (3 إلى 8):** تبدأ حين تكتم�
 W('- **الموسم التجريبي قبل v1.0:** 14 يوماً بالتقويم، لأن المباريات تُلعب بأيام حقيقية مع الأصدقاء.')
 W('- **المرحلة ز (46 إلى 52):** للبناء فقط، لأن صورها وصوتها جاهزة قبلها.')
 W('- **أكبر عامل يغيّر التواريخ:** نسبة إعادة الصور. لو صار عدد الصور اليومي أكثر أو أقل، غيّره في `rates.py` وأعد التوليد.')
-W('\n## مسار الصور (سليمان، بالتوازي مع الكود)\n')
-W('| الدفعة | الباقي | من | إلى | تُبنى في |'); W('|---|---|---|---|---|')
+W('\n## مسار الصور (سليمان بالتوازي مع الكود، وحمزة بعد الصوت)\n')
+W('| الدفعة | من يصنعها | الباقي | من | إلى | تُبنى في |'); W('|---|---|---|---|---|---|')
 BUILT = {1: '3 إلى 8 (v0.1)', 2: '46 (v1.2)', 3: '47 (v1.3)', 4: '48 (v1.4)', 5: '49 (v1.5)', '6 و7': '50 (v1.6)', '8 إلى 11': '51 (v1.7)', '12 إلى 16': '52 (v1.8)'}
-for w, n, a, b in track:
-    W(f'| {w} | {n} | {ar(a)} | {ar(b)} | السبرنت {BUILT[w]} |' if n else f'| {w} | 0 | | | السبرنت {BUILT[w]} |')
-W(f'\n**كل الصور جاهزة:** {ar(IMAGES_END)}.')
+for w, n, a, b, who in track:
+    W(f'| {w} | {WHO[who]} | {n} | {ar(a)} | {ar(b)} | السبرنت {BUILT[w]} |' if n else f'| {w} | {WHO[who]} | 0 | | | السبرنت {BUILT[w]} |')
+W(f'\n**آخر صورة لسليمان:** {ar(IMAGES_END)}. **كل الصور جاهزة:** {ar(ALL_IMAGES_END)}.')
 W('\n## مسار الصوت (حمزة)\n')
 W('| الدفعة | الباقي | من | إلى |'); W('|---|---|---|---|')
 for w, n, a, b in vtrack:
@@ -166,5 +169,5 @@ for date, n, what in sorted(rows, key=lambda r: r[0]):
         cur = n; t = sprints[n][0]
         W(f'\n### Sprint {n}: {t}\n'); W('| اليوم | التاريخ | الكود | الصور |'); W('|---|---|---|---|')
     W(f'| {(date - START).days + 1} | {date.isoformat()} | {what} | {images_on(date)} |')
-open(os.path.join(ROOT, 'docs', 'SCHEDULE.md'), 'w').write('\n'.join(o) + '\n')
+open(os.path.join(ROOT, 'docs', 'SCHEDULE.md'), 'w', encoding='utf-8', newline='\n').write('\n'.join(o) + '\n')
 print(total, summary[-1][5], 'images end', IMAGES_END, 'ready', READY)
