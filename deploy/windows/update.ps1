@@ -12,6 +12,10 @@ Set-Location "$Root\backend"
 Step 'Waiting for the live matches to end'
 while ([int](php artisan matches:live) -gt 0) { Write-Host '  a match is live, waiting a minute...'; Start-Sleep -Seconds 60 }
 
+# The watchdog leaves the tasks alone while this works (it would start them again).
+$flag = "$Root\backend\storage\app\maintenance.flag"
+Set-Content $flag 'update'
+
 Step 'Backing up the databases'
 php artisan db:backup
 
@@ -39,4 +43,8 @@ if (-not (Get-ScheduledTask -TaskName 'Legends Matches' -ErrorAction SilentlyCon
     Write-Host 'Run setup.ps1 once more to add the live connection (Reverb), the queue and the match runner.' -ForegroundColor Yellow
 }
 foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') { Start-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue }
+Remove-Item $flag -ErrorAction SilentlyContinue
+if (-not (Get-ScheduledTask -TaskName 'Legends Watchdog' -ErrorAction SilentlyContinue)) {
+    Write-Host 'Run setup.ps1 once more to add the watchdog and the phone alerts (Sprint 21).' -ForegroundColor Yellow
+}
 Write-Host "`nUpdated. Your link is the same as before." -ForegroundColor Green
