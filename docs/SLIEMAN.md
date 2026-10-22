@@ -3,7 +3,7 @@
 > **مرجعك اليومي.** منه تعرف ماذا تعمل اليوم، وما ينتظر قرارك، وما القادم بتواريخه.
 > يولّده `python3 tools/team.py` بعد كل مراجعة وكل دمج، فلا يُعدَّل يدوياً. والخطة كاملة في [`SCHEDULE.md`](SCHEDULE.md).
 
-**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى 4 (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات، و**كل صورة تحتاج إعادة** من أي دفعة. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات 5 إلى 16 التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). وصور اللحظات والمدربين تصنعها يدوياً خارج هذه القائمة ([`SLIEMAN2.md`](SLIEMAN2.md)). يومك 5 ساعات: **للصور 2 منها (12 صورة معتمدة)، وللكود 3** مع Claude. والأرقام في `tools/plan/rates.py`.
+**تقسيم العمل (قرار 2026-10-22):** أنت تصنع صور الدفعات 1 إلى 4 (التي تحتاجها اللعبة أولاً) **ما عدا الملاعب**، بالتوازي مع السبرنتات، و**كل صورة تحتاج إعادة** من أي دفعة. وحمزة على الصوت، ثم **الملاعب كلها** من أي دفعة، وصور الدفعات 5 إلى 16 التي تُبنى آخر الخطة ([`HAMZA.md`](HAMZA.md)). وصور اللحظات والمدربين تصنعها يدوياً بجانبها (قسمها تحت). يومك 5 ساعات: **للصور 2 منها (12 صورة معتمدة)، وللكود 3** مع Claude. والأرقام في `tools/plan/rates.py`.
 
 ## يومك بالترتيب
 
@@ -86,6 +86,355 @@
 - **الكود:** Claude يفتح PR، وبعد نجاح CI يُدمج في `main`.
 - **الخطة:** بعد كل مراجعة أو دمج تتحدث `SCHEDULE.md` وهذا الملف تلقائياً.
 
+## صور اللحظات والمدربين (يدوياً، خارج صور اليوم)
+
+**قرار صاحب المشروع (2026-10-22):** صور [`08-moments.md`](art/images/08-moments.md) و[`09-coaches.md`](art/images/09-coaches.md) تصنعها يدوياً بجانب صور اليوم، وترفعها بنفسك متى جهزت، ثم قل «راجع اللحظات والمدربين». وليست عند حمزة.
+
+**148 صورة:** ✅ 28 معتمدة · ⏳ 0 تنتظر المراجعة · 🔁 3 للإعادة · ⬜ 117 لم تُصنع.
+
+1. **الأمر** في ملف الجزء، ابحث برقم اللوحة مثل `### 256.1`، ومعه المرفقات المكتوبة تحت «ارفق». والإعادة من ملف الإعادة بسطر تصحيحها.
+2. **احفظ كل صورة PNG حقيقياً، عريضة 3:2،** باسمها في المسار المكتوب تحت، وارفعها إلى `art/raw/`.
+
+| الجزء | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |
+|---|---|---|---|---|---|---|
+| `08-moments.md` | 1 | 4 | 0 | 0 | 0 | 4 |
+| `08-moments.md` | 2 | 20 | 16 | 0 | 0 | 4 |
+| `08-moments.md` | 4 | 4 | 0 | 0 | 0 | 4 |
+| `09-coaches.md` | 1 | 12 | 12 | 0 | 0 | 0 |
+| `09-coaches.md` | 2 | 12 | 0 | 0 | 3 | 9 |
+| `09-coaches.md` | 3 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 4 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 5 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 6 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 7 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 8 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 9 | 12 | 0 | 0 | 0 | 12 |
+| `09-coaches.md` | 10 | 12 | 0 | 0 | 0 | 12 |
+
+### ما بقي منها (120)، بالترتيب
+
+🔁 = إعادة (بأمرها في ملف الإعادة)، ⏳ = مرفوعة تنتظر المراجعة، ⬜ = لم تُصنع (بأمرها في الكتاب). والمعتمد لا يظهر هنا.
+
+#### 256. احتفالات الهدف (وضعيات ثابتة) (الدفعة 1، [`08-moments.md`](art/images/08-moments.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 256.1 | `art/raw/celebrations/solo-1.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 256.2 | `art/raw/celebrations/solo-2.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 256.3 | `art/raw/celebrations/solo-3.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 256.4 | `art/raw/celebrations/solo-4.png` | [`08-moments.md`](art/images/08-moments.md) |
+
+#### 257. احتفالات جماعية (وضعيات ثابتة) (الدفعة 2، [`08-moments.md`](art/images/08-moments.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 257.1 | `art/raw/team-celebrations/team-1.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 257.2 | `art/raw/team-celebrations/team-2.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 257.3 | `art/raw/team-celebrations/team-3.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 257.4 | `art/raw/team-celebrations/final-whistle.png` | [`08-moments.md`](art/images/08-moments.md) |
+
+#### 264. المدرب 2: البطاقة المرجعية (الدفعة 2، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| 🔁 | 264.1 | `art/raw/coach-2/ref.png` | [`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md): الوجه شبيه جداً بمدرب حقيقي مشهور، والمطلوب شخص مخترع |
+| 🔁 | 264.2 | `art/raw/coach-2/faces.png` | [`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md): تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة |
+
+#### 265. المدرب 2: الانطلاق والتوقف والدوران (الدفعة 2، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| 🔁 | 265.1 | `art/raw/coach-2/start/idle-01.png` | [`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md): تتبع البطاقة المرفوضة: تُعاد بإرفاق البطاقة الجديدة |
+| ⬜ | 265.2 | `art/raw/coach-2/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 266. المدرب 2: الحركة (الدفعة 2، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 266.1 | `art/raw/coach-2/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 266.2 | `art/raw/coach-2/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 267. المدرب 2: المشاعر (الدفعة 2، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 267.1 | `art/raw/coach-2/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 267.2 | `art/raw/coach-2/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 267.3 | `art/raw/coach-2/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 267.4 | `art/raw/coach-2/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 267.5 | `art/raw/coach-2/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 267.6 | `art/raw/coach-2/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 268. المدرب 3: البطاقة المرجعية (الدفعة 3، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 268.1 | `art/raw/coach-3/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 268.2 | `art/raw/coach-3/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 269. المدرب 3: الانطلاق والتوقف والدوران (الدفعة 3، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 269.1 | `art/raw/coach-3/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 269.2 | `art/raw/coach-3/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 270. المدرب 3: الحركة (الدفعة 3، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 270.1 | `art/raw/coach-3/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 270.2 | `art/raw/coach-3/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 271. المدرب 3: المشاعر (الدفعة 3، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 271.1 | `art/raw/coach-3/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 271.2 | `art/raw/coach-3/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 271.3 | `art/raw/coach-3/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 271.4 | `art/raw/coach-3/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 271.5 | `art/raw/coach-3/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 271.6 | `art/raw/coach-3/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 258. الكأس والتتويج (وضعيات ثابتة) (الدفعة 4، [`08-moments.md`](art/images/08-moments.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 258.1 | `art/raw/trophy/lift.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 258.2 | `art/raw/trophy/moments.png` | [`08-moments.md`](art/images/08-moments.md) |
+
+#### 259. ركلات الترجيح (وضعيات ثابتة) (الدفعة 4، [`08-moments.md`](art/images/08-moments.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 259.1 | `art/raw/shootout/line.png` | [`08-moments.md`](art/images/08-moments.md) |
+| ⬜ | 259.2 | `art/raw/shootout/walk.png` | [`08-moments.md`](art/images/08-moments.md) |
+
+#### 272. المدرب 4: البطاقة المرجعية (الدفعة 4، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 272.1 | `art/raw/coach-4/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 272.2 | `art/raw/coach-4/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 273. المدرب 4: الانطلاق والتوقف والدوران (الدفعة 4، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 273.1 | `art/raw/coach-4/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 273.2 | `art/raw/coach-4/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 274. المدرب 4: الحركة (الدفعة 4، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 274.1 | `art/raw/coach-4/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 274.2 | `art/raw/coach-4/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 275. المدرب 4: المشاعر (الدفعة 4، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 275.1 | `art/raw/coach-4/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 275.2 | `art/raw/coach-4/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 275.3 | `art/raw/coach-4/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 275.4 | `art/raw/coach-4/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 275.5 | `art/raw/coach-4/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 275.6 | `art/raw/coach-4/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 276. المدرب 5: البطاقة المرجعية (الدفعة 5، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 276.1 | `art/raw/coach-5/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 276.2 | `art/raw/coach-5/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 277. المدرب 5: الانطلاق والتوقف والدوران (الدفعة 5، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 277.1 | `art/raw/coach-5/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 277.2 | `art/raw/coach-5/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 278. المدرب 5: الحركة (الدفعة 5، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 278.1 | `art/raw/coach-5/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 278.2 | `art/raw/coach-5/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 279. المدرب 5: المشاعر (الدفعة 5، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 279.1 | `art/raw/coach-5/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 279.2 | `art/raw/coach-5/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 279.3 | `art/raw/coach-5/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 279.4 | `art/raw/coach-5/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 279.5 | `art/raw/coach-5/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 279.6 | `art/raw/coach-5/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 280. المدرب 6: البطاقة المرجعية (الدفعة 6، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 280.1 | `art/raw/coach-6/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 280.2 | `art/raw/coach-6/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 281. المدرب 6: الانطلاق والتوقف والدوران (الدفعة 6، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 281.1 | `art/raw/coach-6/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 281.2 | `art/raw/coach-6/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 282. المدرب 6: الحركة (الدفعة 6، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 282.1 | `art/raw/coach-6/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 282.2 | `art/raw/coach-6/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 283. المدرب 6: المشاعر (الدفعة 6، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 283.1 | `art/raw/coach-6/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 283.2 | `art/raw/coach-6/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 283.3 | `art/raw/coach-6/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 283.4 | `art/raw/coach-6/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 283.5 | `art/raw/coach-6/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 283.6 | `art/raw/coach-6/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 284. المدرب 7: البطاقة المرجعية (الدفعة 7، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 284.1 | `art/raw/coach-7/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 284.2 | `art/raw/coach-7/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 285. المدرب 7: الانطلاق والتوقف والدوران (الدفعة 7، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 285.1 | `art/raw/coach-7/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 285.2 | `art/raw/coach-7/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 286. المدرب 7: الحركة (الدفعة 7، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 286.1 | `art/raw/coach-7/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 286.2 | `art/raw/coach-7/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 287. المدرب 7: المشاعر (الدفعة 7، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 287.1 | `art/raw/coach-7/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 287.2 | `art/raw/coach-7/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 287.3 | `art/raw/coach-7/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 287.4 | `art/raw/coach-7/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 287.5 | `art/raw/coach-7/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 287.6 | `art/raw/coach-7/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 288. المدرب 8: البطاقة المرجعية (الدفعة 8، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 288.1 | `art/raw/coach-8/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 288.2 | `art/raw/coach-8/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 289. المدرب 8: الانطلاق والتوقف والدوران (الدفعة 8، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 289.1 | `art/raw/coach-8/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 289.2 | `art/raw/coach-8/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 290. المدرب 8: الحركة (الدفعة 8، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 290.1 | `art/raw/coach-8/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 290.2 | `art/raw/coach-8/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 291. المدرب 8: المشاعر (الدفعة 8، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 291.1 | `art/raw/coach-8/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 291.2 | `art/raw/coach-8/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 291.3 | `art/raw/coach-8/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 291.4 | `art/raw/coach-8/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 291.5 | `art/raw/coach-8/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 291.6 | `art/raw/coach-8/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 292. المدرب 9: البطاقة المرجعية (الدفعة 9، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 292.1 | `art/raw/coach-9/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 292.2 | `art/raw/coach-9/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 293. المدرب 9: الانطلاق والتوقف والدوران (الدفعة 9، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 293.1 | `art/raw/coach-9/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 293.2 | `art/raw/coach-9/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 294. المدرب 9: الحركة (الدفعة 9، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 294.1 | `art/raw/coach-9/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 294.2 | `art/raw/coach-9/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 295. المدرب 9: المشاعر (الدفعة 9، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 295.1 | `art/raw/coach-9/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 295.2 | `art/raw/coach-9/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 295.3 | `art/raw/coach-9/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 295.4 | `art/raw/coach-9/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 295.5 | `art/raw/coach-9/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 295.6 | `art/raw/coach-9/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 296. المدرب 10: البطاقة المرجعية (الدفعة 10، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 296.1 | `art/raw/coach-10/ref.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 296.2 | `art/raw/coach-10/faces.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 297. المدرب 10: الانطلاق والتوقف والدوران (الدفعة 10، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 297.1 | `art/raw/coach-10/start/idle-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 297.2 | `art/raw/coach-10/start/idle-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 298. المدرب 10: الحركة (الدفعة 10، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 298.1 | `art/raw/coach-10/move/instruct-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 298.2 | `art/raw/coach-10/move/instruct-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
+#### 299. المدرب 10: المشاعر (الدفعة 10، [`09-coaches.md`](art/images/09-coaches.md))
+
+| | اللوحة | الملف | الأمر في |
+|---|---|---|---|
+| ⬜ | 299.1 | `art/raw/coach-10/emotion/celebrate-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 299.2 | `art/raw/coach-10/emotion/celebrate-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 299.3 | `art/raw/coach-10/emotion/despair-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 299.4 | `art/raw/coach-10/emotion/despair-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 299.5 | `art/raw/coach-10/emotion/argue-01.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+| ⬜ | 299.6 | `art/raw/coach-10/emotion/argue-02.png` | [`09-coaches.md`](art/images/09-coaches.md) |
+
 ## ينتظر قرارك
 
 | الموضوع | المطلوب | لماذا يهم |
@@ -160,9 +509,8 @@
 | [`2026-10-20-striker-dribble-scale.md`](art/redo/2026-10-20-striker-dribble-scale.md) | إعادة: المهاجم: الدريبل بالمقياس الصحيح (2026-10-20) |
 | [`2026-10-20-striker-run-back.md`](art/redo/2026-10-20-striker-run-back.md) | إعادة: المهاجم: الجري ثلاثة أرباع من الخلف، ومن الأمام، ومن الخلف (الإعادة الأولى) (2026-10-20) |
 | [`2026-10-22-stadiums.md`](art/redo/2026-10-22-stadiums.md) | إعادة: الملاعب: الكلاسيكي نهاراً، والمغاربي ليلاً، والساحلي عند الغروب (حمزة) (2026-10-22) |
-| [`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md) | إعادة: المدربان 1 و2 (يدوياً، SLIEMAN2) (2026-10-22) |
-| [`2026-10-22-moments.md`](art/redo/2026-10-22-moments.md) | إعادة: لحظات جماعية متحركة (يدوياً، SLIEMAN2) (2026-10-22) |
+| [`2026-10-22-coaches.md`](art/redo/2026-10-22-coaches.md) | إعادة: المدربان 1 و2 (يدوياً) (2026-10-22) |
+| [`2026-10-22-moments.md`](art/redo/2026-10-22-moments.md) | إعادة: لحظات جماعية متحركة (يدوياً) (2026-10-22) |
 | [`art/images/00-waves.md`](art/images/00-waves.md) | كل الدفعات ومجموعاتها ومجلداتها |
 | [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |
 | [`HAMZA.md`](HAMZA.md) | مرجع حمزة: الصوت، وصور الدفعات الأخيرة |
-| [`SLIEMAN2.md`](SLIEMAN2.md) | صور اللحظات والمدربين: تصنعها يدوياً خارج الخطة |

@@ -18,7 +18,7 @@ HAMZA_FROM_WAVE = 5                  # image waves from this one on are Hamza's,
 HAMZA_IMG_PER_DAY = 12               # Hamza's approved images a day, once his voice is done
 HAMZA_FOLDERS = ('stadiums/',)       # folders under art/raw/ that are Hamza's in every wave
 # Owner's decision (2026-10-22): the boards of these image book files Sliman makes by hand, outside the plan,
-# and uploads himself when they are ready, for a later review (docs/SLIEMAN2.md). They are in no one's daily list.
+# and uploads himself when they are ready, for a later review (their own section in docs/SLIEMAN.md). They are in no one's daily list.
 MANUAL_BOOKS = ('08-moments.md', '09-coaches.md')
 
 

@@ -323,7 +323,7 @@ NOT_REAL = ('He is an invented person and must not look like any real football c
             'fuller face, a short dark full beard (not stubble), thick dark eyebrows and a slightly heavier build. '
             'Keep the shaved head, the plain black tracksuit and the age around 40.')
 COACHES = {
-    'date': '2026-10-22', 'title': 'المدربان 1 و2 (يدوياً، SLIEMAN2)', 'book': 'docs/art/images/09-coaches.md',
+    'date': '2026-10-22', 'title': 'المدربان 1 و2 (يدوياً)', 'book': 'docs/art/images/09-coaches.md',
     'out': 'docs/art/redo/2026-10-22-coaches.md',
     'ok': [('260.1', 'coach-1/ref.png'), ('260.2', 'coach-1/faces.png'), ('261.1', 'coach-1/start/idle-01.png'),
            ('261.2', 'coach-1/start/idle-02.png'), ('262.1', 'coach-1/move/instruct-01.png'), ('262.2', 'coach-1/move/instruct-02.png'),
@@ -343,7 +343,7 @@ COACHES = {
     ],
 }
 MOMENTS = {
-    'date': '2026-10-22', 'title': 'لحظات جماعية متحركة (يدوياً، SLIEMAN2)', 'book': 'docs/art/images/08-moments.md',
+    'date': '2026-10-22', 'title': 'لحظات جماعية متحركة (يدوياً)', 'book': 'docs/art/images/08-moments.md',
     'out': 'docs/art/redo/2026-10-22-moments.md',
     'ok': [(f'255.{i}', f'team/{n}.png') for i, n in enumerate(
         ['hug-01', 'hug-02', 'high-five-01', 'high-five-02', 'header-duel-01', 'header-duel-02', 'header-duel-03',
