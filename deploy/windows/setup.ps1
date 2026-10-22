@@ -104,7 +104,20 @@ Register-ScheduledTask -TaskName 'Legends Queue' -Action $queue -Trigger (New-Sc
 # The match runner (PLAN 2.12): plays the live matches minute by minute; it resumes where it stopped.
 $runner = New-ScheduledTaskAction -Execute $php -Argument 'artisan matches:run' -WorkingDirectory "$Root\backend"
 Register-ScheduledTask -TaskName 'Legends Matches' -Action $runner -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
+# The watchdog (Sprint 21): every minute it starts any task that stopped and runs the health check,
+# which alerts the phones by ntfy (deploy/windows/watchdog.ps1).
+$watch = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$Root\deploy\windows\watchdog.ps1`" -Root `"$Root`" -PhpDir `"$PhpDir`"" -WorkingDirectory "$Root\backend"
+Register-ScheduledTask -TaskName 'Legends Watchdog' -Action $watch -Trigger $every -Settings $settings -Principal $system -Force | Out-Null
 foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') { Start-ScheduledTask -TaskName $task }
+
+Step 'Alerts on the phones (ntfy)'
+# A topic name nobody can guess: each phone subscribes to it in the free ntfy app.
+Set-Location "$Root\backend"
+if (-not (Select-String -Path '.env' -Pattern '^NTFY_TOPIC=.+' -Quiet)) {
+    Add-Content '.env' ('NTFY_TOPIC=legends-' + [guid]::NewGuid().ToString('N').Substring(0, 16))
+    php artisan config:clear
+}
+$topic = ((Select-String -Path '.env' -Pattern '^NTFY_TOPIC=(.+)$').Matches[0].Groups[1].Value).Trim()
 
 Step 'Keeping the PC awake on mains power'
 powercfg /change standby-timeout-ac 0
@@ -132,4 +145,5 @@ if ($name) {
 
 Write-Host "`nDone. Open the https://...ts.net link above and add /sim" -ForegroundColor Green
 Write-Host "Local check: http://127.0.0.1:$Port/sim" -ForegroundColor Green
+Write-Host "Alerts: install the ntfy app on each phone and subscribe to the topic: $topic" -ForegroundColor Green
 Write-Host "Update later with: powershell -ExecutionPolicy Bypass -File $Root\deploy\windows\update.ps1" -ForegroundColor Green

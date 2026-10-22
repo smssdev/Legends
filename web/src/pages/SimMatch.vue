@@ -187,7 +187,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
@@ -569,7 +569,8 @@ const friendLink = computed(() => (friendSeat ? `${location.origin}/sim/${props.
 let seen = 0
 let pollTimer = 0
 let clockTimer = 0
-const playTimers = new Set<number>()
+// The minutes waiting for their start: timer id → the minute and its start on performance.now().
+const playTimers = new Map<number, { t: Tick; startAt: number }>()
 
 // Server time = Date.now() + offset, from the reply that came back fastest.
 let offset = 0
@@ -628,8 +629,50 @@ async function poll() {
 }
 // Back on the page (a locked phone, another tab): catch up at once.
 function onVisible() {
-  if (document.visibilityState === 'visible' && live.value && !finished.value) poll()
+  if (!live.value || finished.value) return
+  if (document.visibilityState !== 'visible') {
+    // Away (a locked phone, another app): the commentator stops rather than catching up later.
+    voice.stop()
+    return
+  }
+  catchUp()
+  keepAwake()
+  poll()
 }
+
+/**
+ * Back from a locked screen (Sprint 21 W1): the minutes whose time came while away are told at once, without
+ * their scenes, and only the one playing now animates, on the server's clock; the later ones keep their timers.
+ */
+function catchUp() {
+  const now = performance.now()
+  const late = [...playTimers.entries()].filter(([, p]) => p.startAt <= now).sort((a, b) => a[1].t.tick - b[1].t.tick)
+  late.forEach(([id], i) => {
+    clearTimeout(id)
+    playTimers.delete(id)
+    const { t, startAt } = late[i][1]
+    if (i < late.length - 1) show(t, false)
+    else show(t, true, startAt)
+  })
+}
+
+// The screen stays on while a live match plays (Screen Wake Lock); the phone takes it back when the page
+// is hidden, so it is asked again on every return.
+let wakeLock: { released: boolean; release: () => Promise<void> } | null = null
+async function keepAwake() {
+  if (!live.value || finished.value || document.visibilityState !== 'visible' || !('wakeLock' in navigator)) return
+  if (wakeLock && !wakeLock.released) return
+  try {
+    wakeLock = await (navigator as any).wakeLock.request('screen')
+  } catch {
+    /* refused (battery saver): the match still plays */
+  }
+}
+function releaseAwake() {
+  wakeLock?.release().catch(() => {})
+  wakeLock = null
+}
+watch(finished, (done) => { if (done) releaseAwake() })
 
 /** Schedules the new minutes on the shared clock and returns how long to wait before asking again. */
 function handleSync(r: LiveSync): number {
@@ -660,7 +703,7 @@ function handleSync(r: LiveSync): number {
     const startAt = performance.now() + delay
     if (delay <= 0) return show(t, true, startAt)
     const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)
-    playTimers.add(id)
+    playTimers.set(id, { t, startAt })
   })
   if (r.tick === 0 && !fresh.length && seen === 0) kickoffAt = r.next_at ?? 0
   else if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
@@ -753,6 +796,7 @@ onMounted(async () => {
       started.value = view.value.started
       seen = view.value.tick
       clockTimer = window.setInterval(clockTick, 250)
+      keepAwake()
       return poll()
     }
     await fetchNext()
@@ -770,7 +814,8 @@ onBeforeUnmount(() => {
   clearTimeout(timer)
   clearTimeout(pollTimer)
   clearInterval(clockTimer)
-  playTimers.forEach((t) => clearTimeout(t))
+  playTimers.forEach((_, id) => clearTimeout(id))
+  releaseAwake()
   clearInterval(htTimer)
   clearTimeout(introTimer)
   highlighting.value = false
