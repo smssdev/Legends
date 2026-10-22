@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\ServerHealth;
 use Illuminate\Support\Facades\Schedule;
 
 // The scheduler runs every minute on the server (Windows Task Scheduler or cron).
@@ -9,6 +10,9 @@ Schedule::command('leagues:start')->everyMinute()->withoutOverlapping();
 Schedule::command('leagues:absence')->everyMinute()->withoutOverlapping();
 // Before each match: the referee at 30 minutes, the lock (with the automatic fix) at 5 [PLAN 2.13].
 Schedule::command('matches:prepare')->everyMinute()->withoutOverlapping();
+
+// The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
+Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');

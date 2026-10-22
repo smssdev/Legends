@@ -3,8 +3,11 @@
 namespace App\Providers;
 
 use App\Database\SQLiteConnector;
+use App\Support\ServerHealth;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Events\Looping;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -27,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureSqliteFiles();
+
+        // The queue worker's sign of life for the health check [Sprint 21 B2].
+        Event::listen(Looping::class, fn () => ServerHealth::beat('queue'));
 
         // Sign-in, sign-up and password attempts: 5 a minute per email, 20 per address [Sprint 10 B3].
         RateLimiter::for('auth', fn (Request $request) => [

@@ -176,6 +176,18 @@ return [
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
-    'monitoring' => ['ntfy_topic' => env('NTFY_TOPIC')],
+    // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
+    // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
+    'monitoring' => [
+        'ntfy_topic' => env('NTFY_TOPIC'),
+        'ntfy_server' => env('NTFY_SERVER', 'https://ntfy.sh'),
+        'web_url' => env('HEALTH_WEB_URL', 'http://127.0.0.1:8000'),
+        // A service is down when its last sign of life is older than this (seconds).
+        'stale' => ['queue' => 120, 'scheduler' => 150],
+        // While a service stays down, the alert comes again this often (minutes).
+        'remind_minutes' => 30,
+        // Disk space under this many MB on the data disk is a warning.
+        'min_free_mb' => 1024,
+    ],
     'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18],
 ];
