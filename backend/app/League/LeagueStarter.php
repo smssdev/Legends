@@ -38,6 +38,11 @@ class LeagueStarter
             }
             DB::table('seasons')->where('league_id', $league->id)->where('number', 1)
                 ->update(['status' => 'running', 'starts_at' => $starts, 'updated_at' => $now]);
+            // Started early ("start now"): the calendar moves with it.
+            if ($starts->ne($league->starts_at)) {
+                $fresh = $league->fresh();
+                SeasonScheduler::build($fresh, $fresh->season);
+            }
 
             return true;
         });

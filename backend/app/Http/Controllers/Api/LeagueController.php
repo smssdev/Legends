@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\League\CupBracket;
 use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
 use App\League\Leaving;
 use App\League\Presence;
+use App\League\SeasonScheduler;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\LeagueJoinRequest;
@@ -76,6 +78,11 @@ class LeagueController extends Controller
             abort_if($changed !== 1, 409, 'إعدادات الدوري مقفلة منذ بدايته.');
             if (isset($data['starts_at'])) {
                 DB::table('seasons')->where('league_id', $league->id)->where('number', 1)->update(['starts_at' => $data['starts_at']]);
+            }
+            // New times make the calendar again (nothing has been played before the start).
+            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times']))) {
+                $fresh = $league->fresh();
+                SeasonScheduler::build($fresh, $fresh->season);
             }
         });
 
@@ -189,6 +196,79 @@ class LeagueController extends Controller
         ]);
     }
 
+    /** The season's calendar: every league round and cup day with its time (UTC; screens show the device's time) [PLAN 2.4]. */
+    public function fixtures(Request $request, League $league): JsonResponse
+    {
+        $this->approvedOnly($request->user(), $league);
+        $this->ensureCalendar($league);
+        $season = $league->season;
+        $clubs = $this->clubCards($league);
+        $stages = CupBracket::stages($league->team_count);
+        $rows = DB::table('fixtures')->where('season_id', $season->id)->orderBy('scheduled_at')->orderBy('competition')->orderBy('id')->get();
+
+        return response()->json([
+            'season' => $this->seasonData($league),
+            'fixtures' => $rows->map(fn ($f) => [
+                'id' => $f->id, 'competition' => $f->competition, 'round' => $f->round,
+                'stage' => $f->competition === 'cup' ? $stages[$f->round - 1] : null,
+                'scheduled_at' => Carbon::parse($f->scheduled_at, 'UTC')->toIso8601ZuluString(),
+                'home' => $f->home_id ? $clubs[$f->home_id] : null, 'away' => $f->away_id ? $clubs[$f->away_id] : null,
+                'is_bye' => (bool) $f->is_bye, 'status' => $f->status, 'home_goals' => $f->home_goals, 'away_goals' => $f->away_goals,
+            ])->values(),
+        ]);
+    }
+
+    /** The league table, with "played" and who rests in the next round when the count is odd [PLAN 2.4]. */
+    public function standings(Request $request, League $league): JsonResponse
+    {
+        $this->approvedOnly($request->user(), $league);
+        $this->ensureCalendar($league);
+        $season = $league->season;
+        $clubs = $this->clubCards($league);
+        $rows = collect($clubs)->map(fn ($c) => $c + ['played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0, 'goals_for' => 0, 'goals_against' => 0]);
+        $done = DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('is_bye', false)->where('status', 'finished')->get();
+        foreach ($done as $f) {
+            foreach ([[$f->home_id, $f->home_goals, $f->away_goals], [$f->away_id, $f->away_goals, $f->home_goals]] as [$id, $for, $against]) {
+                $r = $rows[$id];
+                $r['played']++;
+                $r['goals_for'] += $for;
+                $r['goals_against'] += $against;
+                $r[$for > $against ? 'won' : ($for === $against ? 'drawn' : 'lost')]++;
+                $rows[$id] = $r;
+            }
+        }
+        $next = DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('status', 'scheduled')->min('round');
+        $resting = $next ? DB::table('fixtures')->where('season_id', $season->id)->where('round', $next)->where('competition', 'league')->where('is_bye', true)->value('home_id') : null;
+        $table = $rows->map(fn ($r) => $r + ['goal_difference' => $r['goals_for'] - $r['goals_against'], 'points' => 3 * $r['won'] + $r['drawn'], 'rests_next' => $r['id'] === $resting])
+            ->sortBy([['points', 'desc'], ['goal_difference', 'desc'], ['goals_for', 'desc'], ['strength_cp', 'desc']])->values()
+            ->map(fn ($r, $i) => ['position' => $i + 1] + $r);
+
+        return response()->json(['season' => $this->seasonData($league), 'next_round' => $next, 'table' => $table]);
+    }
+
+    /** The cup's bracket, stage by stage with each stage's day [PLAN 2.5]. */
+    public function cup(Request $request, League $league): JsonResponse
+    {
+        $this->approvedOnly($request->user(), $league);
+        $this->ensureCalendar($league);
+        $season = $league->season;
+        $clubs = $this->clubCards($league);
+        $ties = DB::table('cup_ties')->join('fixtures', 'fixtures.id', '=', 'cup_ties.fixture_id')->where('cup_ties.season_id', $season->id)
+            ->select('cup_ties.*', 'fixtures.scheduled_at', 'fixtures.status', 'fixtures.home_goals', 'fixtures.away_goals')->orderBy('cup_ties.slot')->get()->groupBy('stage');
+        $ids = DB::table('cup_ties')->where('season_id', $season->id)->pluck('slot', 'id');
+
+        return response()->json(['stages' => collect(CupBracket::stages($league->team_count))->map(fn ($stage) => [
+            'stage' => $stage,
+            'scheduled_at' => Carbon::parse($ties[$stage][0]->scheduled_at, 'UTC')->toIso8601ZuluString(),
+            'ties' => $ties[$stage]->map(fn ($t) => [
+                'id' => $t->id, 'slot' => $t->slot,
+                'home' => $t->home_id ? $clubs[$t->home_id] : null, 'away' => $t->away_id ? $clubs[$t->away_id] : null,
+                'winner_id' => $t->winner_id, 'status' => $t->status, 'home_goals' => $t->home_goals, 'away_goals' => $t->away_goals,
+                'next' => $t->next_tie_id ? ['slot' => $ids[$t->next_tie_id], 'side' => $t->next_side] : null,
+            ])->values(),
+        ])]);
+    }
+
     /** Take a club no coach has. 409 "taken" sends the coach back to the list. */
     public function claim(Request $request, League $league, Club $club): JsonResponse
     {
@@ -253,6 +333,39 @@ class LeagueController extends Controller
         }
 
         return $data;
+    }
+
+    /** Leagues made before the calendar existed (Sprint 15) get theirs the first time it is asked for. */
+    private function ensureCalendar(League $league): void
+    {
+        if (! DB::table('fixtures')->where('season_id', $league->season->id)->exists()) {
+            SeasonScheduler::build($league, $league->season);
+            $league->refresh();
+        }
+    }
+
+    /** Every club of the league as the calendar and table show it, by id. */
+    private function clubCards(League $league): array
+    {
+        return Club::where('league_id', $league->id)->with('user')->get()->mapWithKeys(fn (Club $c) => [$c->id => [
+            'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'strength_cp' => (int) $c->strength_snapshot,
+            'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"), 'coach' => $c->user?->name,
+        ]])->all();
+    }
+
+    private function seasonData(League $league): array
+    {
+        $s = $league->season;
+        $windows = DB::table('transfer_windows')->where('season_id', $s->id)->get()->map(fn ($w) => [
+            'kind' => $w->kind, 'opens_at' => Carbon::parse($w->opens_at, 'UTC')->toIso8601ZuluString(), 'closes_at' => Carbon::parse($w->closes_at, 'UTC')->toIso8601ZuluString(),
+        ]);
+
+        return [
+            'number' => $s->number, 'status' => $s->status, 'rounds' => $s->rounds, 'rounds_played' => $s->rounds_played,
+            'lock_from_round' => $s->lock_from_round, 'starts_at' => $s->starts_at->toIso8601ZuluString(),
+            'ends_at' => $s->ends_at ? Carbon::parse($s->ends_at, 'UTC')->toIso8601ZuluString() : null,
+            'winter_break_on' => $s->winter_break_on?->toDateString(), 'windows' => $windows, 'timer_scale' => $league->timer_scale,
+        ];
     }
 
     /** My place in this league's current season. */
