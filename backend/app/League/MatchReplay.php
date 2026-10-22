@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Simulator\Commentary;
 use App\Simulator\MatchChoreographer;
 use App\Simulator\MomentClock;
 use App\Simulator\Runner;
@@ -45,7 +46,7 @@ class MatchReplay
             $state = Runner::tick($state, $orders[$state['tick'] + 1] ?? []);
             $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
             $ball = $choreo['ball'];
-            $out[] = array_diff_key($state['out'], ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
+            $out[] = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
                 'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
         }
 

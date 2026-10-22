@@ -60,6 +60,9 @@ return [
         'assistant_after_ms' => 30000,
         // One runner at a time: another one waits this long after the first one stops before it takes over.
         'claim_seconds' => 10,
+        // The assistant's live reading to his coach [ENGINE 8.2]: about this often in minutes of play, and at once
+        // after a goal, a red card or a line under 60% fitness.
+        'reading_minutes' => 15,
     ],
     'economy' => [
         'starting_budget' => 3_000_000,

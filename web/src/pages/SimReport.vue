@@ -1,11 +1,11 @@
 <template>
   <main class="mx-auto flex min-h-dvh max-w-6xl flex-col gap-5 px-4 py-5 md:px-6">
     <header class="flex flex-wrap items-center gap-3">
-      <RouterLink to="/sim" class="flex items-center gap-3">
+      <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-3">
         <BrandMark />
       </RouterLink>
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">تقرير المباراة</span>
-      <div v-if="view" role="radiogroup" aria-label="التقرير من وجهة نظر" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
+      <div v-if="view && !league" role="radiogroup" aria-label="التقرير من وجهة نظر" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
           {{ view.clubs[s].name }}
         </button>
@@ -67,6 +67,13 @@
         </section>
       </div>
 
+      <section v-if="report.readings?.length" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="readings">
+        <h2 id="readings" class="font-display text-xl font-extrabold">ما قاله المساعد أثناء المباراة</h2>
+        <p v-for="r in report.readings" :key="r.minute + r.kind" class="flex gap-3 text-sm">
+          <span class="w-10 shrink-0 font-numbers text-base text-gold">{{ r.minute }}'</span><span>{{ r.text }}</span>
+        </p>
+      </section>
+
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="stats">
         <h2 id="stats" class="font-display text-xl font-extrabold">الإحصائيات</h2>
         <StatsGrid :home="report.stats.home" :away="report.stats.away" :home-color="color('home')" />
@@ -115,8 +122,12 @@
       </section>
 
       <div class="flex flex-wrap gap-3">
-        <RouterLink to="/sim" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">مباراة جديدة</RouterLink>
-        <span class="self-center text-sm text-text-muted">البذرة <b class="font-numbers" dir="ltr">{{ view.seed }}</b></span>
+        <template v-if="league">
+          <RouterLink to="/match" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">المباراة القادمة</RouterLink>
+          <RouterLink :to="{ name: 'league-match', params: { id } }" class="flex h-14 items-center rounded-lg bg-surface px-6">العودة إلى المباراة</RouterLink>
+        </template>
+        <RouterLink v-else to="/sim" class="flex h-14 items-center rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold">مباراة جديدة</RouterLink>
+        <span v-if="!league" class="self-center text-sm text-text-muted">البذرة <b class="font-numbers" dir="ltr">{{ view.seed }}</b></span>
       </div>
     </template>
   </main>
@@ -128,8 +139,10 @@ import { useRoute } from 'vue-router'
 import Crest from '../components/Crest.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, sim, type MatchView, type Side } from '../api/sim'
+import { clubColors, leagueMatch, sim, type MatchView, type Side } from '../api/sim'
 
+// league (Sprint 20 W1): a league match's report, the coach's own side only (the server knows which).
+const props = defineProps<{ league?: boolean }>()
 const route = useRoute()
 const id = String(route.params.id)
 const sides: Side[] = ['home', 'away']
@@ -177,7 +190,8 @@ const events = computed(() =>
 async function load(s: Side) {
   side.value = s
   try {
-    report.value = await sim.report(id, s)
+    report.value = props.league ? await leagueMatch.report(id) : await sim.report(id, s)
+    if (props.league) side.value = report.value.side
   } catch (e: any) {
     error.value = e.message
   }
@@ -185,7 +199,7 @@ async function load(s: Side) {
 
 onMounted(async () => {
   try {
-    view.value = await sim.show(id)
+    view.value = props.league ? await leagueMatch.show(id) : await sim.show(id)
     await load(side.value)
   } catch (e: any) {
     error.value = e.message
