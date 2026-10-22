@@ -655,6 +655,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/data/formations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The 24 formations */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every formation with its slots, and the limits of a custom one */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            formations: components["schemas"]["Formation"][];
+                            limits: {
+                                [key: string]: number[];
+                            };
+                            grid?: Record<string, never>;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1436,6 +1478,394 @@ export interface paths {
                 };
                 403: components["responses"]["Error"];
                 404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My club, its squad and its team sheet
+         * @description 403 without a club in this league.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Team"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/suggestion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** "تحسين": the best lineup now (not saved) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The suggested lineup */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            lineup: components["schemas"]["Lineup"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/lineup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save my lineup
+         * @description A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every rule is checked here with an Arabic message.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @example 4-3-3A */
+                        formation: string;
+                        starters: number[];
+                        bench: number[];
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Team"];
+                403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        /** Back to the automatic lineup */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Team"];
+                403: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/formations/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                number: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save one of my own formations (1 to 3)
+         * @description Ten outfield cells [row, column]; rows def, dm, am, att (the midfield has two rows), columns 1 (right) to 5 (left). Defence 3 to 6, midfield 2 to 6, attack 1 to 5.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    number: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        cells: (("def" | "dm" | "am" | "att") | number)[][];
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Team"];
+                403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/takers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Choose the captain and set-piece takers
+         * @description Starters only; null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        captain?: number | null;
+                        penalty?: number | null;
+                        free_kick?: number | null;
+                        corner?: number | null;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Team"];
+                403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/tactics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My tactics and tips
+         * @description Tips explain the engine's mechanisms in Arabic (docs/ENGINE.md 5); they never change a number.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+            };
+        };
+        /**
+         * Change my tactics
+         * @description Any of the keys; 409 from the lock (5 minutes before a match) until it ends.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TacticsSet"];
+                };
+            };
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/next-match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My next match
+         * @description When and where, the referee once drawn (30 minutes before), and the opponent. After the lock (5 minutes
+         *     before) the opponent's eleven, formation and only four tactics: tackling, marking, plan and trap.
+         *     Pressing, style, tempo, positions and the defensive shape are never sent (docs/PLAN.md 2.13).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The next match, or null */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            match?: {
+                                fixture_id: number;
+                                /** @enum {string} */
+                                competition: "league" | "cup";
+                                round: number;
+                                /** @enum {string} */
+                                venue: "home" | "away";
+                                /** Format: date-time */
+                                scheduled_at: string;
+                                /** @enum {string} */
+                                status: "scheduled" | "locked" | "live";
+                                /** Format: date-time */
+                                referee_at: string;
+                                /** Format: date-time */
+                                lock_at: string;
+                                /** @enum {string|null} */
+                                referee?: "lenient" | "medium" | "strict" | null;
+                                opponent: {
+                                    id: number;
+                                    name: string;
+                                    code: string;
+                                    strength_cp: number;
+                                    crest_url: string;
+                                    coach?: string | null;
+                                    /** @description Only after the lock */
+                                    sheet?: {
+                                        formation: string;
+                                        starters: {
+                                            id?: number;
+                                            name?: string | null;
+                                        }[];
+                                        tactics: components["schemas"]["PublicTactics"];
+                                    } | null;
+                                };
+                                /** @description My frozen sheet after the lock, with who came in for whom */
+                                mine?: {
+                                    formation?: string;
+                                    starters?: number[];
+                                    bench?: number[];
+                                    tactics?: components["schemas"]["TacticsSet"];
+                                    fixes?: {
+                                        slot?: number;
+                                        out?: number | null;
+                                        in?: number;
+                                        out_name?: string | null;
+                                        in_name?: string | null;
+                                    }[];
+                                } | null;
+                            } | null;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
             };
         };
         put?: never;
@@ -2399,6 +2829,94 @@ export interface components {
                 join_open?: boolean;
             } | null;
         };
+        /** @description The engine's own keys (docs/ENGINE.md 5) */
+        TacticsSet: {
+            /** @enum {string} */
+            plan?: "counter" | "long" | "passing" | "wings" | "shots";
+            /** @description 0 legal */
+            tackling?: number;
+            pressing?: number;
+            /** @description 0 defensive to 100 attacking */
+            style?: number;
+            tempo?: number;
+            /** @enum {string} */
+            att?: "back" | "support" | "only";
+            /** @enum {string} */
+            mid?: "def" | "stay" | "push";
+            /** @enum {string} */
+            def?: "stay" | "fullbacks" | "mid";
+            trap?: number;
+            /** @enum {string} */
+            marking?: "zone" | "man";
+        };
+        /** @description The only tactics the opponent ever sees */
+        PublicTactics: {
+            tackling: number;
+            /** @enum {string} */
+            marking: "zone" | "man";
+            /** @enum {string} */
+            plan: "counter" | "long" | "passing" | "wings" | "shots";
+            trap: number;
+        };
+        Slot: {
+            /** @example CB */
+            role: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            /** @description Depth towards the opponent's goal */
+            x: number;
+            /** @description Across the pitch */
+            y: number;
+        };
+        Formation: {
+            /** @example 4-3-3A */
+            name: string;
+            /** @example 4-3-3 A */
+            label: string;
+            slots: components["schemas"]["Slot"][];
+            lines: {
+                def: number;
+                mid: number;
+                att: number;
+            };
+        };
+        Lineup: {
+            formation: string;
+            /** @description Not saved by the coach; picked automatically ("تحسين") */
+            auto: boolean;
+            slots: components["schemas"]["Slot"][];
+            /** @description Player ids in slot order; null when a slot lost its player */
+            starters: (number | null)[];
+            bench: number[];
+            lines: {
+                def: number;
+                mid: number;
+                att: number;
+            };
+        };
+        SquadPlayer: {
+            id: number;
+            name: string;
+            position: string;
+            alt_positions?: string | null;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            age: number;
+            nationality?: string | null;
+            foot?: string | null;
+            overall: number;
+            potential: number;
+            value: number;
+            fitness: number;
+            injured_matches: number;
+            suspended_matches: number;
+            available: boolean;
+            attributes: {
+                [key: string]: number | null;
+            };
+            /** @enum {string} */
+            role: "starter" | "bench" | "reserve";
+        };
         FixtureClub: {
             id: number;
             name: string;
@@ -2665,6 +3183,52 @@ export interface components {
         };
     };
     responses: {
+        /** @description My tactics, the tips, and the next referee once drawn */
+        Tactics: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    tactics: components["schemas"]["TacticsSet"];
+                    tips: string[];
+                    /** @enum {string|null} */
+                    referee?: "lenient" | "medium" | "strict" | null;
+                };
+            };
+        };
+        /** @description My club and its team sheet */
+        Team: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    club: {
+                        id: number;
+                        name: string;
+                        code: string;
+                        strength_cp: number;
+                        balance: number;
+                        crest_url: string;
+                    };
+                    squad_value: number;
+                    players: components["schemas"]["SquadPlayer"][];
+                    lineup: components["schemas"]["Lineup"];
+                    /** @description captain, penalty, free_kick, corner */
+                    takers: {
+                        [key: string]: {
+                            player_id?: number | null;
+                            auto: boolean;
+                        };
+                    };
+                    custom_formations: (components["schemas"]["Formation"] & {
+                        number: number;
+                        cells: (string | number)[][];
+                    })[];
+                };
+            };
+        };
         /** @description The league */
         League: {
             headers: {
