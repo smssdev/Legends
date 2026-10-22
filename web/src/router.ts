@@ -45,6 +45,8 @@ export const router = createRouter({
     // The match and its report fill the screen
     // A league match, live from the server (Sprint 18): the simulator's viewer on the league's match
     { path: '/live/:id(\\d+)', name: 'league-match', component: () => import('./pages/SimMatch.vue'), props: (r) => ({ id: String(r.params.id), league: true }), meta: { auth: true } },
+    // Its report, "why you won or lost", for the coach (Sprint 20)
+    { path: '/live/:id(\\d+)/report', name: 'league-report', component: () => import('./pages/SimReport.vue'), props: { league: true }, meta: { auth: true } },
     { path: '/sim/room', name: 'sim-room-new', component: () => import('./pages/SimRoom.vue') },
     { path: '/sim/room/:room', name: 'sim-room', component: () => import('./pages/SimRoom.vue'), props: true },
     { path: '/sim/:id', name: 'sim-match', component: () => import('./pages/SimMatch.vue'), props: true },

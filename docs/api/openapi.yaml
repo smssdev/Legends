@@ -870,12 +870,77 @@ paths:
     get:
       tags: [matches]
       summary: The minutes made after `since`, with their frames
-      description: The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own.
+      description: |
+        The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private
+        channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own. Every
+        event carries its Arabic commentary line in `text` (the same for everyone). After a gap (the last 20 minutes are
+        kept whole), `missed` gives the events of the minutes in between, so nothing is lost. `readings` is the
+        assistant's notes to you, the coach (also sent on `club.{id}`, event `reading`); other members get none.
       parameters:
         - { name: since, in: query, schema: { type: integer, default: 0 } }
       responses:
-        '200': { description: Like the simulator's live sync (started, finished, tick, server_now, next_at, gap, ticks) }
+        '200':
+          description: Like the simulator's live sync, with the missed minutes and your readings
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [started, finished, tick, server_now, next_at, gap, missed, ticks, readings]
+                properties:
+                  started: { type: boolean }
+                  finished: { type: boolean }
+                  tick: { type: integer }
+                  server_now: { type: integer }
+                  next_at: { type: integer, nullable: true }
+                  gap: { type: boolean }
+                  missed:
+                    type: array
+                    items:
+                      type: object
+                      required: [tick, minute, events]
+                      properties:
+                        tick: { type: integer }
+                        minute: { type: integer, description: The minute as shown (45+2 is 47) }
+                        events: { type: array, items: { type: object, additionalProperties: true } }
+                  ticks: { type: array, items: { type: object, additionalProperties: true } }
+                  readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
+                  reactions: { type: array, items: { type: object, additionalProperties: true } }
         '404': { $ref: '#/components/responses/Error' }
+  /matches/{match}/report:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: Why you won or lost, for a coach of either side
+      description: |
+        Built when the match ends, from the public events and your own side only: it never reads the other side's hidden
+        tactics. The top reasons with their numbers, one thing to improve, the assistant's verdict, the man of the match,
+        the ratings, the stats, the thirds and the momentum, the timeline, and the readings he gave you during the match.
+      responses:
+        '200':
+          description: Your report
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [side, result, score, reasons, verdict, ratings, stats, timeline, readings]
+                properties:
+                  side: { type: string, enum: [home, away] }
+                  result: { type: string, enum: [win, draw, loss] }
+                  score: { type: object, additionalProperties: { type: integer } }
+                  shootout: { type: object, nullable: true, additionalProperties: { type: integer } }
+                  reasons: { type: array, items: { type: object, additionalProperties: true } }
+                  improve: { type: object, nullable: true, additionalProperties: true }
+                  verdict: { type: array, items: { type: object, additionalProperties: true } }
+                  man_of_the_match: { type: object, nullable: true, additionalProperties: true }
+                  ratings: { type: object, additionalProperties: true }
+                  stats: { type: object, additionalProperties: true }
+                  thirds: { type: array, items: { type: integer } }
+                  momentum: { type: array, items: { type: integer } }
+                  timeline: { type: array, items: { type: object, additionalProperties: true } }
+                  readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /matches/{match}/actions:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
     post:
@@ -1400,6 +1465,16 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    MatchReading:
+      type: object
+      description: The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only
+      required: [minute, kind, text]
+      properties:
+        id: { type: integer }
+        tick: { type: integer }
+        minute: { type: integer }
+        kind: { type: string, description: 'goal_for, goal_against, red_for, red_against, tired, build_lost, press_won, finishing, danger, counters_for, counters_against, offside, cards, fitness, on_top' }
+        text: { type: string }
     MatchOrderResult:
       type: object
       required: [target_tick, duplicate]

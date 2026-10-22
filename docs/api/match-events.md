@@ -25,6 +25,8 @@
 
 كل حدث فيه `type` و`team` (`home` أو `away` أو `null`).
 
+**التعليق النصي (السبرنت 20):** في المباراة الحية والإعادة والمحاكي، كل حدث له سطر يحمل `text`: جملة التعليق العربية من جدول القوالب (`backend/resources/commentary/ar.php`)، يختارها `App\Simulator\Commentary` حسب السياق (النتيجة، والفرصة، والدقيقة) ببذرة المباراة والدقيقة، فنفس الدقيقة تُقرأ بنفس الجملة في كل شاشة. الجملة لا تذكر تكتيك أي فريق، فهي واحدة للمدربين.
+
 | `type` | حقول إضافية |
 |---|---|
 | `attack` | `plan`، `counter`، `phases` (كل مرحلة `{n, ok, p}`: `build` `progress` `offside` `create` `shot` `corner`، و`p` احتمال النجاح بنقاط الأساس)، `result` (`goal` `saved` `missed` `blocked` `lost` `cleared` `corner` `offside` `foul` `penalty`)، `lane` (`left` `center` `right` من جهة المهاجم)، `quality` (`big` `normal` `half` `long` `header`)، ومعرّفات اللاعبين: `carrier` `receiver` `creator` `shooter` `defender` `keeper` |

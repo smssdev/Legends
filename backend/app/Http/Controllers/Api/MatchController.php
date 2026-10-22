@@ -51,7 +51,7 @@ class MatchController extends Controller
     /** The minutes made after $since, with their frames, as the simulator's live sync gives them. */
     public function live(Request $request, int $match): JsonResponse
     {
-        [$m, , $you] = $this->load($request, $match);
+        [$m, $f, $you] = $this->load($request, $match);
         if ($you && $m->status === 'live') {
             MatchOrders::watching($m->id, $you);
         }
@@ -62,16 +62,62 @@ class MatchController extends Controller
         // Minutes made ahead of their start stay unknown until they start (their score too).
         $shown = array_values(array_filter($ticks, fn ($t) => ($t['at'] ?? 0) <= $now + (int) config('game.match.live_lead_ms')));
 
+        $tick = $shown ? end($shown)['tick'] : $since;
+        // Back after a gap (a lost connection, a locked phone): the minutes missed come back as their events,
+        // so nothing is lost; the latest minutes come whole.
+        $gap = $shown && $shown[0]['tick'] > $since + 1;
+        $missed = $gap ? $this->missed($m, $live, $since, $shown[0]['tick'], $you) : [];
+
         return response()->json([
             'started' => true,
             'finished' => $m->status === 'finished',
-            'tick' => $shown ? end($shown)['tick'] : $since,
+            'tick' => $tick,
             'server_now' => $now,
             'next_at' => $m->status === 'live' ? (int) $m->next_at : null,
-            'gap' => $shown && $shown[0]['tick'] > $since + 1,
+            'gap' => $gap,
+            'missed' => $missed,
             'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), $shown),
+            'readings' => $this->readings($m, $f, $you, $tick),
             'reactions' => [],
         ]);
+    }
+
+    /** The events of the minutes after $since and before $until: the kept ones, then those still in the cache. */
+    private function missed(object $m, ?array $live, int $since, int $until, ?string $you): array
+    {
+        $events = [...array_filter(MatchReplay::events($m->id), fn ($e) => $e['tick'] > $since && $e['tick'] < $until),
+            ...array_filter($live['events'] ?? [], fn ($e) => $e['tick'] > $since && $e['tick'] < $until)];
+        $byTick = [];
+        foreach ($events as $e) {
+            $byTick[$e['tick']] ??= ['tick' => $e['tick'], 'minute' => $e['minute'], 'events' => []];
+            $byTick[$e['tick']]['events'][] = array_diff_key($e, ['tick' => 1, 'minute' => 1]);
+        }
+        ksort($byTick);
+
+        return array_map(fn ($t) => Simulator::redact($t, $you), array_values($byTick));
+    }
+
+    /** The assistant's readings to this coach so far (other members get none). */
+    private function readings(object $m, object $f, ?string $you, int $tick): array
+    {
+        if (! $you) {
+            return [];
+        }
+
+        return DB::table('match_readings')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)
+            ->where('tick', '<=', $tick)->orderByDesc('tick')->limit(20)->get(['id', 'tick', 'minute', 'kind', 'text'])
+            ->reverse()->values()->all();
+    }
+
+    /** "Why you won or lost" [ENGINE 8.1]: for the coaches of the two sides, each his own. */
+    public function report(Request $request, int $match): JsonResponse
+    {
+        [$m, $f, $you] = $this->load($request, $match);
+        abort_unless($you, 403, 'التقرير لمدربي الفريقين فقط.');
+        $row = DB::table('match_reports')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)->first();
+        abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
+
+        return response()->json(['side' => $you] + json_decode($row->report, true));
     }
 
     /**
