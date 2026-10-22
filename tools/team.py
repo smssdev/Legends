@@ -309,6 +309,7 @@ def write_slieman():
     # ------------------------------------------------------------ index
     W('## كل الملفات\n')
     W('| الملف | ما فيه |'); W('|---|---|')
+    W('| [`art/FOLDERS.md`](art/FOLDERS.md) | **كل مجلد صور برسالة واحدة:** تنسخها كاملة في Gemini فيصنع صور المجلد كلها |')
     W('| [`SCHEDULE.md`](SCHEDULE.md) | الخطة يوماً يوماً: الكود والصور، وتاريخ كل نسخة |')
     W('| [`SPRINTS.md`](SPRINTS.md) | كل السبرنتات ومهامها، وسجل الإنجاز |')
     W('| [`sprints/sprint-02-days.md`](sprints/sprint-02-days.md) | صور الدفعة 1 بالترتيب: المنجز وما بقي |')
@@ -388,6 +389,7 @@ def write_hamza():
     W('| [`audio/todo/README.md`](audio/todo/README.md) | ملخص الصوت، ومنه قائمة كل دفعة |')
     W('| [`audio/ARABIC_VOICE.md`](audio/ARABIC_VOICE.md) | كتالوج المعلق كاملاً والشرح |')
     W('| `audio/raw/<المجلد>/README.md` | أسماء ملفات كل مجلد |')
+    W('| [`art/FOLDERS.md`](art/FOLDERS.md) | **كل مجلد صور برسالة واحدة:** تنسخها كاملة في Gemini فيصنع صور المجلد كلها |')
     W('| [`art/images/00-waves.md`](art/images/00-waves.md) | كل دفعات الصور ومجموعاتها ومجلداتها |')
     W('| [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |')
     W('| `art/raw/<المجلد>/README.md` | أسماء صور كل مجلد ومرفقاتها |\n')
@@ -474,3 +476,5 @@ if __name__ == '__main__':
     cur, img = write_slieman()
     v1 = write_hamza()
     print('docs/SLIEMAN.md: sprint', cur, img, '· docs/HAMZA.md voice wave 1:', v1)
+    import folders
+    print('docs/art/FOLDERS.md (folders, with work left):', folders.main())

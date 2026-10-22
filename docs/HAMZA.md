@@ -110,6 +110,7 @@
 | [`audio/todo/README.md`](audio/todo/README.md) | ملخص الصوت، ومنه قائمة كل دفعة |
 | [`audio/ARABIC_VOICE.md`](audio/ARABIC_VOICE.md) | كتالوج المعلق كاملا والشرح |
 | `audio/raw/<المجلد>/README.md` | أسماء ملفات كل مجلد |
+| [`art/FOLDERS.md`](art/FOLDERS.md) | **كل مجلد صور برسالة واحدة:** تنسخها كاملة في Gemini فيصنع صور المجلد كلها |
 | [`art/images/00-waves.md`](art/images/00-waves.md) | كل دفعات الصور ومجموعاتها ومجلداتها |
 | [`art/images/00-guide.md`](art/images/00-guide.md) | دليل كتاب الصور: الأسلوب وجمل التصحيح |
 | `art/raw/<المجلد>/README.md` | أسماء صور كل مجلد ومرفقاتها |
