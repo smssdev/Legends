@@ -152,9 +152,9 @@ def link(path):
 
 def who_makes(b, st):
     """Who makes a board: its owner (tools/plan/rates.py), but every redo is Sliman's (owner, 2026-10-22):
-    Hamza never draws an image twice, he only makes new ones. The hand-made books stay 'manual' either way."""
-    owner = rates.image_owner(b[0], b[2], b[3])
-    return 'slieman' if owner == 'hamza' and st[b[2]] == 'redo' else owner
+    Hamza never draws an image twice, he only makes new ones. A redo from the hand-made books is listed in
+    docs/SLIEMAN.md too (owner, 2026-10-22: every redo goes there), and stays in docs/SLIEMAN2.md."""
+    return 'slieman' if st[b[2]] == 'redo' else rates.image_owner(b[0], b[2], b[3])
 
 
 def owned(boards, st, who):
@@ -396,7 +396,7 @@ def write_hamza():
 
 def write_slieman2():
     boards, redo, st = image_states()
-    mine = owned(boards, st, 'manual')
+    mine = [b for b in boards if b[3] in rates.MANUAL_BOOKS]
     n = {k: sum(1 for b in mine if st[b[2]] == k) for k in ('done', 'pending', 'redo', 'todo')}
     mark = {'done': '✅', 'pending': '⏳', 'redo': '🔁', 'todo': '⬜'}
     o = []
@@ -413,7 +413,8 @@ def write_slieman2():
     W('1. **الأمر** في ملف الجزء، ابحث برقم اللوحة مثل `### 256.1`، ومعه المرفقات المكتوبة تحت «ارفق».')
     W('2. **احفظ كل صورة PNG حقيقياً** باسمها في المسار المكتوب في الجدول تحت (وفي `README.md` المجلد).')
     W('3. **ارفعها إلى `art/raw/`** بنفسك متى جهزت، دفعة أو مجموعة، ثم شغّل `python3 tools/art/build.py` وشاهدها في `/dev/art`.')
-    W('4. **المراجعة لاحقاً:** حين تريد، قل لـ Claude «راجع اللحظات والمدربين». المعتمد يصير ✅، والمرفوض يُحذف وتأتيك إعادته بسطر التصحيح.\n')
+    W('4. **المراجعة لاحقاً:** حين تريد، قل لـ Claude «راجع اللحظات والمدربين». المعتمد يصير ✅، والمرفوض يُحذف وتأتيك إعادته بسطر التصحيح.')
+    W('5. **كل إعادة (🔁) تظهر أيضاً في [`SLIEMAN.md`](SLIEMAN.md)** مع باقي الإعادات، وتبقى هنا بعلامتها.\n')
     W('## الحالة\n')
     W(f"**{len(mine)} صورة:** ✅ {n['done']} معتمدة · ⏳ {n['pending']} مرفوعة تنتظر المراجعة · 🔁 {n['redo']} للإعادة · ⬜ {n['todo']} لم تُرفع.\n")
     W('| الجزء | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |'); W('|---|---|---|---|---|---|---|')
