@@ -23,7 +23,8 @@ final class MatchSetup
     ];
 
     /**
-     * @param  array  $home  ['club' => [...], 'squad' => [...], optional 'formation', 'starters', 'bench', 'tactics']
+     * @param  array  $home  ['club' => [...], 'squad' => [...], optional 'formation', 'starters', 'bench', 'tactics',
+     *                       and 'slots' (a league formation's own slots, App\League\FormationBook) with 'takers']
      * @param  array  $options  seed, competition (league|cup), referee (0..2), venue (home|neutral)
      * @param  array  $cfg  config snapshot: ['match' => ..., 'engine' => ...]
      */
@@ -58,11 +59,14 @@ final class MatchSetup
     private static function team(string $side, array $input, array $cfg): array
     {
         $squad = array_map(fn ($p) => self::player($p), $input['squad']);
-        $pick = AutoPick::pick($squad, $input['formation'] ?? null);
-        $formation = $pick['formation'];
+        // A league match brings its frozen sheet: the formation's slots, the eleven, the bench (Sprint 18).
+        // The simulator brings a name of the engine's own six and may leave the rest to AutoPick.
+        $own = isset($input['slots']);
+        $pick = $own ? null : AutoPick::pick($squad, $input['formation'] ?? null);
+        $formation = $own ? (string) $input['formation'] : $pick['formation'];
         $starters = $input['starters'] ?? $pick['starters'];
         $bench = $input['bench'] ?? $pick['bench'];
-        $slots = Formations::slots($formation);
+        $slots = $own ? $input['slots'] : Formations::slots($formation);
 
         $byId = [];
         foreach ($squad as $p) {
@@ -87,13 +91,13 @@ final class MatchSetup
             $players[] = $p;
         }
 
-        return [
+        $team = [
             'side' => $side,
             'club' => $input['club'],
             'formation' => $formation,
             'tactics' => array_merge(self::DEFAULT_TACTICS, $input['tactics'] ?? []),
             'players' => $players,
-            'takers' => AutoPick::takers($players),
+            'takers' => isset($input['takers']) ? $input['takers'] + AutoPick::takers($players) : AutoPick::takers($players),
             'subs_used' => 0,
             'subs_max' => (int) ($cfg['match']['subs'] ?? 3),
             'missing' => 0,
@@ -102,6 +106,18 @@ final class MatchSetup
                 'shots', 'on_target', 'goals', 'corners', 'fouls', 'yellow', 'red', 'offsides', 'saves', 'xg',
             ], 0),
         ];
+        // Only a league side carries its slots; the simulator's states keep their old shape.
+        if ($own) {
+            $team['slots'] = $slots;
+        }
+
+        return $team;
+    }
+
+    /** A team's slots: its own (a league formation) or the engine template's. */
+    public static function slots(array $team): array
+    {
+        return $team['slots'] ?? Formations::slots($team['formation']);
     }
 
     /** Normalises a player row (from master_players) into the engine shape. */

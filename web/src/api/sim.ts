@@ -75,7 +75,8 @@ export interface Tick {
   score: Record<Side, number>
   events: MatchEvent[]
   danger: number
-  rejected: { action: any; reason: string }[]
+  /** Simulator only: the league runner does not send it. */
+  rejected?: { action: any; reason: string }[]
   finished: boolean
   frames: Frame[]
   moment?: { kind: string; ms: number }
@@ -165,6 +166,24 @@ export const sim = {
   joinRoom: (id: string, name: string, clubId: number) => call<Room>('POST', `/rooms/${id}/join`, { name, club_id: clubId }),
   react: (id: string, key: string) => call<Reaction>('POST', `/matches/${id}/reactions`, { key }),
   report: (id: string, side: Side = 'home') => call<any>('GET', `/matches/${id}/report?side=${side}`),
+}
+
+/**
+ * A league match for the same viewer (Sprint 18 W1): the server keeps the clock, the screen only plays.
+ * Same shapes as the simulator's live match, from /api/v1/matches (the league's members, by session).
+ */
+async function leagueCall<T>(path: string): Promise<T> {
+  const res = await fetch(`/api/v1/matches${path}`, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.message || `خطأ ${res.status}`)
+  }
+  return res.json() as Promise<T>
+}
+
+export const leagueMatch = {
+  show: async (id: string) => ({ seed: 0, referee: 1, venue: 'home', formations: [], ...(await leagueCall<Partial<MatchView>>(`/${id}`)), mode: 'live' }) as MatchView,
+  live: (id: string, since: number) => leagueCall<LiveSync>(`/${id}/live?since=${since}`),
 }
 
 export const clubColors = (c: Club) => ({

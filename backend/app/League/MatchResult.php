@@ -1,0 +1,111 @@
+<?php
+
+namespace App\League;
+
+use App\Support\GameClock;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * What a finished match leaves behind [PLAN 2.8, 2.12, Sprint 18 B5]:
+ *  - the fixture's result (the table reads it), the rounds played, and in the cup the winner moving on;
+ *  - each club's numbers (match_stats);
+ *  - on the players: those who played end with the fitness they finished with, those who rested get some
+ *    back; then every injury and suspension of these two clubs counts this match down by one, and the
+ *    new ones begin (an injury lasts 1 to 3 of the club's matches, from the match's seed; a red card 1).
+ *    "The next match" is the club's next match in any competition.
+ */
+class MatchResult
+{
+    public static function apply(int $matchId): void
+    {
+        $m = DB::table('matches')->where('id', $matchId)->first();
+        $f = DB::table('fixtures')->where('id', $m->fixture_id)->first();
+        $state = json_decode($m->state, true);
+        $now = GameClock::now();
+        $club = ['home' => $f->home_id, 'away' => $f->away_id];
+
+        DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => $state['score']['home'],
+            'away_goals' => $state['score']['away'], 'updated_at' => $now]);
+
+        if ($f->competition === 'league') {
+            self::roundsPlayed($f->season_id);
+        } else {
+            self::cupWinner($f, $state);
+        }
+
+        foreach (['home', 'away'] as $side) {
+            $team = $state['teams'][$side];
+            DB::table('match_stats')->insertOrIgnore([
+                'match_id' => $matchId, 'club_id' => $club[$side], 'counters' => json_encode($team['stats']),
+                'players' => json_encode(array_map(fn ($p) => ['id' => $p['id'], 'played' => $p['on'] || $p['out'] !== '',
+                    'fit' => intdiv($p['fit'], 100), 'rating' => $p['st']['r'], 'goals' => $p['st']['goals'], 'assists' => $p['st']['assists'],
+                    'yc' => $p['yc'], 'out' => $p['out']], $team['players'])),
+            ]);
+            self::players($club[$side], $team, $m->seed, $matchId);
+        }
+    }
+
+    private static function players(int $clubId, array $team, int $seed, int $matchId): void
+    {
+        $played = [];
+        foreach ($team['players'] as $p) {
+            if ($p['on'] || $p['out'] !== '') {
+                $played[$p['id']] = intdiv($p['fit'], 100);
+            }
+        }
+        $rest = (int) config('game.matches.rest_recovery');
+        // Fitness: as they ended, or a rest.
+        foreach ($played as $id => $fit) {
+            DB::table('players')->where('id', $id)->update(['fitness' => max(0, min(100, $fit))]);
+        }
+        DB::table('players')->where('club_id', $clubId)->whereNotIn('id', array_keys($played))
+            ->update(['fitness' => DB::raw("min(100, fitness + {$rest})")]);
+        // This match counts down every absence of the club's players...
+        DB::table('players')->where('club_id', $clubId)->where('injured_matches', '>', 0)->decrement('injured_matches');
+        DB::table('players')->where('club_id', $clubId)->where('suspended_matches', '>', 0)->decrement('suspended_matches');
+        // ...then the new ones start.
+        $events = DB::table('match_events')->where('match_id', $matchId)->where('club_id', $clubId)->whereIn('type', ['injury', 'card'])->get();
+        [$min, $max] = config('game.matches.injury_matches');
+        foreach ($events as $e) {
+            $payload = json_decode($e->payload, true);
+            $player = $payload['player'] ?? null;
+            if (! $player) {
+                continue;
+            }
+            if ($e->type === 'injury') {
+                $n = $min + crc32("{$seed}:{$player}") % ($max - $min + 1);
+                DB::table('players')->where('id', $player)->update(['injured_matches' => DB::raw("max(injured_matches, {$n})")]);
+            } elseif (($payload['color'] ?? null) === 'red') {
+                DB::table('players')->where('id', $player)->update(['suspended_matches' => DB::raw('suspended_matches + '.(int) config('game.matches.red_card_matches'))]);
+            }
+        }
+    }
+
+    /** League rounds played: the rounds whose matches have all ended, in order. */
+    private static function roundsPlayed(int $seasonId): void
+    {
+        $open = DB::table('fixtures')->where('season_id', $seasonId)->where('competition', 'league')->where('is_bye', false)
+            ->where('status', '!=', 'finished')->min('round');
+        $rounds = (int) DB::table('seasons')->where('id', $seasonId)->value('rounds');
+        DB::table('seasons')->where('id', $seasonId)->update(['rounds_played' => $open ? $open - 1 : $rounds]);
+    }
+
+    /** The cup: the winner (after extra time, or on penalties) takes his side of the next tie. */
+    private static function cupWinner(object $f, array $state): void
+    {
+        $score = $state['score'];
+        $won = $score['home'] === $score['away'] ? ($state['shootout'] ?? $score) : $score;
+        $winner = $won['home'] > $won['away'] ? $f->home_id : $f->away_id;
+        $tie = DB::table('cup_ties')->where('fixture_id', $f->id)->first();
+        if (! $tie) {
+            return;
+        }
+        DB::table('cup_ties')->where('id', $tie->id)->update(['winner_id' => $winner]);
+        if ($tie->next_tie_id) {
+            $side = $tie->next_side === 'home' ? 'home_id' : 'away_id';
+            DB::table('cup_ties')->where('id', $tie->next_tie_id)->update([$side => $winner]);
+            $next = DB::table('cup_ties')->where('id', $tie->next_tie_id)->value('fixture_id');
+            DB::table('fixtures')->where('id', $next)->update([$side => $winner]);
+        }
+    }
+}

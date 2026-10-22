@@ -153,7 +153,7 @@ class TeamController extends Controller
         $at = Carbon::parse($f->scheduled_at, 'UTC');
 
         return response()->json(['match' => [
-            'fixture_id' => $f->id, 'competition' => $f->competition, 'round' => $f->round, 'venue' => $home ? 'home' : 'away',
+            'fixture_id' => $f->id, 'match_id' => DB::table('matches')->where('fixture_id', $f->id)->value('id'), 'competition' => $f->competition, 'round' => $f->round, 'venue' => $home ? 'home' : 'away',
             'scheduled_at' => $at->toIso8601ZuluString(), 'status' => $f->status,
             'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
             'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
