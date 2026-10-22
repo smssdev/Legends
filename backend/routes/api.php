@@ -51,6 +51,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1'])->contro
     Route::get('{league}', 'show')->whereNumber('league');
     Route::patch('{league}', 'update')->whereNumber('league');
     Route::post('{league}/start', 'start')->whereNumber('league');
+    Route::delete('{league}/request', 'cancel')->whereNumber('league');
     Route::get('{league}/requests', 'requests')->whereNumber('league');
     Route::post('{league}/requests/{joinRequest}/approve', 'approve')->whereNumber(['league', 'joinRequest']);
     Route::post('{league}/requests/{joinRequest}/reject', 'reject')->whereNumber(['league', 'joinRequest']);

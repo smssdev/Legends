@@ -1007,6 +1007,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Take back my waiting request */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/requests": {
         parameters: {
             query?: never;
@@ -1038,7 +1077,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            requests?: components["schemas"]["JoinRequest"][];
+                            requests: components["schemas"]["JoinRequest"][];
                         };
                     };
                 };
@@ -1156,7 +1195,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            clubs?: components["schemas"]["LeagueClub"][];
+                            clubs: components["schemas"]["LeagueClub"][];
                         };
                     };
                 };
@@ -1202,7 +1241,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["LeagueClub"] & {
-                            players?: components["schemas"]["LeaguePlayer"][];
+                            players: components["schemas"]["LeaguePlayer"][];
                         };
                     };
                 };
@@ -2004,8 +2043,8 @@ export interface components {
             /** @description Settings are locked once the league starts */
             locked: boolean;
             owner?: {
-                id?: number;
-                name?: string;
+                id: number;
+                name: string;
             } | null;
             is_owner: boolean;
             my_club_id?: number | null;
@@ -2013,6 +2052,10 @@ export interface components {
             my_request?: "pending" | "approved" | "rejected" | null;
             /** @description Clubs with a coach */
             coaches: number;
+            /** @description Clubs a coach can still take */
+            free_clubs?: number;
+            /** @description Waiting join requests; for the owner only */
+            pending_requests?: number | null;
             season?: {
                 number?: number;
                 /** @enum {string} */
@@ -2030,8 +2073,8 @@ export interface components {
             /** @enum {string} */
             status: "pending" | "approved" | "rejected";
             user?: {
-                id?: number;
-                name?: string;
+                id: number;
+                name: string;
             } | null;
             /** Format: date-time */
             created_at?: string;
@@ -2047,8 +2090,8 @@ export interface components {
             /** @description At the league's making */
             strength_cp: number;
             coach?: {
-                id?: number;
-                name?: string;
+                id: number;
+                name: string;
             } | null;
             /** @description No coach; a bot runs it and it can be taken */
             bot: boolean;

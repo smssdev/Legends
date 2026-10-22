@@ -105,6 +105,15 @@ class LeagueController extends Controller
         ], $joinRequest->wasRecentlyCreated ? 201 : 200);
     }
 
+    /** Take back my request while it waits. */
+    public function cancel(Request $request, League $league): JsonResponse
+    {
+        $gone = LeagueJoinRequest::where('league_id', $league->id)->where('user_id', $request->user()->id)->where('status', 'pending')->delete();
+        abort_unless($gone === 1, 404, 'لا يوجد طلب معلق لك في هذا الدوري.');
+
+        return response()->json(['cancelled' => true]);
+    }
+
     public function requests(Request $request, League $league): JsonResponse
     {
         $this->owner($request->user(), $league);
@@ -254,7 +263,9 @@ class LeagueController extends Controller
             'is_owner' => $l->isOwner($user),
             'my_club_id' => $mine,
             'my_request' => $l->isOwner($user) ? null : LeagueJoinRequest::where('league_id', $l->id)->where('user_id', $user->id)->value('status'),
-            'coaches' => Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
+            'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
+            'free_clubs' => $l->team_count - $coaches,
+            'pending_requests' => $l->isOwner($user) ? LeagueJoinRequest::where('league_id', $l->id)->where('status', 'pending')->count() : null,
             'season' => $season ? [
                 'number' => $season->number, 'status' => $season->status, 'rounds' => $season->rounds,
                 'rounds_played' => $season->rounds_played, 'lock_from_round' => $season->lock_from_round,

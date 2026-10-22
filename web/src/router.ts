@@ -14,6 +14,12 @@ export const router = createRouter({
         ...SECTIONS.filter((s) => s.sprint).map((s) => ({ path: s.path.slice(1), name: s.name, component: () => import('./pages/ComingSoon.vue') })),
         { path: 'sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
         { path: 'profile', name: 'profile', component: () => import('./pages/Profile.vue'), meta: { auth: true } },
+        // Sprint 13: private leagues and the way in
+        { path: 'leagues', name: 'leagues', component: () => import('./pages/leagues/MyLeagues.vue'), meta: { auth: true } },
+        { path: 'leagues/new', name: 'create-league', component: () => import('./pages/leagues/CreateLeague.vue'), meta: { auth: true } },
+        { path: 'leagues/:id(\\d+)', name: 'league-home', component: () => import('./pages/leagues/LeagueHome.vue'), props: true, meta: { auth: true } },
+        { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
+        { path: 'join', name: 'join', component: () => import('./pages/leagues/JoinLeague.vue'), meta: { auth: true } },
         // Sprint 11: the component library on a real club
         { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },
       ],

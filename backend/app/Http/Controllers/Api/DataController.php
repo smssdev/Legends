@@ -37,7 +37,7 @@ class DataController extends Controller
     public function clubs(Request $request): JsonResponse
     {
         $data = $request->validate(['league' => ['required', 'string', 'max:80']]);
-        $clubs = MasterClub::where('data_version', self::version())->where('league_name', $data['league'])->orderByDesc('strength_cp')->get();
+        $clubs = MasterClub::where('data_version', self::version())->where('league_name', $data['league'])->orderByDesc('strength_cp')->orderBy('id')->get();
         abort_if($clubs->isEmpty(), 404, 'لا يوجد دوري بهذا الاسم.');
 
         return response()->json(['league' => $data['league'], 'clubs' => $clubs->map(fn ($c) => $this->club($c))]);

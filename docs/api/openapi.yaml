@@ -463,6 +463,14 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/request:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    delete:
+      tags: [leagues]
+      summary: Take back my waiting request
+      responses:
+        '200': { description: Cancelled }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/requests:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -476,6 +484,7 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [requests]
                 properties:
                   requests: { type: array, items: { $ref: '#/components/schemas/JoinRequest' } }
         '403': { $ref: '#/components/responses/Error' }
@@ -510,6 +519,7 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [clubs]
                 properties:
                   clubs: { type: array, items: { $ref: '#/components/schemas/LeagueClub' } }
         '403': { $ref: '#/components/responses/Error' }
@@ -528,6 +538,7 @@ paths:
                 allOf:
                   - $ref: '#/components/schemas/LeagueClub'
                   - type: object
+                    required: [players]
                     properties:
                       players: { type: array, items: { $ref: '#/components/schemas/LeaguePlayer' } }
         '403': { $ref: '#/components/responses/Error' }
@@ -904,11 +915,13 @@ components:
         is_dev: { type: boolean }
         status: { type: string, enum: [waiting, running, finished] }
         locked: { type: boolean, description: Settings are locked once the league starts }
-        owner: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+        owner: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         is_owner: { type: boolean }
         my_club_id: { type: integer, nullable: true }
         my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
         coaches: { type: integer, description: Clubs with a coach }
+        free_clubs: { type: integer, description: Clubs a coach can still take }
+        pending_requests: { type: integer, nullable: true, description: Waiting join requests; for the owner only }
         season:
           type: object
           nullable: true
@@ -926,7 +939,7 @@ components:
         id: { type: integer }
         league_id: { type: integer }
         status: { type: string, enum: [pending, approved, rejected] }
-        user: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+        user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
     LeagueClub:
@@ -939,7 +952,7 @@ components:
         colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
         crest_url: { type: string }
         strength_cp: { type: integer, description: At the league's making, in hundredths }
-        coach: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+        coach: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         bot: { type: boolean, description: No coach; a bot runs it and it can be taken }
         balance: { type: integer, description: Club money }
         squad_value: { type: integer }

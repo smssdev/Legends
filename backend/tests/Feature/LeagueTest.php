@@ -113,6 +113,17 @@ class LeagueTest extends TestCase
         $this->postJson("/api/v1/leagues/{$league['id']}/clubs/{$clubs[1]['id']}/claim")->assertCreated()->assertJsonPath('club.coach.id', $coach->id);
         $this->getJson("/api/v1/leagues/{$league['id']}")->assertJsonPath('league.my_club_id', $clubs[1]['id'])->assertJsonPath('league.code', $league['code']);
 
+        $this->actingAs($owner)->getJson("/api/v1/leagues/{$league['id']}")->assertJsonPath('league.free_clubs', 4)->assertJsonPath('league.pending_requests', 0);
+
+        // A waiting request can be taken back, and sent again.
+        $shy = User::factory()->create();
+        $this->actingAs($shy)->postJson('/api/v1/leagues/join', ['code' => $league['code']])->assertCreated();
+        $this->actingAs($owner)->getJson("/api/v1/leagues/{$league['id']}")->assertJsonPath('league.pending_requests', 1);
+        $this->actingAs($shy)->deleteJson("/api/v1/leagues/{$league['id']}/request")->assertOk();
+        $this->deleteJson("/api/v1/leagues/{$league['id']}/request")->assertNotFound();
+        $this->getJson("/api/v1/leagues/{$league['id']}")->assertNotFound();
+        $this->postJson('/api/v1/leagues/join', ['code' => $league['code']])->assertCreated();
+
         // A rejected request stays rejected.
         $other = User::factory()->create();
         $id = $this->actingAs($other)->postJson('/api/v1/leagues/join', ['code' => $league['code']])->json('request.id');

@@ -6,6 +6,7 @@ export interface Section { name: string; path: string; label: string; icon: keyo
 
 export const SECTIONS: Section[] = [
   { name: 'home', path: '/', label: 'الرئيسية', icon: 'home' },
+  { name: 'leagues', path: '/leagues', label: 'دورياتي', icon: 'leagues' },
   { name: 'match', path: '/match', label: 'المباراة', icon: 'match', sprint: 20 },
   { name: 'team', path: '/team', label: 'الفريق', icon: 'team', sprint: 16 },
   { name: 'lineup', path: '/lineup', label: 'التشكيلة', icon: 'lineup', sprint: 16 },
