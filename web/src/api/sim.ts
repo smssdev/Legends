@@ -66,6 +66,8 @@ export interface Frame {
 export interface MatchEvent {
   type: string
   team: Side | null
+  /** The server's Arabic commentary line for this event (Sprint 20 B1). */
+  text?: string
   [key: string]: any
 }
 
@@ -94,9 +96,15 @@ export interface LiveSync {
   server_now: number
   next_at: number | null
   gap: boolean
+  /** League (Sprint 20 W2): after a gap, the events of the minutes in between. */
+  missed?: { tick: number; minute: number; events: MatchEvent[] }[]
   ticks: Tick[]
+  /** League: the assistant's notes to this coach (ENGINE 8.2). */
+  readings?: Reading[]
   reactions: Reaction[]
 }
+
+export interface Reading { id: number; tick: number; minute: number; kind: string; text: string }
 
 export interface Reaction { id: number; side: Side; key: string; at: number }
 
@@ -198,6 +206,8 @@ export const leagueMatch = {
       throw asApiError(e)
     }
   },
+  /** "Why you won or lost", for a coach of either side (Sprint 20 B2). */
+  report: (id: string) => leagueCall<any>(`/${id}/report`),
   /** My live matches, for the switcher. */
   mine: async () => (await api.GET('/matches/live')).data!.matches,
 }
