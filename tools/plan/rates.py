@@ -2,7 +2,8 @@
 
 Owner's decision (2026-10-22): Sliman makes the images the game needs first (waves 1 to 4) in parallel
 with the code sprints; Hamza records the voice, then makes every stadium image whatever its wave, and the
-images built last (waves 5 to 16, in sprints 49 to 52). Change a number here and re-run tools/plan/schedule.py, tools/art-prompts/days.py
+images built last (waves 5 to 16, in sprints 49 to 52). Hamza only makes new images: every image a review
+sends back is Sliman's to make again (tools/team.py, who_makes). Change a number here and re-run tools/plan/schedule.py, tools/art-prompts/days.py
 and tools/team.py.
 """
 import datetime as dt
