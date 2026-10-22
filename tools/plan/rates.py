@@ -1,9 +1,9 @@
 """The working pace both plans use (docs/SLIEMAN.md, docs/HAMZA.md, docs/SCHEDULE.md, sprint-02-days.md).
 
-Owner's decision (2026-10-22): Sliman makes the images the game needs first (waves 1 to 4) in parallel
-with the code sprints; Hamza records the voice, then makes every stadium image whatever its wave, and the
-images built last (waves 5 to 16, in sprints 49 to 52). Hamza only makes new images: every image a review
-sends back is Sliman's to make again (tools/team.py, who_makes). Change a number here and re-run tools/plan/schedule.py, tools/art-prompts/days.py
+Owner's decision (2026-10-22, final): the voice is all Hamza's. Of the images, Sliman makes the large
+part (everything but the stadiums) in parallel with the code sprints, and Hamza a small part: the
+stadium plates of every wave, after his voice. Every image a review sends back is Sliman's to make
+again (tools/team.py, who_makes). Change a number here and re-run tools/plan/schedule.py, tools/art-prompts/days.py
 and tools/team.py.
 """
 import datetime as dt
@@ -14,20 +14,13 @@ IMG_HOURS = 2                        # of them on images while there are images 
 IMG_PER_DAY = 12                     # approved images in those hours
 CODE_HOURS = DAY_HOURS - IMG_HOURS   # the rest on the current code sprint
 VOICE_PER_DAY = 30                   # Hamza's approved clips a day
-HAMZA_FROM_WAVE = 5                  # image waves from this one on are Hamza's, the ones before it Sliman's
 HAMZA_IMG_PER_DAY = 12               # Hamza's approved images a day, once his voice is done
 HAMZA_FOLDERS = ('stadiums/',)       # folders under art/raw/ that are Hamza's in every wave
-# Owner's decision (2026-10-22): the boards of these image book files Sliman makes by hand, outside the plan,
-# and uploads himself when they are ready, for a later review (their own section in docs/SLIEMAN.md). They are in no one's daily list.
-MANUAL_BOOKS = ('08-moments.md', '09-coaches.md')
 
 
 def image_owner(wave, path='', book=''):
-    """Who makes an image: 'manual', 'hamza' or 'slieman', by its book file, its wave and its path under art/raw/."""
-    if book in MANUAL_BOOKS:
-        return 'manual'
-    folder = path.removeprefix('art/raw/')
-    return 'hamza' if wave >= HAMZA_FROM_WAVE or folder.startswith(HAMZA_FOLDERS) else 'slieman'
+    """Who makes an image: 'hamza' for the stadium plates (HAMZA_FOLDERS), 'slieman' for everything else."""
+    return 'hamza' if path.removeprefix('art/raw/').startswith(HAMZA_FOLDERS) else 'slieman'
 
 
 def days_word(k):
