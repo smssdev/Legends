@@ -70,6 +70,11 @@ onBeforeUnmount(() => window.clearInterval(timer))
           </div>
         </dl>
         <p class="text-xs text-text-muted">قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.</p>
+        <RouterLink
+          v-if="match.status === 'live' && match.match_id"
+          :to="{ name: 'league-match', params: { id: match.match_id } }"
+          class="flex h-12 items-center justify-center gap-2 rounded-lg bg-live font-display font-extrabold text-white"
+        ><span class="size-2 rounded-full bg-white" />تابع المباراة مباشرة</RouterLink>
         <div v-if="!locked" class="flex gap-2">
           <RouterLink :to="{ name: 'lineup' }" class="flex h-12 flex-1 items-center justify-center rounded-lg bg-gold font-display font-extrabold text-on-gold">التشكيلة</RouterLink>
           <RouterLink :to="{ name: 'tactics' }" class="flex h-12 flex-1 items-center justify-center rounded-lg border border-gold/70 font-display font-extrabold text-gold">التكتيك</RouterLink>

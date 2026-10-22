@@ -173,7 +173,7 @@ class LeaguePresenceTest extends TestCase
         DB::table('leagues')->update(['name' => 'دوري <الشلة> & "أصحاب"']);
         $html = $this->get('/join/'.strtolower($this->league['code']))->assertOk()->assertHeader('Content-Type', 'text/html; charset=UTF-8')->getContent();
         $this->assertStringContainsString('<meta property="og:title" content="انضم لـدوري &lt;الشلة&gt; &amp; &quot;أصحاب&quot; في الأساطير">', $html);
-        $this->assertStringContainsString($this->owner->name.' يدعوك', $html);
+        $this->assertStringContainsString(e($this->owner->name).' يدعوك', $html);
         $this->assertStringContainsString('content="'.url('/brand/og-invite.png').'"', $html);
         $this->assertStringContainsString('content="'.url('/join/'.$this->league['code']).'"', $html);
 

@@ -47,6 +47,16 @@ return [
         // Tries at a league code per account each minute [PLAN 2.1]
         'join_attempts_per_minute' => 10,
     ],
+    // League matches [PLAN 2.8, 2.12] (read by App\League, not by the engine).
+    'matches' => [
+        'missed_live_minutes' => 10,      // up to this late a match still starts live; later it is simulated at once
+        'rest_recovery' => 30,            // fitness back for a player who rests in his club's match
+        'injury_matches' => [1, 3],       // an injury keeps a player out this many of his club's matches
+        'red_card_matches' => 1,
+        'runner_sleep_ms' => 200,         // how often matches:run looks at the clock
+        // A live match more than this behind (the runner was stopped) goes on from now.
+        'stalled_ms' => 5000,
+    ],
     'economy' => [
         'starting_budget' => 3_000_000,
         'starting_budget_min' => 1_000_000, 'starting_budget_max' => 10_000_000,   // what the owner may choose
@@ -104,7 +114,7 @@ return [
         'max_win_shift' => 3,
     ],
     'engine' => [
-        'version' => 2,
+        'version' => 3,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
