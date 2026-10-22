@@ -33,7 +33,7 @@ final class Actions
         return match ($action['type'] ?? null) {
             'sub' => self::sub($s['teams'][$side], (int) ($action['out'] ?? 0), (int) ($action['in'] ?? 0)),
             'tactics' => self::tactics($s['teams'][$side], (array) ($action['tactics'] ?? [])),
-            'formation' => self::formation($s['teams'][$side], (string) ($action['formation'] ?? '')),
+            'formation' => self::formation($s['teams'][$side], (string) ($action['formation'] ?? ''), $action['slots'] ?? null),
             default => 'bad_type',
         };
     }
@@ -96,13 +96,16 @@ final class Actions
         return null;
     }
 
-    /** Re-slots the players on the pitch into a new formation, keeper in goal. */
-    private static function formation(array &$team, string $name): ?string
+    /**
+     * Re-slots the players on the pitch into a new formation, keeper in goal: one by name, or a league
+     * side's own (its slots given with it, the goalkeeper first).
+     */
+    private static function formation(array &$team, string $name, mixed $own = null): ?string
     {
-        if (! Formations::exists($name)) {
+        if ($own !== null ? ! self::validSlots($own) : ! Formations::exists($name)) {
             return 'bad_formation';
         }
-        $slots = Formations::slots($name);
+        $slots = $own ?? Formations::slots($name);
         $free = array_keys($slots);
         $on = array_keys(array_filter($team['players'], fn ($p) => $p['on']));
 
@@ -128,7 +131,28 @@ final class Actions
             $team['players'][$i]['slot_line'] = $slots[$slotIndex]['line'];
         }
         $team['formation'] = $name;
+        if ($own !== null) {
+            $team['slots'] = $own;
+        } else {
+            unset($team['slots']);
+        }
 
         return null;
+    }
+
+    /** Eleven slots, the goalkeeper alone in goal and first, each with its role, line and place. */
+    private static function validSlots(mixed $slots): bool
+    {
+        if (! is_array($slots) || count($slots) !== 11 || ! array_is_list($slots)) {
+            return false;
+        }
+        foreach ($slots as $i => $slot) {
+            if (! is_array($slot) || ! is_string($slot['role'] ?? null) || ! is_int($slot['x'] ?? null) || ! is_int($slot['y'] ?? null)
+                || ! in_array($slot['line'] ?? null, ['gk', 'def', 'mid', 'att'], true) || ($slot['line'] === 'gk') !== ($i === 0)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

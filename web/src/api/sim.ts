@@ -1,4 +1,5 @@
 // Simulator API client (docs/api/openapi.yaml, docs/api/match-events.md).
+import { api, asApiError, ensureCsrf } from './client'
 
 export type Side = 'home' | 'away'
 
@@ -184,6 +185,21 @@ async function leagueCall<T>(path: string): Promise<T> {
 export const leagueMatch = {
   show: async (id: string) => ({ seed: 0, referee: 1, venue: 'home', formations: [], ...(await leagueCall<Partial<MatchView>>(`/${id}`)), mode: 'live' }) as MatchView,
   live: (id: string, since: number) => leagueCall<LiveSync>(`/${id}/live?since=${since}`),
+  /** The coach's order for his side (the server knows which), with the session's XSRF token. */
+  order: async (id: string, order: Record<string, unknown>) => {
+    await ensureCsrf()
+    try {
+      const { data } = await api.POST('/matches/{match}/actions', {
+        params: { path: { match: Number(id) } },
+        body: { ...order, idempotency_key: crypto.randomUUID() } as any,
+      })
+      return data!
+    } catch (e) {
+      throw asApiError(e)
+    }
+  },
+  /** My live matches, for the switcher. */
+  mine: async () => (await api.GET('/matches/live')).data!.matches,
 }
 
 export const clubColors = (c: Club) => ({

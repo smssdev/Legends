@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Events\MatchMinute;
+use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\Models\User;
-use App\Simulator\Runner;
 use App\Support\GameClock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -95,9 +95,9 @@ class MatchRunnerTest extends TestCase
         $this->assertGreaterThan(50, DB::table('match_events')->where('match_id', $match->id)->count());
         $this->assertSame(2, DB::table('match_stats')->where('match_id', $match->id)->count());
         Event::assertDispatched(MatchMinute::class, fn ($e) => $e->matchId === $match->id);
-        // The table counts it.
+        // The table counts it (a development league starts a round every minute, so the next one may be over too).
         $table = collect($this->getJson("/api/v1/leagues/{$this->league['id']}/standings")->json('table'));
-        $this->assertSame(1, $table->firstWhere('id', $this->fixture->home_id)['played']);
+        $this->assertGreaterThanOrEqual(1, $table->firstWhere('id', $this->fixture->home_id)['played']);
     }
 
     public function test_a_killed_runner_resumes_and_the_match_ends_as_it_would_have(): void
@@ -113,8 +113,8 @@ class MatchRunnerTest extends TestCase
             $this->step(400);
         }
         $done = DB::table('matches')->where('id', $match->id)->first();
-        // What the same seed and starting state give with no interruption at all.
-        [$expected] = Runner::toEnd(json_decode($done->initial_state, true));
+        // What the same seed, starting state and orders (the computer's for the bot) give with no interruption.
+        [$expected] = MatchReplay::run($done);
         $this->assertSame($expected['score'], ['home' => $done->home_goals, 'away' => $done->away_goals]);
         $this->assertSame($expected['tick'], $done->tick);
         $goals = DB::table('match_events')->where('match_id', $match->id)->where('type', 'goal')->count();
@@ -133,6 +133,22 @@ class MatchRunnerTest extends TestCase
         // Only what is due in the next moment, as a normal step.
         $this->assertLessThanOrEqual($tick + 4, (int) DB::table('matches')->where('id', $match->id)->value('tick'));
         $this->assertSame('live', DB::table('matches')->where('id', $match->id)->value('status'));
+    }
+
+    public function test_only_one_runner_plays_at_a_time(): void
+    {
+        $this->assertTrue(MatchRunner::claim('first'));
+        $this->assertTrue(MatchRunner::claim('first'));
+        $this->assertFalse(MatchRunner::claim('second'));
+        $this->artisan('matches:run --once')->assertFailed();
+        // The first one stops (or dies: its claim runs out in seconds); the next one takes over.
+        MatchRunner::release('first');
+        $this->artisan('matches:run --once')->assertSuccessful();
+        Cache::forget('matches-runner');
+        Carbon::setTestNow(GameClock::now()->addSeconds(5));
+        $this->assertTrue(MatchRunner::claim('third'));
+        Carbon::setTestNow(GameClock::now()->addSeconds(11));
+        $this->assertTrue(MatchRunner::claim('fourth'));
     }
 
     public function test_the_broadcast_never_carries_hidden_tactics(): void
