@@ -6,12 +6,17 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import { useAuth } from '../stores/auth'
+import { useInbox } from '../stores/inbox'
 import { SECTIONS, TABS } from './nav'
 
 const route = useRoute()
 const auth = useAuth()
 const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
 const more = ref(false)
+// The unread messages on the inbox's entry, and on "المزيد" on the phone where the inbox sits [Sprint 22].
+const inbox = useInbox()
+watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
+const badge = (name: string) => (name === 'inbox' && inbox.unread ? (inbox.unread > 99 ? '99+' : String(inbox.unread)) : '')
 const sections = computed(() => SECTIONS)
 const tabs = computed(() => TABS.map((n) => SECTIONS.find((s) => s.name === n)!))
 const rest = computed(() => SECTIONS.filter((s) => !TABS.includes(s.name)))
@@ -38,6 +43,7 @@ watch(() => route.fullPath, () => (more.value = false))
         >
           <Icon :name="s.icon" />
           <span class="flex-1">{{ s.label }}</span>
+          <span v-if="badge(s.name)" class="min-w-6 rounded-pill bg-gold px-2 text-center font-numbers text-sm text-on-gold" :aria-label="`${inbox.unread} رسالة غير مقروءة`">{{ badge(s.name) }}</span>
           <span v-if="s.dev" class="rounded-pill bg-gold/15 px-2 text-xs text-gold">للمطور</span>
         </RouterLink>
       </nav>
@@ -87,7 +93,7 @@ watch(() => route.fullPath, () => (more.value = false))
         aria-controls="more-sheet"
         @click="more = !more"
       >
-        <Icon name="more" />المزيد
+        <span class="relative"><Icon name="more" /><span v-if="inbox.unread" class="absolute -end-2 -top-1 size-2.5 rounded-full bg-gold" :aria-label="`${inbox.unread} رسالة غير مقروءة`" /></span>المزيد
       </button>
     </nav>
 
@@ -105,7 +111,7 @@ watch(() => route.fullPath, () => (more.value = false))
           class="flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl text-sm font-semibold"
           :class="active(s.path) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text-soft'"
         >
-          <Icon :name="s.icon" />{{ s.label }}
+          <span class="relative"><Icon :name="s.icon" /><span v-if="badge(s.name)" class="absolute -end-3 -top-2 min-w-5 rounded-pill bg-gold px-1 text-center font-numbers text-xs text-on-gold">{{ badge(s.name) }}</span></span>{{ s.label }}
         </RouterLink>
       </div>
     </section>
