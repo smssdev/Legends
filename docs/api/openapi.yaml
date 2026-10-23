@@ -1015,6 +1015,32 @@ paths:
               schema: { $ref: '#/components/schemas/ScoutView' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/spy:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [team]
+      summary: The spy on the next opponent, and his report for this match if sent
+      description: |
+        Sprint 30 (docs/features/spy.md). Before the lock, a paid report of what the opponent has saved at that moment:
+        formation, eleven and bench, the four public tactics, the form and the eleven's fitness. Never pressing, style,
+        tempo, positions, the defensive shape or secret training. The opponent is not told.
+      responses:
+        '200':
+          description: The spy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SpyView' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Send the spy (once a match, until the lock)
+      responses:
+        '200':
+          description: The spy with his report
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SpyView' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/stadium:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2232,6 +2258,56 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    SpyPlayer:
+      type: object
+      required: [id, name, position, line, overall]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        line: { type: string, enum: [gk, def, mid, att] }
+        overall: { type: integer }
+    SpyView:
+      type: object
+      required: [cost, fixture, report]
+      properties:
+        cost: { type: integer }
+        fixture:
+          type: object
+          nullable: true
+          required: [id, status, opponent, lock_at]
+          properties:
+            id: { type: integer }
+            status: { type: string }
+            opponent: { type: string }
+            lock_at: { type: string, format: date-time }
+        report:
+          type: object
+          nullable: true
+          required: [club, at, formation, starters, bench, tactics, form, fitness]
+          properties:
+            club:
+              type: object
+              required: [id, name]
+              properties:
+                id: { type: integer }
+                name: { type: string }
+            at: { type: string, format: date-time, description: When the spy looked; the opponent may have changed since }
+            formation: { type: string }
+            starters: { type: array, items: { $ref: '#/components/schemas/SpyPlayer' } }
+            bench: { type: array, items: { $ref: '#/components/schemas/SpyPlayer' } }
+            tactics:
+              type: object
+              description: Only the four public tactics
+              required: [tackling, marking, plan, trap]
+              additionalProperties: false
+              properties:
+                tackling: { type: integer }
+                marking: { type: string }
+                plan: { type: string }
+                trap: { type: integer }
+            form: { type: array, items: { type: string, enum: [W, D, L] }, description: Newest first }
+            fitness: { type: integer, nullable: true, description: The eleven's average fitness }
     StadiumView:
       type: object
       required: [balance, now, part_minutes, parts_total, facts, sections, building]

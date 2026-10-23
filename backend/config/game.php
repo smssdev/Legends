@@ -237,6 +237,9 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
+    // money until the premium coins come, Sprint 34).
+    'spy' => ['cost_bp' => 15],
     // The scout [docs/features/scout.md]: a share of the league's money scale, a day scaled by the season's length.
     'scout' => ['cost_bp' => 30, 'hours' => 24],
 ];
