@@ -113,6 +113,11 @@ foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Match
 Step 'Alerts on the phones (ntfy)'
 # A topic name nobody can guess: each phone subscribes to it in the free ntfy app.
 Set-Location "$Root\backend"
+# Web Push keys for the game's notifications [Sprint 36]: made once and kept.
+if (-not (Select-String -Path '.env' -Pattern '^WEBPUSH_VAPID_PUBLIC=.+' -Quiet)) {
+    (Get-Content '.env') | Where-Object { $_ -notmatch '^WEBPUSH_VAPID_(PUBLIC|PRIVATE)=' } | Set-Content '.env'
+    php artisan push:keys | Where-Object { $_ -match '^WEBPUSH_' } | Add-Content '.env'
+}
 if (-not (Select-String -Path '.env' -Pattern '^NTFY_TOPIC=.+' -Quiet)) {
     Add-Content '.env' ('NTFY_TOPIC=legends-' + [guid]::NewGuid().ToString('N').Substring(0, 16))
     php artisan config:clear

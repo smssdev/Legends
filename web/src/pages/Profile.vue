@@ -3,6 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
+import NotificationsCard from '../components/NotificationsCard.vue'
 import TextField from '../components/TextField.vue'
 import { useAuth } from '../stores/auth'
 
@@ -124,6 +125,8 @@ async function remove() {
     </section>
 
     <button type="button" class="h-12 rounded-lg border border-text/15 font-bold" @click="logout">تسجيل الخروج</button>
+
+    <NotificationsCard />
 
     <section class="flex flex-col gap-3 rounded-xl border border-live/40 p-4" aria-labelledby="h-delete">
       <h2 id="h-delete" class="font-display text-xl font-extrabold text-[#FF8A8A]">حذف الحساب</h2>

@@ -237,6 +237,19 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
+    // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
+    'notifications' => [
+        'kinds' => [
+            'referee' => ['referee'],
+            'match_soon' => ['match_soon'],
+            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected'],
+            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report'],
+            'absence' => ['absence_warning', 'left_absent', 'kicked'],
+        ],
+        'match_soon_minutes' => 10,
+        'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
+    ],
     // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
     'premium' => [
         'season_cap' => 400,           // the most a coach spends in one league in one season
