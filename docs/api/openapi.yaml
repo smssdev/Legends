@@ -8,6 +8,10 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: admin
+    description: The admin panel, for the admin after the two-step code, from the site only (Sprint 37)
+  - name: notifications
+    description: Push notifications (Sprint 36)
   - name: wallet
     description: The premium coins (Sprint 34)
   - name: market
@@ -1502,6 +1506,218 @@ paths:
                         home: { type: string, description: The home club's code }
                         away: { type: string }
                         competition: { type: string, enum: [league, cup] }
+  /admin/2fa:
+    get:
+      tags: [admin]
+      summary: Is the two-step code set up for this admin, and proved in this session?
+      responses:
+        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/2fa/setup:
+    post:
+      tags: [admin]
+      summary: A new secret for the authenticator app (until it is confirmed)
+      responses:
+        '200':
+          description: The secret and its otpauth link (shown as a QR code)
+          content:
+            application/json:
+              schema: { type: object, required: [secret, uri], properties: { secret: { type: string }, uri: { type: string } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/2fa/confirm:
+    post:
+      tags: [admin]
+      summary: Turn the two-step code on with a first code from the app
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/AdminCode' } } } }
+      responses:
+        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/2fa/verify:
+    post:
+      tags: [admin]
+      summary: Prove the code for this session (asked again after game.admin.two_factor_hours)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/AdminCode' } } } }
+      responses:
+        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/overview:
+    get:
+      tags: [admin]
+      summary: Counts, and the activity and return indicators of the last weeks
+      responses:
+        '200':
+          description: The overview
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [users, leagues, live_matches, active_today, weeks]
+                properties:
+                  users: { type: integer }
+                  leagues: { type: object, required: [total, running], properties: { total: { type: integer }, running: { type: integer } } }
+                  live_matches: { type: integer }
+                  active_today: { type: integer }
+                  weeks:
+                    type: array
+                    items:
+                      type: object
+                      required: [week, active, returning, live]
+                      properties:
+                        week: { type: string, description: 'The last day of the week (Cairo date)' }
+                        active: { type: integer }
+                        returning: { type: integer, description: 'Active the week before too' }
+                        live: { type: integer, description: 'Watched a match live' }
+        '423': { $ref: '#/components/responses/Error' }
+  /admin/users:
+    get:
+      tags: [admin]
+      summary: The accounts, newest first (200)
+      responses:
+        '200':
+          description: The accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [users]
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name, email, role, joined, last_day, matches_watched]
+                      properties:
+                        id: { type: integer }
+                        name: { type: string }
+                        email: { type: string }
+                        role: { type: string }
+                        joined: { type: string, format: date-time }
+                        last_day: { type: string, nullable: true }
+                        matches_watched: { type: integer }
+  /admin/leagues:
+    get:
+      tags: [admin]
+      summary: The leagues, newest first (200)
+      responses:
+        '200':
+          description: The leagues
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [leagues]
+                properties:
+                  leagues:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name, status, teams, dev, owner, coaches, season]
+                      properties:
+                        id: { type: integer }
+                        name: { type: string }
+                        status: { type: string }
+                        teams: { type: integer }
+                        dev: { type: boolean }
+                        owner: { type: string, nullable: true }
+                        coaches: { type: integer }
+                        season: { type: integer }
+  /admin/backups:
+    get:
+      tags: [admin]
+      summary: The backups on this machine, newest first (30)
+      responses:
+        '200': { description: The backups, content: { application/json: { schema: { $ref: '#/components/schemas/AdminBackups' } } } }
+    post:
+      tags: [admin]
+      summary: Make a backup now (and send it to Google Drive when set)
+      responses:
+        '200': { description: The backups after, content: { application/json: { schema: { $ref: '#/components/schemas/AdminBackups' } } } }
+  /admin/commentary:
+    get:
+      tags: [admin]
+      summary: The commentary templates, by moment
+      responses:
+        '200':
+          description: The templates
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [keys]
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      required: [key, count, lines]
+                      properties:
+                        key: { type: string }
+                        count: { type: integer }
+                        lines: { type: array, items: { type: string } }
+  /notifications:
+    get:
+      tags: [notifications]
+      summary: The notification kinds this account wants, how many browsers get them, and the server's Web Push key
+      description: Sprint 36 (PLAN 2.13). One channel, Web Push now and FCM in Sprint 45.
+      responses:
+        '200':
+          description: The settings
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+    put:
+      tags: [notifications]
+      summary: Turn kinds on or off
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kinds]
+              properties:
+                kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence' }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+        '422': { $ref: '#/components/responses/Error' }
+  /notifications/subscriptions:
+    post:
+      tags: [notifications]
+      summary: This browser gets the notifications (its PushSubscription)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint, keys]
+              properties:
+                endpoint: { type: string }
+                keys: { type: object, required: [p256dh, auth], properties: { p256dh: { type: string }, auth: { type: string } } }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+    delete:
+      tags: [notifications]
+      summary: This browser stops getting them
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [endpoint], properties: { endpoint: { type: string } } }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
   /wallet:
     get:
       tags: [wallet]
@@ -2679,6 +2895,39 @@ components:
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
+    AdminTwoFactor:
+      type: object
+      required: [enabled, passed]
+      properties:
+        enabled: { type: boolean }
+        passed: { type: boolean }
+    AdminCode:
+      type: object
+      required: [code]
+      properties:
+        code: { type: string, description: 'The six digits from the authenticator app' }
+    AdminBackups:
+      type: object
+      required: [backups]
+      properties:
+        backups:
+          type: array
+          items: { type: object, required: [name, bytes], properties: { name: { type: string }, bytes: { type: integer } } }
+    NotificationSettings:
+      type: object
+      required: [public_key, enabled, devices, kinds]
+      properties:
+        public_key: { type: string, nullable: true, description: The server's VAPID public key for PushManager.subscribe }
+        enabled: { type: boolean, description: The server can push (its keys are set) }
+        devices: { type: integer }
+        kinds:
+          type: array
+          items:
+            type: object
+            required: [kind, on]
+            properties:
+              kind: { type: string, enum: [referee, match_soon, offers, done, absence] }
+              on: { type: boolean }
     WalletView:
       type: object
       required: [balance, daily, cap, leagues, transactions, shop, prices]

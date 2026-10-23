@@ -187,7 +187,8 @@ class Simulator
             $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
             $ball = $choreo['ball'];
             $ticks[] = $state['out'];
-            $out[] = Commentary::annotate($state, $state['out']) + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
+            $out[] = Commentary::annotate($state, $state['out']) + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match']),
+                'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
         }
 
         $match->fill(compact('state', 'ball', 'pending', 'applied', 'ticks'))->save();

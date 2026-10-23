@@ -1,11 +1,12 @@
 """The Arabic commentator in a recorded human voice (docs/PLAN.md 2.21).
 
-Every Arabic line of web/src/match/feed/story.ts has a file name: <moment>-<slot>-<n>.wav
+Every Arabic line of web/src/match/feed/backend/resources/commentary/voice.json has a file name: <moment>-<slot>-<n>.wav
 (slot: pre before the moment, key the moment itself, post after it). The list, with each
 line's tone and text, is in audio/raw/ar/story/files.txt.
 
-  python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in story.ts
+  python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in backend/resources/commentary/voice.json
   python3 tools/commentary/arabic_voice.py build    # make web/public/commentary/ar/phrases.mp3 + .json
+  python3 tools/commentary/arabic_voice.py voices   # one pack per uploaded voice: web/public/commentary/ar/voice-<n>/phrases.*
 
 build takes each recording in audio/raw/ar/story/ (wav, mp3, m4a, ogg or flac, same name), trims the
 silence and levels the loudness. A line not recorded yet keeps its clip from the current
@@ -20,6 +21,9 @@ PACK = os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', 'phrases')
 LIST = os.path.join(VOICE, 'files.txt')
 SR = 24000
 EXT = ('.wav', '.mp3', '.m4a', '.ogg', '.flac', '.aac')
+# The full voices Hamza uploaded (all 428 clips of catalog.tsv each, MP3 named .wav; ffmpeg reads them as they are).
+# Shown in the game only as «صوت 1..5»: the folder names are real commentators' names, and the game names no real person.
+VOICES = ['ali', 'chawali_audio_output', 'fahad_audio_output', 'faris_audio_output', 'medhat']
 
 HEADER = """# أصوات المعلق العربي: سجّل كل سطر بالاسم المكتوب أمامه وضعه في هذا المجلد.
 # الصيغة: WAV أحادي (mono)، 44.1 أو 48 كيلوهرتز، 16 أو 24 بت. (m4a أو mp3 من الهاتف تعمل أيضاً بنفس الاسم.)
@@ -37,13 +41,9 @@ def phrase_key(text):
 
 
 def lines():
-    """Every Arabic line once, in story.ts order: (file stem, excited, text)."""
-    web = os.path.join(ROOT, 'web')
-    code = subprocess.run(['npx', 'esbuild', 'src/match/feed/story.ts', '--format=esm', '--log-level=error'], cwd=web, capture_output=True, text=True, check=True).stdout
-    with tempfile.TemporaryDirectory() as d:
-        with open(f'{d}/story.mjs', 'w', encoding='utf-8') as h:
-            h.write(code)
-        data = json.loads(subprocess.run(['node', '-e', f"import('{d}/story.mjs').then(m => process.stdout.write(JSON.stringify(m.LINES)))"], capture_output=True, text=True, check=True).stdout)
+    """Every Arabic line once, in the table's order: (file stem, excited, text)."""
+    with open(os.path.join(ROOT, 'backend', 'resources', 'commentary', 'voice.json'), encoding='utf-8') as h:
+        data = json.load(h)
     seen, out = set(), []
     for moment, slots in data.items():
         for slot, s in slots.items():
@@ -77,20 +77,20 @@ def recording(path):
     return pcm(['-i', path, '-af', f'{trim},areverse,{trim},areverse,loudnorm=I=-16:TP=-1.5:LRA=7'])
 
 
-def build():
+def build(voice=VOICE, pack=PACK, fallback=True):
     old = {}
-    if os.path.exists(PACK + '.json'):
+    if fallback and os.path.exists(PACK + '.json'):
         with open(PACK + '.json', encoding='utf-8') as h:
             old = json.load(h)
     with tempfile.TemporaryDirectory() as d:
         src = os.path.join(d, 'old.mp3')
-        if os.path.exists(PACK + '.mp3'):
+        if fallback and os.path.exists(PACK + '.mp3'):
             shutil.copy(PACK + '.mp3', src)
         gap = b'\0\0' * int(SR * 0.15)
         audio, index, recorded, kept, missing = bytearray(), {}, 0, 0, []
         for stem, ex, text in lines():
             key = ('!' if ex else '') + phrase_key(text)
-            mine = next((os.path.join(VOICE, stem + e) for e in EXT if os.path.exists(os.path.join(VOICE, stem + e))), None)
+            mine = next((os.path.join(voice, stem + e) for e in EXT if os.path.exists(os.path.join(voice, stem + e))), None)
             if mine:
                 clip, recorded = recording(mine), recorded + 1
             elif key in old and os.path.exists(src):
@@ -104,12 +104,17 @@ def build():
         raw = os.path.join(d, 'all.raw')
         with open(raw, 'wb') as h:
             h.write(audio)
-        os.makedirs(os.path.dirname(PACK), exist_ok=True)
-        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 's16le', '-ar', str(SR), '-ac', '1', '-i', raw, '-c:a', 'libmp3lame', '-b:a', '64k', PACK + '.mp3'], check=True)
-    with open(PACK + '.json', 'w', encoding='utf-8') as h:
+        os.makedirs(os.path.dirname(pack), exist_ok=True)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 's16le', '-ar', str(SR), '-ac', '1', '-i', raw, '-c:a', 'libmp3lame', '-b:a', '64k', pack + '.mp3'], check=True)
+    with open(pack + '.json', 'w', encoding='utf-8') as h:
         json.dump(index, h, ensure_ascii=False, separators=(',', ':'))
-    print(f'{recorded} recorded, {kept} kept from the current voice' + (f", missing: {' '.join(missing)}" if missing else ''))
+    print(f'{os.path.relpath(pack, ROOT)}: {recorded} recorded, {kept} kept from the current voice' + (f", missing: {' '.join(missing)}" if missing else ''))
+
+
+def voices():
+    for n, folder in enumerate(VOICES, 1):
+        build(os.path.join(ROOT, 'audio', 'raw', folder), os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', f'voice-{n}', 'phrases'), False)
 
 
 if __name__ == '__main__':
-    {'list': write_list, 'build': build}.get(sys.argv[1] if len(sys.argv) > 1 else '', lambda: sys.exit(__doc__))()
+    {'list': write_list, 'build': build, 'voices': voices}.get(sys.argv[1] if len(sys.argv) > 1 else '', lambda: sys.exit(__doc__))()

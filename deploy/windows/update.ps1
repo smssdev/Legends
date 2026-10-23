@@ -10,7 +10,8 @@ function Step($text) { Write-Host "`n==> $text" -ForegroundColor Yellow }
 Set-Location "$Root\backend"
 # No deploy while a match is being played (PLAN 2.12): wait for the live ones to end.
 Step 'Waiting for the live matches to end'
-while ([int](php artisan matches:live) -gt 0) { Write-Host '  a match is live, waiting a minute...'; Start-Sleep -Seconds 60 }
+# Matches kicking off in the next 15 minutes count too: the update takes a few minutes [Sprint 37].
+while ([int](php artisan matches:live --soon=15) -gt 0) { Write-Host '  a match is live or about to start, waiting a minute...'; Start-Sleep -Seconds 60 }
 
 # The watchdog leaves the tasks alone while this works (it would start them again).
 $flag = "$Root\backend\storage\app\maintenance.flag"
@@ -42,7 +43,7 @@ Step 'Starting the game'
 if (-not (Get-ScheduledTask -TaskName 'Legends Matches' -ErrorAction SilentlyContinue)) {
     Write-Host 'Run setup.ps1 once more to add the live connection (Reverb), the queue and the match runner.' -ForegroundColor Yellow
 }
-foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') { Start-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue }
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches', 'Legends Replica') { Start-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue }
 Remove-Item $flag -ErrorAction SilentlyContinue
 if (-not (Get-ScheduledTask -TaskName 'Legends Watchdog' -ErrorAction SilentlyContinue)) {
     Write-Host 'Run setup.ps1 once more to add the watchdog and the phone alerts (Sprint 21).' -ForegroundColor Yellow
