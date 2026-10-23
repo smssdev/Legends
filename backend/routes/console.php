@@ -14,6 +14,8 @@ Schedule::command('matches:prepare')->everyMinute()->withoutOverlapping();
 Schedule::command('market:renew')->everyMinute()->withoutOverlapping();
 // The scouts' reports, coach online or not [Sprint 26].
 Schedule::command('scout:due')->everyMinute()->withoutOverlapping();
+// Training sessions, coach online or not [Sprint 27].
+Schedule::command('training:tick')->everyMinute()->withoutOverlapping();
 
 // The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
 Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');

@@ -13,6 +13,7 @@ use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
+use App\Training\Training;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -280,10 +281,11 @@ class TeamController extends Controller
                 'master_players.pac', 'master_players.sho', 'master_players.pas', 'master_players.dri', 'master_players.def', 'master_players.phy',
                 'master_players.gk_diving', 'master_players.gk_handling', 'master_players.gk_kicking', 'master_players.gk_positioning', 'master_players.gk_reflexes')
             ->orderByRaw("case master_players.line when 'gk' then 0 when 'def' then 1 when 'mid' then 2 else 3 end")->orderByDesc('players.overall')->get()
+            ->map(fn ($r) => (object) Training::boosted((array) $r))
             ->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'alt_positions' => $p->alt_positions, 'line' => $p->line,
                 'age' => $p->age, 'nationality' => $p->nationality, 'foot' => $p->preferred_foot,
-                'overall' => $p->overall, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
+                'overall' => $p->overall, 'training_bonus' => (int) $p->training_bonus, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
                 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
                 'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,
                 'attributes' => $p->line === 'gk'

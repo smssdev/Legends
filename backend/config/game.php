@@ -117,7 +117,13 @@ return [
         'potential_bp_per_point' => 150,      // each point of room to grow
         'round_to' => [100_000 => 1_000, 1_000_000 => 10_000, PHP_INT_MAX => 100_000],
     ],
-    'training' => ['slots' => 4, 'tick_hours' => 8, 'progress_scale' => 10000,
+    // Training [PLAN 2.8, Sprint 27]: a session every tick_hours (scaled by the season's length), about
+    // season_sessions of them in a season. Calibrated by sim:training (docs/sprints/sprint-27.md).
+    'training' => ['slots' => 4, 'tick_hours' => 8, 'progress_scale' => 10000, 'season_sessions' => 111,
+        // rating => about how many sessions a +1 takes; between two points in a straight line
+        'sessions_by_overall' => [55 => 4, 65 => 6, 75 => 14, 80 => 19, 85 => 23, 89 => 25, 92 => 30, 99 => 40],
+        'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
+        'cost_bp_per_season' => 40,      // one slot busy all season costs this share of the league's money scale
         'season_gain_target' => [3, 5]],
     // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
     // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
