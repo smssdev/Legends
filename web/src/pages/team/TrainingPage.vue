@@ -6,6 +6,8 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import PriceTag from '../../components/ui/PriceTag.vue'
+import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
 
@@ -77,7 +79,12 @@ function toggle(id: number) {
 const sendCamp = () => act(() => api.POST('/leagues/{league}/training/camp', { params: { path: { league: leagueId.value! } },
   body: { player_ids: pick.value, level: level.value, days: days.value, idempotency_key: crypto.randomUUID() } }) as any, 'سافر اللاعبون إلى المعسكر.').then(() => { if (!error.value) pick.value = [] })
 const secret = (l: Line) => act(() => api.POST('/leagues/{league}/training/secret', { params: { path: { league: leagueId.value! } }, body: { line: l } }) as any,
-  `تم: ${LINE_NAMES[l]} +${v.value?.secret.boost} في المباراة القادمة، والخصم لا يعرف.`)
+  `تم: ${LINE_NAMES[l]} +${v.value?.secret.boost} في المباراة القادمة، والخصم لا يعرف.`).then(() => wallet.load())
+
+// Finish a session now for coins [Sprint 34].
+const wallet = useWallet()
+const finish = (l: string) => act(() => api.POST('/leagues/{league}/training/{line}/finish', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
+  'انتهت الجلسة الآن.').then(() => wallet.load())
 
 const train = (id: number, name: string) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } }) as any,
   `بدأ ${name} التدريب. أول جلسة بعد ${Math.round((v.value?.interval_minutes ?? 0) / 60)} ساعات.`)
@@ -138,6 +145,8 @@ onBeforeUnmount(() => clearInterval(tick))
             </div>
             <div class="flex gap-2">
               <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="line = s.line as Line">اختر لاعباً آخر</button>
+              <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish(s.line)"
+                title="أنهِ الجلسة الآن">الآن · <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">إفراغ</button>
             </div>
           </template>
@@ -219,9 +228,9 @@ onBeforeUnmount(() => clearInterval(tick))
             <p v-else-if="v.secret.fixture.status !== 'scheduled'" class="text-sm text-text-muted">قُفلت التشكيلة.</p>
             <div v-else class="grid grid-cols-2 gap-2">
               <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" class="h-12 rounded-md bg-surface-sunk font-bold disabled:opacity-40"
-                :disabled="busy || v.secret.used >= v.secret.per_season || v.secret.cost > v.balance" @click="secret(k as Line)">{{ n }}</button>
+                :disabled="busy || v.secret.used >= v.secret.per_season || (v.secret.currency === 'money' && v.secret.cost > v.balance)" @click="secret(k as Line)">{{ n }}</button>
             </div>
-            <p class="text-xs text-text-muted">الجلسة <span class="font-numbers" dir="ltr">{{ count(v.secret.cost) }}</span></p>
+            <p class="text-xs text-text-muted">الجلسة <PriceTag :amount="v.secret.cost" :currency="v.secret.currency" /></p>
           </template>
         </section>
       </div>

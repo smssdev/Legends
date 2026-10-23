@@ -9,6 +9,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Stadium\Stadium;
 use App\Support\GameClock;
+use App\Wallet\Finish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -72,6 +73,13 @@ class StadiumController extends Controller
         $club = $this->club($request, $league);
         $data = $request->validate(['section' => ['required', Rule::in(Stadium::SECTIONS)], 'idempotency_key' => 'required|string|max:64']);
         Stadium::start($club->id, $data['section'], "stadium:{$club->id}:{$data['idempotency_key']}");
+
+        return $this->show($request, $league);
+    }
+
+    public function finish(Request $request, League $league): JsonResponse
+    {
+        Finish::stadium($this->club($request, $league)->id);
 
         return $this->show($request, $league);
     }

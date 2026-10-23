@@ -3470,6 +3470,212 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/wallet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The coins wallet, today's reward, the spending per league against the cap, the movements and the shop
+         * @description Sprint 34 (docs/features/premium.md). Coins are earned in the game only and never become club money.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The wallet */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WalletView"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/wallet/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take today's reward (once a Cairo day) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The wallet after */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WalletView"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/training/{line}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                line: "gk" | "def" | "mid" | "att";
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish the slot's next training session now, for coins
+         * @description Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    line: "gk" | "def" | "mid" | "att";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/scout/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish the scout's search now, for coins
+         * @description Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/stadium/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish the stadium part being built now, for coins
+         * @description Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/honours": {
         parameters: {
             query?: never;
@@ -4968,6 +5174,8 @@ export interface components {
                 /** @enum {string} */
                 type: "doctor" | "lawyer" | "keeper_coach" | "physio";
                 cost: number;
+                /** @enum {string} */
+                currency: "coins" | "money";
                 /**
                  * Format: date-time
                  * @description While a contract works
@@ -4985,6 +5193,11 @@ export interface components {
         };
         SpyView: {
             cost: number;
+            /**
+             * @description Coins
+             * @enum {string}
+             */
+            currency: "coins" | "money";
             fixture: {
                 id: number;
                 status: string;
@@ -5132,6 +5345,8 @@ export interface components {
             };
             secret: {
                 cost: number;
+                /** @enum {string} */
+                currency: "coins" | "money";
                 boost: number;
                 per_season: number;
                 used: number;
@@ -5244,6 +5459,38 @@ export interface components {
             created_at?: string;
             /** Format: date-time */
             decided_at?: string | null;
+        };
+        WalletView: {
+            balance: number;
+            daily: {
+                amount: number;
+                claimed: boolean;
+            };
+            /** @description The most a coach spends in one league in one season */
+            cap: number;
+            leagues: {
+                id: number;
+                name: string;
+                /** @description Coins locked in this league */
+                fair: boolean;
+                /** @description This season */
+                spent: number;
+            }[];
+            transactions: {
+                type: string;
+                label: string;
+                amount: number;
+                balance_after: number;
+                /** Format: date-time */
+                at: string;
+            }[];
+            shop: {
+                coins: number;
+                label: string;
+            }[];
+            prices: {
+                [key: string]: number;
+            };
         };
         Honours: {
             league: {
