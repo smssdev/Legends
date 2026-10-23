@@ -101,6 +101,44 @@ class LeagueClaimRaceTest extends TestCase
         $this->assertSame(100_000, ClubLedger::sum($club));
     }
 
+    /** Sprint 24's definition of done: coaches buying the same pool player at the same moment; one gets him, the rest pay nothing. */
+    public function test_coaches_buying_the_same_player_at_once_one_gets_him(): void
+    {
+        $this->template(full: true);
+        $owner = User::factory()->create();
+        $league = $this->makeLeague($owner, ['team_count' => 6]);
+        $clubs = [$league['my_club_id']];
+        foreach (range(1, 5) as $i) {
+            $coach = $this->approvedCoach($owner, $league);
+            $club = $this->botClub($league['id']);
+            $this->actingAs($coach)->postJson("/api/v1/leagues/{$league['id']}/clubs/{$club}/claim")->assertCreated();
+            $clubs[] = $club;
+        }
+        $player = DB::table('players')->where('league_id', $league['id'])->where('in_pool', true)->orderBy('value')->value('id');
+        $before = DB::table('clubs')->whereIn('id', $clubs)->pluck('balance', 'id');
+        $startAt = sprintf('%.4F', microtime(true) + 3);
+        $processes = collect($clubs)->map(function (int $club) use ($player, $startAt) {
+            $p = new Process([PHP_BINARY, base_path('tests/Fixtures/market-buy.php'), $club, $player, $startAt], base_path(), $this->env(), null, 60);
+            $p->start();
+
+            return $p;
+        });
+        $results = $processes->map(function (Process $p) {
+            $p->wait();
+
+            return trim($p->getOutput()).trim($p->getErrorOutput());
+        })->countBy()->all();
+
+        $this->assertSame(['taken' => 5, 'won' => 1], collect($results)->sortKeys()->all(), json_encode($results, JSON_UNESCAPED_UNICODE));
+        $owner = (int) DB::table('players')->where('id', $player)->value('club_id');
+        $this->assertContains($owner, $clubs);
+        foreach ($clubs as $club) {
+            $paid = (int) $before[$club] - (int) DB::table('clubs')->where('id', $club)->value('balance');
+            $this->assertSame($club === $owner ? (int) DB::table('players')->where('id', $player)->value('value') : 0, $paid);
+            $this->assertSame((int) DB::table('clubs')->where('id', $club)->value('balance'), ClubLedger::sum($club));
+        }
+    }
+
     public function test_twenty_coaches_reach_for_the_same_club_and_exactly_one_gets_it(): void
     {
         $this->template();

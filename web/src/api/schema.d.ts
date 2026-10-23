@@ -1780,6 +1780,165 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The market, the pool or the bot clubs, and my players with what the pool pays
+         * @description Sprint 24. Open from the league's creation until its last quarter (`closed` says why when it is shut). The pool,
+         *     about 300 players from outside the league's clubs renewed in each window, sells at 100% of the value; a bot club
+         *     sells at a fixed 125% and keeps 18 players and 2 keepers; the pool buys back at 70% of the value without training.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    source?: "pool" | "bots";
+                    line?: "gk" | "def" | "mid" | "att";
+                    /** @description Part of a name */
+                    q?: string;
+                    /** @description One bot club */
+                    club?: number;
+                    max_price?: number;
+                };
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The market */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Market"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/buy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Buy a player from the pool or a bot club
+         * @description The same idempotency_key again changes nothing. Two coaches at the same player at once, one gets him.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_id: number;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Bought */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            balance: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/sell": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sell one of my players to the pool (never below 16 players or 2 keepers) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_id: number;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sold */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            balance: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/finance": {
         parameters: {
             query?: never;
@@ -3383,6 +3542,46 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Market: {
+            closed: string | null;
+            open_until_round: number;
+            counts: {
+                pool: number;
+                bots: number;
+            };
+            balance: number;
+            bots: {
+                id: number;
+                name: string;
+                code: string;
+                players: number;
+            }[];
+            players: {
+                id: number;
+                name: string;
+                position: string;
+                line: string;
+                age: number;
+                overall: number;
+                potential: number;
+                nationality?: string | null;
+                value: number;
+                price: number;
+                club: {
+                    id?: number;
+                    name?: string;
+                } | null;
+            }[];
+            mine: {
+                id: number;
+                name: string;
+                position: string;
+                line: string;
+                overall: number;
+                value: number;
+                pool_pays: number;
+            }[];
+        };
         ClubFinance: {
             balance: number;
             can_spend: boolean;

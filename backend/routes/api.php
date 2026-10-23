@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\LeagueController;
+use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\SimulatorController;
@@ -80,6 +81,12 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
+    });
+    // The market: the pool and the bot clubs [Sprint 24].
+    Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('buy', 'buy')->middleware('throttle:30,1,market');
+        Route::post('sell', 'sell')->middleware('throttle:30,1,market');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);

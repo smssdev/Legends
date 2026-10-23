@@ -57,12 +57,12 @@
 2. **⬜ سجل باقي الدفعة 1 (29 مقطعا):** [`audio/todo/wave-01.md`](audio/todo/wave-01.md)، قسم «لم يسجل بعد».
 3. **ثم الدفعات 2 إلى 12 بالترتيب (330 مقطعا):** كل دفعة في قائمتها، أولها [`audio/todo/wave-02.md`](audio/todo/wave-02.md).
 4. **ثم أصوات الملعب (44):** [`audio/todo/sfx.md`](audio/todo/sfx.md).
-5. **⏳ 16 صورة مرفوعة تنتظر المراجعة:** قل ل Claude «راجع».
-6. **ثم الصور بترتيب الدفعات (285 صورة):** لوحات الملاعب الجديدة فقط بترتيب الدفعات. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
+5. **⏳ 21 صورة مرفوعة تنتظر المراجعة:** قل ل Claude «راجع».
+6. **ثم الصور بترتيب الدفعات (280 صورة):** لوحات الملاعب الجديدة فقط بترتيب الدفعات. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
 
 **الإيقاع:** حوالي 30 مقطعا معتمدا يوميا، ثم 12 صورة معتمدة يوميا. وتواريخ كل دفعة في [`SCHEDULE.md`](SCHEDULE.md)، قسما «مسار الصوت» و«مسار الصور».
 
-**أول صورك بعد الصوت، من الدفعة 2 (10):**
+**أول صورك بعد الصوت، من الدفعة 2 (5):**
 
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
@@ -71,11 +71,6 @@
 | ⬜ | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 
 ## طريقة التسجيل
 
@@ -130,7 +125,7 @@
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تصنع |
 |---|---|---|---|---|---|
 | 1 | 16 | 16 | 0 | 0 | 0 |
-| 2 | 25 | 15 | 0 | 0 | 10 |
+| 2 | 25 | 15 | 5 | 0 | 5 |
 | 3 | 26 | 0 | 0 | 0 | 26 |
 | 4 | 25 | 15 | 0 | 0 | 10 |
 | 5 | 25 | 15 | 0 | 0 | 10 |
@@ -145,7 +140,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **362** | **61** | **16** | **0** | **285** |
+| **الكل** | **362** | **61** | **21** | **0** | **280** |
 
 ## كل الملفات
 
@@ -726,7 +721,7 @@
 | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |
 |---|---|---|---|---|---|
 | 1 | 16 | 16 | 0 | 0 | 0 |
-| 2 | 25 | 15 | 0 | 0 | 10 |
+| 2 | 25 | 15 | 5 | 0 | 5 |
 | 3 | 26 | 0 | 0 | 0 | 26 |
 | 4 | 25 | 15 | 0 | 0 | 10 |
 | 5 | 25 | 15 | 0 | 0 | 10 |
@@ -741,7 +736,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **362** | **61** | **16** | **0** | **285** |
+| **الكل** | **362** | **61** | **21** | **0** | **280** |
 
 #### الدفعة 1
 
@@ -788,11 +783,11 @@
 | ⬜ لم يتم العمل عليه | حمزة | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 
 #### الدفعة 3
 

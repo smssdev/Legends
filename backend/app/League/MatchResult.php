@@ -3,6 +3,7 @@
 namespace App\League;
 
 use App\Economy\Economy;
+use App\Market\Market;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
@@ -36,6 +37,10 @@ class MatchResult
         }
         // The money it moves: gate, wages, bonus and the debt count [Sprint 23].
         Economy::afterMatch($f, $state['score']);
+        // A bot left short (a forced sale) buys what it lacks from the pool [Sprint 24].
+        foreach ([$f->home_id, $f->away_id] as $clubId) {
+            Market::refill($clubId);
+        }
 
         foreach (['home', 'away'] as $side) {
             $team = $state['teams'][$side];
