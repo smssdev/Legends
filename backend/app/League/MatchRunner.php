@@ -9,6 +9,7 @@ use App\Simulator\MatchChoreographer;
 use App\Simulator\MomentClock;
 use App\Simulator\Runner;
 use App\Simulator\Simulator;
+use App\Simulator\Voice;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -258,7 +259,8 @@ class MatchRunner
         // The engine's debug values are for the simulator's developer panel only. A rejected order reaches
         // its own coach only (Simulator::redact), never the broadcast.
         $tick = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
-            'moment' => MomentClock::moment($state['out']['events'], $state['cfg']['match'])];
+            'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match']),
+            'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
 
         return [$state, $choreo['ball'], $tick];
     }

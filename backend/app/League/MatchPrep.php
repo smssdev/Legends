@@ -5,6 +5,7 @@ namespace App\League;
 use App\Engine\AutoPick;
 use App\Messages\Inbox;
 use App\Models\Club;
+use App\Notify\Push;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -34,6 +35,7 @@ class MatchPrep
                 self::tellCoaches($id, $strictness);
             }
         }
+        self::soon($now);
         $locks = 0;
         $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
             ->where('scheduled_at', '<=', $now->copy()->addMinutes(config('game.match.lock_minutes_before')))->pluck('id');
@@ -42,6 +44,26 @@ class MatchPrep
         }
 
         return [$refs, $locks];
+    }
+
+    /** "Your match is in 10 minutes", once per fixture, to both coaches' devices [PLAN 2.13, Sprint 36]. */
+    private static function soon($now): void
+    {
+        $due = DB::table('fixtures')->whereIn('status', ['scheduled', 'locked'])->where('is_bye', false)->whereNull('soon_at')
+            ->whereNotNull('home_id')->whereNotNull('away_id')->where('scheduled_at', '>', $now)
+            ->where('scheduled_at', '<=', $now->copy()->addMinutes(config('game.notifications.match_soon_minutes')))->get();
+        foreach ($due as $f) {
+            if (DB::table('fixtures')->where('id', $f->id)->whereNull('soon_at')->update(['soon_at' => $now]) !== 1) {
+                continue;
+            }
+            $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
+            foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
+                if ($coach = Inbox::coachOf($club)) {
+                    Push::send($coach, 'match_soon', 'مباراتك بعد '.config('game.notifications.match_soon_minutes').' دقائق',
+                        'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match');
+                }
+            }
+        }
     }
 
     /** The referee goes to both coaches' inboxes [PLAN 2.13, Sprint 22 B2]. */

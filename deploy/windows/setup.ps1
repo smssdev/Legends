@@ -110,9 +110,44 @@ $watch = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile
 Register-ScheduledTask -TaskName 'Legends Watchdog' -Action $watch -Trigger $every -Settings $settings -Principal $system -Force | Out-Null
 foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') { Start-ScheduledTask -TaskName $task }
 
+Step 'Continuous copy to the second disk (Litestream) [Sprint 37]'
+# Set LITESTREAM_REPLICA_DIR in backend\.env to a folder on the second disk (e.g. D:\LegendsReplica) and run setup again.
+Set-Location "$Root\backend"
+$replica = (Select-String -Path '.env' -Pattern '^LITESTREAM_REPLICA_DIR=(.+)$' -ErrorAction SilentlyContinue | Select-Object -First 1)
+if ($replica) {
+    $replicaDir = $replica.Matches[0].Groups[1].Value.Trim()
+    $ls = "$Root\tools\litestream"
+    if (-not (Test-Path "$ls\litestream.exe")) {
+        New-Item -ItemType Directory -Force -Path $ls | Out-Null
+        Invoke-WebRequest 'https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-windows-amd64.zip' -OutFile "$ls\litestream.zip"
+        Expand-Archive "$ls\litestream.zip" -DestinationPath $ls -Force
+    }
+    New-Item -ItemType Directory -Force -Path $replicaDir | Out-Null
+    $db = "$Root\backend\database\legends.sqlite"
+    @"
+dbs:
+  - path: $db
+    replicas:
+      - type: file
+        path: $replicaDir\legends
+        retention: 72h
+"@ | Set-Content "$ls\litestream.yml" -Encoding UTF8
+    $copy = New-ScheduledTaskAction -Execute "$ls\litestream.exe" -Argument "replicate -config `"$ls\litestream.yml`"" -WorkingDirectory $ls
+    Register-ScheduledTask -TaskName 'Legends Replica' -Action $copy -Trigger (New-ScheduledTaskTrigger -AtStartup) -Settings $settings -Principal $system -Force | Out-Null
+    Start-ScheduledTask -TaskName 'Legends Replica'
+    Write-Host "  Litestream copies the game's data to $replicaDir continuously." -ForegroundColor Green
+} else {
+    Write-Host '  No second disk set (LITESTREAM_REPLICA_DIR in backend\.env): skipped.' -ForegroundColor Yellow
+}
+
 Step 'Alerts on the phones (ntfy)'
 # A topic name nobody can guess: each phone subscribes to it in the free ntfy app.
 Set-Location "$Root\backend"
+# Web Push keys for the game's notifications [Sprint 36]: made once and kept.
+if (-not (Select-String -Path '.env' -Pattern '^WEBPUSH_VAPID_PUBLIC=.+' -Quiet)) {
+    (Get-Content '.env') | Where-Object { $_ -notmatch '^WEBPUSH_VAPID_(PUBLIC|PRIVATE)=' } | Set-Content '.env'
+    php artisan push:keys | Where-Object { $_ -match '^WEBPUSH_' } | Add-Content '.env'
+}
 if (-not (Select-String -Path '.env' -Pattern '^NTFY_TOPIC=.+' -Quiet)) {
     Add-Content '.env' ('NTFY_TOPIC=legends-' + [guid]::NewGuid().ToString('N').Substring(0, 16))
     php artisan config:clear
