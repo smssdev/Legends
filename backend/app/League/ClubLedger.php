@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class ClubLedger
 {
     public const TYPES = ['opening', 'handover_gift', 'handover_trim', 'wages', 'win_bonus', 'draw_bonus', 'sponsor', 'tickets',
-        'league_prize', 'cup_prize', 'forced_sale', 'pool_buy', 'pool_sale', 'bot_buy', 'bot_sale'];
+        'league_prize', 'cup_prize', 'forced_sale', 'pool_buy', 'pool_sale', 'bot_buy', 'bot_sale', 'transfer_buy', 'transfer_sale'];
 
     /** The money a club starts with (not income). */
     public const START = ['opening', 'handover_gift', 'handover_trim'];
@@ -24,7 +24,8 @@ class ClubLedger
     public const LABELS = ['opening' => 'ميزانية البداية', 'handover_gift' => 'هدية الاستلام', 'handover_trim' => 'تعديل الاستلام',
         'wages' => 'الرواتب', 'win_bonus' => 'مكافأة فوز', 'draw_bonus' => 'مكافأة تعادل', 'sponsor' => 'الرعاة', 'tickets' => 'التذاكر',
         'league_prize' => 'جائزة الدوري', 'cup_prize' => 'جائزة الكأس', 'forced_sale' => 'بيع إجباري',
-        'pool_buy' => 'شراء من المجموعة', 'pool_sale' => 'بيع للمجموعة', 'bot_buy' => 'شراء من نادي الحاسوب', 'bot_sale' => 'بيع لمدرب'];
+        'pool_buy' => 'شراء من المجموعة', 'pool_sale' => 'بيع للمجموعة', 'bot_buy' => 'شراء من نادي الحاسوب', 'bot_sale' => 'بيع لمدرب',
+        'transfer_buy' => 'صفقة: شراء', 'transfer_sale' => 'صفقة: بيع'];
 
     /**
      * Post one movement and return the balance after it. With $spend, a debit needs the money

@@ -3,9 +3,11 @@
 // filters, the players with their value and price, and my players to sell to the pool. Prices and every rule
 // come from the API; offers between coaches join in Sprint 25.
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import Trades from './Trades.vue'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
 
@@ -16,7 +18,9 @@ const loaded = ref(false)
 const error = ref('')
 const notice = ref('')
 const busy = ref<number | null>(null)
-const tab = ref<'pool' | 'bots' | 'sell'>('pool')
+const route = useRoute()
+type Tab = 'pool' | 'bots' | 'sell' | 'list' | 'offers'
+const tab = ref<Tab>((['pool', 'bots', 'sell', 'list', 'offers'].includes(String(route.query.tab)) ? route.query.tab : 'pool') as Tab)
 const line = ref<'' | Line>('')
 const bot = ref<number | ''>('')
 const maxPrice = ref<number | ''>('')
@@ -26,6 +30,8 @@ const tabs = computed(() => [
   { id: 'pool' as const, label: 'المجموعة', n: m.value?.counts.pool ?? 0 },
   { id: 'bots' as const, label: 'أندية الحاسوب', n: m.value?.counts.bots ?? 0 },
   { id: 'sell' as const, label: 'بيع لاعبيّ', n: m.value?.mine.length ?? 0 },
+  { id: 'list' as const, label: 'قائمة الانتقالات', n: null },
+  { id: 'offers' as const, label: 'العروض', n: null },
 ])
 const PRICES = [500_000, 1_000_000, 2_000_000, 5_000_000, 10_000_000]
 
@@ -68,7 +74,7 @@ async function act(kind: 'buy' | 'sell', id: number, name: string) {
 }
 
 let typing = 0
-watch([tab, line, bot, maxPrice], () => load())
+watch([tab, line, bot, maxPrice], () => tab.value !== 'list' && tab.value !== 'offers' && load())
 watch(q, () => { clearTimeout(typing); typing = window.setTimeout(load, 300) })
 onMounted(load)
 </script>
@@ -94,11 +100,13 @@ onMounted(load)
     <template v-else-if="m">
       <div role="tablist" aria-label="مصادر اللاعبين" class="flex flex-wrap gap-1 self-start rounded-xl bg-surface p-1">
         <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">
-          {{ t.label }}<span class="min-w-6 rounded-pill px-1.5 font-numbers" :class="tab === t.id ? 'bg-on-gold/15' : 'bg-text/10'">{{ t.n }}</span>
+          {{ t.label }}<span v-if="t.n !== null" class="min-w-6 rounded-pill px-1.5 font-numbers" :class="tab === t.id ? 'bg-on-gold/15' : 'bg-text/10'">{{ t.n }}</span>
         </button>
       </div>
 
-      <template v-if="tab !== 'sell'">
+      <Trades v-if="tab === 'list' || tab === 'offers'" :league-id="leagueId" :view="tab" :mine="m.mine" @changed="load" />
+
+      <template v-else-if="tab !== 'sell'">
         <div class="flex flex-wrap items-center gap-2">
           <label class="flex h-11 items-center gap-2 rounded-lg bg-surface px-3 text-sm text-text-muted">المركز
             <select v-model="line" class="h-8 bg-transparent font-semibold text-text"><option value="">الكل</option><option value="gk">حارس</option><option value="def">دفاع</option><option value="mid">وسط</option><option value="att">هجوم</option></select>
