@@ -10,10 +10,11 @@
 
 ## الحالة الحالية (2026-10-23)
 
-- **Sprint 1 منجز** (كل ما بُني حتى الآن). **التالي: Sprint 2** (المعايرة والتوازن)، ثم بالترتيب حتى 18.
-- **الصور وفيديوهات Flow ملغاة.** المباراة: الملعب المتحرك 2D حتى v1.0، ثم Unity للويب (v1.1)، ثم تطبيق Android بمشهد Unity (v2.0).
+- **Sprint 1 منجز** (كل ما بُني حتى الآن، ومعه الجاهز لـ Unity في `unity/`).
+- **الأولوية الآن: Unity.** السبرنتات 2 إلى 8 كلها مشهد المباراة في Unity حتى ننجز المحاكاة ونجربها، **ثم إطلاق الويب (v1.0) بمشهد Unity مباشرة**، ثم تطبيق Android (v1.1).
+- **عمل Unity على جهاز سليمان** عبر Claude Code في Claude Desktop (الجلسات السحابية بلا Unity ولا كرت شاشة) [PLAN 7.9]. وأوله `unity/build.ps1` [PLAN 7.13].
+- **الصور وفيديوهات Flow ملغاة.** وصور الملاعب السابقة مرجع وخامات جمهور فقط (`unity/Reference/`) [PLAN 7.12].
 - **الفريق:** سليمان ينفذ مع Claude، **وحمزة يراجع فقط** (يراجع كل PR ويختبره حسب `DONE.md`).
-- **عمل Unity على جهاز سليمان** عبر Claude Code في Claude Desktop (الجلسات السحابية بلا Unity ولا كرت شاشة) [PLAN 7.9].
 
 ## طريقة العمل
 
@@ -40,7 +41,7 @@
   - `.env` يحتاج متغيرات Reverb من `.env.example`، وبـ `BROADCAST_CONNECTION=log` يعمل كل شيء إلا البث.
   - PHP 8.4 مستحسن. على 8.3 تفتح المعاملات بـ `BEGIN IMMEDIATE` عبر `App\Database\ImmediatePdo` (اختبار `ImmediateTransactionTest`).
   - لا يُنسخ كود من مستودع `smssdev/coach`.
-- **Unity (من Sprint 7):** `unity/build.ps1 webgl | android | test`.
+- **Unity (على جهاز سليمان):** `unity/build.ps1 install | setup | demo | webgl | android`، و`python3 tools/unity/crowd_textures.py` لخامات الجمهور.
 - **باقي الأوامر:** `PLAN.md` الملحق ب.
 
 ## القواعد الثابتة
