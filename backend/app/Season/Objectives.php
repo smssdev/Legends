@@ -4,6 +4,7 @@ namespace App\Season;
 
 use App\League\CupBracket;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -80,6 +81,10 @@ class Objectives
                 $update = ['result' => $last, 'achieved' => $last !== 'out' && $index($last) >= $index($o->target)];
             }
             DB::table('club_objectives')->where('id', $o->id)->update($update + ['user_id' => $coach, 'updated_at' => $now]);
+            if ($update['achieved']) {
+                $league = (int) DB::table('seasons')->where('id', $seasonId)->value('league_id');
+                Wallet::earn($coach, 'objective', "objective:{$o->id}", "season:{$seasonId}", $league, $seasonId, "objective_{$o->competition}");
+            }
         }
     }
 }

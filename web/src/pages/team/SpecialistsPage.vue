@@ -4,7 +4,9 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
+import PriceTag from '../../components/ui/PriceTag.vue'
 import { money } from '../../lib/format'
+import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 
 type View = components['schemas']['SpecialistsView']
@@ -53,6 +55,7 @@ async function hire(s: Spec) {
     await ensureCsrf()
     const { data } = await api.POST('/leagues/{league}/specialists', { params: { path: { league: leagueId.value! } }, body: { type: s.type, idempotency_key: crypto.randomUUID() } })
     v.value = data!
+    useWallet().load()
     notice.value = `تعاقدت مع ${INFO[s.type]!.title} لمدة ${data!.days} أيام.`
   } catch (e) {
     error.value = asApiError(e).message
@@ -99,8 +102,8 @@ onBeforeUnmount(() => clearInterval(tick))
           <span class="text-sm font-bold text-success">يعمل الآن</span>
           <span class="text-sm text-text-muted">ينتهي بعد <b class="font-numbers text-text">{{ left(s.ends_at) }}</b></span>
         </div>
-        <button v-else type="button" class="mt-auto h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || s.cost > v.balance" @click="hire(s)">
-          تعاقد · <span class="font-numbers" dir="ltr">{{ money(s.cost) }}</span></button>
+        <button v-else type="button" class="mt-auto h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || (s.currency === 'money' && s.cost > v.balance)" @click="hire(s)">
+          تعاقد · <PriceTag :amount="s.cost" :currency="s.currency" /></button>
       </article>
     </section>
   </div>

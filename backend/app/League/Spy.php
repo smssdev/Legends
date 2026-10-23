@@ -5,6 +5,7 @@ namespace App\League;
 use App\Economy\Economy;
 use App\Models\Club;
 use App\Support\GameClock;
+use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -38,7 +39,7 @@ class Spy
             $now = GameClock::now();
             $id = DB::table('spy_reports')->insertGetId(['club_id' => $clubId, 'fixture_id' => $fixture->id, 'target_club_id' => $target->id,
                 'report' => json_encode($report), 'cost' => $cost, 'created_at' => $now, 'updated_at' => $now]);
-            ClubLedger::post($clubId, 'spy', -$cost, "spy:{$id}", "fixture:{$fixture->id}", spend: true);
+            Price::charge($clubId, 'spy', $cost, "spy:{$id}", "fixture:{$fixture->id}");
 
             return $report;
         });

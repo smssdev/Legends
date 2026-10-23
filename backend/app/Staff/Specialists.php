@@ -3,8 +3,8 @@
 namespace App\Staff;
 
 use App\Economy\Economy;
-use App\League\ClubLedger;
 use App\Support\GameClock;
+use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -59,7 +59,7 @@ class Specialists
             $id = DB::table('staff_specialists')->insertGetId(['club_id' => $clubId, 'type' => $type, 'cost' => $cost,
                 'starts_at' => $now, 'ends_at' => $now->copy()->addSeconds(self::seconds($league)), 'idempotency_key' => $key,
                 'created_at' => $now, 'updated_at' => $now]);
-            ClubLedger::post($clubId, 'specialist', -$cost, "specialist:{$id}", "specialist:{$type}", spend: true);
+            Price::charge($clubId, 'specialist', $cost, "specialist:{$id}", "specialist:{$type}");
         });
     }
 

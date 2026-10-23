@@ -7,9 +7,11 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
+import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
+import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
-import { count, strength } from '../../lib/format'
+import { strength } from '../../lib/format'
 
 type Match = NonNullable<paths['/leagues/{league}/team/next-match']['get']['responses'][200]['content']['application/json']['match']>
 const match = ref<Match | null>(null)
@@ -40,6 +42,7 @@ async function sendSpy() {
   try {
     await ensureCsrf()
     spy.value = (await api.POST('/leagues/{league}/spy', { params: { path: { league: leagueId.value! } } })).data!
+    useWallet().load()
   } catch (e) {
     error.value = asApiError(e).message
   }
@@ -129,7 +132,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         <template v-if="!spy.report">
           <p class="text-sm text-text-muted">اعرف خطة الخصم وتشكيلته وتكتيكه العلني وفورمته الآن، قبل القفل. لا يعرف أنك تجسست عليه.</p>
           <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="spying || locked" @click="sendSpy">
-            أرسل جاسوساً · <span class="font-numbers" dir="ltr">{{ count(spy.cost) }}</span></button>
+            أرسل جاسوساً · <PriceTag :amount="spy.cost" :currency="spy.currency" /></button>
         </template>
         <template v-else>
           <div class="flex flex-wrap items-center gap-2">

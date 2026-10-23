@@ -18,6 +18,8 @@ export const router = createRouter({
         { path: 'leagues', name: 'leagues', component: () => import('./pages/leagues/MyLeagues.vue'), meta: { auth: true } },
         { path: 'leagues/new', name: 'create-league', component: () => import('./pages/leagues/CreateLeague.vue'), meta: { auth: true } },
         { path: 'leagues/:id(\\d+)', name: 'league-home', component: () => import('./pages/leagues/LeagueHome.vue'), props: true, meta: { auth: true } },
+        // Sprint 34: the coins wallet and the shop
+        { path: 'wallet', name: 'wallet', component: () => import('./pages/WalletPage.vue'), meta: { auth: true } },
         // Sprint 33: a coach's profile
         { path: 'coaches/:id(\\d+)', name: 'coach', component: () => import('./pages/leagues/CoachProfile.vue'), props: true, meta: { auth: true } },
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
