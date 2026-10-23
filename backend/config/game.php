@@ -26,7 +26,7 @@ return [
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
         'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
-        'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب
+        'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9، السبرنت 29]
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
@@ -160,7 +160,7 @@ return [
         'max_win_shift' => 3,
     ],
     'engine' => [
-        'version' => 4,
+        'version' => 5,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -228,7 +228,15 @@ return [
         // Disk space under this many MB on the data disk is a warning.
         'min_free_mb' => 1024,
     ],
-    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18],
+    // The stadium [PLAN 2.9, Sprint 29]: three sections of three stages of five parts, one part at a time, each
+    // started by the coach and done in part_hours (scaled by the season's length). The pitch's effect is in
+    // match.home_pitch_bp (the engine reads it from the match's snapshot).
+    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18,
+        'sections' => ['seats', 'pitch', 'training'],
+        'part_cost_bp' => [1 => 5, 2 => 8, 3 => 12],          // one part of a stage, as a share of the league's money scale
+        'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
+        // training: each session's step goes up by a random share in this range (basis points)
+        'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
     // The scout [docs/features/scout.md]: a share of the league's money scale, a day scaled by the season's length.
     'scout' => ['cost_bp' => 30, 'hours' => 24],
 ];

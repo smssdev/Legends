@@ -4,6 +4,7 @@ namespace App\Training;
 
 use App\League\ClubLedger;
 use App\Messages\Inbox;
+use App\Stadium\Stadium;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -128,7 +129,8 @@ class Camp
                 if (! $p || (int) $p->club_id !== (int) $camp->club_id || $p->overall + $p->training_bonus >= $p->potential) {
                     continue;
                 }
-                $step = intdiv($gain->step($p->overall + $p->training_bonus, "camp:{$campId}:{$id}:{$done}") * $level, 10000);
+                $key = "camp:{$campId}:{$id}:{$done}";
+                $step = Stadium::trainingStep($club->id, intdiv($gain->step($p->overall + $p->training_bonus, $key) * $level, 10000), $key);
                 if (Training::advance($p, $step)) {
                     $gains[$id] = ($gains[$id] ?? 0) + 1;
                 }

@@ -6,6 +6,7 @@ use App\Data\PlayerValuation;
 use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
+use App\Stadium\Stadium;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -120,7 +121,9 @@ class Training
             } catch (HttpException) {
                 return 0;   // no money: the session is missed, the bar stays
             }
-            if (! self::advance($p, Gain::fromConfig()->step($p->overall + $p->training_bonus, "{$p->id}:{$slotId}:{$session}"))) {
+            $key = "{$p->id}:{$slotId}:{$session}";
+            $step = Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key), $key);
+            if (! self::advance($p, $step)) {
                 return 1;
             }
             DB::table('training_slots')->where('id', $slotId)->delete();

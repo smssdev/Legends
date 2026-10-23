@@ -227,7 +227,8 @@ onBeforeUnmount(() => clearInterval(tick))
       </div>
 
       <section aria-label="منشأة التدريب" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
-        <div class="flex-1"><b class="block">منشأة التدريب</b><span class="text-sm text-text-muted">كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب (السبرنت 29).</span></div>
+        <div class="flex-1"><b class="block">منشأة التدريب</b><span class="text-sm text-text-muted">كل مرحلة منها تسرّع التقدم في كل الخانات والمعسكر، وتُطوَّر من صفحة الملعب.</span></div>
+        <RouterLink :to="{ name: 'stadium' }" class="grid h-touch place-items-center rounded-md bg-surface-sunk px-4 font-bold text-gold">إلى الملعب</RouterLink>
       </section>
     </template>
   </div>

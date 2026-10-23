@@ -53,9 +53,10 @@ class Money
         return intdiv($this->homeMatch($scale, $rounds) * (10000 - $this->cfg['sponsor_share_bp']), 10000 * $this->cfg['stadium']['capacity']);
     }
 
-    public function tickets(int $scale, int $rounds, int $attendanceBp): int
+    /** The gate of one home match: the seats filled at the price. More seats (the stadium's seats section) sell more. */
+    public function tickets(int $scale, int $rounds, int $attendanceBp, ?int $capacity = null): int
     {
-        return intdiv($this->cfg['stadium']['capacity'] * $attendanceBp, 10000) * $this->ticketPrice($scale, $rounds);
+        return intdiv(($capacity ?? $this->cfg['stadium']['capacity']) * $attendanceBp, 10000) * $this->ticketPrice($scale, $rounds);
     }
 
     /** A league match's bonus: a win, a draw, or nothing. */
