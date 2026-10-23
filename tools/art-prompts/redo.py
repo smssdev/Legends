@@ -355,7 +355,20 @@ MOMENTS = {
     'common': '',
     'redo': [],
 }
-REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK, STADIUMS, COACHES, MOMENTS]
+VAR5 = ['shot', 'run', 'goal-front', 'behind-goal', 'corner']
+STADIUMS_2 = {
+    'date': '2026-10-23', 'title': 'الملاعب: الأرينا نهاراً وتحت المطر، والكلاسيكي ليلاً (حمزة)', 'book': 'docs/art/images/02-stadium-var.md',
+    'out': 'docs/art/redo/2026-10-23-stadiums.md',
+    'ok': [(f'{g}.{i}', f'stadiums/{folder}/{n}.jpg') for g, folder in ((17, 'arena/rain'), (18, 'arena/day'), (19, 'classic/night'))
+           for i, n in enumerate(VAR5, 1)],
+    'notes': [
+        '**15 من 15 معتمدة:** كل ملعب هو نفسه في لوحاته الخمس، وبنفس زوايا لوحاته الأساسية، والصور واقعية.',
+        '**المجلد الخطأ:** لوحات **المطر** رُفعت فوق `stadiums/arena/night/`، ولوحات **الليل** فوق `stadiums/classic/day/`، فحلّت محل لوحات معتمدة. نُقلت إلى `stadiums/arena/rain/` و`stadiums/classic/night/`، وأُعيدت المعتمدة القديمة إلى مكانها من سجل git.',
+    ],
+    'common': 'الرفع فوق مجلد آخر: كل ملعب وطقس في مجلده المكتوب في رأس أمره.',
+    'redo': [],
+}
+REVIEWS = [RUN_WALK, START, BALL, DRIBBLE_SCALE, RUN_BACK, STADIUMS, COACHES, MOMENTS, STADIUMS_2]
 
 # Boards approved before these reviews (wave 1), in docs/sprints/sprint-02-days.md.
 APPROVED_BEFORE = ['stadiums/arena/night/' + n + '.jpg' for n in ('shot', 'run', 'wing', 'shot-far', 'goal-front', 'behind-goal', 'corner', 'box-high', 'bench', 'touchline', 'monitor', 'centre', 'tunnel-out', 'crowd-joy', 'crowd-tense', 'crowd-sad')] + ['striker/ref.png', 'striker/faces.png']

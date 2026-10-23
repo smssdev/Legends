@@ -8,57 +8,18 @@
 - **الحفظ:** في المجلد المكتوب باسم الملف بالضبط. والصيغة WAV أو MP3 أو M4A.
 - **بعد الرفع:** Claude يراجع، ثم `python3 tools/commentary/todo.py` يحدث هذه القوائم.
 
-**المجموع:** 98. ✅ معتمد 65 · 🔁 للإعادة 3 · 👂 للتأكد بالسمع 1 · ⬜ لم يسجل 29
+**المجموع:** 98. ✅ معتمد 94 · 🔁 للإعادة 0 · 👂 للتأكد بالسمع 4 · ⬜ لم يسجل 0
 
-## 🔁 للإعادة (3)
-
-| الملف | المكان | النبرة | النص | لماذا |
-|---|---|---|---|---|
-| `miss-post-2.wav` | `audio/raw/ar/story/` | هادئ | فرصة مبتتكررش كتير! | فيها جملتان: جملة miss-post-1 أولا ثم جملتها. سجل جملتها وحدها. |
-| `blocked-key-2.wav` | `audio/raw/ar/story/` | متحمس | تدخل شجاع من المدافع! | نسخة مطابقة تماما ل blocked-key-1 (نفس الملف). سجل جملتها هي. |
-| `red-pre-1.wav` | `audio/raw/ar/story/` | هادئ | تدخل عنيف من ورا! | تقول «كرت أحمر» قبل أن يرفعه الحكم، فتكشف النتيجة. المطلوب وصف التدخل فقط. |
-
-## 👂 للتأكد بالسمع (1)
+## 👂 للتأكد بالسمع (4)
 
 | الملف | المكان | النبرة | النص | لماذا |
 |---|---|---|---|---|
 | `miss-pre-1.wav` | `audio/raw/ar/story/` | هادئ | شوطة... | لم يتعرف عليها التحقق الآلي، وطولها ثانيتان لكلمة واحدة. اسمعها وتأكد أنها «تسديدة...» وحدها. |
+| `miss-post-2.wav` | `audio/raw/ar/story/` | هادئ | فرصة مبتتكررش كتير! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| `blocked-key-2.wav` | `audio/raw/ar/story/` | متحمس | تدخل شجاع من المدافع! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| `red-pre-1.wav` | `audio/raw/ar/story/` | هادئ | تدخل عنيف من ورا! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
 
-## ⬜ لم يسجل بعد (29)
-
-| الملف | المكان | النبرة | النص |
-|---|---|---|---|
-| `header-key-2.wav` | `audio/raw/ar/story/` | متحمس | جون براسية ولا أروع! |
-| `blocked-post-1.wav` | `audio/raw/ar/story/` | هادئ | دفاع جامد. |
-| `yellow-key-2.wav` | `audio/raw/ar/story/` | هادئ | الحكم طلع الكارت الأصفر. |
-| `red-pre-2.wav` | `audio/raw/ar/story/` | هادئ | تدخل خطير! |
-| `red-key-1.wav` | `audio/raw/ar/story/` | متحمس | كارت أحمر! طرد! |
-| `red-key-2.wav` | `audio/raw/ar/story/` | متحمس | الحكم طرده على طول! |
-| `red-post-2.wav` | `audio/raw/ar/story/` | هادئ | خروج حزين على أوضة اللبس. |
-| `second_yellow-pre-1.wav` | `audio/raw/ar/story/` | هادئ | تدخل متأخر تاني... |
-| `second_yellow-key-1.wav` | `audio/raw/ar/story/` | متحمس | الإنذار التاني! طرد! |
-| `second_yellow-post-1.wav` | `audio/raw/ar/story/` | هادئ | ميلومش غير نفسه. |
-| `sub-key-1.wav` | `audio/raw/ar/story/` | هادئ | تغيير. |
-| `sub-key-2.wav` | `audio/raw/ar/story/` | هادئ | تغيير في الفريق. |
-| `sub-post-1.wav` | `audio/raw/ar/story/` | هادئ | دم جديد في الملعب. |
-| `injury-key-1.wav` | `audio/raw/ar/story/` | هادئ | لاعب واقع على الأرض. |
-| `injury-key-2.wav` | `audio/raw/ar/story/` | هادئ | إصابة... والجهاز الطبي داخل. |
-| `injury-post-1.wav` | `audio/raw/ar/story/` | هادئ | نتمنى متكونش خطيرة. |
-| `coach-key-1.wav` | `audio/raw/ar/story/` | هادئ | المدرب بيدي تعليمات جديدة. |
-| `coach-key-2.wav` | `audio/raw/ar/story/` | هادئ | تغيير تكتيكي من الدكة. |
-| `coach-post-1.wav` | `audio/raw/ar/story/` | هادئ | نشوف هيغير حاجة ولا لأ. |
-| `kickoff-key-1.wav` | `audio/raw/ar/story/` | هادئ | الماتش بدأ! |
-| `halftime-key-1.wav` | `audio/raw/ar/story/` | متحمس | نهاية الشوط الأول. |
-| `fulltime-key-1.wav` | `audio/raw/ar/story/` | متحمس | صافرة النهاية! |
-| `extra_time-key-1.wav` | `audio/raw/ar/story/` | متحمس | على الوقت الإضافي! |
-| `penalties-key-1.wav` | `audio/raw/ar/story/` | متحمس | على ضربات الترجيح! |
-| `stoppage-key-1.wav` | `audio/raw/ar/story/` | هادئ | وقت بدل ضايع. |
-| `shootout-key-1.wav` | `audio/raw/ar/story/` | متحمس | ضربات الترجيح... أعصاب حديد. |
-| `attack-key-1.wav` | `audio/raw/ar/story/` | هادئ | هجمة منظمة. |
-| `attack-key-2.wav` | `audio/raw/ar/story/` | هادئ | ضغط مستمر. |
-| `attack-key-3.wav` | `audio/raw/ar/story/` | هادئ | بيحاولوا يبنوا الهجمة. |
-
-## ✅ معتمد (65)
+## ✅ معتمد (94)
 
 | الملف | المكان | النبرة | النص |
 |---|---|---|---|
@@ -74,6 +35,7 @@
 | `header-pre-1.wav` | `audio/raw/ar/story/` | هادئ | عرضية جوه المنطقة... |
 | `header-pre-2.wav` | `audio/raw/ar/story/` | هادئ | الكورة عالية جوه الصندوق... |
 | `header-key-1.wav` | `audio/raw/ar/story/` | متحمس | جون! راسية قوية في الشبكة! |
+| `header-key-2.wav` | `audio/raw/ar/story/` | متحمس | جون براسية ولا أروع! |
 | `header-post-1.wav` | `audio/raw/ar/story/` | هادئ | محدش يقدر يوقفه في الهوا! |
 | `header-post-2.wav` | `audio/raw/ar/story/` | هادئ | طلعة حلوة أوي! |
 | `free_kick_goal-pre-1.wav` | `audio/raw/ar/story/` | هادئ | فاول على حدود المنطقة. |
@@ -111,6 +73,7 @@
 | `post-post-1.wav` | `audio/raw/ar/story/` | هادئ | سنتيمترات حرمته من الجون! |
 | `blocked-pre-2.wav` | `audio/raw/ar/story/` | هادئ | محاولة قوية... |
 | `blocked-key-1.wav` | `audio/raw/ar/story/` | متحمس | الدفاع صدها! |
+| `blocked-post-1.wav` | `audio/raw/ar/story/` | هادئ | دفاع جامد. |
 | `offside-pre-1.wav` | `audio/raw/ar/story/` | هادئ | كورة طويلة ورا الدفاع... |
 | `offside-key-1.wav` | `audio/raw/ar/story/` | هادئ | الراية اترفعت. أوفسايد. |
 | `offside-key-2.wav` | `audio/raw/ar/story/` | هادئ | لأ! أوفسايد. |
@@ -125,6 +88,33 @@
 | `yellow-pre-1.wav` | `audio/raw/ar/story/` | هادئ | تدخل متأخر! |
 | `yellow-pre-2.wav` | `audio/raw/ar/story/` | هادئ | تدخل جامد! |
 | `yellow-key-1.wav` | `audio/raw/ar/story/` | هادئ | كارت أصفر. |
+| `yellow-key-2.wav` | `audio/raw/ar/story/` | هادئ | الحكم طلع الكارت الأصفر. |
 | `yellow-post-1.wav` | `audio/raw/ar/story/` | هادئ | لازم ياخد باله من دلوقتي. |
+| `red-pre-2.wav` | `audio/raw/ar/story/` | هادئ | تدخل خطير! |
+| `red-key-1.wav` | `audio/raw/ar/story/` | متحمس | كارت أحمر! طرد! |
+| `red-key-2.wav` | `audio/raw/ar/story/` | متحمس | الحكم طرده على طول! |
 | `red-post-1.wav` | `audio/raw/ar/story/` | هادئ | فريقه هيكمل بعشرة! |
+| `red-post-2.wav` | `audio/raw/ar/story/` | هادئ | خروج حزين على أوضة اللبس. |
+| `second_yellow-pre-1.wav` | `audio/raw/ar/story/` | هادئ | تدخل متأخر تاني... |
+| `second_yellow-key-1.wav` | `audio/raw/ar/story/` | متحمس | الإنذار التاني! طرد! |
+| `second_yellow-post-1.wav` | `audio/raw/ar/story/` | هادئ | ميلومش غير نفسه. |
+| `sub-key-1.wav` | `audio/raw/ar/story/` | هادئ | تغيير. |
+| `sub-key-2.wav` | `audio/raw/ar/story/` | هادئ | تغيير في الفريق. |
+| `sub-post-1.wav` | `audio/raw/ar/story/` | هادئ | دم جديد في الملعب. |
+| `injury-key-1.wav` | `audio/raw/ar/story/` | هادئ | لاعب واقع على الأرض. |
+| `injury-key-2.wav` | `audio/raw/ar/story/` | هادئ | إصابة... والجهاز الطبي داخل. |
+| `injury-post-1.wav` | `audio/raw/ar/story/` | هادئ | نتمنى متكونش خطيرة. |
+| `coach-key-1.wav` | `audio/raw/ar/story/` | هادئ | المدرب بيدي تعليمات جديدة. |
+| `coach-key-2.wav` | `audio/raw/ar/story/` | هادئ | تغيير تكتيكي من الدكة. |
+| `coach-post-1.wav` | `audio/raw/ar/story/` | هادئ | نشوف هيغير حاجة ولا لأ. |
+| `kickoff-key-1.wav` | `audio/raw/ar/story/` | هادئ | الماتش بدأ! |
+| `halftime-key-1.wav` | `audio/raw/ar/story/` | متحمس | نهاية الشوط الأول. |
+| `fulltime-key-1.wav` | `audio/raw/ar/story/` | متحمس | صافرة النهاية! |
+| `extra_time-key-1.wav` | `audio/raw/ar/story/` | متحمس | على الوقت الإضافي! |
+| `penalties-key-1.wav` | `audio/raw/ar/story/` | متحمس | على ضربات الترجيح! |
+| `stoppage-key-1.wav` | `audio/raw/ar/story/` | هادئ | وقت بدل ضايع. |
+| `shootout-key-1.wav` | `audio/raw/ar/story/` | متحمس | ضربات الترجيح... أعصاب حديد. |
+| `attack-key-1.wav` | `audio/raw/ar/story/` | هادئ | هجمة منظمة. |
+| `attack-key-2.wav` | `audio/raw/ar/story/` | هادئ | ضغط مستمر. |
+| `attack-key-3.wav` | `audio/raw/ar/story/` | هادئ | بيحاولوا يبنوا الهجمة. |
 
