@@ -8,9 +8,11 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
+
+    private const SECTION = ['seats' => 'التذاكر والمقاعد', 'pitch' => 'أرضية الملعب', 'training' => 'منشأة التدريب'];
 
     private const RESULT = ['win' => 'فزت', 'draw' => 'تعادلت', 'loss' => 'خسرت'];
 
@@ -112,6 +114,12 @@ class MessageText
                 'title' => 'عاد اللاعبون من المعسكر',
                 'body' => implode('، ', array_map(fn ($x) => $x['gain'] ? "{$x['name']} +{$x['gain']}" : "{$x['name']} بلا زيادة", $p['players'] ?? [])).'. ومن لم تكتمل قفزته يحتفظ بتقدمه.',
                 'link' => '/training',
+            ],
+            'stadium_part' => [
+                'title' => ($p['stage_done'] ?? false) ? 'اكتملت مرحلة في الملعب' : 'اكتمل جزء في الملعب',
+                'body' => sprintf('%s: %s. ابدأ الجزء التالي من صفحة الملعب.', self::SECTION[$p['section']] ?? '',
+                    ($p['stage_done'] ?? false) ? "المرحلة {$p['stage']} مكتملة وأثرها يعمل الآن" : "الجزء {$p['part']} من 5 في المرحلة {$p['stage']}"),
+                'link' => '/stadium',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

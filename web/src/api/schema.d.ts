@@ -2402,6 +2402,82 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/stadium": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The stadium, its three sections with their stages and effects, and the part being built
+         * @description Sprint 29 (PLAN 2.9). Seats, pitch and training: three stages of five parts each. The coach starts each part and
+         *     pays for it; it is done in 18 hours scaled by the season's length, coach online or not. One part at a time.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The stadium */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StadiumView"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Start the next part of a section */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        section: "seats" | "pitch" | "training";
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The stadium after starting */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StadiumView"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/training": {
         parameters: {
             query?: never;
@@ -4602,6 +4678,48 @@ export interface components {
                 mid: number;
                 att: number;
             };
+        };
+        StadiumView: {
+            balance: number;
+            /**
+             * Format: date-time
+             * @description The game clock
+             */
+            now: string;
+            part_minutes: number;
+            parts_total: number;
+            facts: {
+                capacity: number;
+                /** @description The home advantage with the pitch (basis points) */
+                home_bp: number;
+                tickets_per_match: number;
+                parts_done: number;
+            };
+            sections: {
+                /** @enum {string} */
+                section: "seats" | "pitch" | "training";
+                /** @description Stages finished */
+                stage: number;
+                /** @description Parts finished of the next stage */
+                parts: number;
+                /** @description Parts finished in all */
+                done: number;
+                /** @description The effect at stage 0 to 3: tickets per match, extra home advantage (bp), or the most training speeds up (bp) */
+                effects: number[];
+                next: {
+                    stage: number;
+                    part: number;
+                    cost: number;
+                } | null;
+            }[];
+            building: {
+                /** @enum {string} */
+                section: "seats" | "pitch" | "training";
+                stage: number;
+                part: number;
+                /** Format: date-time */
+                ends_at: string;
+            } | null;
         };
         TrainingPlayer: {
             id: number;

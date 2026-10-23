@@ -1015,6 +1015,41 @@ paths:
               schema: { $ref: '#/components/schemas/ScoutView' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/stadium:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [team]
+      summary: The stadium, its three sections with their stages and effects, and the part being built
+      description: |
+        Sprint 29 (PLAN 2.9). Seats, pitch and training: three stages of five parts each. The coach starts each part and
+        pays for it; it is done in 18 hours scaled by the season's length, coach online or not. One part at a time.
+      responses:
+        '200':
+          description: The stadium
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StadiumView' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Start the next part of a section
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [section, idempotency_key]
+              properties:
+                section: { type: string, enum: [seats, pitch, training] }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '200':
+          description: The stadium after starting
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StadiumView' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/training:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2197,6 +2232,50 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    StadiumView:
+      type: object
+      required: [balance, now, part_minutes, parts_total, facts, sections, building]
+      properties:
+        balance: { type: integer }
+        now: { type: string, format: date-time, description: The game clock, for the countdown }
+        part_minutes: { type: integer }
+        parts_total: { type: integer }
+        facts:
+          type: object
+          required: [capacity, home_bp, tickets_per_match, parts_done]
+          properties:
+            capacity: { type: integer }
+            home_bp: { type: integer, description: The home advantage with the pitch (basis points) }
+            tickets_per_match: { type: integer }
+            parts_done: { type: integer }
+        sections:
+          type: array
+          items:
+            type: object
+            required: [section, stage, parts, done, effects, next]
+            properties:
+              section: { type: string, enum: [seats, pitch, training] }
+              stage: { type: integer, description: Stages finished, 0 to 3 }
+              parts: { type: integer, description: Parts finished of the next stage }
+              done: { type: integer, description: Parts finished in all }
+              effects: { type: array, items: { type: integer }, description: 'The effect at stage 0 to 3: tickets per match, extra home advantage (bp), or the most training speeds up (bp)' }
+              next:
+                type: object
+                nullable: true
+                required: [stage, part, cost]
+                properties:
+                  stage: { type: integer }
+                  part: { type: integer }
+                  cost: { type: integer }
+        building:
+          type: object
+          nullable: true
+          required: [section, stage, part, ends_at]
+          properties:
+            section: { type: string, enum: [seats, pitch, training] }
+            stage: { type: integer }
+            part: { type: integer }
+            ends_at: { type: string, format: date-time }
     TrainingPlayer:
       type: object
       required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed, in_camp]

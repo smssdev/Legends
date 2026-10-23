@@ -13,6 +13,7 @@ use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
+use App\Stadium\Stadium;
 use App\Training\Camp;
 use App\Training\Training;
 use Illuminate\Http\JsonResponse;
@@ -236,8 +237,8 @@ class TeamController extends Controller
             'transactions' => $rows->map(fn ($t) => ['id' => $t->id, 'type' => $t->type, 'label' => ClubLedger::LABELS[$t->type] ?? $t->type,
                 'amount' => (int) $t->amount, 'balance_after' => (int) $t->balance_after, 'created_at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()]
                 + $roundOf($t->reference)),
-            'stadium' => ['capacity' => $cfg['stadium']['capacity'], 'attendance_bp' => $attendance, 'ticket_price' => $money->ticketPrice($scale, $season->rounds),
-                'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance)],
+            'stadium' => ['capacity' => Stadium::capacity($club->id), 'attendance_bp' => $attendance, 'ticket_price' => $money->ticketPrice($scale, $season->rounds),
+                'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance, Stadium::capacity($club->id))],
             'sponsors' => collect($cfg['sectors'])->map(fn ($share, $sector) => [
                 'sector' => $sector, 'name' => self::SECTORS[$sector], 'chosen' => $chosen[$sector] ?? null,
                 'offers' => collect($cfg['sponsor_offers'])->map(fn ($o, $key) => ['offer' => $key, 'name' => self::OFFERS[$key],
