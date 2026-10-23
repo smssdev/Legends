@@ -25,6 +25,8 @@ export const router = createRouter({
         { path: 'tactics', name: 'tactics', component: () => import('./pages/team/TacticsPage.vue'), meta: { auth: true } },
         { path: 'match', name: 'match', component: () => import('./pages/team/NextMatch.vue'), meta: { auth: true } },
         { path: 'lineup', name: 'lineup', component: () => import('./pages/team/Lineup.vue'), meta: { auth: true } },
+        // Sprint 24: the market
+        { path: 'market', name: 'market', component: () => import('./pages/team/Market.vue'), meta: { auth: true } },
         // Sprint 23: the club's money
         { path: 'finance', name: 'finance', component: () => import('./pages/team/Finance.vue'), meta: { auth: true } },
         // Sprint 22: the inbox

@@ -53,6 +53,7 @@ class SimEconomy extends Command
             'normal' => $sim->run($clubs, $budget, $play),
             'spender' => $sim->run($clubs, $budget, $play, ['spender' => $median]),
             'colluders' => $sim->run($clubs, $budget, $play, ['colluders' => [$ids[count($ids) - 1], $ids[count($ids) - 2]]]),
+            'trader' => $sim->run($clubs, $budget, $play, ['trader' => $median]),
         ];
         $summary = SeasonSim::summary($runs['normal'], $cfg['sim_targets']);
 
@@ -74,6 +75,12 @@ class SimEconomy extends Command
         $c = $runs['colluders']['clubs'];
         $this->line(sprintf('المتواطئان: انتقل %s فقط (سقف الزوج)، فأنهى %s بـ %s بدل %s.',
             number_format($runs['colluders']['moved']), $clubs[$to]['name'], number_format($c[$to]['balance']), number_format($n['clubs'][$to]['balance'])));
+
+        $t = $runs['trader']['clubs'][$median];
+        $this->line(sprintf('دورة «اشترِ، درّب، بِع للمجموعة» (%s، مرتين في الموسم): خسر في البيع %s، وأنهى بـ %s بدل %s.',
+            $clubs[$median]['name'], number_format(-($t['traded'] ?? 0)), number_format($t['balance']), number_format($n['clubs'][$median]['balance'])));
+        $summary['trade_cycle_profit'] = ($t['traded'] ?? 0);
+        $summary['ok'] = $summary['ok'] && $summary['trade_cycle_profit'] < 0;
 
         if ($this->option('report')) {
             @mkdir(dirname($this->option('report')), 0775, true);

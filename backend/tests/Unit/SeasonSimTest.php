@@ -51,6 +51,16 @@ class SeasonSimTest extends TestCase
         $this->assertSame($sane['clubs'][5]['balance'] + 750_000, $pair['clubs'][5]['balance']);
     }
 
+    public function test_buying_training_and_selling_to_the_pool_never_pays(): void
+    {
+        $sim = new SeasonSim(Money::fromConfig(), config('game.economy'));
+        $sane = $sim->run($this->clubs(), 3_000_000, $this->play());
+        $trader = $sim->run($this->clubs(), 3_000_000, $this->play(), ['trader' => 3]);
+        $this->assertGreaterThan(0, $trader['clubs'][3]['bought']);
+        $this->assertLessThan(0, $trader['clubs'][3]['traded']);
+        $this->assertLessThan($sane['clubs'][3]['balance'], $trader['clubs'][3]['balance']);
+    }
+
     public function test_a_deep_debt_sells_the_dearest_players_but_keeps_a_squad(): void
     {
         $cfg = config('game.economy');
