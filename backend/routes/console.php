@@ -12,6 +12,8 @@ Schedule::command('leagues:absence')->everyMinute()->withoutOverlapping();
 Schedule::command('matches:prepare')->everyMinute()->withoutOverlapping();
 // The market pool renews when each transfer window opens [PLAN 2.7, Sprint 24].
 Schedule::command('market:renew')->everyMinute()->withoutOverlapping();
+// The scouts' reports, coach online or not [Sprint 26].
+Schedule::command('scout:due')->everyMinute()->withoutOverlapping();
 
 // The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
 Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');

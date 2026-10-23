@@ -89,6 +89,7 @@ onMounted(load)
           <template v-else-if="m">مفتوح حتى الجولة {{ m.open_until_round }} · تتجدد المجموعة في كل نافذة انتقالات</template>
         </p>
       </div>
+      <RouterLink :to="{ name: 'scout' }" class="flex h-11 items-center gap-2 rounded-lg bg-gold/15 px-4 text-sm font-bold">اطلب تقرير الكشاف</RouterLink>
       <span v-if="m" class="flex h-11 items-center gap-2 rounded-lg bg-surface px-4 text-sm"><span class="text-text-muted">أموال النادي</span><b class="font-numbers text-lg" :class="m.balance < 0 ? 'text-warning' : ''" dir="ltr">{{ money(Math.abs(m.balance)) }}</b></span>
     </header>
 

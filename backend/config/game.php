@@ -216,4 +216,6 @@ return [
         'min_free_mb' => 1024,
     ],
     'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18],
+    // The scout [docs/features/scout.md]: a share of the league's money scale, a day scaled by the season's length.
+    'scout' => ['cost_bp' => 30, 'hours' => 24],
 ];

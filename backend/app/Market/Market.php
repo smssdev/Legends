@@ -37,12 +37,14 @@ class Market
         }
     }
 
-    /** What a player costs this club now: the pool's price, or a bot's fixed one. Null when not for sale. */
-    public static function price(object $player): ?int
+    /** What a player costs this club now: the pool's price (a scout's find too, for its club), or a bot's fixed one. Null when not for sale. */
+    public static function price(object $player, ?int $buyer = null): ?int
     {
         $cfg = config('game.economy');
         if ($player->club_id === null) {
-            return $player->in_pool ? intdiv((int) $player->value * $cfg['buy_from_pool_bp'], 10000) : null;
+            $scouted = $buyer !== null && ($player->scouted_by ?? null) === $buyer;
+
+            return $player->in_pool || $scouted ? intdiv((int) $player->value * $cfg['buy_from_pool_bp'], 10000) : null;
         }
         $bot = DB::table('clubs')->where('id', $player->club_id)->whereNull('user_id')->exists();
 
@@ -67,7 +69,7 @@ class Market
             if ($p->club_id !== null && DB::table('clubs')->where('id', $p->club_id)->whereNotNull('user_id')->exists()) {
                 throw new HttpException(409, 'اللاعب في فريق مدرب آخر.');
             }
-            $price = self::price($p);
+            $price = self::price($p, $clubId);
             if ($price === null) {
                 throw new HttpException(409, 'هذا اللاعب ليس للبيع هنا.');
             }
@@ -76,8 +78,9 @@ class Market
                 self::assertBotCanSell((int) $from, $p);
             }
             // The player is this buyer's only if nobody took him first.
-            $taken = DB::table('players')->where('id', $playerId)->where(fn ($q) => $from === null ? $q->whereNull('club_id')->where('in_pool', true) : $q->where('club_id', $from))
-                ->update(['club_id' => $clubId, 'in_pool' => false, 'updated_at' => GameClock::now()]);
+            $taken = DB::table('players')->where('id', $playerId)
+                ->where(fn ($q) => $from === null ? $q->whereNull('club_id')->where(fn ($q) => $q->where('in_pool', true)->orWhere('scouted_by', $clubId)) : $q->where('club_id', $from))
+                ->update(['club_id' => $clubId, 'in_pool' => false, 'scouted_by' => null, 'updated_at' => GameClock::now()]);
             if ($taken !== 1) {
                 throw new HttpException(409, 'سبقك مدرب آخر إلى هذا اللاعب.');
             }
