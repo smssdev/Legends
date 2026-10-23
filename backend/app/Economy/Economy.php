@@ -3,6 +3,7 @@
 namespace App\Economy;
 
 use App\League\ClubLedger;
+use App\Market\Transfers;
 use App\Messages\Inbox;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -102,6 +103,7 @@ class Economy
                 break;
             }
             DB::table('players')->where('id', $p->id)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
+            Transfers::left((int) $p->id, $clubId);
             $balance = ClubLedger::post($clubId, 'forced_sale', $money->poolPays((int) $p->base_value), "forced:{$fixtureId}:{$p->id}", "player:{$p->id}");
             $sold[] = $p->name;
         }
