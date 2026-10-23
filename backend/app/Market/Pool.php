@@ -20,6 +20,8 @@ class Pool
                 return null;
             }
             DB::table('players')->where('league_id', $leagueId)->whereNull('club_id')->where('in_pool', true)->update(['in_pool' => false]);
+            // The scouts' finds nobody bought go with it.
+            DB::table('players')->where('league_id', $leagueId)->whereNull('club_id')->whereNotNull('scouted_by')->update(['scouted_by' => null]);
             // The league's level: from its weaker players to its best.
             $levels = DB::table('players')->where('league_id', $leagueId)->whereNotNull('club_id')->orderBy('overall')->pluck('overall');
             if ($levels->isEmpty()) {

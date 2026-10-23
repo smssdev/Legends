@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TransferController;
@@ -99,6 +100,11 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('offers/{offer}/reject', 'reject')->whereNumber('offer');
         Route::post('offers/{offer}/cancel', 'cancel')->whereNumber('offer');
         Route::post('offers/{offer}/counter', 'counter')->whereNumber('offer')->middleware('throttle:30,1,transfers');
+    });
+    // The scout [Sprint 26].
+    Route::controller(ScoutController::class)->prefix('{league}/scout')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('/', 'ask')->middleware('throttle:20,1,scout');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
