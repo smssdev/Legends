@@ -5,6 +5,7 @@ namespace App\League;
 use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Simulator\MatchFactory;
+use App\Training\Training;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -42,8 +43,8 @@ class LeagueMatch
             // The squad in the shape MatchSetup::player reads, with this league's own numbers.
             'squad' => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
                 ->where('players.club_id', $club->id)
-                ->select('master_players.*', 'players.id', 'players.overall', 'players.fitness')->orderBy('players.id')->get()
-                ->map(fn ($r) => (array) $r)->all(),
+                ->select('master_players.*', 'players.id', 'players.overall', 'players.training_bonus', 'players.fitness')->orderBy('players.id')->get()
+                ->map(fn ($r) => Training::boosted((array) $r))->all(),
             'formation' => $sheet->formation,
             'slots' => json_decode($sheet->slots, true),
             'starters' => json_decode($sheet->starters, true),

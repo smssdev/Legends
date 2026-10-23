@@ -1015,6 +1015,56 @@ paths:
               schema: { $ref: '#/components/schemas/ScoutView' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/training:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [team]
+      summary: Training, its four slots with their bars and next session, and my players
+      description: |
+        Sprint 27 (PLAN 2.8). One player of each line trains at a time. Every session (8 hours scaled by the season's
+        length) costs club money and moves his bar by a random step, coach online or not; at 100% his rating and
+        attributes go up by one and the slot empties. No training past his potential. Due sessions run before the answer.
+      responses:
+        '200':
+          description: Training
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TrainingView' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Put a player in his line's slot (in place of whoever is there)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [player_id]
+              properties:
+                player_id: { type: integer }
+      responses:
+        '200':
+          description: Training after the change
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TrainingView' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/training/{line}:
+    parameters:
+      - { name: league, in: path, required: true, schema: { type: integer } }
+      - { name: line, in: path, required: true, schema: { type: string, enum: [gk, def, mid, att] } }
+    delete:
+      tags: [team]
+      summary: Empty a slot (the player keeps his bar)
+      responses:
+        '200':
+          description: Training after the change
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TrainingView' }
   /leagues/{league}/team/finance:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2098,6 +2148,41 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    TrainingPlayer:
+      type: object
+      required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        position: { type: string }
+        line: { type: string, enum: [gk, def, mid, att] }
+        age: { type: integer }
+        overall: { type: integer, description: With the training on top }
+        training_bonus: { type: integer }
+        potential: { type: integer }
+        progress: { type: integer, description: The bar, 0 to 100 }
+        sessions: { type: integer, description: About how many sessions a +1 takes at his rating }
+        injured: { type: boolean }
+        maxed: { type: boolean, description: At his potential, training adds nothing }
+    TrainingView:
+      type: object
+      required: [cost, balance, interval_minutes, now, slots, players]
+      properties:
+        cost: { type: integer, description: One session's price }
+        balance: { type: integer }
+        interval_minutes: { type: integer }
+        now: { type: string, format: date-time, description: The game clock, for the countdowns }
+        slots:
+          type: array
+          items:
+            type: object
+            required: [line, player, sessions_done, next_at]
+            properties:
+              line: { type: string, enum: [gk, def, mid, att] }
+              player: { allOf: [{ $ref: '#/components/schemas/TrainingPlayer' }], nullable: true }
+              sessions_done: { type: integer }
+              next_at: { type: string, format: date-time, nullable: true }
+        players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
       type: object
       required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
@@ -2110,7 +2195,8 @@ components:
         age: { type: integer }
         nationality: { type: string, nullable: true }
         foot: { type: string, nullable: true }
-        overall: { type: integer }
+        overall: { type: integer, description: With the training on top }
+        training_bonus: { type: integer, description: Points gained in training this season }
         potential: { type: integer }
         value: { type: integer }
         fitness: { type: integer }

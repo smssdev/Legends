@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -102,6 +102,11 @@ class MessageText
                 'body' => ($p['players'] ?? []) ? 'وجد لك الكشاف: '.implode('، ', $p['players']).'. اشترهم قبل تجديد المجموعة.'
                     : 'لم يجد الكشاف لاعباً بهذه المعايير، فرُد لك المبلغ كاملاً.',
                 'link' => '/scout',
+            ],
+            'training_done' => [
+                'title' => 'اكتمل تدريب '.$p['player'],
+                'body' => sprintf('تحسن %s فأصبحت قوته %d، وخانته فارغة الآن: اختر لاعباً آخر للتدريب.', $p['player'], $p['overall']),
+                'link' => '/training',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

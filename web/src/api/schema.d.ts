@@ -2402,6 +2402,125 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/training": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * Training, its four slots with their bars and next session, and my players
+         * @description Sprint 27 (PLAN 2.8). One player of each line trains at a time. Every session (8 hours scaled by the season's
+         *     length) costs club money and moves his bar by a random step, coach online or not; at 100% his rating and
+         *     attributes go up by one and the slot empties. No training past his potential. Due sessions run before the answer.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Training */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrainingView"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Put a player in his line's slot (in place of whoever is there) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Training after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrainingView"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/training/{line}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                line: "gk" | "def" | "mid" | "att";
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Empty a slot (the player keeps his bar) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    line: "gk" | "def" | "mid" | "att";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Training after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrainingView"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/finance": {
         parameters: {
             query?: never;
@@ -4377,6 +4496,45 @@ export interface components {
                 att: number;
             };
         };
+        TrainingPlayer: {
+            id: number;
+            name: string;
+            position: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            age: number;
+            /** @description With the training on top */
+            overall: number;
+            training_bonus: number;
+            potential: number;
+            /** @description The bar */
+            progress: number;
+            /** @description About how many sessions a +1 takes at his rating */
+            sessions: number;
+            injured: boolean;
+            /** @description At his potential */
+            maxed: boolean;
+        };
+        TrainingView: {
+            /** @description One session's price */
+            cost: number;
+            balance: number;
+            interval_minutes: number;
+            /**
+             * Format: date-time
+             * @description The game clock
+             */
+            now: string;
+            slots: {
+                /** @enum {string} */
+                line: "gk" | "def" | "mid" | "att";
+                player: components["schemas"]["TrainingPlayer"] | null;
+                sessions_done: number;
+                /** Format: date-time */
+                next_at: string | null;
+            }[];
+            players: components["schemas"]["TrainingPlayer"][];
+        };
         SquadPlayer: {
             id: number;
             name: string;
@@ -4387,7 +4545,10 @@ export interface components {
             age: number;
             nationality?: string | null;
             foot?: string | null;
+            /** @description With the training on top */
             overall: number;
+            /** @description Points gained in training this season */
+            training_bonus?: number;
             potential: number;
             value: number;
             fitness: number;
