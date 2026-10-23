@@ -237,6 +237,14 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
+    // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    'specialists' => ['contract_days' => 7,
+        'cost_bp' => ['doctor' => 20, 'lawyer' => 15, 'keeper_coach' => 20, 'physio' => 20],
+        'doctor_countdown' => 2,        // each match counts injuries down by this many
+        'lawyer_cancel_bp' => 5000,     // the share of new red-card bans the lawyer cancels
+        'keeper_coach_boost' => 2,      // on the keeper's rating and attributes
+        'physio_rest_bonus' => 15],     // fitness on top of rest_recovery for a player who rests
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).
     'spy' => ['cost_bp' => 15],

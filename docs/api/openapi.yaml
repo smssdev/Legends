@@ -1015,6 +1015,39 @@ paths:
               schema: { $ref: '#/components/schemas/ScoutView' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/specialists:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [team]
+      summary: The four specialists, each with its contract price and the contract working now
+      description: Sprint 31 (docs/features/specialists.md). A week's contract scaled by the season's length, paid when signed.
+      responses:
+        '200':
+          description: The specialists
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SpecialistsView' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Sign a specialist (one of each type at a time)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, idempotency_key]
+              properties:
+                type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '200':
+          description: The specialists after signing
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SpecialistsView' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/spy:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2258,6 +2291,22 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+    SpecialistsView:
+      type: object
+      required: [balance, now, days, specialists]
+      properties:
+        balance: { type: integer }
+        now: { type: string, format: date-time }
+        days: { type: integer, description: A contract's length in this league }
+        specialists:
+          type: array
+          items:
+            type: object
+            required: [type, cost, ends_at]
+            properties:
+              type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
+              cost: { type: integer }
+              ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
     SpyPlayer:
       type: object
       required: [id, name, position, line, overall]

@@ -6,6 +6,7 @@ use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Simulator\MatchFactory;
 use App\Stadium\Stadium;
+use App\Staff\Specialists;
 use App\Training\SecretTraining;
 use App\Training\Training;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,10 @@ class LeagueMatch
         $takers = json_decode($sheet->takers, true);
         // Secret training: one line, this match only [docs/features/secret-training.md].
         $boosts = SecretTraining::boosts($club->id, $sheet->fixture_id);
+        // The keeper coach [docs/features/specialists.md].
+        if (Specialists::has($club->id, 'keeper_coach')) {
+            $boosts['gk'] = ($boosts['gk'] ?? 0) + (int) config('game.specialists.keeper_coach_boost');
+        }
 
         return [
             'club' => [
