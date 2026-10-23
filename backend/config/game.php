@@ -125,6 +125,13 @@ return [
         'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
         'cost_bp_per_season' => 40,      // one slot busy all season costs this share of the league's money scale
         'season_gain_target' => [3, 5]],
+    // The training camp [docs/features/camp.md, Sprint 28]: players away from matches, training at the camp's pace.
+    'camp' => ['max_players' => 5, 'days' => [1, 3], 'min_left' => 16,
+        // each level: the session's step and its price, against an ordinary training session (basis points)
+        'levels' => ['basic' => ['gain_bp' => 10000, 'cost_bp' => 10000], 'good' => ['gain_bp' => 15000, 'cost_bp' => 20000],
+            'elite' => ['gain_bp' => 20000, 'cost_bp' => 35000]]],
+    // Secret training [docs/features/secret-training.md, Sprint 28]: one line, the next match only.
+    'secret_training' => ['boost' => 3, 'cost_bp' => 20, 'per_season' => 5],
     // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
     // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
     'balance' => [
@@ -203,7 +210,7 @@ return [
         'stoppage' => [1 => [1, 3], 2 => [2, 6], 3 => [0, 2], 4 => [0, 2]],
         'bot_personalities' => ['giants', 'defenders', 'pressers', 'hard', 'wingers', 'adaptive'],
     ],
-    'clock' => ['dev_round_minutes' => 1, 'file' => storage_path('app/game-clock.json')],
+    'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],

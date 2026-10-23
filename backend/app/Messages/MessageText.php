@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -106,6 +106,11 @@ class MessageText
             'training_done' => [
                 'title' => 'اكتمل تدريب '.$p['player'],
                 'body' => sprintf('تحسن %s فأصبحت قوته %d، وخانته فارغة الآن: اختر لاعباً آخر للتدريب.', $p['player'], $p['overall']),
+                'link' => '/training',
+            ],
+            'camp_back' => [
+                'title' => 'عاد اللاعبون من المعسكر',
+                'body' => implode('، ', array_map(fn ($x) => $x['gain'] ? "{$x['name']} +{$x['gain']}" : "{$x['name']} بلا زيادة", $p['players'] ?? [])).'. ومن لم تكتمل قفزته يحتفظ بتقدمه.',
                 'link' => '/training',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
