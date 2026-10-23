@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
 use App\Http\Controllers\Controller;
+use App\League\Leaving;
+use App\Models\LeagueMembership;
 use App\Models\User;
 use App\Support\Activity;
 use App\Support\GameClock;
@@ -122,9 +124,12 @@ class AuthController extends Controller
             $user->tokens()->delete();
             DB::table('sessions')->where('user_id', $user->id)->delete();
             DB::table('password_reset_tokens')->where('email', $user->email)->delete();
-            // Its clubs go back to the bots (clubs.user_id empties with the account) [PLAN 2.2].
-            DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')
-                ->update(['left_at' => GameClock::now(), 'left_reason' => 'deleted']);
+            // Its clubs go back to the bots, as any coach leaving: offers and listings cancelled [PLAN 2.2, Sprint 37].
+            foreach (LeagueMembership::where('user_id', $user->id)->whereNull('left_at')->get() as $m) {
+                Leaving::leave($m, 'deleted');
+            }
+            // What is only its own goes with it (wallet, messages, devices, activity: by the database's cascades);
+            // what the leagues keep (titles, objectives, matches) loses the name.
             $user->delete();
         });
         Auth::guard('web')->logout();

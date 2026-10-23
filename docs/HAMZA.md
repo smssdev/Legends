@@ -754,11 +754,11 @@
 | ✅ مكتمل | حمزة | 2.14 | `art/raw/stadiums/classic/day/crowd-joy.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ✅ مكتمل | حمزة | 2.15 | `art/raw/stadiums/classic/day/crowd-tense.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ✅ مكتمل | حمزة | 2.16 | `art/raw/stadiums/classic/day/crowd-sad.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
-| ✅ مكتمل | حمزة | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ✅ مكتمل | حمزة | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ✅ مكتمل | حمزة | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ✅ مكتمل | حمزة | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
@@ -785,11 +785,11 @@
 | ⬜ لم يتم العمل عليه | حمزة | 3.14 | `art/raw/stadiums/gulf/dusk/crowd-joy.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 3.15 | `art/raw/stadiums/gulf/dusk/crowd-tense.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 3.16 | `art/raw/stadiums/gulf/dusk/crowd-sad.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
-| ✅ مكتمل | حمزة | 19.1 | `art/raw/stadiums/classic/night/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 19.2 | `art/raw/stadiums/classic/night/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 19.3 | `art/raw/stadiums/classic/night/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 19.4 | `art/raw/stadiums/classic/night/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ✅ مكتمل | حمزة | 19.5 | `art/raw/stadiums/classic/night/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.1 | `art/raw/stadiums/classic/night/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.2 | `art/raw/stadiums/classic/night/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.3 | `art/raw/stadiums/classic/night/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.4 | `art/raw/stadiums/classic/night/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.5 | `art/raw/stadiums/classic/night/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.1 | `art/raw/stadiums/classic/snow/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.2 | `art/raw/stadiums/classic/snow/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.3 | `art/raw/stadiums/classic/snow/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |

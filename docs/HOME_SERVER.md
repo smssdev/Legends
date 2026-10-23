@@ -45,8 +45,13 @@ powershell -ExecutionPolicy Bypass -File C:\Legends\deploy\windows\update.ps1
 ## حماية البيانات
 
 - لا تشغّل `composer fresh` ولا `migrate:fresh` على هذا الجهاز: هذان للتطوير فقط ويمسحان قاعدة البيانات.
-- لاسترجاع نسخة احتياطية: أوقف المهمة `Legends Web`، وانسخ ملفات النسخة من `database\backups\<التاريخ>\` فوق ملفات `database\`، ثم شغّل المهمة.
-- يُستحسن نسخ مجلد `backups` أسبوعياً إلى Google Drive أو فلاشة.
+- **نسخة متواصلة على القرص الثاني (Litestream):** اكتب في `backend\.env` السطر `LITESTREAM_REPLICA_DIR=D:\LegendsReplica` (مجلد على القرص الثاني)، ثم شغّل `setup.ps1` مرة. تعمل مهمة `Legends Replica` دائماً وتحفظ آخر 72 ساعة.
+- **النسخة اليومية على Google Drive (rclone، مجاني):** ثبّت rclone، ثم `rclone config` مرة (remote باسم `gdrive` من نوع Google Drive)، واكتب `BACKUP_RCLONE_REMOTE=gdrive:LegendsBackups` في `backend\.env`. كل نسخة يومية تُرفع، ويُحذف هناك ما فوق 30 يوماً.
+- **الاسترجاع:** أوقف المهام (أو شغّل من داخل `update.ps1`)، ثم من `backend`:
+  - من نسخة على الجهاز: `php artisan db:restore <التاريخ>` (اسم المجلد في `database\backups\`، وتراه أيضاً في لوحة الإدارة).
+  - من Google Drive: `rclone copy gdrive:LegendsBackups\<التاريخ> restore\` ثم `php artisan db:restore restore`.
+  - من Litestream: `tools\litestream\litestream.exe restore -o legends-restored.sqlite D:\LegendsReplica\legends` ثم `php artisan db:restore legends-restored.sqlite`.
+  - يفحص الملف قبل أي تغيير، ويحفظ الحالي بجانبه باسم `.before-restore`. ثم شغّل المهام.
 
 ## لو لم يعمل شيء
 
