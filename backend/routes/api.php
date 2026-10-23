@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -162,6 +163,14 @@ Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'
     Route::get('unread', 'unread');
     Route::post('read-all', 'readAll');
     Route::post('{message}/read', 'read')->whereNumber('message');
+});
+
+// Notifications [Sprint 36]: the kinds wanted and this browser's subscription.
+Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notifications'])->controller(NotificationController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::put('/', 'update');
+    Route::post('subscriptions', 'subscribe');
+    Route::delete('subscriptions', 'unsubscribe');
 });
 
 // The coins wallet [Sprint 34].

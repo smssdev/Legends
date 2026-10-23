@@ -4,6 +4,7 @@ namespace App\Messages;
 
 use App\Events\MessageReceived;
 use App\Events\MessagesRead;
+use App\Notify\Push;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,10 @@ class Inbox
         }
         $id = DB::table('messages')->insertGetId(['user_id' => $userId, 'league_id' => $leagueId, 'club_id' => $clubId,
             'type' => $type, 'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE), 'created_at' => GameClock::now()]);
-        MessageReceived::dispatch($userId, self::view(DB::table('messages')->find($id)), self::unread($userId));
+        $view = self::view(DB::table('messages')->find($id));
+        MessageReceived::dispatch($userId, $view, self::unread($userId));
+        // And a push to the account's browsers, for the kinds it wants [Sprint 36].
+        Push::send($userId, $type, $view['title'], $view['body'], $view['link']);
 
         return $id;
     }
