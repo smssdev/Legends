@@ -225,6 +225,8 @@ const soundOn = ref(false)
 const pitch = ref<any>()
 const sound = new MatchSound()
 const voice = new Commentator()
+// The crowd steps back under the commentator's voice [Sprint 35].
+voice.onTalk = (talking) => sound.duck(talking)
 const commentary = ref<Lang | 'off'>(readPref())
 const intro = ref(true)
 const highlighting = ref(false)
@@ -477,6 +479,9 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (live.value && animate && lastGoal && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
   lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
+  // The stands sing: after a goal, and now and then in a quiet spell (every 13 minutes of play) [Sprint 35].
+  if (animate && t.events.some((e) => e.type === 'goal')) sound.chant(6)
+  else if (animate && t.moment?.kind === 'quiet' && t.minute?.[0] % 13 === 7) sound.chant()
   pendingReveal = () => tell(t, animate)
   if (animate) pitch.value?.play(t, startAt)
   else reveal()

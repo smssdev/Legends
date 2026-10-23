@@ -87,6 +87,13 @@ class MatchCommentaryTest extends TestCase
         $this->assertNotEmpty($told);
         $this->assertTrue($told->every(fn ($e) => isset($e['text']) && $e['text'] !== ''));
         $this->assertNotEmpty(DB::table('match_events')->where('match_id', $match->id)->where('payload', 'like', '%"text"%')->count());
+        // And the commentator's line, drawn on the server, goes with every minute [Sprint 35].
+        $minutes = Event::dispatched(MatchMinute::class)->map(fn ($e) => $e[0]->broadcastWith());
+        $this->assertTrue($minutes->every(fn ($m) => array_key_exists('voice', $m)));
+        $goal = $minutes->first(fn ($m) => collect($m['events'])->contains('type', 'goal'));
+        if ($goal) {
+            $this->assertContains($goal['voice']['line'], ['goal', 'header', 'penalty_goal', 'free_kick_goal']);
+        }
 
         // The assistant spoke to the coach a few times, on his club's own channel only.
         // (A development league plays a round every minute, so the coach's next matches run alongside.)

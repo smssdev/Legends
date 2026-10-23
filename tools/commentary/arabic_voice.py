@@ -1,10 +1,10 @@
 """The Arabic commentator in a recorded human voice (docs/PLAN.md 2.21).
 
-Every Arabic line of web/src/match/feed/story.ts has a file name: <moment>-<slot>-<n>.wav
+Every Arabic line of web/src/match/feed/backend/resources/commentary/voice.json has a file name: <moment>-<slot>-<n>.wav
 (slot: pre before the moment, key the moment itself, post after it). The list, with each
 line's tone and text, is in audio/raw/ar/story/files.txt.
 
-  python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in story.ts
+  python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in backend/resources/commentary/voice.json
   python3 tools/commentary/arabic_voice.py build    # make web/public/commentary/ar/phrases.mp3 + .json
 
 build takes each recording in audio/raw/ar/story/ (wav, mp3, m4a, ogg or flac, same name), trims the
@@ -37,13 +37,9 @@ def phrase_key(text):
 
 
 def lines():
-    """Every Arabic line once, in story.ts order: (file stem, excited, text)."""
-    web = os.path.join(ROOT, 'web')
-    code = subprocess.run(['npx', 'esbuild', 'src/match/feed/story.ts', '--format=esm', '--log-level=error'], cwd=web, capture_output=True, text=True, check=True).stdout
-    with tempfile.TemporaryDirectory() as d:
-        with open(f'{d}/story.mjs', 'w', encoding='utf-8') as h:
-            h.write(code)
-        data = json.loads(subprocess.run(['node', '-e', f"import('{d}/story.mjs').then(m => process.stdout.write(JSON.stringify(m.LINES)))"], capture_output=True, text=True, check=True).stdout)
+    """Every Arabic line once, in the table's order: (file stem, excited, text)."""
+    with open(os.path.join(ROOT, 'backend', 'resources', 'commentary', 'voice.json'), encoding='utf-8') as h:
+        data = json.load(h)
     seen, out = set(), []
     for moment, slots in data.items():
         for slot, s in slots.items():
