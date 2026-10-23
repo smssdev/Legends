@@ -55,7 +55,7 @@ jobs:
           key: composer-8.4-${{ hashFiles('backend/composer.lock') }}
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: cp .env.example .env && php artisan key:generate && php artisan migrate --force && php artisan data:import
-      # docs/ENGINE.md 9: the same targets as the nightly 5000-match run, on fixed seeds and a short sample
+      # docs/PLAN.md 4.5: the same targets as the nightly 5000-match run, on fixed seeds and a short sample
       # (each target allows two standard errors of the sample). The full runs are nightly on the home server.
       - run: php artisan sim:balance --n=760 --favourite=300
       - run: php artisan sim:knobs --n=300
@@ -67,7 +67,7 @@ jobs:
   arm:
     name: Engine on ARM (golden matches)
     # The repository is private, so no hosted ARM runner: the official arm64 PHP image under QEMU.
-    # The same golden matches as x86, minute for minute (docs/SPRINTS.md S12 B4). Only the golden test runs: it is quick.
+    # The same golden matches as x86, minute for minute (docs/DONE.md 1.5). Only the golden test runs: it is quick.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

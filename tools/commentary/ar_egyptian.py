@@ -1,7 +1,7 @@
 """The Arabic commentator's lines in Egyptian Arabic, as they are said, without diacritics.
 
 Owner's decision (2026-10-20): the commentator speaks Egyptian. ar_catalog.py takes the text of
-every clip from here (docs/audio/ARABIC_VOICE.md, audio/raw/ar/catalog.tsv, each folder's README).
+every clip from here (audio/raw/ar/catalog.tsv).
 The simulator's on-screen lines stay in web/src/match/feed/story.ts; only the recorded voice is Egyptian.
 """
 import re
