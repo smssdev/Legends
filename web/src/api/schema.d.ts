@@ -2479,6 +2479,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/training/camp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send players to the training camp (docs/features/camp.md)
+         * @description Paid in full when they go. They miss the club's matches until they come back, and train at the level's pace.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_ids: number[];
+                        /** @enum {string} */
+                        level: "basic" | "good" | "elite";
+                        days: number;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Training after sending */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrainingView"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/training/secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Order secret training of one line for the next match (docs/features/secret-training.md)
+         * @description Until the lock. The line plays that match only with +3 on the rating and every attribute. Never shown to the opponent.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        line: "gk" | "def" | "mid" | "att";
+                    };
+                };
+            };
+            responses: {
+                /** @description Training after ordering */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrainingView"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/training/{line}": {
         parameters: {
             query?: never;
@@ -4514,6 +4621,7 @@ export interface components {
             injured: boolean;
             /** @description At his potential */
             maxed: boolean;
+            in_camp: boolean;
         };
         TrainingView: {
             /** @description One session's price */
@@ -4534,6 +4642,57 @@ export interface components {
                 next_at: string | null;
             }[];
             players: components["schemas"]["TrainingPlayer"][];
+            camp: {
+                max_players: number;
+                /** @description [least, most] */
+                days: number[];
+                min_left: number;
+                levels: {
+                    /** @enum {string} */
+                    level: "basic" | "good" | "elite";
+                    /** @description The pace against an ordinary session (10000 = the same) */
+                    gain_bp: number;
+                    /** @description One player for one day */
+                    day_price: number;
+                }[];
+                /** @description The camp under way, or the last one */
+                current: {
+                    id: number;
+                    /** @enum {string} */
+                    level: "basic" | "good" | "elite";
+                    /** @enum {string} */
+                    status: "active" | "done";
+                    cost: number;
+                    sessions: number;
+                    sessions_done: number;
+                    /** Format: date-time */
+                    ends_at: string;
+                    players: {
+                        id: number;
+                        gain: number;
+                    }[];
+                } | null;
+            };
+            secret: {
+                cost: number;
+                boost: number;
+                per_season: number;
+                used: number;
+                fixture: {
+                    id: number;
+                    competition: string;
+                    round: number;
+                    status: string;
+                    opponent: string;
+                    /** Format: date-time */
+                    lock_at: string;
+                    /**
+                     * @description The line ordered for this match
+                     * @enum {string|null}
+                     */
+                    line: "gk" | "def" | "mid" | "att" | null;
+                } | null;
+            };
         };
         SquadPlayer: {
             id: number;
@@ -4554,6 +4713,8 @@ export interface components {
             fitness: number;
             injured_matches: number;
             suspended_matches: number;
+            /** @description At the training camp */
+            in_camp?: boolean;
             available: boolean;
             attributes: {
                 [key: string]: number | null;

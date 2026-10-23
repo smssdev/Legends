@@ -50,7 +50,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">القيمة</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
       </dl>
       <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]">
-        {{ player.injured_matches ? `مصاب: يغيب ${player.injured_matches} مباريات` : `موقوف: ${player.suspended_matches} مباريات` }}
+        {{ player.in_camp ? 'في معسكر التدريب حتى يعود' : player.injured_matches ? `مصاب: يغيب ${player.injured_matches} مباريات` : `موقوف: ${player.suspended_matches} مباريات` }}
       </p>
     </section>
   </div>

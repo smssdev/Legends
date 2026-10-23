@@ -111,6 +111,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(TrainingController::class)->prefix('{league}/training')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'add')->middleware('throttle:30,1,training');
+        Route::post('camp', 'sendToCamp')->middleware('throttle:20,1,training-camp');
+        Route::post('secret', 'secretSession')->middleware('throttle:20,1,training-secret');
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);

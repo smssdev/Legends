@@ -23,6 +23,8 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
+        <!-- The tests keep their own game clock: a clock:travel in development does not reach them. -->
+        <env name="GAME_CLOCK_FILE" value="storage/app/testing-game-clock.json"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value="database/testing.sqlite"/>
         <env name="DB_CACHE_DATABASE" value="database/testing-cache.sqlite"/>

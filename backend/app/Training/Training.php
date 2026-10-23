@@ -48,6 +48,9 @@ class Training
             if ($p->overall + $p->training_bonus >= $p->potential) {
                 throw new HttpException(422, 'وصل هذا اللاعب إلى أقصى إمكانيته، والتدريب لا يزيده.');
             }
+            if (Camp::away($clubId, $playerId)) {
+                throw new HttpException(409, 'اللاعب في المعسكر حتى يعود.');
+            }
             if (DB::table('training_slots')->where('player_id', $playerId)->exists()) {
                 throw new HttpException(409, 'اللاعب يتدرب الآن.');
             }
@@ -117,26 +120,39 @@ class Training
             } catch (HttpException) {
                 return 0;   // no money: the session is missed, the bar stays
             }
-            $overall = $p->overall + $p->training_bonus;
-            $progress = $p->training_progress + Gain::fromConfig()->step($overall, "{$p->id}:{$slotId}:{$session}");
-            if ($progress < (int) config('game.training.progress_scale')) {
-                DB::table('players')->where('id', $p->id)->update(['training_progress' => $progress]);
-
+            if (! self::advance($p, Gain::fromConfig()->step($p->overall + $p->training_bonus, "{$p->id}:{$slotId}:{$session}"))) {
                 return 1;
             }
-            $value = PlayerValuation::fromConfig()->value($overall + 1, (int) $p->age, $p->line, (int) $p->potential);
-            DB::table('players')->where('id', $p->id)->update(['training_bonus' => $p->training_bonus + 1, 'training_progress' => 0, 'value' => $value]);
             DB::table('training_slots')->where('id', $slotId)->delete();
-            Inbox::send($club->user_id, 'training_done', ['player' => $p->name, 'overall' => $overall + 1], $club->league_id, $club->id);
+            Inbox::send($club->user_id, 'training_done', ['player' => $p->name, 'overall' => $p->overall + $p->training_bonus + 1], $club->league_id, $club->id);
 
             return 1;
         });
     }
 
-    /** A squad row as the engine reads it, with the training on top: the rating and every attribute, up to 99. */
-    public static function boosted(array $row): array
+    /**
+     * Move a player's bar by $step. At the full bar: +1 on his rating (and value), the bar starts again. Returns
+     * whether he went up. The caller holds the transaction and has checked the potential.
+     */
+    public static function advance(object $p, int $step): bool
     {
-        $bonus = (int) ($row['training_bonus'] ?? 0);
+        $progress = $p->training_progress + $step;
+        if ($progress < (int) config('game.training.progress_scale')) {
+            DB::table('players')->where('id', $p->id)->update(['training_progress' => $progress]);
+
+            return false;
+        }
+        $overall = $p->overall + $p->training_bonus + 1;
+        $value = PlayerValuation::fromConfig()->value($overall, (int) $p->age, $p->line, (int) $p->potential);
+        DB::table('players')->where('id', $p->id)->update(['training_bonus' => $p->training_bonus + 1, 'training_progress' => 0, 'value' => $value]);
+
+        return true;
+    }
+
+    /** A squad row as the engine reads it, with the training on top: the rating and every attribute, up to 99. */
+    public static function boosted(array $row, int $extra = 0): array
+    {
+        $bonus = (int) ($row['training_bonus'] ?? 0) + $extra;
         if ($bonus) {
             foreach (['overall', 'pac', 'sho', 'pas', 'dri', 'def', 'phy', 'gk_diving', 'gk_handling', 'gk_kicking', 'gk_positioning', 'gk_reflexes'] as $k) {
                 if (isset($row[$k])) {
@@ -148,7 +164,7 @@ class Training
         return $row;
     }
 
-    private static function player(int $id): ?object
+    public static function player(int $id): ?object
     {
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.id', $id)
             ->first(['players.id', 'players.club_id', 'players.overall', 'players.training_bonus', 'players.training_progress',
