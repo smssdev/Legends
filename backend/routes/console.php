@@ -16,6 +16,8 @@ Schedule::command('market:renew')->everyMinute()->withoutOverlapping();
 Schedule::command('scout:due')->everyMinute()->withoutOverlapping();
 // Training sessions, coach online or not [Sprint 27].
 Schedule::command('training:tick')->everyMinute()->withoutOverlapping();
+// A season whose last match is in: titles, objectives, then the new season or the end [Sprint 33].
+Schedule::command('seasons:close')->everyMinute()->withoutOverlapping();
 // The stadium's parts, coach online or not [Sprint 29].
 Schedule::command('stadium:due')->everyMinute()->withoutOverlapping();
 

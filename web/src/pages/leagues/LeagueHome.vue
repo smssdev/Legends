@@ -5,7 +5,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
-import { budget, END_MODES, STATUS, when, type JoinRequest, type League, type LeagueClub } from '../../api/leagues'
+import { budget, cupGoal, END_MODES, leagueGoal, STATUS, when, type JoinRequest, type League, type LeagueClub } from '../../api/leagues'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import LeagueTabs from './LeagueTabs.vue'
 import { rememberLeague } from '../../lib/currentLeague'
@@ -167,6 +167,12 @@ onMounted(load)
         </div>
       </header>
 
+      <section v-if="mine?.objectives" aria-label="هدف الإدارة" class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
+        <b class="text-gold">هدف الإدارة هذا الموسم</b>
+        <span>الدوري: {{ leagueGoal(mine.objectives.league) }}</span>
+        <span>الكأس: {{ cupGoal(mine.objectives.cup.target) }}</span>
+      </section>
+
       <LeagueTabs v-if="clubs.length" :league-id="leagueId" :my-club-id="league.my_club_id" :team-count="league.team_count" />
 
       <div class="grid gap-4 md:grid-cols-2">
@@ -234,7 +240,7 @@ onMounted(load)
             <div class="flex min-h-touch flex-wrap items-center gap-3">
               <span class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
-                <span class="block truncate font-bold">{{ m.user.name }} <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
+                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
                 <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
               </span>
               <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>
