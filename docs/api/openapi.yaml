@@ -1052,6 +1052,55 @@ paths:
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/training/camp:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: Send players to the training camp (docs/features/camp.md)
+      description: Paid in full when they go. They miss the club's matches until they come back, and train at the level's pace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [player_ids, level, days, idempotency_key]
+              properties:
+                player_ids: { type: array, items: { type: integer }, minItems: 1, maxItems: 5 }
+                level: { type: string, enum: [basic, good, elite] }
+                days: { type: integer, minimum: 1, maximum: 3 }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '200':
+          description: Training after sending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TrainingView' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/training/secret:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: Order secret training of one line for the next match (docs/features/secret-training.md)
+      description: Until the lock. The line plays that match only with +3 on the rating and every attribute. Never shown to the opponent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [line]
+              properties:
+                line: { type: string, enum: [gk, def, mid, att] }
+      responses:
+        '200':
+          description: Training after ordering
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TrainingView' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/training/{line}:
     parameters:
       - { name: league, in: path, required: true, schema: { type: integer } }
@@ -2150,7 +2199,7 @@ components:
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
     TrainingPlayer:
       type: object
-      required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed]
+      required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed, in_camp]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -2164,9 +2213,10 @@ components:
         sessions: { type: integer, description: About how many sessions a +1 takes at his rating }
         injured: { type: boolean }
         maxed: { type: boolean, description: At his potential, training adds nothing }
+        in_camp: { type: boolean }
     TrainingView:
       type: object
-      required: [cost, balance, interval_minutes, now, slots, players]
+      required: [cost, balance, interval_minutes, now, slots, players, camp, secret]
       properties:
         cost: { type: integer, description: One session's price }
         balance: { type: integer }
@@ -2183,6 +2233,63 @@ components:
               sessions_done: { type: integer }
               next_at: { type: string, format: date-time, nullable: true }
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
+        camp:
+          type: object
+          required: [max_players, days, min_left, levels, current]
+          properties:
+            max_players: { type: integer }
+            days: { type: array, items: { type: integer }, description: '[least, most]' }
+            min_left: { type: integer }
+            levels:
+              type: array
+              items:
+                type: object
+                required: [level, gain_bp, day_price]
+                properties:
+                  level: { type: string, enum: [basic, good, elite] }
+                  gain_bp: { type: integer, description: The pace against an ordinary session (10000 = the same) }
+                  day_price: { type: integer, description: One player for one day }
+            current:
+              type: object
+              nullable: true
+              description: The camp under way, or the last one
+              required: [id, level, status, cost, sessions, sessions_done, ends_at, players]
+              properties:
+                id: { type: integer }
+                level: { type: string, enum: [basic, good, elite] }
+                status: { type: string, enum: [active, done] }
+                cost: { type: integer }
+                sessions: { type: integer }
+                sessions_done: { type: integer }
+                ends_at: { type: string, format: date-time }
+                players:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, gain]
+                    properties:
+                      id: { type: integer }
+                      gain: { type: integer }
+        secret:
+          type: object
+          required: [cost, boost, per_season, used, fixture]
+          properties:
+            cost: { type: integer }
+            boost: { type: integer }
+            per_season: { type: integer }
+            used: { type: integer }
+            fixture:
+              type: object
+              nullable: true
+              required: [id, competition, round, status, opponent, lock_at, line]
+              properties:
+                id: { type: integer }
+                competition: { type: string }
+                round: { type: integer }
+                status: { type: string }
+                opponent: { type: string }
+                lock_at: { type: string, format: date-time }
+                line: { type: string, nullable: true, enum: [gk, def, mid, att], description: The line ordered for this match, if any }
     SquadPlayer:
       type: object
       required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
@@ -2202,6 +2309,7 @@ components:
         fitness: { type: integer }
         injured_matches: { type: integer }
         suspended_matches: { type: integer }
+        in_camp: { type: boolean, description: At the training camp, so not in the matches }
         available: { type: boolean }
         attributes: { type: object, additionalProperties: { type: integer, nullable: true } }
         role: { type: string, enum: [starter, bench, reserve] }

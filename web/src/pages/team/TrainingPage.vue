@@ -61,6 +61,24 @@ async function act(run: () => Promise<{ data?: View }>, done: string) {
   busy.value = false
 }
 
+// The camp (docs/features/camp.md) and secret training (docs/features/secret-training.md).
+const LEVEL_NAMES: Record<string, string> = { basic: 'عادي', good: 'جيد', elite: 'ممتاز' }
+const pick = ref<number[]>([])
+const level = ref<'basic' | 'good' | 'elite'>('good')
+const days = ref(1)
+const campActive = computed(() => v.value?.camp.current?.status === 'active')
+const campPrice = computed(() => (v.value?.camp.levels.find((l) => l.level === level.value)?.day_price ?? 0) * pick.value.length * days.value)
+const nameOf = (id: number) => v.value?.players.find((p) => p.id === id)?.name ?? ''
+function toggle(id: number) {
+  const i = pick.value.indexOf(id)
+  if (i >= 0) pick.value.splice(i, 1)
+  else if (pick.value.length < (v.value?.camp.max_players ?? 5)) pick.value.push(id)
+}
+const sendCamp = () => act(() => api.POST('/leagues/{league}/training/camp', { params: { path: { league: leagueId.value! } },
+  body: { player_ids: pick.value, level: level.value, days: days.value, idempotency_key: crypto.randomUUID() } }) as any, 'سافر اللاعبون إلى المعسكر.').then(() => { if (!error.value) pick.value = [] })
+const secret = (l: Line) => act(() => api.POST('/leagues/{league}/training/secret', { params: { path: { league: leagueId.value! } }, body: { line: l } }) as any,
+  `تم: ${LINE_NAMES[l]} +${v.value?.secret.boost} في المباراة القادمة، والخصم لا يعرف.`)
+
 const train = (id: number, name: string) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } }) as any,
   `بدأ ${name} التدريب. أول جلسة بعد ${Math.round((v.value?.interval_minutes ?? 0) / 60)} ساعات.`)
 const stop = (l: string) => act(() => api.DELETE('/leagues/{league}/training/{line}', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
@@ -70,7 +88,8 @@ onMounted(() => {
   load()
   tick = window.setInterval(() => {
     now.value = Date.now() + skew
-    if (v.value?.slots.some((s) => s.next_at && new Date(s.next_at).getTime() <= now.value - 2000)) load()
+    if (v.value?.slots.some((s) => s.next_at && new Date(s.next_at).getTime() <= now.value - 2000)
+      || (campActive.value && new Date(v.value!.camp.current!.ends_at).getTime() <= now.value - 2000)) load()
   }, 1000)
 })
 onBeforeUnmount(() => clearInterval(tick))
@@ -147,11 +166,65 @@ onBeforeUnmount(() => clearInterval(tick))
           <span class="text-center font-numbers text-lg">{{ p.overall }}</span>
           <span class="hidden text-center font-numbers sm:block" :class="p.maxed ? 'text-text-muted' : 'text-success'">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
-          <button v-if="!p.maxed" type="button" class="h-touch rounded-md bg-gold px-3 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">درّب</button>
+          <span v-if="p.in_camp" class="text-center text-xs text-gold">في المعسكر</span>
+          <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-gold px-3 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">درّب</button>
           <span v-else class="text-center text-xs text-text-muted">بلغ سقفه</span>
         </div>
         <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">لا لاعبين آخرين في هذا الخط.</p>
       </section>
+
+      <div class="grid gap-3 lg:grid-cols-2">
+        <section aria-label="معسكر التدريب" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+          <div><h2 class="font-display text-lg font-bold">معسكر التدريب</h2>
+            <p class="text-sm text-text-muted">حتى {{ v.camp.max_players }} لاعبين يتدربون معاً، ويغيبون عن المباريات حتى يعودوا. يبقى {{ v.camp.min_left }} لاعباً على الأقل في الفريق.</p></div>
+          <template v-if="campActive">
+            <div class="flex items-center gap-3 rounded-lg border border-gold/40 bg-surface-sunk p-3">
+              <span class="flex-1"><b class="block">معسكر {{ LEVEL_NAMES[v.camp.current!.level] }}</b><span class="text-xs text-text-muted">{{ v.camp.current!.sessions_done }} من {{ v.camp.current!.sessions }} جلسات</span></span>
+              <span class="text-end"><span class="block text-xs text-text-muted">العودة بعد</span><b class="font-numbers text-gold" dir="ltr">{{ left(v.camp.current!.ends_at) }}</b></span>
+            </div>
+            <div v-for="c in v.camp.current!.players" :key="c.id" class="flex items-center gap-2 px-1 text-sm">
+              <span class="flex-1 truncate"><bdi>{{ nameOf(c.id) }}</bdi></span>
+              <span class="font-numbers text-text-muted" dir="ltr">{{ v.players.find((p) => p.id === c.id)?.progress ?? 0 }}%</span>
+              <span v-if="c.gain" class="font-numbers text-success" dir="ltr">+{{ c.gain }}</span>
+            </div>
+          </template>
+          <template v-else>
+            <p v-if="v.camp.current" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm text-text-muted">آخر معسكر: {{ v.camp.current.players.map((c) => `${nameOf(c.id)} ${c.gain ? '+' + c.gain : ''}`).join('، ') }}</p>
+            <div class="flex flex-wrap gap-2" role="group" aria-label="الدرجة">
+              <button v-for="l in v.camp.levels" :key="l.level" type="button" class="h-touch flex-1 rounded-md px-3 text-sm font-bold"
+                :class="level === l.level ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="level = l.level">
+                {{ LEVEL_NAMES[l.level] }} · ×{{ l.gain_bp / 10000 }}</button>
+            </div>
+            <label class="flex items-center gap-3 text-sm text-text-muted">الأيام
+              <input v-model.number="days" type="range" :min="v.camp.days[0]" :max="v.camp.days[1]" class="flex-1 accent-gold" />
+              <b class="font-numbers text-text">{{ days }}</b></label>
+            <div class="flex flex-wrap gap-1.5" aria-label="اختر اللاعبين">
+              <button v-for="p in v.players.filter((p) => !p.maxed)" :key="p.id" type="button" class="min-h-touch rounded-full px-3 text-xs"
+                :class="pick.includes(p.id) ? 'bg-gold font-bold text-on-gold' : 'bg-surface-sunk text-text-muted'" :aria-pressed="pick.includes(p.id)" @click="toggle(p.id)">
+                <bdi>{{ p.name }}</bdi> {{ p.overall }}</button>
+            </div>
+            <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40"
+              :disabled="busy || !pick.length || campPrice > v.balance" @click="sendCamp">
+              أرسل {{ pick.length }} إلى المعسكر · <span class="font-numbers" dir="ltr">{{ money(campPrice) }}</span></button>
+          </template>
+        </section>
+
+        <section aria-label="التدريب السري" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+          <div><h2 class="font-display text-lg font-bold">التدريب السري</h2>
+            <p class="text-sm text-text-muted">خط واحد +{{ v.secret.boost }} في المباراة القادمة وحدها، والخصم لا يعرف. {{ v.secret.used }} من {{ v.secret.per_season }} هذا الموسم.</p></div>
+          <p v-if="!v.secret.fixture" class="text-sm text-text-muted">لا مباراة قادمة.</p>
+          <template v-else>
+            <p class="text-sm">ضد <b><bdi>{{ v.secret.fixture.opponent }}</bdi></b> · القفل بعد <span class="font-numbers text-gold" dir="ltr">{{ left(v.secret.fixture.lock_at) }}</span></p>
+            <p v-if="v.secret.fixture.line" class="rounded-lg bg-success/15 px-3 py-2 text-sm text-success">تم: {{ LINE_NAMES[v.secret.fixture.line] }} +{{ v.secret.boost }} في هذه المباراة.</p>
+            <p v-else-if="v.secret.fixture.status !== 'scheduled'" class="text-sm text-text-muted">قُفلت التشكيلة.</p>
+            <div v-else class="grid grid-cols-2 gap-2">
+              <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" class="h-12 rounded-md bg-surface-sunk font-bold disabled:opacity-40"
+                :disabled="busy || v.secret.used >= v.secret.per_season || v.secret.cost > v.balance" @click="secret(k as Line)">{{ n }}</button>
+            </div>
+            <p class="text-xs text-text-muted">الجلسة <span class="font-numbers" dir="ltr">{{ count(v.secret.cost) }}</span></p>
+          </template>
+        </section>
+      </div>
 
       <section aria-label="منشأة التدريب" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
         <div class="flex-1"><b class="block">منشأة التدريب</b><span class="text-sm text-text-muted">كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب (السبرنت 29).</span></div>

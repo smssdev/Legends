@@ -18,6 +18,7 @@ const captain = computed(() => team.value?.takers.captain?.player_id)
 
 function status(p: SquadPlayer) {
   if (p.injured_matches) return { text: `مصاب · ${p.injured_matches} مباريات`, tone: 'text-[#FF8A8A]' }
+  if (p.in_camp) return { text: 'في المعسكر', tone: 'text-gold' }
   if (p.suspended_matches) return { text: `موقوف · ${p.suspended_matches}`, tone: 'text-[#FF8A8A]' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
   if (p.fitness < 70) return { text: 'مرهق', tone: 'text-warning' }

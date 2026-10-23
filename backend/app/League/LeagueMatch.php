@@ -5,6 +5,7 @@ namespace App\League;
 use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Simulator\MatchFactory;
+use App\Training\SecretTraining;
 use App\Training\Training;
 use Illuminate\Support\Facades\DB;
 
@@ -34,6 +35,8 @@ class LeagueMatch
     private static function side(Club $club, object $sheet): array
     {
         $takers = json_decode($sheet->takers, true);
+        // Secret training: one line, this match only [docs/features/secret-training.md].
+        $boosts = SecretTraining::boosts($club->id, $sheet->fixture_id);
 
         return [
             'club' => [
@@ -44,7 +47,7 @@ class LeagueMatch
             'squad' => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
                 ->where('players.club_id', $club->id)
                 ->select('master_players.*', 'players.id', 'players.overall', 'players.training_bonus', 'players.fitness')->orderBy('players.id')->get()
-                ->map(fn ($r) => Training::boosted((array) $r))->all(),
+                ->map(fn ($r) => Training::boosted((array) $r, $boosts[$r->line] ?? 0))->all(),
             'formation' => $sheet->formation,
             'slots' => json_decode($sheet->slots, true),
             'starters' => json_decode($sheet->starters, true),
