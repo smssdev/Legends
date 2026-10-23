@@ -59,6 +59,11 @@ export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null;
 }
 
 const BASE = import.meta.env.BASE_URL + 'commentary/'
+
+/** The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the five full voices by number only. */
+export const AR_VOICES = ['', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5'] as const
+export type ArVoice = (typeof AR_VOICES)[number]
+export const arVoiceName = (v: ArVoice) => (v ? 'صوت ' + v.slice(6) : 'الأساسي')
 const GAP = 0.07
 
 export class Commentator {
@@ -68,6 +73,7 @@ export class Commentator {
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
   private wanted: string[] = []
+  private arPack = 'ar/phrases'
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
   private queue: Line[] = []
@@ -102,8 +108,14 @@ export class Commentator {
     }
     void this.ctx.resume()
     this.pack('phrases')
-    this.pack('ar/phrases')
+    this.pack(this.arPack)
     for (const c of this.wanted) this.pack('clubs/' + c)
+  }
+
+  /** Which recorded Arabic voice says the Arabic lines. */
+  setArVoice(v: ArVoice) {
+    this.arPack = v ? `ar/${v}/phrases` : 'ar/phrases'
+    if (this.ctx && this.on) this.pack(this.arPack)
   }
 
   /** Fetch the two clubs' names early, before their first line. */
@@ -170,7 +182,7 @@ export class Commentator {
   // The clips for a line, null when one is missing for good (use the browser voice),
   // or 'wait' while a pack is still loading (the line is dropped; it would come late anyway).
   private resolve(line: Line): Clip[] | null | 'wait' {
-    const phrasePack = line.lang === 'ar' ? 'ar/phrases' : 'phrases'
+    const phrasePack = line.lang === 'ar' ? this.arPack : 'phrases'
     const out: Clip[] = []
     for (const p of line.parts) {
       const name = p.club ? 'clubs/' + p.club : phrasePack

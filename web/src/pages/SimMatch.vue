@@ -21,6 +21,7 @@
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
+      <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
@@ -196,7 +197,7 @@ import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
-import { Commentator, type Lang } from '../match/voice'
+import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -770,6 +771,17 @@ function toggleCommentary() {
   commentary.value = ({ en: 'ar', ar: 'off', off: 'en' } as const)[commentary.value]
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
+}
+// The Arabic voice: the first recording or one of the five full voices [audio review 2026-10-23].
+const arVoice = ref<ArVoice>(readArVoice())
+voice.setArVoice(arVoice.value)
+function nextArVoice() {
+  arVoice.value = AR_VOICES[(AR_VOICES.indexOf(arVoice.value) + 1) % AR_VOICES.length]
+  voice.setArVoice(arVoice.value)
+  try { localStorage.setItem('legends.arVoice', arVoice.value) } catch {}
+}
+function readArVoice(): ArVoice {
+  try { const v = localStorage.getItem('legends.arVoice') as ArVoice; return AR_VOICES.includes(v) ? v : '' } catch { return '' }
 }
 function readPref(): Lang | 'off' {
   try { const v = localStorage.getItem('legends.commentary'); return v === 'ar' || v === 'off' ? v : 'en' } catch { return 'en' }
