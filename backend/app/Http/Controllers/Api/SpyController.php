@@ -7,6 +7,7 @@ use App\League\Spy;
 use App\Models\Club;
 use App\Models\League;
 use App\Training\SecretTraining;
+use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -22,7 +23,8 @@ class SpyController extends Controller
         $saved = $f ? DB::table('spy_reports')->where('club_id', $club->id)->where('fixture_id', $f->id)->value('report') : null;
 
         return response()->json([
-            'cost' => Spy::cost($league->id),
+            // Coins, or club money in a fair league [Sprint 34].
+            ...(fn ($q) => ['cost' => $q['amount'], 'currency' => $q['currency']])(Price::quote($league->id, 'spy', Spy::cost($league->id))),
             'fixture' => $f ? [
                 'id' => $f->id, 'status' => $f->status,
                 'opponent' => DB::table('clubs')->where('id', $f->home_id === $club->id ? $f->away_id : $f->home_id)->value('name'),

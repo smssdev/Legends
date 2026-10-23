@@ -6,6 +6,7 @@ use App\Economy\Economy;
 use App\Market\Market;
 use App\Staff\Specialists;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -52,6 +53,14 @@ class MatchResult
                     'yc' => $p['yc'], 'out' => $p['out']], $team['players'])),
             ]);
             self::players($club[$side], $team, $m->seed, $matchId);
+            // Coins for the coach: a win or a draw [docs/features/premium.md].
+            $for = $state['score'][$side];
+            $against = $state['score'][$side === 'home' ? 'away' : 'home'];
+            if ($for >= $against) {
+                $type = $for > $against ? 'win' : 'draw';
+                $league = (int) DB::table('seasons')->where('id', $f->season_id)->value('league_id');
+                Wallet::earn(DB::table('clubs')->where('id', $club[$side])->value('user_id'), $type, "{$type}:{$f->id}:{$club[$side]}", "fixture:{$f->id}", $league, $f->season_id);
+            }
         }
         MatchReport::store($matchId, $state);
     }

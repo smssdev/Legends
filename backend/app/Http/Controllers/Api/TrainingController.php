@@ -10,6 +10,8 @@ use App\Training\Camp;
 use App\Training\Gain;
 use App\Training\SecretTraining;
 use App\Training\Training;
+use App\Wallet\Finish;
+use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -115,7 +117,8 @@ class TrainingController extends Controller
         $season = $league->season;
 
         return [
-            'cost' => SecretTraining::cost($league->id), 'boost' => (int) config('game.secret_training.boost'),
+            ...(fn ($q) => ['cost' => $q['amount'], 'currency' => $q['currency']])(Price::quote($league->id, 'secret_training', SecretTraining::cost($league->id))),
+            'boost' => (int) config('game.secret_training.boost'),
             'per_season' => (int) config('game.secret_training.per_season'),
             'used' => $season ? SecretTraining::usedThisSeason($club->id, $season->id) : 0,
             'fixture' => $f ? [
@@ -132,6 +135,13 @@ class TrainingController extends Controller
         $club = $this->club($request, $league);
         $data = $request->validate(['player_id' => 'required|integer']);
         Training::add($club->id, $data['player_id']);
+
+        return $this->show($request, $league);
+    }
+
+    public function finish(Request $request, League $league, string $line): JsonResponse
+    {
+        Finish::training($this->club($request, $league)->id, $line);
 
         return $this->show($request, $league);
     }

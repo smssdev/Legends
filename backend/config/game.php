@@ -237,6 +237,14 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
+    'premium' => [
+        'season_cap' => 400,           // the most a coach spends in one league in one season
+        'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
+            'league_1' => 100, 'league_2' => 50, 'league_3' => 25, 'cup_1' => 60, 'cup_2' => 30],
+        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10],
+        'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
+    ],
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
     // League: the strongest goes for the title; the top quarter for a place this far below its rank; the rest
     // further; and nobody is asked for less than to stay out of the bottom fifth. Cup: a stage by quarter of rank.

@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: wallet
+    description: The premium coins (Sprint 34)
   - name: market
     description: The market (Sprints 24 and 25)
   - name: messages
@@ -1500,6 +1502,61 @@ paths:
                         home: { type: string, description: The home club's code }
                         away: { type: string }
                         competition: { type: string, enum: [league, cup] }
+  /wallet:
+    get:
+      tags: [wallet]
+      summary: The coins wallet, today's reward, the spending per league against the cap, the movements and the shop
+      description: Sprint 34 (docs/features/premium.md). Coins are earned in the game only and never become club money.
+      responses:
+        '200':
+          description: The wallet
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WalletView' }
+  /wallet/daily:
+    post:
+      tags: [wallet]
+      summary: Take today's reward (once a Cairo day)
+      responses:
+        '200':
+          description: The wallet after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WalletView' }
+  /leagues/{league}/training/{line}/finish:
+    parameters:
+      - { name: league, in: path, required: true, schema: { type: integer } }
+      - { name: line, in: path, required: true, schema: { type: string, enum: [gk, def, mid, att] } }
+    post:
+      tags: [team]
+      summary: Finish the slot's next training session now, for coins
+      description: Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+      responses:
+        '200': { description: Done }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/scout/finish:
+    parameters:
+      - { name: league, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: Finish the scout's search now, for coins
+      description: Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+      responses:
+        '200': { description: Done }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/stadium/finish:
+    parameters:
+      - { name: league, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: Finish the stadium part being built now, for coins
+      description: Sprint 34 (docs/features/premium.md). Coins from the wallet, not in a fair league, within the season cap.
+      responses:
+        '200': { description: Done }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/honours:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2347,10 +2404,11 @@ components:
           type: array
           items:
             type: object
-            required: [type, cost, ends_at]
+            required: [type, cost, currency, ends_at]
             properties:
               type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
               cost: { type: integer }
+              currency: { type: string, enum: [coins, money] }
               ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
     SpyPlayer:
       type: object
@@ -2363,9 +2421,10 @@ components:
         overall: { type: integer }
     SpyView:
       type: object
-      required: [cost, fixture, report]
+      required: [cost, currency, fixture, report]
       properties:
         cost: { type: integer }
+        currency: { type: string, enum: [coins, money], description: Coins, or club money in a fair league (Sprint 34) }
         fixture:
           type: object
           nullable: true
@@ -2521,9 +2580,10 @@ components:
                       gain: { type: integer }
         secret:
           type: object
-          required: [cost, boost, per_season, used, fixture]
+          required: [cost, currency, boost, per_season, used, fixture]
           properties:
             cost: { type: integer }
+            currency: { type: string, enum: [coins, money] }
             boost: { type: integer }
             per_season: { type: integer }
             used: { type: integer }
@@ -2619,6 +2679,36 @@ components:
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
+    WalletView:
+      type: object
+      required: [balance, daily, cap, leagues, transactions, shop, prices]
+      properties:
+        balance: { type: integer }
+        daily: { type: object, required: [amount, claimed], properties: { amount: { type: integer }, claimed: { type: boolean } } }
+        cap: { type: integer, description: The most a coach spends in one league in one season }
+        leagues:
+          type: array
+          items:
+            type: object
+            required: [id, name, fair, spent]
+            properties:
+              id: { type: integer }
+              name: { type: string }
+              fair: { type: boolean, description: Coins locked in this league }
+              spent: { type: integer, description: This season }
+        transactions:
+          type: array
+          items:
+            type: object
+            required: [type, label, amount, balance_after, at]
+            properties:
+              type: { type: string }
+              label: { type: string }
+              amount: { type: integer }
+              balance_after: { type: integer }
+              at: { type: string, format: date-time }
+        shop: { type: array, items: { type: object, required: [coins, label], properties: { coins: { type: integer }, label: { type: string } } } }
+        prices: { type: object, additionalProperties: { type: integer } }
     Honours:
       type: object
       required: [league, seasons]

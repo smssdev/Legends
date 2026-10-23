@@ -3,8 +3,8 @@
 namespace App\Training;
 
 use App\Economy\Economy;
-use App\League\ClubLedger;
 use App\Support\GameClock;
+use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -61,7 +61,7 @@ class SecretTraining
             $now = GameClock::now();
             $id = DB::table('secret_trainings')->insertGetId(['club_id' => $clubId, 'fixture_id' => $fixture->id, 'season_id' => $fixture->season_id,
                 'line' => $line, 'cost' => $cost, 'created_at' => $now, 'updated_at' => $now]);
-            ClubLedger::post($clubId, 'secret_training', -$cost, "secret:{$id}", "fixture:{$fixture->id}", spend: true);
+            Price::charge($clubId, 'secret_training', $cost, "secret:{$id}", "fixture:{$fixture->id}");
         });
     }
 }

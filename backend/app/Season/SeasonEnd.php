@@ -10,6 +10,7 @@ use App\Messages\Inbox;
 use App\Models\League;
 use App\Models\Season;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -78,6 +79,10 @@ class SeasonEnd
             }
         }
         DB::table('titles')->insertOrIgnore($rows);
+        // Coins for the titles [docs/features/premium.md].
+        foreach ($rows as $r) {
+            Wallet::earn($r['user_id'], 'title', "title:{$season->id}:{$r['competition']}:{$r['position']}", "season:{$season->id}", $league->id, $season->id, "{$r['competition']}_{$r['position']}");
+        }
     }
 
     /** Each coach hears where he finished and whether he met his objectives. */
