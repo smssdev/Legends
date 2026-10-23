@@ -63,6 +63,8 @@ const GAP = 0.07
 
 export class Commentator {
   on = false
+  /** Told when he starts and stops talking, so the crowd can step back [Sprint 35]. */
+  onTalk: ((talking: boolean) => void) | null = null
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
   private wanted: string[] = []
@@ -141,6 +143,7 @@ export class Commentator {
 
   stop() {
     this.queue = []
+    if (this.busy) this.onTalk?.(false)
     this.busy = false
     clearTimeout(this.timer)
     for (const s of this.sources) try { s.stop() } catch {}
@@ -151,7 +154,12 @@ export class Commentator {
 
   private next(): void {
     const line = this.queue.shift()
-    if (!line || !this.on) { this.busy = false; return }
+    if (!line || !this.on) {
+      if (this.busy) this.onTalk?.(false)
+      this.busy = false
+      return
+    }
+    if (!this.busy) this.onTalk?.(true)
     this.busy = true
     const clips = this.resolve(line)
     if (clips === 'wait') return this.next()
