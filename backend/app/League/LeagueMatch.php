@@ -5,6 +5,7 @@ namespace App\League;
 use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Simulator\MatchFactory;
+use App\Stadium\Stadium;
 use App\Training\SecretTraining;
 use App\Training\Training;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class LeagueMatch
             'competition' => $fixture->competition,
             'referee' => self::REFEREE[$fixture->referee_strictness ?? 'medium'],
             'venue' => 'home',
+            'pitch' => Stadium::stage($fixture->home_id, 'pitch'),
         ], MatchFactory::snapshot()));
     }
 
