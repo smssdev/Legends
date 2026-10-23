@@ -180,11 +180,10 @@ def wave_of(i):
     return 2 + (i - 1) // PER_WAVE
 
 
-SPRINT = {1: 3, 2: 46, 3: 47, 4: 48, 5: 49, 6: 50, 7: 51, 8: 51, 9: 51}  # wave 1 now, the rest after v1.1 (phase Z)
-
-
+# Wave 1 is the simulator's Arabic voice (sprint 7); every later wave goes into the game as soon as it is
+# approved, with no sprint of its own (owner, 2026-10-23: the image phase gave way to Unity).
 def sprint(w):
-    return SPRINT.get(w, 52)
+    return '7' if w == 1 else 'حين تُعتمد'
 
 
 def table(rows, waves=None):
@@ -217,9 +216,9 @@ def main():
         f'| `audio/raw/ar/story/` | ما يقوله المحاكي الآن (يُبنى بـ `python3 tools/commentary/arabic_voice.py build`) | {len(story)} |',
     ] + [f'| `audio/raw/ar/{prefix}/` | {title} | {len(rows)} |' for prefix, title, _, rows in cat] + [
         f'| `audio/raw/sfx/` | أصوات الملعب والمباراة | {len(SFX)} |', '',
-        '## الدفعات: نفس طريقة الصور\n',
+        '## الدفعات\n',
         'لا نسجل الكتالوج فئة فئة، بل **دفعة دفعة على كل الفئات**: كل دفعة تعطي كل اللحظات صوتاً، ثم نضعها في المحاكاة ونجربها ونعتمدها، ثم الدفعة التالية تزيد التنوع.\n',
-        '| الدفعة | المحتوى | السبرنت |', '|---|---|---|',
+        '| الدفعة | المحتوى | تُبنى في |', '|---|---|---|',
         f'| 1 | كل `ar/story/` ({len(story)} مقطعاً): ما يقوله المحاكي الآن، فيعمل العربي كاملاً من أول دفعة | {sprint(1)} |',
     ] + [f'| {w} | المقاطع {PER_WAVE * (w - 2) + 1} إلى {PER_WAVE * (w - 1)} من كل فئة ({sum(1 for *_, r in cat for i in range(1, len(r) + 1) if wave_of(i) == w)} مقطعاً) | {sprint(w)} |' for w in range(2, max(wave_of(len(r)) for *_, r in cat) + 1)] + [
         '',
