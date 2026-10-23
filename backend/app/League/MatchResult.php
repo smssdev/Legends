@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Economy\Economy;
 use App\Market\Market;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
@@ -63,7 +64,11 @@ class MatchResult
                 $played[$p['id']] = intdiv($p['fit'], 100);
             }
         }
-        $rest = (int) config('game.matches.rest_recovery');
+        // The specialists under contract now [docs/features/specialists.md].
+        $doctor = Specialists::has($clubId, 'doctor');
+        $lawyer = Specialists::has($clubId, 'lawyer');
+        $rest = (int) config('game.matches.rest_recovery')
+            + (Specialists::has($clubId, 'physio') ? (int) config('game.specialists.physio_rest_bonus') : 0);
         // Fitness: as they ended, or a rest.
         foreach ($played as $id => $fit) {
             DB::table('players')->where('id', $id)->update(['fitness' => max(0, min(100, $fit))]);
@@ -71,7 +76,9 @@ class MatchResult
         DB::table('players')->where('club_id', $clubId)->whereNotIn('id', array_keys($played))
             ->update(['fitness' => DB::raw("min(100, fitness + {$rest})")]);
         // This match counts down every absence of the club's players...
-        DB::table('players')->where('club_id', $clubId)->where('injured_matches', '>', 0)->decrement('injured_matches');
+        $heal = $doctor ? (int) config('game.specialists.doctor_countdown') : 1;
+        DB::table('players')->where('club_id', $clubId)->where('injured_matches', '>', 0)
+            ->update(['injured_matches' => DB::raw("max(0, injured_matches - {$heal})")]);
         DB::table('players')->where('club_id', $clubId)->where('suspended_matches', '>', 0)->decrement('suspended_matches');
         // ...then the new ones start.
         $events = DB::table('match_events')->where('match_id', $matchId)->where('club_id', $clubId)->whereIn('type', ['injury', 'card'])->get();
@@ -85,7 +92,7 @@ class MatchResult
             if ($e->type === 'injury') {
                 $n = $min + crc32("{$seed}:{$player}") % ($max - $min + 1);
                 DB::table('players')->where('id', $player)->update(['injured_matches' => DB::raw("max(injured_matches, {$n})")]);
-            } elseif (($payload['color'] ?? null) === 'red') {
+            } elseif (($payload['color'] ?? null) === 'red' && ! ($lawyer && Specialists::lawyerCancels($seed, (int) $player))) {
                 DB::table('players')->where('id', $player)->update(['suspended_matches' => DB::raw('suspended_matches + '.(int) config('game.matches.red_card_matches'))]);
             }
         }
