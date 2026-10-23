@@ -27,6 +27,11 @@ class Report
         $good = array_values(array_filter($facts, fn ($f) => $f['weight'] > 0));
         $bad = array_values(array_filter($facts, fn ($f) => $f['weight'] < 0));
         $reasons = $result === 'loss' ? array_slice($bad, 0, 3) : array_slice($good, 0, 3);
+        // An even match leans neither way: its most telling facts, the neutral ones first, so a report always explains.
+        if (! $reasons) {
+            $even = array_values(array_filter($facts, fn ($f) => $result === 'loss' ? $f['weight'] <= 0 : $f['weight'] >= 0));
+            $reasons = array_slice($even ?: $facts, 0, 3);
+        }
         $improve = $result === 'loss' ? ($good[0] ?? null) : ($bad[0] ?? null);
 
         $ratings = [];
