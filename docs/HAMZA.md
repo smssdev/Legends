@@ -1,164 +1,160 @@
-# دليل حمزة: الصوت والمجسمات
+# دليل حمزة: أصوات الملعب
 
-> **مرجعك.** فيه ما تعمله بالترتيب، وروابط كل أداة، والسكربتات الجاهزة وكيف تشغّلها، وكيف تسلّم. كله **مجاني، ولا دولار واحد**.
->
-> **قرار صاحب المشروع (2026-10-23):** حمزة يراجع كل PR كما هو، **ومعه** يجهّز ما ينفعنا من الصوت والمجسمات بلا Unity، فيجده سليمان وClaude جاهزاً حين يصلون لسبرنته (`PLAN.md` القسم 9).
+مهمتك **فقط** أن تختار 44 صوتاً للملعب من موقع **Freesound**، وتقص الجزء المناسب من كل صوت، وتحفظه بالاسم المطلوب. وكل ما بعد ذلك يعمله Claude مع سليمان في Sprint 7 [PLAN 9]:
 
-## لماذا هذا وليس الصور
+- مراجعة الرخص.
+- توحيد مستوى الصوت.
+- جعل الحلقات تتكرر بلا فاصل.
+- إدخال الأصوات إلى Unity.
 
-الصور المسطحة لا تدخل محاكاة Unity: كل صورة لقطة من زاوية واحدة، وكاميرا Unity تتحرك. فلا صور جديدة. الذي يدخل Unity **مجسمات ثلاثية الأبعاد**، و**أصوات**. وهذا ما تجهّزه هنا.
+والمجسمات والملاعب والصور ليست من عملك.
 
-## الأدوات (كلها مجانية)
+## 1. التجهيز (مرة واحدة)
 
-| الأداة | الرابط | لماذا |
+| ماذا | أين | ملاحظة |
 |---|---|---|
-| **Blender** | https://www.blender.org/download/ | يشغّل سكربتاتنا، وتفتح فيه المجسمات وتعدّلها بيدك إن أردت |
-| **MakeHuman** | http://www.makehumancommunity.org/ | برنامج الأجسام البشرية (رخصة CC0): تصمم فيه الوجوه والبنى وتختار الشعر |
-| **MPFB2** (إضافة MakeHuman لـ Blender) | https://static.makehumancommunity.org/mpfb/index.html | نفس MakeHuman داخل Blender، وبه يصنع Claude اللاعبين النهائيين في Sprint 3 |
-| **Freesound** | https://freesound.org | أصوات الملعب. **فلتر الرخصة: Creative Commons 0 فقط** |
-| **Audacity** | https://www.audacityteam.org/download/ | قص الأصوات وتوحيد مستواها وصنع الحلقات |
-| **Git** | https://git-scm.com/download/win | لرفع ما تصنعه |
+| حساب في Freesound | https://freesound.org/home/register/ | مجاني، والتنزيل يحتاج تسجيل الدخول |
+| برنامج Audacity | https://www.audacityteam.org/download/ | مجاني، للقص والحفظ |
+| مجلد الحفظ | `audio/raw/sfx/` في المستودع | كل الأصوات الـ44 في هذا المجلد وحده، بلا مجلدات فرعية |
 
-**تجهيز جهازك مرة واحدة (ويندوز):**
-1. ثبّت Blender وGit وAudacity من الروابط (أو `winget install --id BlenderFoundation.Blender -e` و`winget install --id Git.Git -e`).
-2. `git clone https://github.com/smssdev/Legends.git C:\Legends-hamza`
-3. **لسكربت الناس فقط:** ملفات MakeHuman الأصلية في `tools\unity\art\makehuman\`:
-   - `base.obj` من https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj
-   - و`makehuman\data\targets.npz` من حزمة MakeHuman على PyPI: https://pypi.org/project/makehuman/1.3.2/#files (نزّل الملف `.whl`، وغيّر امتداده إلى `.zip`، وانسخ منه المجلد `makehuman` كما هو).
+## 2. خطوات كل صوت
 
-**تشغيل أي سكربت** (من مجلد المستودع، في PowerShell):
-```
-& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b -P tools\unity\art\<السكربت>.py
-```
-(غيّر رقم النسخة حسب ما ثبّت.) كل سكربت يكتب المجسم FBX في `unity\Assets\Legends\Art\` وصورة للحكم عليه في `unity\Reference\art\`. **افتح الصورة، وغيّر الأرقام أو الألوان في رأس السكربت، وشغّله مرة أخرى، حتى ترضى.**
+1. **ابحث:**
+   - اضغط رابط «جملة البحث» في جدول الصوت (القسم 4).
+   - الرابط يعرض أصواتاً برخصة **CC0** فقط، فلا تغيّر فلتر الرخصة.
+   - لو لم يعجبك شيء فجرّب رابط «إن لم تجد».
+2. **اسمع واختر:**
+   - اسمع عدة نتائج، واختر الأقرب لوصف «ما نريده».
+   - تأكد أن الرخصة تحت الصوت مكتوب فيها **Creative Commons 0**.
+3. **نزّل:** زر **Download**.
+4. **افتح في Audacity:** File ← Open.
+5. **قص:**
+   - حدد بالماوس أنظف جزء بالمدة المطلوبة في الجدول.
+   - Edit ← Remove Special ← Trim Audio، فيبقى المحدد وحده.
+6. **نظّف الأطراف:**
+   - حدد أول جزء صغير من الصوت (عُشر ثانية تقريباً) ثم Effect ← Fade In.
+   - وحدد آخر جزء صغير منه ثم Effect ← Fade Out.
+   - هذا يمنع الطقة في أول الصوت وآخره.
+7. **ارفع المستوى:**
+   - حدد الكل (Ctrl+A).
+   - Effect ← Volume and Compression ← Normalize على **-1 dB**.
+8. **احفظ:**
+   - File ← Export Audio.
+   - النوع **Ogg Vorbis**، والجودة 6 (الافتراضي مناسب).
+   - **الاسم بالضبط كما في عمود «اسم الملف»**: حروف إنجليزية صغيرة وشرطات، بلا مسافات ولا أرقام زائدة.
+   - المكان: `audio/raw/sfx/`.
+9. **سجّل المصدر:** أضف سطراً في الملف `audio/raw/sfx/sources.txt`:
+   - اسم الملف.
+   - ثم مسافة (Tab).
+   - ثم رابط صفحة الصوت في Freesound.
+   - مثال: `ball-shot.ogg	https://freesound.org/people/xxx/sounds/12345/`
 
----
+### الحلقات (المكتوب عندها «حلقة»)
 
-## المهام بالترتيب
+- هذه أصوات تتكرر طوال المباراة: الجمهور، والهتاف، والطبول، والمطر، والرياح، والخطوات، والنبض.
+- اختر جزءاً **ثابت المستوى** بالمدة المطلوبة، بلا صيحة مفاجئة ولا صافرة ولا كلام.
+- لا تحاول جعلها تتكرر بلا فاصل: هذا عمل Claude.
 
-### 1. أصوات الملعب الـ44 (يحتاجها Sprint 7، ابدأ بها)
+## 3. الممنوع
 
-**المطلوب:** كل صوت في الجدول، **برخصة CC0 فقط** من Freesound (أو تسجيلك أنت، أو مولّد)، باسمه بالضبط في `audio\raw\sfx\`.
+- **أي رخصة غير CC0**، حتى لو كان الصوت ممتازاً. فلا Attribution ولا Noncommercial.
+- أي صوت مدفوع أو من موقع آخر.
+- كلام مفهوم أو أسماء أندية أو لاعبين أو أغانٍ معروفة داخل الصوت.
+- صوت معلق، أو مذيع، أو إعلان داخلي في الملعب.
+- أصوات فيها ضجيج واضح: سيارات، ورياح على الميكروفون، وأشخاص قريبون جداً من الميكروفون.
 
-**القواعد:**
-- **CC0 فقط.** في Freesound: ابحث، ثم من اليسار **License ← Creative Commons 0**. لا CC-BY ولا غيرها.
-- **الصيغة:** OGG أو WAV، 44.1 كيلوهرتز. وطّد المستوى (Audacity ← Effect ← Normalize ← -1 dB).
-- **الحلقات** (المكتوب عندها حلقة): 30 ثانية تقريباً، ولا يُسمع مكان التكرار (اقصص عند صوت متشابه، وCrossfade نصف ثانية).
-- **لا موسيقى محمية، ولا معلق، ولا أسماء.**
-- **سجّل مصدر كل ملف** في `audio\raw\sfx\sources.csv`: سطر لكل صوت بالشكل `الملف,الرابط,الرخصة` (مثلاً `crowd-oh.ogg,https://freesound.org/s/12345/,CC0`).
+## 4. الأصوات الـ44
 
-| # | الملف | الصوت |
-|---|---|---|
-| 1 | `crowd-bed-calm.ogg` | خلفية الجمهور الهادئة (حلقة 30 ثانية) |
-| 2 | `crowd-bed-tense.ogg` | خلفية متوترة ترتفع مع الهجمة (حلقة) |
-| 3 | `crowd-bed-loud.ogg` | خلفية صاخبة بعد الهدف (حلقة) |
-| 4 | `crowd-oh.ogg` | آه جماعية بعد فرصة ضائعة |
-| 5 | `crowd-goal.ogg` | انفجار الهدف |
-| 6 | `crowd-goal-away.ogg` | هدف الضيف: صيحة صغيرة وصمت |
-| 7 | `crowd-boo.ogg` | استهجان |
-| 8 | `crowd-whistle.ogg` | صفير الجمهور |
-| 9 | `crowd-applause.ogg` | تصفيق |
-| 10 | `crowd-chant-1.ogg` | أهزوجة عامة 1 (حلقة) |
-| 11 | `crowd-chant-2.ogg` | أهزوجة عامة 2 (حلقة) |
-| 12 | `crowd-drums.ogg` | طبول الألتراس (حلقة) |
-| 13 | `crowd-count.ogg` | العد التنازلي قبل ركلة الجزاء: صمت ثم همهمة |
-| 14 | `crowd-heartbeat.ogg` | نبض قلب قبل الجزاء والضربة الحرة |
-| 15 | `whistle-short.ogg` | صافرة قصيرة (خطأ) |
-| 16 | `whistle-long.ogg` | صافرة طويلة (ركلة جزاء) |
-| 17 | `whistle-half.ogg` | صافرتان (الاستراحة) |
-| 18 | `whistle-end.ogg` | ثلاث صافرات (النهاية) |
-| 19 | `ball-pass.ogg` | لمسة تمرير |
-| 20 | `ball-shot.ogg` | ضربة قوية |
-| 21 | `ball-header.ogg` | رأسية |
-| 22 | `ball-net.ogg` | الكرة في الشباك |
-| 23 | `ball-post.ogg` | القائم: رنين معدني |
-| 24 | `ball-bar.ogg` | العارضة |
-| 25 | `ball-catch.ogg` | الحارس يمسك الكرة |
-| 26 | `ball-punch.ogg` | لكمة الحارس |
-| 27 | `ball-bounce.ogg` | ارتداد على العشب |
-| 28 | `slide.ogg` | تزحلق على العشب |
-| 29 | `slide-wet.ogg` | تزحلق على عشب مبتل |
-| 30 | `fall.ogg` | سقوط لاعب |
-| 31 | `step-run.ogg` | خطوات الجري (حلقة) |
-| 32 | `rain.ogg` | مطر (حلقة) |
-| 33 | `wind.ogg` | رياح (حلقة) |
-| 34 | `thunder.ogg` | رعد بعيد |
-| 35 | `pyro.ogg` | اشتعال شمروخ |
-| 36 | `fireworks.ogg` | ألعاب نارية |
-| 37 | `var-beep.ogg` | نغمة الفار |
-| 38 | `board-beep.ogg` | نغمة لوحة التبديل |
-| 39 | `ui-confirm.ogg` | تأكيد أمر المدرب |
-| 40 | `ui-applied.ogg` | نغمة تطبيق الأمر في الدقيقة |
-| 41 | `sting-goal.ogg` | نغمة البث للهدف |
-| 42 | `sting-card.ogg` | نغمة البطاقة |
-| 43 | `sting-half.ogg` | نغمة الاستراحة |
-| 44 | `sting-intro.ogg` | موسيقى بداية البث (8 ثوانٍ) |
+- كلها تُحفظ في `audio/raw/sfx/`.
+- اضغط جملة البحث لتفتح نتائج CC0 مباشرة.
+- المدة هي طول الجزء الذي تقصه.
 
-**نصيحة بحث في Freesound:** «stadium crowd»، «football crowd cheer»، «crowd groan»، «referee whistle»، «ball kick»، «goal net»، «metal post hit»، «rain loop»، «flare ignite»، «drums ultras».
+### أ. الجمهور (14 صوتاً)
 
-### 2. الكرة
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 1 | `crowd-bed-calm.ogg` | جمهور ملعب كبير في لحظة عادية: همهمة مستمرة، بلا هتاف عالٍ ولا صافرة ولا صوت معلق | [`stadium crowd ambience`](https://freesound.org/search/?q=stadium+crowd+ambience&f=license%3A%22Creative+Commons+0%22) | [`football crowd background`](https://freesound.org/search/?q=football+crowd+background&f=license%3A%22Creative+Commons+0%22) | 40 ث (حلقة) |
+| 2 | `crowd-bed-tense.ogg` | جمهور يترقب هجمة: الصوت يعلو تدريجياً ويشتد | [`crowd anticipation stadium`](https://freesound.org/search/?q=crowd+anticipation+stadium&f=license%3A%22Creative+Commons+0%22) | [`crowd rising tension`](https://freesound.org/search/?q=crowd+rising+tension&f=license%3A%22Creative+Commons+0%22) | 40 ث (حلقة) |
+| 3 | `crowd-bed-loud.ogg` | جمهور متحمس بعد هدف: صخب وهتاف مستمر بلا توقف | [`stadium crowd cheering loop`](https://freesound.org/search/?q=stadium+crowd+cheering+loop&f=license%3A%22Creative+Commons+0%22) | [`football crowd loud`](https://freesound.org/search/?q=football+crowd+loud&f=license%3A%22Creative+Commons+0%22) | 40 ث (حلقة) |
+| 4 | `crowd-oh.ogg` | آآه جماعية بعد فرصة ضائعة: تعلو ثم تهبط | [`crowd ooh disappointed`](https://freesound.org/search/?q=crowd+ooh+disappointed&f=license%3A%22Creative+Commons+0%22) | [`crowd groan`](https://freesound.org/search/?q=crowd+groan&f=license%3A%22Creative+Commons+0%22) | 2 إلى 3 ث |
+| 5 | `crowd-goal.ogg` | انفجار الجمهور لحظة الهدف: صرخة كبيرة ثم هتاف | [`stadium crowd goal cheer`](https://freesound.org/search/?q=stadium+crowd+goal+cheer&f=license%3A%22Creative+Commons+0%22) | [`football goal celebration crowd`](https://freesound.org/search/?q=football+goal+celebration+crowd&f=license%3A%22Creative+Commons+0%22) | 8 إلى 10 ث |
+| 6 | `crowd-goal-away.ogg` | هدف للضيف: صيحة صغيرة من بعيد (جمهور قليل) ثم يهدأ | [`small crowd cheer distant`](https://freesound.org/search/?q=small+crowd+cheer+distant&f=license%3A%22Creative+Commons+0%22) | [`distant cheer short`](https://freesound.org/search/?q=distant+cheer+short&f=license%3A%22Creative+Commons+0%22) | 4 ث |
+| 7 | `crowd-boo.ogg` | الجمهور يستهجن: صيحات «بووو» | [`crowd booing`](https://freesound.org/search/?q=crowd+booing&f=license%3A%22Creative+Commons+0%22) | [`stadium boo`](https://freesound.org/search/?q=stadium+boo&f=license%3A%22Creative+Commons+0%22) | 5 ث |
+| 8 | `crowd-whistle.ogg` | الجمهور يصفّر احتجاجاً بأفواههم (ليست صافرة حكم) | [`crowd whistling stadium`](https://freesound.org/search/?q=crowd+whistling+stadium&f=license%3A%22Creative+Commons+0%22) | [`crowd whistle protest`](https://freesound.org/search/?q=crowd+whistle+protest&f=license%3A%22Creative+Commons+0%22) | 5 ث |
+| 9 | `crowd-applause.ogg` | تصفيق جمهور كبير بالأيدي | [`stadium applause`](https://freesound.org/search/?q=stadium+applause&f=license%3A%22Creative+Commons+0%22) | [`large crowd applause`](https://freesound.org/search/?q=large+crowd+applause&f=license%3A%22Creative+Commons+0%22) | 5 إلى 6 ث |
+| 10 | `crowd-chant-1.ogg` | هتاف جماعي بإيقاع: تصفيق منتظم وأصوات بلا كلمات مفهومة | [`crowd chant clapping rhythm`](https://freesound.org/search/?q=crowd+chant+clapping+rhythm&f=license%3A%22Creative+Commons+0%22) | [`football chant crowd`](https://freesound.org/search/?q=football+chant+crowd&f=license%3A%22Creative+Commons+0%22) | 30 ث (حلقة) |
+| 11 | `crowd-chant-2.ogg` | هتاف جماعي ثانٍ مختلف عن الأول | [`football fans chanting`](https://freesound.org/search/?q=football+fans+chanting&f=license%3A%22Creative+Commons+0%22) | [`crowd chanting stadium`](https://freesound.org/search/?q=crowd+chanting+stadium&f=license%3A%22Creative+Commons+0%22) | 30 ث (حلقة) |
+| 12 | `crowd-drums.ogg` | طبول الألتراس في المدرج بإيقاع ثابت | [`stadium drums`](https://freesound.org/search/?q=stadium+drums&f=license%3A%22Creative+Commons+0%22) | [`ultras drum crowd`](https://freesound.org/search/?q=ultras+drum+crowd&f=license%3A%22Creative+Commons+0%22) | 30 ث (حلقة) |
+| 13 | `crowd-count.ogg` | الجمهور يصمت قبل ركلة الجزاء: هدوء ثم همهمة خفيفة | [`crowd hush`](https://freesound.org/search/?q=crowd+hush&f=license%3A%22Creative+Commons+0%22) | [`crowd quiet murmur`](https://freesound.org/search/?q=crowd+quiet+murmur&f=license%3A%22Creative+Commons+0%22) | 6 ث |
+| 14 | `crowd-heartbeat.ogg` | نبض قلب واضح وبطيء (يُسمع قبل الجزاء) | [`heartbeat`](https://freesound.org/search/?q=heartbeat&f=license%3A%22Creative+Commons+0%22) | [`heart beat slow`](https://freesound.org/search/?q=heart+beat+slow&f=license%3A%22Creative+Commons+0%22) | 8 ث (حلقة) |
 
-**السكربت:** `tools\unity\art\ball.py`. كرة Legends بـ32 قطعة وبمقاس 22 سم حقيقي، بألوان الهوية.
+### ب. صافرة الحكم (4 أصوات)
 
-**جرّب:**
-- `... -P tools\unity\art\ball.py -- --panels ivory --patches navy` (الحالي)
-- `... -- --panels navy --patches gold`
-- `... -- --panels ivory --patches gold`
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 15 | `whistle-short.ogg` | صافرة حكم واحدة قصيرة (خطأ) | [`referee whistle short`](https://freesound.org/search/?q=referee+whistle+short&f=license%3A%22Creative+Commons+0%22) | [`whistle blow single`](https://freesound.org/search/?q=whistle+blow+single&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
+| 16 | `whistle-long.ogg` | صافرة حكم واحدة طويلة (ركلة جزاء) | [`referee whistle long`](https://freesound.org/search/?q=referee+whistle+long&f=license%3A%22Creative+Commons+0%22) | [`whistle long blow`](https://freesound.org/search/?q=whistle+long+blow&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 17 | `whistle-half.ogg` | صافرتان متتاليتان (نهاية الشوط الأول) | [`referee whistle double`](https://freesound.org/search/?q=referee+whistle+double&f=license%3A%22Creative+Commons+0%22) | [`referee whistle two`](https://freesound.org/search/?q=referee+whistle+two&f=license%3A%22Creative+Commons+0%22) | 2 ث |
+| 18 | `whistle-end.ogg` | ثلاث صافرات، الأخيرة أطول (نهاية المباراة) | [`final whistle`](https://freesound.org/search/?q=final+whistle&f=license%3A%22Creative+Commons+0%22) | [`referee whistle three times`](https://freesound.org/search/?q=referee+whistle+three+times&f=license%3A%22Creative+Commons+0%22) | 3 ث |
 
-**المطلوب:** اختر الأجمل وأرسل الصورة لسليمان ليعتمدها. والصورة الحالية في `unity\Reference\art\ball.png`.
+### ج. الكرة (9 أصوات)
 
-### 3. ملحقات الملعب
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 19 | `ball-pass.ogg` | ركلة خفيفة لكرة قدم (تمريرة) | [`soccer ball pass kick soft`](https://freesound.org/search/?q=soccer+ball+pass+kick+soft&f=license%3A%22Creative+Commons+0%22) | [`football kick light`](https://freesound.org/search/?q=football+kick+light&f=license%3A%22Creative+Commons+0%22) | ثلث ثانية |
+| 20 | `ball-shot.ogg` | ركلة قوية لكرة قدم (تسديدة) | [`soccer ball kick hard`](https://freesound.org/search/?q=soccer+ball+kick+hard&f=license%3A%22Creative+Commons+0%22) | [`football shot kick`](https://freesound.org/search/?q=football+shot+kick&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
+| 21 | `ball-header.ogg` | ضربة الكرة بالرأس: صوت مكتوم | [`soccer ball header`](https://freesound.org/search/?q=soccer+ball+header&f=license%3A%22Creative+Commons+0%22) | [`ball hit head`](https://freesound.org/search/?q=ball+hit+head&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
+| 22 | `ball-net.ogg` | الكرة تدخل الشباك وتهزها | [`goal net ball`](https://freesound.org/search/?q=goal+net+ball&f=license%3A%22Creative+Commons+0%22) | [`ball hitting net`](https://freesound.org/search/?q=ball+hitting+net&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 23 | `ball-post.ogg` | الكرة تضرب القائم: رنين معدني | [`goal post hit metal`](https://freesound.org/search/?q=goal+post+hit+metal&f=license%3A%22Creative+Commons+0%22) | [`ball hit metal pole`](https://freesound.org/search/?q=ball+hit+metal+pole&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 24 | `ball-bar.ogg` | الكرة تضرب العارضة: رنين أخف من القائم | [`crossbar hit`](https://freesound.org/search/?q=crossbar+hit&f=license%3A%22Creative+Commons+0%22) | [`ball hits metal bar`](https://freesound.org/search/?q=ball+hits+metal+bar&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 25 | `ball-catch.ogg` | الحارس يمسك الكرة بيديه (بالقفازات) | [`goalkeeper catch ball`](https://freesound.org/search/?q=goalkeeper+catch+ball&f=license%3A%22Creative+Commons+0%22) | [`catch ball hands`](https://freesound.org/search/?q=catch+ball+hands&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
+| 26 | `ball-punch.ogg` | الحارس يبعد الكرة بقبضته | [`punch ball`](https://freesound.org/search/?q=punch+ball&f=license%3A%22Creative+Commons+0%22) | [`fist hit ball`](https://freesound.org/search/?q=fist+hit+ball&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
+| 27 | `ball-bounce.ogg` | الكرة ترتد على العشب | [`ball bounce grass`](https://freesound.org/search/?q=ball+bounce+grass&f=license%3A%22Creative+Commons+0%22) | [`soccer ball bounce`](https://freesound.org/search/?q=soccer+ball+bounce&f=license%3A%22Creative+Commons+0%22) | نصف ثانية |
 
-**السكربت:** `tools\unity\art\props.py`، بمقاسات قانون اللعبة:
-- **المرمى** 7.32 × 2.44 م بشبكة حقيقية (خانات 12 سم).
-- **راية الركنية** 1.5 م.
-- **لوحة LED** باسم LEGENDS.
-- **دكة البدلاء** بسقف شفاف ومقاعد.
-- **صارية الكشافات** 40 م.
+### د. اللاعبون (4 أصوات)
 
-**جرّب:** قطعة واحدة: `... -- --only goal` (أو `flag`، `boards`، `dugout`، `mast`).
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 28 | `slide.ogg` | لاعب يتزحلق على العشب (تدخل) | [`slide tackle grass`](https://freesound.org/search/?q=slide+tackle+grass&f=license%3A%22Creative+Commons+0%22) | [`sliding on grass`](https://freesound.org/search/?q=sliding+on+grass&f=license%3A%22Creative+Commons+0%22) | 1.2 ث |
+| 29 | `slide-wet.ogg` | تزحلق على عشب مبتل: فيه رذاذ ماء | [`wet grass slide`](https://freesound.org/search/?q=wet+grass+slide&f=license%3A%22Creative+Commons+0%22) | [`slide wet ground`](https://freesound.org/search/?q=slide+wet+ground&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 30 | `fall.ogg` | لاعب يسقط على العشب | [`body fall grass`](https://freesound.org/search/?q=body+fall+grass&f=license%3A%22Creative+Commons+0%22) | [`body fall ground`](https://freesound.org/search/?q=body+fall+ground&f=license%3A%22Creative+Commons+0%22) | 1 ث |
+| 31 | `step-run.ogg` | خطوات جري على العشب | [`running footsteps grass`](https://freesound.org/search/?q=running+footsteps+grass&f=license%3A%22Creative+Commons+0%22) | [`footsteps running grass`](https://freesound.org/search/?q=footsteps+running+grass&f=license%3A%22Creative+Commons+0%22) | 10 ث (حلقة) |
 
-**المطلوب:** راجع كل قطعة في `unity\Reference\art\props.png`، وعدّل ما لا يعجبك (الألوان والمقاسات في رأس السكربت)، وإن أردت حسّنها بيدك في Blender (افتح FBX من `unity\Assets\Legends\Art\Props\`) واحفظها FBX بنفس الاسم.
+### هـ. الطقس والمؤثرات (5 أصوات)
 
-### 4. ملعب الأرينا ثلاثي الأبعاد
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 32 | `rain.ogg` | مطر متوسط مستمر، بلا رعد | [`rain loop`](https://freesound.org/search/?q=rain+loop&f=license%3A%22Creative+Commons+0%22) | [`steady rain`](https://freesound.org/search/?q=steady+rain&f=license%3A%22Creative+Commons+0%22) | 40 ث (حلقة) |
+| 33 | `wind.ogg` | رياح مستمرة في مكان مفتوح | [`wind loop`](https://freesound.org/search/?q=wind+loop&f=license%3A%22Creative+Commons+0%22) | [`wind open field`](https://freesound.org/search/?q=wind+open+field&f=license%3A%22Creative+Commons+0%22) | 40 ث (حلقة) |
+| 34 | `thunder.ogg` | رعد من بعيد | [`distant thunder`](https://freesound.org/search/?q=distant+thunder&f=license%3A%22Creative+Commons+0%22) | [`thunder rumble`](https://freesound.org/search/?q=thunder+rumble&f=license%3A%22Creative+Commons+0%22) | 5 ث |
+| 35 | `pyro.ogg` | اشتعال شعلة (شمروخ): فحيح نار | [`flare ignite`](https://freesound.org/search/?q=flare+ignite&f=license%3A%22Creative+Commons+0%22) | [`flare burning`](https://freesound.org/search/?q=flare+burning&f=license%3A%22Creative+Commons+0%22) | 3 ث |
+| 36 | `fireworks.ogg` | ألعاب نارية من بعيد | [`fireworks distant`](https://freesound.org/search/?q=fireworks+distant&f=license%3A%22Creative+Commons+0%22) | [`fireworks`](https://freesound.org/search/?q=fireworks&f=license%3A%22Creative+Commons+0%22) | 6 ث |
 
-**السكربت:** `tools\unity\art\stadium.py`. الأرينا كاملة على شكل صورنا (`unity\Reference\stadiums\arena\`):
-- وعاء مغلق، وطابقان بجمهورنا الحقيقي من صورنا.
-- شريط LED بين الطابقين.
-- سقف على جمالونات حديد، وكشافات تحت حافته، ونفق اللاعبين.
+### و. النغمات (4 أصوات)
 
-**جرّب:** `... -- --seats-lower 26 --seats-upper 24` (صفوف أكثر = ملعب أكبر)، أو غيّر الأرقام في رأس السكربت (`CORNER` استدارة الزوايا، و`RISE_UPPER` ميل الطابق العلوي...).
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 37 | `var-beep.ogg` | نغمة إلكترونية قصيرة (مراجعة الفار) | [`electronic beep short`](https://freesound.org/search/?q=electronic+beep+short&f=license%3A%22Creative+Commons+0%22) | [`alert beep`](https://freesound.org/search/?q=alert+beep&f=license%3A%22Creative+Commons+0%22) | 1 ث |
+| 38 | `board-beep.ogg` | نغمتان صاعدتان (لوحة التبديل) | [`two tone beep`](https://freesound.org/search/?q=two+tone+beep&f=license%3A%22Creative+Commons+0%22) | [`double beep`](https://freesound.org/search/?q=double+beep&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 39 | `ui-confirm.ogg` | نقرة تأكيد ناعمة (المدرب أرسل أمراً) | [`ui click confirm`](https://freesound.org/search/?q=ui+click+confirm&f=license%3A%22Creative+Commons+0%22) | [`soft click`](https://freesound.org/search/?q=soft+click&f=license%3A%22Creative+Commons+0%22) | ثلث ثانية |
+| 40 | `ui-applied.ogg` | رنة إشعار ناعمة (الأمر طُبّق في الملعب) | [`soft notification chime`](https://freesound.org/search/?q=soft+notification+chime&f=license%3A%22Creative+Commons+0%22) | [`notification chime`](https://freesound.org/search/?q=notification+chime&f=license%3A%22Creative+Commons+0%22) | أقل من ثانية |
 
-**المطلوب:**
-1. قارن الصورتين `stadium-arena.png` (من الجو) و`stadium-arena-pitch.png` (من خط التماس) بصور الأرينا الأصلية، واضبط الأرقام حتى يقترب الشكل.
-2. **إن عندك وقت ومهارة:** افتح `Arena.fbx` في Blender وأضف التفاصيل بيدك: درج الممرات بين المدرجات، والبوابات، وغرفة الإعلام، والشاشة الكبيرة. واحفظه `unity\Assets\Legends\Art\Stadium\Arena.fbx`.
-3. **بعدها الكلاسيكي** (نهاراً، مدرجات مفتوحة، سقف جزئي): `... -- --name Classic`، وعدّل ليقترب من `unity\Reference\stadiums\classic\`.
+### ز. نغمات البث (4 أصوات)
 
-### 5. شكل الناس (قبل Sprint 3)
+| # | اسم الملف | ما نريده | جملة البحث | إن لم تجد | المدة |
+|---|---|---|---|---|---|
+| 41 | `sting-goal.ogg` | نغمة قصيرة حماسية للهدف كالقنوات الرياضية | [`sports broadcast sting`](https://freesound.org/search/?q=sports+broadcast+sting&f=license%3A%22Creative+Commons+0%22) | [`sport stinger`](https://freesound.org/search/?q=sport+stinger&f=license%3A%22Creative+Commons+0%22) | 3 ث |
+| 42 | `sting-card.ogg` | نغمة «ووش» قصيرة للبطاقة | [`short whoosh sting`](https://freesound.org/search/?q=short+whoosh+sting&f=license%3A%22Creative+Commons+0%22) | [`whoosh`](https://freesound.org/search/?q=whoosh&f=license%3A%22Creative+Commons+0%22) | 1.5 ث |
+| 43 | `sting-half.ogg` | نغمة انتقال للاستراحة | [`transition sting`](https://freesound.org/search/?q=transition+sting&f=license%3A%22Creative+Commons+0%22) | [`transition swoosh`](https://freesound.org/search/?q=transition+swoosh&f=license%3A%22Creative+Commons+0%22) | 3 ث |
+| 44 | `sting-intro.ogg` | موسيقى بداية البث: حماسية بلا كلمات ولا لحن معروف | [`sports intro music`](https://freesound.org/search/?q=sports+intro+music&f=license%3A%22Creative+Commons+0%22) | [`epic sport intro`](https://freesound.org/search/?q=epic+sport+intro&f=license%3A%22Creative+Commons+0%22) | 8 ث |
 
-**السكربت:** `tools\unity\art\people.py`. يصنع من MakeHuman الأصلي:
-- ثلاثة لاعبين، والحارس بقفازيه، والحكم، والمساعد برايته، والمدرب.
-- الصورة الحالية `unity\Reference\art\people.png`، والقريبة بـ `-- --close`.
+## 5. التسليم
 
-**جرّب:** غيّر قائمة `PEOPLE` في رأس السكربت: لون البشرة، و`muscle` و`weight` (من 0 إلى 1)، وألوان الطقم. ثم شغّل وقارن.
+1. تأكد أن في `audio/raw/sfx/`:
+   - 44 ملف `.ogg` بالأسماء أعلاه بالضبط.
+   - و`sources.txt` فيه 44 سطراً.
+2. ارفعها كما رفعت مقاطع المعلق.
+3. أخبر سليمان: **«راجع أصوات الملعب»**.
+4. لو بقي صوت لم تجد له شيئاً مناسباً، فاكتب اسمه في آخر `sources.txt` بكلمة `ناقص`، وClaude يبحث له.
 
-**المطلوب في برنامج MakeHuman** (هذا عمل فني يفيدنا كثيراً):
-1. **4 وجوه** مختلفة لرجال بين 20 و35 سنة، لا تشبه أي لاعب حقيقي (Modelling ← Face).
-2. **3 بنى:** نحيف سريع، ومتوسط، وقوي (Modelling ← Main: Muscle وWeight وHeight).
-3. **الشعر القصير:** من الشعر المرفق مع MakeHuman برخصة CC0 فقط (Geometries ← Hair)، اختر أفضل 4 قصات قصيرة لرياضيين.
-4. **احفظ كل شخصية** (Files ← Save) بملف `.mhm` في `unity\Reference\players\mhm\`، باسم واضح مثل `face-1-slim.mhm`. هذه الملفات يقرأها Claude في Sprint 3 فيصنع منها لاعبي Legends.
-
----
-
-## كيف تسلّم
-
-1. اعمل فرعاً باسمك: `git checkout -b hamza/art`
-2. أضف ما صنعته: `git add audio/raw/sfx unity/Assets/Legends/Art unity/Reference` ثم `git commit -m "أصوات الملعب والمجسمات"` ثم `git push -u origin hamza/art`
-3. افتح PR على GitHub، وسليمان يقول لـ Claude: «راجع PR حمزة». Claude يفحص الرخص والأسماء والمقاسات ويعطيك ملاحظاته.
-
-## ممنوع
-
-- **أي شيء مدفوع**، ولو دولار واحد.
-- **رخصة غير CC0** في الأصوات والأصول الجاهزة (إلا ما تصنعه بنفسك).
-- **شعارات أو أسماء أندية أو وجوه أشخاص حقيقيين** في أي مجسم.
-- **التعديل على كود اللعبة:** ملفاتك هي الأصوات والمجسمات والصور المرجعية فقط.
+ويمكنك تسليمها على دفعات: الجمهور والصافرة أولاً، فهما الأهم.
