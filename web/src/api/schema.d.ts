@@ -2402,6 +2402,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/spy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The spy on the next opponent, and his report for this match if sent
+         * @description Sprint 30 (docs/features/spy.md). Before the lock, a paid report of what the opponent has saved at that moment:
+         *     formation, eleven and bench, the four public tactics, the form and the eleven's fitness. Never pressing, style,
+         *     tempo, positions, the defensive shape or secret training. The opponent is not told.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The spy */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpyView"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Send the spy (once a match, until the lock) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The spy with his report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpyView"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/stadium": {
         parameters: {
             query?: never;
@@ -4678,6 +4747,49 @@ export interface components {
                 mid: number;
                 att: number;
             };
+        };
+        SpyPlayer: {
+            id: number;
+            name: string;
+            position: string;
+            /** @enum {string} */
+            line: "gk" | "def" | "mid" | "att";
+            overall: number;
+        };
+        SpyView: {
+            cost: number;
+            fixture: {
+                id: number;
+                status: string;
+                opponent: string;
+                /** Format: date-time */
+                lock_at: string;
+            } | null;
+            report: {
+                club: {
+                    id: number;
+                    name: string;
+                };
+                /**
+                 * Format: date-time
+                 * @description When the spy looked; the opponent may have changed since
+                 */
+                at: string;
+                formation: string;
+                starters: components["schemas"]["SpyPlayer"][];
+                bench: components["schemas"]["SpyPlayer"][];
+                /** @description Only the four public tactics */
+                tactics: {
+                    tackling: number;
+                    marking: string;
+                    plan: string;
+                    trap: number;
+                };
+                /** @description Newest first */
+                form: ("W" | "D" | "L")[];
+                /** @description The eleven's average fitness */
+                fitness: number | null;
+            } | null;
         };
         StadiumView: {
             balance: number;
