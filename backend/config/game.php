@@ -237,6 +237,11 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
+    // League: the strongest goes for the title; the top quarter for a place this far below its rank; the rest
+    // further; and nobody is asked for less than to stay out of the bottom fifth. Cup: a stage by quarter of rank.
+    'objectives' => ['top_quarter_slack' => 1, 'rest_slack' => 2, 'bottom_bp' => 2000,
+        'cup_by_quarter' => ['final', 'sf', 'qf', 'qf']],
     // The bots between matches [ENGINE 7, Sprint 32]: each personality's own tactics, then the match's adjustments
     // from what any coach can see of the opponent (strength, the four public tactics of his last match, his form).
     'bots' => [

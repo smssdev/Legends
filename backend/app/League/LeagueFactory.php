@@ -7,6 +7,7 @@ use App\Market\Pool;
 use App\Models\League;
 use App\Models\Season;
 use App\Models\User;
+use App\Season\Objectives;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -78,6 +79,7 @@ class LeagueFactory
                 }
             }
             SeasonScheduler::build($league->fresh(), $season->fresh());
+            Objectives::set($season->id);
             // The market pool for the preparation and the first window [Sprint 24].
             Pool::renew($league->id, DB::table('transfer_windows')->where('season_id', $season->id)->where('kind', 'summer')->value('id'));
             Joining::claim($owner, $league->fresh(), $chosen);

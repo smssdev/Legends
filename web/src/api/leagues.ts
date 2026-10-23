@@ -32,3 +32,13 @@ export function budget(v: number): string {
   }
   return `${Math.round(v / 1000)} ألف`
 }
+
+/** A club's objectives in words (Sprint 33): the place in the league and the stage in the cup. */
+const CUP_STAGES: Record<string, string> = { r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي', winner: 'البطولة' }
+export function leagueGoal(o: { target: number; kind: string }): string {
+  if (o.kind === 'title') return 'الفوز باللقب'
+  if (o.kind === 'survive') return `البقاء: المركز ${o.target} أو أفضل`
+  return `المركز ${o.target} أو أفضل`
+}
+export const cupGoal = (stage: string) => `الوصول إلى ${CUP_STAGES[stage] ?? stage}`
+export const cupStage = (stage: string | null | undefined) => (stage === 'out' ? 'خرج مبكراً' : CUP_STAGES[stage ?? ''] ?? stage ?? '')

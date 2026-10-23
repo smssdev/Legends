@@ -3470,6 +3470,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/honours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The hall of fame, every season with its league podium and cup final
+         * @description Sprint 33 (PLAN 2.11). For the league's members. Kept across seasons.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The hall of fame */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Honours"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coaches/{user}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * A coach's profile, his titles, objectives met and record
+         * @description Sprint 33. From his memberships, the titles and the judged objectives, in every league.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The coach */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CoachProfile"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/clubs": {
         parameters: {
             query?: never;
@@ -5158,6 +5245,67 @@ export interface components {
             /** Format: date-time */
             decided_at?: string | null;
         };
+        Honours: {
+            league: {
+                id: number;
+                name: string;
+            };
+            seasons: {
+                number: number;
+                status: string;
+                titles: {
+                    /** @enum {string} */
+                    competition: "league" | "cup";
+                    /** @description League: 1 to 3. Cup: 1 the winner, 2 the finalist */
+                    position: number;
+                    club: {
+                        id: number;
+                        name: string;
+                        crest_url: string;
+                    };
+                    coach: {
+                        id: number;
+                        name: string;
+                    } | null;
+                }[];
+            }[];
+        };
+        CoachProfile: {
+            coach: {
+                id: number;
+                name: string;
+            };
+            record: {
+                seasons: number;
+                played: number;
+                won: number;
+                drawn: number;
+                lost: number;
+            };
+            titles: {
+                league: string;
+                season: number;
+                /** @enum {string} */
+                competition: "league" | "cup";
+                position: number;
+                club: string;
+            }[];
+            objectives: {
+                met: number;
+                total: number;
+                list: {
+                    league: string;
+                    season: number;
+                    club: string;
+                    /** @enum {string} */
+                    competition: "league" | "cup";
+                    target: string;
+                    kind: string;
+                    result: string | null;
+                    achieved: boolean;
+                }[];
+            };
+        };
         LeagueClub: {
             id: number;
             name: string;
@@ -5176,6 +5324,22 @@ export interface components {
             balance: number;
             squad_value: number;
             players_count: number;
+            /** @description This season's objectives (Sprint 33), shown when a coach picks a team */
+            objectives?: {
+                league: {
+                    /** @description The place to finish in or above */
+                    target: number;
+                    /** @enum {string} */
+                    kind: "title" | "top" | "mid" | "survive";
+                };
+                cup: {
+                    /**
+                     * @description The stage to reach
+                     * @enum {string}
+                     */
+                    target: "r16" | "qf" | "sf" | "final";
+                };
+            } | null;
         };
         LeaguePlayer: {
             id?: number;
