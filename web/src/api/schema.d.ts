@@ -1780,6 +1780,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/finance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * My club's money
+         * @description Sprint 23. The balance (the sum of the movements, never edited), whether the club can spend (not below zero),
+         *     the league rounds in a row below zero and the limit before the dearest player is sold to the pool, the wages
+         *     of a round, the season's totals by kind, the income and expenses of each league round, the last 60 movements
+         *     (a match's ones carry its round, or `cup`), the stadium's gate (seats, attendance, seat price) and each
+         *     sector's sponsor (chosen, or the three offers with what each pays per home match and on a home win).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The finances */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClubFinance"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/sponsors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign a sector's sponsor for the season (once per sector)
+         * @description A sector left unchosen signs the steady sponsor at the club's first home match.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        sector: "main" | "opposite" | "north" | "south";
+                        /** @enum {string} */
+                        offer: "steady" | "bonus" | "ambitious";
+                    };
+                };
+            };
+            responses: {
+                /** @description The finances after signing */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClubFinance"];
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/next-match": {
         parameters: {
             query?: never;
@@ -3281,6 +3383,53 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ClubFinance: {
+            balance: number;
+            can_spend: boolean;
+            debt_rounds: number;
+            debt_limit: number;
+            wages_per_round: number;
+            season_totals: {
+                type: string;
+                label: string;
+                total: number;
+            }[];
+            season_income: number;
+            season_expenses: number;
+            rounds: {
+                round: number;
+                in: number;
+                out: number;
+            }[];
+            transactions: {
+                id: number;
+                type: string;
+                label: string;
+                amount: number;
+                balance_after: number;
+                /** Format: date-time */
+                created_at: string;
+                round: number | null;
+                cup: boolean;
+            }[];
+            stadium: {
+                capacity: number;
+                attendance_bp: number;
+                ticket_price: number;
+                tickets_per_match: number;
+            };
+            sponsors: {
+                sector: string;
+                name: string;
+                chosen: string | null;
+                offers: {
+                    offer: string;
+                    name: string;
+                    per_match: number;
+                    per_win: number;
+                }[];
+            }[];
+        };
         Message: {
             id: number;
             /** @enum {string} */

@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Economy\Economy;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,8 @@ class MatchResult
         } else {
             self::cupWinner($f, $state);
         }
+        // The money it moves: gate, wages, bonus and the debt count [Sprint 23].
+        Economy::afterMatch($f, $state['score']);
 
         foreach (['home', 'away'] as $side) {
             $team = $state['teams'][$side];
@@ -90,6 +93,10 @@ class MatchResult
             ->where('status', '!=', 'finished')->min('round');
         $rounds = (int) DB::table('seasons')->where('id', $seasonId)->value('rounds');
         DB::table('seasons')->where('id', $seasonId)->update(['rounds_played' => $open ? $open - 1 : $rounds]);
+        // The last league match is in: the prizes by final place (each paid once, by its key).
+        if (! $open) {
+            Economy::leaguePrizes($seasonId, Standings::order($seasonId));
+        }
     }
 
     /** The cup: the winner (after extra time, or on penalties) takes his side of the next tie. */
@@ -103,6 +110,7 @@ class MatchResult
             return;
         }
         DB::table('cup_ties')->where('id', $tie->id)->update(['winner_id' => $winner]);
+        Economy::cupPrizes($tie, $winner, $winner === $f->home_id ? $f->away_id : $f->home_id);
         if ($tie->next_tie_id) {
             $side = $tie->next_side === 'home' ? 'home_id' : 'away_id';
             DB::table('cup_ties')->where('id', $tie->next_tie_id)->update([$side => $winner]);

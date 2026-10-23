@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Economy\Economy;
+use App\Economy\Money;
 use App\Http\Controllers\Controller;
+use App\League\ClubLedger;
 use App\League\FormationBook;
 use App\League\MatchPrep;
 use App\League\Tactics;
@@ -182,6 +185,82 @@ class TeamController extends Controller
             ->where(fn ($q) => $q->where('home_id', $club->id)->orWhere('away_id', $club->id))
             ->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('scheduled_at')->first();
     }
+
+    /** The club's money [Sprint 23 W1]: the balance, the debt count, the movements, the sponsors and the gate. */
+    public function finance(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $season = $league->season;
+        $scale = Economy::scale($league->id);
+        $money = Money::fromConfig();
+        $cfg = config('game.economy');
+        $chosen = DB::table('sponsor_contracts')->where('club_id', $club->id)->where('season_id', $season->id)->pluck('offer', 'sector');
+        [$min, $max] = Economy::strengthRange($league->id);
+        $attendance = $money->attendance((int) $club->strength_snapshot, $min, $max);
+        $rows = DB::table('club_transactions')->where('club_id', $club->id)->orderByDesc('id')->limit(60)->get();
+        // Each match's movements carry their round (a cup match its stage), for the ledger and the chart.
+        $all = DB::table('club_transactions')->where('club_id', $club->id)->where('reference', 'like', 'fixture:%')->get(['amount', 'reference']);
+        $fixtures = DB::table('fixtures')->whereIn('id', $all->pluck('reference')->merge($rows->pluck('reference'))->filter(fn ($r) => str_starts_with((string) $r, 'fixture:'))
+            ->map(fn ($r) => (int) substr($r, 8))->unique())->get(['id', 'round', 'competition'])->keyBy('id');
+        $roundOf = function (?string $ref) use ($fixtures) {
+            $f = $ref && str_starts_with($ref, 'fixture:') ? $fixtures[(int) substr($ref, 8)] ?? null : null;
+
+            return $f ? ['round' => $f->competition === 'league' ? (int) $f->round : null, 'cup' => $f->competition !== 'league'] : ['round' => null, 'cup' => false];
+        };
+        $perRound = [];
+        foreach ($all as $t) {
+            $r = $roundOf($t->reference)['round'];
+            if ($r) {
+                $perRound[$r] ??= ['round' => $r, 'in' => 0, 'out' => 0];
+                $perRound[$r][$t->amount >= 0 ? 'in' : 'out'] += abs((int) $t->amount);
+            }
+        }
+        ksort($perRound);
+        $since = DB::table('club_transactions')->where('club_id', $club->id)->where('created_at', '>=', $season->created_at ?? '1970-01-01')
+            ->groupBy('type')->selectRaw('type, sum(amount) as total')->pluck('total', 'type');
+
+        return response()->json([
+            'balance' => (int) $club->balance,
+            'can_spend' => $club->balance >= 0,
+            'debt_rounds' => (int) $club->debt_rounds,
+            'debt_limit' => (int) $cfg['debt_rounds_before_forced_sale'],
+            'wages_per_round' => $money->wages(Economy::squadValue($club->id), $season->rounds),
+            'season_totals' => collect(ClubLedger::LABELS)->map(fn ($label, $type) => ['type' => $type, 'label' => $label, 'total' => (int) ($since[$type] ?? 0)])
+                ->filter(fn ($t) => $t['total'] !== 0)->values(),
+            // What the season earned and spent: the opening budget and a handover's change are neither.
+            'season_income' => (int) collect($since)->except(ClubLedger::START)->filter(fn ($v) => $v > 0)->sum(),
+            'season_expenses' => (int) collect($since)->except(ClubLedger::START)->filter(fn ($v) => $v < 0)->sum(),
+            'rounds' => array_values($perRound),
+            'transactions' => $rows->map(fn ($t) => ['id' => $t->id, 'type' => $t->type, 'label' => ClubLedger::LABELS[$t->type] ?? $t->type,
+                'amount' => (int) $t->amount, 'balance_after' => (int) $t->balance_after, 'created_at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()]
+                + $roundOf($t->reference)),
+            'stadium' => ['capacity' => $cfg['stadium']['capacity'], 'attendance_bp' => $attendance, 'ticket_price' => $money->ticketPrice($scale, $season->rounds),
+                'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance)],
+            'sponsors' => collect($cfg['sectors'])->map(fn ($share, $sector) => [
+                'sector' => $sector, 'name' => self::SECTORS[$sector], 'chosen' => $chosen[$sector] ?? null,
+                'offers' => collect($cfg['sponsor_offers'])->map(fn ($o, $key) => ['offer' => $key, 'name' => self::OFFERS[$key],
+                    'per_match' => $money->sponsor($scale, $season->rounds, $sector, $key, false),
+                    'per_win' => $money->sponsor($scale, $season->rounds, $sector, $key, true) - $money->sponsor($scale, $season->rounds, $sector, $key, false)])->values(),
+            ])->values(),
+        ]);
+    }
+
+    /** Sign a sector's sponsor for the season [PLAN 2.7]: once per sector. */
+    public function signSponsor(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $data = $request->validate([
+            'sector' => ['required', Rule::in(array_keys(config('game.economy.sectors')))],
+            'offer' => ['required', Rule::in(Economy::OFFERS)],
+        ]);
+        Economy::sign($club->id, $league->season->id, $data['sector'], $data['offer']);
+
+        return $this->finance($request, $league);
+    }
+
+    private const SECTORS = ['main' => 'المدرج الرئيسي', 'opposite' => 'المدرج المقابل', 'north' => 'المدرج الشمالي', 'south' => 'المدرج الجنوبي'];
+
+    private const OFFERS = ['steady' => 'ثابت', 'bonus' => 'متوازن مع مكافأة فوز', 'ambitious' => 'طموح: أقل ثابتاً وأكثر عند الفوز'];
 
     /** My club in this league; 403 without one. */
     private function club(User $user, League $league): Club
