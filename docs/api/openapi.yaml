@@ -972,6 +972,49 @@ paths:
               schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' }, balance: { type: integer } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/scout:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: The scout, its cost and time, and my searches with their players
+      description: |
+        Sprint 26 (docs/features/scout.md). A paid search for players from outside the league's clubs; the report comes
+        after a day scaled by the season's length, as a message, coach online or not. Its three players are this club's
+        alone to buy at the pool's price (POST /market/buy) until the pool is renewed. None found, the cost comes back.
+      responses:
+        '200':
+          description: The scout
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScoutView' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [market]
+      summary: Ask the scout (one search at a time)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [min_overall, idempotency_key]
+              properties:
+                line: { type: string, enum: [gk, def, mid, att] }
+                position: { type: string }
+                min_overall: { type: integer, minimum: 40, maximum: 99 }
+                max_overall: { type: integer, minimum: 40, maximum: 99 }
+                max_age: { type: integer }
+                nationality: { type: string }
+                league: { type: string }
+                idempotency_key: { type: string, maxLength: 64 }
+      responses:
+        '200':
+          description: The scout after asking
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScoutView' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/finance:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1743,6 +1786,48 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    ScoutView:
+      type: object
+      required: [cost, hours, balance, options, requests]
+      properties:
+        cost: { type: integer }
+        hours: { type: integer }
+        balance: { type: integer }
+        options:
+          type: object
+          required: [leagues, nationalities, positions]
+          properties:
+            leagues: { type: array, items: { type: string } }
+            nationalities: { type: array, items: { type: string } }
+            positions: { type: array, items: { type: string } }
+        requests:
+          type: array
+          items:
+            type: object
+            required: [id, status, cost, criteria, finishes_at, players]
+            properties:
+              id: { type: integer }
+              status: { type: string, enum: [searching, done, empty] }
+              cost: { type: integer }
+              criteria: { type: object, additionalProperties: true }
+              finishes_at: { type: string, format: date-time }
+              players:
+                type: array
+                items:
+                  type: object
+                  required: [id, name, position, line, age, overall, potential, value, price, state]
+                  properties:
+                    id: { type: integer }
+                    name: { type: string }
+                    position: { type: string }
+                    line: { type: string }
+                    age: { type: integer }
+                    nationality: { type: string, nullable: true }
+                    overall: { type: integer }
+                    potential: { type: integer }
+                    value: { type: integer }
+                    price: { type: integer, nullable: true }
+                    state: { type: string, enum: [available, mine, gone] }
     OfferTerms:
       type: object
       required: [in, idempotency_key]
