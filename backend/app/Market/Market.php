@@ -84,7 +84,7 @@ class Market
             $balance = ClubLedger::post($clubId, $from === null ? 'pool_buy' : 'bot_buy', -$price, $key, "player:{$playerId}", spend: true);
             if ($from !== null) {
                 ClubLedger::post((int) $from, 'bot_sale', $price, "{$key}:seller", "player:{$playerId}");
-                self::forget((int) $from, $playerId);
+                Transfers::left($playerId, (int) $from);
             }
 
             return $balance;
@@ -108,7 +108,7 @@ class Market
             if ($sold !== 1) {
                 throw new HttpException(409, 'اللاعب لم يعد في فريقك.');
             }
-            self::forget($clubId, $playerId);
+            Transfers::left($playerId, $clubId);
 
             return ClubLedger::post($clubId, 'pool_sale', intdiv((int) $p->base_value * config('game.economy.sell_to_pool_bp'), 10000), $key, "player:{$playerId}");
         });
@@ -132,17 +132,6 @@ class Market
             ->where('players.club_id', $clubId)->where('master_players.line', 'gk')->count();
         if ($line === 'gk' && $keepers - 1 < (int) config('game.economy.min_keepers')) {
             throw new HttpException(409, 'لا بد أن يبقى حارسان على الأقل.');
-        }
-    }
-
-    /** A player who left a club leaves its saved lineup and its takers. */
-    private static function forget(int $clubId, int $playerId): void
-    {
-        DB::table('lineup_slots')->join('lineups', 'lineups.id', '=', 'lineup_slots.lineup_id')->where('lineups.club_id', $clubId)
-            ->where('lineup_slots.player_id', $playerId)->select('lineup_slots.id')->pluck('id')
-            ->each(fn ($id) => DB::table('lineup_slots')->where('id', $id)->delete());
-        foreach (['captain_id', 'penalty_id', 'free_kick_id', 'corner_id'] as $col) {
-            DB::table('set_piece_takers')->where('club_id', $clubId)->where($col, $playerId)->update([$col => null]);
         }
     }
 

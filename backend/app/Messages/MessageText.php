@@ -8,11 +8,28 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
     private const RESULT = ['win' => 'فزت', 'draw' => 'تعادلت', 'loss' => 'خسرت'];
+
+    /** An offer in a sentence: who, for whom, with what. */
+    private static function offer(string $type, array $p): string
+    {
+        $wants = implode(' و', $p['in'] ?? []);
+        $gives = array_filter([($p['money'] ?? 0) > 0 ? number_format($p['money']) : null, ($p['out'] ?? []) ? implode(' و', $p['out']) : null]);
+        $deal = sprintf('%s على %s مقابل %s', $p['from'] ?? '', $wants, $gives ? implode(' و', $gives) : 'لا شيء');
+
+        return match ($type) {
+            'offer_received' => "عرض من {$deal}.",
+            'offer_countered' => "رد {$p['from']} بعرض مقابل: {$deal}.",
+            'offer_accepted' => "قبل {$p['to']} عرضك على {$wants}، وتمت الصفقة.",
+            'offer_rejected' => "رفض {$p['to']} عرضك على {$wants}.",
+            'offer_cancelled' => "أُلغي عرض {$deal}: أحد لاعبيه انتقل أو سُحب العرض.",
+            default => "انتهت مدة عرض {$deal} بلا رد.",
+        };
+    }
 
     /** @return array{title: string, body: string, link: ?string} */
     public static function render(string $type, array $p): array
@@ -73,6 +90,12 @@ class MessageText
                 'title' => 'بيع إجباري بسبب الدين',
                 'body' => sprintf('بقي رصيد %s سالباً %d جولات، فبيع للمجموعة: %s.', $p['club'] ?? '', (int) ($p['rounds'] ?? 3), implode('، ', $p['players'] ?? [])),
                 'link' => '/finance',
+            ],
+            'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired' => [
+                'title' => ['offer_received' => 'عرض جديد', 'offer_countered' => 'رد بعرض مقابل', 'offer_accepted' => 'قُبل عرضك',
+                    'offer_rejected' => 'رُفض عرضك', 'offer_cancelled' => 'أُلغي عرض', 'offer_expired' => 'انتهت مدة عرض'][$type],
+                'body' => self::offer($type, $p),
+                'link' => '/market?tab=offers',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

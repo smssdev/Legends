@@ -1,0 +1,179 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\League\ClubLedger;
+use App\Market\Transfers;
+use App\Models\User;
+use App\Support\GameClock;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Tests\Feature\Concerns\MakesLeagues;
+use Tests\TestCase;
+
+/** Trades between coaches and the limits against collusion [PLAN 2.7, Sprint 25]. */
+class TransfersTest extends TestCase
+{
+    use MakesLeagues, RefreshDatabase;
+
+    private User $owner;
+
+    private User $coach;
+
+    private array $league;
+
+    private int $mine;
+
+    private int $theirs;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Carbon::setTestNow('2026-10-22 10:00:00');
+        $this->template(full: true);
+        $this->owner = User::factory()->create(['name' => 'سليمان']);
+        $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()]);
+        $this->mine = $this->league['my_club_id'];
+        $this->coach = $this->approvedCoach($this->owner, $this->league);
+        $this->theirs = $this->botClub($this->league['id']);
+        $this->actingAs($this->coach)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$this->theirs}/claim")->assertCreated();
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
+
+    private function url(string $path = ''): string
+    {
+        return "/api/v1/leagues/{$this->league['id']}/transfers{$path}";
+    }
+
+    /** A club's players, cheapest first. */
+    private function players(int $club)
+    {
+        return DB::table('players')->where('club_id', $club)->orderBy('value')->orderBy('id')->get();
+    }
+
+    private function offer(User $by, int $to, array $in, array $out = [], int $money = 0)
+    {
+        return $this->actingAs($by)->postJson($this->url('/offers'), ['to_club_id' => $to, 'in' => $in, 'out' => $out, 'money' => $money, 'idempotency_key' => uniqid()]);
+    }
+
+    private function assertBooks(): void
+    {
+        foreach ([$this->mine, $this->theirs] as $c) {
+            $this->assertSame((int) DB::table('clubs')->where('id', $c)->value('balance'), ClubLedger::sum($c));
+        }
+    }
+
+    public function test_a_full_swap_between_two_coaches(): void
+    {
+        $want = $this->players($this->theirs)->first();
+        $give = $this->players($this->mine)->first();
+        $money = 200_000;
+        $id = $this->offer($this->owner, $this->theirs, [$want->id], [$give->id], $money)->assertCreated()->json('offer.id');
+        // The other coach hears of it, and only he can accept it.
+        $this->assertSame(1, DB::table('messages')->where('type', 'offer_received')->where('user_id', $this->coach->id)->count());
+        $this->actingAs($this->owner)->postJson($this->url("/offers/{$id}/accept"))->assertNotFound();
+        $before = DB::table('clubs')->whereIn('id', [$this->mine, $this->theirs])->pluck('balance', 'id');
+        $this->actingAs($this->coach)->postJson($this->url("/offers/{$id}/accept"))->assertOk()->assertJsonPath('offer.status', 'accepted');
+
+        $this->assertSame($this->mine, (int) DB::table('players')->where('id', $want->id)->value('club_id'));
+        $this->assertSame($this->theirs, (int) DB::table('players')->where('id', $give->id)->value('club_id'));
+        $this->assertSame((int) $before[$this->mine] - $money, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertSame((int) $before[$this->theirs] + $money, (int) DB::table('clubs')->where('id', $this->theirs)->value('balance'));
+        $this->assertSame(2, DB::table('player_moves')->where('offer_id', $id)->count());
+        $this->assertSame(1, DB::table('messages')->where('type', 'offer_accepted')->where('user_id', $this->owner->id)->count());
+        // Accepted once: again is refused.
+        $this->postJson($this->url("/offers/{$id}/accept"))->assertConflict();
+        $this->assertBooks();
+    }
+
+    public function test_the_price_stays_between_half_and_double_the_value(): void
+    {
+        $want = $this->players($this->theirs)->first();
+        $this->offer($this->owner, $this->theirs, [$want->id], [], intdiv((int) $want->value, 2) - 1)->assertStatus(422);
+        $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value * 2 + 1)->assertStatus(422);
+        $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value)->assertCreated();
+        // The transfer list too.
+        $mine = $this->players($this->mine)->first();
+        $this->actingAs($this->owner)->postJson($this->url('/listings'), ['player_id' => $mine->id, 'price' => (int) $mine->value * 3])->assertStatus(422);
+        $this->postJson($this->url('/listings'), ['player_id' => $mine->id, 'price' => (int) $mine->value])->assertOk()
+            ->assertJsonPath('listings.0.player.id', $mine->id)->assertJsonPath('listings.0.mine', true);
+    }
+
+    public function test_a_player_does_not_move_twice_between_the_same_two_clubs_in_a_season(): void
+    {
+        $want = $this->players($this->theirs)->first();
+        $id = $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value)->json('offer.id');
+        $this->actingAs($this->coach)->postJson($this->url("/offers/{$id}/accept"))->assertOk();
+        // He wants him back.
+        $this->offer($this->coach, $this->mine, [$want->id], [], (int) $want->value)->assertConflict()
+            ->assertJsonPath('message', 'انتقل هذا اللاعب بين الناديين هذا الموسم، فلا ينتقل بينهما مرة أخرى.');
+    }
+
+    public function test_what_is_paid_beyond_value_between_two_clubs_has_a_season_cap(): void
+    {
+        // A fair sale moves its money whatever it is: its value is paid, nothing beyond.
+        [$a, $b, $c] = $this->players($this->theirs)->take(3)->values()->all();
+        $fair = $this->offer($this->owner, $this->theirs, [$a->id], [], (int) $a->value)->assertCreated()->json('offer.id');
+        $this->actingAs($this->coach)->postJson($this->url("/offers/{$fair}/accept"))->assertOk();
+        $this->assertSame(0, (int) DB::table('transfer_offers')->where('id', $fair)->value('excess'));
+        // Overpaying moves money: 600,000 over value passes, then 200,000 more goes beyond the 750,000 cap.
+        $over = $this->offer($this->owner, $this->theirs, [$b->id], [], (int) $b->value + 600_000)->assertCreated()->json('offer.id');
+        $this->actingAs($this->coach)->postJson($this->url("/offers/{$over}/accept"))->assertOk();
+        $message = $this->offer($this->owner, $this->theirs, [$c->id], [], (int) $c->value + 200_000)->assertConflict()->json('message');
+        $this->assertStringContainsString('750,000', $message);
+        $this->assertStringContainsString('150,000', $message);
+        // Overpaid back the other way, it nets down.
+        $back = $this->players($this->mine)->first();
+        $this->offer($this->coach, $this->mine, [$back->id], [], (int) $back->value + 200_000)->assertCreated();
+    }
+
+    public function test_countering_and_rejecting(): void
+    {
+        $want = $this->players($this->theirs)->first();
+        $id = $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value)->json('offer.id');
+        // The coach asks for more, and a player of mine.
+        $extra = $this->players($this->mine)->first();
+        $counter = $this->actingAs($this->coach)->postJson($this->url("/offers/{$id}/counter"), ['in' => [$extra->id], 'out' => [$want->id], 'money' => 0, 'idempotency_key' => 'c1'])
+            ->assertCreated()->json('offer');
+        $this->assertSame('countered', DB::table('transfer_offers')->where('id', $id)->value('status'));
+        $this->assertSame($id, $counter['counter_of']);
+        $this->assertSame(1, DB::table('messages')->where('type', 'offer_countered')->where('user_id', $this->owner->id)->count());
+        // The owner sees it as incoming and turns it down.
+        $seen = collect($this->actingAs($this->owner)->getJson($this->url())->assertOk()->json('offers'))->firstWhere('id', $counter['id']);
+        $this->assertTrue($seen['incoming']);
+        $this->postJson($this->url("/offers/{$counter['id']}/reject"))->assertOk()->assertJsonPath('offer.status', 'rejected');
+        $this->assertSame(1, DB::table('messages')->where('type', 'offer_rejected')->where('user_id', $this->coach->id)->count());
+    }
+
+    public function test_an_offer_dies_when_its_player_leaves_and_when_its_time_runs_out(): void
+    {
+        $want = $this->players($this->theirs)->first();
+        $id = $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value)->json('offer.id');
+        $this->actingAs($this->coach)->postJson($this->url('/listings'), ['player_id' => $want->id, 'price' => (int) $want->value])->assertOk();
+        // The coach sells him to the pool instead: the offer and the listing go.
+        $this->postJson("/api/v1/leagues/{$this->league['id']}/market/sell", ['player_id' => $want->id, 'idempotency_key' => 'x'])->assertOk();
+        $this->assertSame('cancelled', DB::table('transfer_offers')->where('id', $id)->value('status'));
+        $this->assertSame(0, DB::table('transfer_listings')->count());
+        $this->assertSame(1, DB::table('messages')->where('type', 'offer_cancelled')->where('user_id', $this->owner->id)->count());
+
+        $other = $this->players($this->theirs)->first();
+        $late = $this->offer($this->owner, $this->theirs, [$other->id], [], (int) $other->value)->json('offer.id');
+        Carbon::setTestNow(GameClock::now()->addHours(49));
+        $this->assertSame(1, Transfers::expire());
+        $this->assertSame('expired', DB::table('transfer_offers')->where('id', $late)->value('status'));
+    }
+
+    public function test_a_bot_is_bought_from_in_the_market_not_by_offer(): void
+    {
+        $bot = $this->botClub($this->league['id']);
+        $this->offer($this->owner, $bot, [$this->players($bot)->first()->id], [], 1_000_000)->assertConflict()
+            ->assertJsonPath('message', 'هذا نادي حاسوب: اشترِ منه من السوق.');
+        $this->offer($this->owner, $this->theirs, [$this->players($this->mine)->first()->id], [], 0)->assertConflict();
+    }
+}
