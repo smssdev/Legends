@@ -5,7 +5,9 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
+import PriceTag from '../../components/ui/PriceTag.vue'
 import { count, money } from '../../lib/format'
+import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 
 type View = components['schemas']['StadiumView']
@@ -71,6 +73,23 @@ async function start(s: Section) {
   busy.value = false
 }
 
+// Finish the part now for coins [Sprint 34].
+const wallet = useWallet()
+async function finish() {
+  busy.value = true
+  error.value = notice.value = ''
+  try {
+    await ensureCsrf()
+    await api.POST('/leagues/{league}/stadium/finish', { params: { path: { league: leagueId.value! } } })
+    await load()
+    wallet.load()
+    notice.value = 'اكتمل الجزء الآن.'
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+  busy.value = false
+}
+
 onMounted(() => {
   load()
   tick = window.setInterval(() => {
@@ -110,6 +129,8 @@ onBeforeUnmount(() => clearInterval(tick))
         <span class="flex-1"><b class="block">يُبنى الآن: {{ INFO[v.building.section]!.title }}</b>
           <span class="text-sm text-text-muted">الجزء {{ v.building.part }} من 5 في المرحلة {{ v.building.stage }}</span></span>
         <span class="text-end"><span class="block text-xs text-text-muted">يكتمل بعد</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
+        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
+          أنهِ الآن · <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
       </section>
 
       <section aria-label="أقسام الملعب" class="grid gap-3 lg:grid-cols-3">

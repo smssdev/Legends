@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Staff\Specialists;
 use App\Support\GameClock;
+use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -27,7 +28,9 @@ class SpecialistController extends Controller
             'specialists' => array_map(function ($type) use ($club, $league) {
                 $c = Specialists::current($club->id, $type);
 
-                return ['type' => $type, 'cost' => Specialists::cost($league->id, $type),
+                $q = Price::quote($league->id, 'specialist', Specialists::cost($league->id, $type));
+
+                return ['type' => $type, 'cost' => $q['amount'], 'currency' => $q['currency'],
                     'ends_at' => $c ? Carbon::parse($c->ends_at, 'UTC')->toIso8601ZuluString() : null];
             }, Specialists::TYPES),
         ]);

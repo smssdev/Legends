@@ -7,6 +7,7 @@ use App\Market\Market;
 use App\Market\Scout;
 use App\Models\Club;
 use App\Models\League;
+use App\Wallet\Finish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -56,6 +57,13 @@ class ScoutController extends Controller
         ]);
         $criteria = array_filter(array_diff_key($data, ['idempotency_key' => 1]), fn ($v) => $v !== null && $v !== '');
         Scout::ask($club->id, $criteria, "scout:{$club->id}:{$data['idempotency_key']}");
+
+        return $this->show($request, $league);
+    }
+
+    public function finish(Request $request, League $league): JsonResponse
+    {
+        Finish::scout($this->club($request, $league)->id);
 
         return $this->show($request, $league);
     }

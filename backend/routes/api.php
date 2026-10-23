@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\StadiumController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\WalletController;
 use Illuminate\Support\Facades\Route;
 
 // Every route here is served under /api/v1 (see bootstrap/app.php) and is
@@ -113,6 +114,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(ScoutController::class)->prefix('{league}/scout')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'ask')->middleware('throttle:20,1,scout');
+        Route::post('finish', 'finish')->middleware('throttle:30,1,finish');
     });
     // Specialists [Sprint 31].
     Route::controller(SpecialistController::class)->prefix('{league}/specialists')->whereNumber('league')->group(function () {
@@ -128,6 +130,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(StadiumController::class)->prefix('{league}/stadium')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'start')->middleware('throttle:20,1,stadium');
+        Route::post('finish', 'finish')->middleware('throttle:30,1,finish');
     });
     // Training [Sprint 27].
     Route::controller(TrainingController::class)->prefix('{league}/training')->whereNumber('league')->group(function () {
@@ -136,6 +139,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('camp', 'sendToCamp')->middleware('throttle:20,1,training-camp');
         Route::post('secret', 'secretSession')->middleware('throttle:20,1,training-secret');
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
+        Route::post('{line}/finish', 'finish')->whereIn('line', ['gk', 'def', 'mid', 'att'])->middleware('throttle:30,1,finish');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
@@ -158,6 +162,12 @@ Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'
     Route::get('unread', 'unread');
     Route::post('read-all', 'readAll');
     Route::post('{message}/read', 'read')->whereNumber('message');
+});
+
+// The coins wallet [Sprint 34].
+Route::prefix('wallet')->middleware(['auth:sanctum', 'throttle:60,1,wallet'])->controller(WalletController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::post('daily', 'daily');
 });
 
 // A coach's profile: titles, objectives and record [Sprint 33].

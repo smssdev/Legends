@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import { useAuth } from '../stores/auth'
 import { useInbox } from '../stores/inbox'
+import { useWallet } from '../stores/wallet'
 import { SECTIONS, TABS } from './nav'
 
 const route = useRoute()
@@ -16,6 +17,9 @@ const more = ref(false)
 // The unread messages on the inbox's entry, and on "المزيد" on the phone where the inbox sits [Sprint 22].
 const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
+// The coins balance on the shell [Sprint 34].
+const wallet = useWallet()
+watch(() => auth.user?.id ?? null, (id) => id && wallet.load(), { immediate: true })
 const badge = (name: string) => (name === 'inbox' && inbox.unread ? (inbox.unread > 99 ? '99+' : String(inbox.unread)) : '')
 const sections = computed(() => SECTIONS)
 const tabs = computed(() => TABS.map((n) => SECTIONS.find((s) => s.name === n)!))
@@ -47,6 +51,11 @@ watch(() => route.fullPath, () => (more.value = false))
           <span v-if="s.dev" class="rounded-pill bg-gold/15 px-2 text-xs text-gold">للمطور</span>
         </RouterLink>
       </nav>
+      <RouterLink v-if="auth.user" to="/wallet" class="flex min-h-touch items-center gap-2 rounded-lg px-3 font-semibold text-text-soft hover:bg-surface" aria-label="المحفظة">
+        <img src="/brand/coin.svg" alt="" class="size-6" />
+        <span class="flex-1">المحفظة</span>
+        <b class="font-numbers text-gold" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
+      </RouterLink>
       <RouterLink v-if="auth.user" to="/profile" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface p-3 hover:bg-surface-raised">
         <span class="flex size-10 items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold">{{ initial }}</span>
         <span class="min-w-0 flex-1">
@@ -63,7 +72,10 @@ watch(() => route.fullPath, () => (more.value = false))
     <div class="flex min-w-0 flex-1 flex-col">
       <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-text/5 bg-bg/95 px-4 py-3 backdrop-blur md:hidden">
         <BrandMark size="sm" />
-        <RouterLink v-if="auth.user" to="/profile" class="ms-auto flex size-touch items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">{{ initial }}</RouterLink>
+        <RouterLink v-if="auth.user" to="/wallet" class="ms-auto flex h-touch items-center gap-1 rounded-pill bg-surface px-3" aria-label="المحفظة">
+          <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-gold" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
+        </RouterLink>
+        <RouterLink v-if="auth.user" to="/profile" class="flex size-touch items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">{{ initial }}</RouterLink>
         <RouterLink v-else-if="auth.loaded" to="/login" class="ms-auto flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">دخول</RouterLink>
       </header>
       <RouterLink v-if="auth.user && !auth.user.email_verified && route.name !== 'profile'" to="/profile" class="block bg-warning/15 px-4 py-2 text-center text-sm">

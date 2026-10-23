@@ -6,6 +6,8 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import PriceTag from '../../components/ui/PriceTag.vue'
+import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
 
@@ -59,6 +61,23 @@ async function ask() {
   busy.value = false
 }
 
+// Finish the search now for coins [Sprint 34].
+const wallet = useWallet()
+async function finish() {
+  busy.value = true
+  error.value = notice.value = ''
+  try {
+    await ensureCsrf()
+    v.value = (await api.POST('/leagues/{league}/scout/finish', { params: { path: { league: leagueId.value! } } })).data as any
+    await load()
+    wallet.load()
+    notice.value = 'وصل تقرير الكشاف.'
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+  busy.value = false
+}
+
 async function buy(id: number, name: string) {
   if (!leagueId.value) return
   busy.value = true
@@ -99,6 +118,8 @@ onBeforeUnmount(() => clearInterval(tick))
       <section v-if="searching" aria-label="الكشاف يبحث" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 bg-surface p-4">
         <div class="flex-1"><b class="block">الكشاف يبحث</b><span class="text-sm text-text-muted">{{ describe(searching.criteria) }}</span></div>
         <span class="font-numbers text-3xl text-gold" dir="ltr" aria-live="off">{{ left }}</span>
+        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
+          أنهِ الآن · <PriceTag :amount="wallet.price('finish_scout')" currency="coins" /></button>
       </section>
 
       <section v-else aria-label="طلب جديد" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
