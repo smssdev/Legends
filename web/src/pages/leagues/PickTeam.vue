@@ -10,6 +10,7 @@ import ClubCrest from '../../components/ui/ClubCrest.vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { money, strength } from '../../lib/format'
+import { cupGoal, leagueGoal } from '../../api/leagues'
 import type { Line } from '../../lib/format'
 
 const props = defineProps<{ id: string }>()
@@ -115,6 +116,11 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الميزانية</dt><dd class="font-numbers text-lg">{{ money(chosen.balance) }}</dd></div>
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">اللاعبون</dt><dd class="font-numbers text-lg">{{ chosen.players_count }}</dd></div>
         </dl>
+        <div v-if="chosen.objectives" class="flex flex-col gap-1 rounded-lg border border-gold/30 bg-gold/10 p-3 text-sm" aria-label="هدف النادي">
+          <b class="text-gold">هدف الإدارة هذا الموسم</b>
+          <span>الدوري: {{ leagueGoal(chosen.objectives.league) }}</span>
+          <span>الكأس: {{ cupGoal(chosen.objectives.cup.target) }}</span>
+        </div>
         <ul class="flex max-h-80 flex-col gap-1 overflow-y-auto text-sm" aria-label="اللاعبون">
           <li v-for="p in squad" :key="p.id" class="flex items-center gap-2 rounded-md px-2 py-1.5 odd:bg-surface-sunk">
             <LineBadge :line="p.line as Line" />

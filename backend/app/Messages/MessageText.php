@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -120,6 +120,13 @@ class MessageText
                 'body' => sprintf('%s: %s. ابدأ الجزء التالي من صفحة الملعب.', self::SECTION[$p['section']] ?? '',
                     ($p['stage_done'] ?? false) ? "المرحلة {$p['stage']} مكتملة وأثرها يعمل الآن" : "الجزء {$p['part']} من 5 في المرحلة {$p['stage']}"),
                 'link' => '/stadium',
+            ],
+            'season_end' => [
+                'title' => ($p['champion'] ?? false) ? "بطل {$p['league']}!" : "انتهى الموسم {$p['season']} في {$p['league']}",
+                'body' => sprintf('أنهيت في المركز %d. هدف الدوري: %s، وهدف الكأس: %s. %s', $p['place'],
+                    ($p['league_goal'] ?? false) ? 'تحقق' : 'لم يتحقق', ($p['cup_goal'] ?? false) ? 'تحقق' : 'لم يتحقق',
+                    ($p['renew'] ?? false) ? 'بدأ الموسم الجديد من الصفر، وفريقك ينتظرك في فترة الإعداد.' : 'وانتهى الدوري.'),
+                'link' => '/league',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };
