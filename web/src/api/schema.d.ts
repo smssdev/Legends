@@ -2402,6 +2402,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/specialists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The four specialists, each with its contract price and the contract working now
+         * @description Sprint 31 (docs/features/specialists.md). A week's contract scaled by the season's length, paid when signed.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The specialists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpecialistsView"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Sign a specialist (one of each type at a time) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The specialists after signing */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpecialistsView"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/spy": {
         parameters: {
             query?: never;
@@ -4747,6 +4822,23 @@ export interface components {
                 mid: number;
                 att: number;
             };
+        };
+        SpecialistsView: {
+            balance: number;
+            /** Format: date-time */
+            now: string;
+            /** @description A contract's length in this league */
+            days: number;
+            specialists: {
+                /** @enum {string} */
+                type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                cost: number;
+                /**
+                 * Format: date-time
+                 * @description While a contract works
+                 */
+                ends_at: string | null;
+            }[];
         };
         SpyPlayer: {
             id: number;
