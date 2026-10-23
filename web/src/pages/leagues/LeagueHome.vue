@@ -3,7 +3,7 @@
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import { budget, END_MODES, STATUS, when, type JoinRequest, type League, type LeagueClub } from '../../api/leagues'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
@@ -88,6 +88,22 @@ async function holiday(start: boolean) {
     league.value = data!.league
   } catch (e) {
     error.value = asApiError(e).message
+  }
+}
+
+// Resigning [PLAN 2.2, Sprint 32]: asked twice, since the club goes back to a bot for the rest of the season.
+const router = useRouter()
+const confirmResign = ref(false)
+const resignError = ref('')
+async function resign() {
+  resignError.value = ''
+  try {
+    await ensureCsrf()
+    await api.POST('/leagues/{league}/resign', { params: { path: { league: leagueId.value } } })
+    router.push({ name: 'leagues' })
+  } catch (e) {
+    resignError.value = asApiError(e).message
+    confirmResign.value = false
   }
 }
 
@@ -199,6 +215,17 @@ onMounted(load)
           <UiButton type="submit" variant="outline">فعّل الإجازة</UiButton>
         </form>
         <p v-else class="text-sm text-text-muted">استخدمت إجازة هذا الموسم.</p>
+        <div v-if="!league.is_owner" class="flex flex-col gap-2 border-t border-text/10 pt-3">
+          <p v-if="resignError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ resignError }}</p>
+          <UiButton v-if="!confirmResign" variant="quiet" @click="confirmResign = true">الاستقالة من الدوري</UiButton>
+          <template v-else>
+            <p class="rounded-lg bg-live/15 px-3 py-2 text-sm">يعود فريقك للحاسوب بحالته، ولا تعود لهذا الدوري قبل الموسم الجديد. متأكد؟</p>
+            <div class="flex gap-2">
+              <UiButton variant="danger" @click="resign">نعم، أستقيل</UiButton>
+              <UiButton variant="quiet" @click="confirmResign = false">تراجع</UiButton>
+            </div>
+          </template>
+        </div>
       </UiCard>
 
       <UiCard v-if="league.members.length" title="المدربون">

@@ -496,6 +496,26 @@ paths:
       responses:
         '200': { description: Cancelled }
         '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/resign:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [leagues]
+      summary: Resign from the league (the club goes back to a bot)
+      description: |
+        PLAN 2.2, Sprint 32. Not in the preparation (the summer window), not on the winter transfer day, not in the last
+        25% of the league rounds; the league's owner does not resign. No coming back to this league this season.
+      responses:
+        '200':
+          description: Resigned
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [left]
+                properties:
+                  left: { type: boolean }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/vacation:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
