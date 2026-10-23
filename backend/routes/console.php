@@ -27,4 +27,6 @@ if (config('game.balance.nightly')) {
         ->appendOutputTo(storage_path('logs/balance.log'));
     Schedule::command('sim:matrix --n=1000')->dailyAt('04:30')->timezone('Africa/Cairo')->withoutOverlapping()->runInBackground()
         ->appendOutputTo(storage_path('logs/balance.log'));
+    // The economy [Sprint 23 B5]: a season of club money, a few seconds.
+    Schedule::command('sim:economy --report='.storage_path('app/balance/economy.json'))->dailyAt('05:00')->timezone('Africa/Cairo')->withoutOverlapping()->runInBackground();
 }

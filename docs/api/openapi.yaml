@@ -796,6 +796,48 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/finance:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [team]
+      summary: My club's money
+      description: |
+        Sprint 23. The balance (the sum of the movements, never edited), whether the club can spend (not below zero),
+        the league rounds in a row below zero and the limit before the dearest player is sold to the pool, the wages
+        of a round, the season's totals by kind, the income and expenses of each league round, the last 60 movements
+        (a match's ones carry its round, or `cup`), the stadium's gate (seats, attendance, seat price) and each
+        sector's sponsor (chosen, or the three offers with what each pays per home match and on a home win).
+      responses:
+        '200':
+          description: The finances
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClubFinance' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/sponsors:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: Sign a sector's sponsor for the season (once per sector)
+      description: A sector left unchosen signs the steady sponsor at the club's first home match.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sector, offer]
+              properties:
+                sector: { type: string, enum: [main, opposite, north, south] }
+                offer: { type: string, enum: [steady, bonus, ambitious] }
+      responses:
+        '200':
+          description: The finances after signing
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClubFinance' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/next-match:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -1525,6 +1567,47 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    ClubFinance:
+      type: object
+      required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]
+      properties:
+        balance: { type: integer }
+        can_spend: { type: boolean }
+        debt_rounds: { type: integer }
+        debt_limit: { type: integer }
+        wages_per_round: { type: integer }
+        season_totals: { type: array, items: { type: object, required: [type, label, total], properties: { type: { type: string }, label: { type: string }, total: { type: integer } } } }
+        season_income: { type: integer }
+        season_expenses: { type: integer }
+        rounds: { type: array, items: { type: object, required: [round, in, out], properties: { round: { type: integer }, in: { type: integer }, out: { type: integer } } } }
+        transactions:
+          type: array
+          items:
+            type: object
+            required: [id, type, label, amount, balance_after, created_at, round, cup]
+            properties:
+              id: { type: integer }
+              type: { type: string }
+              label: { type: string }
+              amount: { type: integer }
+              balance_after: { type: integer }
+              created_at: { type: string, format: date-time }
+              round: { type: integer, nullable: true }
+              cup: { type: boolean }
+        stadium:
+          type: object
+          required: [capacity, attendance_bp, ticket_price, tickets_per_match]
+          properties: { capacity: { type: integer }, attendance_bp: { type: integer }, ticket_price: { type: integer }, tickets_per_match: { type: integer } }
+        sponsors:
+          type: array
+          items:
+            type: object
+            required: [sector, name, chosen, offers]
+            properties:
+              sector: { type: string }
+              name: { type: string }
+              chosen: { type: string, nullable: true }
+              offers: { type: array, items: { type: object, required: [offer, name, per_match, per_win], properties: { offer: { type: string }, name: { type: string }, per_match: { type: integer }, per_win: { type: integer } } } }
     Message:
       type: object
       required: [id, type, read, created_at, title, body, link]

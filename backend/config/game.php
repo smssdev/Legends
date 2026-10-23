@@ -75,9 +75,33 @@ return [
         'pair_net_transfer_cap_bp' => 2500,   // من ميزانية البداية، لكل ناديين في الموسم
         'same_pair_player_moves_per_season' => 1,
         'debt_rounds_before_forced_sale' => 3,
+        'min_squad' => 16,                  // a forced sale never leaves fewer players than this
         'pool_size' => 300,
-        'round_base_income' => null, 'win_bonus' => null, 'draw_bonus' => null,
-        'salary_ratio_per_round' => null,   // تُحدد بعد الاستيراد
+        // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
+        // average squad value when it starts, so a small league's money is small like its prices.
+        // Wages: this share of the squad's value over a season, paid each league round.
+        'wages_bp_per_season' => 300,
+        // A home match brings this share of the scale over a season (split over the home matches): sponsors
+        // take sponsor_share of it, the tickets the rest at full attendance.
+        'home_income_bp_per_season' => 450,
+        'sponsor_share_bp' => 5500,
+        // The four sectors of the stadium, each with its sponsor, and its share of the sponsors' money.
+        'sectors' => ['main' => 3500, 'opposite' => 2500, 'north' => 2000, 'south' => 2000],
+        // The sponsor offers per sector: a fixed part of the sector's money each home match, plus a part on a home win.
+        'sponsor_offers' => [
+            'steady' => ['fixed_bp' => 10000, 'win_bp' => 0],
+            'bonus' => ['fixed_bp' => 7000, 'win_bp' => 7000],
+            'ambitious' => ['fixed_bp' => 4000, 'win_bp' => 13000],
+        ],
+        // The stadium at stage 0 (Sprint 29 builds on it): seats, and attendance from the club's strength in its league.
+        'stadium' => ['capacity' => 20000, 'attendance_min_bp' => 6000, 'attendance_max_bp' => 10000],
+        // A league match's result, as a share of the scale.
+        'win_bonus_bp' => 8, 'draw_bonus_bp' => 3,
+        // Season prizes as a share of the scale: the league by place (from the champion down), and the cup.
+        'league_prize_bp' => [100, 70, 50, 35, 25, 15, 10, 5],
+        'cup_prize_bp' => ['winner' => 50, 'final' => 25, 'sf' => 10],
+        // sim:economy's targets for a season: no mass bankruptcy, and no clear inflation.
+        'sim_targets' => ['broke_%_max' => 10, 'median_end_ratio' => [0.7, 2.5], 'money_growth_max' => 2.0],
     ],
     // A player's value in club money [PLAN 2.6]: from his rating, then his age, line and room to grow.
     // Integers only; each multiplier in basis points. Calibrated in Sprint 11 (docs/sprints/sprint-11.md).
