@@ -24,6 +24,7 @@ class SimEconomy extends Command
     public function handle(): int
     {
         $cfg = config('game.economy');
+        $cfg['training_bp'] = (int) config('game.training.slots') * (int) config('game.training.cost_bp_per_season');
         $masters = MasterClub::where('league_name', $this->option('league'))->orderByDesc('strength_cp')->orderBy('id')->get();
         if ($masters->count() < 4) {
             $this->error('No league named '.$this->option('league').'.');

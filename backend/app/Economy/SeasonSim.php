@@ -69,6 +69,8 @@ class SeasonSim
                 foreach ([[$home, $score['home'], $score['away']], [$away, $score['away'], $score['home']]] as [$id, $for, $against]) {
                     $wages = $this->money->wages(array_sum($clubs[$id]['players']), $nRounds);
                     $bonus = $this->money->resultBonus($scale, $for, $against);
+                    // Training: every coach keeps his four slots busy all season [PLAN 2.8, Sprint 27].
+                    $wages += intdiv($scale * (int) ($this->cfg['training_bp'] ?? 0), 10000 * $nRounds);
                     $book[$id]['balance'] += $bonus - $wages;
                     $book[$id]['income'] += $bonus;
                     $book[$id]['wages'] += $wages;

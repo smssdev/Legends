@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +106,12 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(ScoutController::class)->prefix('{league}/scout')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'ask')->middleware('throttle:20,1,scout');
+    });
+    // Training [Sprint 27].
+    Route::controller(TrainingController::class)->prefix('{league}/training')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('/', 'add')->middleware('throttle:30,1,training');
+        Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);

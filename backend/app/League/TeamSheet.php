@@ -6,6 +6,7 @@ use App\Engine\AutoPick;
 use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Support\GameClock;
+use App\Training\Training;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -26,10 +27,10 @@ class TeamSheet
     {
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
             ->where('players.club_id', $club->id)
-            ->select('master_players.*', 'players.id', 'players.overall', 'players.fitness', 'players.injured_matches', 'players.suspended_matches')
+            ->select('master_players.*', 'players.id', 'players.overall', 'players.training_bonus', 'players.fitness', 'players.injured_matches', 'players.suspended_matches')
             ->orderBy('players.id')->get()
             ->map(function ($r) {
-                $p = MatchSetup::player((array) $r);
+                $p = MatchSetup::player(Training::boosted((array) $r));
                 $p['fitness'] = (int) $r->fitness;
                 $p['unavailable'] = $r->injured_matches > 0 || $r->suspended_matches > 0;
 
