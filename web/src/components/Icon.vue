@@ -12,6 +12,7 @@ export const PATHS = {
   tactics: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4',
   training: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12',
   market: 'M4 8h14l-4-4M20 16H6l4 4',
+  staff: 'M12 3v4M10 5h4M7 21v-6a5 5 0 0 1 10 0v6M12 15v6M9.5 10a2.5 2.5 0 1 0 5 0',
   scout: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM21 21l-5-5',
   stadium: 'M3 9c0-2.2 4-4 9-4s9 1.8 9 4-4 4-9 4-9-1.8-9-4ZM3 9v6c0 2.2 4 4 9 4s9-1.8 9-4V9',
   finance: 'M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Zm0 0 2-3h12v3M16 13.5h2',
