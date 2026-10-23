@@ -7,8 +7,10 @@ export function money(v: number): string {
 }
 export const strength = (cp: number) => (cp / 100).toFixed(1)
 export const count = (n: number) => n.toLocaleString('en-US')
+// Drops the decimals' trailing zeros only (1.50 → 1.5, 2.00 → 2), never a whole number's (620 stays 620).
 function trim(n: number, digits: number) {
-  return n.toFixed(digits).replace(/\.?0+$/, '')
+  const s = n.toFixed(digits)
+  return s.includes('.') ? s.replace(/0+$/, '').replace(/\.$/, '') : s
 }
 
 /** Line letters and names (حارس، دفاع، وسط، هجوم). */

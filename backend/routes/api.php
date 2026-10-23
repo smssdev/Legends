@@ -77,6 +77,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('tactics', 'tactics');
         Route::put('tactics', 'saveTactics');
         Route::get('next-match', 'nextMatch');
+        // Club money [Sprint 23].
+        Route::get('finance', 'finance');
+        Route::post('sponsors', 'signSponsor');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
