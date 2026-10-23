@@ -28,7 +28,7 @@ Step 'Getting the latest version'
 git -C $Root pull --ff-only
 composer install --no-dev --optimize-autoloader --no-interaction
 php artisan migrate --force
-# The nightly engine calibration (docs/ENGINE.md 9) runs on this machine.
+# The nightly engine calibration (docs/PLAN.md 4.5) runs on this machine.
 if (-not (Select-String -Path '.env' -Pattern '^GAME_NIGHTLY_BALANCE=' -Quiet)) { Add-Content '.env' 'GAME_NIGHTLY_BALANCE=true' }
 
 Step 'Building the web app'

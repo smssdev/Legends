@@ -1,6 +1,4 @@
 node_modules/
 __pycache__/
 
-# built by tools/art/build.py from art/raw/
-web/public/match-art/
 .claude/worktrees/
