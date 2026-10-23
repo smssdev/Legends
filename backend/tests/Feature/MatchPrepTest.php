@@ -150,7 +150,7 @@ class MatchPrepTest extends TestCase
         $this->assertSame(91, $this->getJson($this->url('/next-match'))->json('match.mine.tactics.tempo'));
     }
 
-    public function test_a_bot_side_is_locked_with_the_automatic_sheet_and_neutral_tactics(): void
+    public function test_a_bot_side_is_locked_with_the_automatic_sheet_and_its_personalitys_tactics(): void
     {
         $bot = DB::table('fixtures')->where('competition', 'league')->where('round', 1)->whereNotIn('id', [$this->fixture->id])->where('is_bye', false)->first();
         Carbon::setTestNow(Carbon::parse($bot->scheduled_at, 'UTC')->subMinutes(5));
@@ -158,7 +158,11 @@ class MatchPrepTest extends TestCase
         $sheets = DB::table('fixture_sheets')->where('fixture_id', $bot->id)->get();
         $this->assertCount(2, $sheets);
         foreach ($sheets as $s) {
-            $this->assertSame(MatchSetup::DEFAULT_TACTICS, json_decode($s->tactics, true));
+            // Its personality's tactics, with every knob a valid one [Sprint 32].
+            $t = json_decode($s->tactics, true);
+            $this->assertSame(array_keys(MatchSetup::DEFAULT_TACTICS), array_keys($t));
+            $persona = config('game.bots.personalities.'.DB::table('clubs')->where('id', $s->club_id)->value('bot_personality'));
+            $this->assertSame($persona['pressing'], $t['pressing']);
             $this->assertCount(11, array_filter(json_decode($s->starters)));
         }
         $this->assertTrue(GameClock::now()->gte(Carbon::parse($bot->scheduled_at)->subMinutes(5)));

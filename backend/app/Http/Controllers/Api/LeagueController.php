@@ -130,6 +130,14 @@ class LeagueController extends Controller
         return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
     }
 
+    /** The coach resigns: the club goes back to a bot [PLAN 2.2, Sprint 32]. */
+    public function resign(Request $request, League $league): JsonResponse
+    {
+        Leaving::resign($this->membership($request->user(), $league));
+
+        return response()->json(['left' => true]);
+    }
+
     /** The owner sends a coach away with a written reason that every member sees [PLAN 2.1]. */
     public function kick(Request $request, League $league, LeagueMembership $membership): JsonResponse
     {

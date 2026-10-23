@@ -71,11 +71,12 @@ class MatchPrep
             }
             foreach ([$fixture->home_id, $fixture->away_id] as $clubId) {
                 $club = Club::find($clubId);
-                [$lineup, $fixes] = self::fixed($club);
+                // A bot picks its eleven afresh, resting the tired, and its tactics for this opponent [Sprint 32].
+                [$lineup, $fixes] = $club->isBot() ? [TeamSheet::best($club, Bot::restBelow($club)), []] : self::fixed($club);
                 DB::table('fixture_sheets')->insert([
                     'fixture_id' => $fixtureId, 'club_id' => $clubId, 'formation' => $lineup['formation'],
                     'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']), 'bench' => json_encode($lineup['bench']),
-                    'takers' => json_encode(TeamSheet::takers($club, $lineup)), 'tactics' => json_encode(Tactics::of($club)),
+                    'takers' => json_encode(TeamSheet::takers($club, $lineup)), 'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : Tactics::of($club)),
                     'fixes' => json_encode($fixes), 'locked_at' => $now,
                 ]);
             }
