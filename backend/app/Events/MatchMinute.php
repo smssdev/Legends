@@ -35,6 +35,8 @@ class MatchMinute implements ShouldBroadcastNow
             'tick' => $this->tick['tick'], 'minute' => $this->tick['minute'], 'score' => $this->tick['score'],
             'at' => $this->tick['at'] ?? null, 'moment' => $this->tick['moment'], 'finished' => $this->tick['finished'],
             'events' => $this->tick['events'],
+            // The commentator's line for this minute, drawn on the server [Sprint 35].
+            'voice' => $this->tick['voice'] ?? null,
         ];
     }
 }

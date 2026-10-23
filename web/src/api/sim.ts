@@ -141,9 +141,11 @@ export const seats = {
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   const match = path.match(/^\/matches\/([^/?]+)/)?.[1]
   const seat = match ? seats.get(match) : null
+  // With a session cookie (a signed-in player) Sanctum checks CSRF on every write: send the token when there is one.
+  const xsrf = document.cookie.split('; ').find((c) => c.startsWith('XSRF-TOKEN='))?.slice(11)
   const res = await fetch(`/api/v1/sim${path}`, {
     method,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(seat ? { 'X-Seat': seat } : {}) },
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(seat ? { 'X-Seat': seat } : {}), ...(xsrf ? { 'X-XSRF-TOKEN': decodeURIComponent(xsrf) } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!res.ok) {

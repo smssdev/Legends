@@ -10,6 +10,8 @@ COPY docs/design ./docs/design
 COPY web/package.json web/package-lock.json ./web/
 RUN cd web && npm ci
 COPY web ./web
+# The commentator's line table, shared with the server [Sprint 35].
+COPY backend/resources/commentary/voice.json ./backend/resources/commentary/voice.json
 RUN cd web && npm run build
 
 FROM composer:2 AS vendor

@@ -2,13 +2,13 @@
 English with Kokoro (George), Arabic with Piper (Kareem).
 
 Output in web/public/commentary/:
-  phrases.mp3 + .json          every English phrase in feed/story.ts, in the voice it is said (calm or excited)
+  phrases.mp3 + .json          every English phrase in backend/resources/commentary/voice.json, in the voice it is said (calm or excited)
   ar/phrases.mp3 + .json       the same for Arabic (the Arabic voice says no names); once lines are
                                recorded by a person (audio/raw/ar/story/), arabic_voice.py builds this pack instead
   clubs/<slug>.mp3 + .json     each covered club's name and its players' surnames (English)
 
 The browser joins the pieces into lines at play time (web/src/match/voice.ts).
-Run it again after changing a line in story.ts or the player data:
+Run it again after changing a line in backend/resources/commentary/voice.json or the player data:
 
   python -m venv .venv && .venv/bin/pip install kokoro-onnx piper-tts soundfile
   curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx
@@ -54,13 +54,9 @@ def surname(full):
 
 
 def lines():
-    """LINES from web/src/match/feed/story.ts, as JSON (bundled with the web app's esbuild)."""
-    web = os.path.join(ROOT, 'web')
-    code = subprocess.run(['npx', 'esbuild', 'src/match/feed/story.ts', '--format=esm', '--log-level=error'], cwd=web, capture_output=True, text=True, check=True).stdout
-    with tempfile.TemporaryDirectory() as d:
-        with open(f'{d}/story.mjs', 'w', encoding='utf-8') as h:
-            h.write(code)
-        out = subprocess.run(['node', '-e', f"import('{d}/story.mjs').then(m => process.stdout.write(JSON.stringify(m.LINES)))"], capture_output=True, text=True, check=True).stdout
+    """The commentator's line table, shared by the server and the web (Sprint 35)."""
+    with open(os.path.join(ROOT, 'backend', 'resources', 'commentary', 'voice.json'), encoding='utf-8') as h:
+        out = h.read()
     return json.loads(out)
 
 
