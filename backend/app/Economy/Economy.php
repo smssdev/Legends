@@ -5,6 +5,7 @@ namespace App\Economy;
 use App\League\ClubLedger;
 use App\Market\Transfers;
 use App\Messages\Inbox;
+use App\Stadium\Stadium;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -54,7 +55,7 @@ class Economy
         }
         [$min, $max] = self::strengthRange($season->league_id);
         $strength = (int) DB::table('clubs')->where('id', $f->home_id)->value('strength_snapshot');
-        ClubLedger::post($f->home_id, 'tickets', $money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max)),
+        ClubLedger::post($f->home_id, 'tickets', $money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max), Stadium::capacity($f->home_id)),
             "tickets:{$f->id}", "fixture:{$f->id}");
 
         if ($f->competition !== 'league') {

@@ -226,7 +226,8 @@ final class MatchEngine
         $team = $this->s['teams'][$side];
         $value = Ability::lines($team, $mix, $lines);
         if ($side === 'home' && $this->s['venue'] === 'home') {
-            $value += intdiv($value * (int) $this->cfg['home_base_bp'], 10000);
+            // The base advantage, and the home pitch's stage on top [PLAN 2.9].
+            $value += intdiv($value * ((int) $this->cfg['home_base_bp'] + (int) ($this->cfg['home_pitch_bp'][$this->s['pitch'] ?? 0] ?? 0)), 10000);
         }
         $captain = $this->player($side, $team['takers']['captain'] ?? 0);
         if ($captain && $captain['on'] && $captain['fit'] > (int) $this->cfg['captain_min_fitness'] * 100) {
