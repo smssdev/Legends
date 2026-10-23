@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
+use App\Http\Controllers\Api\SpyController;
 use App\Http\Controllers\Api\StadiumController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TrainingController;
@@ -107,6 +108,11 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(ScoutController::class)->prefix('{league}/scout')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'ask')->middleware('throttle:20,1,scout');
+    });
+    // Spying on the next opponent [Sprint 30].
+    Route::controller(SpyController::class)->prefix('{league}/spy')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('/', 'send')->middleware('throttle:20,1,spy');
     });
     // The stadium [Sprint 29].
     Route::controller(StadiumController::class)->prefix('{league}/stadium')->whereNumber('league')->group(function () {
