@@ -2,8 +2,7 @@
 
   python3 tools/commentary/ar_catalog.py
 
-writes docs/audio/ARABIC_VOICE.md (every clip in one file), audio/raw/ar/catalog.tsv, and a
-README in each folder of audio/raw/ naming the files that go in it. The lines in story.ts
+writes audio/raw/ar/catalog.tsv: every clip with its wave, folder, file, tone and text. The lines in story.ts
 (audio/raw/ar/story/files.txt) are what the simulator says today; the catalogue adds the full
 set, so every moment has many variants and the voice rarely repeats itself. Same rules as files.txt: no player or club names, one line per file.
 The text of every line comes from ar_egyptian.py: Egyptian Arabic as it is said, without diacritics.
@@ -180,25 +179,6 @@ def wave_of(i):
     return 2 + (i - 1) // PER_WAVE
 
 
-SPRINT = {1: 3, 2: 46, 3: 47, 4: 48, 5: 49, 6: 50, 7: 51, 8: 51, 9: 51}  # wave 1 now, the rest after v1.1 (phase Z)
-
-
-def sprint(w):
-    return SPRINT.get(w, 52)
-
-
-def table(rows, waves=None):
-    if waves is None:
-        return ['| الملف | النبرة | النص |', '|---|---|---|'] + [f'| `{n}` | {t} | {x} |' for n, t, x in rows]
-    return ['| الدفعة | الملف | النبرة | النص |', '|---|---|---|---|'] + [f'| {w} | `{n}` | {t} | {x} |' for w, (n, t, x) in zip(waves, rows)]
-
-
-def write(path, lines):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(EG.plain('\n'.join(lines)) + '\n')          # no diacritics anywhere (owner's decision, 2026-10-20)
-
-
 def main():
     story = story_lines()
     for prefix, _, _, items in CATALOG:
@@ -208,60 +188,8 @@ def main():
     n_cat = sum(len(r) for *_, r in cat)
     total = len(story) + n_cat
 
-    out = [
-        '# صوت المعلق العربي وأصوات الملعب: كل المقاطع\n',
-        f'الملف الكامل لكل صوت يحتاجه المحاكي: **{total} مقطعاً للمعلق** (منها {len(story)} يستخدمها المحاكي الآن و{n_cat} للتوسعة في {len(cat)} فئة)، '
-        f'و**{len(SFX)} صوتاً** للملعب والمباراة. **المعلق الافتراضي في اللعبة إنجليزي** (مولّد)، والعربي بديله الكامل من هذه الملفات، وأي لحظة لم يصل مقطعها العربي تُقال بالإنجليزي. كل مقطع له **اسم ملف ومجلد**: احفظه بالاسم نفسه في مجلده داخل `audio/raw/`، وفي كل مجلد ملف `README.md` بأسماء ملفاته.\n',
-        '## المجلدات\n',
-        '| المجلد | المحتوى | العدد |', '|---|---|---|',
-        f'| `audio/raw/ar/story/` | ما يقوله المحاكي الآن (يُبنى بـ `python3 tools/commentary/arabic_voice.py build`) | {len(story)} |',
-    ] + [f'| `audio/raw/ar/{prefix}/` | {title} | {len(rows)} |' for prefix, title, _, rows in cat] + [
-        f'| `audio/raw/sfx/` | أصوات الملعب والمباراة | {len(SFX)} |', '',
-        '## الدفعات: نفس طريقة الصور\n',
-        'لا نسجل الكتالوج فئة فئة، بل **دفعة دفعة على كل الفئات**: كل دفعة تعطي كل اللحظات صوتاً، ثم نضعها في المحاكاة ونجربها ونعتمدها، ثم الدفعة التالية تزيد التنوع.\n',
-        '| الدفعة | المحتوى | السبرنت |', '|---|---|---|',
-        f'| 1 | كل `ar/story/` ({len(story)} مقطعاً): ما يقوله المحاكي الآن، فيعمل العربي كاملاً من أول دفعة | {sprint(1)} |',
-    ] + [f'| {w} | المقاطع {PER_WAVE * (w - 2) + 1} إلى {PER_WAVE * (w - 1)} من كل فئة ({sum(1 for *_, r in cat for i in range(1, len(r) + 1) if wave_of(i) == w)} مقطعاً) | {sprint(w)} |' for w in range(2, max(wave_of(len(r)) for *_, r in cat) + 1)] + [
-        '',
-        '**دورة كل دفعة:** صاحب المشروع يسجل أو يولّد المقاطع ويرفعها، وClaude يبنيها ويضعها في المحاكي، ثم مباراة كاملة بالعربي للتجربة، ثم الاعتماد والدفعة التالية.\n',
-        '## التوليد أو التسجيل\n',
-        '- **الصيغة:** WAV أحادي (mono) 44.1 أو 48 كيلوهرتز. mp3 أو m4a بنفس الاسم يعملان أيضاً.',
-        '- **الصوت:** معلق عربي واحد لكل المقاطع، **باللهجة المصرية** (قرار صاحب المشروع، 2026-10-20)، بنفس الصوت والإعدادات من أول مقطع لآخر مقطع. النص هنا مكتوب بالمصرية كما يُقال، بلا تشكيل. جملة واحدة لكل مقطع بلا جمل من مقطع آخر، والمقطع الذي قبل اللحظة (pre) لا يكشف النتيجة.',
-        '- **قوائم العمل:** `docs/audio/todo/`، فيها لكل دفعة ما اعتُمد وما يُعاد وما لم يُسجَّل، بالملف والمكان والنبرة والنص.',
-        '- **النبرات:**',
-        '  - **هادئ:** تعليق عادي بسرعة متوسطة.',
-        '  - **متحمس:** صوت مرتفع وأسرع، للحظات الكبيرة.',
-        '  - **صاخب:** أعلى صوت ممكن مع مدّ الكلمة، للهدف والطرد والفوز القاتل.',
-        '- **في أداة التوليد:** ثبّت الصوت والإعدادات لكل نبرة، وولّد المقاطع نبرة نبرة. انسخ النص كما هو، وقله بالنطق المصري.',
-        '- **الصمت:** نصف ثانية قبل الكلام وبعده. أداة البناء تقص الزائد وتوحد مستوى الصوت.',
-        '- **ممنوع:** أسماء لاعبين أو أندية، وأي موسيقى تحت الصوت.\n',
-        '## كيف يستخدمها المحاكي\n',
-        '- **ثلاث خانات لكل لقطة:** قبل اللحظة (بناء الهجمة)، واللحظة نفسها (تُقال لحظة وصول الكرة بالضبط)، وبعدها (الإعادة والاحتفال).',
-        '- **الأولوية:** مقطع اللحظة يقطع ما قبله، والهادئة تنتظر في طابور ولا تُقطع.',
-        '- **التنويع:** الاختيار ببذرة الدقيقة، ولا يتكرر المقطع نفسه قبل عشر دقائق من المباراة، والشاشتان في مباراة الصديقين تسمعان المقطع نفسه.',
-        '- **المزج:** الجمهور ينخفض تلقائياً حين يتكلم المعلق، ويرتفع مع خطورة الهجمة.\n',
-        f'## الجزء 1: ما يقوله المحاكي الآن ({len(story)} مقطعاً)\n',
-        '**المجلد:** `audio/raw/ar/story/`. الأسماء بصيغة `<اللقطة>-<الخانة>-<الرقم>.wav`: الخانة pre قبل اللحظة، وkey اللحظة، وpost بعدها.\n',
-    ] + table(story) + ['', f'## الجزء 2: التوسعة ({n_cat} مقطعاً في {len(cat)} فئة)\n',
-                        '| الفئة | المجلد | متى تُقال | العدد |', '|---|---|---|---|'] + [
-        f'| {title} | `audio/raw/ar/{prefix}/` | {when} | {len(rows)} |' for prefix, title, when, rows in cat] + ['']
-    for prefix, title, when, rows in cat:
-        out += [f'### {title}\n', f'**المجلد:** `audio/raw/ar/{prefix}/` · **متى:** {when}\n'] + table(rows, [wave_of(i) for i in range(1, len(rows) + 1)]) + ['']
-    out += [f'## الجزء 3: أصوات الملعب والمباراة ({len(SFX)} صوتاً)\n',
-            '**المجلد:** `audio/raw/sfx/`. ليست صوت المعلق: تُسجَّل أو تُولَّد، بترخيص CC0 فقط. الحلقات (المكتوب عندها حلقة) تُصنع بحيث لا يُسمع مكان التكرار.\n',
-            '| الملف | الصوت |', '|---|---|'] + [f'| `{k}.ogg` | {d} |' for k, d in SFX]
-    write(os.path.join(ROOT, 'docs', 'audio', 'ARABIC_VOICE.md'), out)
-
-    # one README per folder, naming what goes in it
-    write(os.path.join(RAW, 'README.md'), ['# الأصوات الخام\n', 'كل مجلد فيه `README.md` بأسماء ملفاته ونصوصها. القائمة الكاملة والشرح في `docs/audio/ARABIC_VOICE.md`.\n',
-                                           '| المجلد | المحتوى | العدد |', '|---|---|---|', f'| `ar/story/` | ما يقوله المحاكي الآن | {len(story)} |'] +
-          [f'| `ar/{prefix}/` | {title} | {len(rows)} |' for prefix, title, _, rows in cat] + [f'| `sfx/` | أصوات الملعب والمباراة | {len(SFX)} |'])
-    write(os.path.join(RAW, 'ar', 'story', 'README.md'), ['# ما يقوله المحاكي الآن (الدفعة 1)\n', 'ضع هنا كل مقطع باسمه، ثم: `python3 tools/commentary/arabic_voice.py build`. القائمة نفسها في `files.txt`.\n'] + table(story))
-    for prefix, title, when, rows in cat:
-        write(os.path.join(RAW, 'ar', prefix, 'README.md'), [f'# {title}\n', f'**متى:** {when}. ضع هنا كل مقطع باسمه، دفعة دفعة (`docs/audio/ARABIC_VOICE.md`).\n'] + table(rows, [wave_of(i) for i in range(1, len(rows) + 1)]))
-    write(os.path.join(RAW, 'sfx', 'README.md'), ['# أصوات الملعب والمباراة\n', 'بترخيص CC0 أو مولّدة. ضع هنا كل صوت باسمه.\n', '| الملف | الصوت |', '|---|---|'] + [f'| `{k}.ogg` | {d} |' for k, d in SFX])
     with open(os.path.join(RAW, 'ar', 'catalog.tsv'), 'w', encoding='utf-8') as f:
-        f.write('# كل مقاطع المعلق العربي (docs/audio/ARABIC_VOICE.md): الدفعة\tالمجلد\tالملف\tالنبرة\tالنص\n')
+        f.write('# كل مقاطع المعلق العربي: الدفعة\tالمجلد\tالملف\tالنبرة\tالنص\n')
         f.writelines(f'1\tstory\t{n}\t{t}\t{x}\n' for n, t, x in story)
         for prefix, _, _, rows in cat:
             f.writelines(f'{wave_of(i)}\t{prefix}\t{n}\t{t}\t{x}\n' for i, (n, t, x) in enumerate(rows, 1))

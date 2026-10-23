@@ -17,7 +17,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url)
   if (e.request.method !== 'GET' || url.origin !== location.origin) return
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/match-art/')) return
+  if (url.pathname.startsWith('/api/')) return
   // Pages: the network first, the saved page when offline.
   if (e.request.mode === 'navigate') {
     e.respondWith(
