@@ -10,6 +10,7 @@ use App\League\Members;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Simulator\Simulator;
+use App\Support\Activity;
 use App\Support\GameClock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,6 +55,10 @@ class MatchController extends Controller
         [$m, $f, $you] = $this->load($request, $match);
         if ($you && $m->status === 'live') {
             MatchOrders::watching($m->id, $you);
+        }
+        // A match followed live counts once for the activity indicators [PLAN 2.22, Sprint 37].
+        if ($m->status === 'live' && Cache::add("watched:{$request->user()->id}:{$m->id}", 1, 3600)) {
+            Activity::record($request->user()->id, 'matches_watched');
         }
         $since = (int) $request->query('since', 0);
         $live = Cache::get("league-match:{$m->id}");
@@ -131,6 +136,7 @@ class MatchController extends Controller
         // The 24 formations and the coach's own, each with its slots (the engine takes them with the order).
         $formations = TeamSheet::formations(Club::findOrFail($you === 'home' ? $f->home_id : $f->away_id));
         abort_unless($m->mode === 'live' && $m->status === 'live', 409, 'انتهت المباراة.');
+        Activity::record($request->user()->id, 'orders');
         $data = $request->validate([
             'type' => 'required|in:sub,tactics,formation',
             'out' => 'required_if:type,sub|integer',

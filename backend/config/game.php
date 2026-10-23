@@ -237,6 +237,10 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // Backups off this machine [PLAN 2.19, Sprint 37]: an rclone remote to Google Drive (rclone config, once).
+    'backup' => ['rclone_remote' => env('BACKUP_RCLONE_REMOTE')],
+    // The admin panel [PLAN 2.17, Sprint 37]: a code from the authenticator is asked again after these hours.
+    'admin' => ['two_factor_hours' => 12],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [
