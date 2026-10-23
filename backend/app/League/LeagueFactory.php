@@ -3,6 +3,7 @@
 namespace App\League;
 
 use App\Http\Controllers\Api\DataController;
+use App\Market\Pool;
 use App\Models\League;
 use App\Models\Season;
 use App\Models\User;
@@ -77,6 +78,8 @@ class LeagueFactory
                 }
             }
             SeasonScheduler::build($league->fresh(), $season->fresh());
+            // The market pool for the preparation and the first window [Sprint 24].
+            Pool::renew($league->id, DB::table('transfer_windows')->where('season_id', $season->id)->where('kind', 'summer')->value('id'));
             Joining::claim($owner, $league->fresh(), $chosen);
 
             return $league->fresh();

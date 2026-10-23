@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: market
+    description: The market (Sprints 24 and 25)
   - name: messages
     description: The inbox (Sprint 22)
   - name: auth
@@ -796,6 +798,65 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/market:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: The market, the pool or the bot clubs, and my players with what the pool pays
+      description: |
+        Sprint 24. Open from the league's creation until its last quarter (`closed` says why when it is shut). The pool,
+        about 300 players from outside the league's clubs renewed in each window, sells at 100% of the value; a bot club
+        sells at a fixed 125% and keeps 18 players and 2 keepers; the pool buys back at 70% of the value without training.
+      parameters:
+        - { name: source, in: query, schema: { type: string, enum: [pool, bots], default: pool } }
+        - { name: line, in: query, schema: { type: string, enum: [gk, def, mid, att] } }
+        - { name: q, in: query, schema: { type: string }, description: Part of a name }
+        - { name: club, in: query, schema: { type: integer }, description: One bot club }
+        - { name: max_price, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: The market
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Market' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/buy:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: Buy a player from the pool or a bot club
+      description: The same idempotency_key again changes nothing. Two coaches at the same player at once, one gets him.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [player_id, idempotency_key], properties: { player_id: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } }
+      responses:
+        '200':
+          description: Bought
+          content:
+            application/json:
+              schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/sell:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: Sell one of my players to the pool (never below 16 players or 2 keepers)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [player_id, idempotency_key], properties: { player_id: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } }
+      responses:
+        '200':
+          description: Sold
+          content:
+            application/json:
+              schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/finance:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1567,6 +1628,38 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Market:
+      type: object
+      required: [closed, open_until_round, counts, balance, bots, players, mine]
+      properties:
+        closed: { type: string, nullable: true }
+        open_until_round: { type: integer }
+        counts: { type: object, required: [pool, bots], properties: { pool: { type: integer }, bots: { type: integer } } }
+        balance: { type: integer }
+        bots: { type: array, items: { type: object, required: [id, name, code, players], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, players: { type: integer } } } }
+        players:
+          type: array
+          items:
+            type: object
+            required: [id, name, position, line, age, overall, potential, value, price, club]
+            properties:
+              id: { type: integer }
+              name: { type: string }
+              position: { type: string }
+              line: { type: string }
+              age: { type: integer }
+              overall: { type: integer }
+              potential: { type: integer }
+              nationality: { type: string, nullable: true }
+              value: { type: integer }
+              price: { type: integer }
+              club: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+        mine:
+          type: array
+          items:
+            type: object
+            required: [id, name, position, line, overall, value, pool_pays]
+            properties: { id: { type: integer }, name: { type: string }, position: { type: string }, line: { type: string }, overall: { type: integer }, value: { type: integer }, pool_pays: { type: integer } }
     ClubFinance:
       type: object
       required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]

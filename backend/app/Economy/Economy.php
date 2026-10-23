@@ -101,7 +101,7 @@ class Economy
             if (! $p || DB::table('players')->where('club_id', $clubId)->count() <= (int) config('game.economy.min_squad')) {
                 break;
             }
-            DB::table('players')->where('id', $p->id)->where('club_id', $clubId)->update(['club_id' => null, 'updated_at' => GameClock::now()]);
+            DB::table('players')->where('id', $p->id)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
             $balance = ClubLedger::post($clubId, 'forced_sale', $money->poolPays((int) $p->base_value), "forced:{$fixtureId}:{$p->id}", "player:{$p->id}");
             $sold[] = $p->name;
         }

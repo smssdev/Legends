@@ -10,6 +10,8 @@ Schedule::command('leagues:start')->everyMinute()->withoutOverlapping();
 Schedule::command('leagues:absence')->everyMinute()->withoutOverlapping();
 // Before each match: the referee at 30 minutes, the lock (with the automatic fix) at 5 [PLAN 2.13].
 Schedule::command('matches:prepare')->everyMinute()->withoutOverlapping();
+// The market pool renews when each transfer window opens [PLAN 2.7, Sprint 24].
+Schedule::command('market:renew')->everyMinute()->withoutOverlapping();
 
 // The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
 Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');

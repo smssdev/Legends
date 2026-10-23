@@ -12,7 +12,7 @@ export const SECTIONS: Section[] = [
   { name: 'lineup', path: '/lineup', label: 'التشكيلة', icon: 'lineup' },
   { name: 'tactics', path: '/tactics', label: 'التكتيك', icon: 'tactics' },
   { name: 'training', path: '/training', label: 'التدريب', icon: 'training', sprint: 27 },
-  { name: 'market', path: '/market', label: 'السوق', icon: 'market', sprint: 24 },
+  { name: 'market', path: '/market', label: 'السوق', icon: 'market' },
   { name: 'scout', path: '/scout', label: 'الكشاف', icon: 'scout', sprint: 26 },
   { name: 'stadium', path: '/stadium', label: 'الملعب', icon: 'stadium', sprint: 29 },
   { name: 'finance', path: '/finance', label: 'المالية', icon: 'finance' },

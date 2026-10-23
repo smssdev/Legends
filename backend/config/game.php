@@ -76,6 +76,7 @@ return [
         'same_pair_player_moves_per_season' => 1,
         'debt_rounds_before_forced_sale' => 3,
         'min_squad' => 16,                  // a forced sale never leaves fewer players than this
+        'bot_min_squad' => 18, 'min_keepers' => 2,   // a bot club sells no lower than this [PLAN 2.7]
         'pool_size' => 300,
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
