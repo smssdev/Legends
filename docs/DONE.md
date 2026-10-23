@@ -557,7 +557,7 @@
   - **السكربتات:** قارئ JSON، وأصناف رسائل الخادم، ومشهد المباراة (اللاعبون أشكال بألوان أطقمهم الآن)، والجسر، وتشغيل المباراة المسجلة، وكاميرا البث، والنتيجة.
   - **أدوات المحرر:** الحزم، وبناء الأرينا، وبناء مشهد المباراة، والبناءان.
   - **سكربت التشغيل:** `unity/build.ps1`.
-- **شكل MakeHuman الخام:** `tools/unity/players/preview.py` يصنع ثلاثة لاعبين من ملفات MakeHuman الأصلية (CC0) ويرسمهم بـ Blender. الصورتان في `unity/Reference/players/`، وMakeHuman معتمد للاعبين (`PLAN.md` 7.11).
+- **شكل MakeHuman الخام:** `tools/unity/art/people.py` يصنع اللاعبين والحارس والحكم والمساعد والمدرب من ملفات MakeHuman الأصلية (CC0) ويرسمهم بـ Blender. ومعه سكربتات الكرة والملحقات والأرينا (`docs/HAMZA.md`). الصورتان في `unity/Reference/players/`، وMakeHuman معتمد للاعبين (`PLAN.md` 7.11).
 
 **كيف تجربه (على جهاز ويندوز، Sprint 2):**
 1. `powershell -ExecutionPolicy Bypass -File unity\build.ps1 install`، ثم في Unity Hub: الدخول، والرخصة المجانية، وأحدث Unity 6 LTS مع WebGL وAndroid.
