@@ -5,11 +5,13 @@ namespace App\Console\Commands;
 use App\Support\GameClock;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 
 /**
  * Copies the three SQLite files (data, cache, queue) into database/backups/<time>/
  * with VACUUM INTO, which is safe while the game is running (WAL mode), and keeps
- * the newest --keep copies. Runs daily from the scheduler [PLAN 2.19].
+ * the newest --keep copies. Runs daily from the scheduler [PLAN 2.19]. With BACKUP_RCLONE_REMOTE set (an rclone
+ * remote to Google Drive, e.g. "gdrive:LegendsBackups"), the copy also goes there, off this machine [Sprint 37].
  */
 class DbBackup extends Command
 {
@@ -40,6 +42,19 @@ class DbBackup extends Command
         }
 
         $this->info("نسخة احتياطية في $dir");
+
+        $remote = config('game.backup.rclone_remote');
+        if ($remote) {
+            $copy = Process::timeout(1800)->run(['rclone', 'copy', $dir, rtrim($remote, '/').'/'.basename($dir)]);
+            if (! $copy->successful()) {
+                $this->error('لم تُرفع النسخة إلى Google Drive: '.trim($copy->errorOutput()));
+
+                return self::FAILURE;
+            }
+            // Drive keeps a month.
+            Process::timeout(600)->run(['rclone', 'delete', $remote, '--min-age', '30d', '--rmdirs']);
+            $this->info("ورُفعت إلى {$remote}");
+        }
 
         return self::SUCCESS;
     }
