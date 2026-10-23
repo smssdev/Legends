@@ -46,6 +46,35 @@ class Leaving
         });
     }
 
+    /**
+     * A coach resigns [PLAN 2.2, Sprint 32]: allowed except in the preparation (the summer window), on the winter
+     * transfer day, and in the last 25% of the league rounds. He cannot come back to this league this season.
+     */
+    public static function resign(LeagueMembership $membership): void
+    {
+        if ($membership->left_at !== null) {
+            throw new HttpException(409, 'غادرت هذا الدوري من قبل.');
+        }
+        if ($membership->user_id === $membership->league->owner_id) {
+            throw new HttpException(409, 'منشئ الدوري لا يستقيل منه، فهو يديره.');
+        }
+        $season = $membership->league->season;
+        $now = GameClock::now();
+        $windows = DB::table('transfer_windows')->where('season_id', $season->id)->get()->keyBy('kind');
+        $summer = $windows['summer'] ?? null;
+        if ($membership->league->status !== 'running' || ($summer && $now->lt($summer->closes_at))) {
+            throw new HttpException(409, 'لا استقالة في فترة الإعداد. يمكنك الاستقالة بعد أن تبدأ الجولات.');
+        }
+        $winter = $windows['winter'] ?? null;
+        if ($winter && $now->gte($winter->opens_at) && $now->lt($winter->closes_at)) {
+            throw new HttpException(409, 'لا استقالة في يوم الانتقالات الشتوي.');
+        }
+        if ($season->inLastQuarter()) {
+            throw new HttpException(409, 'لا استقالة في آخر ربع من جولات الدوري.');
+        }
+        self::leave($membership, 'resigned') || throw new HttpException(409, 'غادرت هذا الدوري من قبل.');
+    }
+
     /** The owner sends a coach away with a reason every member sees [PLAN 2.1]. */
     public static function kick(LeagueMembership $membership, string $reason): void
     {

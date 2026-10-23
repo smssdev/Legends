@@ -1088,6 +1088,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/resign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resign from the league (the club goes back to a bot)
+         * @description PLAN 2.2, Sprint 32. Not in the preparation (the summer window), not on the winter transfer day, not in the last
+         *     25% of the league rounds; the league's owner does not resign. No coming back to this league this season.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Resigned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            left: boolean;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/vacation": {
         parameters: {
             query?: never;

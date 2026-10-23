@@ -69,6 +69,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::post('{league}/vacation', 'vacation')->whereNumber('league');
     Route::delete('{league}/vacation', 'endVacation')->whereNumber('league');
     Route::post('{league}/members/{membership}/kick', 'kick')->whereNumber(['league', 'membership']);
+    Route::post('{league}/resign', 'resign')->whereNumber('league');
     Route::get('{league}/fixtures', 'fixtures')->whereNumber('league');
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');

@@ -237,6 +237,21 @@ return [
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
+    // The bots between matches [ENGINE 7, Sprint 32]: each personality's own tactics, then the match's adjustments
+    // from what any coach can see of the opponent (strength, the four public tactics of his last match, his form).
+    'bots' => [
+        'personalities' => [
+            'giants' => ['plan' => 'passing', 'tackling' => 1, 'pressing' => 55, 'style' => 62, 'tempo' => 50, 'att' => 'support', 'mid' => 'push', 'def' => 'stay', 'trap' => 0, 'marking' => 'zone'],
+            'defenders' => ['plan' => 'counter', 'tackling' => 1, 'pressing' => 30, 'style' => 25, 'tempo' => 45, 'att' => 'only', 'mid' => 'def', 'def' => 'stay', 'trap' => 0, 'marking' => 'man'],
+            'pressers' => ['plan' => 'passing', 'tackling' => 2, 'pressing' => 85, 'style' => 62, 'tempo' => 78, 'att' => 'back', 'mid' => 'push', 'def' => 'stay', 'trap' => 1, 'marking' => 'zone'],
+            'hard' => ['plan' => 'long', 'tackling' => 3, 'pressing' => 55, 'style' => 48, 'tempo' => 55, 'att' => 'support', 'mid' => 'stay', 'def' => 'stay', 'trap' => 0, 'marking' => 'man'],
+            'wingers' => ['plan' => 'wings', 'tackling' => 1, 'pressing' => 50, 'style' => 58, 'tempo' => 60, 'att' => 'support', 'mid' => 'stay', 'def' => 'fullbacks', 'trap' => 0, 'marking' => 'zone'],
+            'adaptive' => ['plan' => 'passing', 'tackling' => 1, 'pressing' => 50, 'style' => 50, 'tempo' => 50, 'att' => 'support', 'mid' => 'stay', 'def' => 'stay', 'trap' => 0, 'marking' => 'zone'],
+        ],
+        'style_per_100cp' => 4,        // a stronger side attacks more: style moves this much per 100 strength points of gap
+        'style_swing' => 12,           // at most this far from the personality's own style
+        'rest_below_fitness' => ['pressers' => 75, 'default' => 65],   // rotation: who rests while the squad allows
+    ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
     'specialists' => ['contract_days' => 7,
