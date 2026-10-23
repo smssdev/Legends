@@ -1,0 +1,109 @@
+<script setup lang="ts">
+// The app and its notifications (Sprint 36 W1, PLAN 2.13): install the site on the home screen (with the
+// iPhone's own steps), turn this browser's notifications on, and choose the kinds. A tap on a notification
+// opens its screen (public/sw.js).
+import { onMounted, ref } from 'vue'
+import { api, asApiError, ensureCsrf } from '../api/client'
+import type { components } from '../api/schema'
+import { currentSubscription, install, installable, isIos, pushSupported, standalone, subscribe } from '../lib/pwa'
+
+type Settings = components['schemas']['NotificationSettings']
+const settings = ref<Settings | null>(null)
+const here = ref(false)
+const error = ref('')
+const busy = ref(false)
+const LABELS: Record<string, [string, string]> = {
+  referee: ['الحكم', 'قبل المباراة بنصف ساعة'],
+  match_soon: ['المباراة بعد 10 دقائق', 'لتدخل وتدير فريقك'],
+  offers: ['العروض', 'عرض وارد أو رد على عرضك'],
+  done: ['انتهى شيء', 'تدريب أو معسكر أو جزء ملعب أو تقرير كشاف'],
+  absence: ['الغياب', 'تحذير قبل أن يعود فريقك للحاسوب'],
+}
+const ios = isIos()
+const app = standalone()
+
+async function load() {
+  try {
+    settings.value = (await api.GET('/notifications')).data!
+    here.value = !!(await currentSubscription())
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+}
+
+async function enable() {
+  busy.value = true
+  error.value = ''
+  try {
+    const sub = await subscribe(settings.value!.public_key!)
+    if (!sub) {
+      error.value = 'لم يُسمح بالإشعارات في هذا المتصفح. اسمح بها من إعدادات الموقع ثم أعد المحاولة.'
+    } else {
+      await ensureCsrf()
+      const json = sub.toJSON() as { endpoint: string; keys: { p256dh: string; auth: string } }
+      settings.value = (await api.POST('/notifications/subscriptions', { body: { endpoint: json.endpoint, keys: json.keys } })).data!
+      here.value = true
+    }
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+  busy.value = false
+}
+
+async function disable() {
+  busy.value = true
+  const sub = await currentSubscription()
+  if (sub) {
+    await ensureCsrf()
+    settings.value = (await api.DELETE('/notifications/subscriptions', { body: { endpoint: sub.endpoint } })).data!
+    await sub.unsubscribe()
+  }
+  here.value = false
+  busy.value = false
+}
+
+async function toggle(kind: string, on: boolean) {
+  await ensureCsrf()
+  settings.value = (await api.PUT('/notifications', { body: { kinds: { [kind]: on } } })).data!
+}
+
+onMounted(load)
+</script>
+
+<template>
+  <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-app">
+    <h2 id="h-app" class="font-display text-xl font-extrabold">التطبيق والإشعارات</h2>
+    <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+
+    <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
+      <b>ثبّت الأساطير على شاشتك الرئيسية</b>
+      <span class="text-text-muted">يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.</span>
+      <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">ثبّت الآن</button>
+      <ol v-else-if="ios" class="list-decimal ps-5 text-text-muted">
+        <li>افتح الموقع في Safari.</li>
+        <li>اضغط زر المشاركة (المربع والسهم).</li>
+        <li>اختر «إضافة إلى الشاشة الرئيسية».</li>
+      </ol>
+      <span v-else class="text-text-muted">من قائمة المتصفح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</span>
+    </div>
+
+    <template v-if="settings">
+      <p v-if="!settings.enabled" class="text-sm text-text-muted">الإشعارات غير مفعلة على الخادم بعد.</p>
+      <p v-else-if="!pushSupported()" class="text-sm text-text-muted">
+        {{ ios && !app ? 'على iPhone تعمل الإشعارات بعد تثبيت الموقع على الشاشة الرئيسية.' : 'هذا المتصفح لا يدعم الإشعارات.' }}
+      </p>
+      <div v-else class="flex flex-wrap items-center gap-3">
+        <span class="flex-1 text-sm">{{ here ? 'الإشعارات تعمل على هذا الجهاز' : 'الإشعارات متوقفة على هذا الجهاز' }}
+          <span v-if="settings.devices" class="text-text-muted"> · {{ settings.devices }} جهاز</span></span>
+        <button v-if="!here" type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="enable">فعّلها</button>
+        <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">أوقفها هنا</button>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label v-for="k in settings.kinds" :key="k.kind" class="flex min-h-touch items-center gap-3 rounded-lg px-1">
+          <input type="checkbox" class="size-5 accent-gold" :checked="k.on" @change="toggle(k.kind, ($event.target as HTMLInputElement).checked)" />
+          <span class="flex-1"><b class="block text-sm">{{ LABELS[k.kind]?.[0] }}</b><span class="text-xs text-text-muted">{{ LABELS[k.kind]?.[1] }}</span></span>
+        </label>
+      </div>
+    </template>
+  </section>
+</template>

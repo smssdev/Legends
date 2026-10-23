@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: notifications
+    description: Push notifications (Sprint 36)
   - name: wallet
     description: The premium coins (Sprint 34)
   - name: market
@@ -1502,6 +1504,70 @@ paths:
                         home: { type: string, description: The home club's code }
                         away: { type: string }
                         competition: { type: string, enum: [league, cup] }
+  /notifications:
+    get:
+      tags: [notifications]
+      summary: The notification kinds this account wants, how many browsers get them, and the server's Web Push key
+      description: Sprint 36 (PLAN 2.13). One channel, Web Push now and FCM in Sprint 45.
+      responses:
+        '200':
+          description: The settings
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+    put:
+      tags: [notifications]
+      summary: Turn kinds on or off
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kinds]
+              properties:
+                kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence' }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+        '422': { $ref: '#/components/responses/Error' }
+  /notifications/subscriptions:
+    post:
+      tags: [notifications]
+      summary: This browser gets the notifications (its PushSubscription)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint, keys]
+              properties:
+                endpoint: { type: string }
+                keys: { type: object, required: [p256dh, auth], properties: { p256dh: { type: string }, auth: { type: string } } }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
+    delete:
+      tags: [notifications]
+      summary: This browser stops getting them
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [endpoint], properties: { endpoint: { type: string } } }
+      responses:
+        '200':
+          description: The settings after
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NotificationSettings' }
   /wallet:
     get:
       tags: [wallet]
@@ -2679,6 +2745,21 @@ components:
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
+    NotificationSettings:
+      type: object
+      required: [public_key, enabled, devices, kinds]
+      properties:
+        public_key: { type: string, nullable: true, description: The server's VAPID public key for PushManager.subscribe }
+        enabled: { type: boolean, description: The server can push (its keys are set) }
+        devices: { type: integer }
+        kinds:
+          type: array
+          items:
+            type: object
+            required: [kind, on]
+            properties:
+              kind: { type: string, enum: [referee, match_soon, offers, done, absence] }
+              on: { type: boolean }
     WalletView:
       type: object
       required: [balance, daily, cap, leagues, transactions, shop, prices]
