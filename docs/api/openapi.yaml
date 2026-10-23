@@ -857,6 +857,121 @@ paths:
               schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: The transfer list, my offers in and out, and the coaches' clubs
+      description: |
+        Sprint 25. Trades between coaches: club money only, never the premium currency. Limits against collusion: what
+        the buyer pays (money and his players' value) between 50% and 200% of what he gets; no player twice between the
+        same two clubs in a season; and what one club gives the other beyond value in a season under `pair_cap`. Open
+        offers die after 48 hours, or when one of their players leaves.
+      responses:
+        '200':
+          description: The market between coaches
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transfers' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/listings:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: List one of my players at my price (50% to 200% of his value)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [player_id, price], properties: { player_id: { type: integer }, price: { type: integer } } }
+      responses:
+        '200': { description: The market between coaches, content: { application/json: { schema: { $ref: '#/components/schemas/Transfers' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/listings/{player}:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }, { name: player, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [market]
+      summary: Take my player off the list
+      responses:
+        '200': { description: The market between coaches, content: { application/json: { schema: { $ref: '#/components/schemas/Transfers' } } } }
+  /leagues/{league}/transfers/offers:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: Offer another coach money, my players or both for his players
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/OfferTerms'
+                - { type: object, required: [to_club_id], properties: { to_club_id: { type: integer } } }
+      responses:
+        '201':
+          description: The offer
+          content:
+            application/json:
+              schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/offers/{offer}/accept:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }, { name: offer, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: 'Accept (the other coach): everything moves now, or nothing'
+      responses:
+        '200':
+          description: The offer after it
+          content:
+            application/json:
+              schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' }, balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/offers/{offer}/reject:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }, { name: offer, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: Reject (the other coach)
+      responses:
+        '200':
+          description: The offer after it
+          content:
+            application/json:
+              schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' }, balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/offers/{offer}/cancel:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }, { name: offer, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: Take it back (the coach who offered)
+      responses:
+        '200':
+          description: The offer after it
+          content:
+            application/json:
+              schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' }, balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/offers/{offer}/counter:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }, { name: offer, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: 'Answer with my own terms: a new offer the other way'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OfferTerms' }
+      responses:
+        '201':
+          description: The offer after it
+          content:
+            application/json:
+              schema: { type: object, required: [offer], properties: { offer: { $ref: '#/components/schemas/TransferOffer' }, balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/finance:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1628,6 +1743,51 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    OfferTerms:
+      type: object
+      required: [in, idempotency_key]
+      properties:
+        money: { type: integer, minimum: 0, description: From the offering club to the other }
+        in: { type: array, items: { type: integer }, minItems: 1, maxItems: 5, description: The other club's players wanted }
+        out: { type: array, items: { type: integer }, maxItems: 5, description: The offering club's players given }
+        idempotency_key: { type: string, maxLength: 64 }
+    TradePlayer:
+      type: object
+      required: [id, name, position, line, age, overall, value]
+      properties: { id: { type: integer }, name: { type: string }, position: { type: string }, line: { type: string }, age: { type: integer }, overall: { type: integer }, value: { type: integer } }
+    TransferOffer:
+      type: object
+      required: [id, status, money, from, to, incoming, counter_of, in, out, expires_at]
+      properties:
+        id: { type: integer }
+        status: { type: string, enum: [pending, accepted, rejected, countered, cancelled, expired] }
+        money: { type: integer }
+        from: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        to: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        incoming: { type: boolean, description: True when it is mine to answer }
+        counter_of: { type: integer, nullable: true }
+        in: { type: array, items: { $ref: '#/components/schemas/TradePlayer' } }
+        out: { type: array, items: { $ref: '#/components/schemas/TradePlayer' } }
+        expires_at: { type: string, format: date-time }
+    Transfers:
+      type: object
+      required: [closed, fair, pair_cap, listings, offers, clubs]
+      properties:
+        closed: { type: string, nullable: true }
+        fair: { type: object, required: [min_bp, max_bp], properties: { min_bp: { type: integer }, max_bp: { type: integer } } }
+        pair_cap: { type: integer }
+        listings:
+          type: array
+          items:
+            type: object
+            required: [player, price, club, mine]
+            properties:
+              player: { $ref: '#/components/schemas/TradePlayer' }
+              price: { type: integer }
+              club: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+              mine: { type: boolean }
+        offers: { type: array, items: { $ref: '#/components/schemas/TransferOffer' } }
+        clubs: { type: array, items: { type: object, required: [id, name, code], properties: { id: { type: integer }, name: { type: string }, code: { type: string } } } }
     Market:
       type: object
       required: [closed, open_until_round, counts, balance, bots, players, mine]

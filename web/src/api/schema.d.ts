@@ -1939,6 +1939,385 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The transfer list, my offers in and out, and the coaches' clubs
+         * @description Sprint 25. Trades between coaches: club money only, never the premium currency. Limits against collusion: what
+         *     the buyer pays (money and his players' value) between 50% and 200% of what he gets; no player twice between the
+         *     same two clubs in a season; and what one club gives the other beyond value in a season under `pair_cap`. Open
+         *     offers die after 48 hours, or when one of their players leaves.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The market between coaches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Transfers"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** List one of my players at my price (50% to 200% of his value) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_id: number;
+                        price: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The market between coaches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Transfers"];
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/listings/{player}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                player: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Take my player off the list */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The market between coaches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Transfers"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Offer another coach money, my players or both for his players */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OfferTerms"] & {
+                        to_club_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The offer */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            offer: components["schemas"]["TransferOffer"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/offers/{offer}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                offer: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept (the other coach): everything moves now, or nothing */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    offer: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The offer after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            offer: components["schemas"]["TransferOffer"];
+                            balance?: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/offers/{offer}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                offer: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject (the other coach) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    offer: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The offer after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            offer: components["schemas"]["TransferOffer"];
+                            balance?: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/offers/{offer}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                offer: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take it back (the coach who offered) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    offer: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The offer after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            offer: components["schemas"]["TransferOffer"];
+                            balance?: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/offers/{offer}/counter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+                offer: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer with my own terms: a new offer the other way */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                    offer: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OfferTerms"];
+                };
+            };
+            responses: {
+                /** @description The offer after it */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            offer: components["schemas"]["TransferOffer"];
+                            balance?: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/finance": {
         parameters: {
             query?: never;
@@ -3542,6 +3921,68 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        OfferTerms: {
+            /** @description From the offering club to the other */
+            money?: number;
+            /** @description The other club's players wanted */
+            in: number[];
+            /** @description The offering club's players given */
+            out?: number[];
+            idempotency_key: string;
+        };
+        TradePlayer: {
+            id: number;
+            name: string;
+            position: string;
+            line: string;
+            age: number;
+            overall: number;
+            value: number;
+        };
+        TransferOffer: {
+            id: number;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "rejected" | "countered" | "cancelled" | "expired";
+            money: number;
+            from: {
+                id: number;
+                name: string;
+            };
+            to: {
+                id: number;
+                name: string;
+            };
+            /** @description True when it is mine to answer */
+            incoming: boolean;
+            counter_of: number | null;
+            in: components["schemas"]["TradePlayer"][];
+            out: components["schemas"]["TradePlayer"][];
+            /** Format: date-time */
+            expires_at: string;
+        };
+        Transfers: {
+            closed: string | null;
+            fair: {
+                min_bp: number;
+                max_bp: number;
+            };
+            pair_cap: number;
+            listings: {
+                player: components["schemas"]["TradePlayer"];
+                price: number;
+                club: {
+                    id: number;
+                    name: string;
+                };
+                mine: boolean;
+            }[];
+            offers: components["schemas"]["TransferOffer"][];
+            clubs: {
+                id: number;
+                name: string;
+                code: string;
+            }[];
+        };
         Market: {
             closed: string | null;
             open_until_round: number;

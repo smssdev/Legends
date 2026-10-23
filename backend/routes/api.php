@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TransferController;
 use Illuminate\Support\Facades\Route;
 
 // Every route here is served under /api/v1 (see bootstrap/app.php) and is
@@ -87,6 +88,17 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('/', 'show');
         Route::post('buy', 'buy')->middleware('throttle:30,1,market');
         Route::post('sell', 'sell')->middleware('throttle:30,1,market');
+    });
+    // The market between coaches: the transfer list and the offers [Sprint 25].
+    Route::controller(TransferController::class)->prefix('{league}/transfers')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('listings', 'list')->middleware('throttle:30,1,transfers');
+        Route::delete('listings/{player}', 'unlist')->whereNumber('player');
+        Route::post('offers', 'offer')->middleware('throttle:30,1,transfers');
+        Route::post('offers/{offer}/accept', 'accept')->whereNumber('offer');
+        Route::post('offers/{offer}/reject', 'reject')->whereNumber('offer');
+        Route::post('offers/{offer}/cancel', 'cancel')->whereNumber('offer');
+        Route::post('offers/{offer}/counter', 'counter')->whereNumber('offer')->middleware('throttle:30,1,transfers');
     });
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);

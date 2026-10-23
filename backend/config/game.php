@@ -74,6 +74,7 @@ return [
         'human_trade_min_bp' => 5000, 'human_trade_max_bp' => 20000,
         'pair_net_transfer_cap_bp' => 2500,   // من ميزانية البداية، لكل ناديين في الموسم
         'same_pair_player_moves_per_season' => 1,
+        'offer_hours' => 48,                // an offer between coaches waits this long for an answer
         'debt_rounds_before_forced_sale' => 3,
         'min_squad' => 16,                  // a forced sale never leaves fewer players than this
         'bot_min_squad' => 18, 'min_keepers' => 2,   // a bot club sells no lower than this [PLAN 2.7]
