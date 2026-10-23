@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -96,6 +96,12 @@ class MessageText
                     'offer_rejected' => 'رُفض عرضك', 'offer_cancelled' => 'أُلغي عرض', 'offer_expired' => 'انتهت مدة عرض'][$type],
                 'body' => self::offer($type, $p),
                 'link' => '/market?tab=offers',
+            ],
+            'scout_report' => [
+                'title' => 'تقرير الكشاف جاهز',
+                'body' => ($p['players'] ?? []) ? 'وجد لك الكشاف: '.implode('، ', $p['players']).'. اشترهم قبل تجديد المجموعة.'
+                    : 'لم يجد الكشاف لاعباً بهذه المعايير، فرُد لك المبلغ كاملاً.',
+                'link' => '/scout',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

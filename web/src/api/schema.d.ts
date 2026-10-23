@@ -2318,6 +2318,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/scout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * The scout, its cost and time, and my searches with their players
+         * @description Sprint 26 (docs/features/scout.md). A paid search for players from outside the league's clubs; the report comes
+         *     after a day scaled by the season's length, as a message, coach online or not. Its three players are this club's
+         *     alone to buy at the pool's price (POST /market/buy) until the pool is renewed. None found, the cost comes back.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The scout */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScoutView"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Ask the scout (one search at a time) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        line?: "gk" | "def" | "mid" | "att";
+                        position?: string;
+                        min_overall: number;
+                        max_overall?: number;
+                        max_age?: number;
+                        nationality?: string;
+                        league?: string;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The scout after asking */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ScoutView"];
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/finance": {
         parameters: {
             query?: never;
@@ -3921,6 +4005,41 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ScoutView: {
+            cost: number;
+            hours: number;
+            balance: number;
+            options: {
+                leagues: string[];
+                nationalities: string[];
+                positions: string[];
+            };
+            requests: {
+                id: number;
+                /** @enum {string} */
+                status: "searching" | "done" | "empty";
+                cost: number;
+                criteria: {
+                    [key: string]: unknown;
+                };
+                /** Format: date-time */
+                finishes_at: string;
+                players: {
+                    id: number;
+                    name: string;
+                    position: string;
+                    line: string;
+                    age: number;
+                    nationality?: string | null;
+                    overall: number;
+                    potential: number;
+                    value: number;
+                    price: number | null;
+                    /** @enum {string} */
+                    state: "available" | "mine" | "gone";
+                }[];
+            }[];
+        };
         OfferTerms: {
             /** @description From the offering club to the other */
             money?: number;
