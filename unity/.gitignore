@@ -1,0 +1,16 @@
+# what Unity rebuilds on every machine
+/Library/
+/Temp/
+/Obj/
+/Logs/
+/UserSettings/
+/MemoryCaptures/
+/Builds/
+*.csproj
+*.sln
+*.user
+*.pidb
+*.booproj
+# the sample match is copied from docs/api/samples/ by Legends → Build match scene
+/Assets/StreamingAssets/sample-match.json
+/Assets/StreamingAssets/sample-match.json.meta

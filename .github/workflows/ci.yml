@@ -130,7 +130,7 @@ jobs:
       - shell: pwsh
         run: |
           $bad = 0
-          foreach ($f in Get-ChildItem deploy/windows/*.ps1) {
+          foreach ($f in Get-ChildItem deploy/windows/*.ps1, unity/*.ps1) {
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errors) | Out-Null
             if ($errors) { $bad++; $errors | ForEach-Object { Write-Host "$($f.Name): $($_.Message) (line $($_.Extent.StartLineNumber))" } }
