@@ -15,6 +15,7 @@ use App\Models\League;
 use App\Models\LeagueJoinRequest;
 use App\Models\LeagueMembership;
 use App\Models\User;
+use App\Season\Objectives;
 use App\Support\GameClock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -496,7 +497,26 @@ class LeagueController extends Controller
             'balance' => (int) $c->balance,
             'squad_value' => (int) $c->squad_value,
             'players_count' => (int) $c->players_count,
+            // This season's objectives, shown when a coach picks a team [PLAN 2.20, Sprint 33].
+            'objectives' => $this->objectives($c),
         ];
+    }
+
+    private function objectives(Club $c): ?array
+    {
+        $season = DB::table('seasons')->where('league_id', $c->league_id)->orderByDesc('number')->value('id');
+        if (! $season) {
+            return null;
+        }
+        if (! DB::table('club_objectives')->where('season_id', $season)->exists()) {
+            Objectives::set($season);   // a league made before Sprint 33
+        }
+        $o = DB::table('club_objectives')->where('club_id', $c->id)->where('season_id', $season)->get()->keyBy('competition');
+
+        return isset($o['league'], $o['cup']) ? [
+            'league' => ['target' => (int) $o['league']->target, 'kind' => $o['league']->kind],
+            'cup' => ['target' => $o['cup']->target],
+        ] : null;
     }
 
     private function requestData(LeagueJoinRequest $r): array

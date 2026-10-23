@@ -13,7 +13,20 @@ type Row = { position: number; id: number; name: string; code: string; crest_url
 type Stage = { stage: string; scheduled_at: string; ties: { id: number; slot: number; home?: { name: string; code: string; crest_url: string } | null; away?: { name: string; code: string; crest_url: string } | null; next?: { slot: number; side: string } | null }[] }
 
 const props = defineProps<{ leagueId: number; myClubId?: number | null; teamCount: number }>()
-const tab = ref<'table' | 'fixtures' | 'cup'>('table')
+const tab = ref<'table' | 'fixtures' | 'cup' | 'honours'>('table')
+// The hall of fame (Sprint 33): loaded when its tab is opened.
+type Honours = components['schemas']['Honours']
+const honours = ref<Honours | null>(null)
+async function openHonours() {
+  tab.value = 'honours'
+  if (honours.value) return
+  try {
+    honours.value = (await api.GET('/leagues/{league}/honours', { params: { path: { league: props.leagueId } } })).data!
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+}
+const MEDALS = ['', 'الأول', 'الثاني', 'الثالث']
 const table = ref<Row[]>([])
 const fixtures = ref<Fixture[]>([])
 const stages = ref<Stage[]>([])
@@ -59,7 +72,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 <template>
   <section class="flex flex-col gap-3 rounded-xl bg-surface p-3 md:p-5" aria-label="الدوري">
-    <div class="grid grid-cols-3 gap-1 rounded-xl bg-surface-sunk p-1" role="tablist">
+    <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface-sunk p-1" role="tablist">
       <button
         v-for="(label, key) in { table: 'الترتيب', fixtures: 'المباريات', cup: 'الكأس' }"
         :key="key"
@@ -70,6 +83,8 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         :aria-selected="tab === key"
         @click="tab = key"
       >{{ label }}</button>
+      <button type="button" role="tab" class="h-12 rounded-lg font-display text-lg font-extrabold" :class="tab === 'honours' ? 'bg-gold text-on-gold' : 'text-text-soft'"
+        :aria-selected="tab === 'honours'" @click="openHonours">الشرف</button>
     </div>
     <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
 
@@ -123,6 +138,21 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
             <span class="flex-1">{{ f.away?.name ?? 'يتحدد' }}</span>
           </span>
           <UiChip v-if="f.competition === 'league' && season && f.round >= season.lock_from_round" tone="warning">قفل</UiChip>
+        </div>
+      </div>
+    </template>
+
+    <template v-else-if="tab === 'honours'">
+      <p v-if="!honours" class="text-text-muted">جارٍ التحميل...</p>
+      <div v-for="s in honours?.seasons ?? []" :key="s.number" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
+        <h3 class="font-display text-lg font-extrabold">الموسم {{ s.number }} <UiChip v-if="s.status !== 'finished'" tone="neutral">يجري الآن</UiChip></h3>
+        <p v-if="!s.titles.length" class="text-sm text-text-muted">لم يُحسم بعد.</p>
+        <div v-for="t in s.titles" :key="t.competition + t.position" class="flex min-h-touch items-center gap-2 text-sm">
+          <UiChip :tone="t.position === 1 ? 'gold' : 'neutral'">{{ t.competition === 'cup' ? (t.position === 1 ? 'بطل الكأس' : 'وصيف الكأس') : (t.position === 1 ? 'بطل الدوري' : MEDALS[t.position]) }}</UiChip>
+          <ClubCrest :url="t.club.crest_url" :code="t.club.name.slice(0, 3)" :size="24" />
+          <span class="flex-1 truncate font-bold">{{ t.club.name }}</span>
+          <RouterLink v-if="t.coach" :to="{ name: 'coach', params: { id: t.coach.id } }" class="text-gold">{{ t.coach.name }}</RouterLink>
+          <span v-else class="text-text-muted">الحاسوب</span>
         </div>
       </div>
     </template>

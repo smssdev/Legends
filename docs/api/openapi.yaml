@@ -1500,6 +1500,31 @@ paths:
                         home: { type: string, description: The home club's code }
                         away: { type: string }
                         competition: { type: string, enum: [league, cup] }
+  /leagues/{league}/honours:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: The hall of fame, every season with its league podium and cup final
+      description: Sprint 33 (PLAN 2.11). For the league's members. Kept across seasons.
+      responses:
+        '200':
+          description: The hall of fame
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Honours' }
+        '403': { $ref: '#/components/responses/Error' }
+  /coaches/{user}:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [leagues]
+      summary: A coach's profile, his titles, objectives met and record
+      description: Sprint 33. From his memberships, the titles and the judged objectives, in every league.
+      responses:
+        '200':
+          description: The coach
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CoachProfile' }
   /leagues/{league}/clubs:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2594,6 +2619,81 @@ components:
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
+    Honours:
+      type: object
+      required: [league, seasons]
+      properties:
+        league: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        seasons:
+          type: array
+          items:
+            type: object
+            required: [number, status, titles]
+            properties:
+              number: { type: integer }
+              status: { type: string }
+              titles:
+                type: array
+                items:
+                  type: object
+                  required: [competition, position, club, coach]
+                  properties:
+                    competition: { type: string, enum: [league, cup] }
+                    position: { type: integer, description: 'League: 1 to 3. Cup: 1 the winner, 2 the finalist' }
+                    club:
+                      type: object
+                      required: [id, name, crest_url]
+                      properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string } }
+                    coach:
+                      type: object
+                      nullable: true
+                      required: [id, name]
+                      properties: { id: { type: integer }, name: { type: string } }
+    CoachProfile:
+      type: object
+      required: [coach, record, titles, objectives]
+      properties:
+        coach: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        record:
+          type: object
+          required: [seasons, played, won, drawn, lost]
+          properties:
+            seasons: { type: integer }
+            played: { type: integer }
+            won: { type: integer }
+            drawn: { type: integer }
+            lost: { type: integer }
+        titles:
+          type: array
+          items:
+            type: object
+            required: [league, season, competition, position, club]
+            properties:
+              league: { type: string }
+              season: { type: integer }
+              competition: { type: string, enum: [league, cup] }
+              position: { type: integer }
+              club: { type: string }
+        objectives:
+          type: object
+          required: [met, total, list]
+          properties:
+            met: { type: integer }
+            total: { type: integer }
+            list:
+              type: array
+              items:
+                type: object
+                required: [league, season, club, competition, target, kind, result, achieved]
+                properties:
+                  league: { type: string }
+                  season: { type: integer }
+                  club: { type: string }
+                  competition: { type: string, enum: [league, cup] }
+                  target: { type: string }
+                  kind: { type: string }
+                  result: { type: string, nullable: true }
+                  achieved: { type: boolean }
     LeagueClub:
       type: object
       required: [id, name, code, colors, crest_url, strength_cp, bot, balance, squad_value, players_count]
@@ -2609,6 +2709,23 @@ components:
         balance: { type: integer, description: Club money }
         squad_value: { type: integer }
         players_count: { type: integer }
+        objectives:
+          type: object
+          nullable: true
+          description: This season's objectives (Sprint 33), shown when a coach picks a team
+          required: [league, cup]
+          properties:
+            league:
+              type: object
+              required: [target, kind]
+              properties:
+                target: { type: integer, description: The place to finish in or above }
+                kind: { type: string, enum: [title, top, mid, survive] }
+            cup:
+              type: object
+              required: [target]
+              properties:
+                target: { type: string, enum: [r16, qf, sf, final], description: The stage to reach }
     LeaguePlayer:
       type: object
       properties:

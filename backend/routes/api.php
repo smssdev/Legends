@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\HonoursController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
@@ -74,6 +75,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
+    // The hall of fame [Sprint 33].
+    Route::get('{league}/honours', [HonoursController::class, 'league'])->whereNumber('league');
     // My club: the squad, the lineup and the set-piece takers [Sprint 16].
     Route::controller(TeamController::class)->prefix('{league}/team')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
@@ -156,6 +159,9 @@ Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'
     Route::post('read-all', 'readAll');
     Route::post('{message}/read', 'read')->whereNumber('message');
 });
+
+// A coach's profile: titles, objectives and record [Sprint 33].
+Route::get('coaches/{user}', [HonoursController::class, 'coach'])->middleware(['auth:sanctum', 'throttle:60,1,coaches'])->whereNumber('user');
 
 // Simulator: development (and admin, later) only. See docs/MATCH_VIEW.md 8.
 Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::class)->group(function () {
