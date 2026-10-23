@@ -13,6 +13,7 @@ use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
+use App\Training\Camp;
 use App\Training\Training;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -275,19 +276,22 @@ class TeamController extends Controller
     /** Each player's card: attributes, potential, fitness, value, and whether he can play [PLAN 2.15]. */
     private function players(Club $club)
     {
+        $camp = Camp::awayIds($club->id);
+
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
             ->select('players.*', 'master_players.name', 'master_players.position', 'master_players.alt_positions', 'master_players.line', 'master_players.age',
                 'master_players.nationality', 'master_players.preferred_foot', 'master_players.potential',
                 'master_players.pac', 'master_players.sho', 'master_players.pas', 'master_players.dri', 'master_players.def', 'master_players.phy',
                 'master_players.gk_diving', 'master_players.gk_handling', 'master_players.gk_kicking', 'master_players.gk_positioning', 'master_players.gk_reflexes')
             ->orderByRaw("case master_players.line when 'gk' then 0 when 'def' then 1 when 'mid' then 2 else 3 end")->orderByDesc('players.overall')->get()
-            ->map(fn ($r) => (object) Training::boosted((array) $r))
+            ->map(fn ($r) => (object) (Training::boosted((array) $r) + ['in_camp' => in_array($r->id, $camp, true)]))
             ->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'alt_positions' => $p->alt_positions, 'line' => $p->line,
                 'age' => $p->age, 'nationality' => $p->nationality, 'foot' => $p->preferred_foot,
                 'overall' => $p->overall, 'training_bonus' => (int) $p->training_bonus, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
                 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
-                'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,
+                'in_camp' => $p->in_camp,
+                'available' => $p->injured_matches === 0 && $p->suspended_matches === 0 && ! $p->in_camp,
                 'attributes' => $p->line === 'gk'
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
