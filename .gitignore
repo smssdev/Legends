@@ -2,3 +2,8 @@ node_modules/
 __pycache__/
 
 .claude/worktrees/
+
+# MakeHuman base mesh and targets for tools/unity/art/people.py (downloaded, not ours to keep)
+tools/unity/art/makehuman/
+# the rough people from people.py: Sprint 3 makes the real ones in Assets/Legends/Players/
+unity/Assets/Legends/Art/People/
