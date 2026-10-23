@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -62,6 +62,17 @@ class MessageText
                 'title' => 'تقرير مباراتك جاهز',
                 'body' => sprintf('%s أمام %s %s. اقرأ لماذا في التقرير.', self::RESULT[$p['result'] ?? 'draw'] ?? '', $p['opponent'] ?? '', $p['score'] ?? ''),
                 'link' => isset($p['match_id']) ? "/live/{$p['match_id']}/report" : null,
+            ],
+            'in_debt' => [
+                'title' => 'رصيد ناديك تحت الصفر',
+                'body' => sprintf('رصيد %s صار %s بعد الرواتب، ولا يمكنك الصرف حتى يعود موجباً. إن بقي سالباً %d جولات متتالية يُباع أغلى لاعب تلقائياً.',
+                    $p['club'] ?? '', number_format((int) ($p['balance'] ?? 0)), (int) ($p['rounds'] ?? 3)),
+                'link' => '/finance',
+            ],
+            'forced_sale' => [
+                'title' => 'بيع إجباري بسبب الدين',
+                'body' => sprintf('بقي رصيد %s سالباً %d جولات، فبيع للمجموعة: %s.', $p['club'] ?? '', (int) ($p['rounds'] ?? 3), implode('، ', $p['players'] ?? [])),
+                'link' => '/finance',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };
