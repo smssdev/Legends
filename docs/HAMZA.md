@@ -9,43 +9,14 @@
 
 **المحاكي المصور (السبرنتات 3 إلى 8) يبنى بالدفعة 1 وحدها ولا يبدأ قبل اكتمال صوتها وصورها.** فكل ما تحت يسبق أي مقطع أو صورة من دفعة أخرى.
 
-**الدفعة 1:** ✅ 65 مكتملة · 🔁 3 يجب إعادتها · 👂 1 تأكد بالسمع · ⬜ 29 لم تسجل. الباقي 33 مقطعا، أي يوم أو يومان بوتيرة 30 يوميا.
+**الدفعة 1:** ✅ 94 مكتملة · 🔁 0 يجب إعادتها · 👂 4 تأكد بالسمع · ⬜ 0 لم تسجل. الباقي 4 مقطعا، أي يوم أو يومان بوتيرة 30 يوميا.
 
 | | الحالة | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| 1 | 🔁 يجب إعادته | `audio/raw/ar/story/miss-post-2.wav` | هادئ | فرصة مبتتكررش كتير! | فيها جملتان: جملة miss-post-1 أولا ثم جملتها. سجل جملتها وحدها. |
-| 2 | 🔁 يجب إعادته | `audio/raw/ar/story/blocked-key-2.wav` | متحمس | تدخل شجاع من المدافع! | نسخة مطابقة تماما ل blocked-key-1 (نفس الملف). سجل جملتها هي. |
-| 3 | 🔁 يجب إعادته | `audio/raw/ar/story/red-pre-1.wav` | هادئ | تدخل عنيف من ورا! | تقول «كرت أحمر» قبل أن يرفعه الحكم، فتكشف النتيجة. المطلوب وصف التدخل فقط. |
-| 4 | 👂 تأكد بالسمع | `audio/raw/ar/story/miss-pre-1.wav` | هادئ | شوطة... | لم يتعرف عليها التحقق الآلي، وطولها ثانيتان لكلمة واحدة. اسمعها وتأكد أنها «تسديدة...» وحدها. |
-| 5 | ⬜ لم يسجل | `audio/raw/ar/story/header-key-2.wav` | متحمس | جون براسية ولا أروع! |  |
-| 6 | ⬜ لم يسجل | `audio/raw/ar/story/blocked-post-1.wav` | هادئ | دفاع جامد. |  |
-| 7 | ⬜ لم يسجل | `audio/raw/ar/story/yellow-key-2.wav` | هادئ | الحكم طلع الكارت الأصفر. |  |
-| 8 | ⬜ لم يسجل | `audio/raw/ar/story/red-pre-2.wav` | هادئ | تدخل خطير! |  |
-| 9 | ⬜ لم يسجل | `audio/raw/ar/story/red-key-1.wav` | متحمس | كارت أحمر! طرد! |  |
-| 10 | ⬜ لم يسجل | `audio/raw/ar/story/red-key-2.wav` | متحمس | الحكم طرده على طول! |  |
-| 11 | ⬜ لم يسجل | `audio/raw/ar/story/red-post-2.wav` | هادئ | خروج حزين على أوضة اللبس. |  |
-| 12 | ⬜ لم يسجل | `audio/raw/ar/story/second_yellow-pre-1.wav` | هادئ | تدخل متأخر تاني... |  |
-| 13 | ⬜ لم يسجل | `audio/raw/ar/story/second_yellow-key-1.wav` | متحمس | الإنذار التاني! طرد! |  |
-| 14 | ⬜ لم يسجل | `audio/raw/ar/story/second_yellow-post-1.wav` | هادئ | ميلومش غير نفسه. |  |
-| 15 | ⬜ لم يسجل | `audio/raw/ar/story/sub-key-1.wav` | هادئ | تغيير. |  |
-| 16 | ⬜ لم يسجل | `audio/raw/ar/story/sub-key-2.wav` | هادئ | تغيير في الفريق. |  |
-| 17 | ⬜ لم يسجل | `audio/raw/ar/story/sub-post-1.wav` | هادئ | دم جديد في الملعب. |  |
-| 18 | ⬜ لم يسجل | `audio/raw/ar/story/injury-key-1.wav` | هادئ | لاعب واقع على الأرض. |  |
-| 19 | ⬜ لم يسجل | `audio/raw/ar/story/injury-key-2.wav` | هادئ | إصابة... والجهاز الطبي داخل. |  |
-| 20 | ⬜ لم يسجل | `audio/raw/ar/story/injury-post-1.wav` | هادئ | نتمنى متكونش خطيرة. |  |
-| 21 | ⬜ لم يسجل | `audio/raw/ar/story/coach-key-1.wav` | هادئ | المدرب بيدي تعليمات جديدة. |  |
-| 22 | ⬜ لم يسجل | `audio/raw/ar/story/coach-key-2.wav` | هادئ | تغيير تكتيكي من الدكة. |  |
-| 23 | ⬜ لم يسجل | `audio/raw/ar/story/coach-post-1.wav` | هادئ | نشوف هيغير حاجة ولا لأ. |  |
-| 24 | ⬜ لم يسجل | `audio/raw/ar/story/kickoff-key-1.wav` | هادئ | الماتش بدأ! |  |
-| 25 | ⬜ لم يسجل | `audio/raw/ar/story/halftime-key-1.wav` | متحمس | نهاية الشوط الأول. |  |
-| 26 | ⬜ لم يسجل | `audio/raw/ar/story/fulltime-key-1.wav` | متحمس | صافرة النهاية! |  |
-| 27 | ⬜ لم يسجل | `audio/raw/ar/story/extra_time-key-1.wav` | متحمس | على الوقت الإضافي! |  |
-| 28 | ⬜ لم يسجل | `audio/raw/ar/story/penalties-key-1.wav` | متحمس | على ضربات الترجيح! |  |
-| 29 | ⬜ لم يسجل | `audio/raw/ar/story/stoppage-key-1.wav` | هادئ | وقت بدل ضايع. |  |
-| 30 | ⬜ لم يسجل | `audio/raw/ar/story/shootout-key-1.wav` | متحمس | ضربات الترجيح... أعصاب حديد. |  |
-| 31 | ⬜ لم يسجل | `audio/raw/ar/story/attack-key-1.wav` | هادئ | هجمة منظمة. |  |
-| 32 | ⬜ لم يسجل | `audio/raw/ar/story/attack-key-2.wav` | هادئ | ضغط مستمر. |  |
-| 33 | ⬜ لم يسجل | `audio/raw/ar/story/attack-key-3.wav` | هادئ | بيحاولوا يبنوا الهجمة. |  |
+| 1 | 👂 تأكد بالسمع | `audio/raw/ar/story/miss-pre-1.wav` | هادئ | شوطة... | لم يتعرف عليها التحقق الآلي، وطولها ثانيتان لكلمة واحدة. اسمعها وتأكد أنها «تسديدة...» وحدها. |
+| 2 | 👂 تأكد بالسمع | `audio/raw/ar/story/miss-post-2.wav` | هادئ | فرصة مبتتكررش كتير! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| 3 | 👂 تأكد بالسمع | `audio/raw/ar/story/blocked-key-2.wav` | متحمس | تدخل شجاع من المدافع! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| 4 | 👂 تأكد بالسمع | `audio/raw/ar/story/red-pre-1.wav` | هادئ | تدخل عنيف من ورا! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
 
 **صورك في الدفعة 1:** 0 باقية. فلا صور عليك قبل انتهاء صوت الدفعة 1.
 
@@ -53,24 +24,29 @@
 
 **الأولوية للدفعة 1:** المحاكاة المصورة (السبرنتات 3 إلى 8) تحتاج صوتها كاملا مع صورها.
 
-1. **🔁 أعد المقاطع المرفوضة من الدفعة 1 (3)، و👂 تأكد بالسمع من (1):** [`audio/todo/wave-01.md`](audio/todo/wave-01.md)، أول قسمين.
-2. **⬜ سجل باقي الدفعة 1 (29 مقطعا):** [`audio/todo/wave-01.md`](audio/todo/wave-01.md)، قسم «لم يسجل بعد».
-3. **ثم الدفعات 2 إلى 12 بالترتيب (330 مقطعا):** كل دفعة في قائمتها، أولها [`audio/todo/wave-02.md`](audio/todo/wave-02.md).
-4. **ثم أصوات الملعب (44):** [`audio/todo/sfx.md`](audio/todo/sfx.md).
-5. **⏳ 21 صورة مرفوعة تنتظر المراجعة:** قل ل Claude «راجع».
-6. **ثم الصور بترتيب الدفعات (280 صورة):** لوحات الملاعب الجديدة فقط بترتيب الدفعات. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
+1. **🔁 أعد المقاطع المرفوضة من الدفعة 1 (0)، و👂 تأكد بالسمع من (4):** [`audio/todo/wave-01.md`](audio/todo/wave-01.md)، أول قسمين.
+2. **ثم أصوات الملعب (44):** [`audio/todo/sfx.md`](audio/todo/sfx.md).
+3. **⏳ 16 صورة مرفوعة تنتظر المراجعة:** قل ل Claude «راجع».
+4. **ثم الصور بترتيب الدفعات (270 صورة):** لوحات الملاعب الجديدة فقط بترتيب الدفعات. من كتاب الصور، وكل دفعة في [`00-waves.md`](art/images/00-waves.md). أول 12 في الجدول تحت.
 
 **الإيقاع:** حوالي 30 مقطعا معتمدا يوميا، ثم 12 صورة معتمدة يوميا. وتواريخ كل دفعة في [`SCHEDULE.md`](SCHEDULE.md)، قسما «مسار الصوت» و«مسار الصور».
 
-**أول صورك بعد الصوت، من الدفعة 2 (5):**
+**أول صورك بعد الصوت، من الدفعة 3 (12):**
 
 | | اللوحة | الملف | الأمر في |
 |---|---|---|---|
-| ⬜ | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ⬜ | 3.1 | `art/raw/stadiums/gulf/dusk/shot.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.2 | `art/raw/stadiums/gulf/dusk/run.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.3 | `art/raw/stadiums/gulf/dusk/wing.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.4 | `art/raw/stadiums/gulf/dusk/shot-far.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.5 | `art/raw/stadiums/gulf/dusk/goal-front.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.6 | `art/raw/stadiums/gulf/dusk/behind-goal.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.7 | `art/raw/stadiums/gulf/dusk/corner.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.8 | `art/raw/stadiums/gulf/dusk/box-high.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.9 | `art/raw/stadiums/gulf/dusk/bench.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.10 | `art/raw/stadiums/gulf/dusk/touchline.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.11 | `art/raw/stadiums/gulf/dusk/monitor.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
+| ⬜ | 3.12 | `art/raw/stadiums/gulf/dusk/centre.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 
 ## طريقة التسجيل
 
@@ -105,28 +81,28 @@
 
 | الدفعة | المجموع | ✅ | 🔁 | 👂 | ⬜ | القائمة |
 |---|---|---|---|---|---|---|
-| 1 | 98 | 65 | 3 | 1 | 29 | [`wave-01.md`](audio/todo/wave-01.md) |
-| 2 | 111 | 0 | 0 | 0 | 111 | [`wave-02.md`](audio/todo/wave-02.md) |
-| 3 | 98 | 0 | 0 | 0 | 98 | [`wave-03.md`](audio/todo/wave-03.md) |
-| 4 | 56 | 0 | 0 | 0 | 56 | [`wave-04.md`](audio/todo/wave-04.md) |
-| 5 | 31 | 0 | 0 | 0 | 31 | [`wave-05.md`](audio/todo/wave-05.md) |
-| 6 | 15 | 0 | 0 | 0 | 15 | [`wave-06.md`](audio/todo/wave-06.md) |
-| 7 | 5 | 0 | 0 | 0 | 5 | [`wave-07.md`](audio/todo/wave-07.md) |
-| 8 | 3 | 0 | 0 | 0 | 3 | [`wave-08.md`](audio/todo/wave-08.md) |
-| 9 | 3 | 0 | 0 | 0 | 3 | [`wave-09.md`](audio/todo/wave-09.md) |
-| 10 | 3 | 0 | 0 | 0 | 3 | [`wave-10.md`](audio/todo/wave-10.md) |
-| 11 | 3 | 0 | 0 | 0 | 3 | [`wave-11.md`](audio/todo/wave-11.md) |
-| 12 | 2 | 0 | 0 | 0 | 2 | [`wave-12.md`](audio/todo/wave-12.md) |
+| 1 | 98 | 94 | 0 | 4 | 0 | [`wave-01.md`](audio/todo/wave-01.md) |
+| 2 | 111 | 111 | 0 | 0 | 0 | [`wave-02.md`](audio/todo/wave-02.md) |
+| 3 | 98 | 98 | 0 | 0 | 0 | [`wave-03.md`](audio/todo/wave-03.md) |
+| 4 | 56 | 56 | 0 | 0 | 0 | [`wave-04.md`](audio/todo/wave-04.md) |
+| 5 | 31 | 31 | 0 | 0 | 0 | [`wave-05.md`](audio/todo/wave-05.md) |
+| 6 | 15 | 15 | 0 | 0 | 0 | [`wave-06.md`](audio/todo/wave-06.md) |
+| 7 | 5 | 5 | 0 | 0 | 0 | [`wave-07.md`](audio/todo/wave-07.md) |
+| 8 | 3 | 3 | 0 | 0 | 0 | [`wave-08.md`](audio/todo/wave-08.md) |
+| 9 | 3 | 3 | 0 | 0 | 0 | [`wave-09.md`](audio/todo/wave-09.md) |
+| 10 | 3 | 3 | 0 | 0 | 0 | [`wave-10.md`](audio/todo/wave-10.md) |
+| 11 | 3 | 3 | 0 | 0 | 0 | [`wave-11.md`](audio/todo/wave-11.md) |
+| 12 | 2 | 2 | 0 | 0 | 0 | [`wave-12.md`](audio/todo/wave-12.md) |
 | أصوات الملعب | 44 | 0 | 0 | 0 | 44 | [`sfx.md`](audio/todo/sfx.md) |
-| **المعلق كله** | **428** | **65** | **3** | **1** | **359** | |
+| **المعلق كله** | **428** | **424** | **0** | **4** | **0** | |
 
 ### الصور (لوحات الملاعب الجديدة، والإعادة عند سليمان)
 
 | الدفعة | المجموع | ✅ معتمد | ⏳ تنتظر المراجعة | 🔁 للإعادة | ⬜ لم تصنع |
 |---|---|---|---|---|---|
 | 1 | 16 | 16 | 0 | 0 | 0 |
-| 2 | 25 | 15 | 5 | 0 | 5 |
-| 3 | 26 | 0 | 0 | 0 | 26 |
+| 2 | 25 | 25 | 0 | 0 | 0 |
+| 3 | 26 | 5 | 0 | 0 | 21 |
 | 4 | 25 | 15 | 0 | 0 | 10 |
 | 5 | 25 | 15 | 0 | 0 | 10 |
 | 6 | 26 | 0 | 16 | 0 | 10 |
@@ -140,7 +116,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **362** | **61** | **21** | **0** | **280** |
+| **الكل** | **362** | **76** | **16** | **0** | **270** |
 
 ## كل الملفات
 
@@ -162,20 +138,20 @@
 
 | | المجموع | ✅ | 👂 | 🔁 | ⬜ |
 |---|---|---|---|---|---|
-| الدفعة 1 | 98 | 65 | 1 | 3 | 29 |
-| الدفعة 2 | 111 | 0 | 0 | 0 | 111 |
-| الدفعة 3 | 98 | 0 | 0 | 0 | 98 |
-| الدفعة 4 | 56 | 0 | 0 | 0 | 56 |
-| الدفعة 5 | 31 | 0 | 0 | 0 | 31 |
-| الدفعة 6 | 15 | 0 | 0 | 0 | 15 |
-| الدفعة 7 | 5 | 0 | 0 | 0 | 5 |
-| الدفعة 8 | 3 | 0 | 0 | 0 | 3 |
-| الدفعة 9 | 3 | 0 | 0 | 0 | 3 |
-| الدفعة 10 | 3 | 0 | 0 | 0 | 3 |
-| الدفعة 11 | 3 | 0 | 0 | 0 | 3 |
-| الدفعة 12 | 2 | 0 | 0 | 0 | 2 |
+| الدفعة 1 | 98 | 94 | 4 | 0 | 0 |
+| الدفعة 2 | 111 | 111 | 0 | 0 | 0 |
+| الدفعة 3 | 98 | 98 | 0 | 0 | 0 |
+| الدفعة 4 | 56 | 56 | 0 | 0 | 0 |
+| الدفعة 5 | 31 | 31 | 0 | 0 | 0 |
+| الدفعة 6 | 15 | 15 | 0 | 0 | 0 |
+| الدفعة 7 | 5 | 5 | 0 | 0 | 0 |
+| الدفعة 8 | 3 | 3 | 0 | 0 | 0 |
+| الدفعة 9 | 3 | 3 | 0 | 0 | 0 |
+| الدفعة 10 | 3 | 3 | 0 | 0 | 0 |
+| الدفعة 11 | 3 | 3 | 0 | 0 | 0 |
+| الدفعة 12 | 2 | 2 | 0 | 0 | 0 |
 | أصوات الملعب | 44 | 0 | 0 | 0 | 44 |
-| **الكل** | **472** | **65** | **1** | **3** | **403** |
+| **الكل** | **472** | **424** | **4** | **0** | **44** |
 
 #### الدفعة 1
 
@@ -193,7 +169,7 @@
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/header-pre-1.wav` | هادئ | عرضية جوه المنطقة... |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/header-pre-2.wav` | هادئ | الكورة عالية جوه الصندوق... |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/header-key-1.wav` | متحمس | جون! راسية قوية في الشبكة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/header-key-2.wav` | متحمس | جون براسية ولا أروع! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/header-key-2.wav` | متحمس | جون براسية ولا أروع! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/header-post-1.wav` | هادئ | محدش يقدر يوقفه في الهوا! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/header-post-2.wav` | هادئ | طلعة حلوة أوي! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/free_kick_goal-pre-1.wav` | هادئ | فاول على حدود المنطقة. |  |
@@ -228,13 +204,13 @@
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/miss-pre-2.wav` | هادئ | محاولة على المرمى... |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/miss-key-3.wav` | متحمس | كانت هتبقى جون! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/miss-post-1.wav` | هادئ | المدرب مش مصدق! |  |
-| 🔁 يجب إعادته | حمزة | `audio/raw/ar/story/miss-post-2.wav` | هادئ | فرصة مبتتكررش كتير! | فيها جملتان: جملة miss-post-1 أولا ثم جملتها. سجل جملتها وحدها. |
+| 👂 مسجل، ينتظر التأكد بالسمع | حمزة | `audio/raw/ar/story/miss-post-2.wav` | هادئ | فرصة مبتتكررش كتير! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/post-key-1.wav` | متحمس | القائم! القائم رجع الكورة! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/post-post-1.wav` | هادئ | سنتيمترات حرمته من الجون! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/blocked-pre-2.wav` | هادئ | محاولة قوية... |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/blocked-key-1.wav` | متحمس | الدفاع صدها! |  |
-| 🔁 يجب إعادته | حمزة | `audio/raw/ar/story/blocked-key-2.wav` | متحمس | تدخل شجاع من المدافع! | نسخة مطابقة تماما ل blocked-key-1 (نفس الملف). سجل جملتها هي. |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/blocked-post-1.wav` | هادئ | دفاع جامد. |  |
+| 👂 مسجل، ينتظر التأكد بالسمع | حمزة | `audio/raw/ar/story/blocked-key-2.wav` | متحمس | تدخل شجاع من المدافع! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/blocked-post-1.wav` | هادئ | دفاع جامد. |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/offside-pre-1.wav` | هادئ | كورة طويلة ورا الدفاع... |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/offside-key-1.wav` | هادئ | الراية اترفعت. أوفسايد. |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/offside-key-2.wav` | هادئ | لأ! أوفسايد. |  |
@@ -249,421 +225,421 @@
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/yellow-pre-1.wav` | هادئ | تدخل متأخر! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/yellow-pre-2.wav` | هادئ | تدخل جامد! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/yellow-key-1.wav` | هادئ | كارت أصفر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/yellow-key-2.wav` | هادئ | الحكم طلع الكارت الأصفر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/yellow-key-2.wav` | هادئ | الحكم طلع الكارت الأصفر. |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/yellow-post-1.wav` | هادئ | لازم ياخد باله من دلوقتي. |  |
-| 🔁 يجب إعادته | حمزة | `audio/raw/ar/story/red-pre-1.wav` | هادئ | تدخل عنيف من ورا! | تقول «كرت أحمر» قبل أن يرفعه الحكم، فتكشف النتيجة. المطلوب وصف التدخل فقط. |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/red-pre-2.wav` | هادئ | تدخل خطير! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/red-key-1.wav` | متحمس | كارت أحمر! طرد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/red-key-2.wav` | متحمس | الحكم طرده على طول! |  |
+| 👂 مسجل، ينتظر التأكد بالسمع | حمزة | `audio/raw/ar/story/red-pre-1.wav` | هادئ | تدخل عنيف من ورا! | سجل من جديد بعد المراجعة، وينتظر المراجعة. |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/red-pre-2.wav` | هادئ | تدخل خطير! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/red-key-1.wav` | متحمس | كارت أحمر! طرد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/red-key-2.wav` | متحمس | الحكم طرده على طول! |  |
 | ✅ مكتمل | حمزة | `audio/raw/ar/story/red-post-1.wav` | هادئ | فريقه هيكمل بعشرة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/red-post-2.wav` | هادئ | خروج حزين على أوضة اللبس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/second_yellow-pre-1.wav` | هادئ | تدخل متأخر تاني... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/second_yellow-key-1.wav` | متحمس | الإنذار التاني! طرد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/second_yellow-post-1.wav` | هادئ | ميلومش غير نفسه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/sub-key-1.wav` | هادئ | تغيير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/sub-key-2.wav` | هادئ | تغيير في الفريق. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/sub-post-1.wav` | هادئ | دم جديد في الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/injury-key-1.wav` | هادئ | لاعب واقع على الأرض. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/injury-key-2.wav` | هادئ | إصابة... والجهاز الطبي داخل. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/injury-post-1.wav` | هادئ | نتمنى متكونش خطيرة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/coach-key-1.wav` | هادئ | المدرب بيدي تعليمات جديدة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/coach-key-2.wav` | هادئ | تغيير تكتيكي من الدكة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/coach-post-1.wav` | هادئ | نشوف هيغير حاجة ولا لأ. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/kickoff-key-1.wav` | هادئ | الماتش بدأ! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/halftime-key-1.wav` | متحمس | نهاية الشوط الأول. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/fulltime-key-1.wav` | متحمس | صافرة النهاية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/extra_time-key-1.wav` | متحمس | على الوقت الإضافي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/penalties-key-1.wav` | متحمس | على ضربات الترجيح! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/stoppage-key-1.wav` | هادئ | وقت بدل ضايع. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/shootout-key-1.wav` | متحمس | ضربات الترجيح... أعصاب حديد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/attack-key-1.wav` | هادئ | هجمة منظمة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/attack-key-2.wav` | هادئ | ضغط مستمر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/story/attack-key-3.wav` | هادئ | بيحاولوا يبنوا الهجمة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/red-post-2.wav` | هادئ | خروج حزين على أوضة اللبس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/second_yellow-pre-1.wav` | هادئ | تدخل متأخر تاني... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/second_yellow-key-1.wav` | متحمس | الإنذار التاني! طرد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/second_yellow-post-1.wav` | هادئ | ميلومش غير نفسه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/sub-key-1.wav` | هادئ | تغيير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/sub-key-2.wav` | هادئ | تغيير في الفريق. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/sub-post-1.wav` | هادئ | دم جديد في الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/injury-key-1.wav` | هادئ | لاعب واقع على الأرض. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/injury-key-2.wav` | هادئ | إصابة... والجهاز الطبي داخل. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/injury-post-1.wav` | هادئ | نتمنى متكونش خطيرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/coach-key-1.wav` | هادئ | المدرب بيدي تعليمات جديدة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/coach-key-2.wav` | هادئ | تغيير تكتيكي من الدكة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/coach-post-1.wav` | هادئ | نشوف هيغير حاجة ولا لأ. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/kickoff-key-1.wav` | هادئ | الماتش بدأ! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/halftime-key-1.wav` | متحمس | نهاية الشوط الأول. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/fulltime-key-1.wav` | متحمس | صافرة النهاية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/extra_time-key-1.wav` | متحمس | على الوقت الإضافي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/penalties-key-1.wav` | متحمس | على ضربات الترجيح! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/stoppage-key-1.wav` | هادئ | وقت بدل ضايع. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/shootout-key-1.wav` | متحمس | ضربات الترجيح... أعصاب حديد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/attack-key-1.wav` | هادئ | هجمة منظمة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/attack-key-2.wav` | هادئ | ضغط مستمر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/story/attack-key-3.wav` | هادئ | بيحاولوا يبنوا الهجمة. |  |
 
 #### الدفعة 2
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-01.wav` | هادئ | مسا الخير وأهلا بيكم في ماتش منتظر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-02.wav` | هادئ | أهلا بيكم، المدرجات مليانة والجو تحفة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-03.wav` | هادئ | ماتش كبير مستنينا الليلة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-01.wav` | متحمس | الماتش بدأ! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-02.wav` | متحمس | صافرة البداية، وعلى بركة الله! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-03.wav` | هادئ | الكورة بتتحرك من نص الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-01.wav` | هادئ | تدوير للكورة في النص. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-02.wav` | هادئ | بنا هادي من ورا. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-03.wav` | هادئ | الفريق بيدور على ثغرة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-01.wav` | هادئ | هجمة خطيرة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-02.wav` | هادئ | انطلاقة سريعة على المرمى... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-03.wav` | هادئ | الكورة بتقرب من منطقة الجزا... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-01.wav` | متحمس | هجمة مرتدة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-02.wav` | متحمس | مرتدة سريعة جدا! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-03.wav` | هادئ | قطع للكورة، والطريق مفتوح... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-01.wav` | متحمس | بيشوط! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-02.wav` | متحمس | شوطة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-03.wav` | متحمس | شاطها جامدة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-01.wav` | صاخب | جوووووول! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-02.wav` | صاخب | جون! جون! جون! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-03.wav` | صاخب | جووول! جون جامد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-01.wav` | متحمس | المدرجات ولعت فرحة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-02.wav` | هادئ | إيه الجون ده! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-03.wav` | هادئ | جون يستاهل التسقيف. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-01.wav` | متحمس | التعادل! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-02.wav` | متحمس | الفريق رجع للماتش! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-03.wav` | متحمس | تقدم مستحق! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-01.wav` | صاخب | في الوقت القاتل! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-02.wav` | صاخب | في آخر ثواني! جون! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-03.wav` | صاخب | جون قاتل! مش معقول! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-01.wav` | هادئ | عرضية جوه المنطقة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-02.wav` | هادئ | الكورة عالية جوه الصندوق... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-03.wav` | صاخب | جون! راسية قوية في الشبكة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-01.wav` | متحمس | جنب القائم! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-02.wav` | متحمس | فوق العارضة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-03.wav` | متحمس | آه! ضاعت! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/blocked/blocked-01.wav` | متحمس | المدافع صدها! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/blocked/blocked-02.wav` | متحمس | جسم المدافع في الطريق! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/blocked/blocked-03.wav` | هادئ | تضحية دفاعية. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-01.wav` | متحمس | القائم! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-02.wav` | متحمس | العارضة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-03.wav` | متحمس | خبطت في القائم وطلعت! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-01.wav` | متحمس | تصدي جامد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-02.wav` | متحمس | الحارس طار وبعدها! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-03.wav` | متحمس | إيه الحارس ده! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/line/line-01.wav` | متحمس | شالها من على الخط! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/line/line-02.wav` | متحمس | إنقاذ في آخر لحظة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/line/line-03.wav` | هادئ | كانت هتعدي الخط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/own/own-01.wav` | متحمس | جون في مرماه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/own/own-02.wav` | متحمس | جاب جون في نفسه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/own/own-03.wav` | هادئ | لحظة صعبة على المدافع. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-01.wav` | متحمس | الراية اترفعت! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-02.wav` | هادئ | أوفسايد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-03.wav` | هادئ | كان متقدم بخطوة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-01.wav` | متحمس | عرقلة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-02.wav` | هادئ | فاول واضح. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-03.wav` | هادئ | تدخل جامد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-01.wav` | متحمس | كارت أصفر! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-02.wav` | هادئ | إنذار. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-03.wav` | هادئ | الحكم طلع الكارت الأصفر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-01.wav` | صاخب | كارت أحمر! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-02.wav` | متحمس | طرد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-03.wav` | متحمس | الإنذار التاني... وطرد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-01.wav` | هادئ | فاول على حدود المنطقة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-02.wav` | هادئ | الحيطة اتعملت... والكل مستني. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-03.wav` | هادئ | مسافة مثالية للتسديد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-01.wav` | صاخب | ضربة جزا! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-02.wav` | متحمس | الحكم بيشاور على النقطة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-03.wav` | هادئ | الملعب كله حابس نفسه... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-01.wav` | هادئ | على ضربات الترجيح. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-02.wav` | هادئ | القرعة هتحدد مين يبدأ. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-03.wav` | هادئ | الضربة الأولى... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-01.wav` | هادئ | كورنر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-02.wav` | هادئ | الكل جوه المنطقة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-03.wav` | هادئ | الكورنر اتلعب عالي... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-01.wav` | هادئ | الحكم بيكلم حكام الفيديو. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-02.wav` | هادئ | لحظات... مراجعة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-03.wav` | هادئ | الحكم رايح للشاشة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-01.wav` | هادئ | لاعب واقع على الأرض. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-02.wav` | هادئ | الحكم وقف اللعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-03.wav` | هادئ | الجهاز الطبي داخل الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-01.wav` | هادئ | تغيير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-02.wav` | هادئ | المدرب بيعمل تغيير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-03.wav` | هادئ | دم جديد في الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-01.wav` | هادئ | المدرب بيغير الخطة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-02.wav` | هادئ | تعليمات جديدة من على الخط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-03.wav` | هادئ | الفريق طالع للهجوم. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/stoppage/stoppage-01.wav` | هادئ | الوقت بدل الضايع. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/stoppage/stoppage-02.wav` | هادئ | الحكم الرابع رافع اللوحة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/stoppage/stoppage-03.wav` | هادئ | فاضل دقايق قليلة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/half/half-01.wav` | هادئ | نهاية الشوط الأول. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/half/half-02.wav` | هادئ | الحكم صفر للاستراحة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/half/half-03.wav` | هادئ | شوط أول مثير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-01.wav` | متحمس | نهاية الماتش! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-02.wav` | متحمس | الحكم صفر صافرة النهاية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-03.wav` | متحمس | فوز غالي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/trophy/trophy-01.wav` | صاخب | الأبطال! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/trophy/trophy-02.wav` | صاخب | الكاس في الحضن! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/trophy/trophy-03.wav` | متحمس | الكابتن بيرفع الكاس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-01.wav` | هادئ | الجمهور مولع المدرجات. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-02.wav` | هادئ | الأغاني مش بتقف. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-03.wav` | هادئ | المدرجات بتترج. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-01.wav` | صاخب | مقصية! جون أسطوري! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-02.wav` | صاخب | بالكعب! إيه المهارة دي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-03.wav` | صاخب | صاروخ من بعيد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/scuffle/scuffle-01.wav` | متحمس | شد بين اللاعيبة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/scuffle/scuffle-02.wav` | هادئ | الحكم بيدخل يفضها. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/scuffle/scuffle-03.wav` | هادئ | الأعصاب مشدودة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-01.wav` | هادئ | تعالوا نحلل اللي حصل في الشوط الأول. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-02.wav` | هادئ | الأرقام بتقول كتير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-03.wav` | هادئ | الاستحواذ مش معناه الفوز. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-01.wav` | هادئ | مسا الخير وأهلا بيكم في ماتش منتظر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-02.wav` | هادئ | أهلا بيكم، المدرجات مليانة والجو تحفة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-03.wav` | هادئ | ماتش كبير مستنينا الليلة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-01.wav` | متحمس | الماتش بدأ! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-02.wav` | متحمس | صافرة البداية، وعلى بركة الله! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-03.wav` | هادئ | الكورة بتتحرك من نص الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-01.wav` | هادئ | تدوير للكورة في النص. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-02.wav` | هادئ | بنا هادي من ورا. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-03.wav` | هادئ | الفريق بيدور على ثغرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-01.wav` | هادئ | هجمة خطيرة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-02.wav` | هادئ | انطلاقة سريعة على المرمى... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-03.wav` | هادئ | الكورة بتقرب من منطقة الجزا... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-01.wav` | متحمس | هجمة مرتدة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-02.wav` | متحمس | مرتدة سريعة جدا! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-03.wav` | هادئ | قطع للكورة، والطريق مفتوح... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-01.wav` | متحمس | بيشوط! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-02.wav` | متحمس | شوطة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-03.wav` | متحمس | شاطها جامدة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-01.wav` | صاخب | جوووووول! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-02.wav` | صاخب | جون! جون! جون! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-03.wav` | صاخب | جووول! جون جامد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-01.wav` | متحمس | المدرجات ولعت فرحة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-02.wav` | هادئ | إيه الجون ده! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-03.wav` | هادئ | جون يستاهل التسقيف. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-01.wav` | متحمس | التعادل! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-02.wav` | متحمس | الفريق رجع للماتش! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-03.wav` | متحمس | تقدم مستحق! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-01.wav` | صاخب | في الوقت القاتل! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-02.wav` | صاخب | في آخر ثواني! جون! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-03.wav` | صاخب | جون قاتل! مش معقول! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-01.wav` | هادئ | عرضية جوه المنطقة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-02.wav` | هادئ | الكورة عالية جوه الصندوق... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-03.wav` | صاخب | جون! راسية قوية في الشبكة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-01.wav` | متحمس | جنب القائم! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-02.wav` | متحمس | فوق العارضة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-03.wav` | متحمس | آه! ضاعت! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/blocked/blocked-01.wav` | متحمس | المدافع صدها! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/blocked/blocked-02.wav` | متحمس | جسم المدافع في الطريق! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/blocked/blocked-03.wav` | هادئ | تضحية دفاعية. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-01.wav` | متحمس | القائم! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-02.wav` | متحمس | العارضة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-03.wav` | متحمس | خبطت في القائم وطلعت! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-01.wav` | متحمس | تصدي جامد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-02.wav` | متحمس | الحارس طار وبعدها! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-03.wav` | متحمس | إيه الحارس ده! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/line/line-01.wav` | متحمس | شالها من على الخط! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/line/line-02.wav` | متحمس | إنقاذ في آخر لحظة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/line/line-03.wav` | هادئ | كانت هتعدي الخط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/own/own-01.wav` | متحمس | جون في مرماه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/own/own-02.wav` | متحمس | جاب جون في نفسه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/own/own-03.wav` | هادئ | لحظة صعبة على المدافع. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-01.wav` | متحمس | الراية اترفعت! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-02.wav` | هادئ | أوفسايد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-03.wav` | هادئ | كان متقدم بخطوة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-01.wav` | متحمس | عرقلة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-02.wav` | هادئ | فاول واضح. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-03.wav` | هادئ | تدخل جامد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-01.wav` | متحمس | كارت أصفر! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-02.wav` | هادئ | إنذار. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-03.wav` | هادئ | الحكم طلع الكارت الأصفر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-01.wav` | صاخب | كارت أحمر! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-02.wav` | متحمس | طرد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-03.wav` | متحمس | الإنذار التاني... وطرد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-01.wav` | هادئ | فاول على حدود المنطقة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-02.wav` | هادئ | الحيطة اتعملت... والكل مستني. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-03.wav` | هادئ | مسافة مثالية للتسديد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-01.wav` | صاخب | ضربة جزا! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-02.wav` | متحمس | الحكم بيشاور على النقطة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-03.wav` | هادئ | الملعب كله حابس نفسه... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-01.wav` | هادئ | على ضربات الترجيح. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-02.wav` | هادئ | القرعة هتحدد مين يبدأ. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-03.wav` | هادئ | الضربة الأولى... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-01.wav` | هادئ | كورنر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-02.wav` | هادئ | الكل جوه المنطقة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-03.wav` | هادئ | الكورنر اتلعب عالي... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-01.wav` | هادئ | الحكم بيكلم حكام الفيديو. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-02.wav` | هادئ | لحظات... مراجعة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-03.wav` | هادئ | الحكم رايح للشاشة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-01.wav` | هادئ | لاعب واقع على الأرض. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-02.wav` | هادئ | الحكم وقف اللعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-03.wav` | هادئ | الجهاز الطبي داخل الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-01.wav` | هادئ | تغيير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-02.wav` | هادئ | المدرب بيعمل تغيير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-03.wav` | هادئ | دم جديد في الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-01.wav` | هادئ | المدرب بيغير الخطة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-02.wav` | هادئ | تعليمات جديدة من على الخط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-03.wav` | هادئ | الفريق طالع للهجوم. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/stoppage/stoppage-01.wav` | هادئ | الوقت بدل الضايع. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/stoppage/stoppage-02.wav` | هادئ | الحكم الرابع رافع اللوحة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/stoppage/stoppage-03.wav` | هادئ | فاضل دقايق قليلة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/half/half-01.wav` | هادئ | نهاية الشوط الأول. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/half/half-02.wav` | هادئ | الحكم صفر للاستراحة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/half/half-03.wav` | هادئ | شوط أول مثير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-01.wav` | متحمس | نهاية الماتش! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-02.wav` | متحمس | الحكم صفر صافرة النهاية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-03.wav` | متحمس | فوز غالي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/trophy/trophy-01.wav` | صاخب | الأبطال! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/trophy/trophy-02.wav` | صاخب | الكاس في الحضن! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/trophy/trophy-03.wav` | متحمس | الكابتن بيرفع الكاس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-01.wav` | هادئ | الجمهور مولع المدرجات. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-02.wav` | هادئ | الأغاني مش بتقف. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-03.wav` | هادئ | المدرجات بتترج. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-01.wav` | صاخب | مقصية! جون أسطوري! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-02.wav` | صاخب | بالكعب! إيه المهارة دي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-03.wav` | صاخب | صاروخ من بعيد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/scuffle/scuffle-01.wav` | متحمس | شد بين اللاعيبة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/scuffle/scuffle-02.wav` | هادئ | الحكم بيدخل يفضها. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/scuffle/scuffle-03.wav` | هادئ | الأعصاب مشدودة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-01.wav` | هادئ | تعالوا نحلل اللي حصل في الشوط الأول. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-02.wav` | هادئ | الأرقام بتقول كتير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-03.wav` | هادئ | الاستحواذ مش معناه الفوز. |  |
 
 #### الدفعة 3
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-04.wav` | هادئ | الفريقين داخلين أرض الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-05.wav` | هادئ | كله جاهز لصافرة البداية. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-06.wav` | هادئ | ماتش مفيهوش قسمة على اتنين. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-04.wav` | هادئ | الشوط التاني بدأ. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-05.wav` | هادئ | الفريقين رجعوا من أوضة اللبس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-06.wav` | هادئ | شوط تاني جديد، وكل حاجة ممكنة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-04.wav` | هادئ | باصات قصيرة وصبر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-05.wav` | هادئ | الضغط عالي في نص الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-06.wav` | هادئ | الكورة راجعة للحارس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-04.wav` | هادئ | تمريرة بينية... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-05.wav` | هادئ | مراوغة على الخط... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-06.wav` | هادئ | عرضية على المنطقة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-04.wav` | متحمس | تلاتة ضد اتنين! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-05.wav` | هادئ | الضغط جاب كورة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-06.wav` | متحمس | الدفاع مكشوف! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-04.wav` | متحمس | من بعيد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-05.wav` | متحمس | بيجرب حظه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-06.wav` | متحمس | براسه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-04.wav` | صاخب | في الشبكة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-05.wav` | صاخب | يا سلام! جون خرافي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-06.wav` | صاخب | جون ولا أروع! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-04.wav` | هادئ | الجمهور مش هينساه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-05.wav` | هادئ | تعالوا نشوف الإعادة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-06.wav` | هادئ | بصوا اللمسة دي... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-04.wav` | متحمس | بيضاعف النتيجة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-05.wav` | متحمس | هاتريك! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-06.wav` | متحمس | رجوع تاريخي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-04.wav` | متحمس | دراما في آخر دقايق! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-05.wav` | متحمس | قلب النتيجة في الوقت بدل الضايع! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/late/late-06.wav` | هادئ | محدش يقوم من مكانه قبل الصافرة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-04.wav` | صاخب | جون براسية ولا أروع! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-05.wav` | متحمس | راسية فوق العارضة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-06.wav` | متحمس | راسية في حضن الحارس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-04.wav` | متحمس | كانت جون أكيد! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-05.wav` | متحمس | سنتيمترات بس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-06.wav` | متحمس | مش معقول! ضاعت إزاي؟ |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/blocked/blocked-04.wav` | هادئ | الكورة رجعت كورنر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-04.wav` | متحمس | القائم أنقذ الحارس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-05.wav` | هادئ | الحظ واقف ضده. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/post/post-06.wav` | هادئ | القائم بيترج. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-04.wav` | متحمس | بأطراف صوابعه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-05.wav` | متحمس | فوق العارضة بلمسة سحرية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-06.wav` | متحمس | مسكها بثقة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/own/own-04.wav` | هادئ | كان بيحاول يشيلها. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-04.wav` | هادئ | مصيدة أوفسايد ناجحة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-05.wav` | هادئ | الحكم المساعد كان في مكانه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/offside/offside-06.wav` | هادئ | لولا الأوفسايد... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-04.wav` | هادئ | الحكم صفر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-05.wav` | هادئ | اللاعب وقع وبيتألم. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-06.wav` | هادئ | تدخل متأخر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-04.wav` | هادئ | إنذار مستحق. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-05.wav` | هادئ | لازم ياخد باله دلوقتي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-06.wav` | هادئ | بيعترض، بس القرار واضح. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-04.wav` | هادئ | الفريق هيكمل بعشرة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-05.wav` | هادئ | قرار قاسي، بس صح. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-06.wav` | هادئ | خارج من الملعب وراسه في الأرض. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-04.wav` | صاخب | فوق الحيطة وفي الزاوية! جون يجنن! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-05.wav` | صاخب | جون من فاول! لوحة فنية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-06.wav` | متحمس | تصدي جامد للفاول! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-04.wav` | هادئ | اللي هيشوط بيحط الكورة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-05.wav` | هادئ | الحارس بيتحرك على خطه... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-06.wav` | هادئ | لحظة الحقيقة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-04.wav` | هادئ | كل ضربة كأنها نهائي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-05.wav` | متحمس | جابها! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-06.wav` | متحمس | ضيعها! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-04.wav` | هادئ | كورنر قصير. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-05.wav` | متحمس | الحارس طلع وبعدها بإيده! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/corner/corner-06.wav` | هادئ | الدفاع شالها. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-04.wav` | هادئ | الكل مستني القرار. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-05.wav` | متحمس | الجون اتلغى! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-06.wav` | متحمس | الجون صحيح! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-04.wav` | هادئ | نتمنى متكونش إصابة خطيرة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-05.wav` | هادئ | شكله مش هيكمل. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/injury/injury-06.wav` | هادئ | راجع للملعب، أخبار حلوة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-04.wav` | هادئ | تغيير هجومي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-05.wav` | هادئ | تغيير دفاعي عشان يحافظ على النتيجة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-06.wav` | هادئ | الجمهور بيسقف للي خارج. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-04.wav` | هادئ | تحفظ دفاعي دلوقتي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-05.wav` | هادئ | ضغط أعلى من دلوقتي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-06.wav` | هادئ | المدرب متعصب على الخط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/stoppage/stoppage-04.wav` | متحمس | آخر فرصة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/half/half-04.wav` | هادئ | شوط أول مقفول. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/half/half-05.wav` | هادئ | المدربين قدامهم حاجات كتير يراجعوها. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-04.wav` | هادئ | تعادل عادل. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-05.wav` | متحمس | مفاجأة الموسم! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-06.wav` | هادئ | الخسران قدم ماتش مشرف. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/trophy/trophy-04.wav` | هادئ | موسم تاريخي بيتختم باللقب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/trophy/trophy-05.wav` | هادئ | ليلة مش هتتنسي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-04.wav` | هادئ | سكوت رهيب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-05.wav` | هادئ | صفارات استهجان. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-06.wav` | هادئ | تسقيف جامد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-04.wav` | متحمس | مراوغة سحرية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-05.wav` | متحمس | لمسة بالكعب! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-06.wav` | متحمس | عداها من بين رجليه! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/scuffle/scuffle-04.wav` | هادئ | لازم الكل يهدى. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-04.wav` | هادئ | نجم الماتش من غير منافس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-05.wav` | هادئ | أداء جماعي ممتاز. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/studio/studio-06.wav` | هادئ | التغييرات هي اللي فرقت. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-04.wav` | هادئ | الفريقين داخلين أرض الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-05.wav` | هادئ | كله جاهز لصافرة البداية. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-06.wav` | هادئ | ماتش مفيهوش قسمة على اتنين. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-04.wav` | هادئ | الشوط التاني بدأ. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-05.wav` | هادئ | الفريقين رجعوا من أوضة اللبس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-06.wav` | هادئ | شوط تاني جديد، وكل حاجة ممكنة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-04.wav` | هادئ | باصات قصيرة وصبر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-05.wav` | هادئ | الضغط عالي في نص الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-06.wav` | هادئ | الكورة راجعة للحارس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-04.wav` | هادئ | تمريرة بينية... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-05.wav` | هادئ | مراوغة على الخط... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-06.wav` | هادئ | عرضية على المنطقة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-04.wav` | متحمس | تلاتة ضد اتنين! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-05.wav` | هادئ | الضغط جاب كورة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-06.wav` | متحمس | الدفاع مكشوف! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-04.wav` | متحمس | من بعيد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-05.wav` | متحمس | بيجرب حظه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-06.wav` | متحمس | براسه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-04.wav` | صاخب | في الشبكة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-05.wav` | صاخب | يا سلام! جون خرافي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-06.wav` | صاخب | جون ولا أروع! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-04.wav` | هادئ | الجمهور مش هينساه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-05.wav` | هادئ | تعالوا نشوف الإعادة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-06.wav` | هادئ | بصوا اللمسة دي... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-04.wav` | متحمس | بيضاعف النتيجة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-05.wav` | متحمس | هاتريك! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-06.wav` | متحمس | رجوع تاريخي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-04.wav` | متحمس | دراما في آخر دقايق! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-05.wav` | متحمس | قلب النتيجة في الوقت بدل الضايع! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/late/late-06.wav` | هادئ | محدش يقوم من مكانه قبل الصافرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-04.wav` | صاخب | جون براسية ولا أروع! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-05.wav` | متحمس | راسية فوق العارضة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-06.wav` | متحمس | راسية في حضن الحارس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-04.wav` | متحمس | كانت جون أكيد! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-05.wav` | متحمس | سنتيمترات بس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-06.wav` | متحمس | مش معقول! ضاعت إزاي؟ |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/blocked/blocked-04.wav` | هادئ | الكورة رجعت كورنر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-04.wav` | متحمس | القائم أنقذ الحارس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-05.wav` | هادئ | الحظ واقف ضده. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/post/post-06.wav` | هادئ | القائم بيترج. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-04.wav` | متحمس | بأطراف صوابعه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-05.wav` | متحمس | فوق العارضة بلمسة سحرية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-06.wav` | متحمس | مسكها بثقة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/own/own-04.wav` | هادئ | كان بيحاول يشيلها. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-04.wav` | هادئ | مصيدة أوفسايد ناجحة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-05.wav` | هادئ | الحكم المساعد كان في مكانه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/offside/offside-06.wav` | هادئ | لولا الأوفسايد... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-04.wav` | هادئ | الحكم صفر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-05.wav` | هادئ | اللاعب وقع وبيتألم. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-06.wav` | هادئ | تدخل متأخر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-04.wav` | هادئ | إنذار مستحق. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-05.wav` | هادئ | لازم ياخد باله دلوقتي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-06.wav` | هادئ | بيعترض، بس القرار واضح. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-04.wav` | هادئ | الفريق هيكمل بعشرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-05.wav` | هادئ | قرار قاسي، بس صح. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-06.wav` | هادئ | خارج من الملعب وراسه في الأرض. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-04.wav` | صاخب | فوق الحيطة وفي الزاوية! جون يجنن! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-05.wav` | صاخب | جون من فاول! لوحة فنية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-06.wav` | متحمس | تصدي جامد للفاول! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-04.wav` | هادئ | اللي هيشوط بيحط الكورة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-05.wav` | هادئ | الحارس بيتحرك على خطه... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-06.wav` | هادئ | لحظة الحقيقة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-04.wav` | هادئ | كل ضربة كأنها نهائي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-05.wav` | متحمس | جابها! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-06.wav` | متحمس | ضيعها! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-04.wav` | هادئ | كورنر قصير. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-05.wav` | متحمس | الحارس طلع وبعدها بإيده! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/corner/corner-06.wav` | هادئ | الدفاع شالها. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-04.wav` | هادئ | الكل مستني القرار. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-05.wav` | متحمس | الجون اتلغى! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-06.wav` | متحمس | الجون صحيح! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-04.wav` | هادئ | نتمنى متكونش إصابة خطيرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-05.wav` | هادئ | شكله مش هيكمل. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/injury/injury-06.wav` | هادئ | راجع للملعب، أخبار حلوة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-04.wav` | هادئ | تغيير هجومي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-05.wav` | هادئ | تغيير دفاعي عشان يحافظ على النتيجة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-06.wav` | هادئ | الجمهور بيسقف للي خارج. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-04.wav` | هادئ | تحفظ دفاعي دلوقتي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-05.wav` | هادئ | ضغط أعلى من دلوقتي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-06.wav` | هادئ | المدرب متعصب على الخط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/stoppage/stoppage-04.wav` | متحمس | آخر فرصة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/half/half-04.wav` | هادئ | شوط أول مقفول. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/half/half-05.wav` | هادئ | المدربين قدامهم حاجات كتير يراجعوها. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-04.wav` | هادئ | تعادل عادل. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-05.wav` | متحمس | مفاجأة الموسم! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-06.wav` | هادئ | الخسران قدم ماتش مشرف. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/trophy/trophy-04.wav` | هادئ | موسم تاريخي بيتختم باللقب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/trophy/trophy-05.wav` | هادئ | ليلة مش هتتنسي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-04.wav` | هادئ | سكوت رهيب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-05.wav` | هادئ | صفارات استهجان. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-06.wav` | هادئ | تسقيف جامد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-04.wav` | متحمس | مراوغة سحرية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-05.wav` | متحمس | لمسة بالكعب! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-06.wav` | متحمس | عداها من بين رجليه! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/scuffle/scuffle-04.wav` | هادئ | لازم الكل يهدى. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-04.wav` | هادئ | نجم الماتش من غير منافس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-05.wav` | هادئ | أداء جماعي ممتاز. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/studio/studio-06.wav` | هادئ | التغييرات هي اللي فرقت. |  |
 
 #### الدفعة 4
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-07.wav` | هادئ | الجماهير بتهتف قبل ما الماتش يبدأ. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-08.wav` | هادئ | التشكيلتين على الشاشة، والمدربين جاهزين. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-09.wav` | هادئ | ليلة كورة بجد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/kickoff/kickoff-07.wav` | هادئ | يا ترى هنشوف تغيير في الشوط التاني؟ |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-07.wav` | هادئ | لعب على الأطراف. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-08.wav` | هادئ | نقل اللعب من ناحية للتانية. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-09.wav` | هادئ | الدفاع متماسك. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-07.wav` | متحمس | انفراد بالحارس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-08.wav` | متحمس | المساحة فاضية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-09.wav` | هادئ | لعب تنائي حلو... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/counter/counter-07.wav` | هادئ | تحول سريع من الدفاع للهجوم... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-07.wav` | متحمس | على الطاير! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shot/shot-08.wav` | متحمس | بالكعب! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-07.wav` | صاخب | الكورة في حضن الشبكة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-08.wav` | صاخب | جووول! الملعب ولع! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-09.wav` | صاخب | جون من عالم تاني! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-07.wav` | هادئ | الحارس ملوش أي فرصة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-08.wav` | هادئ | تمريرة الجون دي دهب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-09.wav` | متحمس | الاحتفال عند الراية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-07.wav` | متحمس | قلب الترابيزة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-08.wav` | هادئ | النتيجة لسه مفتوحة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-09.wav` | هادئ | جون واحد بس بين الفريقين. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-07.wav` | هادئ | محدش يقدر يوقفه في الهوا. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/header/header-08.wav` | هادئ | طلعة حلوة أوي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-07.wav` | هادئ | فرصة ضاعت. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-08.wav` | هادئ | مشاطهاش كويس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-09.wav` | هادئ | التركيز خانه في آخر لحظة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-07.wav` | متحمس | تصدي مزدوج! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-08.wav` | متحمس | حيطة في المرمى! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-09.wav` | هادئ | الحارس في يومه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-07.wav` | هادئ | كان ممكن يتجنبه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/foul/foul-08.wav` | هادئ | الحكم سايب اللعب يكمل... أفضلية. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/yellow/yellow-07.wav` | هادئ | كارت عشان يوقف الهجمة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/red/red-07.wav` | هادئ | ده بيغير شكل الماتش. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-07.wav` | متحمس | في الحيطة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-08.wav` | متحمس | فوق العارضة بشوية! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/freekick/freekick-09.wav` | هادئ | الحارس متحركش. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-07.wav` | صاخب | جون! الحارس في حتة والكورة في حتة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-08.wav` | صاخب | جون! شوطة واثقة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-09.wav` | صاخب | صدها! الحارس بطل! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-07.wav` | متحمس | الحارس صدها! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-08.wav` | صاخب | كسب بضربات الترجيح! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-09.wav` | هادئ | الضغط رهيب على اللي بيشوط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-07.wav` | متحمس | ضربة جزا بعد المراجعة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-08.wav` | متحمس | اتحولت لكارت أحمر! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-09.wav` | هادئ | مفيش حاجة بعد المراجعة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/sub/sub-07.wav` | هادئ | تغيير اضطراري. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/coach/coach-07.wav` | هادئ | المدرب بيسقف للاعيبته. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-07.wav` | هادئ | نقط مهمة في سباق الصدارة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-08.wav` | هادئ | شكرا إنكم كنتم معانا. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/full/full-09.wav` | هادئ | نتقابل في ماتش جاي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-07.wav` | هادئ | المطر مش موقف الحماس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-08.wav` | هادئ | التلج مغطي أطراف الملعب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/crowd/crowd-09.wav` | هادئ | الشبورة مخبية المدرجات البعيدة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-07.wav` | هادئ | مهارة عالية. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/skill/skill-08.wav` | هادئ | هي دي الكورة الحلوة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-07.wav` | هادئ | الجماهير بتهتف قبل ما الماتش يبدأ. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-08.wav` | هادئ | التشكيلتين على الشاشة، والمدربين جاهزين. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-09.wav` | هادئ | ليلة كورة بجد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/kickoff/kickoff-07.wav` | هادئ | يا ترى هنشوف تغيير في الشوط التاني؟ |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-07.wav` | هادئ | لعب على الأطراف. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-08.wav` | هادئ | نقل اللعب من ناحية للتانية. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-09.wav` | هادئ | الدفاع متماسك. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-07.wav` | متحمس | انفراد بالحارس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-08.wav` | متحمس | المساحة فاضية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-09.wav` | هادئ | لعب تنائي حلو... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/counter/counter-07.wav` | هادئ | تحول سريع من الدفاع للهجوم... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-07.wav` | متحمس | على الطاير! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shot/shot-08.wav` | متحمس | بالكعب! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-07.wav` | صاخب | الكورة في حضن الشبكة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-08.wav` | صاخب | جووول! الملعب ولع! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-09.wav` | صاخب | جون من عالم تاني! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-07.wav` | هادئ | الحارس ملوش أي فرصة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-08.wav` | هادئ | تمريرة الجون دي دهب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-09.wav` | متحمس | الاحتفال عند الراية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-07.wav` | متحمس | قلب الترابيزة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-08.wav` | هادئ | النتيجة لسه مفتوحة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-09.wav` | هادئ | جون واحد بس بين الفريقين. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-07.wav` | هادئ | محدش يقدر يوقفه في الهوا. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/header/header-08.wav` | هادئ | طلعة حلوة أوي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-07.wav` | هادئ | فرصة ضاعت. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-08.wav` | هادئ | مشاطهاش كويس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-09.wav` | هادئ | التركيز خانه في آخر لحظة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-07.wav` | متحمس | تصدي مزدوج! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-08.wav` | متحمس | حيطة في المرمى! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-09.wav` | هادئ | الحارس في يومه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-07.wav` | هادئ | كان ممكن يتجنبه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/foul/foul-08.wav` | هادئ | الحكم سايب اللعب يكمل... أفضلية. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/yellow/yellow-07.wav` | هادئ | كارت عشان يوقف الهجمة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/red/red-07.wav` | هادئ | ده بيغير شكل الماتش. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-07.wav` | متحمس | في الحيطة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-08.wav` | متحمس | فوق العارضة بشوية! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/freekick/freekick-09.wav` | هادئ | الحارس متحركش. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-07.wav` | صاخب | جون! الحارس في حتة والكورة في حتة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-08.wav` | صاخب | جون! شوطة واثقة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-09.wav` | صاخب | صدها! الحارس بطل! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-07.wav` | متحمس | الحارس صدها! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-08.wav` | صاخب | كسب بضربات الترجيح! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-09.wav` | هادئ | الضغط رهيب على اللي بيشوط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-07.wav` | متحمس | ضربة جزا بعد المراجعة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-08.wav` | متحمس | اتحولت لكارت أحمر! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-09.wav` | هادئ | مفيش حاجة بعد المراجعة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/sub/sub-07.wav` | هادئ | تغيير اضطراري. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/coach/coach-07.wav` | هادئ | المدرب بيسقف للاعيبته. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-07.wav` | هادئ | نقط مهمة في سباق الصدارة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-08.wav` | هادئ | شكرا إنكم كنتم معانا. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/full/full-09.wav` | هادئ | نتقابل في ماتش جاي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-07.wav` | هادئ | المطر مش موقف الحماس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-08.wav` | هادئ | التلج مغطي أطراف الملعب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/crowd/crowd-09.wav` | هادئ | الشبورة مخبية المدرجات البعيدة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-07.wav` | هادئ | مهارة عالية. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/skill/skill-08.wav` | هادئ | هي دي الكورة الحلوة. |  |
 
 #### الدفعة 5
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-10.wav` | هادئ | نتمنالكم فرجة ممتعة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-11.wav` | هادئ | الملعب صعب على الضيوف، والجمهور مش بيهدى. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-12.wav` | هادئ | ماتش ممكن يغير شكل الترتيب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-10.wav` | هادئ | الإيقاع بطيء في الدقايق دي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-11.wav` | هادئ | الماتش محتاج شرارة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-12.wav` | هادئ | استحواذ على الكورة، بس من غير خطورة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-10.wav` | هادئ | اختراق من الشمال... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-11.wav` | هادئ | توغل من اليمين... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-12.wav` | متحمس | لوحده قدام المرمى! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-10.wav` | صاخب | مش معقول! جون! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-11.wav` | صاخب | جاب جون! جاب جون! جاب جون! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-12.wav` | صاخب | جون تاريخي! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-10.wav` | هادئ | زمايله بيحضنوه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-11.wav` | هادئ | المدرب بيحتفل على الخط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-12.wav` | هادئ | الجون ده بيغير كل حاجة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-10.wav` | هادئ | الفرق بيكبر. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-11.wav` | هادئ | يا ترى الخسران هيرجع للماتش؟ |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/score/score-12.wav` | هادئ | التعادل يرضي حد؟ |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-10.wav` | هادئ | هيندم على الفرصة دي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-11.wav` | هادئ | الجمهور حاطط إيده على راسه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/miss/miss-12.wav` | هادئ | المدرب مش مصدق اللي شايفه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-10.wav` | هادئ | رد فعل سريع. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-11.wav` | هادئ | كانت رايحة الشبكة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/save/save-12.wav` | هادئ | الحارس بيزعق في دفاعه. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-10.wav` | متحمس | ضيعها! فوق العارضة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-11.wav` | متحمس | في القائم! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-12.wav` | هادئ | أعصاب حديد. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/shootout/shootout-10.wav` | هادئ | ضربة حاسمة... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-10.wav` | هادئ | إيد واضحة في الإعادة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-11.wav` | هادئ | أوفسايد بفرق بسيط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/var/var-12.wav` | هادئ | التكنولوجيا حسمت الجدل. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-10.wav` | هادئ | نتمنالكم فرجة ممتعة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-11.wav` | هادئ | الملعب صعب على الضيوف، والجمهور مش بيهدى. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-12.wav` | هادئ | ماتش ممكن يغير شكل الترتيب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-10.wav` | هادئ | الإيقاع بطيء في الدقايق دي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-11.wav` | هادئ | الماتش محتاج شرارة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-12.wav` | هادئ | استحواذ على الكورة، بس من غير خطورة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-10.wav` | هادئ | اختراق من الشمال... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-11.wav` | هادئ | توغل من اليمين... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-12.wav` | متحمس | لوحده قدام المرمى! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-10.wav` | صاخب | مش معقول! جون! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-11.wav` | صاخب | جاب جون! جاب جون! جاب جون! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-12.wav` | صاخب | جون تاريخي! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-10.wav` | هادئ | زمايله بيحضنوه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-11.wav` | هادئ | المدرب بيحتفل على الخط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-12.wav` | هادئ | الجون ده بيغير كل حاجة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-10.wav` | هادئ | الفرق بيكبر. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-11.wav` | هادئ | يا ترى الخسران هيرجع للماتش؟ |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/score/score-12.wav` | هادئ | التعادل يرضي حد؟ |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-10.wav` | هادئ | هيندم على الفرصة دي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-11.wav` | هادئ | الجمهور حاطط إيده على راسه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/miss/miss-12.wav` | هادئ | المدرب مش مصدق اللي شايفه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-10.wav` | هادئ | رد فعل سريع. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-11.wav` | هادئ | كانت رايحة الشبكة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/save/save-12.wav` | هادئ | الحارس بيزعق في دفاعه. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-10.wav` | متحمس | ضيعها! فوق العارضة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-11.wav` | متحمس | في القائم! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-12.wav` | هادئ | أعصاب حديد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/shootout/shootout-10.wav` | هادئ | ضربة حاسمة... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-10.wav` | هادئ | إيد واضحة في الإعادة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-11.wav` | هادئ | أوفسايد بفرق بسيط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/var/var-12.wav` | هادئ | التكنولوجيا حسمت الجدل. |  |
 
 #### الدفعة 6
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-13.wav` | هادئ | المطر نازل، والنجيلة بتزحلق. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-14.wav` | هادئ | برد جامد الليلة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/intro/intro-15.wav` | هادئ | الحر شديد، واللياقة هتفرق. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-13.wav` | هادئ | صراع على الكورة في النص. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-14.wav` | هادئ | الكورة طلعت رمية تماس. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-15.wav` | هادئ | الحكم متابع من قريب. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-13.wav` | هادئ | بيراوغ الأول... والتاني... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-14.wav` | هادئ | الدفاع بيرجع لورا... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-15.wav` | متحمس | فرصة سانحة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-13.wav` | صاخب | في الزاوية العليا! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-14.wav` | صاخب | في الزاوية البعيدة! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-15.wav` | صاخب | من تحت الحارس! |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-13.wav` | هادئ | لازم رد فعل سريع دلوقتي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal-after/goal-after-14.wav` | هادئ | سكوت في مدرجات الضيوف. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/penalty/penalty-13.wav` | هادئ | الحكم بيقول تتعاد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-13.wav` | هادئ | المطر نازل، والنجيلة بتزحلق. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-14.wav` | هادئ | برد جامد الليلة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/intro/intro-15.wav` | هادئ | الحر شديد، واللياقة هتفرق. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-13.wav` | هادئ | صراع على الكورة في النص. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-14.wav` | هادئ | الكورة طلعت رمية تماس. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-15.wav` | هادئ | الحكم متابع من قريب. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-13.wav` | هادئ | بيراوغ الأول... والتاني... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-14.wav` | هادئ | الدفاع بيرجع لورا... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-15.wav` | متحمس | فرصة سانحة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-13.wav` | صاخب | في الزاوية العليا! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-14.wav` | صاخب | في الزاوية البعيدة! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-15.wav` | صاخب | من تحت الحارس! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-13.wav` | هادئ | لازم رد فعل سريع دلوقتي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal-after/goal-after-14.wav` | هادئ | سكوت في مدرجات الضيوف. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/penalty/penalty-13.wav` | هادئ | الحكم بيقول تتعاد. |  |
 
 #### الدفعة 7
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-16.wav` | هادئ | المدرب بيوجه لاعيبته من على الخط. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-17.wav` | هادئ | الجمهور عايز هجوم. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-18.wav` | هادئ | هدوء قبل العاصفة؟ |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/attack/attack-16.wav` | هادئ | رافع راسه وبيدور على زميل... |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/goal/goal-16.wav` | صاخب | صاروخ ميترجعش! |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-16.wav` | هادئ | المدرب بيوجه لاعيبته من على الخط. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-17.wav` | هادئ | الجمهور عايز هجوم. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-18.wav` | هادئ | هدوء قبل العاصفة؟ |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/attack/attack-16.wav` | هادئ | رافع راسه وبيدور على زميل... |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/goal/goal-16.wav` | صاخب | صاروخ ميترجعش! |  |
 
 #### الدفعة 8
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-19.wav` | هادئ | كل فريق عامل حساب التاني. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-20.wav` | هادئ | الاستحواذ لصاحب الأرض. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-21.wav` | هادئ | الضيوف مستنيين المرتدة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-19.wav` | هادئ | كل فريق عامل حساب التاني. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-20.wav` | هادئ | الاستحواذ لصاحب الأرض. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-21.wav` | هادئ | الضيوف مستنيين المرتدة. |  |
 
 #### الدفعة 9
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-22.wav` | هادئ | كورة طويلة لقدام. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-23.wav` | هادئ | قطع حلو في النص. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-24.wav` | هادئ | غلطة بسيطة في التمريرة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-22.wav` | هادئ | كورة طويلة لقدام. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-23.wav` | هادئ | قطع حلو في النص. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-24.wav` | هادئ | غلطة بسيطة في التمريرة. |  |
 
 #### الدفعة 10
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-25.wav` | هادئ | اللياقة بدأت تبان. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-26.wav` | هادئ | المساحات بتضيق. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-27.wav` | هادئ | الفريق بيطلع لقدام. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-25.wav` | هادئ | اللياقة بدأت تبان. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-26.wav` | هادئ | المساحات بتضيق. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-27.wav` | هادئ | الفريق بيطلع لقدام. |  |
 
 #### الدفعة 11
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-28.wav` | هادئ | رجوع للدفاع بسرعة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-29.wav` | هادئ | مفيش حاجة تذكر لحد دلوقتي. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-30.wav` | هادئ | الماتش متكافئ. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-28.wav` | هادئ | رجوع للدفاع بسرعة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-29.wav` | هادئ | مفيش حاجة تذكر لحد دلوقتي. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-30.wav` | هادئ | الماتش متكافئ. |  |
 
 #### الدفعة 12
 
 | الحالة | من | الملف | النبرة | النص | ملاحظة |
 |---|---|---|---|---|---|
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-31.wav` | هادئ | الأعصاب مشدودة. |  |
-| ⬜ لم يتم العمل عليه | حمزة | `audio/raw/ar/calm/calm-32.wav` | هادئ | كل دقيقة الضغط بيزيد. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-31.wav` | هادئ | الأعصاب مشدودة. |  |
+| ✅ مكتمل | حمزة | `audio/raw/ar/calm/calm-32.wav` | هادئ | كل دقيقة الضغط بيزيد. |  |
 
 #### أصوات الملعب
 
@@ -721,8 +697,8 @@
 | الدفعة | المجموع | ✅ | ⏳ | 🔁 | ⬜ |
 |---|---|---|---|---|---|
 | 1 | 16 | 16 | 0 | 0 | 0 |
-| 2 | 25 | 15 | 5 | 0 | 5 |
-| 3 | 26 | 0 | 0 | 0 | 26 |
+| 2 | 25 | 25 | 0 | 0 | 0 |
+| 3 | 26 | 5 | 0 | 0 | 21 |
 | 4 | 25 | 15 | 0 | 0 | 10 |
 | 5 | 25 | 15 | 0 | 0 | 10 |
 | 6 | 26 | 0 | 16 | 0 | 10 |
@@ -736,7 +712,7 @@
 | 14 | 26 | 0 | 0 | 0 | 26 |
 | 15 | 11 | 0 | 0 | 0 | 11 |
 | 16 | 5 | 0 | 0 | 0 | 5 |
-| **الكل** | **362** | **61** | **21** | **0** | **280** |
+| **الكل** | **362** | **76** | **16** | **0** | **270** |
 
 #### الدفعة 1
 
@@ -778,16 +754,16 @@
 | ✅ مكتمل | حمزة | 2.14 | `art/raw/stadiums/classic/day/crowd-joy.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ✅ مكتمل | حمزة | 2.15 | `art/raw/stadiums/classic/day/crowd-tense.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ✅ مكتمل | حمزة | 2.16 | `art/raw/stadiums/classic/day/crowd-sad.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⏳ مرفوع، ينتظر المراجعة | حمزة | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.1 | `art/raw/stadiums/arena/rain/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.2 | `art/raw/stadiums/arena/rain/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.3 | `art/raw/stadiums/arena/rain/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.4 | `art/raw/stadiums/arena/rain/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 17.5 | `art/raw/stadiums/arena/rain/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | حمزة | 18.1 | `art/raw/stadiums/arena/day/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | حمزة | 18.2 | `art/raw/stadiums/arena/day/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | حمزة | 18.3 | `art/raw/stadiums/arena/day/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | حمزة | 18.4 | `art/raw/stadiums/arena/day/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | حمزة | 18.5 | `art/raw/stadiums/arena/day/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 
 #### الدفعة 3
 
@@ -809,11 +785,11 @@
 | ⬜ لم يتم العمل عليه | حمزة | 3.14 | `art/raw/stadiums/gulf/dusk/crowd-joy.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 3.15 | `art/raw/stadiums/gulf/dusk/crowd-tense.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 3.16 | `art/raw/stadiums/gulf/dusk/crowd-sad.jpg` | [`01-stadium.md`](art/images/01-stadium.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 19.1 | `art/raw/stadiums/classic/night/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 19.2 | `art/raw/stadiums/classic/night/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 19.3 | `art/raw/stadiums/classic/night/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 19.4 | `art/raw/stadiums/classic/night/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
-| ⬜ لم يتم العمل عليه | حمزة | 19.5 | `art/raw/stadiums/classic/night/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.1 | `art/raw/stadiums/classic/night/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.2 | `art/raw/stadiums/classic/night/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.3 | `art/raw/stadiums/classic/night/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.4 | `art/raw/stadiums/classic/night/behind-goal.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
+| ✅ مكتمل | سليمان | 19.5 | `art/raw/stadiums/classic/night/corner.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.1 | `art/raw/stadiums/classic/snow/shot.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.2 | `art/raw/stadiums/classic/snow/run.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |
 | ⬜ لم يتم العمل عليه | حمزة | 20.3 | `art/raw/stadiums/classic/snow/goal-front.jpg` | [`02-stadium-var.md`](art/images/02-stadium-var.md) |

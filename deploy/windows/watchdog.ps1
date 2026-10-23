@@ -13,7 +13,7 @@ function Log($text) { Add-Content -Path $log -Value ("{0:yyyy-MM-dd HH:mm:ss} {1
 $flag = "$backend\storage\app\maintenance.flag"
 if ((Test-Path $flag) -and ((Get-Item $flag).LastWriteTime -gt (Get-Date).AddHours(-2))) { exit 0 }
 
-foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches') {
+foreach ($task in 'Legends Web', 'Legends Live', 'Legends Queue', 'Legends Matches', 'Legends Replica') {
     $t = Get-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue
     if ($t -and $t.State -ne 'Running') {
         Log "$task was $($t.State): starting it"

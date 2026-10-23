@@ -31,6 +31,11 @@ REVIEW = {
     },
 }
 
+# The five full voices (2026-10-23): every clip of catalog.tsv in each folder, by file name only.
+# Checked by machine: all 428 present in each, no clipping, no long silence, speaking pace even.
+# Which one the game keeps waits on the owner (they are named after real commentators).
+from arabic_voice import VOICES  # noqa: E402
+
 import datetime as _dt
 REVIEW_TIME = _dt.datetime.fromisoformat(REVIEW['date'] + 'T23:59:59').timestamp()
 
@@ -64,7 +69,8 @@ def sfx():
 
 def status(folder, name):
     key = folder.split('/', 1)[-1] + '/' + name if folder.startswith('ar/') else 'sfx/' + name
-    here = os.path.splitext(name)[0] in present(folder)
+    stem = os.path.splitext(name)[0]
+    here = stem in present(folder) or (folder.startswith('ar/') and any(stem in present(v) for v in VOICES))
     if key in REVIEW['redo']:
         # recorded again after the review: waiting to be heard
         return ('check', 'سُجّل من جديد بعد المراجعة، وينتظر المراجعة.') if here else ('redo', REVIEW['redo'][key])

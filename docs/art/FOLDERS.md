@@ -299,9 +299,9 @@
 | الدفعة | المجلد | من | ✅ | ⏳ | 🔁 | ⬜ | الرسالة |
 |---|---|---|---|---|---|---|---|
 | 1 | `stadiums/arena/night/` | حمزة | 16 | 0 | 0 | 0 | مكتمل |
-| 2 | `stadiums/arena/day/` | حمزة | 0 | 5 | 0 | 0 | مكتمل |
-| 2 | `stadiums/arena/rain/` | حمزة | 0 | 0 | 0 | 5 | [`stadiums-arena-rain.md`](folders/stadiums-arena-rain.md) |
-| 3 | `stadiums/classic/night/` | حمزة | 0 | 0 | 0 | 5 | [`stadiums-classic-night.md`](folders/stadiums-classic-night.md) |
+| 2 | `stadiums/arena/day/` | حمزة | 5 | 0 | 0 | 0 | مكتمل |
+| 2 | `stadiums/arena/rain/` | حمزة | 5 | 0 | 0 | 0 | مكتمل |
+| 3 | `stadiums/classic/night/` | حمزة | 5 | 0 | 0 | 0 | مكتمل |
 | 3 | `stadiums/classic/snow/` | حمزة | 0 | 0 | 0 | 5 | [`stadiums-classic-snow.md`](folders/stadiums-classic-snow.md) |
 | 3 | `stadiums/gulf/dusk/` | حمزة | 0 | 0 | 0 | 16 | [`stadiums-gulf-dusk.md`](folders/stadiums-gulf-dusk.md) |
 | 4 | `stadiums/gulf/heat/` | حمزة | 0 | 0 | 0 | 5 | [`stadiums-gulf-heat.md`](folders/stadiums-gulf-heat.md) |

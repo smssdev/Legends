@@ -51,6 +51,7 @@ watch(() => route.fullPath, () => (more.value = false))
           <span v-if="s.dev" class="rounded-pill bg-gold/15 px-2 text-xs text-gold">للمطور</span>
         </RouterLink>
       </nav>
+      <RouterLink v-if="auth.user?.role === 'admin'" to="/admin" class="flex min-h-touch items-center gap-2 rounded-lg px-3 font-semibold text-text-soft hover:bg-surface">لوحة الإدارة</RouterLink>
       <RouterLink v-if="auth.user" to="/wallet" class="flex min-h-touch items-center gap-2 rounded-lg px-3 font-semibold text-text-soft hover:bg-surface" aria-label="المحفظة">
         <img src="/brand/coin.svg" alt="" class="size-6" />
         <span class="flex-1">المحفظة</span>

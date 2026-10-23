@@ -21,6 +21,7 @@
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
+      <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
@@ -196,7 +197,7 @@ import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
-import { Commentator, type Lang } from '../match/voice'
+import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -225,6 +226,8 @@ const soundOn = ref(false)
 const pitch = ref<any>()
 const sound = new MatchSound()
 const voice = new Commentator()
+// The crowd steps back under the commentator's voice [Sprint 35].
+voice.onTalk = (talking) => sound.duck(talking)
 const commentary = ref<Lang | 'off'>(readPref())
 const intro = ref(true)
 const highlighting = ref(false)
@@ -477,6 +480,9 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (live.value && animate && lastGoal && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
   lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
+  // The stands sing: after a goal, and now and then in a quiet spell (every 13 minutes of play) [Sprint 35].
+  if (animate && t.events.some((e) => e.type === 'goal')) sound.chant(6)
+  else if (animate && t.moment?.kind === 'quiet' && t.minute?.[0] % 13 === 7) sound.chant()
   pendingReveal = () => tell(t, animate)
   if (animate) pitch.value?.play(t, startAt)
   else reveal()
@@ -765,6 +771,17 @@ function toggleCommentary() {
   commentary.value = ({ en: 'ar', ar: 'off', off: 'en' } as const)[commentary.value]
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
+}
+// The Arabic voice: the first recording or one of the five full voices [audio review 2026-10-23].
+const arVoice = ref<ArVoice>(readArVoice())
+voice.setArVoice(arVoice.value)
+function nextArVoice() {
+  arVoice.value = AR_VOICES[(AR_VOICES.indexOf(arVoice.value) + 1) % AR_VOICES.length]
+  voice.setArVoice(arVoice.value)
+  try { localStorage.setItem('legends.arVoice', arVoice.value) } catch {}
+}
+function readArVoice(): ArVoice {
+  try { const v = localStorage.getItem('legends.arVoice') as ArVoice; return AR_VOICES.includes(v) ? v : '' } catch { return '' }
 }
 function readPref(): Lang | 'off' {
   try { const v = localStorage.getItem('legends.commentary'); return v === 'ar' || v === 'off' ? v : 'en' } catch { return 'en' }

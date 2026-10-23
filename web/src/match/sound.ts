@@ -5,6 +5,9 @@
 export class MatchSound {
   private ctx: AudioContext | null = null
   private crowd: GainNode | null = null
+  // The crowd goes down while the commentator talks, and back after [MATCH_VIEW 5, Sprint 35].
+  private duckGain: GainNode | null = null
+  private chanting = 0
   private master: GainNode | null = null
   muted = false
 
@@ -33,8 +36,65 @@ export class MatchSound {
     band.Q.value = 0.6
     this.crowd = ctx.createGain()
     this.crowd.gain.value = 0.25
-    src.connect(band).connect(this.crowd).connect(this.master)
+    this.duckGain = ctx.createGain()
+    src.connect(band).connect(this.crowd).connect(this.duckGain).connect(this.master)
     src.start()
+  }
+
+  /** The commentator starts or stops talking: the crowd steps back under his voice. */
+  duck(talking: boolean) {
+    if (!this.duckGain || !this.ctx) return
+    this.duckGain.gain.setTargetAtTime(talking ? 0.45 : 1, this.ctx.currentTime, talking ? 0.08 : 0.5)
+  }
+
+  /**
+   * A chant from the stands: hands clapping a 3-and-2 rhythm over a low hum of voices, a few bars long. Made
+   * here like the rest of the crowd, so there is nothing to license. Ducked with the crowd under the commentator.
+   */
+  chant(after = 0, bars = 3) {
+    if (!this.ctx || !this.duckGain || this.chanting > this.ctx.currentTime + after) return
+    const ctx = this.ctx
+    const beat = 0.32
+    const start = ctx.currentTime + 0.05 + after
+    const length = bars * 8 * beat
+    this.chanting = start + length
+    // The voices: three low notes together, swelling in and out.
+    const hum = ctx.createGain()
+    hum.gain.setValueAtTime(0, start)
+    hum.gain.linearRampToValueAtTime(0.05, start + 0.6)
+    hum.gain.setValueAtTime(0.05, start + length - 0.6)
+    hum.gain.linearRampToValueAtTime(0, start + length)
+    const low = ctx.createBiquadFilter()
+    low.type = 'lowpass'
+    low.frequency.value = 900
+    hum.connect(low).connect(this.duckGain)
+    for (const f of [196, 247, 294]) {
+      const o = ctx.createOscillator()
+      o.type = 'sawtooth'
+      o.frequency.value = f
+      o.detune.value = Math.random() * 14 - 7
+      o.connect(hum)
+      o.start(start)
+      o.stop(start + length + 0.1)
+    }
+    // The hands: noise bursts on the 3-and-2 rhythm of every bar.
+    const noise = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate)
+    const d = noise.getChannelData(0)
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length)
+    for (let b = 0; b < bars; b++) {
+      for (const step of [0, 2, 4, 5, 6]) {
+        const t = start + (b * 8 + step) * beat
+        const src = ctx.createBufferSource()
+        src.buffer = noise
+        const band = ctx.createBiquadFilter()
+        band.type = 'bandpass'
+        band.frequency.value = 1600
+        const g = ctx.createGain()
+        g.gain.value = 0.35
+        src.connect(band).connect(g).connect(this.duckGain)
+        src.start(t)
+      }
+    }
   }
 
   setMuted(muted: boolean) {

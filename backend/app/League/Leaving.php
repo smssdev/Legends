@@ -11,8 +11,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * A coach leaves a league [PLAN 2.1, 2.2]: kicked by the owner, away too long, or (later) resigned.
  * The club goes back to a bot as it is (squad, money, place), free for another coach, and the coach
- * cannot come back to the same league this season. Pending offers are cancelled here once the market
- * has them (Sprint 24); training and stadium timers stay with the club.
+ * cannot come back to the same league this season. His open offers and listings are cancelled, and the
+ * training slots empty (a bot does not train); a stadium part under way finishes with the club.
  */
 class Leaving
 {
@@ -34,6 +34,12 @@ class Leaving
             }
             DB::table('clubs')->where('id', $membership->club_id)->where('user_id', $membership->user_id)
                 ->update(['user_id' => null, 'updated_at' => $now]);
+            // A bot keeps no deals: the coach's open offers (made or received) and his listings go [Sprint 37].
+            DB::table('transfer_offers')->where('status', 'pending')
+                ->where(fn ($q) => $q->where('from_club_id', $membership->club_id)->orWhere('to_club_id', $membership->club_id))
+                ->update(['status' => 'cancelled', 'decided_at' => $now, 'updated_at' => $now]);
+            DB::table('transfer_listings')->where('club_id', $membership->club_id)->delete();
+            DB::table('training_slots')->where('club_id', $membership->club_id)->delete();
             // The coach is told why [Sprint 22 B2]; one who resigned or deleted the account knows.
             if (in_array($reason, ['absent', 'kicked'], true)) {
                 Inbox::send($membership->user_id, $reason === 'absent' ? 'left_absent' : 'kicked', [

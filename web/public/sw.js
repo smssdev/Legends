@@ -1,6 +1,7 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
-const VERSION = 'legends-v1'
+// Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
+const VERSION = 'legends-v2'
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -32,4 +33,23 @@ self.addEventListener('fetch', (e) => {
       caches.match(e.request).then((hit) => hit ?? fetch(e.request).then((r) => (r.ok && caches.open(VERSION).then((c) => c.put(e.request, r.clone())), r))),
     )
   }
+})
+
+// A notification from the server: { title, body, link, tag } [Sprint 36].
+self.addEventListener('push', (e) => {
+  let n = {}
+  try { n = e.data ? e.data.json() : {} } catch { n = { title: 'الأساطير', body: e.data?.text() ?? '' } }
+  e.waitUntil(self.registration.showNotification(n.title || 'الأساطير', {
+    body: n.body || '', tag: n.tag, icon: '/icon-192.png', badge: '/icon-192.png', dir: 'rtl', lang: 'ar', data: { link: n.link || '/' },
+  }))
+})
+
+// The tap: the open tab goes to the screen, or a new one opens on it.
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close()
+  const link = new URL(e.notification.data?.link || '/', location.origin).href
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((tabs) => {
+    const tab = tabs.find((t) => t.url.startsWith(location.origin))
+    return tab ? tab.navigate(link).then((t) => t?.focus()) : self.clients.openWindow(link)
+  }))
 })

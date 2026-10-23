@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -162,6 +164,30 @@ Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'
     Route::get('unread', 'unread');
     Route::post('read-all', 'readAll');
     Route::post('{message}/read', 'read')->whereNumber('message');
+});
+
+// The admin panel [Sprint 37]: the admin only, and after the two-step code (from the site's session).
+Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->controller(AdminController::class)->group(function () {
+    Route::get('2fa', 'status');
+    Route::post('2fa/setup', 'setup');
+    Route::post('2fa/confirm', 'confirm')->middleware('throttle:10,1,admin-2fa');
+    Route::post('2fa/verify', 'verify')->middleware('throttle:10,1,admin-2fa');
+    Route::middleware('admin')->group(function () {
+        Route::get('overview', 'overview');
+        Route::get('users', 'users');
+        Route::get('leagues', 'leagues');
+        Route::get('backups', 'backups');
+        Route::post('backups', 'backupNow');
+        Route::get('commentary', 'commentary');
+    });
+});
+
+// Notifications [Sprint 36]: the kinds wanted and this browser's subscription.
+Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notifications'])->controller(NotificationController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::put('/', 'update');
+    Route::post('subscriptions', 'subscribe');
+    Route::delete('subscriptions', 'unsubscribe');
 });
 
 // The coins wallet [Sprint 34].
