@@ -61,6 +61,7 @@ jobs:
       - run: php artisan sim:knobs --n=300
       - run: php artisan sim:matrix --n=100
       - run: php artisan sim:golden
+      - run: php artisan sim:training
 
   arm:
     name: Engine on ARM (golden matches)
