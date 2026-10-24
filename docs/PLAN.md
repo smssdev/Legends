@@ -341,7 +341,7 @@ unity/
 
 | # | الخطوة | من | أين وكيف |
 |---|---|---|---|
-| 1 | حساب Backblaze | سليمان | https://www.backblaze.com/sign-up/cloud-storage. لو طلب بطاقة: الخطوة 4 تمنع أي خصم |
+| 1 | حساب Backblaze | سليمان | https://www.backblaze.com/sign-up/cloud-storage: الصفحة تبدو صفحة دخول، والتسجيل منها نفسها: اكتب بريدك ← **Get started for free** ← افتح رابط التأكيد من بريدك **في نفس المتصفح** ← كلمة مرور، والمنطقة (**EU Central** الأقرب لنا)، والموافقة ← **Create Account**. لو طلب بطاقة: الخطوة 4 تمنع أي خصم |
 | 2 | مكان التخزين (Bucket) | سليمان | B2 ← **Buckets** ← **Create a Bucket**: الاسم مثل `legends-save-` ثم أرقام (فريد عالمياً)، و**Private**، وObject Lock مطفأ. ثم انسخ **Endpoint** الظاهر تحته (مثل `s3.us-east-005.backblazeb2.com`) |
 | 3 | مفتاح الدخول | سليمان | **Application Keys** ← **Add a New Application Key**: الاسم `legends-render`، وAllow access to Bucket: الذي صنعته فقط، و**Read and Write**. ثم انسخ **keyID** و**applicationKey** فوراً، لأنه يظهر مرة واحدة |
 | 4 | سقف الدفع صفر | سليمان | **Caps & Alerts**: كل الأسقف اليومية (Storage وDownload وClass B وClass C) على **$0** |
