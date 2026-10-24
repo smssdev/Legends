@@ -8,3 +8,13 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/v1/sim/leagues
     autoDeploy: true
+    # Optional, set in the service's Environment (deploy/render/start.sh): real emails through Gmail, and Google sign-in.
+    envVars:
+      - key: GMAIL_ADDRESS
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
