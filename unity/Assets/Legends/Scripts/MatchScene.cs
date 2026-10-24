@@ -53,7 +53,7 @@ namespace Legends
                 var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 ball.name = "Ball";
                 ball.transform.SetParent(transform, false);
-                ball.transform.localScale = Vector3.one * 0.22f;
+                ball.transform.localScale = Vector3.one * 0.32f;   // a real ball is 0.22 m: a little bigger reads on TV
                 if (ballMaterial != null) ball.GetComponent<Renderer>().sharedMaterial = ballMaterial;
                 Destroy(ball.GetComponent<Collider>());
                 Ball = ball.transform;
@@ -80,12 +80,10 @@ namespace Legends
         void Draw(MatchMinute m, float t)
         {
             if (m.Frames.Count == 0) return;
-            float at = t * (m.Frames.Count - 1);
-            int i = Mathf.Clamp((int)at, 0, Mathf.Max(0, m.Frames.Count - 2));
+            Segment(m.Frames.Count, t, out int i, out float k);
             var a = m.Frames[i];
             var b = m.Frames[Mathf.Min(i + 1, m.Frames.Count - 1)];
-            float k = Mathf.SmoothStep(0, 1, at - i);
-            bool flip = m.Period == 2 || m.Period == 4;   // the ends change at half time
+            bool flip = Flipped(m.Period);
 
             foreach (var kv in players)
             {
@@ -105,8 +103,24 @@ namespace Legends
             }
 
             var ball = Vector3.Lerp(a.Ball, b.Ball, k);
-            Ball.localPosition = World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (0.11f + ball.z / 10f);
+            Ball.localPosition = World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (0.16f + ball.z / 10f);
         }
+
+        /// <summary>How far through the current minute's shot, 0 to 1 (the tests compare the scene with the frames at it).</summary>
+        public float Progress => Current == null ? 0f : Mathf.Clamp01(elapsedMs / Current.Ms);
+
+        /// <summary>
+        /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, eased by k (0..1).
+        /// </summary>
+        public static void Segment(int frames, float t, out int i, out float k)
+        {
+            float at = Mathf.Clamp01(t) * (frames - 1);
+            i = Mathf.Clamp((int)at, 0, Mathf.Max(0, frames - 2));
+            k = frames < 2 ? 0f : Mathf.SmoothStep(0, 1, Mathf.Clamp01(at - i));
+        }
+
+        /// <summary>The ends change at half time, and again in extra time's second half.</summary>
+        public static bool Flipped(int period) => period == 2 || period == 4;
 
         /// <summary>Decimetres on the 1050 x 680 pitch to metres in the scene, the centre spot at the origin.</summary>
         public static Vector3 World(Vector2 dm, bool flip)

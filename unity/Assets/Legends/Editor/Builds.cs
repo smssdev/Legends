@@ -14,6 +14,8 @@ namespace Legends.EditorTools
 
         public static void WebGL()
         {
+            PlayerSettings.companyName = "Legends";
+            PlayerSettings.productName = "Legends";
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
             Run(BuildTarget.WebGL, "Builds/WebGL");

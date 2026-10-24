@@ -587,3 +587,33 @@
 - **ملفات الخطة القديمة:** `SPRINTS.md`، و`SCHEDULE.md`، و`SLIEMAN.md`، و`HAMZA.md`، وملفات السبرنتات، و`ENGINE.md`، و`MATCH_VIEW.md`، و`MOMENTS.md`، و`HOME_SERVER.md`، و`RUN.md`، والمواصفات، وقوائم الصوت، وملفات README. خلاصتها في هذا الملف و`PLAN.md`، وكلها في تاريخ git.
 - **أدواتها:** `tools/plan/`، و`tools/team.py`، و`tools/commentary/todo.py`.
 - **مهام GitHub المفتوحة (195):** أُغلقت. المرجع `PLAN.md`.
+
+---
+
+## Sprint 2: Unity، أول تشغيل والأساس والربط (جارٍ، 2026-10-24)
+
+**ما بُني (كله في `unity/`):**
+- **`build.ps1`:** يجد Unity أينما ثبّته Unity Hub (C أو «Installs location» مثل `D:\unity`)، وخطوات جديدة: `where` (أي Unity.exe)، و`capture`، و`test`، و`serve`، و`open`.
+- **`Editor/Setup.cs`:** يضيف الحزم السبع ويخرج بـ 0 حتى بعد إعادة الترجمة التي يسببها إضافتها (الحالة في `SessionState`).
+- **`Editor/QualityLevels.cs` (U4):** URP بثلاثة مستويات (Low وMedium وHigh) في `Assets/Legends/Quality/`، والكمبيوتر والويب على High وAndroid على Medium. و`demo` يضبطها قبل بناء الأرينا فتُبنى المواد بـ shaders الـ URP، وشدة الكشافات لـ URP في `ArenaBuilder`.
+- **الكاميرا والكرة:** كاميرا البث أعلى وأبعد (`BroadcastCamera`)، والكرة 32 سم بتوهج خفيف (`MatchScene`).
+- **`Editor/Capture.cs` (U5):** يشغّل المباراة المسجلة بسرعة 8 ويلتقط كاميرا البث 1600×900 عند 5 و20 و45 و70 و90 إلى `unity/Captures/`.
+- **`Editor/OpenMatch.cs`:** يفتح المحرر على `Scenes/Match.unity` (`build.ps1 open`، والقائمة Legends).
+- **الوحدات (asmdef):** `Legends` (Scripts)، و`Legends.Editor`، و`Legends.Tests.EditMode`، و`Legends.Tests.PlayMode`.
+- **الاختبارات (U7):** `Tests/EditMode/FeedTests.cs` (12): قارئ JSON والعربية، والإعداد والدقيقة بحقول الملحق أ، والديسيمتر إلى متر، والانعكاس، والاستيفاء، والمباراة المسجلة كاملة (93 دقيقة بستة إطارات، 1-1). و`Tests/PlayMode/PlaybackTests.cs` (3): كل لاعب والكرة في مكانهما من الإطارات في كل إطار رسم (بفارق أقل من 5 سم)، في الشوط الأول والثاني المعكوس، والدقائق بالترتيب.
+- **نسخة الويب (U8):** `build.ps1 webgl` ثم `build.ps1 serve` (خادم Python على `http://localhost:8090`).
+
+**كيف تجربه (على جهاز فيه Unity 6.3 LTS):**
+1. `powershell -ExecutionPolicy Bypass -File unity\build.ps1 setup` ثم `demo`.
+2. `build.ps1 test`: المتوقع `12 passed` و`3 passed` و`All tests green.`
+3. `build.ps1 capture`: خمس صور في `unity\Captures\`، وفي السجل النتيجة واللحظة عند كل صورة.
+4. `build.ps1 open` ثم Play: المباراة تتحرك، والنتيجة والدقيقة في الزاوية.
+5. `build.ps1 webgl` (أول مرة 15 إلى 40 دقيقة) ثم `build.ps1 serve`: نفس المباراة في المتصفح.
+
+**يراجعه حمزة:** يفتح الصور في `unity/Captures/`، ويقارنها بحركة اللاعبين في `open`، ويشغّل نسخة الويب.
+
+**إصلاحات معه في نفس اليوم:**
+- **Codespaces:** الدخول والجلسة على العنوان العام، والبريد عبر Gmail وجوجل من أسرار Codespaces، والطابور والمجدول و`matches:run` (`.devcontainer/env.sh` و`start.sh`، والقسم «الحسابات في Codespaces» أعلاه).
+- **Render:** نفس الإصلاح وقت التشغيل (`deploy/render/start.sh`)، والإعدادات تُحفظ بعد معرفة العنوان لا وقت البناء (`Dockerfile`).
+
+**بقي:** B1 (`/matches/{id}/scene`)، وتجربة U6 إن احتجناها، والـ PR. والتفصيل في `PLAN.md` تحت Sprint 2 «من أين نكمل».

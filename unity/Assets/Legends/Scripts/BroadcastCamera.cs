@@ -9,7 +9,9 @@ namespace Legends
     public sealed class BroadcastCamera : MonoBehaviour
     {
         public MatchScene scene;
-        public float height = 22f, back = 48f, follow = 2.5f;
+        // High in the main stand, like a TV gantry: the far touchline and both sides of the ball in the frame,
+        // little empty grass in front (Sprint 2 captures).
+        public float height = 30f, back = 62f, follow = 2.5f;
 
         float x;
 
@@ -19,7 +21,7 @@ namespace Legends
             var ball = scene.Ball.position;
             x = Mathf.Lerp(x, Mathf.Clamp(ball.x, -35f, 35f), follow * Time.unscaledDeltaTime);
             transform.position = new Vector3(x, height, -back);
-            transform.LookAt(new Vector3(x * 0.85f, 0, ball.z * 0.3f));
+            transform.LookAt(new Vector3(x * 0.9f, 0, 6f + ball.z * 0.35f));
         }
     }
 }
