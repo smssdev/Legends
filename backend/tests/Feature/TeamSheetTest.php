@@ -92,8 +92,9 @@ class TeamSheetTest extends TestCase
         $ids = collect($team['players']);
         $keepers = $ids->where('line', 'gk')->pluck('id')->values();
         $field = $ids->where('line', '!=', 'gk')->pluck('id')->values();
-        $starters = array_merge([$keepers[1]], $field->take(10)->all());
-        $bench = array_merge([$keepers[0]], $field->slice(10, 5)->values()->all());
+        $starters = $this->byLine($team['players'], '3-5-2B', $keepers[1]);
+        $field = $field->diff($starters)->values()->merge(array_slice($starters, 1));
+        $bench = array_merge([$keepers[0]], $field->take(5)->all());
 
         $saved = $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $starters, 'bench' => $bench])->assertOk()->json('lineup');
         $this->assertSame(['3-5-2B', false, $starters, $bench], [$saved['formation'], $saved['auto'], $saved['starters'], $saved['bench']]);
@@ -102,11 +103,19 @@ class TeamSheetTest extends TestCase
         $bad = fn (array $body) => $this->putJson("{$this->url}/lineup", $body + ['formation' => '4-4-2A', 'starters' => $starters, 'bench' => $bench])->assertUnprocessable();
         $bad(['formation' => '9-9-9'])->assertJsonPath('errors.formation.0', 'هذه الطريقة غير موجودة.');
         $bad(['starters' => array_slice($starters, 0, 10)])->assertJsonPath('errors.starters.0', 'التشكيلة 11 لاعباً بالضبط.');
-        $bad(['starters' => array_merge([$field[0], $keepers[1]], $field->slice(1, 9)->values()->all())])->assertJsonPath('errors.starters.0', 'خانة الحارس لحارس مرمى.');
-        $bad(['bench' => array_merge($bench, [$starters[3]])])->assertJsonPath('errors.starters.0', 'لاعب واحد لا يكون في خانتين.');
-        $bad(['bench' => array_merge($bench, $field->slice(15)->values()->all(), [$keepers[0], $field[0]])])->assertJsonPath('errors.bench.0', 'الاحتياط 7 لاعبين على الأكثر.');
+        $bad(['bench' => [], 'starters' => array_merge([$field[0], $keepers[1]], $field->slice(1, 9)->values()->all())])->assertJsonPath('errors.starters.0', 'خانة الحارس لحارس مرمى.');
+        $bad(['formation' => '3-5-2B', 'bench' => array_merge($bench, [$starters[3]])])->assertJsonPath('errors.starters.0', 'لاعب واحد لا يكون في خانتين.');
+        $bad(['formation' => '3-5-2B', 'bench' => array_merge($bench, $field->slice(5, 4)->values()->all())])->assertJsonPath('errors.bench.0', 'الاحتياط 7 لاعبين على الأكثر.');
         $other = DB::table('players')->where('club_id', '!=', $this->league['my_club_id'])->value('id');
-        $bad(['bench' => [$other]])->assertJsonPath('errors.starters.0', 'كل اللاعبين يجب أن يكونوا من فريقك.');
+        $bad(['formation' => '3-5-2B', 'bench' => [$other]])->assertJsonPath('errors.starters.0', 'كل اللاعبين يجب أن يكونوا من فريقك.');
+
+        // A striker stays in attack: never in midfield or defence [X5].
+        $wrong = $starters;
+        $mid = array_search('mid', array_column(FormationBook::slots('3-5-2B'), 'line'), true);
+        $striker = $ids->first(fn ($p) => $p['line'] === 'att' && ! str_contains((string) $p['alt_positions'], 'M') && ! in_array($p['id'], $starters, true));
+        $wrong[$mid] = $striker['id'];
+        $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $wrong, 'bench' => []])->assertUnprocessable()
+            ->assertJsonPath('errors.starters.0', "{$striker['name']} ({$striker['position']}) لا يلعب في الوسط: ضع كل لاعب في خطه، ويتبادل المراكز داخله.");
 
         // Back to automatic.
         $this->deleteJson("{$this->url}/lineup")->assertOk()->assertJsonPath('lineup.auto', true);
@@ -136,8 +145,46 @@ class TeamSheetTest extends TestCase
 
         // A saved custom formation is one a lineup can use.
         $team = $this->getJson($this->url)->json();
-        $this->putJson("{$this->url}/lineup", ['formation' => 'custom:1', 'starters' => $team['lineup']['starters'], 'bench' => $team['lineup']['bench']])
+        $keeper = collect($team['players'])->firstWhere('line', 'gk')['id'];
+        $this->putJson("{$this->url}/lineup", ['formation' => 'custom:1', 'starters' => $this->byLine($team['players'], FormationBook::custom($cells), $keeper), 'bench' => []])
             ->assertOk()->assertJsonPath('lineup.formation', 'custom:1')->assertJsonPath('lineup.lines.att', 3);
+    }
+
+    public function test_the_coach_drags_players_anywhere_inside_their_lines_band(): void
+    {
+        $this->actingAs($this->owner);
+        $team = $this->getJson($this->url)->json();
+        $keeper = collect($team['players'])->firstWhere('line', 'gk')['id'];
+        $starters = $this->byLine($team['players'], '4-3-3A', $keeper);
+        $places = array_map(fn ($s) => [$s['x'], $s['y']], array_slice(FormationBook::slots('4-3-3A'), 1));
+        // The striker (slot 9 of ten) drifts to the right wing; the holding midfielder (5) pushes up behind him.
+        $places[8] = [650, 600];
+        $places[4] = [540, 340];
+        $lineup = $this->putJson("{$this->url}/lineup", ['formation' => '4-3-3A', 'starters' => $starters, 'bench' => [], 'positions' => $places])->assertOk()->json('lineup');
+        $this->assertSame(['RW', 650, 600], [$lineup['slots'][9]['role'], $lineup['slots'][9]['x'], $lineup['slots'][9]['y']]);
+        $this->assertSame('CAM', $lineup['slots'][5]['role']);
+        // Kept: the same places come back.
+        $this->assertSame('RW', $this->getJson($this->url)->json('lineup.slots.9.role'));
+
+        // Out of his line's band: the striker dropping to the halfway line.
+        $places[8] = [450, 340];
+        $this->putJson("{$this->url}/lineup", ['formation' => '4-3-3A', 'starters' => $starters, 'bench' => [], 'positions' => $places])
+            ->assertUnprocessable()->assertJsonPath('errors.positions.0', 'لاعب الهجوم يتحرك داخل منطقة خطه فقط.');
+    }
+
+    /** Eleven for a formation, each in his own line: the keeper given, then the best of each line in turn. */
+    private function byLine(array $players, string|array $formation, int $keeper): array
+    {
+        $slots = is_string($formation) ? FormationBook::slots($formation) : $formation;
+        $used = [$keeper => true];
+        $out = [$keeper];
+        foreach (array_slice($slots, 1) as $slot) {
+            $p = collect($players)->first(fn ($p) => ! isset($used[$p['id']]) && $p['line'] === $slot['line']);
+            $used[$p['id']] = true;
+            $out[] = $p['id'];
+        }
+
+        return $out;
     }
 
     public function test_the_coach_picks_the_takers_among_the_starters(): void

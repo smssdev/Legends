@@ -23,6 +23,31 @@ class TeamSheet
 
     public const CUSTOM_MAX = 3;
 
+    /** The line of each position [X5]: a player plays in his own line, or in one his other positions belong to. */
+    public const POSITION_LINE = [
+        'GK' => 'gk', 'CB' => 'def', 'LB' => 'def', 'RB' => 'def', 'LWB' => 'def', 'RWB' => 'def',
+        'CDM' => 'mid', 'CM' => 'mid', 'CAM' => 'mid', 'LM' => 'mid', 'RM' => 'mid',
+        'LW' => 'att', 'RW' => 'att', 'ST' => 'att', 'CF' => 'att',
+    ];
+
+    public const LINE_NAME = ['gk' => 'حراسة المرمى', 'def' => 'الدفاع', 'mid' => 'الوسط', 'att' => 'الهجوم'];
+
+    /** The lines a player may stand in: his position's, and his other positions' (a CB who also plays CDM). */
+    public static function linesOf(array $p): array
+    {
+        $lines = [$p['line'] => true];
+        foreach (array_map('trim', explode(',', (string) ($p['alt'] ?? ''))) as $alt) {
+            if (isset(self::POSITION_LINE[$alt])) {
+                $lines[self::POSITION_LINE[$alt]] = true;
+            }
+        }
+
+        return array_keys($lines);
+    }
+
+    /** Out of his lines: so far out that "تحسين" puts him there only when nobody else is left. */
+    public const OFF_LINE = 1000000;
+
     /** The squad in the engine's shape (App\Engine\MatchSetup::player), with the league's own numbers. */
     public static function squad(Club $club): array
     {
@@ -73,6 +98,14 @@ class TeamSheet
         if (! $saved || ! isset($formations[$saved->formation])) {
             return self::best($club) + ['auto' => true];
         }
+        $slots = $formations[$saved->formation];
+        if ($saved->positions) {
+            try {
+                $slots = FormationBook::moved($slots, json_decode($saved->positions, true));
+            } catch (\InvalidArgumentException) {
+                // A formation changed since: its own places.
+            }
+        }
         $at = DB::table('lineup_slots')->where('lineup_id', $saved->id)->pluck('player_id', 'position');
         $mine = DB::table('players')->where('club_id', $club->id)->pluck('id')->flip();
         $starters = [];
@@ -81,7 +114,7 @@ class TeamSheet
         }
         $bench = $at->filter(fn ($id, $pos) => $pos >= 11 && isset($mine[$id]))->sortKeys()->values()->map(fn ($id) => (int) $id)->all();
 
-        return ['formation' => $saved->formation, 'slots' => $formations[$saved->formation], 'starters' => $starters, 'bench' => $bench, 'auto' => false];
+        return ['formation' => $saved->formation, 'slots' => $slots, 'starters' => $starters, 'bench' => $bench, 'auto' => false];
     }
 
     /**
@@ -141,7 +174,8 @@ class TeamSheet
         foreach ($slots as $i => $slot) {
             $fit = ['line' => $slot['line'], 'fits' => self::fits($slot['role'])];
             foreach ($players as $p) {
-                $pairs[] = [self::value($p) - AutoPick::misfit($p, $fit), $i, $p['id']];
+                $off = in_array($slot['line'], self::linesOf($p), true) ? 0 : self::OFF_LINE;
+                $pairs[] = [self::value($p) - AutoPick::misfit($p, $fit) - $off, $i, $p['id']];
             }
         }
         usort($pairs, fn ($a, $b) => $b[0] <=> $a[0] ?: $a[1] <=> $b[1] ?: $a[2] <=> $b[2]);
@@ -170,13 +204,25 @@ class TeamSheet
         ][$role];
     }
 
-    /** Save the coach's lineup: a formation, eleven players in its slots, and up to seven on the bench. */
-    public static function save(Club $club, string $formation, array $starters, array $bench): void
+    /**
+     * Save the coach's lineup: a formation, eleven players in its slots, and up to seven on the bench. The coach may
+     * drag the ten outfield places anywhere inside their lines' bands ($positions) [X5], and every player stands in
+     * his own line: a striker on the wing, never in midfield or defence.
+     */
+    public static function save(Club $club, string $formation, array $starters, array $bench, ?array $positions = null): void
     {
         MatchPrep::assertOpen($club);
         $formations = self::formations($club);
         if (! isset($formations[$formation])) {
             throw ValidationException::withMessages(['formation' => 'هذه الطريقة غير موجودة.']);
+        }
+        $slots = $formations[$formation];
+        if ($positions !== null) {
+            try {
+                $slots = FormationBook::moved($slots, $positions);
+            } catch (\InvalidArgumentException $e) {
+                throw ValidationException::withMessages(['positions' => $e->getMessage()]);
+            }
         }
         if (count($starters) !== 11 || in_array(null, $starters, true)) {
             throw ValidationException::withMessages(['starters' => 'التشكيلة 11 لاعباً بالضبط.']);
@@ -197,9 +243,16 @@ class TeamSheet
         if ($squad[$starters[0]]['line'] !== 'gk') {
             throw ValidationException::withMessages(['starters' => 'خانة الحارس لحارس مرمى.']);
         }
-        DB::transaction(function () use ($club, $formation, $starters, $bench) {
+        foreach ($starters as $i => $id) {
+            if ($i > 0 && ! in_array($slots[$i]['line'], self::linesOf($squad[$id]), true)) {
+                throw ValidationException::withMessages(['starters' => sprintf('%s (%s) لا يلعب في %s: ضع كل لاعب في خطه، ويتبادل المراكز داخله.',
+                    $squad[$id]['name'], $squad[$id]['pos'], self::LINE_NAME[$slots[$i]['line']])]);
+            }
+        }
+        $moved = $positions === null ? null : json_encode(array_map(fn ($s) => [$s['x'], $s['y']], array_slice($slots, 1)));
+        DB::transaction(function () use ($club, $formation, $starters, $bench, $moved) {
             $now = GameClock::now();
-            DB::table('lineups')->upsert([['club_id' => $club->id, 'formation' => $formation, 'created_at' => $now, 'updated_at' => $now]], ['club_id'], ['formation', 'updated_at']);
+            DB::table('lineups')->upsert([['club_id' => $club->id, 'formation' => $formation, 'positions' => $moved, 'created_at' => $now, 'updated_at' => $now]], ['club_id'], ['formation', 'positions', 'updated_at']);
             $id = DB::table('lineups')->where('club_id', $club->id)->value('id');
             DB::table('lineup_slots')->where('lineup_id', $id)->delete();
             $rows = [];

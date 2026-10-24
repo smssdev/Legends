@@ -5,6 +5,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { currentLeague } from '../../lib/currentLeague'
 
@@ -13,6 +14,8 @@ const leagueId = ref<number | null>(null)
 const t = ref<T | null>(null)
 const saved = ref('')
 const tips = ref<string[]>([])
+// What each part does, behind its "?" [X5].
+const help = ref<Record<string, string>>({})
 const referee = ref<string | null>(null)
 const message = ref('')
 const loaded = ref(false)
@@ -42,7 +45,8 @@ async function load() {
   apply(data!)
   loaded.value = true
 }
-function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null }) {
+function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null; help?: Record<string, string> }) {
+  help.value = d.help ?? help.value
   t.value = { ...(d.tactics as T) }
   saved.value = JSON.stringify(t.value)
   tips.value = d.tips
@@ -80,36 +84,39 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ message }}</p>
 
       <section class="flex flex-col gap-2 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-tips">
-        <h2 id="h-tips" class="text-sm text-text-muted">الأثر المتوقع في المباراة{{ dirty ? ' (يتحدث بعد الحفظ)' : '' }}</h2>
+        <div class="flex flex-wrap items-center justify-between gap-x-2">
+          <h2 id="h-tips" class="text-sm text-text-muted">الأثر المتوقع في المباراة{{ dirty ? ' (يتحدث بعد الحفظ)' : '' }}</h2>
+          <HelpTip :text="help.tips" label="الأثر المتوقع" />
+        </div>
         <ul class="flex flex-col gap-1.5 text-sm">
           <li v-for="(tip, i) in tips" :key="i" class="rounded-lg bg-surface-sunk px-3 py-2">{{ tip }}</li>
         </ul>
       </section>
 
       <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 font-bold">خطة اللعب <span class="text-xs font-normal text-text-muted">(يراها الخصم بعد القفل)</span></legend>
+        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">خطة اللعب <span class="text-xs font-normal text-text-muted">(يراها الخصم بعد القفل)</span><HelpTip :text="help.plan" label="خطة اللعب" /></legend>
         <div class="flex flex-wrap gap-2">
           <button v-for="(label, k) in PLANS" :key="k" type="button" class="h-12 rounded-xl border px-4 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k">{{ label }}</button>
         </div>
       </fieldset>
 
       <section class="flex flex-col gap-4 rounded-xl bg-surface p-4">
-        <label v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
-          <span class="flex items-center justify-between font-bold">{{ s.label }} <span class="font-numbers text-2xl text-gold">{{ t[s.key] }}</span></span>
-          <input v-model.number="t[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" />
+        <div v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
+          <span class="flex flex-wrap items-center justify-between font-bold"><span class="flex items-center gap-1"><label :for="`t-${s.key}`">{{ s.label }}</label><HelpTip :text="help[s.key]" :label="s.label" /></span><span class="font-numbers text-2xl text-gold">{{ t[s.key] }}</span></span>
+          <input :id="`t-${s.key}`" v-model.number="t[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" />
           <span class="flex justify-between text-xs text-text-muted"><span>{{ s.low }}</span><span>{{ s.high }}</span></span>
-        </label>
+        </div>
       </section>
 
       <fieldset>
-        <legend class="mb-2 font-bold">قطع الكرة <span class="text-xs font-normal text-text-muted">(يراه الخصم بعد القفل)</span></legend>
+        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">قطع الكرة <span class="text-xs font-normal text-text-muted">(يراه الخصم بعد القفل)</span><HelpTip :text="help.tackling" label="قطع الكرة" /></legend>
         <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1">
           <button v-for="(label, i) in TACKLING" :key="i" type="button" class="h-12 rounded-lg font-bold" :class="t.tackling === i ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.tackling === i" @click="t.tackling = i">{{ label }}</button>
         </div>
       </fieldset>
 
       <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 font-bold">التمركز</legend>
+        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">التمركز<HelpTip :text="help.lines" label="التمركز" /></legend>
         <div v-for="l in LINES" :key="l.key" class="flex items-center gap-2">
           <span class="flex w-20 shrink-0 items-center gap-1.5 text-sm"><span class="size-2.5 rounded-full" :class="l.color" />{{ l.label }}</span>
           <div class="grid flex-1 grid-cols-3 gap-1 rounded-xl bg-surface p-1">
@@ -119,12 +126,12 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       </fieldset>
 
       <div class="grid gap-2 md:grid-cols-2">
-        <label class="flex min-h-touch cursor-pointer items-center justify-between gap-3 rounded-xl bg-surface p-3">
-          <span><span class="block font-bold">مصيدة التسلل</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span>
-          <input type="checkbox" role="switch" class="size-6 accent-success" :checked="t.trap === 1" @change="t.trap = ($event.target as HTMLInputElement).checked ? 1 : 0" />
-        </label>
-        <div class="flex items-center justify-between gap-3 rounded-xl bg-surface p-3">
-          <span><span class="block font-bold">الرقابة</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span>
+        <div class="flex min-h-touch flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
+          <span class="flex items-center gap-1"><label for="t-trap"><span class="block font-bold">مصيدة التسلل</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></label><HelpTip :text="help.trap" label="مصيدة التسلل" /></span>
+          <input id="t-trap" type="checkbox" role="switch" class="size-6 accent-success" :checked="t.trap === 1" @change="t.trap = ($event.target as HTMLInputElement).checked ? 1 : 0" />
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
+          <span class="flex items-center gap-1"><span><span class="block font-bold">الرقابة</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span><HelpTip :text="help.marking" label="الرقابة" /></span>
           <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1">
             <button v-for="(label, k) in { zone: 'منطقة', man: 'رجل لرجل' }" :key="k" type="button" class="h-10 rounded-md px-3 text-sm font-bold" :class="t.marking === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.marking === k" @click="t.marking = k">{{ label }}</button>
           </div>

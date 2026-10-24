@@ -396,11 +396,16 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [formations, limits]
+                required: [formations, limits, bands, across]
                 properties:
                   formations: { type: array, items: { $ref: '#/components/schemas/Formation' } }
                   limits: { type: object, additionalProperties: { type: array, items: { type: integer } } }
                   grid: { type: object }
+                  bands:
+                    type: object
+                    description: The depth (x) a player of each line may be dragged to, [from, to]
+                    additionalProperties: { type: array, items: { type: integer } }
+                  across: { type: array, items: { type: integer }, description: 'The width (y) a player may be dragged to, [from, to]' }
   /health:
     get:
       tags: [system]
@@ -819,7 +824,7 @@ paths:
     put:
       tags: [team]
       summary: Save my lineup
-      description: A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every rule is checked here with an Arabic message.
+      description: A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every player stands in his own line (or one his other positions belong to), and may be dragged anywhere inside its band (positions); a moved slot takes the role its place gives. Every rule is checked here with an Arabic message.
       requestBody:
         required: true
         content:
@@ -831,6 +836,13 @@ paths:
                 formation: { type: string, example: 4-3-3A }
                 starters: { type: array, items: { type: integer }, minItems: 11, maxItems: 11 }
                 bench: { type: array, items: { type: integer }, maxItems: 7 }
+                positions:
+                  type: array
+                  nullable: true
+                  minItems: 10
+                  maxItems: 10
+                  description: The ten outfield places [x, y] in slot order (the keeper apart), each inside its line's band; null for the formation's own
+                  items: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }
       responses:
         '200': { $ref: '#/components/responses/Team' }
         '403': { $ref: '#/components/responses/Error' }
@@ -2290,11 +2302,15 @@ components:
         application/json:
           schema:
             type: object
-            required: [tactics, tips]
+            required: [tactics, tips, help]
             properties:
               tactics: { $ref: '#/components/schemas/TacticsSet' }
               tips: { type: array, items: { type: string } }
               referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+              help:
+                type: object
+                description: 'What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips'
+                additionalProperties: { type: string }
     Team:
       description: My club and its team sheet
       content:

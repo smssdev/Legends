@@ -125,7 +125,8 @@ class MatchPrep
             $used = array_flip(array_filter($lineup['starters']));
             $slot = $lineup['slots'][$i];
             $fit = ['line' => $slot['line'], 'fits' => TeamSheet::fits($slot['role'])];
-            $score = fn ($p) => $p['a']['ovr'] * 100 - AutoPick::misfit($p, $fit);
+            // His own line first [X5]: another line's player only when none is left.
+            $score = fn ($p) => $p['a']['ovr'] * 100 - AutoPick::misfit($p, $fit) - (in_array($slot['line'], TeamSheet::linesOf($p), true) ? 0 : TeamSheet::OFF_LINE);
             $pick = null;
             foreach ([$lineup['bench'], $squad->keys()->all()] as $pool) {
                 foreach ($pool as $cand) {

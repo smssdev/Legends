@@ -836,6 +836,12 @@ export interface paths {
                                 [key: string]: number[];
                             };
                             grid?: Record<string, never>;
+                            /** @description The depth (x) a player of each line may be dragged to, [from, to] */
+                            bands: {
+                                [key: string]: number[];
+                            };
+                            /** @description The width (y) a player may be dragged to, [from, to] */
+                            across: number[];
                         };
                     };
                 };
@@ -1854,7 +1860,7 @@ export interface paths {
         get?: never;
         /**
          * Save my lineup
-         * @description A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every rule is checked here with an Arabic message.
+         * @description A formation (a book name or custom:N), 11 player ids in its slot order (the goalkeeper first) and up to 7 on the bench. Every player stands in his own line (or one his other positions belong to), and may be dragged anywhere inside its band (positions); a moved slot takes the role its place gives. Every rule is checked here with an Arabic message.
          */
         put: {
             parameters: {
@@ -1872,6 +1878,8 @@ export interface paths {
                         formation: string;
                         starters: number[];
                         bench: number[];
+                        /** @description The ten outfield places [x, y] in slot order (the keeper apart), each inside its line's band; null for the formation's own */
+                        positions?: number[][] | null;
                     };
                 };
             };
@@ -6608,6 +6616,10 @@ export interface components {
                     tips: string[];
                     /** @enum {string|null} */
                     referee?: "lenient" | "medium" | "strict" | null;
+                    /** @description What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips */
+                    help: {
+                        [key: string]: string;
+                    };
                 };
             };
         };

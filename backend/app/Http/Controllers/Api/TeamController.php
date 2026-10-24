@@ -35,6 +35,9 @@ class TeamController extends Controller
             'formations' => collect(FormationBook::names())->map(fn ($n) => $this->formation($n, FormationBook::label($n), FormationBook::slots($n))),
             'limits' => FormationBook::LIMITS,
             'grid' => ['rows' => array_keys(FormationBook::ROWS), 'columns' => array_keys(FormationBook::COLUMNS)],
+            // Where a player may be dragged [X5]: his line's depth band, and across from touchline to touchline.
+            'bands' => FormationBook::BANDS,
+            'across' => FormationBook::ACROSS,
         ]);
     }
 
@@ -74,8 +77,12 @@ class TeamController extends Controller
             'starters.*' => ['nullable', 'integer'],
             'bench' => ['present', 'array'],
             'bench.*' => ['integer'],
+            'positions' => ['sometimes', 'nullable', 'array', 'size:10'],
+            'positions.*' => ['array', 'size:2'],
+            'positions.*.*' => ['integer'],
         ]);
-        TeamSheet::save($club, $data['formation'], array_map(fn ($v) => $v === null ? null : (int) $v, $data['starters']), array_map('intval', $data['bench']));
+        TeamSheet::save($club, $data['formation'], array_map(fn ($v) => $v === null ? null : (int) $v, $data['starters']), array_map('intval', $data['bench']),
+            $data['positions'] ?? null);
 
         return $this->show($request, $league);
     }
@@ -121,7 +128,8 @@ class TeamController extends Controller
         $t = Tactics::of($club);
         $next = $this->nextFixture($club);
 
-        return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness]);
+        return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
+            'help' => Tactics::HELP]);
     }
 
     public function saveTactics(Request $request, League $league): JsonResponse

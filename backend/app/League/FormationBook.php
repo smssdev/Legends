@@ -16,6 +16,17 @@ class FormationBook
 
     public const ROWS = ['def' => 260, 'dm' => 400, 'am' => 530, 'att' => 650];
 
+    /**
+     * The depth band of each line [X5]: a coach drags a player anywhere across the pitch, but only as deep or as high
+     * as his line goes (a striker never drops into midfield). Across: from touchline to touchline.
+     */
+    public const BANDS = ['def' => [180, 350], 'mid' => [360, 580], 'att' => [590, 720]];
+
+    public const ACROSS = [30, 650];
+
+    /** Nearer a touchline than this is a wide role (RB, RM, RW and their left side). */
+    public const WIDE = 140;
+
     /** Players in each line of a custom formation (the goalkeeper apart) [PLAN 2.15]. */
     public const LIMITS = ['def' => [3, 6], 'mid' => [2, 6], 'att' => [1, 5]];
 
@@ -105,6 +116,46 @@ class FormationBook
                 'att' => $edge ? $edge.'W' : 'ST',
             };
             $slots[] = ['role' => $role, 'line' => self::LINE[$role], 'x' => self::ROWS[$row], 'y' => self::COLUMNS[$col]];
+        }
+
+        return $slots;
+    }
+
+    /** The role a place gives within its line: wide or central, and in midfield how deep [X5]. */
+    public static function roleAt(string $line, int $x, int $y): string
+    {
+        $edge = $y >= self::ACROSS[1] + self::ACROSS[0] - self::WIDE ? 'R' : ($y <= self::WIDE ? 'L' : null);
+
+        return match ($line) {
+            'def' => $edge ? $edge.($x >= 300 ? 'WB' : 'B') : 'CB',
+            'mid' => $edge ? $edge.'M' : ($x < 430 ? 'CDM' : ($x >= 520 ? 'CAM' : 'CM')),
+            default => $edge ? $edge.'W' : 'ST',
+        };
+    }
+
+    /**
+     * The slots with the coach's own places [X5]: ten [x, y] for the outfield (the keeper stays in goal), each inside
+     * its line's band. A moved slot takes the role its new place gives; one left where it was keeps its own.
+     *
+     * @throws \InvalidArgumentException with the Arabic reason
+     */
+    public static function moved(array $slots, array $positions): array
+    {
+        if (count($positions) !== count($slots) - 1) {
+            throw new \InvalidArgumentException('أماكن اللاعبين عشرة، والحارس ثابت في مرماه.');
+        }
+        $names = ['def' => 'الدفاع', 'mid' => 'الوسط', 'att' => 'الهجوم'];
+        foreach (array_values($positions) as $i => $at) {
+            $slot = &$slots[$i + 1];
+            [$x, $y] = [(int) ($at[0] ?? -1), (int) ($at[1] ?? -1)];
+            [$from, $to] = self::BANDS[$slot['line']];
+            if ($x < $from || $x > $to || $y < self::ACROSS[0] || $y > self::ACROSS[1]) {
+                throw new \InvalidArgumentException("لاعب {$names[$slot['line']]} يتحرك داخل منطقة خطه فقط.");
+            }
+            if ($x !== $slot['x'] || $y !== $slot['y']) {
+                $slot = ['role' => self::roleAt($slot['line'], $x, $y), 'line' => $slot['line'], 'x' => $x, 'y' => $y];
+            }
+            unset($slot);
         }
 
         return $slots;
