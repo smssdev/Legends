@@ -968,7 +968,8 @@ paths:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     post:
       tags: [market]
-      summary: Sell one of my players to the pool (never below 16 players or 2 keepers)
+      summary: Sell one of my players now (never below 16 players or 2 keepers)
+      description: The instant sale pays his full value (training counted) for 5 coins from the coach's wallet; in a fair league for 10% of his value from the club. To sell without a fee, list him (/transfers/listings).
       requestBody:
         required: true
         content:
@@ -982,6 +983,21 @@ paths:
               schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/quote:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [market]
+      summary: How long the outside buyer takes for one of my players at a price
+      parameters:
+        - { name: player_id, in: query, required: true, schema: { type: integer } }
+        - { name: price, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The range and the wait
+          content:
+            application/json:
+              schema: { type: object, required: [floor, cap, ok, wait_hours], properties: { floor: { type: integer }, cap: { type: integer }, ok: { type: boolean }, wait_hours: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/transfers:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1003,7 +1019,8 @@ paths:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     post:
       tags: [market]
-      summary: List one of my players at my price (50% to 200% of his value)
+      summary: List one of my players at my price (50% of his value to his sale cap)
+      description: The cap is 130% of his value, or his value for a player the club bought. Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap), and the money comes to the club.
       requestBody:
         required: true
         content:
@@ -2517,8 +2534,25 @@ components:
           type: array
           items:
             type: object
-            required: [id, name, position, line, overall, value, pool_pays]
-            properties: { id: { type: integer }, name: { type: string }, position: { type: string }, line: { type: string }, overall: { type: integer }, value: { type: integer }, pool_pays: { type: integer } }
+            required: [id, name, position, line, overall, value, floor, cap, quick, wait_hours, listed]
+            properties:
+              id: { type: integer }
+              name: { type: string }
+              position: { type: string }
+              line: { type: string }
+              overall: { type: integer }
+              value: { type: integer, description: His value now, training counted }
+              floor: { type: integer, description: The least a listing asks }
+              cap: { type: integer, description: The most a listing asks (his sale cap) }
+              quick:
+                type: object
+                required: [pays, fee]
+                description: The instant sale
+                properties:
+                  pays: { type: integer }
+                  fee: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
+              wait_hours: { type: object, required: [value, cap], properties: { value: { type: integer }, cap: { type: integer } }, description: About how long the outside buyer takes at his value and at his cap }
+              listed: { type: object, nullable: true, required: [price, sells_at], properties: { price: { type: integer }, sells_at: { type: string, format: date-time, nullable: true } } }
     ClubFinance:
       type: object
       required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]

@@ -4,13 +4,15 @@ namespace App\Market;
 
 use App\League\ClubLedger;
 use App\Support\GameClock;
+use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * The market with the pool and the bot clubs [PLAN 2.4, 2.7, Sprint 24]. Open all season until its last 25%
  * (the lock). The pool sells at 100% of a player's value and buys at 70% of his value without training; a bot
- * club sells at a fixed 125%, never below 18 players or 2 keepers, and never sells on its own. A player is
+ * club sells at a fixed 125%, never below 18 players or 2 keepers, and never sells on its own. A coach sells to the
+ * pool at once at the full value for a few coins, or lists the player and waits for a buyer [X6]. A player is
  * taken by one conditional update checked by its rows, and the money moves in the same IMMEDIATE transaction,
  * so of two coaches buying the same player at the same moment one gets him and the other pays nothing.
  */
@@ -94,7 +96,12 @@ class Market
         });
     }
 
-    /** Sell a player to the pool: 70% of his value without training. Returns the balance after. */
+    /**
+     * The instant sale [X6, 2026-10-24]: the player goes to the pool now at his full value (his training counted),
+     * for game.premium.price.quick_sale coins from the coach's wallet (in a fair league, quick_sale_fee_bp of his
+     * value from the club). Listing him instead (Transfers::list) costs nothing but waits for a buyer. Returns the
+     * balance after.
+     */
     public static function sell(int $clubId, int $playerId, string $key): int
     {
         return DB::transaction(function () use ($clubId, $playerId, $key) {
@@ -107,13 +114,15 @@ class Market
             $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
             abort_unless($p, 404, 'اللاعب ليس في فريقك.');
             self::assertKeeps($clubId, $p, (int) config('game.economy.min_squad'), 'لا يمكن أن ينزل فريقك عن %d لاعباً.');
+            $fee = intdiv((int) $p->value * (int) config('game.economy.quick_sale_fee_bp'), 10000);
+            Price::charge($clubId, 'quick_sale', $fee, "{$key}:fee", "player:{$playerId}");
             $sold = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
             if ($sold !== 1) {
                 throw new HttpException(409, 'اللاعب لم يعد في فريقك.');
             }
             Transfers::left($playerId, $clubId);
 
-            return ClubLedger::post($clubId, 'pool_sale', intdiv((int) $p->base_value * config('game.economy.sell_to_pool_bp'), 10000), $key, "player:{$playerId}");
+            return ClubLedger::post($clubId, 'pool_sale', (int) $p->value, $key, "player:{$playerId}");
         });
     }
 

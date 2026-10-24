@@ -22,14 +22,24 @@ class Transfers
 {
     public const OPEN = ['pending'];
 
-    /** The coach lists one of his players at his price (within the fair range). */
+    /**
+     * The coach lists one of his players at his price, from half his value to his sale cap [X6]. Other coaches may
+     * buy him meanwhile; otherwise a buyer from outside the league takes him at that price when its time comes
+     * (App\Market\Buyer): the dearer, the longer the wait. Listing again at a new price starts a new wait.
+     */
     public static function list(int $clubId, int $playerId, int $price): void
     {
         $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
-        self::assertFair($price, (int) $p->value);
+        $leagueId = (int) DB::table('clubs')->where('id', $clubId)->value('league_id');
+        Market::assertOpen($leagueId);
+        [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $clubId)];
+        if ($price < $floor || $price > $cap) {
+            throw new HttpException(422, sprintf('سعر البيع من %s إلى سقف هذا اللاعب %s.', number_format($floor), number_format($cap)));
+        }
         DB::table('transfer_listings')->upsert([['club_id' => $clubId, 'player_id' => $playerId, 'price' => $price,
-            'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]], ['player_id'], ['price', 'updated_at']);
+            'sells_at' => Buyer::sellsAt($price, (int) $p->value, $leagueId),
+            'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]], ['player_id'], ['price', 'sells_at', 'updated_at']);
     }
 
     public static function unlist(int $clubId, int $playerId): void

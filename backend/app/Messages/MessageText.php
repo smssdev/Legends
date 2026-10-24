@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -142,6 +142,11 @@ class MessageText
                 'title' => 'رُفض طلب إجازتك',
                 'body' => sprintf('رفض مسؤول %s طلب إجازتك. يمكنك أن تطلبها من جديد بسبب أوضح، أو تأخذ إجازة لحسابك كله من صفحة حسابك.', $league),
                 'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
+            ],
+            'listing_sold' => [
+                'title' => 'بِيع '.($p['player'] ?? 'لاعبك'),
+                'body' => sprintf('اشترى نادٍ من خارج الدوري %s بالسعر الذي طلبته: %s. المبلغ في رصيد ناديك.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))),
+                'link' => '/finance',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

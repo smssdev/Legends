@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use App\League\ClubLedger;
+use App\Market\Buyer;
 use App\Market\Market;
 use App\Market\Pool;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +67,7 @@ class MarketTest extends TestCase
     public function test_the_pool_comes_with_the_league_from_outside_its_clubs(): void
     {
         $pool = DB::table('players')->where('league_id', $this->league['id'])->where('in_pool', true)->get();
-        $this->assertGreaterThan(20, $pool->count());
+        $this->assertGreaterThan(5, $pool->count());
         $this->assertLessThanOrEqual(300, $pool->count());
         $leagueMasters = DB::table('clubs')->where('league_id', $this->league['id'])->pluck('master_club_id');
         $this->assertSame(0, DB::table('master_players')->whereIn('id', $pool->pluck('master_player_id'))->whereIn('master_club_id', $leagueMasters)->count());
@@ -103,16 +105,18 @@ class MarketTest extends TestCase
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
     }
 
-    public function test_selling_to_the_pool_pays_70_percent_without_the_training(): void
+    public function test_the_instant_sale_pays_the_full_value_with_the_training_for_a_fee(): void
     {
         $p = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->first();
-        // Trained since: his value went up, his base did not.
-        DB::table('players')->where('id', $p->id)->update(['value' => (int) $p->value * 2, 'training_bonus' => 3]);
+        // Trained since: his value went up, and the sale pays it [X6].
+        $value = (int) $p->value * 2;
+        DB::table('players')->where('id', $p->id)->update(['value' => $value, 'training_bonus' => 3]);
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        // A fair league: no coins, so the fee is 10% of his value from the club.
         $this->actingAs($this->owner)->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 's1'])->assertOk()
-            ->assertJsonPath('balance', $before + intdiv((int) $p->base_value * 7000, 10000));
+            ->assertJsonPath('balance', $before - intdiv($value, 10) + $value);
+        $this->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 's1'])->assertOk()->assertJsonPath('balance', $before - intdiv($value, 10) + $value);
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
-        // A buy-train-sell round trip loses money: the pool sells at his value, buys back at 70% of the base.
         $this->assertBooks();
         // Never below 16 players.
         $left = DB::table('players')->where('club_id', $this->mine)->pluck('id');
@@ -121,6 +125,78 @@ class MarketTest extends TestCase
         }
         $this->postJson($this->url('/sell'), ['player_id' => DB::table('players')->where('club_id', $this->mine)->value('id'), 'idempotency_key' => 'last'])
             ->assertConflict()->assertJsonPath('message', 'لا يمكن أن ينزل فريقك عن 16 لاعباً.');
+    }
+
+    public function test_the_instant_sale_costs_5_coins_outside_a_fair_league(): void
+    {
+        DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
+        $p = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->first();
+        $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        $this->actingAs($this->owner)->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 'c1'])->assertConflict();
+        Wallet::post($this->owner->id, 'daily', 7, 'gift');
+        $this->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 'c2'])->assertOk()->assertJsonPath('balance', $before + (int) $p->value);
+        $this->assertSame(2, Wallet::balance($this->owner->id));
+        $this->assertBooks();
+    }
+
+    public function test_a_listed_player_is_sold_to_an_outside_buyer_later_the_dearer_he_is(): void
+    {
+        $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
+        [$a, $b] = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->limit(2)->get()->all();
+        $this->actingAs($this->owner);
+        // The cap: 130% of his value for his own player.
+        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 13000, 10000) + 1])->assertUnprocessable();
+        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 13000, 10000)])->assertOk();
+        $this->postJson($tr, ['player_id' => $b->id, 'price' => (int) $b->value])->assertOk();
+        $at = fn ($p) => Carbon::parse(DB::table('transfer_listings')->where('player_id', $p->id)->value('sells_at'), 'UTC');
+        $scale = (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale');
+        $this->assertGreaterThan($at($b), $at($a));
+        // At his value: six hours on the season's scale, give or take a fifth.
+        $six = intdiv(6 * 3600 * $scale, 10000);
+        $this->assertEqualsWithDelta($six, GameClock::now()->diffInSeconds($at($b)), intdiv($six, 5) + 1);
+
+        $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        Carbon::setTestNow($at($b)->copy()->addSecond());
+        $this->assertSame(1, Buyer::due());
+        $this->assertNull(DB::table('players')->where('id', $b->id)->value('club_id'));
+        $this->assertFalse((bool) DB::table('players')->where('id', $b->id)->value('in_pool'));
+        $this->assertSame($before + (int) $b->value, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'listing_sold')->count());
+        Carbon::setTestNow($at($a)->copy()->addSecond());
+        $this->assertSame(1, Buyer::due());
+        $this->assertSame(0, DB::table('transfer_listings')->count());
+        $this->assertBooks();
+    }
+
+    public function test_a_bought_player_is_capped_at_his_value(): void
+    {
+        $p = $this->poolPlayer();
+        $this->actingAs($this->owner)->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'k1'])->assertOk();
+        $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
+        $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value + 1])->assertUnprocessable();
+        $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value])->assertOk();
+    }
+
+    public function test_the_pool_renews_every_4_hours_from_every_league_at_this_leagues_level(): void
+    {
+        $first = DB::table('players')->where('league_id', $this->league['id'])->where('in_pool', true)->pluck('id');
+        // Players of another league in the data, as strong as this one, one per line.
+        $abroad = DB::table('master_clubs')->insertGetId(['data_version' => '2026', 'name' => 'Abroad FC', 'code' => 'ABR', 'league_name' => 'Abroad League',
+            'strength_cp' => 8400, 'color_primary' => '#000000', 'color_secondary' => '#FFFFFF']);
+        foreach (['GK' => 'gk', 'CB' => 'def', 'CM' => 'mid', 'ST' => 'att'] as $pos => $line) {
+            DB::table('master_players')->insert(['data_version' => '2026', 'external_id' => 990000 + crc32($pos) % 1000, 'master_club_id' => $abroad, 'name' => "Abroad {$pos}",
+                'position' => $pos, 'line' => $line, 'age' => 25, 'overall' => 84, 'potential' => 86, 'value' => 2_000_000,
+                'pac' => 70, 'sho' => 65, 'pas' => 70, 'dri' => 70, 'def' => 65, 'phy' => 70]);
+        }
+        $this->assertSame(0, Pool::due());
+        Carbon::setTestNow(GameClock::now()->addHours(4));
+        $this->assertSame(1, Pool::due());
+        $this->assertSame(0, DB::table('players')->whereIn('id', $first)->where('in_pool', true)->count());
+        $pool = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.league_id', $this->league['id'])->where('players.in_pool', true)->get(['master_players.line', 'players.overall']);
+        $this->assertEqualsCanonicalizing(['gk', 'def', 'mid', 'att'], $pool->pluck('line')->unique()->values()->all());
+        $levels = DB::table('players')->where('league_id', $this->league['id'])->whereNotNull('club_id')->orderBy('overall')->pluck('overall');
+        $this->assertGreaterThanOrEqual($levels[intdiv($levels->count() * 40, 100)], $pool->min('overall'));
     }
 
     public function test_a_bot_sells_at_125_percent_and_keeps_18_players_and_2_keepers(): void

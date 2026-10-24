@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Market\Buyer;
 use App\Market\Pool;
 use App\Market\Transfers;
 use Illuminate\Console\Command;
@@ -16,8 +17,9 @@ class MarketRenew extends Command
     public function handle(): int
     {
         $n = Pool::due();
-        // Offers between coaches past their time.
+        // Offers between coaches past their time, and the listed players whose buyer has come [X6].
         Transfers::expire();
+        Buyer::due();
         if ($n) {
             $this->line("تجددت مجموعة السوق في {$n} نافذة.");
         }
