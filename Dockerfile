@@ -34,9 +34,11 @@ RUN composer dump-autoload --optimize --no-dev \
  && php artisan key:generate --force \
  && php artisan migrate --force \
  && php artisan data:import \
- && php artisan config:cache \
  && chown -R www-data:www-data storage database bootstrap/cache
-ENV PORT=8000 PHP_CLI_SERVER_WORKERS=4
+# The start script: the public address, sign-in, Gmail and Google from the host's run-time variables, the
+# configuration cached then (not here, before they are known), and the queue, scheduler and live matches.
+COPY deploy/render/start.sh /app/start.sh
+ENV PORT=8000 PHP_CLI_SERVER_WORKERS=2
 EXPOSE 8000
 USER www-data
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT}"]
+CMD ["sh", "/app/start.sh"]

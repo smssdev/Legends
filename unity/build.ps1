@@ -1,6 +1,7 @@
 # The Unity project from the command line, on Sliman's Windows PC (docs/PLAN.md 7.9). Claude runs these.
 #
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 install   Unity Hub (winget), then the editor by hand
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 where     shows which Unity.exe the other steps will use
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 setup     opens the project once and adds the packages
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 demo      builds the Arena and the match scene
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 webgl     the web build in unity\Builds\WebGL
@@ -8,7 +9,7 @@
 #
 # The log of every step goes to the window and to unity\Logs\<step>.log.
 param(
-    [Parameter(Position = 0)][ValidateSet('install', 'setup', 'demo', 'webgl', 'android')][string]$Step = 'demo',
+    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'webgl', 'android')][string]$Step = 'demo',
     [string]$Unity = ''   # Unity.exe; found under Unity Hub's editors when empty
 )
 $ErrorActionPreference = 'Stop'
@@ -27,12 +28,40 @@ if ($Step -eq 'install') {
 }
 
 if (-not $Unity) {
-    $editors = Get-ChildItem 'C:\Program Files\Unity\Hub\Editor' -Directory -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -like '6000.*' } | Sort-Object { [version]($_.Name -replace '[a-z].*$', '') } -Descending
-    if (-not $editors) { throw 'No Unity 6 editor found. Run: build.ps1 install' }
-    $Unity = Join-Path $editors[0].FullName 'Editor\Unity.exe'
+    # Every place Unity Hub may have put an editor: the default folder, the "Installs location" chosen in
+    # Hub's settings (e.g. on D:), and the editors Hub lists in its own files.
+    $hubData = Join-Path $env:APPDATA 'UnityHub'
+    $roots = @('C:\Program Files\Unity\Hub\Editor')
+    $custom = Join-Path $hubData 'secondaryInstallPath.json'
+    if (Test-Path $custom) {
+        $path = (Get-Content $custom -Raw).Trim().Trim('"') -replace '\\\\', '\'
+        if ($path) { $roots += $path }
+    }
+    $exes = @()
+    foreach ($root in $roots) {
+        $exes += Get-ChildItem $root -Directory -ErrorAction SilentlyContinue |
+            ForEach-Object { Join-Path $_.FullName 'Editor\Unity.exe' }
+    }
+    foreach ($list in @('editors-v2.json', 'editors.json')) {
+        $file = Join-Path $hubData $list
+        if (Test-Path $file) {
+            # pull every "...Unity.exe" path out of the file without depending on its exact shape
+            $exes += [regex]::Matches((Get-Content $file -Raw), '"([^"]*?Unity\.exe)"') |
+                ForEach-Object { $_.Groups[1].Value -replace '\\\\', '\' }
+        }
+    }
+    $editors = $exes | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique |
+        ForEach-Object { [pscustomobject]@{ Exe = $_; Name = Split-Path (Split-Path (Split-Path $_)) -Leaf } } |
+        Where-Object { $_.Name -like '6000.*' } |
+        Sort-Object { [version]($_.Name -replace '[a-z].*$', '') } -Descending
+    if (-not $editors) {
+        throw "No Unity 6 editor found (looked in: $($roots -join ', ')). Run: build.ps1 install, or pass -Unity 'D:\...\Editor\Unity.exe'"
+    }
+    $Unity = $editors[0].Exe
 }
+if (-not (Test-Path $Unity)) { throw "Unity.exe not found: $Unity" }
 Write-Host "Unity: $Unity"
+if ($Step -eq 'where') { exit 0 }
 New-Item -ItemType Directory -Force (Join-Path $Project 'Logs') | Out-Null
 $log = Join-Path $Project "Logs\$Step.log"
 
