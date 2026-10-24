@@ -3,18 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Market\Buyer;
 use App\Market\Market;
 use App\Models\Club;
 use App\Models\League;
+use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
  * The market [Sprint 24]: the pool and the bot clubs, buying and selling. For a coach with a club in the
- * league. Prices come from the server (100% of value from the pool, 125% from a bot, 70% of the value
- * without training when selling to the pool).
+ * league. Prices come from the server (100% of value from the pool, 125% from a bot; selling at once at the full
+ * value for a fee, or listing up to the sale cap for a buyer from outside [X6]).
  */
 class MarketController extends Controller
 {
@@ -65,12 +68,44 @@ class MarketController extends Controller
                 'value' => (int) $p->value, 'price' => intdiv((int) $p->value * $bp, 10000),
                 'club' => $p->club_id ? ['id' => $p->club_id, 'name' => $clubs[$p->club_id] ?? ''] : null,
             ]),
-            // My players and what the pool pays for each.
-            'mine' => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
-                ->orderByDesc('players.value')->get(['players.id', 'master_players.name', 'master_players.position', 'master_players.line', 'players.overall', 'players.training_bonus', 'players.value', 'players.base_value'])
-                ->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'overall' => (int) $p->overall + (int) $p->training_bonus,
-                    'value' => (int) $p->value, 'pool_pays' => intdiv((int) $p->base_value * $cfg['sell_to_pool_bp'], 10000)]),
+            // My players and the ways to sell each [X6]: now for a fee at his full value, or listed up to his cap.
+            'mine' => $this->mine($club, $league),
         ]);
+    }
+
+    private function mine(Club $club, League $league): array
+    {
+        $cfg = config('game.economy');
+        $listed = DB::table('transfer_listings')->where('club_id', $club->id)->get()->keyBy('player_id');
+
+        return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
+            ->orderByDesc('players.value')->get(['players.id', 'master_players.name', 'master_players.position', 'master_players.line', 'players.overall', 'players.training_bonus', 'players.value'])
+            ->map(function ($p) use ($club, $league, $cfg, $listed) {
+                $cap = Buyer::cap($p, $club->id);
+                $l = $listed[$p->id] ?? null;
+
+                return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'overall' => (int) $p->overall + (int) $p->training_bonus,
+                    'value' => (int) $p->value, 'floor' => Buyer::floor($p), 'cap' => $cap,
+                    'quick' => ['pays' => (int) $p->value, 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000))],
+                    // About how long the outside buyer takes, at his value and at his cap.
+                    'wait_hours' => ['value' => intdiv(Buyer::wait((int) $p->value, (int) $p->value, $league->id) + 1800, 3600),
+                        'cap' => intdiv(Buyer::wait($cap, (int) $p->value, $league->id) + 1800, 3600)],
+                    'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Carbon::parse($l->sells_at, 'UTC')->toIso8601ZuluString() : null] : null,
+                ];
+            })->all();
+    }
+
+    /** How long the outside buyer takes at a price [X6]: for the price field as the coach types. */
+    public function quote(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request, $league);
+        $data = $request->validate(['player_id' => 'required|integer', 'price' => 'required|integer|min:1']);
+        $p = DB::table('players')->where('id', $data['player_id'])->where('club_id', $club->id)->first();
+        abort_unless($p, 404, 'اللاعب ليس في فريقك.');
+        [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $club->id)];
+
+        return response()->json(['floor' => $floor, 'cap' => $cap, 'ok' => $data['price'] >= $floor && $data['price'] <= $cap,
+            'wait_hours' => intdiv(Buyer::wait(min($cap, max($floor, $data['price'])), (int) $p->value, $league->id) + 1800, 3600)]);
     }
 
     public function buy(Request $request, League $league): JsonResponse

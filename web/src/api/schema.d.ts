@@ -2182,7 +2182,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sell one of my players to the pool (never below 16 players or 2 keepers) */
+        /**
+         * Sell one of my players now (never below 16 players or 2 keepers)
+         * @description The instant sale pays his full value (training counted) for 5 coins from the coach's wallet; in a fair league for 10% of his value from the club. To sell without a fee, list him (/transfers/listings).
+         */
         post: {
             parameters: {
                 query?: never;
@@ -2216,6 +2219,55 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        /** How long the outside buyer takes for one of my players at a price */
+        get: {
+            parameters: {
+                query: {
+                    player_id: number;
+                    price: number;
+                };
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The range and the wait */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            floor: number;
+                            cap: number;
+                            ok: boolean;
+                            wait_hours: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2280,7 +2332,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** List one of my players at my price (50% to 200% of his value) */
+        /**
+         * List one of my players at my price (50% of his value to his sale cap)
+         * @description The cap is 130% of his value, or his value for a player the club bought. Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap), and the money comes to the club.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -5706,8 +5761,31 @@ export interface components {
                 position: string;
                 line: string;
                 overall: number;
+                /** @description His value now */
                 value: number;
-                pool_pays: number;
+                /** @description The least a listing asks */
+                floor: number;
+                /** @description The most a listing asks (his sale cap) */
+                cap: number;
+                /** @description The instant sale */
+                quick: {
+                    pays: number;
+                    fee: {
+                        /** @enum {string} */
+                        currency: "coins" | "money";
+                        amount: number;
+                    };
+                };
+                /** @description About how long the outside buyer takes at his value and at his cap */
+                wait_hours: {
+                    value: number;
+                    cap: number;
+                };
+                listed: {
+                    price: number;
+                    /** Format: date-time */
+                    sells_at: string | null;
+                } | null;
             }[];
         };
         ClubFinance: {

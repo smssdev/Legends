@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // The market (Sprint 24 W1), after the drafts WebMarket and MobileMarket: the pool and the bot clubs as tabs,
-// filters, the players with their value and price, and my players to sell to the pool. Prices and every rule
-// come from the API; offers between coaches join in Sprint 25.
+// filters, the players with their value and price, and my players to sell: at once for a fee, at their value, or
+// at my own price up to their cap for a buyer from outside [X6]. Prices, caps and waits come from the API.
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -9,7 +9,7 @@ import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import Trades from './Trades.vue'
 import { currentLeague } from '../../lib/currentLeague'
-import { count, money, type Line } from '../../lib/format'
+import { money, type Line } from '../../lib/format'
 
 type Market = components['schemas']['Market']
 const leagueId = ref<number | null>(null)
@@ -64,7 +64,7 @@ async function act(kind: 'buy' | 'sell', id: number, name: string) {
     const { data } = kind === 'buy'
       ? await api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value } }, body })
       : await api.POST('/leagues/{league}/market/sell', { params: { path: { league: leagueId.value } }, body })
-    notice.value = kind === 'buy' ? `انضم ${name} إلى فريقك.` : `بِيع ${name} للمجموعة.`
+    notice.value = kind === 'buy' ? `انضم ${name} إلى فريقك.` : `بِيع ${name} الآن بقيمته الكاملة.`
     await load()
     if (m.value) m.value.balance = data!.balance
   } catch (e) {
@@ -72,6 +72,57 @@ async function act(kind: 'buy' | 'sell', id: number, name: string) {
   }
   busy.value = null
 }
+
+// Selling [X6]: one open player at a time, with his price and the server's estimate of the wait.
+type Mine = Market['mine'][number]
+const open = ref<number | null>(null)
+const price = ref<number | ''>('')
+const quote = ref<{ ok: boolean; wait_hours: number } | null>(null)
+let quoting = 0
+function openSell(p: Mine) {
+  open.value = open.value === p.id ? null : p.id
+  price.value = p.listed?.price ?? p.value
+  quote.value = { ok: true, wait_hours: p.wait_hours.value }
+}
+watch(price, (v) => {
+  clearTimeout(quoting)
+  if (!leagueId.value || !open.value || !v) return (quote.value = null)
+  quoting = window.setTimeout(async () => {
+    const { data } = await api.GET('/leagues/{league}/market/quote', { params: { path: { league: leagueId.value! }, query: { player_id: open.value!, price: Number(v) } } })
+    quote.value = data ?? null
+  }, 250)
+})
+async function listAt(p: Mine, at: number) {
+  if (!leagueId.value) return
+  busy.value = p.id
+  error.value = notice.value = ''
+  try {
+    await ensureCsrf()
+    await api.POST('/leagues/{league}/transfers/listings', { params: { path: { league: leagueId.value } }, body: { player_id: p.id, price: at } })
+    notice.value = `عُرض ${p.name} للبيع بـ ${money(at)}. لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري في موعده.`
+    open.value = null
+    await load()
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+  busy.value = null
+}
+async function unlist(p: Mine) {
+  if (!leagueId.value) return
+  busy.value = p.id
+  try {
+    await ensureCsrf()
+    await api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: leagueId.value, player: p.id } } })
+    notice.value = `سُحب ${p.name} من البيع.`
+    await load()
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+  busy.value = null
+}
+const fee = (p: Mine) => (p.quick.fee.currency === 'coins' ? `${p.quick.fee.amount} كوينز` : `${money(p.quick.fee.amount)} من أموال النادي`)
+const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString('ar-EG', { weekday: 'long', hour: 'numeric', minute: '2-digit' }) : '')
+const hours = (h: number) => (h <= 1 ? 'ساعة تقريباً' : h === 2 ? 'ساعتين تقريباً' : h <= 10 ? `${h} ساعات تقريباً` : `${h} ساعة تقريباً`)
 
 let typing = 0
 watch([tab, line, bot, maxPrice], () => tab.value !== 'list' && tab.value !== 'offers' && load())
@@ -86,7 +137,7 @@ onMounted(load)
         <h1 class="font-display text-3xl font-extrabold">السوق</h1>
         <p class="mt-1 text-sm text-text-muted">
           <template v-if="m?.closed">{{ m.closed }}</template>
-          <template v-else-if="m">مفتوح حتى الجولة {{ m.open_until_round }} · تتجدد المجموعة في كل نافذة انتقالات</template>
+          <template v-else-if="m">مفتوح حتى الجولة {{ m.open_until_round }} · لاعبون جدد في المجموعة كل 4 ساعات، من كل الدوريات وبقوة دوريك</template>
         </p>
       </div>
       <RouterLink :to="{ name: 'scout' }" class="flex h-11 items-center gap-2 rounded-lg bg-gold/15 px-4 text-sm font-bold">اطلب تقرير الكشاف</RouterLink>
@@ -141,15 +192,41 @@ onMounted(load)
         <p v-if="tab === 'bots'" class="text-xs text-text-muted">البوت لا يبيع لو نزل فريقه عن 18 لاعباً أو حارسين.</p>
       </template>
 
-      <section v-else aria-label="بيع لاعبيّ للمجموعة" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
-        <p class="px-2 pt-2 text-sm text-text-muted">المجموعة تشتري بـ 70% من القيمة الأصلية، بلا أثر التدريب. والبيع لمدرب آخر يأتي مع قائمة الانتقالات.</p>
+      <section v-else aria-label="بيع لاعبيّ" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
+        <p class="px-2 pt-2 text-sm text-text-muted">بيع فوري بقيمة اللاعب الكاملة مقابل رسوم صغيرة، أو اعرضه بقيمته أو بسعرك حتى سقفه بلا رسوم: لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري، وكلما ارتفع السعر طال الانتظار. والتدريب يرفع قيمة اللاعب وسعره.</p>
         <ul class="flex flex-col">
-          <li v-for="p in m.mine" :key="p.id" class="flex items-center gap-3 border-t border-text/5 px-2 py-2">
-            <LineBadge :line="p.line as Line" />
-            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ p.name }}</b><span class="text-xs text-text-muted">{{ p.position }} · قيمته {{ money(p.value) }}</span></span>
-            <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
-            <span class="w-24 text-end font-numbers text-lg text-success" dir="ltr">+{{ count(p.pool_pays) }}</span>
-            <button type="button" class="h-touch min-w-20 rounded-md border border-warning/60 px-3 font-bold text-warning disabled:opacity-40" :disabled="!!m.closed || busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : 'بيع' }}</button>
+          <li v-for="p in m.mine" :key="p.id" class="flex flex-col border-t border-text/5 px-2 py-2">
+            <div class="flex items-center gap-3">
+              <LineBadge :line="p.line as Line" />
+              <span class="min-w-0 flex-1">
+                <b class="block truncate" dir="auto">{{ p.name }}</b>
+                <span class="text-xs text-text-muted">{{ p.position }} · قيمته {{ money(p.value) }} · سقفه {{ money(p.cap) }}</span>
+                <span v-if="p.listed" class="mt-1 block w-fit rounded-pill bg-gold/15 px-2 text-xs text-gold">معروض بـ <b dir="ltr" class="font-numbers">{{ money(p.listed.price) }}</b></span>
+              </span>
+              <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
+              <button type="button" class="h-touch min-w-20 rounded-md border border-warning/60 px-3 font-bold text-warning disabled:opacity-40" :aria-expanded="open === p.id" :disabled="!!m.closed" @click="openSell(p)">بيع</button>
+            </div>
+            <div v-if="open === p.id" class="mt-2 flex flex-col gap-3 rounded-lg bg-surface-sunk p-3 text-sm">
+              <div v-if="p.listed" class="flex flex-wrap items-center gap-2">
+                <span>معروض بـ <b dir="ltr" class="font-numbers">{{ money(p.listed.price) }}</b><template v-if="p.listed.sells_at">، ويُباع {{ when(p.listed.sells_at) }} إن لم يشتره مدرب.</template></span>
+                <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy !== null" @click="unlist(p)">اسحبه من البيع</button>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span><b>بيع فوري</b>: تحصل الآن على <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> مقابل {{ fee(p) }}.</span>
+                <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : 'بع الآن' }}</button>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span><b>بقيمته</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> بلا رسوم، ويُباع خلال {{ hours(p.wait_hours.value) }}.</span>
+                <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">اعرضه بقيمته</button>
+              </div>
+              <form class="flex flex-wrap items-end gap-2" @submit.prevent="price && listAt(p, Number(price))">
+                <label class="flex flex-col gap-1"><b>بسعرك</b> <span class="text-xs text-text-muted">من {{ money(p.floor) }} إلى {{ money(p.cap) }}</span>
+                  <input v-model.number="price" type="number" inputmode="numeric" :min="p.floor" :max="p.cap" step="1000" class="h-touch w-40 rounded-md bg-surface px-2 font-numbers" dir="ltr" :aria-label="`سعر ${p.name}`" />
+                </label>
+                <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !quote?.ok">اعرضه بهذا السعر</button>
+                <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-[#FF8A8A]'">{{ quote.ok ? `يُباع خلال ${hours(quote.wait_hours)}` : 'خارج حدود سعره' }}</span>
+              </form>
+            </div>
           </li>
         </ul>
       </section>

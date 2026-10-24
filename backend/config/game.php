@@ -79,6 +79,17 @@ return [
         'min_squad' => 16,                  // a forced sale never leaves fewer players than this
         'bot_min_squad' => 18, 'min_keepers' => 2,   // a bot club sells no lower than this [PLAN 2.7]
         'pool_size' => 300,
+        // The pool renews every pool_hours from the players of every league in the data [X6], as strong as this
+        // league: from its pool_level_from_pct percentile of strength to its best, in pool_lines shares per line.
+        'pool_hours' => 4, 'pool_level_from_pct' => 40,
+        'pool_lines' => ['gk' => 10, 'def' => 30, 'mid' => 35, 'att' => 25],
+        // Selling [X6]: the instant sale pays the full value for coins (in a fair league, this share of the value);
+        // a listing asks up to the sale cap (130% of the value, the value alone for a player the club bought), and a
+        // buyer from outside takes it after a wait from this table (price in bp of value => hours, before the
+        // season's scale), give or take jitter_bp.
+        'quick_sale_fee_bp' => 1000,
+        'sale_cap_bp' => 13000,
+        'virtual_buyer' => ['hours_at_bp' => [5000 => 1, 10000 => 6, 13000 => 36], 'jitter_bp' => 2000],
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
         // Wages: this share of the squad's value over a season, paid each league round.
@@ -250,7 +261,7 @@ return [
         'kinds' => [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
-            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected'],
+            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
             'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
         ],
@@ -262,7 +273,7 @@ return [
         'season_cap' => 400,           // the most a coach spends in one league in one season
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
             'league_1' => 100, 'league_2' => 50, 'league_3' => 25, 'cup_1' => 60, 'cup_2' => 30],
-        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10],
+        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).

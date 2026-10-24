@@ -13,10 +13,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Wallet
 {
-    public const TYPES = ['daily', 'win', 'draw', 'objective', 'title', 'spy', 'secret_training', 'specialist', 'finish_training', 'finish_scout', 'finish_stadium'];
+    public const TYPES = ['daily', 'win', 'draw', 'objective', 'title', 'spy', 'secret_training', 'specialist', 'finish_training', 'finish_scout', 'finish_stadium', 'quick_sale'];
 
     public const LABELS = ['daily' => 'مكافأة اليوم', 'win' => 'فوز', 'draw' => 'تعادل', 'objective' => 'تحقيق هدف', 'title' => 'لقب',
-        'spy' => 'التجسس', 'secret_training' => 'التدريب السري', 'specialist' => 'أخصائي', 'finish_training' => 'إنهاء جلسة تدريب',
+        'spy' => 'التجسس', 'secret_training' => 'التدريب السري', 'specialist' => 'أخصائي', 'finish_training' => 'إنهاء جلسة تدريب', 'quick_sale' => 'بيع فوري',
         'finish_scout' => 'إنهاء بحث الكشاف', 'finish_stadium' => 'إنهاء جزء الملعب'];
 
     public static function balance(int $userId): int
