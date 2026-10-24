@@ -80,7 +80,7 @@ namespace Legends.EditorTools
                 l.transform.SetParent(lines, false);
                 l.transform.localPosition = (a + b) / 2 + Vector3.up * 0.01f;
                 l.transform.localRotation = Quaternion.LookRotation(b - a);
-                l.transform.localScale = new Vector3(0.12f, 0.01f, (b - a).magnitude + 0.12f);
+                l.transform.localScale = new Vector3(0.14f, 0.01f, (b - a).magnitude + 0.14f);   // 12 cm by the laws, a little more to hold at 100 m
                 l.GetComponent<Renderer>().sharedMaterial = white;
             }
             Vector3 P(float x, float z) => new Vector3(x, 0, z);
@@ -242,7 +242,9 @@ namespace Legends.EditorTools
                 light.type = LightType.Spot;
                 light.range = 160f;
                 light.spotAngle = 80f;
-                light.intensity = 2.2f;
+                // URP lights fall off with the square of the distance (about 80 m from a bank to the centre spot);
+                // the built-in pipeline's spot light does not, so it needs far less.
+                light.intensity = GraphicsSettings.currentRenderPipeline != null ? 2500f : 2.2f;
                 light.shadows = LightShadows.Soft;
             }
         }

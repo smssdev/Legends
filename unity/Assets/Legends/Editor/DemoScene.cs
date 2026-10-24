@@ -18,6 +18,8 @@ namespace Legends.EditorTools
         [MenuItem("Legends/Build match scene")]
         public static void Build()
         {
+            // URP and the quality levels first, so the Arena's materials are made with URP's shaders (U4).
+            QualityLevels.Ensure();
             Directory.CreateDirectory("Assets/Legends/Scenes");
             Directory.CreateDirectory("Assets/StreamingAssets");
             if (File.Exists(Sample)) File.Copy(Sample, "Assets/StreamingAssets/sample-match.json", true);
@@ -30,6 +32,9 @@ namespace Legends.EditorTools
             var match = new GameObject("Match").AddComponent<Legends.MatchScene>();
             match.playerMaterial = Mat("Player", Color.white);
             match.ballMaterial = Mat("Ball", Color.white);
+            // A faint glow, so the ball reads from the broadcast camera under the floodlights.
+            match.ballMaterial.EnableKeyword("_EMISSION");
+            match.ballMaterial.SetColor("_EmissionColor", Color.white * 0.6f);
 
             var bridge = new GameObject("Bridge").AddComponent<Legends.Bridge>();   // the page calls it by this name
             bridge.scene = match;
@@ -41,12 +46,12 @@ namespace Legends.EditorTools
             var camera = cam.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.02f, 0.03f, 0.06f);   // the night sky over the roof
-            camera.fieldOfView = 32;
+            camera.fieldOfView = 30;
             camera.farClipPlane = 600;
             cam.tag = "MainCamera";
             cam.AddComponent<AudioListener>();
             cam.AddComponent<Legends.BroadcastCamera>().scene = match;
-            cam.transform.position = new Vector3(0, 22, -48);
+            cam.transform.position = new Vector3(0, 30, -62);
             cam.transform.LookAt(Vector3.zero);
 
             var moon = new GameObject("Moonlight").AddComponent<Light>();
@@ -64,13 +69,14 @@ namespace Legends.EditorTools
         {
             string path = "Assets/Legends/Materials/" + name + ".mat";
             Directory.CreateDirectory("Assets/Legends/Materials");
+            var shader = Shader.Find(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline != null ? "Universal Render Pipeline/Lit" : "Standard");
             var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (mat == null)
             {
-                var shader = Shader.Find(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline != null ? "Universal Render Pipeline/Lit" : "Standard");
                 mat = new Material(shader);
                 AssetDatabase.CreateAsset(mat, path);
             }
+            mat.shader = shader;   // made before URP: moved to its shader
             mat.color = color;
             EditorUtility.SetDirty(mat);
             return mat;

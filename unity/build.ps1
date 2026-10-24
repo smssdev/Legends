@@ -4,12 +4,16 @@
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 where     shows which Unity.exe the other steps will use
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 setup     opens the project once and adds the packages
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 demo      builds the Arena and the match scene
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 capture   plays the match and saves minutes 5, 20, 45, 70, 90 to unity\Captures
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 test      the EditMode then PlayMode tests (results in unity\Logs\tests-*.xml)
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 open      opens the editor on the match scene (then press Play)
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 webgl     the web build in unity\Builds\WebGL
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 serve     serves the web build on http://localhost:8090 and opens it
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 android   the test APK in unity\Builds\Android
 #
 # The log of every step goes to the window and to unity\Logs\<step>.log.
 param(
-    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'webgl', 'android')][string]$Step = 'demo',
+    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'capture', 'test', 'serve', 'open', 'webgl', 'android')][string]$Step = 'demo',
     [string]$Unity = ''   # Unity.exe; found under Unity Hub's editors when empty
 )
 $ErrorActionPreference = 'Stop'
@@ -62,17 +66,65 @@ if (-not $Unity) {
 if (-not (Test-Path $Unity)) { throw "Unity.exe not found: $Unity" }
 Write-Host "Unity: $Unity"
 if ($Step -eq 'where') { exit 0 }
+if ($Step -eq 'serve') {
+    # The web build from a plain local server: gzip with the decompression fallback needs no special headers.
+    $web = Join-Path $Project 'Builds\WebGL'
+    if (-not (Test-Path (Join-Path $web 'index.html'))) { throw 'No web build yet. Run: build.ps1 webgl' }
+    $py = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $py) { $py = Get-Command py -ErrorAction SilentlyContinue }
+    if (-not $py) { throw 'Python is missing: winget install --id Python.Python.3.12 -e' }
+    Write-Host 'Serving the web build on http://localhost:8090 (Ctrl+C to stop)'
+    Start-Process 'http://localhost:8090'
+    & $py.Source -m http.server 8090 --directory $web
+    exit 0
+}
+if ($Step -eq 'test') {
+    # Unity's test runner from the command line: it quits by itself (never with -quit, which skips the tests).
+    New-Item -ItemType Directory -Force (Join-Path $Project 'Logs') | Out-Null
+    $failed = 0
+    foreach ($platform in 'EditMode', 'PlayMode') {
+        $log = Join-Path $Project "Logs\test-$($platform.ToLower()).log"
+        $xml = Join-Path $Project "Logs\tests-$($platform.ToLower()).xml"
+        Remove-Item $log, $xml -ErrorAction SilentlyContinue
+        Write-Host "$platform tests..."
+        $testArgs = @('-batchmode', '-projectPath', "`"$Project`"", '-runTests', '-testPlatform', $platform, '-testResults', "`"$xml`"", '-logFile', "`"$log`"")
+        $p = Start-Process -FilePath $Unity -ArgumentList $testArgs -PassThru -NoNewWindow -Wait
+        if (-not (Test-Path $xml)) {
+            Write-Host "  no results: see $log" -ForegroundColor Red
+            $failed++
+            continue
+        }
+        [xml]$r = Get-Content $xml
+        $run = $r.'test-run'
+        $color = if ([int]$run.failed -gt 0) { 'Red' } else { 'Green' }
+        Write-Host "  $($run.passed) passed, $($run.failed) failed, $($run.skipped) skipped" -ForegroundColor $color
+        foreach ($case in $r.SelectNodes('//test-case[@result="Failed"]')) {
+            Write-Host "  FAILED $($case.fullname): $($case.failure.message.'#cdata-section')" -ForegroundColor Red
+        }
+        if ([int]$run.failed -gt 0 -or $p.ExitCode -ne 0) { $failed++ }
+    }
+    if ($failed) { Write-Host 'Tests failed.' -ForegroundColor Red; exit 1 }
+    Write-Host 'All tests green.' -ForegroundColor Green
+    exit 0
+}
+if ($Step -eq 'open') {
+    # The editor with its window, on Scenes/Match.unity; it keeps running after this script ends.
+    Start-Process -FilePath $Unity -ArgumentList @('-projectPath', "`"$Project`"", '-executeMethod', 'Legends.EditorTools.OpenMatch.Run')
+    Write-Host 'Unity is opening the project (the first time takes a few minutes). Then press Play.'
+    exit 0
+}
 New-Item -ItemType Directory -Force (Join-Path $Project 'Logs') | Out-Null
 $log = Join-Path $Project "Logs\$Step.log"
 
 $method = @{
     setup   = 'Legends.EditorTools.Setup.Run'
     demo    = 'Legends.EditorTools.DemoScene.Build'
+    capture = 'Legends.EditorTools.Capture.Run'
     webgl   = 'Legends.EditorTools.Builds.WebGL'
     android = 'Legends.EditorTools.Builds.Android'
 }[$Step]
 $unityArgs = @('-batchmode', '-projectPath', "`"$Project`"", '-executeMethod', $method, '-logFile', "`"$log`"")
-if ($Step -ne 'setup') { $unityArgs += '-quit' }       # setup quits by itself once the packages are in
+if ($Step -notin @('setup', 'capture')) { $unityArgs += '-quit' }   # these two quit by themselves when done
 if ($Step -eq 'webgl') { $unityArgs += @('-buildTarget', 'WebGL') }
 if ($Step -eq 'android') { $unityArgs += @('-buildTarget', 'Android') }
 
