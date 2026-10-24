@@ -5,7 +5,17 @@
 /Logs/
 /UserSettings/
 /MemoryCaptures/
+/Build/
 /Builds/
+# editors and the machine
+/.vs/
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+*.apk
+*.aab
+/Assets/Plugins/Editor/JetBrains*
 *.csproj
 *.sln
 *.user
