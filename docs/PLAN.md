@@ -363,7 +363,7 @@ unity/
 | 1. ويندوز 10 أو 11 بمساحة 40 جيجا فارغة وكرت شاشة يعمل | | |
 | 2. **Git** | `winget install --id Git.Git -e` | 5 دقائق |
 | 3. **Python 3** | `winget install --id Python.Python.3.12 -e` | 5 دقائق |
-| 4. **المستودع** | `git clone https://github.com/smssdev/Legends.git C:\Legends-dev` (بحساب GitHub) | 5 دقائق |
+| 4. **المستودع (ما يلزم Unity فقط، 60 ميجا تقريباً)** | في PowerShell:<br>`git clone --filter=blob:none --no-checkout https://github.com/smssdev/Legends.git C:\Legends-dev`<br>`cd C:\Legends-dev`<br>`git sparse-checkout set --no-cone "/*" "!/*/" "/unity/" "/tools/" "/docs/" "!/docs/reference/"`<br>`git checkout main`<br>ومجلد آخر حين يلزم: `git sparse-checkout add backend` (أو `web`). والمستودع كاملاً (260 ميجا تقريباً): `git sparse-checkout disable`.<br>**نُظّف سجل git في 2026-10-24، فأي نسخة قديمة تُحذف وتُنزَّل من جديد** | 5 دقائق |
 | 5. **Claude Desktop** | تنزيله من claude.ai، ثم تبويب **Code**، ثم فتح المجلد `C:\Legends-dev` | 5 دقائق |
 | 6. **أول رسالة لـ Claude** | «نبدأ Sprint 2» | |
 
