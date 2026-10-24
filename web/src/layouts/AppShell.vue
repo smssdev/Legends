@@ -58,10 +58,11 @@ watch(() => route.fullPath, () => (more.value = false))
         <b class="font-numbers text-gold" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
       </RouterLink>
       <RouterLink v-if="auth.user" to="/profile" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface p-3 hover:bg-surface-raised">
-        <span class="flex size-10 items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold">{{ initial }}</span>
+        <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
+        <span v-else class="flex size-10 items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold">{{ initial }}</span>
         <span class="min-w-0 flex-1">
           <span class="block truncate font-bold">{{ auth.user.name }}</span>
-          <span class="block text-xs text-text-muted">حسابي</span>
+          <span class="block truncate text-xs text-text-muted" dir="ltr">@{{ auth.user.username }}</span>
         </span>
       </RouterLink>
       <div v-else class="flex flex-col gap-2">
@@ -76,7 +77,9 @@ watch(() => route.fullPath, () => (more.value = false))
         <RouterLink v-if="auth.user" to="/wallet" class="ms-auto flex h-touch items-center gap-1 rounded-pill bg-surface px-3" aria-label="المحفظة">
           <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-gold" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
         </RouterLink>
-        <RouterLink v-if="auth.user" to="/profile" class="flex size-touch items-center justify-center rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">{{ initial }}</RouterLink>
+        <RouterLink v-if="auth.user" to="/profile" class="flex size-touch items-center justify-center overflow-hidden rounded-full bg-gold font-display text-lg font-extrabold text-on-gold" aria-label="حسابي">
+          <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-full object-cover" /><template v-else>{{ initial }}</template>
+        </RouterLink>
         <RouterLink v-else-if="auth.loaded" to="/login" class="ms-auto flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">دخول</RouterLink>
       </header>
       <RouterLink v-if="auth.user && !auth.user.email_verified && route.name !== 'profile'" to="/profile" class="block bg-warning/15 px-4 py-2 text-center text-sm">

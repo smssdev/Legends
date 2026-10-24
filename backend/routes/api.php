@@ -46,8 +46,15 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::put('password', 'password')->middleware('throttle:auth');
         Route::post('email/resend', 'resend')->middleware('throttle:3,1,resend');
         Route::delete('token', 'revoke');
+        Route::post('avatar', 'avatar')->middleware('throttle:10,1,avatar');
+        Route::delete('avatar', 'removeAvatar');
+        Route::post('vacation', 'vacation');
+        Route::delete('vacation', 'endVacation');
     });
 });
+
+// An account's picture [X4]: public like a crest, so an <img> shows it anywhere.
+Route::get('users/{user}/avatar', [AuthController::class, 'showAvatar'])->whereNumber('user')->middleware('throttle:240,1,avatar-show');
 
 // The real clubs and players [PLAN 2.6], read-only and public: league templates, squads, badges.
 Route::prefix('data')->controller(DataController::class)->middleware('throttle:120,1,data')->group(function () {
@@ -72,6 +79,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::post('{league}/requests/{joinRequest}/reject', 'reject')->whereNumber(['league', 'joinRequest']);
     Route::post('{league}/vacation', 'vacation')->whereNumber('league');
     Route::delete('{league}/vacation', 'endVacation')->whereNumber('league');
+    Route::post('{league}/members/{membership}/vacation/approve', 'approveVacation')->whereNumber(['league', 'membership']);
+    Route::post('{league}/members/{membership}/vacation/reject', 'rejectVacation')->whereNumber(['league', 'membership']);
     Route::post('{league}/members/{membership}/kick', 'kick')->whereNumber(['league', 'membership']);
     Route::post('{league}/resign', 'resign')->whereNumber('league');
     Route::get('{league}/fixtures', 'fixtures')->whereNumber('league');

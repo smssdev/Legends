@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Notifications\ResetPasswordNotice;
 use App\Notifications\VerifyEmailNotice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -34,8 +35,8 @@ class AuthTest extends TestCase
     public function test_register_signs_in_on_the_web_and_sends_the_arabic_confirmation(): void
     {
         Notification::fake();
-        $this->web()->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'email' => ' Hamza@Example.com ', 'password' => 'secret123', 'terms' => true])
-            ->assertCreated()->assertJsonPath('user.email', 'hamza@example.com')->assertJsonPath('user.email_verified', false)
+        $this->web()->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'Hamza', 'email' => ' Hamza@Example.com ', 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
+            ->assertCreated()->assertJsonPath('user.email', 'hamza@example.com')->assertJsonPath('user.username', 'hamza')->assertJsonPath('user.email_verified', false)
             ->assertJsonMissingPath('token');
         $user = User::where('email', 'hamza@example.com')->firstOrFail();
         $this->assertAuthenticatedAs($user, 'web');
@@ -50,18 +51,64 @@ class AuthTest extends TestCase
     public function test_register_refuses_in_arabic_a_weak_password_a_taken_email_and_no_terms(): void
     {
         $this->user();
-        $this->postJson('/api/v1/auth/register', ['name' => 'س', 'email' => 'sliman@example.com', 'password' => 'abcdefgh'])
+        $this->postJson('/api/v1/auth/register', ['name' => 'س', 'username' => 'sliman', 'email' => 'sliman@example.com', 'password' => 'abcdefgh', 'password_confirmation' => 'abcdefgh'])
             ->assertStatus(422)->assertJsonPath('code', 'validation')
+            ->assertJsonPath('errors.username.0', 'اسم المستخدم مأخوذ، اختر غيره.')
             ->assertJsonPath('errors.email.0', 'البريد الإلكتروني مستخدم من قبل.')
             ->assertJsonPath('errors.name.0', 'يجب ألا يقل الاسم عن 2 أحرف.')
             ->assertJsonPath('errors.password.0', 'يجب أن تحتوي كلمة المرور رقماً واحداً على الأقل.')
             ->assertJsonPath('errors.terms.0', 'يجب قبول الشروط.');
     }
 
+    public function test_the_username_is_english_letters_only_and_the_password_is_confirmed(): void
+    {
+        foreach (['ab', 'hamza1', 'حمزة', 'ham_za', 'ham za', str_repeat('a', 21)] as $i => $bad) {
+            $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => $bad, 'email' => "h{$i}@example.com", 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
+                ->assertStatus(422)->assertJsonPath('errors.username.0', 'اسم المستخدم حروف إنجليزية فقط، من 3 إلى 20 حرفاً.');
+        }
+        $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'hamza', 'email' => 'h@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret124', 'terms' => true])
+            ->assertStatus(422)->assertJsonPath('errors.password.0', 'تأكيد كلمة المرور غير مطابق.');
+        // A taken one, whatever its case.
+        $this->user(['username' => 'sliman']);
+        $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'SLIMAN', 'email' => 'h9@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
+            ->assertStatus(422)->assertJsonPath('errors.username.0', 'اسم المستخدم مأخوذ، اختر غيره.');
+    }
+
+    public function test_an_account_made_without_a_username_gets_a_free_one_and_can_change_it(): void
+    {
+        $a = $this->user(['email' => 'mo.salah@example.com']);
+        $b = $this->user(['email' => 'mosalah@example.com']);
+        $this->assertSame('mosalah', $a->username);
+        $this->assertSame('mosalaha', $b->username);
+        Sanctum::actingAs($b);
+        $this->patchJson('/api/v1/auth/me', ['username' => 'MoSalah'])->assertStatus(422);
+        $this->patchJson('/api/v1/auth/me', ['username' => 'Pharaoh'])->assertOk()->assertJsonPath('user.username', 'pharaoh')->assertJsonPath('user.name', 'سليمان');
+    }
+
+    public function test_the_web_signs_in_with_the_username_too(): void
+    {
+        $this->user(['username' => 'sliman']);
+        $this->web()->postJson('/api/v1/auth/login', ['email' => 'Sliman', 'password' => 'secret123'])->assertOk()->assertJsonPath('user.username', 'sliman');
+    }
+
+    public function test_the_picture_is_cut_square_kept_small_and_shown_to_anyone(): void
+    {
+        $user = $this->user();
+        Sanctum::actingAs($user);
+        $this->postJson('/api/v1/auth/avatar', ['image' => UploadedFile::fake()->createWithContent('a.txt', 'not an image')])->assertStatus(422);
+        $url = $this->post('/api/v1/auth/avatar', ['image' => UploadedFile::fake()->image('me.png', 600, 400)], ['Accept' => 'application/json'])
+            ->assertOk()->json('user.avatar_url');
+        $this->assertStringStartsWith("/api/v1/users/{$user->id}/avatar?v=", $url);
+        $jpeg = $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/jpeg')->getContent();
+        $this->assertSame([256, 256], array_slice(getimagesizefromstring($jpeg), 0, 2));
+        $this->deleteJson('/api/v1/auth/avatar')->assertOk()->assertJsonPath('user.avatar_url', null);
+        $this->get("/api/v1/users/{$user->id}/avatar")->assertNotFound();
+    }
+
     public function test_the_app_registers_and_gets_a_token(): void
     {
         Notification::fake();
-        $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'email' => 'h@example.com', 'password' => 'secret123', 'terms' => true, 'device_name' => 'Pixel'])
+        $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'hamza', 'email' => 'h@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true, 'device_name' => 'Pixel'])
             ->assertCreated()->assertJsonStructure(['token', 'expires_at']);
     }
 

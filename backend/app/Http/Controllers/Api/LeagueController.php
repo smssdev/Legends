@@ -115,11 +115,37 @@ class LeagueController extends Controller
         ], $joinRequest->wasRecentlyCreated ? 201 : 200);
     }
 
-    /** A holiday of 1 to 7 days, once a season: absence is not counted meanwhile [PLAN 2.2]. */
+    /**
+     * Ask for a holiday of 1 to 7 days in this league alone, once a season, with a reason its owner approves [X4].
+     * The account's holiday covers every league without asking (PUT /auth/vacation).
+     */
     public function vacation(Request $request, League $league): JsonResponse
     {
-        $data = $request->validate(['days' => ['required', 'integer', 'between:1,'.config('game.league.vacation_max_days')]]);
-        Presence::startHoliday($this->membership($request->user(), $league), (int) $data['days']);
+        $data = $request->validate([
+            'days' => ['required', 'integer', 'between:1,'.config('game.league.vacation_max_days')],
+            'reason' => ['required', 'string', 'min:5', 'max:300'],
+        ]);
+        Presence::askHoliday($this->membership($request->user(), $league), (int) $data['days'], trim($data['reason']), $league->isOwner($request->user()));
+
+        return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
+    }
+
+    /** The owner approves a coach's holiday request [X4]. */
+    public function approveVacation(Request $request, League $league, LeagueMembership $membership): JsonResponse
+    {
+        return $this->decideVacation($request, $league, $membership, true);
+    }
+
+    public function rejectVacation(Request $request, League $league, LeagueMembership $membership): JsonResponse
+    {
+        return $this->decideVacation($request, $league, $membership, false);
+    }
+
+    private function decideVacation(Request $request, League $league, LeagueMembership $membership, bool $approve): JsonResponse
+    {
+        $this->owner($request->user(), $league);
+        abort_unless($membership->league_id === $league->id, 404);
+        Presence::decide($membership, $approve);
 
         return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
     }
@@ -452,6 +478,8 @@ class LeagueController extends Controller
             'on_holiday' => Presence::onHoliday($m),
             'vacation_until' => $m->vacation_until?->toIso8601ZuluString(),
             'vacation_used' => $m->vacation_from !== null,
+            'vacation_requested' => $m->vacation_requested_at !== null,
+            'account_vacation' => (bool) $user->onVacation(),
             'absence_warning' => $m->absence_warned_at !== null,
             // When the club goes back to a bot if nothing changes: only once the season counts absence.
             'away_deadline' => ($since = Presence::quietSince($m, $l->season->starts_at))
@@ -464,10 +492,13 @@ class LeagueController extends Controller
         return LeagueMembership::where('season_id', $seasonId)->whereNull('left_at')->with('user', 'club')->orderBy('joined_at')->get()
             ->map(fn (LeagueMembership $m) => [
                 'id' => $m->id,
-                'user' => ['id' => $m->user_id, 'name' => $m->user?->name],
+                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl()],
                 'club' => $m->club ? ['id' => $m->club->id, 'name' => $m->club->name] : null,
                 'is_owner' => $m->user_id === $l->owner_id,
                 'on_holiday' => Presence::onHoliday($m),
+                // A holiday request waiting for the owner, with its reason: only the owner sees it [X4].
+                'vacation_request' => $owner && $m->vacation_requested_at
+                    ? ['days' => (int) $m->vacation_request_days, 'reason' => $m->vacation_reason, 'at' => $m->vacation_requested_at->toIso8601ZuluString()] : null,
                 'joined_at' => $m->joined_at->toIso8601ZuluString(),
                 // The owner sees who has been quiet; coaches do not watch each other.
                 'last_active_at' => $owner ? $m->last_active_at?->toIso8601ZuluString() : null,

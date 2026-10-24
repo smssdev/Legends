@@ -54,6 +54,11 @@ class LeaguePresenceTest extends TestCase
         return $this->actingAs($user)->getJson("/api/v1/leagues/{$this->league['id']}")->assertOk()->json('league');
     }
 
+    private function membershipId(User $user): int
+    {
+        return (int) DB::table('league_memberships')->where('league_id', $this->league['id'])->where('user_id', $user->id)->whereNull('left_at')->value('id');
+    }
+
     private function coachLeft(): ?string
     {
         return DB::table('league_memberships')->where('user_id', $this->coach->id)->value('left_reason');
@@ -107,18 +112,35 @@ class LeaguePresenceTest extends TestCase
         $this->assertSame('absent', $this->coachLeft());
     }
 
-    public function test_a_holiday_of_up_to_7_days_once_a_season_stops_the_count(): void
+    public function test_a_league_holiday_of_up_to_7_days_once_a_season_needs_a_reason_the_owner_approves(): void
     {
         $url = "/api/v1/leagues/{$this->league['id']}/vacation";
-        $this->actingAs($this->coach)->postJson($url, ['days' => 8])->assertUnprocessable();
-        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/vacation", ['days' => 1])->assertOk();
-        $this->actingAs(User::factory()->create())->postJson($url, ['days' => 3])->assertForbidden();
+        $why = 'سفر للعمل خارج البلد';
+        $this->actingAs($this->coach)->postJson($url, ['days' => 8, 'reason' => $why])->assertUnprocessable();
+        $this->postJson($url, ['days' => 3])->assertUnprocessable()->assertJsonValidationErrors('reason');
+        // The owner's own holiday starts at once.
+        $this->actingAs($this->owner)->postJson($url, ['days' => 1, 'reason' => $why])->assertOk()->assertJsonPath('league.me.on_holiday', true);
+        $this->actingAs(User::factory()->create())->postJson($url, ['days' => 3, 'reason' => $why])->assertForbidden();
 
         $this->passTime('2 days');
-        $me = $this->actingAs($this->coach)->postJson($url, ['days' => 7])->assertOk()->json('league.me');
+        $me = $this->actingAs($this->coach)->postJson($url, ['days' => 7, 'reason' => $why])->assertOk()->json('league.me');
+        $this->assertFalse($me['on_holiday']);
+        $this->assertTrue($me['vacation_requested']);
+        $this->postJson($url, ['days' => 2, 'reason' => $why])->assertConflict()->assertJsonPath('message', 'طلبك للإجازة ينتظر رد مسؤول الدوري.');
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'vacation_request')->count());
+
+        // Only the owner sees the reason, and only the owner decides.
+        $mid = $this->membershipId($this->coach);
+        $members = $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.members');
+        $this->assertSame($why, collect($members)->firstWhere('id', $mid)['vacation_request']['reason']);
+        $this->assertNull(collect($this->actingAs($this->coach)->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.members'))->firstWhere('id', $mid)['vacation_request']);
+        $this->actingAs($this->coach)->postJson("/api/v1/leagues/{$this->league['id']}/members/{$mid}/vacation/approve")->assertForbidden();
+        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/members/{$mid}/vacation/approve")->assertOk();
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->coach->id)->where('type', 'vacation_approved')->count());
+        $me = $this->actingAs($this->coach)->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.me');
         $this->assertTrue($me['on_holiday']);
         $this->assertNull($me['away_deadline']);
-        $this->postJson($url, ['days' => 2])->assertConflict()->assertJsonPath('message', 'استخدمت إجازة هذا الموسم من قبل.');
+        $this->postJson($url, ['days' => 2, 'reason' => $why])->assertConflict()->assertJsonPath('message', 'استخدمت إجازة هذا الموسم من قبل.');
 
         // Six days away on holiday: nothing happens. It ends on day 7, and the count starts from there.
         $this->passTime('6 days');
@@ -130,14 +152,43 @@ class LeaguePresenceTest extends TestCase
         $this->assertSame('absent', $this->coachLeft());
     }
 
-    public function test_coming_back_early_ends_the_holiday_and_it_still_counts(): void
+    public function test_a_refused_holiday_can_be_asked_again(): void
     {
         $url = "/api/v1/leagues/{$this->league['id']}/vacation";
-        $this->actingAs($this->coach)->deleteJson($url)->assertConflict();
-        $this->postJson($url, ['days' => 5])->assertOk();
+        $this->actingAs($this->coach)->postJson($url, ['days' => 3, 'reason' => 'ظرف عائلي طارئ'])->assertOk();
+        $mid = $this->membershipId($this->coach);
+        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/members/{$mid}/vacation/reject")->assertOk();
+        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/members/{$mid}/vacation/reject")->assertConflict();
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->coach->id)->where('type', 'vacation_rejected')->count());
+        $this->actingAs($this->coach)->postJson($url, ['days' => 3, 'reason' => 'ظرف عائلي طارئ'])->assertOk()->assertJsonPath('league.me.vacation_requested', true);
+    }
+
+    public function test_the_account_holiday_covers_every_league_without_asking(): void
+    {
+        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 15])->assertUnprocessable();
+        $this->postJson('/api/v1/auth/vacation', ['days' => 10])->assertOk()->assertJsonPath('user.vacation.on', true);
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertConflict()->assertJsonPath('message', 'أنت في إجازة الآن.');
+        $this->assertTrue($this->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.me.on_holiday'));
+
+        // Nine days away: the team stays. It ends on day 10, and the count starts from there.
+        $this->passTime('9 days');
+        $this->assertNull($this->coachLeft());
         $this->passTime('1 day');
-        $this->actingAs($this->coach)->deleteJson($url)->assertOk()->assertJsonPath('league.me.on_holiday', false)->assertJsonPath('league.me.vacation_used', true);
-        $this->postJson($url, ['days' => 1])->assertConflict();
+        $this->passTime('71 hours');
+        $this->assertNull($this->coachLeft());
+        $this->passTime('1 hour');
+        $this->assertSame('absent', $this->coachLeft());
+    }
+
+    public function test_the_next_account_holiday_waits_for_the_rest_days(): void
+    {
+        $this->actingAs($this->coach)->deleteJson('/api/v1/auth/vacation')->assertConflict();
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertOk();
+        $this->passTime('1 day');
+        $this->actingAs($this->coach)->deleteJson('/api/v1/auth/vacation')->assertOk()->assertJsonPath('user.vacation.on', false);
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertConflict();
+        $this->passTime('14 days');
+        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 2])->assertOk();
     }
 
     public function test_the_owner_kicks_a_coach_with_a_reason_everyone_sees(): void

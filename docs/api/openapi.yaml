@@ -52,11 +52,13 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, email, password, terms]
+              required: [name, username, email, password, password_confirmation, terms]
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
+                username: { type: string, pattern: '^[A-Za-z]{3,20}$', description: 'English letters only, unique whatever the case, kept in lower case' }
                 email: { type: string, format: email }
                 password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
+                password_confirmation: { type: string, description: The password again }
                 terms: { type: boolean, description: Must be true }
                 device_name: { type: string, maxLength: 100, description: The device name }
       responses:
@@ -76,7 +78,7 @@ paths:
               type: object
               required: [email, password]
               properties:
-                email: { type: string, format: email }
+                email: { type: string, description: The email or the username }
                 password: { type: string }
                 remember: { type: boolean }
       responses:
@@ -185,16 +187,16 @@ paths:
         '401': { $ref: '#/components/responses/Error' }
     patch:
       tags: [auth]
-      summary: Change the name
+      summary: Change the name or the username
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [name]
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
+                username: { type: string, pattern: '^[A-Za-z]{3,20}$' }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
@@ -234,6 +236,66 @@ paths:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /auth/avatar:
+    post:
+      tags: [auth]
+      summary: Set the account's picture
+      description: Any image up to 4 MB (JPEG, PNG, WebP or GIF), cut to its middle square and kept as a 256-pixel JPEG.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [auth]
+      summary: Remove the picture
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+  /auth/vacation:
+    post:
+      tags: [auth]
+      summary: Start the account's holiday
+      description: Up to 14 days, in every league at once and without asking; absence is not counted, so no team is lost. The next one 14 days after it ends.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [days]
+              properties:
+                days: { type: integer, minimum: 1, maximum: 14 }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [auth]
+      summary: End the account's holiday now
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /users/{user}/avatar:
+    get:
+      tags: [auth]
+      summary: An account's picture (public)
+      security: []
+      parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: The JPEG, content: { image/jpeg: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
   /auth/email/resend:
     post:
       tags: [auth]
@@ -526,17 +588,18 @@ paths:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
       tags: [leagues]
-      summary: Start a holiday
-      description: 1 to 7 days, once a season. Absence is not counted meanwhile (docs/PLAN.md 2.2).
+      summary: Ask for a holiday in this league alone
+      description: 1 to 7 days, once a season, with a reason the owner approves (the owner's own starts at once). Absence is not counted meanwhile. The account's holiday (/auth/vacation) covers every league without asking.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [days]
+              required: [days, reason]
               properties:
                 days: { type: integer, minimum: 1, maximum: 7 }
+                reason: { type: string, minLength: 5, maxLength: 300 }
       responses:
         '200': { $ref: '#/components/responses/League' }
         '403': { $ref: '#/components/responses/Error' }
@@ -549,6 +612,30 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/League' }
         '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/members/{membership}/vacation/approve:
+    parameters:
+      - $ref: '#/components/parameters/League'
+      - { name: membership, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: Approve a coach's holiday request (owner); it starts now
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/members/{membership}/vacation/reject:
+    parameters:
+      - $ref: '#/components/parameters/League'
+      - { name: membership, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: Refuse a coach's holiday request (owner); it can be asked again
+      responses:
+        '200': { $ref: '#/components/responses/League' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/members/{membership}/kick:
     parameters:
@@ -2521,6 +2608,8 @@ components:
             on_holiday: { type: boolean }
             vacation_until: { type: string, format: date-time, nullable: true }
             vacation_used: { type: boolean, description: The season's one holiday is taken }
+            vacation_requested: { type: boolean, description: A holiday request waits for the owner }
+            account_vacation: { type: boolean, description: "The account's holiday is on (every league)" }
             absence_warning: { type: boolean, description: 48 hours quiet; cleared by any visit }
             away_deadline: { type: string, format: date-time, nullable: true, description: When the club goes back to a bot if I stay away; null before the season and on holiday }
         members:
@@ -2531,10 +2620,18 @@ components:
             required: [id, user, is_owner, on_holiday, joined_at]
             properties:
               id: { type: integer, description: Membership id (for the kick) }
-              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, avatar_url: { type: string, nullable: true } } }
               club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
               is_owner: { type: boolean }
               on_holiday: { type: boolean }
+              vacation_request:
+                type: object
+                nullable: true
+                description: A holiday request waiting for the owner; for the owner only
+                properties:
+                  days: { type: integer }
+                  reason: { type: string }
+                  at: { type: string, format: date-time }
               joined_at: { type: string, format: date-time }
               last_active_at: { type: string, format: date-time, nullable: true, description: For the owner only }
         departures:
@@ -3111,16 +3208,27 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, email, email_verified, role, has_password, google]
+      required: [id, name, username, avatar_url, email, email_verified, role, has_password, google, vacation]
       properties:
         id: { type: integer }
         name: { type: string }
+        username: { type: string, description: 'English letters only, lower case' }
+        avatar_url: { type: string, nullable: true, description: 'The picture (GET /users/{id}/avatar), null without one' }
         email: { type: string, format: email }
         email_verified: { type: boolean }
         role: { type: string, enum: [user, admin] }
         has_password: { type: boolean, description: False for an account made with Google only }
         google: { type: boolean, description: Linked to a Google account }
         created_at: { type: string, format: date-time }
+        vacation:
+          type: object
+          required: [on, until, next_from, max_days]
+          description: The account's holiday (every league)
+          properties:
+            on: { type: boolean }
+            until: { type: string, format: date-time, nullable: true }
+            next_from: { type: string, format: date-time, nullable: true, description: When a new one may start }
+            max_days: { type: integer }
     Error:
       type: object
       required: [message, code]

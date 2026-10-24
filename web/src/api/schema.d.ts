@@ -28,10 +28,14 @@ export interface paths {
                 content: {
                     "application/json": {
                         name: string;
+                        /** @description English letters only, unique whatever the case, kept in lower case */
+                        username: string;
                         /** Format: email */
                         email: string;
                         /** @description At least 8 characters with letters and numbers */
                         password: string;
+                        /** @description The password again */
+                        password_confirmation: string;
                         /** @description Must be true */
                         terms: boolean;
                         /** @description The device name */
@@ -71,7 +75,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** Format: email */
+                        /** @description The email or the username */
                         email: string;
                         password: string;
                         remember?: boolean;
@@ -377,7 +381,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Change the name */
+        /** Change the name or the username */
         patch: {
             parameters: {
                 query?: never;
@@ -388,7 +392,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        name: string;
+                        name?: string;
+                        username?: string;
                     };
                 };
             };
@@ -432,6 +437,153 @@ export interface paths {
                 422: components["responses"]["ValidationError"];
             };
         };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set the account's picture
+         * @description Any image up to 4 MB (JPEG, PNG, WebP or GIF), cut to its middle square and kept as a 256-pixel JPEG.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        image: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                401: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+                429: components["responses"]["Error"];
+            };
+        };
+        /** Remove the picture */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Account"];
+                401: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/vacation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start the account's holiday
+         * @description Up to 14 days, in every league at once and without asking; absence is not counted, so no team is lost. The next one 14 days after it ends.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        days: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                401: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        /** End the account's holiday now */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Account"];
+                401: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{user}/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** An account's picture (public) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The JPEG */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1148,8 +1300,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Start a holiday
-         * @description 1 to 7 days, once a season. Absence is not counted meanwhile (docs/PLAN.md 2.2).
+         * Ask for a holiday in this league alone
+         * @description 1 to 7 days, once a season, with a reason the owner approves (the owner's own starts at once). Absence is not counted meanwhile. The account's holiday (/auth/vacation) covers every league without asking.
          */
         post: {
             parameters: {
@@ -1164,6 +1316,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         days: number;
+                        reason: string;
                     };
                 };
             };
@@ -1194,6 +1347,80 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/members/{membership}/vacation/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                membership: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a coach's holiday request (owner); it starts now */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    membership: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/members/{membership}/vacation/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                membership: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refuse a coach's holiday request (owner); it can be asked again */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    membership: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["League"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -5592,6 +5819,10 @@ export interface components {
                 vacation_until?: string | null;
                 /** @description The season's one holiday is taken */
                 vacation_used: boolean;
+                /** @description A holiday request waits for the owner */
+                vacation_requested?: boolean;
+                /** @description The account's holiday is on (every league) */
+                account_vacation?: boolean;
                 /** @description 48 hours quiet; cleared by any visit */
                 absence_warning: boolean;
                 /**
@@ -5607,6 +5838,8 @@ export interface components {
                 user: {
                     id: number;
                     name: string;
+                    username?: string | null;
+                    avatar_url?: string | null;
                 };
                 club?: {
                     id: number;
@@ -5614,6 +5847,13 @@ export interface components {
                 } | null;
                 is_owner: boolean;
                 on_holiday: boolean;
+                /** @description A holiday request waiting for the owner; for the owner only */
+                vacation_request?: {
+                    days?: number;
+                    reason?: string;
+                    /** Format: date-time */
+                    at?: string;
+                } | null;
                 /** Format: date-time */
                 joined_at: string;
                 /**
@@ -6209,6 +6449,10 @@ export interface components {
         Account: {
             id: number;
             name: string;
+            /** @description English letters only, lower case */
+            username: string;
+            /** @description The picture (GET /users/{id}/avatar), null without one */
+            avatar_url: string | null;
             /** Format: email */
             email: string;
             email_verified: boolean;
@@ -6220,6 +6464,18 @@ export interface components {
             google: boolean;
             /** Format: date-time */
             created_at?: string;
+            /** @description The account's holiday (every league) */
+            vacation: {
+                on: boolean;
+                /** Format: date-time */
+                until: string | null;
+                /**
+                 * Format: date-time
+                 * @description When a new one may start
+                 */
+                next_from: string | null;
+                max_days: number;
+            };
         };
         /** @description Every API error has this shape (app/Http/Errors/ApiErrors.php). */
         Error: {

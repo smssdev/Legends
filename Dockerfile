@@ -21,6 +21,12 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 
 FROM php:8.4-cli-alpine
 WORKDIR /app/backend
+# GD makes the accounts' pictures small squares (App\Support\Avatar).
+RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype \
+ && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
+ && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
+ && docker-php-ext-install -j"$(nproc)" gd \
+ && apk del .gd-build
 # Litestream (free, open source): copies every change to the databases to B2 and brings it back on start.
 ARG LITESTREAM_VERSION=0.3.13
 ADD https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-amd64.tar.gz /tmp/litestream.tar.gz

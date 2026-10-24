@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Auth\Username;
 use App\Notifications\ResetPasswordNotice;
 use App\Notifications\VerifyEmailNotice;
+use App\Support\GameClock;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -23,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
-    protected $fillable = ['name', 'email', 'password', 'google_id'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'google_id'];
 
     /** @var list<string> */
     protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
@@ -33,7 +37,33 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'vacation_from' => 'datetime',
+            'vacation_until' => 'datetime',
         ];
+    }
+
+    /** Every account has a username [X4]: one made without it (Google, a test) gets a free one from its email. */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            $user->username = $user->username ? strtolower($user->username) : Username::free(strtok((string) $user->email, '@') ?: (string) $user->name);
+        });
+    }
+
+    /** The account's holiday [X4]: every league it coaches in stops counting its absence meanwhile. */
+    public function onVacation(?Carbon $at = null): bool
+    {
+        $at ??= GameClock::now();
+
+        return $this->vacation_from !== null && $this->vacation_from->lte($at) && $this->vacation_until->gt($at);
+    }
+
+    /** The picture's address, with its time so a new one is not taken from the cache; null without one. */
+    public function avatarUrl(): ?string
+    {
+        $at = DB::table('user_avatars')->where('user_id', $this->id)->value('updated_at');
+
+        return $at ? '/api/v1/users/'.$this->id.'/avatar?v='.strtotime($at) : null;
     }
 
     public function isAdmin(): bool
@@ -52,12 +82,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'username' => $this->username,
+            'avatar_url' => $this->avatarUrl(),
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
             'role' => $this->role,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,
             'created_at' => $this->created_at?->toIso8601ZuluString(),
+            'vacation' => [
+                'on' => $this->onVacation(),
+                'until' => $this->vacation_until?->toIso8601ZuluString(),
+                // A new holiday once the last one has ended and the rest days after it have passed.
+                'next_from' => $this->vacation_until?->copy()->addDays((int) config('game.account.vacation_rest_days'))->toIso8601ZuluString(),
+                'max_days' => (int) config('game.account.vacation_max_days'),
+            ],
         ];
     }
 

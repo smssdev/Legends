@@ -54,7 +54,7 @@ async function submit() {
   <GoogleButton label="المتابعة بحساب Google" />
   <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />أو بالبريد<span class="h-px flex-1 bg-text/10" /></div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <TextField v-model="email" label="البريد الإلكتروني" type="email" autocomplete="email" placeholder="you@example.com" :error="errors.email" />
+    <TextField v-model="email" label="البريد أو اسم المستخدم" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
     <TextField v-model="password" label="كلمة المرور" type="password" autocomplete="current-password" :error="errors.password">
       <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">نسيت كلمة المرور؟</RouterLink></template>
     </TextField>

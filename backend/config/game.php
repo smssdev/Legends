@@ -215,6 +215,9 @@ return [
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
+    // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
+    // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
+    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256],
     // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
     // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
     'monitoring' => [
@@ -249,7 +252,7 @@ return [
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected'],
             'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report'],
-            'absence' => ['absence_warning', 'left_absent', 'kicked'],
+            'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
         ],
         'match_soon_minutes' => 10,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],

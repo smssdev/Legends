@@ -16,7 +16,7 @@ class LeagueMembership extends Model
     {
         return [
             'joined_at' => 'datetime', 'left_at' => 'datetime', 'last_active_at' => 'datetime', 'absence_warned_at' => 'datetime',
-            'vacation_from' => 'datetime', 'vacation_until' => 'datetime',
+            'vacation_from' => 'datetime', 'vacation_until' => 'datetime', 'vacation_requested_at' => 'datetime',
         ];
     }
 
