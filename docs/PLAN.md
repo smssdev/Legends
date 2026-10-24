@@ -342,7 +342,7 @@ unity/
 | # | الخطوة | من | أين وكيف |
 |---|---|---|---|
 | 1 | حساب Backblaze | سليمان | https://www.backblaze.com/sign-up/cloud-storage: الصفحة تبدو صفحة دخول، والتسجيل منها نفسها: اكتب بريدك ← **Get started for free** ← افتح رابط التأكيد من بريدك **في نفس المتصفح** ← كلمة مرور، والمنطقة (**EU Central** الأقرب لنا)، والموافقة ← **Create Account**. لو طلب بطاقة: الخطوة 4 تمنع أي خصم |
-| 2 | مكان التخزين (Bucket) | سليمان | B2 ← **Buckets** ← **Create a Bucket**: الاسم مثل `legends-save-` ثم أرقام (فريد عالمياً)، و**Private**، وObject Lock مطفأ. ثم انسخ **Endpoint** الظاهر تحته (مثل `s3.us-east-005.backblazeb2.com`) |
+| 2 | مكان التخزين (Bucket) | سليمان | B2 ← **Buckets** ← **Create a Bucket**: الاسم مثل `legends-save-` ثم أرقام (فريد عالمياً)، و**Private**، وObject Lock مطفأ. ثم انسخ **Endpoint** الظاهر تحته (مثل `s3.eu-central-003.backblazeb2.com`، بلا `https://`) |
 | 3 | مفتاح الدخول | سليمان | **Application Keys** ← **Add a New Application Key**: الاسم `legends-render`، وAllow access to Bucket: الذي صنعته فقط، و**Read and Write**. ثم انسخ **keyID** و**applicationKey** فوراً، لأنه يظهر مرة واحدة |
 | 4 | سقف الدفع صفر | سليمان | **Caps & Alerts**: كل الأسقف اليومية (Storage وDownload وClass B وClass C) على **$0** |
 | 5 | متغيرات Render | سليمان | الخدمة ← **Environment** ← أضف: `B2_BUCKET` (اسم المكان)، و`B2_ENDPOINT` (الـ Endpoint)، و`B2_KEY_ID` (keyID)، و`B2_APPLICATION_KEY` (applicationKey)، و`APP_KEY_SEED` (نص عشوائي طويل، 40 حرفاً فأكثر، إن لم يصنعه `render.yaml`) ← **Save** |
@@ -351,6 +351,10 @@ unity/
 | 8 | منع النوم | سليمان | https://cron-job.org (مجاني) ← **Create cronjob**: العنوان `https://<الخدمة>.onrender.com/up`، وكل **5 دقائق** |
 | 9 | المتابعة | سليمان | B2 ← **Buckets** يعرض الحجم. وعند الاقتراب من 10 جيجا ننتقل للجهاز المنزلي أو VPS (النقل = نسخ ملفات SQLite) |
 
+- **الحالة (2026-10-24):**
+  - ✅ الخطوة 1: الحساب.
+  - ✅ الخطوة 2: الـ Bucket في `eu-central-003`، والـ Endpoint هو `s3.eu-central-003.backblazeb2.com`.
+  - يبقى من 3 إلى 9. وهي مهمة X2 في Sprint 2.
 - **إن تعطل شيء:**
   - **Logs على Render:** فيها سطر `Saved game` يقول هل الحفظ يعمل.
   - **رسالة خطأ من `litestream restore`:** المفتاح أو الـ Endpoint خطأ، فيُصحَّح في Environment ثم Manual Deploy.
@@ -379,6 +383,11 @@ unity/
 > **المدد** تقديرية بأيام عمل كاملة (5 ساعات يومياً)، والموسم التجريبي بأيام حقيقية. تُعدَّل هنا عند نهاية كل سبرنت.
 >
 > **لا يبدأ سبرنت إلا بطلب صاحب المشروع** (2026-10-23). وClaude لا يكمل سبرنتاً وحده.
+>
+> **بالتوازي (قرار صاحب المشروع، 2026-10-24):** نكمل محاكاة Unity سبرنتاً سبرنتاً، ومعها تعديلات وتحسينات على ما أُنجز في Sprint 1 (الخادم والويب والنشر).
+> - كل تعديل يُطلب يُسجَّل في جدول «تعديلات بالتوازي» داخل السبرنت الجاري، برمز X، ومعه من ينفذه وحالته.
+> - وكل تعديل في PR صغير مستقل، يُدمج حين يخضر، ولا ينتظر إغلاق السبرنت.
+> - ويُضاف ما يُنجز منه إلى `DONE.md` تحت السبرنت الجاري.
 >
 > **أين يُعمل:** سبرنتات Unity (2 إلى 8، و12) على **جهاز سليمان** عبر Claude Code في Claude Desktop (7.9). وسبرنتات الخادم والويب والتطبيق في أي جلسة.
 >
@@ -428,6 +437,26 @@ unity/
 | B1 | **`GET /api/v1/matches/{id}/scene`** (7.7): الناديان (الاسم والرمز واللونان والنقش من `App\Data\Crest`)، واللاعبون (المعرّف والرقم والمركز والخط)، والملعب وساعة المباراة. في العقد `openapi.yaml`، واختبار Feature، واختبار أنه لا يحمل أي تكتيك مخفي | Claude | `backend/app/Http/Controllers/Api/`، `openapi.yaml` |
 | X1 | رفع ملفات Unity الصحيحة إلى git: `ProjectSettings/` و`Packages/` وكل `.meta`، لا `Library/` | Claude | `unity/` |
 
+**تعديلات بالتوازي** (على ما أُنجز، خارج مشهد Unity):
+
+| الرمز | التعديل | من | الحالة |
+|---|---|---|---|
+| X2 | **حفظ بيانات Render** (8.1): Litestream إلى Backblaze B2، و`APP_KEY_SEED` ثابت، وcron-job.org لمنع النوم | Claude (الكود، PR #540 و#541 ✅) ثم سليمان (الإعداد) | الكود مدموج. والإعداد: ✅ الحساب والـ Bucket، ويبقى ما في الجدول تحته |
+| X3 | **تنظيف المستودع:** التنزيل 189 ميجا بدل 422 (حُذفت من السجل صور `art/raw` القديمة، وملفات zip الأربعة المكررة من `audio/raw`، ولقطات `docs/reference/osm`)، و`unity/.gitignore` | Claude | ✅ (2026-10-24) |
+
+**المطلوب من سليمان في X2** (التفصيل في 8.1):
+
+| # | الخطوة | الحالة |
+|---|---|---|
+| 1 | حساب Backblaze | ✅ |
+| 2 | الـ Bucket، والـ Endpoint `s3.eu-central-003.backblazeb2.com` | ✅ |
+| 3 | مفتاح `legends-render` لهذا الـ Bucket فقط، **Read and Write**. ونسخ keyID وapplicationKey فوراً، **ولا يُرسلان في أي محادثة** | |
+| 4 | **Caps & Alerts:** كل الأسقف على $0 | |
+| 5 | Render ← **Environment**: `B2_BUCKET`، و`B2_ENDPOINT` (`s3.eu-central-003.backblazeb2.com`)، و`B2_KEY_ID`، و`B2_APPLICATION_KEY`، و`APP_KEY_SEED` (نص عشوائي من 40 حرفاً فأكثر، يُحفظ عند سليمان) ← **Save** | |
+| 6 | **Manual Deploy**، وإرسال سطر `Saved game` من **Logs** لـ Claude | |
+| 7 | تجربة: حساب جديد ← **Restart service** ← الحساب باقٍ، وفي Logs: `brought back from B2` | |
+| 8 | cron-job.org: زيارة `https://<الخدمة>.onrender.com/up` كل 5 دقائق | |
+
 **الأيام:**
 
 | اليوم | العمل |
@@ -443,6 +472,7 @@ unity/
 - [x] `build.ps1 test` كله أخضر (EditMode 12، وPlayMode 3)، و`build.ps1 capture` يُخرج الصور الخمس
 - [x] نسخة الويب تفتح في المتصفح وتلعب المباراة (`build.ps1 webgl` ثم `build.ps1 serve`)
 - [ ] `/matches/{id}/scene` مُختبر، ولا يحمل تكتيكاً مخفياً
+- [ ] (بالتوازي) X2: بيانات Render تبقى بعد إعادة التشغيل (الخطوة 7 أعلاه)
 
 **الحالة (2026-10-24، نهاية اليوم الأول):**
 - **تم:** U1 وU2 وU3 وU4 وU5 وU7 وU8، والتفصيل في `DONE.md` (Sprint 2). وX1 بـ `unity/.gitignore` الموجود (يُرفع `Assets` و`Packages` و`ProjectSettings` وكل `.meta`، لا `Library` ولا `Builds` ولا `Logs`).
@@ -452,6 +482,7 @@ unity/
   1. **B1:** `GET /api/v1/matches/{id}/scene` في `MatchController` (نفس `load()`: لأعضاء الدوري فقط): الناديان (المعرّف والاسم والرمز واللونان والنقش من `App\Data\Crest`، ويُستخرج النقش منه في دالة عامة)، واللاعبون (المعرّف والرقم والمركز والخط ومن بدأ) من `matches.state`، والملعب (الأرينا أو الكلاسيكي) وساعة المباراة المحلية ليلاً أو نهاراً (`scheduled_at` بتوقيت `Africa/Cairo`، والحدود في `config/game.php`)، و`tick_ms`. ثم اختبار Feature (`tests/Feature/MatchSceneTest.php` بـ `MakesLeagues`) واختبار أنه لا يحمل أي مفتاح من `MatchSetup::DEFAULT_TACTICS`، وتحديث `docs/api/openapi.yaml` و`npm run api` في `web/`.
   2. صور الالتقاط بعد آخر تعديل (`build.ps1 demo` ثم `capture`) للـ PR.
   3. إغلاق السبرنت: علامة B1 هنا، وPR يراجعه حمزة.
+  4. **بالتوازي:** سليمان يكمل X2 من الخطوة 3، ويرسل سطر `Saved game` من Logs.
 - **ملاحظات من الصور لسبرنتات قادمة:** الجمهور ممطوط وضبابي (Sprint 5)، واللاعبون كبسولات (Sprint 3).
 
 **يراجعه حمزة:** يفتح الصور الملتقطة في الـ PR، ويشغّل نسخة الويب من الرابط المرفق، ويتأكد أن المباراة تتحرك.
