@@ -14,8 +14,15 @@
     "8000": { "label": "Legends (built app + API)", "onAutoForward": "openBrowser" },
     "5173": { "label": "Vite dev server" }
   },
+  // Optional Codespaces secrets (github.com/settings/codespaces), read by .devcontainer/env.sh.
+  "secrets": {
+    "GMAIL_ADDRESS": { "description": "The Gmail address that sends the game's emails (confirmation, password reset)." },
+    "GMAIL_APP_PASSWORD": { "description": "An app password for that Gmail (myaccount.google.com/apppasswords), not the Gmail password." },
+    "GOOGLE_CLIENT_ID": { "description": "Google sign-in: the OAuth web client id from console.cloud.google.com." },
+    "GOOGLE_CLIENT_SECRET": { "description": "Google sign-in: that client's secret." }
+  },
   "customizations": {
-    "codespaces": { "openFiles": ["docs/sprints/sprint-02.md"] },
+    "codespaces": { "openFiles": ["docs/DONE.md"] },
     "vscode": { "extensions": ["Vue.volar", "bmewburn.vscode-intelephense-client", "bradlc.vscode-tailwindcss"] }
   }
 }

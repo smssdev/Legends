@@ -22,6 +22,18 @@
 - **البريد محلياً** يُكتب في `backend/storage/logs/laravel.log` (رابط التأكيد والاستعادة).
 - **المدير:** عمود `role = admin` في `users` (للمحاكي خارج التطوير ولوحة الإدارة).
 
+**الحسابات في Codespaces (إصلاح 2026-10-24):**
+- **السبب:** كان الخادم يعرف نفسه بـ `localhost:8000` لا بعنوان الـ Codespace العام، فيرفض Sanctum كوكيز الجلسة القادمة منه: التسجيل ينجح ثم يظهر «غير مسجل». وروابط البريد كانت تشير إلى `localhost`، والبريد لا يُرسل أصلاً (`MAIL_MAILER=log`)، وجوجل بلا معرّفات.
+- **الإصلاح:** `.devcontainer/env.sh` يضبط عند كل فتح: العنوان العام (`APP_URL` و`FRONTEND_URL`)، والنطاق في `SANCTUM_STATEFUL_DOMAINS`، وكوكيز https، والثقة بتمرير GitHub (`TRUSTED_PROXIES=*`، في `bootstrap/app.php`)، وعنوان رجوع جوجل، و`BROADCAST_CONNECTION=log` (لا Reverb هنا). و`start.sh` يشغّل معه الطابور والمجدول و`matches:run`.
+- **الأسرار للفريق كله (سليمان وحمزة):** صاحب المستودع يضيفها مرة في المستودع نفسه: Settings ← Secrets and variables ← Codespaces ← New repository secret، فتصل كل Codespace لأي عضو. (أو كل واحد لنفسه من github.com/settings/codespaces.)
+- **البريد الحقيقي إلى Gmail:**
+  - `GMAIL_ADDRESS`: بريد Gmail المرسِل.
+  - `GMAIL_APP_PASSWORD`: «كلمة مرور تطبيق» من myaccount.google.com/apppasswords (تحتاج التحقق بخطوتين)، لا كلمة مرور Gmail.
+- **الدخول بجوجل:** في console.cloud.google.com ← APIs & Services ← Credentials ← Create OAuth client ID ← Web application، وفي Authorized redirect URIs: `https://<اسم الـ Codespace>-8000.app.github.dev/auth/google/callback` (يطبعه `start.sh` عند الفتح). ثم سرّان: `GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET`. ولكل Codespace عنوانه: يُضاف عنوان كل واحد (سليمان وحمزة) في نفس القائمة، وفي OAuth consent screen ← Test users يُضاف بريد كل من يجرب.
+- **حمزة يجرب:** من المستودع Code ← Codespaces ← Create codespace on main، ثم يرسل لسليمان العنوان الذي يطبعه `start.sh` ليضيفه في Google.
+- بعد إضافة الأسرار: أعد تشغيل الـ Codespace (Stop ثم فتح). وعند الفتح يطبع `start.sh` حالة البريد وجوجل.
+- **كيف تجربه:** سجّل حساباً ثم حدّث الصفحة: تبقى مسجلاً. وتصلك رسالة التأكيد على Gmail (أو رابطها في `laravel.log` بلا أسرار)، والرابط يفتح على عنوان الـ Codespace.
+
 ---
 
 ## 1.1 المحاكي (القديم 1)

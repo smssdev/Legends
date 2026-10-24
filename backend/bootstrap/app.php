@@ -27,7 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('api', RecordActivity::class);
         // The public link (Tailscale Funnel) reaches the game through tailscaled on this machine: trust only
         // that local hop's X-Forwarded-* headers, so links and cookies are https on the public address.
-        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
+        // A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh): there only GitHub's forwarding reaches the game.
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES') === '*' ? '*' : ['127.0.0.1', '::1']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(fn (Throwable $e, Request $request) => ApiErrors::render($e, $request));
