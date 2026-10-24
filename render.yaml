@@ -10,6 +10,18 @@ services:
     autoDeploy: true
     # Optional, set in the service's Environment (deploy/render/start.sh): real emails through Gmail, and Google sign-in.
     envVars:
+      # One key for every deploy, so sign-ins and encrypted values survive it (start.sh).
+      - key: APP_KEY_SEED
+        generateValue: true
+      # The saved game in Backblaze B2 (free up to 10 GB): without these the data is wiped on every restart.
+      - key: B2_BUCKET
+        sync: false
+      - key: B2_ENDPOINT
+        sync: false
+      - key: B2_KEY_ID
+        sync: false
+      - key: B2_APPLICATION_KEY
+        sync: false
       - key: GMAIL_ADDRESS
         sync: false
       - key: GMAIL_APP_PASSWORD
