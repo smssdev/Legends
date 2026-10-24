@@ -58,12 +58,21 @@ return [
         'array' => 'يجب أن يحتوي :attribute :size عناصر.',
     ],
     'string' => 'يجب أن يكون :attribute نصاً.',
+    'image' => 'يجب أن يكون :attribute صورة.',
+    'mimes' => 'يجب أن يكون :attribute من نوع: :values.',
     'unique' => ':attribute مستخدم من قبل.',
     'url' => 'اكتب رابطاً صحيحاً في :attribute.',
     'uuid' => 'صيغة :attribute غير صحيحة.',
 
+    'custom' => [
+        'username' => ['regex' => 'اسم المستخدم حروف إنجليزية فقط، من 3 إلى 20 حرفاً.'],
+    ],
+
     'attributes' => [
         'name' => 'الاسم',
+        'username' => 'اسم المستخدم',
+        'image' => 'الصورة',
+        'reason' => 'السبب',
         'email' => 'البريد الإلكتروني',
         'password' => 'كلمة المرور',
         'club_id' => 'النادي',

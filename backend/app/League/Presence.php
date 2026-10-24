@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Messages\Inbox;
 use App\Models\LeagueMembership;
+use App\Models\User;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * Who is still around [PLAN 2.2]. Any visit to a league's pages (or a change in it) is activity, kept
  * on the membership, not the account. From the season's start, 48 hours without it brings a warning
- * and 3 days send the coach away. A holiday of up to 7 days, once a season, stops the count.
+ * and 3 days send the coach away. A holiday stops the count: the account's own, in every league at once, or one
+ * league's alone, of up to 7 days once a season, asked for with a reason its owner approves [X4, 2026-10-24].
  */
 class Presence
 {
@@ -29,7 +31,8 @@ class Presence
     {
         $at ??= GameClock::now();
 
-        return $m->vacation_from !== null && $m->vacation_from->lte($at) && $m->vacation_until->gt($at);
+        return ($m->vacation_from !== null && $m->vacation_from->lte($at) && $m->vacation_until->gt($at))
+            || (bool) $m->user?->onVacation($at);
     }
 
     /**
@@ -42,7 +45,8 @@ class Presence
         if ($seasonStart->gt($at) || self::onHoliday($m, $at)) {
             return null;
         }
-        $since = collect([$m->last_active_at, $m->joined_at, $seasonStart, $m->vacation_until?->lte($at) ? $m->vacation_until : null])
+        $account = $m->user?->vacation_until;
+        $since = collect([$m->last_active_at, $m->joined_at, $seasonStart, $m->vacation_until?->lte($at) ? $m->vacation_until : null, $account?->lte($at) ? $account : null])
             ->filter()->max();
 
         return $since;
@@ -59,7 +63,7 @@ class Presence
             ->join('seasons', 'seasons.id', '=', 'league_memberships.season_id')
             ->join('leagues', 'leagues.id', '=', 'league_memberships.league_id')
             ->where('leagues.status', 'running')->where('seasons.status', 'running')
-            ->select('league_memberships.*', 'seasons.starts_at as season_starts_at')->get();
+            ->select('league_memberships.*', 'seasons.starts_at as season_starts_at')->with('user')->get();
         foreach ($members as $m) {
             $since = self::quietSince($m, Carbon::parse($m->season_starts_at), $now);
             if ($since === null) {
@@ -82,15 +86,70 @@ class Presence
         return [$warned, $gone];
     }
 
-    /** Start a holiday of up to 7 days, once a season [PLAN 2.2]. */
-    public static function startHoliday(LeagueMembership $m, int $days): void
+    /**
+     * Ask for a holiday in this league alone, with a reason [X4]: its owner approves or refuses it. The owner's own
+     * request starts at once, since nobody else runs the league. One holiday a season, one request at a time.
+     */
+    public static function askHoliday(LeagueMembership $m, int $days, string $reason, bool $owner): void
     {
         $now = GameClock::now();
-        $set = DB::table('league_memberships')->where('id', $m->id)->whereNull('left_at')->whereNull('vacation_from')
-            ->update(['vacation_from' => $now, 'vacation_until' => $now->copy()->addDays($days), 'absence_warned_at' => null, 'last_active_at' => $now, 'updated_at' => $now]);
+        $set = DB::table('league_memberships')->where('id', $m->id)->whereNull('left_at')->whereNull('vacation_from')->whereNull('vacation_requested_at')
+            ->update(['vacation_request_days' => $days, 'vacation_reason' => $reason, 'vacation_requested_at' => $now, 'last_active_at' => $now, 'updated_at' => $now]);
         if ($set !== 1) {
-            throw new HttpException(409, 'استخدمت إجازة هذا الموسم من قبل.');
+            throw new HttpException(409, $m->vacation_from ? 'استخدمت إجازة هذا الموسم من قبل.' : 'طلبك للإجازة ينتظر رد مسؤول الدوري.');
         }
+        if ($owner) {
+            self::decide($m->fresh(), true);
+
+            return;
+        }
+        $league = DB::table('leagues')->where('id', $m->league_id)->first(['name', 'owner_id']);
+        Inbox::send($league->owner_id, 'vacation_request', ['league' => $league->name, 'league_id' => $m->league_id,
+            'coach' => $m->user?->name, 'days' => $days, 'reason' => $reason], $m->league_id);
+    }
+
+    /** The owner's answer to a holiday request: approved, it starts now for the days asked; refused, it can be asked again. */
+    public static function decide(LeagueMembership $m, bool $approve): void
+    {
+        $now = GameClock::now();
+        $days = (int) $m->vacation_request_days;
+        $set = DB::table('league_memberships')->where('id', $m->id)->whereNull('left_at')->whereNull('vacation_from')->whereNotNull('vacation_requested_at')
+            ->update($approve
+                ? ['vacation_from' => $now, 'vacation_until' => $now->copy()->addDays($days), 'vacation_requested_at' => null, 'absence_warned_at' => null, 'last_active_at' => $now, 'updated_at' => $now]
+                : ['vacation_requested_at' => null, 'vacation_request_days' => null, 'updated_at' => $now]);
+        if ($set !== 1) {
+            throw new HttpException(409, 'لا يوجد طلب إجازة ينتظر الرد.');
+        }
+        $league = DB::table('leagues')->where('id', $m->league_id)->value('name');
+        if ((int) DB::table('leagues')->where('id', $m->league_id)->value('owner_id') !== (int) $m->user_id) {
+            Inbox::send($m->user_id, $approve ? 'vacation_approved' : 'vacation_rejected', ['league' => $league, 'league_id' => $m->league_id, 'days' => $days], $m->league_id, $m->club_id);
+        }
+    }
+
+    /** The account's holiday [X4]: up to game.account.vacation_max_days, then a rest before the next one. */
+    public static function startAccountHoliday(User $user, int $days): void
+    {
+        $now = GameClock::now();
+        $rest = (int) config('game.account.vacation_rest_days');
+        $set = DB::table('users')->where('id', $user->id)
+            ->where(fn ($q) => $q->whereNull('vacation_until')->orWhere('vacation_until', '<=', $now->copy()->subDays($rest)))
+            ->update(['vacation_from' => $now, 'vacation_until' => $now->copy()->addDays($days), 'updated_at' => $now]);
+        if ($set !== 1) {
+            throw new HttpException(409, $user->fresh()->onVacation($now) ? 'أنت في إجازة الآن.'
+                : 'تبدأ إجازتك التالية بعد '.$rest.' يوماً من نهاية الإجازة السابقة.');
+        }
+        // Coming back is activity: the warnings of every league go.
+        DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')->update(['absence_warned_at' => null, 'last_active_at' => $now]);
+    }
+
+    public static function endAccountHoliday(User $user): void
+    {
+        $now = GameClock::now();
+        $ended = DB::table('users')->where('id', $user->id)->where('vacation_until', '>', $now)->update(['vacation_until' => $now, 'updated_at' => $now]);
+        if ($ended !== 1) {
+            throw new HttpException(409, 'لست في إجازة الآن.');
+        }
+        DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')->update(['last_active_at' => $now]);
     }
 
     /** Come back early: the holiday ends now, and it still counts as this season's one. */

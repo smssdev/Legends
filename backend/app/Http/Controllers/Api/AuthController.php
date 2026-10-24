@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\Leaving;
+use App\League\Presence;
 use App\Models\LeagueMembership;
 use App\Models\User;
 use App\Support\Activity;
+use App\Support\Avatar;
 use App\Support\GameClock;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -39,12 +43,13 @@ class AuthController extends Controller
         $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
         $data = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:40'],
+            'username' => ['required', 'string', Username::RULE, $this->usernameFree()],
             'email' => ['required', 'string', 'email', 'max:190', 'unique:users,email'],
-            'password' => ['required', 'string', $this->passwordRule()],
+            'password' => ['required', 'string', 'confirmed', $this->passwordRule()],
             'terms' => ['accepted'],
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
-        $user = User::create(['name' => trim($data['name']), 'email' => $data['email'], 'password' => $data['password']]);
+        $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => $data['email'], 'password' => $data['password']]);
         $user->sendEmailVerificationNotification();
 
         return response()->json($this->signIn($request, $user, $data['device_name'] ?? null), 201);
@@ -53,8 +58,9 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         abort_unless($request->hasSession(), 400, 'الدخول بالجلسة للويب فقط. التطبيق يستخدم /auth/token.');
-        $data = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']]);
-        if (! Auth::guard('web')->attempt(['email' => Str::lower($data['email']), 'password' => $data['password']], (bool) ($data['remember'] ?? false))) {
+        // The email or the username [X4].
+        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']]);
+        if (! Auth::guard('web')->attempt([$this->loginField($data['email']) => Str::lower(trim($data['email'])), 'password' => $data['password']], (bool) ($data['remember'] ?? false))) {
             throw ValidationException::withMessages(['email' => self::WRONG]);
         }
 
@@ -77,12 +83,70 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()->toAccount()]);
     }
 
+    /** The name and the username [X4]; either may be sent alone. */
     public function update(Request $request): JsonResponse
     {
-        $data = $request->validate(['name' => ['required', 'string', 'min:2', 'max:40']]);
-        $request->user()->update(['name' => trim($data['name'])]);
+        $user = $request->user();
+        $data = $request->validate([
+            'name' => ['required_without:username', 'string', 'min:2', 'max:40'],
+            'username' => ['required_without:name', 'string', Username::RULE, $this->usernameFree($user->id)],
+        ]);
+        $user->update(array_filter(['name' => isset($data['name']) ? trim($data['name']) : null,
+            'username' => isset($data['username']) ? strtolower($data['username']) : null]));
+
+        return response()->json(['user' => $user->toAccount()]);
+    }
+
+    /** A username nobody else has, whatever its case. */
+    private function usernameFree(?int $except = null): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($except) {
+            if (is_string($value) && Username::taken($value, $except)) {
+                $fail('اسم المستخدم مأخوذ، اختر غيره.');
+            }
+        };
+    }
+
+    /** The account's picture [X4]: any image up to game.account.avatar_max_kb, cut to a square and kept as a small JPEG. */
+    public function avatar(Request $request): JsonResponse
+    {
+        $request->validate(['image' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:'.config('game.account.avatar_max_kb')]]);
+        $jpeg = Avatar::square((string) file_get_contents($request->file('image')->getRealPath()), (int) config('game.account.avatar_size'));
+        abort_unless($jpeg !== null, 422, 'تعذرت قراءة الصورة، جرّب صورة أخرى.');
+        DB::table('user_avatars')->updateOrInsert(['user_id' => $request->user()->id], ['image' => $jpeg, 'updated_at' => GameClock::now()]);
 
         return response()->json(['user' => $request->user()->toAccount()]);
+    }
+
+    public function removeAvatar(Request $request): JsonResponse
+    {
+        DB::table('user_avatars')->where('user_id', $request->user()->id)->delete();
+
+        return response()->json(['user' => $request->user()->toAccount()]);
+    }
+
+    public function showAvatar(User $user): Response
+    {
+        $image = DB::table('user_avatars')->where('user_id', $user->id)->value('image');
+        abort_unless($image !== null, 404);
+
+        return response($image, 200, ['Content-Type' => 'image/jpeg', 'Cache-Control' => 'public, max-age=604800, immutable']);
+    }
+
+    /** The account's holiday [X4]: every league stops counting the absence, so no team is lost meanwhile. */
+    public function vacation(Request $request): JsonResponse
+    {
+        $data = $request->validate(['days' => ['required', 'integer', 'between:1,'.config('game.account.vacation_max_days')]]);
+        Presence::startAccountHoliday($request->user(), (int) $data['days']);
+
+        return response()->json(['user' => $request->user()->fresh()->toAccount()]);
+    }
+
+    public function endVacation(Request $request): JsonResponse
+    {
+        Presence::endAccountHoliday($request->user());
+
+        return response()->json(['user' => $request->user()->fresh()->toAccount()]);
     }
 
     /** Change the password, or give a Google-only account its first one. */
@@ -189,8 +253,8 @@ class AuthController extends Controller
     /** The app's sign-in: a token that expires after game.app.token_ttl_days. */
     public function token(Request $request): JsonResponse
     {
-        $data = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string'], 'device_name' => ['required', 'string', 'max:100']]);
-        $user = User::where('email', Str::lower($data['email']))->first();
+        $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'device_name' => ['required', 'string', 'max:100']]);
+        $user = User::where($this->loginField($data['email']), Str::lower(trim($data['email'])))->first();
         if (! $user || ! $user->hasPassword() || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages(['email' => self::WRONG]);
         }
@@ -217,6 +281,12 @@ class AuthController extends Controller
         }
 
         return response()->json($this->signIn($request, $linker->resolve($google), $data['device_name']));
+    }
+
+    /** Signing in with an email or a username: an @ tells them apart, since a username has letters only. */
+    private function loginField(string $login): string
+    {
+        return str_contains($login, '@') ? 'email' : 'username';
     }
 
     /** Signs the user in: a session for the web, or a token for the app when it names its device. */

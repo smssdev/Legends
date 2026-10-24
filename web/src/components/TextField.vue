@@ -5,7 +5,7 @@ import { computed, useId } from 'vue'
 const props = defineProps<{ label: string; type?: string; error?: string; autocomplete?: string; placeholder?: string; hint?: string }>()
 const model = defineModel<string>({ default: '' })
 const id = useId()
-const ltr = computed(() => ['email', 'password', 'code'].includes(props.type ?? ''))
+const ltr = computed(() => ['email', 'password', 'code', 'username'].includes(props.type ?? ''))
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const ltr = computed(() => ['email', 'password', 'code'].includes(props.type ?? 
     <input
       :id="id"
       v-model="model"
-      :type="type === 'code' ? 'text' : (type ?? 'text')"
+      :type="type === 'code' || type === 'username' ? 'text' : (type ?? 'text')"
       :dir="ltr ? 'ltr' : undefined"
       :autocomplete="autocomplete"
       :placeholder="placeholder"

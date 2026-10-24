@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -127,6 +127,21 @@ class MessageText
                     ($p['league_goal'] ?? false) ? 'تحقق' : 'لم يتحقق', ($p['cup_goal'] ?? false) ? 'تحقق' : 'لم يتحقق',
                     ($p['renew'] ?? false) ? 'بدأ الموسم الجديد من الصفر، وفريقك ينتظرك في فترة الإعداد.' : 'وانتهى الدوري.'),
                 'link' => '/league',
+            ],
+            'vacation_request' => [
+                'title' => 'طلب إجازة في '.$league,
+                'body' => sprintf('%s يطلب إجازة %d أيام في %s. السبب: %s. وافق أو ارفض من صفحة الدوري.', $p['coach'] ?? '', (int) ($p['days'] ?? 0), $league, $p['reason'] ?? ''),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
+            ],
+            'vacation_approved' => [
+                'title' => 'وافق مسؤول الدوري على إجازتك',
+                'body' => sprintf('إجازتك في %s %d أيام بدأت الآن. لا يُحسب غيابك، والمساعد يدير فريقك.', $league, (int) ($p['days'] ?? 0)),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
+            ],
+            'vacation_rejected' => [
+                'title' => 'رُفض طلب إجازتك',
+                'body' => sprintf('رفض مسؤول %s طلب إجازتك. يمكنك أن تطلبها من جديد بسبب أوضح، أو تأخذ إجازة لحسابك كله من صفحة حسابك.', $league),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

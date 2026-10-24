@@ -26,9 +26,9 @@ export const useAuth = defineStore('auth', () => {
     const { data } = await api.POST('/auth/login', { body: { email, password, remember } })
     user.value = data!.user!
   }
-  async function register(name: string, email: string, password: string, terms: boolean) {
+  async function register(name: string, username: string, email: string, password: string, passwordConfirmation: string, terms: boolean) {
     await ensureCsrf()
-    const { data } = await api.POST('/auth/register', { body: { name, email, password, terms } })
+    const { data } = await api.POST('/auth/register', { body: { name, username, email, password, password_confirmation: passwordConfirmation, terms } })
     user.value = data!.user
   }
   async function logout() {

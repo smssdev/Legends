@@ -75,15 +75,17 @@ async function share() {
   }
 }
 
-// A holiday of up to 7 days, once a season [PLAN 2.2].
+// A holiday in this league alone: up to 7 days, once a season, with a reason its owner approves [X4].
+// The account's holiday (every league, no asking) is on the profile page.
 const days = ref(3)
+const holidayReason = ref('')
 async function holiday(start: boolean) {
   error.value = ''
   try {
     await ensureCsrf()
     const path = { league: leagueId.value }
     const { data } = start
-      ? await api.POST('/leagues/{league}/vacation', { params: { path }, body: { days: days.value } })
+      ? await api.POST('/leagues/{league}/vacation', { params: { path }, body: { days: days.value, reason: holidayReason.value.trim() } })
       : await api.DELETE('/leagues/{league}/vacation', { params: { path } })
     league.value = data!.league
   } catch (e) {
@@ -104,6 +106,21 @@ async function resign() {
   } catch (e) {
     resignError.value = asApiError(e).message
     confirmResign.value = false
+  }
+}
+
+// The owner answers a coach's holiday request [X4].
+async function answerHoliday(membership: number, approve: boolean) {
+  error.value = ''
+  try {
+    await ensureCsrf()
+    const params = { path: { league: leagueId.value, membership } }
+    const { data } = approve
+      ? await api.POST('/leagues/{league}/members/{membership}/vacation/approve', { params })
+      : await api.POST('/leagues/{league}/members/{membership}/vacation/reject', { params })
+    league.value = data!.league
+  } catch (e) {
+    error.value = asApiError(e).message
   }
 }
 
@@ -210,17 +227,24 @@ onMounted(load)
           كل دخول للدوري يُحسب حضوراً. لو غبت 3 أيام متواصلة يعود فريقك للحاسوب: آخر موعد الآن {{ since(league.me.away_deadline) }}.
         </p>
         <p v-else class="text-sm text-text-muted">عداد الغياب يبدأ مع بداية الموسم.</p>
-        <UiButton v-if="league.me.on_holiday" variant="quiet" @click="holiday(false)">عدت مبكراً، أنهِ الإجازة</UiButton>
-        <form v-else-if="!league.me.vacation_used" class="flex flex-wrap items-end gap-2" @submit.prevent="holiday(true)">
+        <UiButton v-if="league.me.on_holiday && !league.me.account_vacation" variant="quiet" @click="holiday(false)">عدت مبكراً، أنهِ الإجازة</UiButton>
+        <p v-if="league.me.account_vacation" class="text-sm text-text-muted">إجازة حسابك تشمل هذا الدوري. تنهيها من <RouterLink to="/profile" class="font-bold text-gold">حسابي</RouterLink>.</p>
+        <p v-else-if="league.me.vacation_requested" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">طلبت إجازة في هذا الدوري، وتنتظر موافقة مسؤوله.</p>
+        <form v-else-if="!league.me.vacation_used && !league.me.on_holiday" class="flex flex-col gap-2" @submit.prevent="holiday(true)">
+          <p class="text-sm text-text-muted">إجازة في هذا الدوري وحده (مرة في الموسم) تحتاج سبباً يوافق عليه مسؤول الدوري. ولإجازة تشمل كل دورياتك بلا طلب: <RouterLink to="/profile" class="font-bold text-gold">إجازة الحساب</RouterLink>.</p>
           <label class="flex flex-col gap-1.5">
-            <span class="text-sm font-bold">إجازة (مرة في الموسم)</span>
+            <span class="text-sm font-bold">المدة</span>
             <select v-model.number="days" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4">
               <option v-for="d in 7" :key="d" :value="d">{{ d === 1 ? 'يوم' : d === 2 ? 'يومان' : `${d} أيام` }}</option>
             </select>
           </label>
-          <UiButton type="submit" variant="outline">فعّل الإجازة</UiButton>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-bold">السبب (يراه مسؤول الدوري)</span>
+            <textarea v-model="holidayReason" rows="2" maxlength="300" class="rounded-lg border border-text/10 bg-surface-sunk p-3" />
+          </label>
+          <UiButton type="submit" variant="outline" :disabled="holidayReason.trim().length < 5">{{ league.is_owner ? 'فعّل الإجازة' : 'اطلب الإجازة' }}</UiButton>
         </form>
-        <p v-else class="text-sm text-text-muted">استخدمت إجازة هذا الموسم.</p>
+        <p v-else-if="league.me.vacation_used && !league.me.on_holiday" class="text-sm text-text-muted">استخدمت إجازة هذا الموسم.</p>
         <div v-if="!league.is_owner" class="flex flex-col gap-2 border-t border-text/10 pt-3">
           <p v-if="resignError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ resignError }}</p>
           <UiButton v-if="!confirmResign" variant="quiet" @click="confirmResign = true">الاستقالة من الدوري</UiButton>
@@ -238,12 +262,20 @@ onMounted(load)
         <ul class="flex flex-col gap-2">
           <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
             <div class="flex min-h-touch flex-wrap items-center gap-3">
-              <span class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
+              <img v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
+              <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
                 <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
               </span>
               <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>
+            </div>
+            <div v-if="m.vacation_request" class="flex flex-col gap-2 rounded-lg bg-gold/10 p-3 text-sm">
+              <p>يطلب إجازة {{ m.vacation_request.days }} أيام. السبب: «{{ m.vacation_request.reason }}»</p>
+              <div class="flex gap-2">
+                <UiButton variant="outline" @click="answerHoliday(m.id, true)">وافق</UiButton>
+                <UiButton variant="quiet" @click="answerHoliday(m.id, false)">ارفض</UiButton>
+              </div>
             </div>
             <form v-if="kicking === m.id" class="flex flex-col gap-2" @submit.prevent="kick(m.id)">
               <label class="flex flex-col gap-1.5">
