@@ -2,6 +2,7 @@
 // The lineup editor (Sprint 16 W2), after the draft MobileLineup: the formation picker (24 and my own),
 // a counter per line, "تحسين", the pitch, the bench and the rest of the squad. A player moves by dragging
 // (pointer events: the same code for a finger and a mouse) or by tapping him and then the place he goes.
+// Dropped on open grass, a starter stays where he is dropped, inside his line's band, like PES [X5].
 // The server checks every rule and answers in Arabic; this screen only arranges.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -20,25 +21,55 @@ const saving = ref(false)
 const message = ref('')
 const view = ref<'overall' | 'fitness' | 'age' | 'value'>('overall')
 const card = ref<SquadPlayer | null>(null)
+// The ten outfield places [x, y] (the keeper stays in goal), and the bands the server allows each line.
+const places = ref<[number, number][]>([])
+const bands = ref<Record<string, number[]>>({})
+const across = ref<number[]>([30, 650])
 
 onMounted(async () => {
   const [, f] = await Promise.all([load(), api.GET('/data/formations')])
   formations.value = f.data!.formations
+  bands.value = f.data!.bands
+  across.value = f.data!.across
   if (team.value) apply(team.value.lineup)
 })
 
-function apply(l: { formation: string; starters: (number | null)[]; bench: number[] }) {
+type Slot = { role: string; line: string; x: number; y: number }
+function apply(l: { formation: string; starters: (number | null)[]; bench: number[]; slots: Slot[] }) {
   formation.value = l.formation
   starters.value = [...l.starters]
   bench.value = [...l.bench]
+  places.value = l.slots.slice(1).map((s) => [s.x, s.y])
   if (!saved.value) saved.value = snapshot()
 }
-const snapshot = () => JSON.stringify([formation.value, starters.value, bench.value])
+/** Another formation: its own places. */
+function pick(name: string) {
+  formation.value = name
+  const f = all.value.find((x) => x.name === name)
+  if (f) places.value = f.slots.slice(1).map((s) => [s.x, s.y])
+}
+const snapshot = () => JSON.stringify([formation.value, starters.value, bench.value, places.value])
 const dirty = computed(() => saved.value !== '' && snapshot() !== saved.value)
 
 const players = computed(() => new Map((team.value?.players ?? []).map((p) => [p.id, p])))
 const all = computed(() => [...formations.value, ...(team.value?.custom_formations ?? [])])
-const current = computed(() => all.value.find((f) => f.name === formation.value))
+const current = computed(() => {
+  const f = all.value.find((x) => x.name === formation.value)
+  if (!f) return undefined
+  // The places the coach dragged them to.
+  return { ...f, slots: f.slots.map((s, i) => (i > 0 && places.value[i - 1] ? { ...s, x: places.value[i - 1][0], y: places.value[i - 1][1] } : s)) }
+})
+// Only for a quick message when dragging: the server is the one that decides [X5].
+const POSITION_LINE: Record<string, string> = {
+  GK: 'gk', CB: 'def', LB: 'def', RB: 'def', LWB: 'def', RWB: 'def', CDM: 'mid', CM: 'mid', CAM: 'mid', LM: 'mid', RM: 'mid', LW: 'att', RW: 'att', ST: 'att', CF: 'att',
+}
+const LINE_NAME: Record<string, string> = { gk: 'حراسة المرمى', def: 'الدفاع', mid: 'الوسط', att: 'الهجوم' }
+function fitsLine(id: number, line: string) {
+  const p = players.value.get(id)
+  if (!p) return true
+  const lines = new Set([p.line, ...(p.alt_positions ?? '').split(',').map((a) => POSITION_LINE[a.trim()]).filter(Boolean)])
+  return lines.has(line)
+}
 const reserves = computed(() => {
   const used = new Set([...starters.value, ...bench.value])
   return (team.value?.players ?? []).filter((p) => !used.has(p.id))
@@ -83,6 +114,15 @@ function move(from: Spot, to: Spot) {
   }
   if (to.zone === 'bench' && b === null && bench.value.length >= 7) {
     message.value = 'الاحتياط 7 لاعبين على الأكثر.'
+    return
+  }
+  // Each in his own line: a striker on the wing, never in midfield or defence [X5].
+  const slots = current.value?.slots ?? []
+  const wrong = (id: number | null, slot: number) => id !== null && slot > 0 && !fitsLine(id, slots[slot].line)
+  if ((to.zone === 'slot' && wrong(a, to.index)) || (from.zone === 'slot' && wrong(b, from.index))) {
+    const [id, slot] = to.zone === 'slot' && wrong(a, to.index) ? [a, to.index] : [b!, from.index]
+    const p = players.value.get(id)!
+    message.value = `${p.name} (${p.position}) لا يلعب في ${LINE_NAME[slots[slot].line]}. ضع كل لاعب في خطه، ويتبادل المراكز داخله.`
     return
   }
   // The target takes him; the source takes whoever was there (or empties).
@@ -145,13 +185,35 @@ function up(e: PointerEvent) {
   if (el) {
     const [zone, index] = el.dataset.spot!.split(':')
     move(d.from, { zone: zone as Spot['zone'], index: Number(index) })
-  }
+  } else if (d.from.zone === 'slot' && d.from.index > 0) place_(d.from.index, e)
   selected.value = null
   // The click that follows a drag must not also select.
   suppress = true
   window.setTimeout(() => (suppress = false), 0)
 }
 let suppress = false
+
+// A starter dropped on open grass stays there, held inside his line's band [X5].
+const pitch = ref<HTMLElement | null>(null)
+function place_(slot: number, e: PointerEvent) {
+  const r = pitch.value?.getBoundingClientRect()
+  const line = current.value?.slots[slot].line
+  if (!r || !line || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return
+  const [from, to] = bands.value[line] ?? [0, 720]
+  const clamp = (v: number, lo: number, hi: number) => Math.round(Math.min(hi, Math.max(lo, v)))
+  const x = clamp((1 - (e.clientY - r.top) / r.height) * 720, from, to)
+  const y = clamp(((e.clientX - r.left) / r.width) * 680, across.value[0], across.value[1])
+  places.value[slot - 1] = [x, y]
+  places.value = [...places.value]
+  message.value = ''
+}
+/** The band a dragged starter may go to, drawn on the pitch while he moves. */
+const band = computed(() => {
+  const d = drag.value
+  if (!d?.moved || d.from.zone !== 'slot' || d.from.index === 0) return null
+  const [from, to] = bands.value[current.value?.slots[d.from.index].line ?? ''] ?? []
+  return from === undefined ? null : { top: `${100 - (to / 720) * 100}%`, height: `${((to - from) / 720) * 100}%` }
+})
 const click = (s: Spot) => !suppress && tap(s)
 const isSelected = (s: Spot) => selected.value?.zone === s.zone && selected.value.index === s.index
 
@@ -172,7 +234,7 @@ async function save() {
     await ensureCsrf()
     const { data } = await api.PUT('/leagues/{league}/team/lineup', {
       params: { path: { league: leagueId.value } },
-      body: { formation: formation.value, starters: starters.value as number[], bench: bench.value },
+      body: { formation: formation.value, starters: starters.value as number[], bench: bench.value, positions: places.value },
     })
     team.value = data as typeof team.value
     saved.value = ''
@@ -275,7 +337,7 @@ async function saveCustom() {
           :class="f.name === formation ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface text-text-soft'"
           :aria-pressed="f.name === formation"
           :dir="f.name.startsWith('custom:') ? undefined : 'ltr'"
-          @click="formation = f.name"
+          @click="pick(f.name)"
         >{{ f.label }}</button>
         <button type="button" class="h-12 shrink-0 rounded-xl border border-dashed border-gold/50 px-4 font-bold text-gold" @click="openCustom">+ مخصصة</button>
       </div>
@@ -294,13 +356,15 @@ async function saveCustom() {
 
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ message }}</p>
       <p v-if="selected" class="text-sm text-gold">اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.</p>
+      <p class="text-xs text-text-muted">اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.</p>
 
-      <div class="relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl border-2 border-white/20 bg-[repeating-linear-gradient(0deg,#1f8f4e_0,#1f8f4e_8%,#22994f_8%,#22994f_16%)]">
+      <div ref="pitch" class="relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl border-2 border-white/20 bg-[repeating-linear-gradient(0deg,#1f8f4e_0,#1f8f4e_8%,#22994f_8%,#22994f_16%)]">
         <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
         <div class="pointer-events-none absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-[28%] bottom-3 h-[13%] border-2 border-b-0 border-white/40" />
         <div class="pointer-events-none absolute inset-x-[28%] top-3 h-[13%] border-2 border-t-0 border-white/40" />
+        <div v-if="band" class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15" :style="band" />
         <button
           v-for="(slot, i) in current.slots"
           :key="i"

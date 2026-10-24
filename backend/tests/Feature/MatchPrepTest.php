@@ -62,6 +62,9 @@ class MatchPrepTest extends TestCase
     {
         $this->actingAs($this->owner);
         $this->getJson($this->url('/tactics'))->assertOk()->assertJsonPath('tactics.pressing', 50)->assertJsonPath('tactics.plan', 'passing');
+        // A "?" for every part [X5].
+        $help = $this->getJson($this->url('/tactics'))->json('help');
+        $this->assertSame(['plan', 'pressing', 'style', 'tempo', 'tackling', 'lines', 'trap', 'marking', 'tips'], array_keys($help));
         $res = $this->putJson($this->url('/tactics'), ['pressing' => 85, 'tackling' => 3, 'plan' => 'counter', 'trap' => 1])->assertOk();
         $this->assertSame([85, 3, 'counter', 1], [$res->json('tactics.pressing'), $res->json('tactics.tackling'), $res->json('tactics.plan'), $res->json('tactics.trap')]);
         $tips = implode(' ', $res->json('tips'));
