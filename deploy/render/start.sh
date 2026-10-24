@@ -27,6 +27,39 @@ if [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
 fi
 # Google sign-in: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Render's Environment are read as they are.
 
+# One APP_KEY for every deploy (APP_KEY_SEED in Render's Environment, render.yaml makes it): without it each new
+# image has a new key, and the sign-ins and the encrypted values saved before it can no longer be read.
+if [ -n "${APP_KEY_SEED:-}" ]; then
+  APP_KEY=$(php -r 'echo "base64:".base64_encode(hash("sha256", getenv("APP_KEY_SEED"), true));')
+  export APP_KEY
+fi
+
+# The saved game: Render's free disk is wiped on every deploy, restart and sleep, so Litestream keeps the
+# databases in Backblaze B2 (free up to 10 GB, deploy/render/litestream.yml). B2_BUCKET, B2_ENDPOINT, B2_KEY_ID
+# and B2_APPLICATION_KEY in Render's Environment turn it on. The copy is brought back before anything opens the
+# databases; if B2 cannot be read the start stops here, rather than begin an empty game over the saved one.
+saved=
+if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}" ] && [ -n "${B2_APPLICATION_KEY:-}" ]; then
+  endpoint="${B2_ENDPOINT#https://}"
+  endpoint="${endpoint%/}"
+  export LITESTREAM_BUCKET="$B2_BUCKET" LITESTREAM_ENDPOINT="https://$endpoint"
+  # The region is in B2's endpoint: s3.<region>.backblazeb2.com
+  region=$(printf '%s' "$endpoint" | sed -n 's/^s3\.\([^.]*\)\.backblazeb2\.com$/\1/p')
+  export LITESTREAM_REGION="${region:-us-east-1}"
+  export LITESTREAM_ACCESS_KEY_ID="$B2_KEY_ID" LITESTREAM_SECRET_ACCESS_KEY="$B2_APPLICATION_KEY"
+  for db in legends queue; do
+    file="database/$db.sqlite"
+    rm -f "$file.restore"
+    litestream restore -config /app/litestream.yml -if-replica-exists -o "$file.restore" "/app/backend/$file"
+    if [ -f "$file.restore" ]; then
+      rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
+      mv "$file.restore" "$file"
+      echo "Saved game: $db.sqlite brought back from B2"
+    fi
+  done
+  saved=1
+fi
+
 mkdir -p storage/logs
 php artisan migrate --force
 # Cache the configuration now that the run-time variables are known.
@@ -40,5 +73,10 @@ php artisan matches:run >> storage/logs/matches.log 2>&1 &
 echo "Legends: ${APP_URL:-http://localhost:${PORT}}"
 if [ -n "${MAIL_HOST:-}" ]; then echo "Emails: through Gmail from ${MAIL_FROM_ADDRESS}"; else echo "Emails: to storage/logs/laravel.log"; fi
 if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on, return address ${GOOGLE_REDIRECT_URI:-}"; else echo "Google sign-in: off"; fi
+if [ -n "$saved" ]; then echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"; else echo "Saved game: off, the data is wiped on every restart (B2_* in Render's Environment)"; fi
 # --no-reload: without it "serve" drops the variables above before starting PHP's server.
+if [ -n "$saved" ]; then
+  # Litestream runs the site and, when Render stops the service, copies the last changes before it ends.
+  exec litestream replicate -config /app/litestream.yml -exec "php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"
+fi
 exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload

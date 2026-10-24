@@ -1,8 +1,8 @@
 # One image with everything for the simulator demo: the Laravel API, the built
 # Vue app and the imported club data. Used by Render (render.yaml) and runnable
 # anywhere with: docker build -t legends . && docker run -p 8000:8000 legends
-# Free hosts wipe the disk on restart: fine for the simulator, not for leagues
-# (those need the home server in PLAN 2.19).
+# Free hosts wipe the disk on restart: on Render, Litestream keeps the databases in Backblaze B2 and brings
+# them back on start (deploy/render/start.sh), so the game and its accounts are kept.
 
 FROM node:22-alpine AS web
 WORKDIR /app
@@ -21,6 +21,10 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 
 FROM php:8.4-cli-alpine
 WORKDIR /app/backend
+# Litestream (free, open source): copies every change to the databases to B2 and brings it back on start.
+ARG LITESTREAM_VERSION=0.3.13
+ADD https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-amd64.tar.gz /tmp/litestream.tar.gz
+RUN tar -xzf /tmp/litestream.tar.gz -C /usr/local/bin litestream && rm /tmp/litestream.tar.gz
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY backend ./
 COPY data /app/data
@@ -38,6 +42,7 @@ RUN composer dump-autoload --optimize --no-dev \
 # The start script: the public address, sign-in, Gmail and Google from the host's run-time variables, the
 # configuration cached then (not here, before they are known), and the queue, scheduler and live matches.
 COPY deploy/render/start.sh /app/start.sh
+COPY deploy/render/litestream.yml /app/litestream.yml
 ENV PORT=8000 PHP_CLI_SERVER_WORKERS=2
 EXPOSE 8000
 USER www-data

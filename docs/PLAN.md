@@ -322,8 +322,38 @@ unity/
 - **الجهاز المنزلي** (`deploy/windows/`): `setup.ps1` مرة واحدة يثبت كل شيء ويشغّل المهام مع ويندوز (الموقع، وReverb، والطابور، والمشغّل، والمجدول، وLitestream، والحارس كل دقيقة)، ويصنع موضوع ntfy ومفاتيح Web Push. و`update.ps1` للتحديث: ينتظر ألا تكون مباراة حية أو قريبة (15 دقيقة)، ثم نسخة، ثم سحب `main`، ثم الترحيلات، ثم إعادة التشغيل.
 - **الرابط العام:** Tailscale Funnel (`https://اسم-الجهاز...ts.net`)، والبث على نفس الرابط (`/app`).
 - **النسخ:** Litestream إلى قرص ثانٍ (72 ساعة)، ونسخة يومية 4 فجراً بـ `VACUUM INTO` إلى Google Drive (rclone، 30 يوماً)، والاسترجاع `php artisan db:restore`.
-- **للعرض السريع:** Codespaces، أو Render المجاني (`render.yaml`، تُمسح بياناته)، أو حزمة `Package` من GitHub Actions.
+- **للعرض السريع:** Codespaces، أو Render المجاني (`render.yaml`، وبياناته محفوظة في Backblaze B2 حسب 8.1)، أو حزمة `Package` من GitHub Actions.
 - **لاحقاً:** VPS ونطاق باسم اللعبة عند وجود ميزانية (النقل = نسخ ملفات SQLite).
+
+### 8.1 Render المجاني بلا ضياع بيانات
+
+- **المشكلة:** قرص Render المجاني يُمسح عند كل نشر أو إعادة تشغيل أو نوم، فتضيع الحسابات والدوريات.
+- **الحل:**
+  - **Litestream** ينسخ كل تغيير في `legends.sqlite` و`queue.sqlite` خلال ثانية إلى **Backblaze B2**، المجاني حتى 10 جيجا.
+  - وعند كل تشغيل يسترجعهما قبل أن يبدأ الموقع (`deploy/render/start.sh` و`deploy/render/litestream.yml`).
+  - **و`APP_KEY_SEED`** يثبّت مفتاح التطبيق بين النشرات، فلا يخرج المستخدمون ولا تضيع القيم المشفرة.
+  - **وcron-job.org** يزور الموقع كل 5 دقائق فلا ينام، فيبقى المجدول والمباريات المباشرة يعملان.
+- **التكلفة:** صفر.
+  - Render يعطي 750 ساعة شهرياً، وتكفي خدمة واحدة طوال الشهر.
+  - وB2 مجاني حتى 10 جيجا، و2500 عملية قراءة يومياً.
+  - وcron-job.org مجاني.
+- **الأمان:** لو تعذرت قراءة B2 عند التشغيل يتوقف التشغيل ولا يبدأ لعبة فارغة فوق المحفوظة. وبدون متغيرات B2 يعمل كما كان، بلا حفظ.
+
+| # | الخطوة | من | أين وكيف |
+|---|---|---|---|
+| 1 | حساب Backblaze | سليمان | https://www.backblaze.com/sign-up/cloud-storage. لو طلب بطاقة: الخطوة 4 تمنع أي خصم |
+| 2 | مكان التخزين (Bucket) | سليمان | B2 ← **Buckets** ← **Create a Bucket**: الاسم مثل `legends-save-` ثم أرقام (فريد عالمياً)، و**Private**، وObject Lock مطفأ. ثم انسخ **Endpoint** الظاهر تحته (مثل `s3.us-east-005.backblazeb2.com`) |
+| 3 | مفتاح الدخول | سليمان | **Application Keys** ← **Add a New Application Key**: الاسم `legends-render`، وAllow access to Bucket: الذي صنعته فقط، و**Read and Write**. ثم انسخ **keyID** و**applicationKey** فوراً، لأنه يظهر مرة واحدة |
+| 4 | سقف الدفع صفر | سليمان | **Caps & Alerts**: كل الأسقف اليومية (Storage وDownload وClass B وClass C) على **$0** |
+| 5 | متغيرات Render | سليمان | الخدمة ← **Environment** ← أضف: `B2_BUCKET` (اسم المكان)، و`B2_ENDPOINT` (الـ Endpoint)، و`B2_KEY_ID` (keyID)، و`B2_APPLICATION_KEY` (applicationKey)، و`APP_KEY_SEED` (نص عشوائي طويل، 40 حرفاً فأكثر، إن لم يصنعه `render.yaml`) ← **Save** |
+| 6 | النشر والتأكد | سليمان مع Claude | **Manual Deploy**، ثم في **Logs** يظهر: `Saved game: every change copied to B2`. وأول تشغيل يبدأ لعبة جديدة، فما قبله ضاع أصلاً |
+| 7 | تجربة الحفظ | سليمان مع Claude | سجّل حساباً وأنشئ دورياً، ثم **Restart service**. فيظهر في Logs: `Saved game: legends.sqlite brought back from B2`، والحساب والدوري موجودان |
+| 8 | منع النوم | سليمان | https://cron-job.org (مجاني) ← **Create cronjob**: العنوان `https://<الخدمة>.onrender.com/up`، وكل **5 دقائق** |
+| 9 | المتابعة | سليمان | B2 ← **Buckets** يعرض الحجم. وعند الاقتراب من 10 جيجا ننتقل للجهاز المنزلي أو VPS (النقل = نسخ ملفات SQLite) |
+
+- **إن تعطل شيء:**
+  - **Logs على Render:** فيها سطر `Saved game` يقول هل الحفظ يعمل.
+  - **رسالة خطأ من `litestream restore`:** المفتاح أو الـ Endpoint خطأ، فيُصحَّح في Environment ثم Manual Deploy.
 
 ## 9. السبرنتات
 

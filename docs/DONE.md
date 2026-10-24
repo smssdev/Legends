@@ -13,7 +13,7 @@
 | **Codespaces** (بلا تثبيت) | على GitHub: Code ← Codespaces ← Create codespace on main. بعد الإعداد يُفتح المنفذ 8000. ولصديق من جواله: Ports ← 8000 ← Port Visibility ← Public |
 | **محلياً** | من `backend/`: `composer setup` أول مرة، ثم `composer dev`، وافتح `http://localhost:5173` |
 | **الحزمة الجاهزة** | Actions ← Package ← آخر تشغيل ← Artifacts. فك الضغط وشغّل `run.bat` أو `run.sh` (تحتاج PHP 8.3+ مع `pdo_sqlite`)، وافتح `http://127.0.0.1:8000/sim` |
-| **Render** (للعرض) | `https://render.com/deploy?repo=https://github.com/smssdev/Legends`. ينام بعد 15 دقيقة وتُمسح بياناته (الحسابات أيضاً) عند كل نشر أو إعادة تشغيل. `deploy/render/start.sh` يأخذ العنوان العام من Render فيعمل الدخول، ويشغّل الطابور والمجدول و`matches:run`. وللبريد وجوجل: Environment ← `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` و`GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET`، وعنوان رجوع جوجل `https://<الخدمة>.onrender.com/auth/google/callback` |
+| **Render** (للعرض) | `https://render.com/deploy?repo=https://github.com/smssdev/Legends`. ينام بعد 15 دقيقة بلا زيارات (cron-job.org يبقيه صاحياً). والبيانات محفوظة في Backblaze B2 بـ Litestream، ومفتاح التطبيق ثابت بـ `APP_KEY_SEED` (`deploy/render/litestream.yml`، وخطوات الإعداد والتجربة في PLAN 8.1). وبدون متغيرات B2 تُمسح البيانات عند كل نشر أو إعادة تشغيل. `deploy/render/start.sh` يأخذ العنوان العام من Render فيعمل الدخول، ويشغّل الطابور والمجدول و`matches:run`. وللبريد وجوجل: Environment ← `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` و`GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET`، وعنوان رجوع جوجل `https://<الخدمة>.onrender.com/auth/google/callback` |
 | **الجهاز المنزلي** | الجزء 1.14 و`deploy/windows/setup.ps1` |
 
 **أدوات الاختبار السريع:**
