@@ -41,9 +41,10 @@ class TrainingController extends Controller
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
                 'overall' => $p->overall + $p->training_bonus, 'training_bonus' => (int) $p->training_bonus, 'potential' => (int) $p->potential,
                 'progress' => intdiv($p->training_progress * 100, (int) config('game.training.progress_scale')),
-                'sessions' => $gain->sessions($p->overall + $p->training_bonus),
+                'sessions' => $gain->sessions($p->overall + $p->training_bonus, (int) $p->potential),
                 'injured' => $p->injured_matches > 0,
-                'maxed' => $p->overall + $p->training_bonus >= $p->potential,
+                'maxed' => $p->overall + $p->training_bonus >= $gain->ceiling(),
+                'over_potential' => $p->overall + $p->training_bonus >= $p->potential,
                 'in_camp' => in_array($p->id, $away, true),
             ])->keyBy('id');
 

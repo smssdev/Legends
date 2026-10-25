@@ -53,6 +53,7 @@ class ScoutController extends Controller
             'max_age' => 'nullable|integer|min:16|max:45',
             'nationality' => 'nullable|string|max:60',
             'league' => 'nullable|string|max:60',
+            'max_value' => 'nullable|integer|min:1',
             'idempotency_key' => 'required|string|max:64',
         ]);
         $criteria = array_filter(array_diff_key($data, ['idempotency_key' => 1]), fn ($v) => $v !== null && $v !== '');

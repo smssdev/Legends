@@ -18,7 +18,7 @@ const loaded = ref(false)
 const error = ref('')
 const notice = ref('')
 const busy = ref(false)
-const form = reactive({ line: 'att', position: '', min_overall: 70, max_overall: 85, max_age: 30, nationality: '', league: '' })
+const form = reactive({ line: 'att', position: '', min_overall: 70, max_overall: 85, max_age: 30, max_value: null as number | null, nationality: '', league: '' })
 const now = ref(Date.now())
 let tick = 0
 const searching = computed(() => v.value?.requests.find((r) => r.status === 'searching'))
@@ -29,7 +29,7 @@ const left = computed(() => {
 })
 const LINE_NAMES: Record<string, string> = { gk: 'حارس', def: 'دفاع', mid: 'وسط', att: 'هجوم' }
 const describe = (c: Record<string, any>) => [c.line && LINE_NAMES[c.line], c.position, `قوة ${c.min_overall}${c.max_overall ? '–' + c.max_overall : '+'}`,
-  c.max_age && `حتى ${c.max_age} سنة`, c.nationality, c.league].filter(Boolean).join(' · ')
+  c.max_age && `حتى ${c.max_age} سنة`, c.max_value && `حتى ${money(c.max_value)}`, c.nationality, c.league].filter(Boolean).join(' · ')
 
 async function load() {
   try {
@@ -52,6 +52,7 @@ async function ask() {
     await ensureCsrf()
     const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: crypto.randomUUID() }
     for (const k of ['line', 'position', 'nationality', 'league'] as const) if (form[k]) body[k] = form[k]
+    if (form.max_value) body.max_value = form.max_value
     const { data } = await api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value } }, body: body as any })
     v.value = data!
     notice.value = 'انطلق الكشاف. يصلك تقريره كرسالة في موعده.'
@@ -136,6 +137,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted">إلى<input v-model.number="form.max_overall" type="number" min="40" max="99" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           </div>
           <label class="flex flex-col gap-1 text-sm text-text-muted">أكبر عمر<input v-model.number="form.max_age" type="number" min="16" max="45" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
+          <label class="flex flex-col gap-1 text-sm text-text-muted">أعلى سعر (اختياري)<input v-model.number="form.max_value" type="number" min="1" step="100000" placeholder="بلا حد" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           <label class="flex flex-col gap-1 text-sm text-text-muted">الجنسية
             <select v-model="form.nationality" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">أي جنسية</option><option v-for="n in v.options.nationalities" :key="n" :value="n">{{ n }}</option></select>
           </label>
@@ -145,7 +147,7 @@ onBeforeUnmount(() => clearInterval(tick))
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || v.balance < v.cost" @click="ask">اطلب التقرير · <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></button>
-          <span class="text-sm text-text-muted">يصل بعد {{ v.hours }} ساعة كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.</span>
+          <span class="text-sm text-text-muted">رحلة {{ v.hours }} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.</span>
         </div>
       </section>
 

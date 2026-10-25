@@ -11,9 +11,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * The scout [docs/features/scout.md, Sprint 26]: a paid search for players from outside the league's clubs by
- * the coach's criteria. The report comes after a day (scaled by the season's length) even if the coach is away,
- * with three players this club alone may buy at the pool's price until the pool is renewed; none found, the
- * money comes back.
+ * the coach's criteria. The report comes after a 15-hour trip (scaled by the season's length) even if the coach is
+ * away, with five players [X15] this club alone may buy at the pool's price until the pool is renewed; none found,
+ * the money comes back.
  */
 class Scout
 {
@@ -63,7 +63,7 @@ class Scout
         return $n;
     }
 
-    /** The search itself: three players from outside the league, nearest the level asked first, drawn by the request. */
+    /** The search itself: five players from outside the league, the strongest in range first, drawn by the request. */
     public static function report(int $id): bool
     {
         return DB::transaction(function () use ($id) {
@@ -85,9 +85,10 @@ class Scout
                 ->when($c['max_age'] ?? null, fn ($q, $v) => $q->where('master_players.age', '<=', $v))
                 ->when($c['nationality'] ?? null, fn ($q, $v) => $q->where('master_players.nationality', $v))
                 ->when($c['league'] ?? null, fn ($q, $v) => $q->where('master_clubs.league_name', $v))
+                ->when($c['max_value'] ?? null, fn ($q, $v) => $q->where('master_players.value', '<=', $v))
                 ->orderByDesc('master_players.overall')->limit(300)->get(['master_players.id', 'master_players.overall', 'master_players.value', 'master_players.name']);
             // The strongest in range first, drawn among equals by the request, so the same search may find others.
-            $picked = $candidates->sortBy(fn ($p) => [-$p->overall, crc32("{$id}:{$p->id}")])->take(3)->values();
+            $picked = $candidates->sortBy(fn ($p) => [-$p->overall, crc32("{$id}:{$p->id}")])->take((int) config('game.scout.results'))->values();
             $now = GameClock::now();
             if ($picked->isEmpty()) {
                 DB::table('scout_requests')->where('id', $id)->update(['status' => 'empty', 'result_player_ids' => '[]', 'updated_at' => $now]);

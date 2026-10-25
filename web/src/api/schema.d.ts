@@ -2756,7 +2756,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Ask the scout (one search at a time) */
+        /** Ask the scout (one search at a time; a 15-hour trip, five players) [X15] */
         post: {
             parameters: {
                 query?: never;
@@ -2775,6 +2775,8 @@ export interface paths {
                         min_overall: number;
                         max_overall?: number;
                         max_age?: number;
+                        /** @description The highest price (the player value) [X15] */
+                        max_value?: number;
                         nationality?: string;
                         league?: string;
                         idempotency_key: string;
@@ -6317,8 +6319,10 @@ export interface components {
             /** @description About how many sessions a +1 takes at his rating */
             sessions: number;
             injured: boolean;
-            /** @description At his potential */
+            /** @description At 99, training adds nothing [X16] */
             maxed: boolean;
+            /** @description At or past his potential: training goes on, much slower [X16] */
+            over_potential?: boolean;
             in_camp: boolean;
         };
         TrainingView: {
