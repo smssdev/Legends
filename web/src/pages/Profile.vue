@@ -7,6 +7,7 @@ import NotificationsCard from '../components/NotificationsCard.vue'
 import TextField from '../components/TextField.vue'
 import UsernameField from '../components/UsernameField.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
+import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
 import { AR_VOICES, arVoiceName, type ArVoice } from '../match/voice'
 import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
@@ -266,6 +267,12 @@ async function remove() {
     </section>
 
     <NotificationsCard />
+
+    <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-support">
+      <h2 id="h-support" class="font-display text-xl font-extrabold">الدعم الفني</h2>
+      <SupportLinks />
+      <p class="text-xs text-text-muted">إن لم تظهر الأزرار فالدعم لم يُفعَّل على الخادم بعد.</p>
+    </section>
 
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-signout">
       <h2 id="h-signout" class="font-display text-xl font-extrabold">تسجيل الخروج</h2>

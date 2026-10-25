@@ -72,7 +72,7 @@ class SeasonSim
                     // Training: every coach keeps his four slots busy all season [PLAN 2.8, Sprint 27].
                     $wages += intdiv($scale * (int) ($this->cfg['training_bp'] ?? 0), 10000 * $nRounds);
                     $book[$id]['balance'] += $bonus - $wages;
-                    $book[$id]['income'] += $bonus;
+                    $book[$id]['income'] += max(0, $bonus);
                     $book[$id]['wages'] += $wages;
                     $book[$id]['pts'] += $for > $against ? 3 : ($for === $against ? 1 : 0);
                     $book[$id]['gd'] += $for - $against;

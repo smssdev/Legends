@@ -108,8 +108,9 @@ return [
         ],
         // The stadium at stage 0 (Sprint 29 builds on it): seats, and attendance from the club's strength in its league.
         'stadium' => ['capacity' => 20000, 'attendance_min_bp' => 6000, 'attendance_max_bp' => 10000],
-        // A league match's result, as a share of the scale.
-        'win_bonus_bp' => 8, 'draw_bonus_bp' => 3,
+        // A league match's result, as a share of the scale: a bonus for a win, a smaller one for a draw, and a
+        // deduction for a loss [X14].
+        'win_bonus_bp' => 8, 'draw_bonus_bp' => 3, 'loss_penalty_bp' => 2,
         // Season prizes as a share of the scale: the league by place (from the champion down), and the cup.
         'league_prize_bp' => [100, 70, 50, 35, 25, 15, 10, 5],
         'cup_prize_bp' => ['winner' => 50, 'final' => 25, 'sf' => 10],
@@ -226,6 +227,10 @@ return [
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
+    // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
+    // for account and sign-up problems and ideas. A channel left empty has no button.
+    'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
+        'message' => 'مرحباً، أحتاج مساعدة في لعبة الأساطير: '],
     // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
     // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
@@ -281,7 +286,8 @@ return [
     'premium' => [
         'season_cap' => 400,           // the most a coach spends in one league in one season
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
-            'league_1' => 100, 'league_2' => 50, 'league_3' => 25, 'cup_1' => 60, 'cup_2' => 30],
+            // The big season prizes go to the champions alone: the league's and the cup's [X14].
+            'league_1' => 300, 'cup_1' => 200],
         'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],

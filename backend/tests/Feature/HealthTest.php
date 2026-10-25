@@ -62,4 +62,14 @@ class HealthTest extends TestCase
         $this->postJson('/api/v1/health/ping')->assertStatus(429)
             ->assertJsonPath('code', 'too_many_requests')->assertJsonPath('message', 'طلبات كثيرة، حاول بعد قليل.');
     }
+
+    /** [X13] The support buttons: a WhatsApp link with a ready message, a Telegram link, none when not set. */
+    public function test_health_gives_the_support_links_only_when_set(): void
+    {
+        $this->getJson('/api/v1/health')->assertJsonPath('support', ['whatsapp' => null, 'telegram' => null]);
+        config(['game.support.whatsapp' => '+20 100 000 0000', 'game.support.telegram' => '@legends_help']);
+        $support = $this->getJson('/api/v1/health')->json('support');
+        $this->assertStringStartsWith('https://wa.me/201000000000?text=', $support['whatsapp']);
+        $this->assertSame('https://t.me/legends_help', $support['telegram']);
+    }
 }

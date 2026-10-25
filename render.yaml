@@ -26,6 +26,10 @@ services:
         sync: false
       - key: MAIL_FROM_ADDRESS
         sync: false
+      - key: SUPPORT_WHATSAPP
+        sync: false
+      - key: SUPPORT_TELEGRAM
+        sync: false
       - key: GMAIL_ADDRESS
         sync: false
       - key: GMAIL_APP_PASSWORD

@@ -456,6 +456,13 @@ paths:
                     properties:
                       channel: { type: string, example: system }
                       event: { type: string, example: ping }
+                  support:
+                    type: object
+                    description: 'The support buttons [X13]: a link per channel, null when not set'
+                    required: [whatsapp, telegram]
+                    properties:
+                      whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
+                      telegram: { type: string, nullable: true, example: 'https://t.me/legends_support' }
   /health/ping:
     post:
       tags: [system]
