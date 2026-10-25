@@ -11,6 +11,7 @@ use App\League\LeagueStarter;
 use App\League\Leaving;
 use App\League\Presence;
 use App\League\SeasonScheduler;
+use App\League\SeasonStats;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\LeagueJoinRequest;
@@ -280,6 +281,15 @@ class LeagueController extends Controller
             ->map(fn ($r, $i) => ['position' => $i + 1] + $r);
 
         return response()->json(['season' => $this->seasonData($league), 'next_round' => $next, 'table' => $table]);
+    }
+
+    /** The statistics centre [X17]: the season's table in detail, scorers, assists, cards, money, value and runs. */
+    public function stats(Request $request, League $league): JsonResponse
+    {
+        $this->approvedOnly($request->user(), $league);
+        $this->ensureCalendar($league);
+
+        return response()->json(['season' => $this->seasonData($league)] + SeasonStats::of($league->id, $league->season->id));
     }
 
     /** The cup's bracket, stage by stage with each stage's day [PLAN 2.5]. */

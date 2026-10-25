@@ -88,6 +88,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}/fixtures', 'fixtures')->whereNumber('league');
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');
+    Route::get('{league}/stats', 'stats')->whereNumber('league');
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
     // The hall of fame [Sprint 33].
     Route::get('{league}/honours', [HonoursController::class, 'league'])->whereNumber('league');

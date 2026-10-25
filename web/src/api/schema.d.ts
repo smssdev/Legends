@@ -1763,6 +1763,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The statistics centre [X17]
+         * @description The season's table in detail, scorers and assists, cards of players and clubs, each club's buying and selling, the squads' value, and the runs of results. Members only; nothing hidden (no tactic).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The season's statistics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LeagueStats"];
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/cup": {
         parameters: {
             query?: never;
@@ -6573,6 +6615,86 @@ export interface components {
                         name: string;
                     } | null;
                 }[];
+            }[];
+        };
+        StatsClub: {
+            id: number;
+            name: string;
+            code: string;
+            crest_url: string;
+        };
+        StatsPlayer: {
+            player: {
+                id: number;
+                name: string;
+            };
+            club: components["schemas"]["StatsClub"];
+            goals?: number;
+            assists?: number;
+            yellow?: number;
+            red?: number;
+        };
+        LeagueStats: {
+            season: components["schemas"]["SeasonCalendar"];
+            /** @description Finished matches this season */
+            matches: number;
+            table: {
+                position: number;
+                club: components["schemas"]["StatsClub"];
+                played: number;
+                won: number;
+                drawn: number;
+                lost: number;
+                goals_for: number;
+                goals_against: number;
+                goal_difference: number;
+                points: number;
+                /** @description Goals per match times 100 (integers only): 175 = 1.75 */
+                goals_per_match_x100: number;
+                conceded_per_match_x100: number;
+            }[];
+            scorers: components["schemas"]["StatsPlayer"][];
+            assists: components["schemas"]["StatsPlayer"][];
+            discipline: {
+                /** @description Most red cards */
+                players: components["schemas"]["StatsPlayer"][];
+                /** @description Most yellow cards */
+                bookings: components["schemas"]["StatsPlayer"][];
+                clubs: {
+                    club: components["schemas"]["StatsClub"];
+                    yellow: number;
+                    red: number;
+                }[];
+            };
+            finance: {
+                club: components["schemas"]["StatsClub"];
+                bought: number;
+                bought_count: number;
+                sold: number;
+                sold_count: number;
+                /** @description Sold minus bought */
+                net: number;
+            }[];
+            value: {
+                position: number;
+                club: components["schemas"]["StatsClub"];
+                value: number;
+                players: number;
+            }[];
+            streaks: {
+                club: components["schemas"]["StatsClub"];
+                current: {
+                    /** @enum {string} */
+                    kind: "W" | "D" | "L";
+                    length: number;
+                } | null;
+                best: {
+                    W: number;
+                    D: number;
+                    L: number;
+                };
+                /** @description The last five */
+                form: ("W" | "D" | "L")[];
             }[];
         };
         CoachProfile: {
