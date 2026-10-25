@@ -6,6 +6,7 @@ use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
 use App\League\MatchOrders;
 use App\League\MatchReplay;
+use App\League\MatchSocial;
 use App\League\Members;
 use App\League\TeamSheet;
 use App\Models\Club;
@@ -83,8 +84,32 @@ class MatchController extends Controller
             'missed' => $missed,
             'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), $shown),
             'readings' => $this->readings($m, $f, $you, $tick),
-            'reactions' => [],
+        ] + MatchSocial::recent($m->id));
+    }
+
+    /** A reaction on every viewer's screen [X24]: an emoji, or a boo or a cheer for one side. Any member who watches. */
+    public function react(Request $request, int $match): JsonResponse
+    {
+        [$m, , $you] = $this->load($request, $match);
+        $data = $request->validate([
+            'key' => ['required', Rule::in([...config('game.match.reactions'), ...MatchSocial::CHEERS])],
+            'target' => ['required_if:key,boo,cheer', 'nullable', Rule::in(['home', 'away'])],
         ]);
+        abort_unless($m->status === 'live', 409, 'المباراة ليست مباشرة الآن.');
+
+        return response()->json(MatchSocial::react($m->id, $request->user()->id, $request->user()->name, $you, $data['key'], $data['target'] ?? null), 201);
+    }
+
+    /** The side chat between the league's coaches who watch [X24]. */
+    public function chat(Request $request, int $match): JsonResponse
+    {
+        [$m, , $you] = $this->load($request, $match);
+        $data = $request->validate(['body' => ['required', 'string', 'max:'.config('game.match.chat_max')]]);
+        abort_unless($m->status === 'live', 409, 'المباراة ليست مباشرة الآن.');
+        $body = trim(preg_replace('/\s+/u', ' ', $data['body']));
+        abort_if($body === '', 422, 'اكتب رسالة.');
+
+        return response()->json(MatchSocial::say($m->id, $request->user()->id, $request->user()->name, $you, $body), 201);
     }
 
     /** The events of the minutes after $since and before $until: the kept ones, then those still in the cache. */
