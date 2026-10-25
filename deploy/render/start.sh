@@ -54,10 +54,18 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
   region=$(printf '%s' "$endpoint" | sed -n 's/^s3\.\([^.]*\)\.backblazeb2\.com$/\1/p')
   export LITESTREAM_REGION="${region:-us-east-1}"
   export LITESTREAM_ACCESS_KEY_ID="$B2_KEY_ID" LITESTREAM_SECRET_ACCESS_KEY="$B2_APPLICATION_KEY"
+  # RESTORE_AT (an RFC 3339 time in Render's Environment, e.g. 2026-10-26T18:30:00Z) brings the game back as it was
+  # then, from B2's week of history; remove it after that deploy, or every restart goes back to it.
+  at=
+  if [ -n "${RESTORE_AT:-}" ]; then
+    at="-timestamp $RESTORE_AT"
+    echo "Saved game: going back to $RESTORE_AT (remove RESTORE_AT from Render's Environment after this deploy)"
+  fi
   for db in legends queue; do
     file="database/$db.sqlite"
     rm -f "$file.restore"
-    litestream restore -config /app/litestream.yml -if-replica-exists -o "$file.restore" "/app/backend/$file"
+    # shellcheck disable=SC2086
+    litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file"
     if [ -f "$file.restore" ]; then
       rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
       mv "$file.restore" "$file"
@@ -68,6 +76,9 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
 fi
 
 mkdir -p storage/logs
+# A copy of the game as it is before this deploy's migrations, downloadable from the admin panel (النسخ) until the
+# next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
+if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
 php artisan migrate --force
 # Cache the configuration now that the run-time variables are known.
 php artisan config:cache

@@ -2,6 +2,8 @@
 # so every change to the game's databases is copied within a second to Backblaze B2 (free up to 10 GB), and
 # brought back before the site starts. The ${...} values are set by start.sh from the B2_* variables in Render.
 # The cache (cache.sqlite) is not copied: it rebuilds itself.
+# B2 keeps a week of history (retention) with a full snapshot every 6 hours, so the game can be brought back to
+# any moment of the last 7 days (RESTORE_AT in start.sh), for example to just before a deploy that went wrong.
 dbs:
   - path: /app/backend/database/legends.sqlite
     replicas:
@@ -11,6 +13,8 @@ dbs:
         endpoint: ${LITESTREAM_ENDPOINT}
         region: ${LITESTREAM_REGION}
         force-path-style: true
+        retention: 168h
+        snapshot-interval: 6h
   - path: /app/backend/database/queue.sqlite
     replicas:
       - type: s3
@@ -19,3 +23,5 @@ dbs:
         endpoint: ${LITESTREAM_ENDPOINT}
         region: ${LITESTREAM_REGION}
         force-path-style: true
+        retention: 168h
+        snapshot-interval: 6h
