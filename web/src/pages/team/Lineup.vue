@@ -105,9 +105,9 @@ const links = computed(() => {
 // The mini cards on the pitch [X29], as the squad's cards: gold from 85, silver from 75, bronze under.
 const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
 const MINI = {
-  gold: 'border-gold/70 from-[#5a4410] to-[#10284F] text-gold',
-  silver: 'border-text/40 from-[#3b4a66] to-[#10284F] text-text',
-  bronze: 'border-[#B4692A]/60 from-[#4a2c16] to-[#10284F] text-text',
+  gold: 'border-gold from-[#6b5214] to-surface text-gold',
+  silver: 'border-chrome/70 from-[#4a5a63] to-surface text-text',
+  bronze: 'border-[#B4692A] from-[#55331a] to-surface text-text',
 } as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
@@ -392,7 +392,8 @@ async function saveCustom() {
       <p v-if="selected" class="text-sm text-gold">اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.</p>
       <p class="text-xs text-text-muted">اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.</p>
 
-      <div ref="pitch" class="relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl border-2 border-white/20 bg-[repeating-linear-gradient(0deg,#1f8f4e_0,#1f8f4e_8%,#22994f_8%,#22994f_16%)]">
+      <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
+      <div ref="pitch" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
         <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
         <div class="pointer-events-none absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
@@ -417,14 +418,14 @@ async function saveCustom() {
           <template v-if="starters[i] && players.get(starters[i]!)">
             <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
             <span
-              class="relative flex h-14 w-12 flex-col items-center justify-center overflow-hidden rounded-lg border bg-gradient-to-b shadow-md shadow-black/40"
+              class="mini-card relative flex h-16 w-13 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-black/50"
               :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
             >
               <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
               <b class="font-numbers text-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
               <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
             </span>
-            <span class="max-w-full truncate rounded bg-bg/85 px-1.5 text-xs font-bold" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
+            <span class="max-w-full truncate rounded bg-chrome px-1.5 text-xs font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
             <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(starters[i]!)!.fitness)" :style="{ width: `${players.get(starters[i]!)!.fitness}%` }" /></span>
           </template>
           <span v-else class="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-white/70 text-2xl text-white">+</span>
@@ -550,3 +551,21 @@ async function saveCustom() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.lineup-pitch {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 50%, rgb(255 255 255 / 0.12), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 60%, rgb(0 0 0 / 0.35)),
+    repeating-linear-gradient(0deg, #1d8a4b 0, #1d8a4b 7.5%, #23994f 7.5%, #23994f 15%);
+  box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent), 0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+/* A sheen across the top of each mini card, as on a printed card. */
+.mini-card::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 55% 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.22), transparent);
+  pointer-events: none;
+}
+</style>

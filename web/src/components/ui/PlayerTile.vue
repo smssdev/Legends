@@ -9,7 +9,7 @@ const props = defineProps<{ name: string; line: Line; position: string; overall:
 const LABELS: Record<string, string> = { pac: 'سرعة', sho: 'تسديد', pas: 'تمرير', dri: 'مراوغة', def: 'دفاع', phy: 'بدنية', diving: 'طيران', handling: 'إمساك', kicking: 'ركل', positioning: 'تمركز', reflexes: 'ردة فعل' }
 const stats = computed(() => Object.entries(props.attributes ?? {}).filter(([, v]) => v != null).slice(0, 6) as [string, number][])
 const tier = computed(() => (props.overall >= 85 ? 'gold' : props.overall >= 75 ? 'silver' : 'bronze'))
-const FACE = { gold: 'from-[#3a2c07] via-[#1b2f57] to-[#10284F] ring-gold/60', silver: 'from-[#33415a] via-[#172f58] to-[#10284F] ring-text/30', bronze: 'from-[#3b2414] via-[#162d55] to-[#10284F] ring-[#B4692A]/50' }
+const FACE = { gold: 'from-[#4a3809] via-surface-raised to-surface ring-gold/70', silver: 'from-[#3a4a52] via-surface-raised to-surface ring-chrome/40', bronze: 'from-[#45291a] via-surface-raised to-surface ring-[#B4692A]/60' }
 const shortName = computed(() => {
   const parts = props.name.trim().split(/\s+/)
   return parts.length > 1 ? parts.slice(1).join(' ') : props.name
