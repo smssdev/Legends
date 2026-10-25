@@ -35,7 +35,9 @@ class MarketController extends Controller
         $cfg = config('game.economy');
         $q = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
             ->where('players.league_id', $league->id)
-            ->select('players.*', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'master_players.potential', 'master_players.nationality')
+            ->select('players.*', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'master_players.potential', 'master_players.nationality',
+                'master_players.pac', 'master_players.sho', 'master_players.pas', 'master_players.dri', 'master_players.def', 'master_players.phy',
+                'master_players.gk_diving', 'master_players.gk_handling', 'master_players.gk_kicking', 'master_players.gk_positioning', 'master_players.gk_reflexes')
             ->when($data['line'] ?? null, fn ($q, $line) => $q->where('master_players.line', $line))
             ->when($data['q'] ?? null, fn ($q, $name) => $q->where('master_players.name', 'like', '%'.str_replace(['%', '_'], '', $name).'%'));
         if ($source === 'pool') {
@@ -67,6 +69,10 @@ class MarketController extends Controller
                 'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
                 'value' => (int) $p->value, 'price' => intdiv((int) $p->value * $bp, 10000),
                 'club' => $p->club_id ? ['id' => $p->club_id, 'name' => $clubs[$p->club_id] ?? ''] : null,
+                // For the player's card in the market [X29].
+                'attributes' => $p->line === 'gk'
+                    ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
+                    : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
             ]),
             // My players and the ways to sell each [X6]: now for a fee at his full value, or listed up to his cap.
             'mine' => $this->mine($club, $league),

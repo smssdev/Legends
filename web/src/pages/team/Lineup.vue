@@ -102,7 +102,13 @@ const links = computed(() => {
     return a && b ? [{ ...l, x1: a.x, y1: a.y, x2: b.x, y2: b.y }] : []
   })
 })
-const ring = (line: string) => ({ gk: 'border-[#F5B82E]', def: 'border-[#3B82F6]', mid: 'border-[#22A35A]', att: 'border-[#F08A3C]' })[line] ?? 'border-text/30'
+// The mini cards on the pitch [X29], as the squad's cards: gold from 85, silver from 75, bronze under.
+const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
+const MINI = {
+  gold: 'border-gold/70 from-[#5a4410] to-[#10284F] text-gold',
+  silver: 'border-text/40 from-[#3b4a66] to-[#10284F] text-text',
+  bronze: 'border-[#B4692A]/60 from-[#4a2c16] to-[#10284F] text-text',
+} as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
 type Spot = { zone: 'slot' | 'bench' | 'reserve'; index: number }
@@ -409,10 +415,15 @@ async function saveCustom() {
           @click="click({ zone: 'slot', index: i })"
         >
           <template v-if="starters[i] && players.get(starters[i]!)">
+            <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
             <span
-              class="flex size-12 items-center justify-center rounded-full border-[3px] bg-bg font-numbers text-lg font-bold"
-              :class="[ring(slot.line), isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
-            >{{ shown(players.get(starters[i]!)!) }}</span>
+              class="relative flex h-14 w-12 flex-col items-center justify-center overflow-hidden rounded-lg border bg-gradient-to-b shadow-md shadow-black/40"
+              :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
+            >
+              <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
+              <b class="font-numbers text-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
+              <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
+            </span>
             <span class="max-w-full truncate rounded bg-bg/85 px-1.5 text-xs font-bold" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
             <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(starters[i]!)!.fitness)" :style="{ width: `${players.get(starters[i]!)!.fitness}%` }" /></span>
           </template>

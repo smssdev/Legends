@@ -16,13 +16,17 @@
     <p v-else-if="!report || !view" class="text-text-muted">جارٍ تحميل التقرير...</p>
 
     <template v-if="report && view">
-      <section class="flex items-center justify-center gap-4 rounded-xl bg-surface p-5 md:gap-8" aria-label="النتيجة">
+      <!-- The scoreboard as a broadcast's [X29]: over the stadium at night, each crest lit in its club's colour. -->
+      <section class="relative flex items-center justify-center gap-4 overflow-hidden rounded-2xl border border-gold/25 bg-surface bg-cover bg-center p-6 shadow-xl shadow-black/40 md:gap-8 md:p-8"
+        style="background-image: linear-gradient(180deg, rgba(10,31,66,.55), rgba(10,31,66,.92)), url('/art/stadium-banner.svg')" aria-label="النتيجة">
+        <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
+        <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
         <div class="flex flex-1 flex-col items-center gap-2 text-center">
           <Crest :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="56" />
           <span class="font-display text-lg font-extrabold">{{ view.clubs.home.name }}</span>
         </div>
         <div class="flex flex-col items-center gap-1">
-          <span class="font-numbers text-5xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
+          <span class="rounded-xl bg-bg/70 px-4 py-1 font-numbers text-5xl shadow-inner md:text-6xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
           <span v-if="report.shootout" class="text-sm text-text-soft">ركلات الترجيح <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span>
           <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ resultLabel }}</span>
         </div>
@@ -59,7 +63,9 @@
             <span>{{ v.text }}</span>
           </p>
         </section>
-        <section v-if="report.man_of_the_match" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface p-4 text-center" aria-labelledby="motm">
+        <section v-if="report.man_of_the_match" class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-[#3a2c07] to-[#10284F] p-4 text-center shadow-lg shadow-black/40" aria-labelledby="motm">
+          <span class="absolute inset-x-0 top-0 h-1 bg-gold" aria-hidden="true" />
+          <span class="text-2xl" aria-hidden="true">⭐</span>
           <h2 id="motm" class="text-sm font-bold text-gold">رجل المباراة</h2>
           <span class="font-display text-2xl font-extrabold">{{ report.man_of_the_match.name }}</span>
           <span class="text-sm text-text-muted">{{ view.clubs[report.man_of_the_match.team as Side].name }}</span>
