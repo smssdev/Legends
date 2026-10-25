@@ -2,6 +2,7 @@
 // Make a league (Sprint 13 W1), after the drafts WebCreateLeague and MobileCreateLeague: the basics, the
 // times, the money and rules, and the season's summary; then "أنشئ الدوري واختر فريقك" shows the copied
 // clubs to choose the owner's own. The server makes it all in one step [PLAN 2.1, 2.3].
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf, type ApiError } from '../../api/client'
@@ -206,13 +207,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
             <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
             <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
           </label>
-          <label class="flex min-h-touch cursor-pointer items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3">
-            <span>
-              <span class="block font-bold">دوري نزيه</span>
-              <span class="block text-sm text-text-muted">يقفل صرف العملة المميزة داخل هذا الدوري</span>
-            </span>
-            <input v-model="fair" type="checkbox" role="switch" class="size-6 accent-success" />
-          </label>
+          <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف العملة المميزة داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
           <fieldset class="flex flex-col gap-2">
             <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>
             <div class="grid gap-2 md:grid-cols-2">

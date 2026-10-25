@@ -2,6 +2,8 @@
 // The market (Sprint 24 W1), after the drafts WebMarket and MobileMarket: the pool and the bot clubs as tabs,
 // filters, the players with their value and price, and my players to sell: at once for a fee, at their value, or
 // at my own price up to their cap for a buyer from outside [X6]. Prices, caps and waits come from the API.
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -12,6 +14,8 @@ import { currentLeague } from '../../lib/currentLeague'
 import { money, type Line } from '../../lib/format'
 
 type Market = components['schemas']['Market']
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const m = ref<Market | null>(null)
 const loaded = ref(false)
@@ -134,7 +138,7 @@ onMounted(load)
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-center gap-3">
       <div class="flex-[1_1_240px]">
-        <h1 class="font-display text-3xl font-extrabold">السوق</h1>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">السوق</h1><HelpTip :text="g.pool" label="مجموعة السوق" /></span>
         <p class="mt-1 text-sm text-text-muted">
           <template v-if="m?.closed">{{ m.closed }}</template>
           <template v-else-if="m">مفتوح حتى الجولة {{ m.open_until_round }} · لاعبون جدد في المجموعة كل 4 ساعات، من كل الدوريات وبقوة دوريك</template>
@@ -212,12 +216,13 @@ onMounted(load)
                 <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy !== null" @click="unlist(p)">اسحبه من البيع</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span><b>بيع فوري</b>: تحصل الآن على <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> مقابل {{ fee(p) }}.</span>
+                <span class="inline-flex flex-wrap items-center"><b>بيع فوري</b><HelpTip :text="g.quick_sale" label="البيع الفوري" /></span><span>: تحصل الآن على <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> مقابل {{ fee(p) }}.</span>
                 <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : 'بع الآن' }}</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span><b>بقيمته</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> بلا رسوم، ويُباع خلال {{ hours(p.wait_hours.value) }}.</span>
                 <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">اعرضه بقيمته</button>
+                <HelpTip :text="g.listing" label="العرض في السوق" />
               </div>
               <form class="flex flex-wrap items-end gap-2" @submit.prevent="price && listAt(p, Number(price))">
                 <label class="flex flex-col gap-1"><b>بسعرك</b> <span class="text-xs text-text-muted">من {{ money(p.floor) }} إلى {{ money(p.cap) }}</span>

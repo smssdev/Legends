@@ -2,6 +2,8 @@
 // Training (Sprint 27 W1, PLAN 2.8), per the WebTraining and MobileTraining drafts: the four slots with their
 // bars and the countdown to the next session, and the candidates of the chosen line. Every number comes from
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -12,6 +14,8 @@ import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
 
 type View = components['schemas']['TrainingView']
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -106,7 +110,7 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <h1 class="font-display text-3xl font-extrabold">التدريب</h1>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">التدريب</h1><HelpTip :text="g.training" label="التدريب" /></span>
         <p class="mt-1 text-sm text-text-muted">لاعب من كل خط · جلسة كل {{ v ? Math.round(v.interval_minutes / 60) : 8 }} ساعات حتى لو كنت غائباً · عند 100% القوة +1 · التدريب مفتوح طوال الموسم: بعد الإمكانية أبطأ، حتى 99</p>
       </div>
       <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">
@@ -159,7 +163,7 @@ onBeforeUnmount(() => clearInterval(tick))
 
       <section aria-label="مرشحون للتدريب" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
         <div class="flex flex-wrap items-center gap-2 px-1">
-          <h2 class="font-display text-lg font-bold">مرشحون للتدريب</h2>
+          <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">مرشحون للتدريب</h2><HelpTip :text="g.potential" label="الإمكانية" /></span>
           <span class="text-sm text-text-muted">الأصغر سناً يتطور أسرع وسقفه أعلى</span>
           <div class="ms-auto flex gap-1" role="tablist" aria-label="الخط">
             <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" role="tab" :aria-selected="line === k" class="h-touch rounded-md px-3 text-sm font-bold"
@@ -184,7 +188,7 @@ onBeforeUnmount(() => clearInterval(tick))
 
       <div class="grid gap-3 lg:grid-cols-2">
         <section aria-label="معسكر التدريب" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
-          <div><h2 class="font-display text-lg font-bold">معسكر التدريب</h2>
+          <div><span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">معسكر التدريب</h2><HelpTip :text="g.camp" label="معسكر التدريب" /></span>
             <p class="text-sm text-text-muted">حتى {{ v.camp.max_players }} لاعبين يتدربون معاً، ويغيبون عن المباريات حتى يعودوا. يبقى {{ v.camp.min_left }} لاعباً على الأقل في الفريق.</p></div>
           <template v-if="campActive">
             <div class="flex items-center gap-3 rounded-lg border border-gold/40 bg-surface-sunk p-3">
@@ -219,7 +223,7 @@ onBeforeUnmount(() => clearInterval(tick))
         </section>
 
         <section aria-label="التدريب السري" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
-          <div><h2 class="font-display text-lg font-bold">التدريب السري</h2>
+          <div><span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">التدريب السري</h2><HelpTip :text="g.secret_training" label="التدريب السري" /></span>
             <p class="text-sm text-text-muted">خط واحد +{{ v.secret.boost }} في المباراة القادمة وحدها، والخصم لا يعرف. {{ v.secret.used }} من {{ v.secret.per_season }} هذا الموسم.</p></div>
           <p v-if="!v.secret.fixture" class="text-sm text-text-muted">لا مباراة قادمة.</p>
           <template v-else>

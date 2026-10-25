@@ -2,6 +2,8 @@
 // The scout (Sprint 26 W1, docs/features/scout.md): the criteria with the cost and the time, the search under
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -12,6 +14,8 @@ import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
 
 type View = components['schemas']['ScoutView']
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -107,7 +111,7 @@ onBeforeUnmount(() => clearInterval(tick))
 <template>
   <div class="flex flex-col gap-4">
     <header>
-      <h1 class="font-display text-3xl font-extrabold">الكشاف</h1>
+      <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الكشاف</h1><HelpTip :text="g.scout" label="الكشاف" /></span>
       <p class="mt-1 text-sm text-text-muted">يبحث لك عن لاعبين من خارج أندية الدوري، وتشتريهم وحدك بسعر المجموعة حتى تتجدد</p>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>

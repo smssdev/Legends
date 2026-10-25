@@ -65,6 +65,7 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
+    Route::get('glossary', 'glossary');
 });
 Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1,data');
 

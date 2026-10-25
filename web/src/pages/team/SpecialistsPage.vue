@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // The specialists (Sprint 31 W1, docs/features/specialists.md): four cards, each with what it does, its price and
 // the contract working now with a countdown on the server's clock. No draft of its own: the stadium's cards.
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -11,6 +13,8 @@ import { currentLeague } from '../../lib/currentLeague'
 
 type View = components['schemas']['SpecialistsView']
 type Spec = View['specialists'][number]
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -77,7 +81,7 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <h1 class="font-display text-3xl font-extrabold">الأخصائيون</h1>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الأخصائيون</h1><HelpTip :text="g.specialists" label="الأخصائيون" /></span>
         <p class="mt-1 text-sm text-text-muted">عقد كل أخصائي {{ v?.days ?? 7 }} أيام، يُدفع عند التوقيع، وتجدده بنفسك بعد أن ينتهي</p>
       </div>
       <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">

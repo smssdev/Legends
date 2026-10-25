@@ -328,6 +328,21 @@ paths:
         '401': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '503': { $ref: '#/components/responses/Error' }
+  /data/glossary:
+    get:
+      tags: [data]
+      summary: The game's terms explained in Arabic, for the "?" beside each [X19]
+      security: []
+      responses:
+        '200':
+          description: The terms
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [terms]
+                properties:
+                  terms: { type: object, additionalProperties: { type: string } }
   /data/templates:
     get:
       tags: [data]

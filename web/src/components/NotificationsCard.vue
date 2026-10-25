@@ -2,6 +2,7 @@
 // The app and its notifications (Sprint 36 W1, PLAN 2.13): install the site on the home screen (with the
 // iPhone's own steps), turn this browser's notifications on, and choose the kinds. A tap on a notification
 // opens its screen (public/sw.js).
+import UiToggle from './ui/UiToggle.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
@@ -99,10 +100,7 @@ onMounted(load)
         <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">أوقفها هنا</button>
       </div>
       <div class="flex flex-col gap-1">
-        <label v-for="k in settings.kinds" :key="k.kind" class="flex min-h-touch items-center gap-3 rounded-lg px-1">
-          <input type="checkbox" class="size-5 accent-gold" :checked="k.on" @change="toggle(k.kind, ($event.target as HTMLInputElement).checked)" />
-          <span class="flex-1"><b class="block text-sm">{{ LABELS[k.kind]?.[0] }}</b><span class="text-xs text-text-muted">{{ LABELS[k.kind]?.[1] }}</span></span>
-        </label>
+        <UiToggle v-for="k in settings.kinds" :key="k.kind" class="rounded-lg px-1" :model-value="k.on" :label="LABELS[k.kind]?.[0]" :hint="LABELS[k.kind]?.[1]" @update:model-value="(on: boolean) => toggle(k.kind, on)" />
       </div>
     </template>
   </section>
