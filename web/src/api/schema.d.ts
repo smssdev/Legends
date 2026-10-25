@@ -3682,9 +3682,10 @@ export interface paths {
                                 [key: string]: unknown;
                             }[];
                             readings: components["schemas"]["MatchReading"][];
-                            reactions?: {
-                                [key: string]: unknown;
-                            }[];
+                            /** @description The latest reactions [X24] */
+                            reactions?: components["schemas"]["BroadcastReaction"][];
+                            /** @description The side chat, the latest 50 [X24] */
+                            chat?: components["schemas"]["BroadcastChat"][];
                         };
                     };
                 };
@@ -3776,6 +3777,116 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/reactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A reaction on every viewer's screen [X24]
+         * @description An emoji (one each 1.2 s), or a boo or a cheer for one side (one each 30 s). Any member of the league, while live; 409 otherwise.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        key: "fire" | "clap" | "wow" | "laugh" | "angry" | "pray" | "unlucky" | "coming" | "easy" | "focus" | "boo" | "cheer";
+                        /**
+                         * @description For a boo or a cheer
+                         * @enum {string}
+                         */
+                        target?: "home" | "away";
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BroadcastReaction"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A message in the side chat between the league's viewers [X24]
+         * @description Up to 140 characters, one each 2 s; while live.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BroadcastChat"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -7270,6 +7381,28 @@ export interface components {
             trap?: 0 | 1;
             /** @enum {string} */
             marking?: "zone" | "man";
+        };
+        BroadcastReaction: {
+            id: number;
+            /**
+             * @description The coach's side
+             * @enum {string|null}
+             */
+            side: "home" | "away" | null;
+            key: string;
+            /** @enum {string|null} */
+            target: "home" | "away" | null;
+            who: string;
+            at: number;
+        };
+        BroadcastChat: {
+            id: number;
+            /** @enum {string|null} */
+            side: "home" | "away" | null;
+            who: string;
+            body: string;
+            user_id: number;
+            at: number;
         };
         /** @description A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival. */
         Scenario: {

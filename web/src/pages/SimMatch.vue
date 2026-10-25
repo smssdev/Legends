@@ -73,11 +73,21 @@
           <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء</p>
         </section>
 
-        <!-- Live: the two coaches cheer and tease each other; both screens see it at once. -->
-        <section v-if="live && mine && !finished" class="flex gap-1.5 overflow-x-auto rounded-xl bg-surface p-2" aria-label="تفاعل مع صديقك">
-          <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
-            <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
-          </button>
+        <!-- Live: the two coaches cheer and tease each other; every screen sees it at once. In a league every member who
+             watches may react, and cheer or boo one side once in half a minute [X24]. -->
+        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" aria-label="تفاعل مع المباراة">
+          <div class="flex gap-1.5 overflow-x-auto">
+            <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
+              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
+            </button>
+          </div>
+          <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            <template v-for="s in (['home', 'away'] as const)" :key="s">
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ view.clubs[s].name }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ view.clubs[s].name }}</span></button>
+            </template>
+          </div>
+          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">التشجيع والاستهجان بعد <span class="font-numbers">{{ cheerLeft }}</span> ثانية</p>
         </section>
       </div>
 
@@ -177,6 +187,21 @@
           </div>
         </section>
 
+        <section v-if="league" class="flex flex-col gap-2 rounded-xl bg-surface p-3" aria-label="دردشة المشاهدين">
+          <h2 class="font-display text-base font-bold">دردشة المشاهدين</h2>
+          <div ref="chatBox" class="flex max-h-[240px] min-h-[64px] flex-col gap-1.5 overflow-y-auto" aria-live="polite">
+            <p v-if="!chat.length" class="text-sm text-text-muted">مدربو الدوري الذين يتابعون يتكلمون هنا.</p>
+            <p v-for="c in chat" :key="c.id" class="rounded-md bg-surface-sunk px-3 py-1.5 text-sm">
+              <b :class="c.side ? 'text-gold' : 'text-text-soft'" dir="auto">{{ c.who }}</b><span class="text-text-muted">: </span><span dir="auto">{{ c.body }}</span>
+            </p>
+          </div>
+          <form v-if="live && !finished" class="flex gap-2" @submit.prevent="sendChat">
+            <input v-model="chatText" type="text" maxlength="140" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" placeholder="اكتب رسالة…" aria-label="رسالة" />
+            <button type="submit" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="!chatText.trim() || chatWait">إرسال</button>
+          </form>
+          <p v-if="chatError" class="text-xs text-[#FF8A8A]" role="status">{{ chatError }}</p>
+        </section>
+
         <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" aria-label="مجريات المباراة">
           <h2 class="mb-1 font-display text-base font-bold">مجريات المباراة</h2>
           <div v-for="(f, i) in feed" :key="i" class="flex gap-3 border-b border-text/5 py-2 text-sm">
@@ -197,7 +222,7 @@ import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
@@ -719,6 +744,7 @@ function handleSync(r: LiveSync): number {
   else if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
   if (breakAhead && r.next_at) resumeAt = r.next_at
   for (const x of r.reactions ?? []) receive(x)
+  for (const c of r.chat ?? []) hear(c)
   const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
   return Math.min(1000, Math.max(250, left))
 }
@@ -743,23 +769,69 @@ const REACTIONS = [
   { key: 'easy', emoji: '😎', text: 'سهلة', label: 'سهلة' },
   { key: 'focus', emoji: '🧠', text: 'ركّز', label: 'ركّز' },
 ]
+// The league's boos and cheers for one side [X24].
+const CHEERS = { cheer: { emoji: '📣', text: 'تشجيع' }, boo: { emoji: '👎', text: 'استهجان' } } as const
 const shownReactions = new Set<number>()
 const reactWait = ref(false)
-function receive(x: { id: number; side: Side; key: string }) {
+const myReactions = new Set<number>()
+function receive(x: Reaction) {
   if (shownReactions.has(x.id)) return
   shownReactions.add(x.id)
-  const r = REACTIONS.find((r) => r.key === x.key)
+  const r = x.key in CHEERS ? CHEERS[x.key as keyof typeof CHEERS] : REACTIONS.find((r) => r.key === x.key)
   if (!r) return
-  pitch.value?.react(x.side, r.emoji, r.text, x.side === mine.value ? 'أنت' : view.value?.coaches?.[x.side] ?? view.value?.clubs[x.side].name)
-  if (x.side !== mine.value) sound.pop()
+  // A boo or a cheer rises on its target's side; a member who watches has no side: by turns.
+  const side: Side = x.target ?? x.side ?? (x.id % 2 ? 'home' : 'away')
+  const mineToo = myReactions.has(x.id) || (!props.league && x.side === mine.value)
+  pitch.value?.react(side, r.emoji, r.text, mineToo ? 'أنت' : x.who ?? (x.side ? view.value?.coaches?.[x.side] ?? view.value?.clubs[x.side].name : ''))
+  if (!mineToo) sound.pop()
 }
-async function react(key: string) {
-  reactWait.value = true
-  window.setTimeout(() => (reactWait.value = false), 1300)
+const cheerLeft = ref(0)
+let cheerTimer = 0
+async function react(key: string, target?: Side) {
+  const cheer = key in CHEERS
+  if (!cheer) {
+    reactWait.value = true
+    window.setTimeout(() => (reactWait.value = false), 1300)
+  }
   try {
-    receive(await sim.react(props.id, key))
+    const x = props.league ? await leagueMatch.react(props.id, key, target) : await sim.react(props.id, key)
+    myReactions.add(x.id)
+    receive(x)
+    if (cheer) {
+      cheerLeft.value = 30
+      window.clearInterval(cheerTimer)
+      cheerTimer = window.setInterval(() => { if (--cheerLeft.value <= 0) window.clearInterval(cheerTimer) }, 1000)
+    }
   } catch {
     /* too soon: the button comes back in a moment */
+  }
+}
+
+// The side chat between the league's coaches who watch [X24].
+const chat = ref<ChatLine[]>([])
+const chatText = ref('')
+const chatWait = ref(false)
+const chatError = ref('')
+const chatBox = ref<HTMLElement | null>(null)
+function hear(c: ChatLine) {
+  if (chat.value.some((x) => x.id === c.id)) return
+  const box = chatBox.value
+  const atEnd = !box || box.scrollHeight - box.scrollTop - box.clientHeight < 40
+  chat.value = [...chat.value, c].slice(-50)
+  if (atEnd) requestAnimationFrame(() => chatBox.value?.scrollTo({ top: chatBox.value.scrollHeight }))
+}
+async function sendChat() {
+  const body = chatText.value.trim()
+  if (!body) return
+  chatWait.value = true
+  chatError.value = ''
+  try {
+    hear(await leagueMatch.chat(props.id, body))
+    chatText.value = ''
+  } catch (e) {
+    chatError.value = (e as Error).message
+  } finally {
+    window.setTimeout(() => (chatWait.value = false), 2000)
   }
 }
 
@@ -840,6 +912,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisible)
   window.removeEventListener('online', onVisible)
   window.clearInterval(othersTimer)
+  window.clearInterval(cheerTimer)
   clearTimeout(timer)
   clearTimeout(pollTimer)
   clearInterval(clockTimer)

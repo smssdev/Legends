@@ -102,11 +102,15 @@ export interface LiveSync {
   /** League: the assistant's notes to this coach (ENGINE 8.2). */
   readings?: Reading[]
   reactions: Reaction[]
+  /** League: the side chat between the viewers [X24]. */
+  chat?: ChatLine[]
 }
 
 export interface Reading { id: number; tick: number; minute: number; kind: string; text: string }
 
-export interface Reaction { id: number; side: Side; key: string; at: number }
+/** side: the coach's (null for a league member who watches); target and who: the league's broadcast [X24]. */
+export interface Reaction { id: number; side: Side | null; key: string; at: number; target?: Side | null; who?: string }
+export interface ChatLine { id: number; side: Side | null; who: string; body: string; user_id: number; at: number }
 
 export interface MatchView {
   id: string
@@ -204,6 +208,25 @@ export const leagueMatch = {
         body: { ...order, idempotency_key: crypto.randomUUID() } as any,
       })
       return data!
+    } catch (e) {
+      throw asApiError(e)
+    }
+  },
+  /** The broadcast [X24]: a reaction (a boo or a cheer has its target side), and a line in the side chat. */
+  react: async (id: string, key: string, target?: Side) => {
+    await ensureCsrf()
+    try {
+      const { data } = await api.POST('/matches/{match}/reactions', { params: { path: { match: Number(id) } }, body: { key: key as any, target } })
+      return data as Reaction
+    } catch (e) {
+      throw asApiError(e)
+    }
+  },
+  chat: async (id: string, body: string) => {
+    await ensureCsrf()
+    try {
+      const { data } = await api.POST('/matches/{match}/chat', { params: { path: { match: Number(id) } }, body: { body } })
+      return data as ChatLine
     } catch (e) {
       throw asApiError(e)
     }

@@ -16,6 +16,9 @@ return [
         // A coach's reactions in a match between friends: at most one this often.
         'reaction_gap_ms' => 1200,
         'reactions' => ['fire', 'clap', 'wow', 'laugh', 'angry', 'pray', 'unlucky', 'coming', 'easy', 'focus'],
+        // The league broadcast [X24]: a boo or a cheer for one side at most this often per viewer, the side chat's
+        // pace and length, and how many of each the live poll carries.
+        'cheer_gap_ms' => 30000, 'chat_gap_ms' => 2000, 'chat_max' => 140, 'chat_kept' => 50, 'reactions_kept' => 20,
         // A breath after each scene before the next minute: the timeline and the clock on screen (not after quiet minutes).
         'scene_gap_ms' => 1800,
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,

@@ -1589,7 +1589,8 @@ paths:
                         events: { type: array, items: { type: object, additionalProperties: true } }
                   ticks: { type: array, items: { type: object, additionalProperties: true } }
                   readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
-                  reactions: { type: array, items: { type: object, additionalProperties: true } }
+                  reactions: { type: array, items: { $ref: '#/components/schemas/BroadcastReaction' }, description: 'The latest reactions [X24]' }
+                  chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/report:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -1626,6 +1627,43 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /matches/{match}/reactions:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: 'A reaction on every viewer''s screen [X24]'
+      description: An emoji (one each 1.2 s), or a boo or a cheer for one side (one each 30 s). Any member of the league, while live; 409 otherwise.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key]
+              properties:
+                key: { type: string, enum: [fire, clap, wow, laugh, angry, pray, unlucky, coming, easy, focus, boo, cheer] }
+                target: { type: string, enum: [home, away], description: For a boo or a cheer }
+      responses:
+        '201': { description: Sent, content: { application/json: { schema: { $ref: '#/components/schemas/BroadcastReaction' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /matches/{match}/chat:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: 'A message in the side chat between the league''s viewers [X24]'
+      description: Up to 140 characters, one each 2 s; while live.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [body], properties: { body: { type: string, maxLength: 140 } } }
+      responses:
+        '201': { description: Sent, content: { application/json: { schema: { $ref: '#/components/schemas/BroadcastChat' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /matches/{match}/actions:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
     post:
@@ -3707,6 +3745,26 @@ components:
         def: { type: string, enum: [stay, fullbacks, mid] }
         trap: { type: integer, enum: [0, 1] }
         marking: { type: string, enum: [zone, man] }
+    BroadcastReaction:
+      type: object
+      required: [id, side, key, target, who, at]
+      properties:
+        id: { type: integer }
+        side: { type: string, nullable: true, enum: [home, away, null], description: The coach's side, or null for a league member who watches }
+        key: { type: string }
+        target: { type: string, nullable: true, enum: [home, away, null] }
+        who: { type: string }
+        at: { type: integer }
+    BroadcastChat:
+      type: object
+      required: [id, side, who, body, user_id, at]
+      properties:
+        id: { type: integer }
+        side: { type: string, nullable: true, enum: [home, away, null] }
+        who: { type: string }
+        body: { type: string }
+        user_id: { type: integer }
+        at: { type: integer }
     Scenario:
       type: object
       description: 'A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival.'
