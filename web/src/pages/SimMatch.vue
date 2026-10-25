@@ -463,6 +463,7 @@ async function fetchNext(count = 1) {
   }
 }
 
+let fixedPace = false
 function schedule(ms: number) {
   clearTimeout(timer)
   timer = window.setTimeout(step, ms)
@@ -471,7 +472,8 @@ function schedule(ms: number) {
 async function step() {
   if (!playing.value || halftime.value || finished.value) return
   // Let the commentator finish his sentence (a little), so lines are never cut short.
-  const talk = voice.remainingMs()
+  // At the broadcast's fixed pace the clock never waits for him [X35]: his lines queue instead.
+  const talk = fixedPace ? 0 : voice.remainingMs()
   if (talk > 250 && waited < 2500) { waited += Math.min(talk, 500); return schedule(Math.min(talk, 500)) }
   waited = 0
   if (!buffer.length) {
@@ -479,6 +481,7 @@ async function step() {
     if (!buffer.length) return schedule(500)
   }
   const t = buffer.shift()!
+  fixedPace = !!t.moment && t.moment.ms <= 3400 && t.moment.kind !== 'shootout'
   show(t)
   if (!t.finished && buffer.length === 0) fetchNext()
   if (!halftime.value && !finished.value) schedule(momentMs(t))

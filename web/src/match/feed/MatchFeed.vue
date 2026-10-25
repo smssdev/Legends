@@ -5,11 +5,15 @@
     <div class="sb">
       <div class="sb-in">
         <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></span></div>
-        <div class="mid"><span class="score" :class="{ pop }" dir="ltr">{{ score.away }} - {{ score.home }}</span><span class="live" dir="ltr"><i />{{ minute }}</span></div>
+        <div class="mid"><span class="score" :class="{ pop }" dir="ltr">{{ score.away }} - {{ score.home }}</span><span class="live" dir="ltr"><i />{{ clock || minute }}</span></div>
         <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></span></div>
       </div>
       <div class="mom" dir="ltr"><i :style="{ width: 100 - mom + '%', background: kits.away.kit }" /><i :style="{ width: mom + '%', background: kits.home.kit }" /></div>
     </div>
+
+    <!-- [X35] The whole match on a pitch seen from above: all 22 and the ball moving through every minute from the
+         server's keyframes, never only the key moments. -->
+    <div ref="pitchHost" class="pitch" aria-hidden="true" />
 
     <div class="tl" aria-label="مجريات المباراة" aria-live="polite">
       <div class="spine" />
@@ -90,7 +94,9 @@ import { voiceLine, type Lang } from '../voice'
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
 
-const host = ref<HTMLElement>(), stage = ref<HTMLElement>()
+const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
+// [X35] The broadcast clock, minutes and seconds running through each minute as on TV ('' between minutes: the parent's).
+const clock = ref('')
 const items = ref<any[]>([])
 const cur = ref<any>(null)
 const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false)
@@ -136,7 +142,7 @@ const compare = computed(() => [
 ].map((r) => ({ ...r, hp: r.h + r.a ? (r.h / (r.h + r.a)) * 100 : 50 })))
 
 // ---------------------------------------------------------------- playing a minute
-let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0
+let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0, pitchDrawn = 0
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
 function play(tick, startAt = null) {
@@ -145,8 +151,9 @@ function play(tick, startAt = null) {
   const total = (tick.moment?.ms ?? 3000) / 1000
   const nominal = s.scene ? SCENE_TIME[s.scene][0] : 0
   // The scene takes most of the minute; the commentator sums it up after.
-  const sceneT = s.scene ? Math.min(nominal, total * 0.72) : 0
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt }
+  // At the broadcast's fixed pace a minute is 3.3 s [X35]: the scene takes up to nine tenths of it, a little faster.
+  const sceneT = s.scene ? Math.min(nominal, total * (tick.moment?.ms <= 3400 ? 0.9 : 0.72)) : 0
+  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   revealed.value = !s.pre
@@ -208,6 +215,8 @@ function frame(now) {
   if (plan) {
     t = plan.startAt === null ? t + dt : Math.max(0, (now - plan.startAt) / 1000)
     const { s, total, sceneT, rate, fired } = plan
+    tickClock(plan.tick, Math.min(1, t / total))
+    if (!smooth.value || now - pitchDrawn >= 32) { pitchDrawn = now; drawPitch(plan.tick, Math.min(1, t / total)) }
     const fire = (k, fn) => { if (!fired.has(k)) { fired.add(k); fn() } }
     // A line or a sound long past (the screen joined late) is dropped, not played out of time.
     const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
@@ -230,6 +239,74 @@ function frame(now) {
   raf = requestAnimationFrame(frame)
 }
 
+// ---------------------------------------------------------------- the live pitch and the clock [X35]
+const NS = 'http://www.w3.org/2000/svg'
+let pitchSvg = null, dots = new Map(), ballEl = null, shadowEl = null
+const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.appendChild(e); return e }
+// Writes an attribute only when it changes: a weak phone lays the page out again on every write [X30].
+const sa = (e, k, v) => { const s = String(v); if (e.getAttribute(k) !== s) e.setAttribute(k, s) }
+function buildPitch() {
+  if (!pitchHost.value) return
+  pitchSvg = mk('svg', { viewBox: '-20 -20 1090 720', preserveAspectRatio: 'xMidYMid meet' })
+  const g = mk('g', { fill: 'none', stroke: 'rgba(255,255,255,.55)', 'stroke-width': 4 }, pitchSvg)
+  for (let i = 0; i < 10; i++) mk('rect', { x: i * 105, y: 0, width: 105, height: 680, fill: i % 2 ? '#1d8a4b' : '#23994f', stroke: 'none' }, g)
+  mk('rect', { x: 0, y: 0, width: 1050, height: 680 }, g)
+  mk('line', { x1: 525, y1: 0, x2: 525, y2: 680 }, g)
+  mk('circle', { cx: 525, cy: 340, r: 91 }, g)
+  for (const x of [0, 1050]) {
+    const d = x ? -1 : 1
+    mk('rect', { x: x ? x - 165 : 0, y: 138, width: 165, height: 404 }, g)
+    mk('rect', { x: x ? x - 55 : 0, y: 248, width: 55, height: 184 }, g)
+    mk('rect', { x: x ? x : -18, y: 303, width: 18, height: 74, stroke: '#fff' }, g)
+    mk('circle', { cx: x + d * 110, cy: 340, r: 4, fill: 'rgba(255,255,255,.7)' }, g)
+  }
+  pitchHost.value.replaceChildren(pitchSvg)
+  dots = new Map()
+  shadowEl = mk('ellipse', { rx: 9, ry: 5, fill: 'rgba(0,0,0,.35)' }, pitchSvg)
+  ballEl = mk('circle', { r: 8, fill: '#fff', stroke: '#111', 'stroke-width': 2 }, pitchSvg)
+}
+function dotFor(id, side) {
+  let d = dots.get(id)
+  if (!d) {
+    const k = props.kits[side]
+    d = mk('g', {}, pitchSvg)
+    mk('circle', { r: 22, fill: k.kit, stroke: k.trim || '#fff', 'stroke-width': 3 }, d)
+    const no = players.value[id]?.no
+    const n = mk('text', { y: 8, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 800, fill: k.ink || '#fff', 'font-family': 'Barlow Condensed, sans-serif' }, d)
+    n.textContent = no ?? ''
+    pitchSvg.insertBefore(d, shadowEl)
+    dots.set(id, d)
+  }
+  return d
+}
+const lerp = (a, b, u) => a + (b - a) * u
+function drawPitch(tick, u) {
+  const f = tick?.frames
+  if (!pitchSvg || !f?.length) return
+  const x = u * (f.length - 1), i = Math.min(f.length - 2, Math.floor(x)), k = f.length > 1 ? x - i : 0
+  const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
+  const seen = new Set()
+  for (const id in A.p) {
+    const side = players.value[id]?.side
+    if (!side) continue
+    const a = A.p[id], b = B.p[id] ?? a, d = dotFor(id, side)
+    sa(d, 'transform', `translate(${Math.round(lerp(a[0], b[0], k))} ${Math.round(lerp(a[1], b[1], k))})`)
+    seen.add(id)
+  }
+  for (const [id, d] of dots) sa(d, 'opacity', seen.has(id) ? 1 : 0)
+  const bx = lerp(A.b[0], B.b[0], k), by = lerp(A.b[1], B.b[1], k), bz = lerp(A.b[2] ?? 0, B.b[2] ?? 0, k)
+  sa(shadowEl, 'cx', Math.round(bx)); sa(shadowEl, 'cy', Math.round(by) + 6)
+  sa(ballEl, 'cx', Math.round(bx)); sa(ballEl, 'cy', Math.round(by - bz * 0.6)); sa(ballEl, 'r', Math.round(8 + bz * 0.08))
+}
+function tickClock(tick, u) {
+  const m = tick?.minute
+  if (!m || (tick.moment?.kind === 'shootout')) { clock.value = ''; return }
+  const base = m[0] - 1 + (m[1] || 0), sec = Math.min(59, Math.floor(u * 60))
+  const text = `${String(base).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+  if (clock.value !== text) clock.value = text
+}
+watch(() => props.kits, () => { for (const d of dots.values()) d.remove(); dots = new Map() }, { deep: true })
+onMounted(buildPitch)
 onMounted(() => { raf = requestAnimationFrame((n) => { last = n; frame(n) }) })
 onBeforeUnmount(() => cancelAnimationFrame(raf))
 </script>
@@ -268,7 +345,9 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .mom { height: 3px; display: flex; margin: 0 14px; border-radius: 2px; overflow: hidden }
 .mom i { display: block; height: 100%; transition: width .8s }
 
-.tl { position: absolute; top: clamp(84px, 16cqw, 106px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
+.pitch { position: absolute; z-index: 1; top: clamp(84px, 16cqw, 106px); left: 10px; right: 10px; height: min(40cqh, 62cqw); border-radius: 14px; overflow: hidden; background: #1a7d44; box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 16px 30px rgba(0,0,0,.45) }
+.pitch :deep(svg) { width: 100%; height: 100%; display: block }
+.tl { position: absolute; top: calc(clamp(84px, 16cqw, 106px) + min(40cqh, 62cqw) + 6px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
 .spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, rgba(245,184,46,.55) 10%, rgba(245,184,46,.15)) }
 .list { position: relative; padding: 22px 10px 0; display: grid; gap: 10px }
 .row { display: grid; grid-template-columns: 1fr 54px 1fr; align-items: center }

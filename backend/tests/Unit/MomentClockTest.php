@@ -50,4 +50,17 @@ class MomentClockTest extends TestCase
         // Matches created before the table existed keep the fixed minute.
         $this->assertSame(3000, MomentClock::moment([], ['tick_ms' => 3000])['ms']);
     }
+
+    /** [X35] The broadcast's pace: 18 minutes of football a real minute, extra time and the shootout half a minute. */
+    public function test_the_broadcast_plays_every_minute_at_a_fixed_pace(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000];
+        $goal = [['type' => 'goal', 'team' => 'home', 'kind' => 'open']];
+        $this->assertSame(['kind' => 'quiet', 'ms' => 3333], MomentClock::moment([], $match, 1));
+        $this->assertSame(['kind' => 'goal', 'ms' => 3333], MomentClock::moment($goal, $match, 2));
+        // A half of 45 minutes is two and a half real minutes; an extra-time half (15) half a minute.
+        $this->assertSame(150, intdiv(45 * MomentClock::moment([], $match, 1)['ms'] + 999, 1000));
+        $this->assertSame(30000, 15 * MomentClock::moment($goal, $match, 3)['ms']);
+        $this->assertSame(30000, MomentClock::moment([['type' => 'shootout', 'team' => null]], $match, 5)['ms']);
+    }
 }
