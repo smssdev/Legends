@@ -29,7 +29,8 @@ class LeagueMatch
 
         return self::withFitness(MatchSetup::build($side($fixture->home_id), $side($fixture->away_id), [
             'seed' => $seed,
-            'competition' => $fixture->competition,
+            // The alliance tournament is a knockout like the cup [X27].
+            'competition' => $fixture->competition === 'alliance' ? 'cup' : $fixture->competition,
             'referee' => self::REFEREE[$fixture->referee_strictness ?? 'medium'],
             'venue' => 'home',
             'pitch' => Stadium::stage($fixture->home_id, 'pitch'),

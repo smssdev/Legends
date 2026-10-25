@@ -44,7 +44,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
     <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ message }}</p>
     <ul class="flex flex-col gap-2">
       <li v-for="f in data.fixtures" :key="f.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <span class="text-xs text-text-muted">{{ f.competition === 'cup' ? 'الكأس' : `الجولة ${f.round}` }} · {{ when(f.scheduled_at) }}</span>
+        <span class="text-xs text-text-muted">{{ f.competition === 'cup' ? 'الكأس' : f.competition === 'alliance' ? 'التحالفات' : `الجولة ${f.round}` }} · {{ when(f.scheduled_at) }}</span>
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="s in (['home', 'away'] as const)"

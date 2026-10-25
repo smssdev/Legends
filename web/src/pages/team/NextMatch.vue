@@ -81,7 +81,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         <div class="relative isolate -m-4 mb-0 overflow-hidden rounded-t-xl px-4 pb-4 pt-3">
           <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-70" />
           <div class="absolute inset-0 -z-10 bg-gradient-to-b from-bg/30 via-bg/50 to-surface" aria-hidden="true" />
-          <div class="mb-2 flex justify-center"><UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : `الجولة ${match.round}` }} · {{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</UiChip></div>
+          <div class="mb-2 flex justify-center"><UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : match.competition === 'alliance' ? `بطولة التحالفات · الدور ${match.round}` : `الجولة ${match.round}` }} · {{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</UiChip></div>
           <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
             <div class="flex flex-col items-center gap-1 text-center">
               <ClubCrest :url="match.club.crest_url" :code="match.club.code" :size="72" />

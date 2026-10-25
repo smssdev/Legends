@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Admin\TwoFactor;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\League\Alliance;
 use App\Messages\Inbox;
 use App\Models\User;
 use App\Simulator\Commentary;
@@ -173,5 +174,28 @@ class AdminController extends Controller
         $table = Commentary::table();
 
         return response()->json(['keys' => collect($table)->map(fn ($lines, $key) => ['key' => $key, 'count' => count($lines), 'lines' => array_values($lines)])->values()]);
+    }
+
+    /** The alliance tournaments waiting for the developers, and the latest decided [X27]. */
+    public function alliances(): JsonResponse
+    {
+        $rows = DB::table('alliance_tournaments')->join('leagues', 'leagues.id', '=', 'alliance_tournaments.league_id')
+            ->orderByRaw("alliance_tournaments.status = 'pending' desc")->orderByDesc('alliance_tournaments.id')->limit(30)
+            ->get(['alliance_tournaments.*', 'leagues.name as league']);
+        $captains = DB::table('users')->whereIn('id', $rows->pluck('captain_a')->merge($rows->pluck('captain_b')))->pluck('username', 'id');
+
+        return response()->json(['tournaments' => $rows->map(fn ($t) => [
+            'id' => $t->id, 'league_id' => $t->league_id, 'league' => $t->league, 'name' => $t->name, 'status' => $t->status, 'size' => (int) $t->size,
+            'captains' => [$captains[$t->captain_a] ?? null, $captains[$t->captain_b] ?? null],
+            'first_round_at' => Carbon::parse($t->first_round_at, 'UTC')->toIso8601ZuluString(), 'review_note' => $t->review_note,
+        ])->values()]);
+    }
+
+    public function reviewAlliance(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate(['approve' => ['required', 'boolean'], 'note' => ['nullable', 'string', 'max:200']]);
+        Alliance::review($id, $request->user(), (bool) $data['approve'], $data['note'] ?? null);
+
+        return $this->alliances();
     }
 }

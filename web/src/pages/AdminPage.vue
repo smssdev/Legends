@@ -11,13 +11,16 @@ const secret = ref<{ secret: string; uri: string } | null>(null)
 const code = ref('')
 const error = ref('')
 const busy = ref(false)
-const tab = ref<'overview' | 'users' | 'leagues' | 'backups' | 'commentary'>('overview')
+const tab = ref<'overview' | 'users' | 'leagues' | 'alliances' | 'backups' | 'commentary'>('overview')
+// The alliance tournaments waiting for the developers [X27].
+const alliances = ref<components['responses']['AdminAlliances']['content']['application/json']['tournaments']>([])
+const allianceNote = ref<Record<number, string>>({})
 const overview = ref<any>(null)
 const users = ref<any[]>([])
 const leagues = ref<any[]>([])
 const backups = ref<S['AdminBackups']['backups']>([])
 const commentary = ref<{ key: string; count: number; lines: string[] }[]>([])
-const TABS = { overview: 'النشاط', users: 'المستخدمون', leagues: 'الدوريات', backups: 'النسخ', commentary: 'قوالب التعليق' } as const
+const TABS = { overview: 'النشاط', users: 'المستخدمون', leagues: 'الدوريات', alliances: 'بطولات التحالفات', backups: 'النسخ', commentary: 'قوالب التعليق' } as const
 
 const open = computed(() => state.value?.enabled && state.value.passed)
 const size = (b: number) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.ceil(b / 1024) + ' KB')
@@ -70,9 +73,13 @@ async function show(t: typeof tab.value) {
   if (t === 'overview') overview.value = (await api.GET('/admin/overview')).data
   if (t === 'users') users.value = (await api.GET('/admin/users')).data!.users
   if (t === 'leagues') leagues.value = (await api.GET('/admin/leagues')).data!.leagues
+  if (t === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (t === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
   if (t === 'commentary') commentary.value = (await api.GET('/admin/commentary')).data!.keys
 }
+const review = (id: number, approve: boolean) => run(async () => {
+  alliances.value = (await api.POST('/admin/alliances/{id}/review', { params: { path: { id } }, body: { approve, note: allianceNote.value[id] || null } })).data!.tournaments
+})
 const backupNow = () => run(async () => { backups.value = (await api.POST('/admin/backups')).data!.backups })
 onMounted(load)
 </script>
@@ -183,6 +190,22 @@ onMounted(load)
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section v-if="tab === 'alliances'" aria-label="بطولات التحالفات" class="flex flex-col gap-2">
+        <p v-if="!alliances.length" class="rounded-xl bg-surface p-4 text-text-muted">لا طلبات.</p>
+        <article v-for="a in alliances" :key="a.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2"><b>{{ a.name }}</b><span class="text-sm text-text-muted">{{ a.league }} · {{ a.status }}</span></div>
+          <p class="text-sm text-text-muted">{{ a.size }} ضد {{ a.size }} · القائدان <span dir="ltr">{{ a.captains.join(' / ') }}</span> · الدور الأول {{ day(a.first_round_at) }}</p>
+          <template v-if="a.status === 'pending'">
+            <input v-model="allianceNote[a.id]" maxlength="200" placeholder="ملاحظة (اختيارية)" class="h-touch rounded-md bg-surface-sunk px-3" />
+            <div class="flex gap-2">
+              <button type="button" class="h-touch flex-1 rounded-md bg-gold font-bold text-on-gold disabled:opacity-50" :disabled="busy" @click="review(a.id, true)">اعتمد</button>
+              <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk font-bold disabled:opacity-50" :disabled="busy" @click="review(a.id, false)">ارفض</button>
+            </div>
+          </template>
+          <p v-else-if="a.review_note" class="text-sm">{{ a.review_note }}</p>
+        </article>
       </section>
 
       <section v-if="tab === 'backups'" aria-label="النسخ" class="flex flex-col gap-2 rounded-xl bg-surface p-4">

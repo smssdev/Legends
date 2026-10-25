@@ -345,6 +345,10 @@ return [
     ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
+    // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
+    // clash_minutes of another match of its clubs.
+    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [2, 7], 'default_size' => 5],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a

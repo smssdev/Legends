@@ -131,7 +131,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         <div v-for="f in d.items" :key="f.id" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm" :class="(f.home?.id === myClubId || f.away?.id === myClubId) && myClubId ? 'border border-gold/40' : ''">
           <span class="w-12 shrink-0 font-numbers text-base" dir="ltr">{{ time.format(new Date(f.scheduled_at)) }}</span>
           <UiChip :tone="f.competition === 'cup' ? 'gold' : 'neutral'">
-            {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : `الجولة ${f.round}` }}
+            {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : f.competition === 'alliance' ? `التحالفات ${f.round}` : `الجولة ${f.round}` }}
           </UiChip>
           <span v-if="f.is_bye" class="text-text-muted">استراحة: {{ f.home?.name }}</span>
           <span v-else class="flex min-w-0 flex-1 items-center justify-center gap-2">
