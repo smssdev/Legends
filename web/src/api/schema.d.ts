@@ -3485,6 +3485,14 @@ export interface paths {
                                 lock_at: string;
                                 /** @enum {string|null} */
                                 referee?: "lenient" | "medium" | "strict" | null;
+                                /** @description My club, for the VS card [X29] */
+                                club: {
+                                    id: number;
+                                    name: string;
+                                    code: string;
+                                    strength_cp: number;
+                                    crest_url: string;
+                                };
                                 opponent: {
                                     id: number;
                                     name: string;
@@ -7268,6 +7276,13 @@ export interface components {
             };
             content: {
                 "application/json": {
+                    /** @description The team strength by line [X29]: the starters' average rating in each (or the line's best) */
+                    lines: {
+                        att: number;
+                        mid: number;
+                        def: number;
+                        gk: number;
+                    };
                     club: {
                         id: number;
                         name: string;

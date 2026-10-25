@@ -53,6 +53,7 @@ class TeamController extends Controller
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
                 'balance' => (int) $club->balance, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
             'squad_value' => (int) $players->sum('value'),
+            'lines' => $this->lineStrength($players),
             'players' => $players->values(),
             'lineup' => $this->lineup($lineup),
             'takers' => TeamSheet::takers($club, $lineup),
@@ -172,6 +173,9 @@ class TeamController extends Controller
             'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
             'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
             'referee' => $f->referee_strictness,
+            // My club beside the opponent, for the VS card [X29].
+            'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
+                'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
             'opponent' => [
                 'id' => $opponent->id, 'name' => $opponent->name, 'code' => $opponent->code, 'strength_cp' => (int) $opponent->strength_snapshot,
                 'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name,
@@ -305,6 +309,23 @@ class TeamController extends Controller
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
             ]);
+    }
+
+    /**
+     * The team's strength by line [X29], as the squad screen's four rings: the average rating of the starters in each
+     * line (with their training), or of the line's best when no starter plays there. Integers, rounded down.
+     */
+    private function lineStrength($players): array
+    {
+        $out = [];
+        foreach (['att' => 2, 'mid' => 4, 'def' => 4, 'gk' => 1] as $line => $n) {
+            $all = $players->where('line', $line);
+            $pick = $all->where('role', 'starter');
+            $pick = $pick->isEmpty() ? $all->sortByDesc('overall')->take($n) : $pick;
+            $out[$line] = $pick->isEmpty() ? 0 : intdiv((int) $pick->sum('overall'), $pick->count());
+        }
+
+        return $out;
     }
 
     private function lineup(array $l): array
