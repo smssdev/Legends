@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\AdminOnly;
 use App\Models\User;
+use App\Support\Mailer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -79,5 +81,38 @@ class MailDeliveryTest extends TestCase
         Mail::fake();
         config(['mail.default' => 'array']);
         $this->artisan('mail:check', ['to' => 'me@example.com'])->assertSuccessful();
+    }
+
+    public function test_the_admin_test_names_brevos_ip_block_and_its_fix(): void
+    {
+        config(['mail.default' => 'brevo', 'mail.mailers.brevo.key' => 'xkeysib-abc', 'mail.from.address' => 'legends@gmail.com']);
+        Http::fake(['api.brevo.com/*' => Http::response(['code' => 'unauthorized', 'message' => 'We have detected you are using an unrecognised IP address 1.2.3.4.'], 401)]);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->withoutMiddleware(AdminOnly::class);
+        Sanctum::actingAs($admin);
+        $this->postJson('/api/v1/admin/mail-test', ['to' => 'me@example.com'])->assertOk()
+            ->assertJsonPath('sent', false)->assertJsonPath('key', 'api')->assertJsonPath('mailer', 'brevo')
+            ->assertJsonPath('fix', 'Brevo يرفض عنوان خادمنا (Render يغيّر عناوينه). الحل: في Brevo ← Settings ← Security ← Authorised IPs ← عطّل حظر العناوين (Deactivate blocking).');
+    }
+
+    public function test_an_smtp_key_in_place_of_an_api_key_is_named(): void
+    {
+        config(['mail.default' => 'brevo', 'mail.mailers.brevo.key' => 'xsmtpsib-abc', 'mail.from.address' => 'legends@gmail.com']);
+        $this->assertSame('smtp', Mailer::setup()['key']);
+        $this->assertStringContainsString('xkeysib-', Mailer::setup()['problems'][0]);
+    }
+
+    public function test_a_developers_own_address_hears_why_the_resend_failed(): void
+    {
+        config(['mail.default' => 'brevo', 'mail.mailers.brevo.key' => 'bad', 'mail.from.address' => 'legends@gmail.com',
+            'game.account.official_emails' => ['Owner-Soliman' => 'dev@gmail.com', 'Owner-Hamza' => null]]);
+        Http::fake(['api.brevo.com/*' => Http::response(['message' => 'Key not found'], 401)]);
+        Sanctum::actingAs(User::factory()->unverified()->create(['email' => 'dev@gmail.com']));
+        $msg = $this->postJson('/api/v1/auth/email/resend')->assertStatus(503)->json('message');
+        $this->assertStringContainsString('Key not found', $msg);
+        $this->assertStringContainsString('xkeysib-', $msg);
+        // Anyone else hears only the short message.
+        Sanctum::actingAs(User::factory()->unverified()->create(['email' => 'fan@gmail.com']));
+        $this->postJson('/api/v1/auth/email/resend')->assertStatus(503)->assertJsonPath('message', 'تعذر إرسال الرسالة الآن. حاول بعد دقائق، أو تواصل مع الدعم.');
     }
 }

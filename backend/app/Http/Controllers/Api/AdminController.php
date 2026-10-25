@@ -10,12 +10,14 @@ use App\Models\User;
 use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\GameClock;
+use App\Support\Mailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 /**
@@ -94,6 +96,20 @@ class AdminController extends Controller
             'dev' => (bool) $l->is_dev, 'owner' => $l->owner,
             'coaches' => DB::table('clubs')->where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'season' => (int) DB::table('seasons')->where('league_id', $l->id)->max('number')])]);
+    }
+
+    /** The email settings and a test email to the given address, with the exact error and its fix [X8]. */
+    public function mailTest(Request $request): JsonResponse
+    {
+        $to = (string) $request->validate(['to' => ['required', 'email']])['to'];
+        $setup = Mailer::setup();
+        try {
+            Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
+        } catch (\Throwable $e) {
+            return response()->json($setup + ['sent' => false, 'error' => substr($e->getMessage(), 0, 600), 'fix' => Mailer::explain($e->getMessage())]);
+        }
+
+        return response()->json($setup + ['sent' => Mailer::live(), 'error' => null, 'fix' => Mailer::live() ? null : $setup['problems'][0] ?? null]);
     }
 
     /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */

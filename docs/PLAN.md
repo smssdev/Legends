@@ -542,7 +542,8 @@ unity/
 | 2 | **Senders, Domains & Dedicated IPs ← Senders ← Add a sender:** بريد Gmail الذي ترسل منه اللعبة، ثم الضغط على رابط التأكيد الذي يصله | |
 | 3 | **SMTP & API ← API Keys ← Generate a new API key** باسم `legends-render`، ونسخه فوراً، **ولا يُرسل في أي محادثة** | |
 | 4 | Render ← **Environment:** `BREVO_API_KEY` (المفتاح)، و`MAIL_FROM_ADDRESS` (البريد المؤكد في الخطوة 2) ← **Save** | |
-| 5 | بعد النشر في **Logs:** `Emails: through brevo (HTTPS)`. ثم من **Shell:** `php artisan mail:check بريدك` فيقول «أُرسلت» | |
+| 4ب | **مهم:** Brevo يحظر افتراضياً الإرسال من عناوين IP غير معروفة، وعناوين Render تتغير. من **Settings ← Security ← Authorised IPs** ← **Deactivate blocking** | |
+| 5 | بعد النشر (**Manual Deploy**) في **Logs:** `Emails: through brevo (HTTPS)`. وRender المجاني بلا Shell، فالتجربة من **لوحة الإدارة ← اختبار البريد** (تعرض الخطأ بالضبط وحله)، أو قبل أن يصير حسابك مديراً: سجّل بجيميلك المحجوز واضغط «أرسل الرابط من جديد» فيظهر لك السبب والحل | |
 | 6 | تجربة: حساب جديد ببريد حقيقي ← تصل رسالة «أكّد بريدك في الأساطير» (افحص الرسائل غير المرغوبة أول مرة) ← الرابط يؤكد الحساب | |
 
 **المطلوب من سليمان في X11 (الحسابان الثابتان للمطورين):** في Render ← **Environment:** `OWNER_HAMZA_EMAIL` (جيميل حمزة)، و`OWNER_SOLIMAN_EMAIL` (جيميل سليمان) ← **Save**. ثم يسجّل كل منكما بجيميله (أو يدخل بجوجل)، ويؤكد البريد من الرابط، فيصير حسابه `Owner-Hamza` أو `Owner-Soliman` تلقائياً، بالشارة الرسمية ولوحة الإدارة. الجيميلان لا يُكتبان في الكود ولا يُرسلان في أي محادثة.
