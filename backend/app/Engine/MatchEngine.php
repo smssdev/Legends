@@ -237,10 +237,10 @@ final class MatchEngine
         return $value - $team['missing'] * (int) $this->eng['man_down_cp'];
     }
 
-    private function phase(string $name, int $attack, int $defence, int $mod = 0): array
+    private function phase(string $name, int $attack, int $defence, int $mod = 0, int $bp = 0): array
     {
         $base = (int) $this->eng['phase_base_bp'][$name];
-        $p = $base + intdiv(($attack - $defence + $mod) * (int) $this->eng['phase_slope_bp'], 100);
+        $p = $base + intdiv(($attack - $defence + $mod) * (int) $this->eng['phase_slope_bp'], 100) + $bp;
         $p = max((int) $this->eng['phase_floor_bp'], min((int) $this->eng['phase_ceiling_bp'], $p));
         $roll = $this->rng->int(10000);
 
@@ -277,7 +277,7 @@ final class MatchEngine
             $a = $this->ability($atk, 'build', Ability::LINES['build']) - $tempoLoss + $this->posMod($ta, 'build');
             $d = $this->ability($def, 'press', Ability::LINES['press'])
                 + ($td['pressing'] - 50) * (int) $this->eng['press_bonus_cp'] + $tackleBonus + $this->posMod($td, 'press');
-            $r = $this->phase('build', $a, $d);
+            $r = $this->phase('build', $a, $d, 0, $this->chemistry($atk));
             $phases[] = ['n' => 'build', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $this->stat($atk, 'builds_lost');
@@ -338,7 +338,7 @@ final class MatchEngine
             $createBonus = (int) $this->eng['trap_fail_bonus_cp'];
         }
 
-        $r = $this->phase('progress', $a, $d);
+        $r = $this->phase('progress', $a, $d, 0, $counter ? $this->chemistry($atk) : 0);
         $phases[] = ['n' => 'progress', 'ok' => $r['ok'], 'p' => $r['p']];
         if (! $r['ok']) {
             $this->rate($def, $marker, 6, 'tackles');
@@ -369,7 +369,7 @@ final class MatchEngine
         if ($plan !== 'shots') {
             $a = $this->ability($atk, 'create', Ability::LINES['create']) - $tempoLoss + $createBonus + $this->posMod($ta, 'create');
             $d = $this->ability($def, 'mark', Ability::LINES['mark']) + $this->markingMod($td, $A);
-            $r = $this->phase('create', $a, $d);
+            $r = $this->phase('create', $a, $d, 0, -$this->chemistry($def));
             $phases[] = ['n' => 'create', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $corner = $this->rng->chance(2500);
@@ -393,6 +393,29 @@ final class MatchEngine
 
         $shooter = $this->pickPlayer($atk, $plan === 'shots' ? ['mid' => 3, 'att' => 2] : ['att' => 6, 'mid' => 3, 'def' => 1], 'sho');
         $this->shot($atk, $shooter, $quality, $phases, $plan, $counter, ['carrier' => $carrier, 'receiver' => $receiver, 'creator' => $creator, 'defender' => $marker]);
+    }
+
+    /**
+     * Chemistry [X22]: a side that knows itself (85 and up) passes better in the build-up, breaks better on the
+     * counter and covers better at its box, up to +7% on each of those phases; one that does not (under 50)
+     * misplaces passes and leaves gaps. It moves the odds of a phase,
+     * never a player's ability. A side without a reading (the simulator) is neutral.
+     */
+    private function chemistry(string $side): int
+    {
+        $chem = $this->s['teams'][$side]['chem'] ?? null;
+        if ($chem === null) {
+            return 0;
+        }
+        [$from, $to] = $this->eng['chemistry_high_bp'];
+        $high = (int) $this->eng['chemistry_high'];
+        $low = (int) $this->eng['chemistry_low'];
+
+        return match (true) {
+            $chem >= $high => $from + intdiv(($chem - $high) * ($to - $from), max(1, 100 - $high)),
+            $chem < $low => -intdiv(($low - $chem) * (int) $this->eng['chemistry_low_bp'], max(1, $low)),
+            default => 0,
+        };
     }
 
     private function planKey(string $plan): string

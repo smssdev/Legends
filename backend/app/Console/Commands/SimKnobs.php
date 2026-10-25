@@ -31,16 +31,19 @@ class SimKnobs extends Command
             if ($this->option('knob') && $this->option('knob') !== $knob) {
                 continue;
             }
-            $run = fn (int $v) => Batch::summary(Batch::run($club, $club, $n, ['venue' => 'neutral'], ['home' => ['tactics' => [$knob => $v]], 'away' => ['tactics' => $k['against'] ?? null]]));
+            // A tactic knob, or a side's own field (the chemistry [X22]).
+            $home = fn (int $v) => isset($k['field']) ? [$k['field'] => $v] : ['tactics' => [$knob => $v]];
+            $run = fn (int $v) => Batch::summary(Batch::run($club, $club, $n, ['venue' => 'neutral'], ['home' => $home($v), 'away' => ['tactics' => $k['against'] ?? null]]));
             $low = $run($k['from']);
             $high = $run($k['to']);
             $points = fn ($s) => $s['home_win_%'] + $s['draw_%'] / 2;
             $shift = round($points($high) - $points($low), 1);
             // The points share of a batch of n varies by about 42 / sqrt(n) points (two batches: × sqrt 2); allow two of those on top.
-            $limit = $cfg['max_win_shift'] + round(120 / sqrt($n), 1);
-            $ok = abs($shift) <= $limit;
+            $limit = ($k['max_shift'] ?? $cfg['max_win_shift']) + round(120 / sqrt($n), 1);
+            // A knob that should win more (the chemistry) must also move the points the right way.
+            $ok = abs($shift) <= $limit && (! isset($k['min_shift']) || $shift >= $k['min_shift']);
             $failed += $ok ? 0 : 1;
-            $rows[] = [$knob, 'points %', $points($low), $points($high), "±{$limit}", $ok ? 'ok' : 'OUT'];
+            $rows[] = [$knob, 'points %', $points($low), $points($high), isset($k['min_shift']) ? "+{$k['min_shift']}..{$limit}" : "±{$limit}", $ok ? 'ok' : 'OUT'];
 
             foreach ($k['expect'] as $metric => $way) {
                 $ok = ($high[$metric] - $low[$metric]) * $way > 0;

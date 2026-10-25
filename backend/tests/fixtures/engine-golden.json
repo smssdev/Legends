@@ -1,5 +1,5 @@
 {
-    "engine_version": 6,
+    "engine_version": 7,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -73,7 +73,7 @@
             }
         },
         "engine": {
-            "version": 6,
+            "version": 7,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -123,6 +123,13 @@
             "tired_fit": 5500,
             "tired_injury_bp": 30000,
             "red_card_drain_bp": 11500,
+            "chemistry_high": 85,
+            "chemistry_high_bp": [
+                300,
+                700
+            ],
+            "chemistry_low": 50,
+            "chemistry_low_bp": 600,
             "trailing_push_from_minute": 60,
             "tactics_max_win_bp": 5800,
             "live_reading_every_minutes": 15,

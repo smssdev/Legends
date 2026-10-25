@@ -6424,6 +6424,16 @@ export interface components {
                 mid: number;
                 att: number;
             };
+            /** @description The eleven's chemistry, 0..100, and the links between neighbours [X22] */
+            chemistry: {
+                score: number;
+                links: {
+                    a: number;
+                    b: number;
+                    /** @enum {string} */
+                    color: "green" | "yellow" | "red";
+                }[];
+            };
         };
         SpecialistsView: {
             balance: number;
