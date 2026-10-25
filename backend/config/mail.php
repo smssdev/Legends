@@ -61,8 +61,17 @@ return [
             // ],
         ],
 
+        // Over HTTPS, for hosts that block SMTP (App\Mail\ApiTransport) [X8].
+        'brevo' => [
+            'transport' => 'api',
+            'service' => 'brevo',
+            'key' => env('BREVO_API_KEY'),
+        ],
+
         'resend' => [
-            'transport' => 'resend',
+            'transport' => 'api',
+            'service' => 'resend',
+            'key' => env('RESEND_API_KEY'),
         ],
 
         'sendmail' => [

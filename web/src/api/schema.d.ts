@@ -619,6 +619,7 @@ export interface paths {
                 };
                 401: components["responses"]["Error"];
                 409: components["responses"]["Error"];
+                503: components["responses"]["Error"];
             };
         };
         delete?: never;
@@ -6779,6 +6780,8 @@ export interface components {
                     token?: string;
                     /** Format: date-time */
                     expires_at?: string;
+                    /** @description Register only: the confirmation email left the server. False when it could not be sent (the app offers to send it again) */
+                    verification_sent?: boolean;
                 };
             };
         };

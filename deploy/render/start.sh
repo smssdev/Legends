@@ -17,9 +17,16 @@ if [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
   export TRUSTED_PROXIES='*'
 fi
 
-# Real emails through Gmail (free): GMAIL_ADDRESS and GMAIL_APP_PASSWORD in Render's Environment
-# (an app password from myaccount.google.com/apppasswords). Without them the emails go to the log.
-if [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
+# Real emails [X8]. Render's free plan blocks the SMTP ports (25, 465, 587), so Gmail's SMTP cannot work here:
+# the emails go over HTTPS instead. BREVO_API_KEY (free, 300 a day; MAIL_FROM_ADDRESS is the sender verified in
+# Brevo, a Gmail address works) or RESEND_API_KEY (free, needs a domain of ours). Gmail's SMTP is kept for hosts
+# that allow it (the home server, Codespaces). Without any of them the emails go to the log.
+if [ -n "${BREVO_API_KEY:-}" ]; then
+  export MAIL_MAILER=brevo MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-${GMAIL_ADDRESS:-}}"
+elif [ -n "${RESEND_API_KEY:-}" ]; then
+  export MAIL_MAILER=resend MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-onboarding@resend.dev}"
+elif [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
+  echo "Emails: Gmail SMTP is blocked on Render's free plan; set BREVO_API_KEY instead (docs/PLAN.md 8.1)"
   export MAIL_MAILER=smtp MAIL_HOST=smtp.gmail.com MAIL_PORT=587
   export MAIL_USERNAME="$GMAIL_ADDRESS" MAIL_FROM_ADDRESS="$GMAIL_ADDRESS"
   MAIL_PASSWORD=$(printf '%s' "$GMAIL_APP_PASSWORD" | tr -d ' ')
@@ -71,7 +78,11 @@ php artisan schedule:work >> storage/logs/schedule.log 2>&1 &
 php artisan matches:run >> storage/logs/matches.log 2>&1 &
 
 echo "Legends: ${APP_URL:-http://localhost:${PORT}}"
-if [ -n "${MAIL_HOST:-}" ]; then echo "Emails: through Gmail from ${MAIL_FROM_ADDRESS}"; else echo "Emails: to storage/logs/laravel.log"; fi
+case "${MAIL_MAILER:-log}" in
+  brevo|resend) echo "Emails: through ${MAIL_MAILER} (HTTPS) from ${MAIL_FROM_ADDRESS}; check with: php artisan mail:check you@example.com" ;;
+  smtp) echo "Emails: through Gmail SMTP from ${MAIL_FROM_ADDRESS}" ;;
+  *) echo "Emails: to storage/logs/laravel.log (nobody receives them; set BREVO_API_KEY)" ;;
+esac
 if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on, return address ${GOOGLE_REDIRECT_URI:-}"; else echo "Google sign-in: off"; fi
 if [ -n "$saved" ]; then echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"; else echo "Saved game: off, the data is wiped on every restart (B2_* in Render's Environment)"; fi
 # --no-reload: without it "serve" drops the variables above before starting PHP's server.

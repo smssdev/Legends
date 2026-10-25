@@ -15,7 +15,7 @@ const user = computed(() => auth.user ?? last)
 let last = auth.user!
 
 const welcome = computed(() =>
-  route.query.verified === '1' ? 'تم تأكيد بريدك. حسابك جاهز.' : route.query.welcome === '1' ? 'أهلاً بك! أرسلنا رسالة إلى بريدك، اضغط الرابط فيها لتأكيده.' : '',
+  route.query.verified === '1' ? 'تم تأكيد بريدك. حسابك جاهز.' : route.query.welcome === '1' ? 'أهلاً بك! أرسلنا رسالة إلى بريدك، اضغط الرابط فيها لتأكيده.' : route.query.welcome === 'unsent' ? 'أهلاً بك! تعذر إرسال رسالة التأكيد الآن، اضغط «أرسل الرابط من جديد» بعد قليل.' : '',
 )
 
 const name = ref(user.value.name)

@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Database\SQLiteConnector;
+use App\Mail\ApiTransport;
 use App\Support\ServerHealth;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Queue\Events\Looping;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -30,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureSqliteFiles();
+
+        // Emails over HTTPS where the host blocks SMTP [X8].
+        Mail::extend('api', fn (array $config) => new ApiTransport((string) $config['service'], (string) $config['key']));
 
         // The queue worker's sign of life for the health check [Sprint 21 B2].
         Event::listen(Looping::class, fn () => ServerHealth::beat('queue'));
