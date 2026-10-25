@@ -49,6 +49,17 @@ CLUBS = {
     'UAE Pro League': ['Al Ain FC', 'Shabab Al Ahli Club', 'Al Jazira Club', 'Al Wahda FC', 'Al Wasl F.C.', 'Sharjah FC', 'Al-Nasr SC (Dubai)',
                        'Baniyas Club', 'Ajman Club', 'Khor Fakkan Club', 'Kalba FC', 'Hatta Club', 'United FC (Dubai)', 'Al Dhafra FC'],
 }
+# Each league's great clubs, strongest first: they head the ranking before last season's table (a giant that finished
+# fifth is still a giant), and the owner and Hamza correct the rest in the review.
+GIANTS = {
+    'Egyptian Premier League': ['Al Ahly SC', 'Pyramids FC', 'Zamalek SC', 'Ceramica Cleopatra FC', 'Al Masry SC'],
+    'Botola Pro': ['RS Berkane', 'Wydad AC', 'Raja CA', 'AS FAR (football club)', 'FUS Rabat'],
+    'Algerian Ligue 1': ['MC Alger', 'CR Belouizdad', 'USM Alger', 'JS Kabylie', 'ES Sétif', 'CS Constantine'],
+    'Tunisian Ligue 1': ['Espérance Sportive de Tunis', 'Étoile Sportive du Sahel', 'Club Africain', 'CS Sfaxien', 'US Monastir (football)', 'Stade Tunisien'],
+    'Qatar Stars League': ['Al Sadd SC', 'Al-Duhail SC', 'Al-Rayyan SC', 'Al-Gharafa SC', 'Al-Arabi SC (Qatar)', 'Qatar SC'],
+    'UAE Pro League': ['Al Ain FC', 'Shabab Al Ahli Club', 'Al Wahda FC', 'Al Jazira Club', 'Sharjah FC', 'Al Wasl F.C.'],
+    'Iraq Stars League': ['Al-Shorta SC', 'Al-Zawraa SC', 'Al-Quwa Al-Jawiya', 'Al-Talaba SC', 'Erbil SC', 'Al-Karma SC'],
+}
 # Wikipedia's FIFA codes as EA names the countries (the game's chemistry compares these names).
 NATIONS = {
     'EGY': 'Egypt', 'MAR': 'Morocco', 'ALG': 'Algeria', 'TUN': 'Tunisia', 'LBY': 'Libya', 'SUD': 'Sudan', 'IRQ': 'Iraq', 'QAT': 'Qatar',
@@ -126,6 +137,12 @@ def season_clubs(title):
     """[(article, shown name)] from a season article's standings (the name_XXX entries), in table order."""
     text, _ = wikitext(title)
     order = re.search(r'team_order\s*=\s*([A-Z0-9_ ,]+)', text)
+    # Some seasons keep their table in a template of its own ({{2025–26 Botola table}}): read that.
+    if not order:
+        table = re.search(r'\{\{\s*(20\d\d–\d\d[^{}|]*?[Tt]able)\s*\}\}', text)
+        if table:
+            text = wikitext('Template:' + table.group(1).strip())[0] + text
+            order = re.search(r'team_order\s*=\s*([A-Z0-9_ ,]+)', text)
     names = {code: (link, (label or link)) for code, link, label in
              re.findall(r'\|\s*name_([A-Z0-9_]+)\s*=\s*\[\[([^\]|]+)(?:\|([^\]]*))?\]\]', text)}
     codes = [c.strip() for c in order.group(1).split(',') if c.strip()] if order else list(names)
@@ -140,6 +157,10 @@ def season_clubs(title):
 def squad(article):
     """The first team: [(number, nation code, player article or None, name, GK/DF/MF/FW, captain)], and the kit colours."""
     text, _ = wikitext(article)
+    # The first {{Fs start}} ... {{Fs end}} block is the first team wherever the page puts it (the loans come after).
+    block = re.search(r'\{\{\s*[Ff]s start(.*?)\{\{\s*[Ff]s end', text, re.S)
+    if block:
+        text = '\n== Current squad ==\n{{Fs start' + block.group(1) + '\n== End =='
     start = None
     for heading in ('Current squad', 'First-team squad', 'First team squad', 'Current Squad', 'Squad', 'Players'):
         m = re.search(r'\n(=+)\s*' + re.escape(heading) + r'[^=\n]*=+', text)
@@ -251,7 +272,8 @@ def main():
     rows, report = [], []
     for league, (season, last, top, bottom, prefix) in LEAGUES.items():
         clubs = [(c, None) for c in CLUBS[league]] if league in CLUBS else season_clubs(season)
-        table = [c for c, _ in season_clubs(last)]
+        giants = GIANTS.get(league, [])
+        table = giants + [c for c, _ in season_clubs(last) if c not in giants]
         names = {c: n for c, n in season_clubs(season)} if league not in CLUBS else {}
         squads = {}
         for article, _ in clubs:
