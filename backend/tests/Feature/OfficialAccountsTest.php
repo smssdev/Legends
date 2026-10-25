@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Notifications\VerifyEmailNotice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /** [X11] The developers' fixed accounts: a configured Gmail, once confirmed, takes its reserved name and the admin panel. */
@@ -19,7 +20,7 @@ class OfficialAccountsTest extends TestCase
         config(['game.account.official_emails' => ['Owner-Hamza' => 'hamza.dev@gmail.com', 'Owner-Soliman' => 'Soliman.Dev@gmail.com']]);
     }
 
-    private function register(string $email, string $username): \Illuminate\Testing\TestResponse
+    private function register(string $email, string $username): TestResponse
     {
         return $this->postJson('/api/v1/auth/register', ['name' => 'مطور', 'username' => $username, 'email' => $email,
             'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true, 'device_name' => 'Pixel']);
