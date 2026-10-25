@@ -150,8 +150,8 @@
                 <select v-model="draft[l]" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="o in positioning[l]" :key="o.v" :value="o.v">{{ o.label }}</option></select>
               </label>
               <div class="flex gap-2">
-                <label class="flex flex-1 items-center gap-2"><input v-model="draftTrap" type="checkbox" class="size-5 accent-gold" /> مصيدة التسلل</label>
-                <label class="flex flex-1 items-center gap-2"><input v-model="draftMan" type="checkbox" class="size-5 accent-gold" /> رقابة رجل لرجل</label>
+                <UiToggle v-model="draftTrap" class="flex-1" label="مصيدة التسلل" />
+                <UiToggle v-model="draftMan" class="flex-1" label="رقابة رجل لرجل" />
               </div>
               <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold" :disabled="finished" @click="applyDraft">طبّق في الدقيقة التالية</button>
             </div>
@@ -190,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'

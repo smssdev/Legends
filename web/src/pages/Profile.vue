@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // The account (Sprint 10 W1). No approved design yet: built with the cards of WebHome.
+import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
@@ -292,7 +293,7 @@ async function remove() {
           <li>كوينزك ورسائلك وصورتك وسجل نشاطك.</li>
           <li>اسمك يُمحى من الألقاب والأهداف المسجلة.</li>
         </ul>
-        <label class="flex min-h-touch items-center gap-3"><input v-model="understood" type="checkbox" class="size-5 accent-[var(--color-live)]" />فهمت، ولن أستطيع استرجاع حسابي</label>
+        <UiToggle v-model="understood" tone="live" label="فهمت، ولن أستطيع استرجاع حسابي" />
         <div class="flex gap-2">
           <button type="button" class="h-12 flex-1 rounded-lg bg-live/80 px-4 font-bold text-white disabled:opacity-50" :disabled="!understood" @click="deleteStep = 2">متابعة</button>
           <button type="button" class="h-12 rounded-lg bg-surface-raised px-4 font-bold" @click="cancelDelete">تراجع</button>

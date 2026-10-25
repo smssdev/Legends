@@ -2,6 +2,7 @@
 // Trades between coaches (Sprint 25 W1), inside the market: the transfer list, my offers in and out, and the
 // composer for a new offer or a counter. Every rule (the fair range, the season limits) is checked by the API,
 // which answers in Arabic; the screen only gathers the terms.
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -172,19 +173,17 @@ onMounted(load)
         <div>
           <h3 class="mb-1 text-sm font-bold">تريد من فريقه (حتى 5)</h3>
           <div class="flex max-h-56 flex-col overflow-y-auto rounded-lg bg-surface-sunk">
-            <label v-for="p in theirs" :key="p.id" class="flex min-h-touch items-center gap-2 border-b border-text/5 px-2 text-sm">
-              <input type="checkbox" class="size-5 accent-gold" :checked="draft.in.includes(p.id)" @change="toggle(draft.in, p.id)" />
-              <LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span>
-            </label>
+            <UiToggle v-for="p in theirs" :key="p.id" class="border-b border-text/5 px-2" :model-value="draft.in.includes(p.id)" @update:model-value="toggle(draft.in, p.id)">
+              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
+            </UiToggle>
           </div>
         </div>
         <div>
           <h3 class="mb-1 text-sm font-bold">تعطيه من فريقك (اختياري)</h3>
           <div class="flex max-h-40 flex-col overflow-y-auto rounded-lg bg-surface-sunk">
-            <label v-for="p in mine" :key="p.id" class="flex min-h-touch items-center gap-2 border-b border-text/5 px-2 text-sm">
-              <input type="checkbox" class="size-5 accent-gold" :checked="draft.out.includes(p.id)" @change="toggle(draft.out, p.id)" />
-              <LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span>
-            </label>
+            <UiToggle v-for="p in mine" :key="p.id" class="border-b border-text/5 px-2" :model-value="draft.out.includes(p.id)" @update:model-value="toggle(draft.out, p.id)">
+              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
+            </UiToggle>
           </div>
         </div>
         <label class="flex flex-col gap-1 text-sm font-bold">والمال من أموال النادي

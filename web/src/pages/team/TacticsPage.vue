@@ -2,6 +2,7 @@
 // Tactics (Sprint 17 W1), after the draft MobileTactics: the plan, three sliders, tackling, the positions
 // of each line, the trap and marking, with tips in our own words. Tips explain how the engine plays them;
 // they change no number [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent.
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -128,7 +129,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <div class="grid gap-2 md:grid-cols-2">
         <div class="flex min-h-touch flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
           <span class="flex items-center gap-1"><label for="t-trap"><span class="block font-bold">مصيدة التسلل</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></label><HelpTip :text="help.trap" label="مصيدة التسلل" /></span>
-          <input id="t-trap" type="checkbox" role="switch" class="size-6 accent-success" :checked="t.trap === 1" @change="t.trap = ($event.target as HTMLInputElement).checked ? 1 : 0" />
+          <UiToggle id="t-trap" tone="success" label="مصيدة التسلل" class="[&_label]:sr-only" :model-value="t.trap === 1" @update:model-value="(on: boolean) => (t!.trap = on ? 1 : 0)" />
         </div>
         <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
           <span class="flex items-center gap-1"><span><span class="block font-bold">الرقابة</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span><HelpTip :text="help.marking" label="الرقابة" /></span>
