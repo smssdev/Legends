@@ -24,7 +24,8 @@ class LeagueMatch
     public static function state(object $fixture, int $seed): array
     {
         $sheets = DB::table('fixture_sheets')->where('fixture_id', $fixture->id)->get()->keyBy('club_id');
-        $side = fn (int $clubId) => self::side(Club::findOrFail($clubId), $sheets[$clubId]);
+        $side = fn (int $clubId) => self::side(Club::findOrFail($clubId), $sheets[$clubId])
+            + ['morale' => Morale::forMatch($fixture, $clubId === (int) $fixture->home_id ? 'home' : 'away')];
 
         return self::withFitness(MatchSetup::build($side($fixture->home_id), $side($fixture->away_id), [
             'seed' => $seed,

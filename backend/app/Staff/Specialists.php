@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Specialists
 {
-    public const TYPES = ['att_coach', 'mid_coach', 'def_coach', 'keeper_coach', 'physio', 'doctor', 'lawyer'];
+    public const TYPES = ['att_coach', 'mid_coach', 'def_coach', 'keeper_coach', 'physio', 'doctor', 'lawyer', 'mental_coach'];
 
     /** The coach of each line. */
     public const LINE_COACH = ['gk' => 'keeper_coach', 'def' => 'def_coach', 'mid' => 'mid_coach', 'att' => 'att_coach'];

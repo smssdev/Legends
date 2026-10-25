@@ -176,6 +176,8 @@ return [
             'style' => ['from' => 0, 'to' => 100, 'expect' => ['goals_home' => 1, 'counters_away' => 1]],
             'trap' => ['from' => 0, 'to' => 1, 'against' => ['plan' => 'long'], 'expect' => ['offsides_away' => 1]],
             // Chemistry [X22] is not a tactic: from 40 to 100 it must win more, by a few points, not by a class.
+            // Morale [X25] likewise: from 40 to 90 a few points more, not a class.
+            'morale' => ['field' => 'morale', 'from' => 40, 'to' => 90, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
             'chem' => ['field' => 'chem', 'from' => 40, 'to' => 100, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
         ],
         'max_win_shift' => 3,
@@ -188,7 +190,7 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 7,
+        'version' => 8,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -208,6 +210,9 @@ return [
         'red_card_drain_bp' => 11500,
         // Chemistry [X22]: from chemistry_high the phases (passing, counters, cover) gain chemistry_high_bp, from
         // the first value at the line up to the second at 100; under chemistry_low they lose up to chemistry_low_bp at 0.
+        // Morale [X25]: each point over or under 50 moves the progress and the chance creation by this much, the
+        // attack's against the defence's. A side without a reading (the simulator) is neutral.
+        'morale_bp' => 6,
         'chemistry_high' => 85, 'chemistry_high_bp' => [300, 700], 'chemistry_low' => 50, 'chemistry_low_bp' => 600,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
@@ -340,18 +345,24 @@ return [
     ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
+    // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
+    // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
+    'morale' => ['start' => 70, 'min' => 20, 'max' => 100, 'win' => 6, 'draw' => -2, 'loss' => -6, 'winless_extra' => 2,
+        'crowd' => 3, 'ticket' => 2, 'tickets_max' => 6, 'ticket_cost_bp' => 5],
     'specialists' => ['contract_days' => 7,
         // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
         // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect
         // grows with the stars. A contract can be renewed in its last renew_hours (the new one starts when it ends);
         // one that ends unrenewed is a resignation, and the coach is told.
-        'cost_bp' => ['doctor' => 20, 'lawyer' => 15, 'physio' => 20, 'keeper_coach' => 20, 'def_coach' => 15, 'mid_coach' => 15, 'att_coach' => 15],
+        'cost_bp' => ['mental_coach' => 15, 'doctor' => 20, 'lawyer' => 15, 'physio' => 20, 'keeper_coach' => 20, 'def_coach' => 15, 'mid_coach' => 15, 'att_coach' => 15],
         'stars_cost_bp' => [1 => 5000, 2 => 7500, 3 => 10000, 4 => 14000, 5 => 20000],
         'renew_hours' => 24,
         'doctor_countdown' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],         // each match counts injuries down by this many
         'lawyer_cancel_bp' => [1 => 2000, 2 => 3500, 3 => 5000, 4 => 6500, 5 => 8000],   // the share of new red-card bans cancelled
         'keeper_coach_boost' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],       // on the keeper's rating and attributes in a match
         'physio_rest_bonus' => [1 => 5, 2 => 10, 3 => 15, 4 => 20, 5 => 25],     // fitness on top of rest_recovery for a player who rests
+        'mental_coach_boost' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5],    // morale back after a draw or a defeat [X25]
         'coach_training_bp' => [1 => 1000, 2 => 2000, 3 => 3000, 4 => 4500, 5 => 6000]],  // faster training for the coach's line
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).

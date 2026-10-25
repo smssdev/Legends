@@ -33,10 +33,11 @@ const ICON: Record<string, string> = {
   physio: 'M3 12h4l2-5 4 10 2-5h6',
   doctor: 'M12 5v14M5 12h14',
   lawyer: 'M12 3v18M5 7h14M7 7l-3 7h6zM17 7l-3 7h6zM8 21h8',
+  mental_coach: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3Z',
 }
 const GROUPS = [
   { title: 'مدربو الخطوط', hint: 'كل مدرب يسرّع تدريب لاعبي خطه', types: ['att_coach', 'mid_coach', 'def_coach', 'keeper_coach'] },
-  { title: 'الطاقم الطبي والإداري', hint: 'اللياقة والإصابات والإيقافات', types: ['physio', 'doctor', 'lawyer'] },
+  { title: 'الطاقم الطبي والإداري', hint: 'اللياقة والإصابات والإيقافات والمعنويات', types: ['physio', 'doctor', 'mental_coach', 'lawyer'] },
 ]
 // The stars chosen on each card before signing (3 by default).
 const pick = ref<Record<string, number>>({})

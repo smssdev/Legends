@@ -18,7 +18,7 @@ class MessageText
 
     /** The staff's names [X20]. */
     public const STAFF = ['att_coach' => 'مدرب الهجوم', 'mid_coach' => 'مدرب الوسط', 'def_coach' => 'مدرب الدفاع', 'keeper_coach' => 'مدرب الحراس',
-        'physio' => 'المعالج البدني', 'doctor' => 'طبيب النادي', 'lawyer' => 'محامي النادي'];
+        'physio' => 'المعالج البدني', 'doctor' => 'طبيب النادي', 'lawyer' => 'محامي النادي', 'mental_coach' => 'المعد النفسي'];
 
     /** An offer in a sentence: who, for whom, with what. */
     private static function offer(string $type, array $p): string

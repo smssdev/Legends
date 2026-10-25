@@ -53,6 +53,8 @@ class MatchResult
                     'yc' => $p['yc'], 'out' => $p['out']], $team['players'])),
             ]);
             self::players($club[$side], $team, $m->seed, $matchId);
+            // Morale after the result [X25].
+            Morale::after($club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
             // Coins for the coach: a win or a draw [docs/features/premium.md].
             $for = $state['score'][$side];
             $against = $state['score'][$side === 'home' ? 'away' : 'home'];

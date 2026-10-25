@@ -115,6 +115,10 @@ final class MatchSetup
         if (isset($input['chem'])) {
             $team['chem'] = max(0, min(100, (int) $input['chem']));
         }
+        // Its morale for this match, 0..100 [X25], with the crowd and the tickets (App\League\Morale).
+        if (isset($input['morale'])) {
+            $team['morale'] = max(0, min(100, (int) $input['morale']));
+        }
 
         return $team;
     }

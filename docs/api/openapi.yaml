@@ -1003,6 +1003,32 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/tickets:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: 'The other clubs'' coming matches, to cheer one side with a ticket [X25]'
+      responses:
+        '200': { $ref: '#/components/responses/Tickets' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Buy a ticket and cheer one side (its morale for that match goes up)
+      description: Club money; one per match, not for my own matches (422), until the lock (409).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fixture_id, side]
+              properties: { fixture_id: { type: integer }, side: { type: string, enum: [home, away] } }
+      responses:
+        '200': { $ref: '#/components/responses/Tickets' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1262,7 +1288,7 @@ paths:
               type: object
               required: [type, idempotency_key]
               properties:
-                type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer] }
+                type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer, mental_coach] }
                 stars: { type: integer, minimum: 1, maximum: 5, description: 'Default 3 [X20]' }
                 idempotency_key: { type: string, maxLength: 64 }
       responses:
@@ -1494,7 +1520,7 @@ paths:
                   match:
                     type: object
                     nullable: true
-                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, club, opponent]
+                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, club, opponent, morale]
                     properties:
                       fixture_id: { type: integer }
                       match_id: { type: integer, nullable: true, description: 'Once it kicks off: watch it at GET /matches/{id}' }
@@ -1506,6 +1532,7 @@ paths:
                       referee_at: { type: string, format: date-time }
                       lock_at: { type: string, format: date-time }
                       referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+                      morale: { type: integer, description: 'My morale for this match with my crowd and the tickets cheering me [X25]' }
                       club:
                         type: object
                         description: 'My club, for the VS card [X29]'
@@ -2564,14 +2591,44 @@ components:
                       nullable: true
                       required: [default, min, max]
                       properties: { default: { type: integer }, min: { type: integer }, max: { type: integer } }
+    Tickets:
+      description: The coming matches of the other clubs, with my ticket
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [price, boost, balance, fixtures]
+            properties:
+              price: { type: integer }
+              boost: { type: integer, description: The morale a ticket adds to the side it cheers }
+              balance: { type: integer }
+              fixtures:
+                type: array
+                items:
+                  type: object
+                  required: [id, competition, round, scheduled_at, home, away, cheering, mine]
+                  properties:
+                    id: { type: integer }
+                    competition: { type: string }
+                    round: { type: integer }
+                    scheduled_at: { type: string, format: date-time }
+                    home: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                    away: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                    cheering: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+                    mine: { type: string, nullable: true, enum: [home, away, null] }
     Team:
       description: My club and its team sheet
       content:
         application/json:
           schema:
             type: object
-            required: [club, squad_value, lines, players, lineup, takers, custom_formations]
+            required: [club, squad_value, lines, players, lineup, takers, custom_formations, morale]
             properties:
+              morale:
+                type: object
+                description: 'The squad''s morale, 0..100, and its run of matches without a win [X25]'
+                required: [value, winless_run]
+                properties: { value: { type: integer }, winless_run: { type: integer } }
               lines:
                 type: object
                 description: 'The team strength by line [X29]: the starters'' average rating in each (or the line''s best)'
@@ -3034,7 +3091,7 @@ components:
             type: object
             required: [type, name, cost, currency, offers, stars, renewed, ends_at]
             properties:
-              type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer] }
+              type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer, mental_coach] }
               name: { type: string, description: In Arabic }
               cost: { type: integer, description: The three-star price }
               currency: { type: string, enum: [coins, money] }

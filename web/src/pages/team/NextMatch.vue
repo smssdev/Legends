@@ -9,6 +9,7 @@ import type { components, paths } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
+import TicketsPanel from './TicketsPanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { strength } from '../../lib/format'
@@ -108,8 +109,9 @@ onBeforeUnmount(() => window.clearInterval(timer))
           </div>
           <p class="mt-1 text-center text-xs text-text-muted">القوة</p>
         </div>
-        <dl class="grid grid-cols-3 gap-2 text-center text-sm">
+        <dl class="grid grid-cols-2 gap-2 text-center text-sm sm:grid-cols-4">
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الموعد</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
+          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">معنوياتك مع الجمهور</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-[#FF8A8A]' : 'text-gold'">{{ match.morale }}</dd></div>
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الحكم</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : 'قبلها بنصف ساعة' }}</dd></div>
           <div class="rounded-lg bg-surface-sunk p-2">
             <dt class="text-text-muted">{{ locked ? 'مقفلة' : 'يُقفل بعد' }}</dt>
@@ -179,6 +181,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         </template>
       </section>
     </template>
-    <p v-else class="text-text-muted">جارٍ التحميل…</p>
+    <TicketsPanel v-if="leagueId" :league-id="leagueId" />
+    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>
   </div>
 </template>
