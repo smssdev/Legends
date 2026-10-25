@@ -32,44 +32,39 @@ elif [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
   MAIL_PASSWORD=$(printf '%s' "$GMAIL_APP_PASSWORD" | tr -d ' ')
   export MAIL_PASSWORD
 fi
-# Google sign-in: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Render's Environment are read as they are.
 
-# One APP_KEY for every deploy (APP_KEY_SEED in Render's Environment, render.yaml makes it): without it each new
-# image has a new key, and the sign-ins and the encrypted values saved before it can no longer be read.
 if [ -n "${APP_KEY_SEED:-}" ]; then
   APP_KEY=$(php -r 'echo "base64:".base64_encode(hash("sha256", getenv("APP_KEY_SEED"), true));')
   export APP_KEY
 fi
 
-# The saved game: Render's free disk is wiped on every deploy, restart and sleep, so Litestream keeps the
-# databases in Backblaze B2 (free up to 10 GB, deploy/render/litestream.yml). B2_BUCKET, B2_ENDPOINT, B2_KEY_ID
-# and B2_APPLICATION_KEY in Render's Environment turn it on. The copy is brought back before anything opens the
-# databases; if B2 cannot be read the start stops here, rather than begin an empty game over the saved one.
 saved=
 if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}" ] && [ -n "${B2_APPLICATION_KEY:-}" ]; then
   endpoint="${B2_ENDPOINT#https://}"
   endpoint="${endpoint%/}"
   export LITESTREAM_BUCKET="$B2_BUCKET" LITESTREAM_ENDPOINT="https://$endpoint"
-  # The region is in B2's endpoint: s3.<region>.backblazeb2.com
   region=$(printf '%s' "$endpoint" | sed -n 's/^s3\.\([^.]*\)\.backblazeb2\.com$/\1/p')
   export LITESTREAM_REGION="${region:-us-east-1}"
   export LITESTREAM_ACCESS_KEY_ID="$B2_KEY_ID" LITESTREAM_SECRET_ACCESS_KEY="$B2_APPLICATION_KEY"
-  # RESTORE_AT (an RFC 3339 time in Render's Environment, e.g. 2026-10-26T18:30:00Z) brings the game back as it was
-  # then, from B2's week of history; remove it after that deploy, or every restart goes back to it.
+  
   at=
   if [ -n "${RESTORE_AT:-}" ]; then
     at="-timestamp $RESTORE_AT"
-    echo "Saved game: going back to $RESTORE_AT (remove RESTORE_AT from Render's Environment after this deploy)"
+    echo "Saved game: going back to $RESTORE_AT"
   fi
+  
+  # علم (Flag) لمتابعة إذا واجهنا خطأ في الحساب
+  b2_failed=0
+  
   for db in legends queue; do
     file="database/$db.sqlite"
     rm -f "$file.restore"
-    # shellcheck disable=SC2086
     if ! litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file" 2> /tmp/restore.err; then
       cat /tmp/restore.err
       if grep -q "cap exceeded" /tmp/restore.err; then
-        echo "Saved game: B2 refused (its daily cap). The saved game is safe; nothing started over it. Raise the cap of"
-        echo "  Class B and Class C transactions in Backblaze (Caps & Alerts) or wait for midnight UTC, then deploy again."
+        echo "Saved game: B2 refused (its daily cap). Bypassing Litestream to allow Demo mode..."
+        b2_failed=1
+        break
       fi
       exit 1
     fi
@@ -79,35 +74,41 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
       echo "Saved game: $db.sqlite brought back from B2"
     fi
   done
-  saved=1
+  
+  # إذا نجح الاتصال ولم يستهلك الـ Cap نعتبر اللعبة محفوظة ومربوطة
+  if [ "$b2_failed" -eq 0 ]; then
+    saved=1
+  fi
 fi
 
 mkdir -p storage/logs
-# A copy of the game as it is before this deploy's migrations, downloadable from the admin panel (النسخ) until the
-# next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
-if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
+
+if [ -n "$saved" ]; then 
+  php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"
+fi
+
+# الهجرة والاستيراد ستعمل بكل الأحوال سواء من البيانات المسترجعة أو كبيانات ديمو جديدة
 php artisan migrate --force
-# New clubs and leagues from the data files (the Arab leagues, X34) join the saved game; what is there stays as it is.
 php artisan data:import --add
-# Cache the configuration now that the run-time variables are known.
 php artisan config:cache
 
-# The workers the game needs: the queue, the scheduler (training, scout, seasons) and the live matches.
 php artisan queue:work --tries=1 --sleep=1 >> storage/logs/queue.log 2>&1 &
 php artisan schedule:work >> storage/logs/schedule.log 2>&1 &
 php artisan matches:run >> storage/logs/matches.log 2>&1 &
 
 echo "Legends: ${APP_URL:-http://localhost:${PORT}}"
 case "${MAIL_MAILER:-log}" in
-  brevo|resend) echo "Emails: through ${MAIL_MAILER} (HTTPS) from ${MAIL_FROM_ADDRESS}; check with: php artisan mail:check you@example.com" ;;
+  brevo|resend) echo "Emails: through ${MAIL_MAILER} (HTTPS) from ${MAIL_FROM_ADDRESS}" ;;
   smtp) echo "Emails: through Gmail SMTP from ${MAIL_FROM_ADDRESS}" ;;
-  *) echo "Emails: to storage/logs/laravel.log (nobody receives them; set BREVO_API_KEY)" ;;
+  *) echo "Emails: to storage/logs/laravel.log" ;;
 esac
-if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on, return address ${GOOGLE_REDIRECT_URI:-}"; else echo "Google sign-in: off"; fi
-if [ -n "$saved" ]; then echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"; else echo "Saved game: off, the data is wiped on every restart (B2_* in Render's Environment)"; fi
-# --no-reload: without it "serve" drops the variables above before starting PHP's server.
+if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on"; else echo "Google sign-in: off"; fi
+
+# تشغيل السيرفر بناءً على حالة اتصال Backblaze B2
 if [ -n "$saved" ]; then
-  # Litestream runs the site and, when Render stops the service, copies the last changes before it ends.
+  echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"
   exec litestream replicate -config /app/litestream.yml -exec "php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"
+else
+  echo "Saved game: OFF (Demo Local Mode). Data will reset on next Render restart."
+  exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
 fi
-exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
