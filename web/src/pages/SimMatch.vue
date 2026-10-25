@@ -22,6 +22,8 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
       <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">العرض: {{ viewing.chosenView.value === 'unity' ? 'المطوّر' : 'الكرتوني' }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">الأداء: {{ PERF_NAMES[perfPref] }}{{ perfPref === 'auto' ? (smooth ? ' (سلس)' : ' (كامل)') : '' }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
@@ -32,6 +34,7 @@
     </nav>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
+    <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
@@ -71,11 +74,21 @@
           <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء</p>
         </section>
 
-        <!-- Live: the two coaches cheer and tease each other; both screens see it at once. -->
-        <section v-if="live && mine && !finished" class="flex gap-1.5 overflow-x-auto rounded-xl bg-surface p-2" aria-label="تفاعل مع صديقك">
-          <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
-            <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
-          </button>
+        <!-- Live: the two coaches cheer and tease each other; every screen sees it at once. In a league every member who
+             watches may react, and cheer or boo one side once in half a minute [X24]. -->
+        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" aria-label="تفاعل مع المباراة">
+          <div class="flex gap-1.5 overflow-x-auto">
+            <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
+              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
+            </button>
+          </div>
+          <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            <template v-for="s in (['home', 'away'] as const)" :key="s">
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ view.clubs[s].name }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ view.clubs[s].name }}</span></button>
+            </template>
+          </div>
+          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">التشجيع والاستهجان بعد <span class="font-numbers">{{ cheerLeft }}</span> ثانية</p>
         </section>
       </div>
 
@@ -148,8 +161,8 @@
                 <select v-model="draft[l]" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="o in positioning[l]" :key="o.v" :value="o.v">{{ o.label }}</option></select>
               </label>
               <div class="flex gap-2">
-                <label class="flex flex-1 items-center gap-2"><input v-model="draftTrap" type="checkbox" class="size-5 accent-gold" /> مصيدة التسلل</label>
-                <label class="flex flex-1 items-center gap-2"><input v-model="draftMan" type="checkbox" class="size-5 accent-gold" /> رقابة رجل لرجل</label>
+                <UiToggle v-model="draftTrap" class="flex-1" label="مصيدة التسلل" />
+                <UiToggle v-model="draftMan" class="flex-1" label="رقابة رجل لرجل" />
               </div>
               <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold" :disabled="finished" @click="applyDraft">طبّق في الدقيقة التالية</button>
             </div>
@@ -175,6 +188,21 @@
           </div>
         </section>
 
+        <section v-if="league" class="flex flex-col gap-2 rounded-xl bg-surface p-3" aria-label="دردشة المشاهدين">
+          <h2 class="font-display text-base font-bold">دردشة المشاهدين</h2>
+          <div ref="chatBox" class="flex max-h-[240px] min-h-[64px] flex-col gap-1.5 overflow-y-auto" aria-live="polite">
+            <p v-if="!chat.length" class="text-sm text-text-muted">مدربو الدوري الذين يتابعون يتكلمون هنا.</p>
+            <p v-for="c in chat" :key="c.id" class="rounded-md bg-surface-sunk px-3 py-1.5 text-sm">
+              <b :class="c.side ? 'text-gold' : 'text-text-soft'" dir="auto">{{ c.who }}</b><span class="text-text-muted">: </span><span dir="auto">{{ c.body }}</span>
+            </p>
+          </div>
+          <form v-if="live && !finished" class="flex gap-2" @submit.prevent="sendChat">
+            <input v-model="chatText" type="text" maxlength="140" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" placeholder="اكتب رسالة…" aria-label="رسالة" />
+            <button type="submit" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="!chatText.trim() || chatWait">إرسال</button>
+          </form>
+          <p v-if="chatError" class="text-xs text-[#FF8A8A]" role="status">{{ chatError }}</p>
+        </section>
+
         <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" aria-label="مجريات المباراة">
           <h2 class="mb-1 font-display text-base font-bold">مجريات المباراة</h2>
           <div v-for="(f, i) in feed" :key="i" class="flex gap-3 border-b border-text/5 py-2 text-sm">
@@ -188,16 +216,19 @@
 </template>
 
 <script setup lang="ts">
+import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
+import { useViewing } from '../match/viewing'
+import { perfPref, setPerfPref, smooth, type PerfPref } from '../match/perf'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -432,6 +463,7 @@ async function fetchNext(count = 1) {
   }
 }
 
+let fixedPace = false
 function schedule(ms: number) {
   clearTimeout(timer)
   timer = window.setTimeout(step, ms)
@@ -440,7 +472,8 @@ function schedule(ms: number) {
 async function step() {
   if (!playing.value || halftime.value || finished.value) return
   // Let the commentator finish his sentence (a little), so lines are never cut short.
-  const talk = voice.remainingMs()
+  // At the broadcast's fixed pace the clock never waits for him [X35]: his lines queue instead.
+  const talk = fixedPace ? 0 : voice.remainingMs()
   if (talk > 250 && waited < 2500) { waited += Math.min(talk, 500); return schedule(Math.min(talk, 500)) }
   waited = 0
   if (!buffer.length) {
@@ -448,6 +481,7 @@ async function step() {
     if (!buffer.length) return schedule(500)
   }
   const t = buffer.shift()!
+  fixedPace = !!t.moment && t.moment.ms <= 3400 && t.moment.kind !== 'shootout'
   show(t)
   if (!t.finished && buffer.length === 0) fetchNext()
   if (!halftime.value && !finished.value) schedule(momentMs(t))
@@ -715,6 +749,7 @@ function handleSync(r: LiveSync): number {
   else if (fresh.length && fresh[0].tick === 1) kickoffAt = fresh[0].at ?? 0
   if (breakAhead && r.next_at) resumeAt = r.next_at
   for (const x of r.reactions ?? []) receive(x)
+  for (const c of r.chat ?? []) hear(c)
   const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
   return Math.min(1000, Math.max(250, left))
 }
@@ -739,23 +774,69 @@ const REACTIONS = [
   { key: 'easy', emoji: '😎', text: 'سهلة', label: 'سهلة' },
   { key: 'focus', emoji: '🧠', text: 'ركّز', label: 'ركّز' },
 ]
+// The league's boos and cheers for one side [X24].
+const CHEERS = { cheer: { emoji: '📣', text: 'تشجيع' }, boo: { emoji: '👎', text: 'استهجان' } } as const
 const shownReactions = new Set<number>()
 const reactWait = ref(false)
-function receive(x: { id: number; side: Side; key: string }) {
+const myReactions = new Set<number>()
+function receive(x: Reaction) {
   if (shownReactions.has(x.id)) return
   shownReactions.add(x.id)
-  const r = REACTIONS.find((r) => r.key === x.key)
+  const r = x.key in CHEERS ? CHEERS[x.key as keyof typeof CHEERS] : REACTIONS.find((r) => r.key === x.key)
   if (!r) return
-  pitch.value?.react(x.side, r.emoji, r.text, x.side === mine.value ? 'أنت' : view.value?.coaches?.[x.side] ?? view.value?.clubs[x.side].name)
-  if (x.side !== mine.value) sound.pop()
+  // A boo or a cheer rises on its target's side; a member who watches has no side: by turns.
+  const side: Side = x.target ?? x.side ?? (x.id % 2 ? 'home' : 'away')
+  const mineToo = myReactions.has(x.id) || (!props.league && x.side === mine.value)
+  pitch.value?.react(side, r.emoji, r.text, mineToo ? 'أنت' : x.who ?? (x.side ? view.value?.coaches?.[x.side] ?? view.value?.clubs[x.side].name : ''))
+  if (!mineToo) sound.pop()
 }
-async function react(key: string) {
-  reactWait.value = true
-  window.setTimeout(() => (reactWait.value = false), 1300)
+const cheerLeft = ref(0)
+let cheerTimer = 0
+async function react(key: string, target?: Side) {
+  const cheer = key in CHEERS
+  if (!cheer) {
+    reactWait.value = true
+    window.setTimeout(() => (reactWait.value = false), 1300)
+  }
   try {
-    receive(await sim.react(props.id, key))
+    const x = props.league ? await leagueMatch.react(props.id, key, target) : await sim.react(props.id, key)
+    myReactions.add(x.id)
+    receive(x)
+    if (cheer) {
+      cheerLeft.value = 30
+      window.clearInterval(cheerTimer)
+      cheerTimer = window.setInterval(() => { if (--cheerLeft.value <= 0) window.clearInterval(cheerTimer) }, 1000)
+    }
   } catch {
     /* too soon: the button comes back in a moment */
+  }
+}
+
+// The side chat between the league's coaches who watch [X24].
+const chat = ref<ChatLine[]>([])
+const chatText = ref('')
+const chatWait = ref(false)
+const chatError = ref('')
+const chatBox = ref<HTMLElement | null>(null)
+function hear(c: ChatLine) {
+  if (chat.value.some((x) => x.id === c.id)) return
+  const box = chatBox.value
+  const atEnd = !box || box.scrollHeight - box.scrollTop - box.clientHeight < 40
+  chat.value = [...chat.value, c].slice(-50)
+  if (atEnd) requestAnimationFrame(() => chatBox.value?.scrollTo({ top: chatBox.value.scrollHeight }))
+}
+async function sendChat() {
+  const body = chatText.value.trim()
+  if (!body) return
+  chatWait.value = true
+  chatError.value = ''
+  try {
+    hear(await leagueMatch.chat(props.id, body))
+    chatText.value = ''
+  } catch (e) {
+    chatError.value = (e as Error).message
+  } finally {
+    window.setTimeout(() => (chatWait.value = false), 2000)
   }
 }
 
@@ -766,25 +847,39 @@ function toggleSound() {
   voice.setOn(soundOn.value && commentary.value !== 'off')
   if (soundOn.value) sound.whistle()
 }
-// The commentator speaks when the sound is on: English (the default), Arabic, or not at all.
+// The commentator speaks when the sound is on: Arabic (the default), English, or not at all.
 function toggleCommentary() {
-  commentary.value = ({ en: 'ar', ar: 'off', off: 'en' } as const)[commentary.value]
+  commentary.value = ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value]
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
-// The Arabic voice: the first recording or one of the five full voices [audio review 2026-10-23].
-const arVoice = ref<ArVoice>(readArVoice())
+// The Arabic voice: the sixth (hafid) by default, or the coach's choice from their account [X9].
+const viewing = useViewing()
+const arVoice = ref<ArVoice>(viewing.commentator.value)
 voice.setArVoice(arVoice.value)
+watch(viewing.commentator, (v) => {
+  arVoice.value = v
+  voice.setArVoice(v)
+})
 function nextArVoice() {
   arVoice.value = AR_VOICES[(AR_VOICES.indexOf(arVoice.value) + 1) % AR_VOICES.length]
   voice.setArVoice(arVoice.value)
-  try { localStorage.setItem('legends.arVoice', arVoice.value) } catch {}
+  void viewing.save({ commentator: arVoice.value }).catch(() => {})
 }
-function readArVoice(): ArVoice {
-  try { const v = localStorage.getItem('legends.arVoice') as ArVoice; return AR_VOICES.includes(v) ? v : '' } catch { return '' }
+// The simulator: cartoon or Unity, switched here or in the account [X10]. Until Unity's web build is deployed
+// (Sprint 8) the cartoon one keeps playing, with a note.
+// The smooth mode for weak phones [X30]: automatic by default, or forced either way by the coach.
+const PERF_NAMES: Record<PerfPref, string> = { auto: 'تلقائي', smooth: 'سلس', full: 'كامل' }
+const PERF_HINT = 'سلس: رسوم أخف وحركة أنعم على الجوالات الضعيفة. كامل: كل المؤثرات. تلقائي: يختار حسب جهازك.'
+function nextPerf() {
+  setPerfPref(({ auto: 'smooth', smooth: 'full', full: 'auto' } as const)[perfPref.value])
 }
+function switchView() {
+  void viewing.save({ match_view: viewing.chosenView.value === 'unity' ? 'cartoon' : 'unity' }).catch(() => {})
+}
+// Arabic by default, now that the default commentator is an Arabic voice [X9].
 function readPref(): Lang | 'off' {
-  try { const v = localStorage.getItem('legends.commentary'); return v === 'ar' || v === 'off' ? v : 'en' } catch { return 'en' }
+  try { const v = localStorage.getItem('legends.commentary'); return v === 'en' || v === 'off' ? v : 'ar' } catch { return 'ar' }
 }
 
 onMounted(async () => {
@@ -828,6 +923,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisible)
   window.removeEventListener('online', onVisible)
   window.clearInterval(othersTimer)
+  window.clearInterval(cheerTimer)
   clearTimeout(timer)
   clearTimeout(pollTimer)
   clearInterval(clockTimer)

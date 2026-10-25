@@ -7,6 +7,7 @@ use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
 use App\Stadium\Stadium;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * Training [PLAN 2.8, Sprint 27]: four slots, one player of each line. Every session (8 hours scaled by the
  * season's length) moves the player's bar by a random step and costs club money, the coach online or not. At
  * the full bar his rating and his six attributes (a keeper's four) go up by one, his value with them, and the
- * slot empties for the coach to fill again. He trains no further than his potential.
+ * slot empties for the coach to fill again. Past his potential he still grows, slower, up to 99 [X16].
  */
 class Training
 {
@@ -46,8 +47,9 @@ class Training
             if (! $p || (int) $p->club_id !== $clubId) {
                 throw new HttpException(404, 'اللاعب ليس في فريقك.');
             }
-            if ($p->overall + $p->training_bonus >= $p->potential) {
-                throw new HttpException(422, 'وصل هذا اللاعب إلى أقصى إمكانيته، والتدريب لا يزيده.');
+            // Open training [X16]: past the potential too, only slower; 99 is the end.
+            if ($p->overall + $p->training_bonus >= Gain::fromConfig()->ceiling()) {
+                throw new HttpException(422, 'وصل هذا اللاعب إلى 99، أعلى تقييم في اللعبة.');
             }
             if (Camp::away($clubId, $playerId)) {
                 throw new HttpException(409, 'اللاعب في المعسكر حتى يعود.');
@@ -103,8 +105,8 @@ class Training
             }
             $club = DB::table('clubs')->where('id', $slot->club_id)->first();
             $p = self::player((int) $slot->player_id);
-            // A player sold or at his ceiling, or a club left to the computer: the slot empties.
-            if (! $p || (int) $p->club_id !== (int) $slot->club_id || ! $club->user_id || $p->overall + $p->training_bonus >= $p->potential) {
+            // A player sold or at the ceiling (99), or a club left to the computer: the slot empties.
+            if (! $p || (int) $p->club_id !== (int) $slot->club_id || ! $club->user_id || $p->overall + $p->training_bonus >= Gain::fromConfig()->ceiling()) {
                 DB::table('training_slots')->where('id', $slotId)->delete();
 
                 return null;
@@ -122,7 +124,8 @@ class Training
                 return 0;   // no money: the session is missed, the bar stays
             }
             $key = "{$p->id}:{$slotId}:{$session}";
-            $step = Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key), $key);
+            // The stadium's training ground, then the line's coach by his stars [X20].
+            $step = Specialists::trainingStep($club->id, $p->line, Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key, (int) $p->potential), $key));
             if (! self::advance($p, $step)) {
                 return 1;
             }

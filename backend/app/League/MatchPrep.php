@@ -7,6 +7,7 @@ use App\Messages\Inbox;
 use App\Models\Club;
 use App\Notify\Push;
 use App\Support\GameClock;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -23,9 +24,13 @@ class MatchPrep
     {
         $now = GameClock::now();
         $refs = 0;
+        $lock = (int) config('game.match.lock_minutes_before');
+        $before = (int) config('game.match.referee_minutes_before');
+        // The referee comes the same time before the lock as ever; a round in two slots locks all at once [X31].
         $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNull('referee_strictness')
             ->whereNotNull('home_id')->whereNotNull('away_id')
-            ->where('scheduled_at', '<=', $now->copy()->addMinutes(config('game.match.referee_minutes_before')))->pluck('id');
+            ->where(fn ($q) => $q->where(fn ($q) => $q->whereNull('lock_at')->where('scheduled_at', '<=', $now->copy()->addMinutes($before)))
+                ->orWhere(fn ($q) => $q->whereNotNull('lock_at')->where('lock_at', '<=', $now->copy()->addMinutes($before - $lock))))->pluck('id');
         foreach ($due as $id) {
             $strictness = Tactics::REFEREES[random_int(0, 2)];
             $drawn = DB::table('fixtures')->where('id', $id)->whereNull('referee_strictness')
@@ -36,14 +41,90 @@ class MatchPrep
             }
         }
         self::soon($now);
+        self::remind($now);
         $locks = 0;
         $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
-            ->where('scheduled_at', '<=', $now->copy()->addMinutes(config('game.match.lock_minutes_before')))->pluck('id');
-        foreach ($due as $id) {
-            $locks += self::lock($id) ? 1 : 0;
+            ->where(fn ($q) => $q->where(fn ($q) => $q->whereNull('lock_at')->where('scheduled_at', '<=', $now->copy()->addMinutes($lock)))
+                ->orWhere(fn ($q) => $q->whereNotNull('lock_at')->where('lock_at', '<=', $now)))->orderBy('scheduled_at')->get(['id', 'season_id', 'round', 'competition']);
+        foreach ($due as $f) {
+            $locks += self::lock($f->id) ? 1 : 0;
+        }
+        foreach ($due->where('competition', 'league')->unique(fn ($f) => $f->season_id.':'.$f->round) as $f) {
+            self::matchOfDay($f->season_id, $f->round);
         }
 
         return [$refs, $locks];
+    }
+
+    /** These players are in no sheet locked for a match not yet over (the match plays with them) [X31]. */
+    public static function assertFree(array $playerIds): void
+    {
+        if (! $playerIds) {
+            return;
+        }
+        $sheets = DB::table('fixture_sheets')->join('fixtures', 'fixtures.id', '=', 'fixture_sheets.fixture_id')
+            ->whereIn('fixtures.status', ['locked', 'live'])
+            ->whereIn('fixture_sheets.club_id', DB::table('players')->whereIn('id', $playerIds)->whereNotNull('club_id')->pluck('club_id'))
+            ->get(['fixture_sheets.starters', 'fixture_sheets.bench']);
+        foreach ($sheets as $sheet) {
+            if (array_intersect($playerIds, array_map('intval', array_filter([...json_decode($sheet->starters, true), ...json_decode($sheet->bench, true)])))) {
+                throw new HttpException(409, 'اللاعب في تشكيلة مقفلة لمباراة لم تنته: انتظر نهايتها.');
+            }
+        }
+    }
+
+    /** When a fixture locks: its own lock_at (a round in two slots, X31), or the usual minutes before its kick-off. */
+    public static function lockAt(object $f): Carbon
+    {
+        return $f->lock_at ? Carbon::parse($f->lock_at, 'UTC') : Carbon::parse($f->scheduled_at, 'UTC')->subMinutes((int) config('game.match.lock_minutes_before'));
+    }
+
+    /**
+     * In a league with two slots [X31]: a reminder to each coach before the round locks, with his slot, once per
+     * fixture ("your club plays in the first slot; the plans lock in two hours").
+     */
+    private static function remind($now): void
+    {
+        $ahead = (int) config('game.staggered.remind_minutes');
+        $due = DB::table('fixtures')->where('status', 'scheduled')->where('is_bye', false)->whereNull('reminded_at')->whereNotNull('lock_at')
+            ->whereNotNull('home_id')->whereNotNull('away_id')->where('lock_at', '>', $now)->where('lock_at', '<=', $now->copy()->addMinutes($ahead))->get();
+        foreach ($due as $f) {
+            if (DB::table('fixtures')->where('id', $f->id)->whereNull('reminded_at')->update(['reminded_at' => $now]) !== 1) {
+                continue;
+            }
+            $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
+            $slot = (int) $f->slot === 2 ? 'الفترة الثانية (السهرة)' : 'الفترة الأولى';
+            $left = max(1, intdiv(Carbon::parse($f->lock_at, 'UTC')->getTimestamp() - $now->getTimestamp() + 59, 60));
+            foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
+                if ($coach = Inbox::coachOf($club)) {
+                    Push::send($coach, 'match_slot', "تذكير: ناديك يلعب في {$slot}",
+                        'ضد '.($names[$other] ?? '').". تُقفل خطط الجولة كلها بعد {$left} دقيقة: تفقد خطتك الآن!", '/match');
+                }
+            }
+        }
+    }
+
+    /**
+     * The night's big match [X31]: once a round in two slots has locked, its most telling second-slot match (the two
+     * clubs highest in the table) is named, and every coach of the league is told.
+     */
+    private static function matchOfDay(int $seasonId, int $round): void
+    {
+        $night = DB::table('fixtures')->where('season_id', $seasonId)->where('competition', 'league')->where('round', $round)->where('slot', 2)
+            ->where('is_bye', false)->get();
+        if ($night->isEmpty() || $night->contains(fn ($f) => $f->match_of_day)) {
+            return;
+        }
+        $place = array_flip(Standings::order($seasonId));
+        $top = $night->sortBy(fn ($f) => [($place[$f->home_id] ?? 99) + ($place[$f->away_id] ?? 99), $f->id])->first();
+        if (DB::table('fixtures')->where('id', $top->id)->where('match_of_day', false)->update(['match_of_day' => true]) !== 1) {
+            return;
+        }
+        $league = DB::table('seasons')->join('leagues', 'leagues.id', '=', 'seasons.league_id')->where('seasons.id', $seasonId)->first(['leagues.id', 'leagues.name']);
+        $names = DB::table('clubs')->whereIn('id', [$top->home_id, $top->away_id])->pluck('name', 'id');
+        foreach (DB::table('clubs')->where('league_id', $league->id)->whereNotNull('user_id')->pluck('user_id') as $coach) {
+            Inbox::send($coach, 'match_of_day', ['league' => $league->name, 'home' => $names[$top->home_id] ?? '', 'away' => $names[$top->away_id] ?? ''], $league->id);
+        }
     }
 
     /** "Your match is in 10 minutes", once per fixture, to both coaches' devices [PLAN 2.13, Sprint 36]. */
@@ -100,6 +181,10 @@ class MatchPrep
                     'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']), 'bench' => json_encode($lineup['bench']),
                     'takers' => json_encode(TeamSheet::takers($club, $lineup)), 'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : Tactics::of($club)),
                     'fixes' => json_encode($fixes), 'locked_at' => $now,
+                    // The coach's pre-match scenarios [X23], frozen like the rest.
+                    'scenarios' => $club->isBot() ? null : json_encode(Scenarios::of($club)),
+                    // The squad as it is now: training or the market until kick-off changes nothing in this match [X31].
+                    'squad' => json_encode(LeagueMatch::squadRows($clubId)),
                 ]);
             }
 

@@ -2,6 +2,8 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -12,6 +14,8 @@ import { currentLeague } from '../../lib/currentLeague'
 
 type View = components['schemas']['StadiumView']
 type Section = View['sections'][number]
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -104,10 +108,10 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <h1 class="font-display text-3xl font-extrabold">الملعب</h1>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الملعب</h1><HelpTip :text="g.stadium" label="الملعب" /></span>
         <p class="mt-1 text-sm text-text-muted">جزء واحد في كل مرة · كل جزء {{ v ? Math.round(v.part_minutes / 60) : 18 }} ساعة · تبدأ كل جزء بنفسك</p>
       </div>
-      <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">
+      <div v-if="v" class="money-box px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">أموال النادي</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
       </div>
@@ -150,7 +154,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>
           </div>
           <p class="text-sm text-text-muted">{{ s.stage }} من 3 مراحل · {{ s.done }} من 15 جزءاً</p>
-          <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40"
+          <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40"
             :disabled="busy || !!v.building || s.next.cost > v.balance" @click="start(s)">
             ابدأ الجزء التالي · <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
           <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">القسم مكتمل</p>

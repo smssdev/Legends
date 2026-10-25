@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // docs/design/legends-ui: WebLogin, MobileLogin.
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { asApiError } from '../../api/client'
 import GoogleButton from '../../components/GoogleButton.vue'
 import TextField from '../../components/TextField.vue'
+import SupportLinks from '../../components/SupportLinks.vue'
 import { useAuth } from '../../stores/auth'
 
 const auth = useAuth()
@@ -58,9 +60,10 @@ async function submit() {
     <TextField v-model="password" label="كلمة المرور" type="password" autocomplete="current-password" :error="errors.password">
       <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">نسيت كلمة المرور؟</RouterLink></template>
     </TextField>
-    <label class="flex min-h-touch items-center gap-3 text-sm"><input v-model="remember" type="checkbox" class="size-5 accent-[var(--color-gold)]" />تذكرني على هذا الجهاز</label>
+    <UiToggle v-model="remember" label="تذكرني على هذا الجهاز" />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? 'جارٍ الدخول…' : 'دخول' }}</button>
   </form>
   <p class="text-center text-sm text-text-muted">ليس لديك حساب؟ <RouterLink to="/register" class="font-bold text-gold">أنشئ حساباً</RouterLink></p>
+  <SupportLinks />
 </template>

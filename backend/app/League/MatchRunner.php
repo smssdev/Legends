@@ -136,6 +136,7 @@ class MatchRunner
         $events = [];
         $orders = [];
         $ms = 0;
+        MatchOrders::forget($id);
         while (! $state['finished']) {
             [$actions, $rows] = MatchOrders::auto($id, $state, $managers);
             $orders = [...$orders, ...$rows];
@@ -146,6 +147,7 @@ class MatchRunner
         foreach (array_chunk($orders, 200) as $chunk) {
             DB::table('match_actions')->insert($chunk);
         }
+        MatchOrders::forget($id);
         self::save($id, $state, $events);
         // Bot against bot shows at its natural end; a long missed match is already over, so at once.
         DB::table('matches')->where('id', $id)->update(['status' => 'done', 'finished_at' => GameClock::now(),
@@ -259,7 +261,7 @@ class MatchRunner
         // The engine's debug values are for the simulator's developer panel only. A rejected order reaches
         // its own coach only (Simulator::redact), never the broadcast.
         $tick = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
-            'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match']),
+            'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
             'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
 
         return [$state, $choreo['ball'], $tick];

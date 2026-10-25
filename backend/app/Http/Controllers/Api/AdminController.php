@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Admin\TwoFactor;
+use App\Auth\Username;
+use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
+use App\League\Alliance;
+use App\Messages\Inbox;
+use App\Models\User;
 use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\GameClock;
+use App\Support\Mailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * The admin panel [PLAN 2.17, 2.22, Sprint 37]: for the admin only, after the two-step code. The users, the
@@ -66,6 +75,14 @@ class AdminController extends Controller
             'live_matches' => DB::table('matches')->where('status', 'live')->count(),
             'active_today' => DB::table('user_activity')->where('day', $today)->count(),
             'weeks' => Activity::weeks(),
+            // Whether a deploy now is safe [X33]: Render runs the old and new versions side by side for about a minute,
+            // so nothing should be live or about to kick off (30 minutes), and the next kick-off says how long it stays so.
+            'deploy' => [
+                'busy' => MatchesLive::busy(30),
+                'next_kickoff' => ($next = DB::table('fixtures')->whereIn('status', ['scheduled', 'locked'])->where('is_bye', false)->whereNotNull('home_id')
+                    ->whereNotNull('away_id')->where('scheduled_at', '>', GameClock::now())->min('scheduled_at'))
+                    ? Carbon::parse($next, 'UTC')->toIso8601ZuluString() : null,
+            ],
         ]);
     }
 
@@ -92,6 +109,58 @@ class AdminController extends Controller
             'season' => (int) DB::table('seasons')->where('league_id', $l->id)->max('number')])]);
     }
 
+    /** The email settings and a test email to the given address, with the exact error and its fix [X8]. */
+    public function mailTest(Request $request): JsonResponse
+    {
+        $to = (string) $request->validate(['to' => ['required', 'email']])['to'];
+        $setup = Mailer::setup();
+        try {
+            Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
+        } catch (\Throwable $e) {
+            return response()->json($setup + ['sent' => false, 'error' => substr($e->getMessage(), 0, 600), 'fix' => Mailer::explain($e->getMessage())]);
+        }
+
+        return response()->json($setup + ['sent' => Mailer::live(), 'error' => null, 'fix' => Mailer::live() ? null : $setup['problems'][0] ?? null]);
+    }
+
+    /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */
+    public function official(Request $request, User $user): JsonResponse
+    {
+        $name = (string) $request->validate(['name' => ['required', 'string', Rule::in(config('game.account.official_usernames'))]])['name'];
+        abort_if(Username::taken($name, $user->id), 409, 'هذا الاسم الرسمي لحساب آخر.');
+        $user->forceFill(['username' => strtolower($name)])->save();
+
+        return response()->json(['user' => $user->toAccount()]);
+    }
+
+    /** A message from the developers to every account, signed with the official badge [X11]. Only from an official account. */
+    public function announce(Request $request): JsonResponse
+    {
+        $from = $request->user();
+        abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Hamza أو Owner-Soliman).');
+        $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000']]);
+        $payload = ['title' => $data['title'], 'body' => $data['body'], 'from' => $from->name, 'username' => $this->officialName($from->username)];
+        $sent = 0;
+        foreach (User::query()->pluck('id') as $id) {
+            Inbox::send($id, 'announcement', $payload);
+            $sent++;
+        }
+
+        return response()->json(['sent' => $sent], 201);
+    }
+
+    /** owner-hamza → Owner-Hamza, as written in the settings. */
+    private function officialName(string $username): string
+    {
+        foreach (config('game.account.official_usernames') as $name) {
+            if (strtolower($name) === $username) {
+                return $name;
+            }
+        }
+
+        return $username;
+    }
+
     /** The backups on this machine (newest first), and making one now. */
     public function backups(): JsonResponse
     {
@@ -109,11 +178,46 @@ class AdminController extends Controller
         return $this->backups();
     }
 
+    /**
+     * One backup's game database to keep off the server [X33]: on Render the backups live only until the next
+     * restart, so the admin downloads the copy made before a deploy (start.sh) to have it on his own machine.
+     */
+    public function downloadBackup(string $name): BinaryFileResponse
+    {
+        $file = base_path("database/backups/$name/".basename((string) config('database.connections.sqlite.database')));
+        abort_unless(is_file($file), 404, 'هذه النسخة غير موجودة.');
+
+        return response()->download($file, "legends-$name.sqlite", ['Content-Type' => 'application/vnd.sqlite3']);
+    }
+
     /** The commentary templates: how many lines each moment has, and its lines. */
     public function commentary(): JsonResponse
     {
         $table = Commentary::table();
 
         return response()->json(['keys' => collect($table)->map(fn ($lines, $key) => ['key' => $key, 'count' => count($lines), 'lines' => array_values($lines)])->values()]);
+    }
+
+    /** The alliance tournaments waiting for the developers, and the latest decided [X27]. */
+    public function alliances(): JsonResponse
+    {
+        $rows = DB::table('alliance_tournaments')->join('leagues', 'leagues.id', '=', 'alliance_tournaments.league_id')
+            ->orderByRaw("alliance_tournaments.status = 'pending' desc")->orderByDesc('alliance_tournaments.id')->limit(30)
+            ->get(['alliance_tournaments.*', 'leagues.name as league']);
+        $captains = DB::table('users')->whereIn('id', $rows->pluck('captain_a')->merge($rows->pluck('captain_b')))->pluck('username', 'id');
+
+        return response()->json(['tournaments' => $rows->map(fn ($t) => [
+            'id' => $t->id, 'league_id' => $t->league_id, 'league' => $t->league, 'name' => $t->name, 'status' => $t->status, 'size' => (int) $t->size,
+            'captains' => [$captains[$t->captain_a] ?? null, $captains[$t->captain_b] ?? null],
+            'first_round_at' => Carbon::parse($t->first_round_at, 'UTC')->toIso8601ZuluString(), 'review_note' => $t->review_note,
+        ])->values()]);
+    }
+
+    public function reviewAlliance(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate(['approve' => ['required', 'boolean'], 'note' => ['nullable', 'string', 'max:200']]);
+        Alliance::review($id, $request->user(), (bool) $data['approve'], $data['note'] ?? null);
+
+        return $this->alliances();
     }
 }

@@ -2,6 +2,7 @@
 // Make a league (Sprint 13 W1), after the drafts WebCreateLeague and MobileCreateLeague: the basics, the
 // times, the money and rules, and the season's summary; then "أنشئ الدوري واختر فريقك" shows the copied
 // clubs to choose the owner's own. The server makes it all in one step [PLAN 2.1, 2.3].
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf, type ApiError } from '../../api/client'
@@ -26,6 +27,11 @@ const roundsPerDay = ref(1)
 const times = ref(['21:00', '18:00'])
 const startingBudget = ref(3_000_000)
 const fair = ref(true)
+// The integrity system: bribes, spies and the FA [X28], off unless the owner wants it.
+const integrity = ref(false)
+// Each round in two time slots [X31]: off, or the second slot this many minutes after the round's time.
+const staggered = ref(false)
+const slotGap = ref(240)
 const endMode = ref<'renew' | 'end'>('renew')
 
 const step = ref<'settings' | 'club'>('settings')
@@ -96,6 +102,8 @@ async function create() {
         starts_at: new Date(startsAt.value).toISOString(),
         starting_budget: startingBudget.value,
         fair_league: fair.value,
+        integrity: integrity.value,
+        second_slot_minutes: staggered.value ? slotGap.value : null,
         is_dev: import.meta.env.DEV,
         club_id: club.value.id,
       },
@@ -206,12 +214,13 @@ const field = (name: string) => error.value?.field(name) ?? ''
             <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
             <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
           </label>
-          <label class="flex min-h-touch cursor-pointer items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3">
-            <span>
-              <span class="block font-bold">دوري نزيه</span>
-              <span class="block text-sm text-text-muted">يقفل صرف العملة المميزة داخل هذا الدوري</span>
-            </span>
-            <input v-model="fair" type="checkbox" role="switch" class="size-6 accent-success" />
+          <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف العملة المميزة داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
+          <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" hint="رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح"><b>منظومة النزاهة والمؤامرات</b></UiToggle>
+          <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" hint="نصف مباريات الجولة في موعدها والنصف الآخر في سهرة بعدها، بقفل موحد وتدوير عادل، والجولة الأخيرة متزامنة"><b>الجولة على فترتين</b></UiToggle>
+          <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">الفترة الثانية بعد موعد الجولة بـ
+            <select v-model.number="slotGap" class="h-touch rounded-md bg-surface px-2 font-bold">
+              <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? 'ساعة' : m === 120 ? 'ساعتين' : 'ساعات' }}</option>
+            </select>
           </label>
           <fieldset class="flex flex-col gap-2">
             <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>

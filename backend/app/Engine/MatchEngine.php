@@ -237,10 +237,10 @@ final class MatchEngine
         return $value - $team['missing'] * (int) $this->eng['man_down_cp'];
     }
 
-    private function phase(string $name, int $attack, int $defence, int $mod = 0): array
+    private function phase(string $name, int $attack, int $defence, int $mod = 0, int $bp = 0): array
     {
         $base = (int) $this->eng['phase_base_bp'][$name];
-        $p = $base + intdiv(($attack - $defence + $mod) * (int) $this->eng['phase_slope_bp'], 100);
+        $p = $base + intdiv(($attack - $defence + $mod) * (int) $this->eng['phase_slope_bp'], 100) + $bp;
         $p = max((int) $this->eng['phase_floor_bp'], min((int) $this->eng['phase_ceiling_bp'], $p));
         $roll = $this->rng->int(10000);
 
@@ -277,7 +277,7 @@ final class MatchEngine
             $a = $this->ability($atk, 'build', Ability::LINES['build']) - $tempoLoss + $this->posMod($ta, 'build');
             $d = $this->ability($def, 'press', Ability::LINES['press'])
                 + ($td['pressing'] - 50) * (int) $this->eng['press_bonus_cp'] + $tackleBonus + $this->posMod($td, 'press');
-            $r = $this->phase('build', $a, $d);
+            $r = $this->phase('build', $a, $d, 0, $this->chemistry($atk));
             $phases[] = ['n' => 'build', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $this->stat($atk, 'builds_lost');
@@ -338,7 +338,7 @@ final class MatchEngine
             $createBonus = (int) $this->eng['trap_fail_bonus_cp'];
         }
 
-        $r = $this->phase('progress', $a, $d);
+        $r = $this->phase('progress', $a, $d, 0, ($counter ? $this->chemistry($atk) : 0) + $this->morale($atk) - $this->morale($def));
         $phases[] = ['n' => 'progress', 'ok' => $r['ok'], 'p' => $r['p']];
         if (! $r['ok']) {
             $this->rate($def, $marker, 6, 'tackles');
@@ -369,7 +369,7 @@ final class MatchEngine
         if ($plan !== 'shots') {
             $a = $this->ability($atk, 'create', Ability::LINES['create']) - $tempoLoss + $createBonus + $this->posMod($ta, 'create');
             $d = $this->ability($def, 'mark', Ability::LINES['mark']) + $this->markingMod($td, $A);
-            $r = $this->phase('create', $a, $d);
+            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def));
             $phases[] = ['n' => 'create', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $corner = $this->rng->chance(2500);
@@ -393,6 +393,54 @@ final class MatchEngine
 
         $shooter = $this->pickPlayer($atk, $plan === 'shots' ? ['mid' => 3, 'att' => 2] : ['att' => 6, 'mid' => 3, 'def' => 1], 'sho');
         $this->shot($atk, $shooter, $quality, $phases, $plan, $counter, ['carrier' => $carrier, 'receiver' => $receiver, 'creator' => $creator, 'defender' => $marker]);
+    }
+
+    /**
+     * Chemistry [X22]: a side that knows itself (85 and up) passes better in the build-up, breaks better on the
+     * counter and covers better at its box, up to +7% on each of those phases; one that does not (under 50)
+     * misplaces passes and leaves gaps. It moves the odds of a phase,
+     * never a player's ability. A side without a reading (the simulator) is neutral.
+     */
+    private function chemistry(string $side): int
+    {
+        $chem = $this->s['teams'][$side]['chem'] ?? null;
+        if ($chem === null) {
+            return 0;
+        }
+        [$from, $to] = $this->eng['chemistry_high_bp'];
+        $high = (int) $this->eng['chemistry_high'];
+        $low = (int) $this->eng['chemistry_low'];
+
+        return match (true) {
+            $chem >= $high => $from + intdiv(($chem - $high) * ($to - $from), max(1, 100 - $high)),
+            $chem < $low => -intdiv(($low - $chem) * (int) $this->eng['chemistry_low_bp'], max(1, $low)),
+            default => 0,
+        };
+    }
+
+    /**
+     * A bought referee [X28] leans to the side that paid: its fouls are carded less, its opponent's more, and a foul
+     * on it at the box is a penalty more often. In basis points of the usual call; 10000 when nobody paid.
+     */
+    private function leaning(string $side, string $call): int
+    {
+        $other = $side === 'home' ? 'away' : 'home';
+        if ($call === 'penalty') {
+            return empty($this->s['teams'][$side]['bribed']) ? 10000 : (int) $this->eng['bribe_penalty_bp'];
+        }
+        if (! empty($this->s['teams'][$side]['bribed'])) {
+            return (int) $this->eng['bribe_own_card_bp'];
+        }
+
+        return empty($this->s['teams'][$other]['bribed']) ? 10000 : (int) $this->eng['bribe_rival_card_bp'];
+    }
+
+    /** Morale [X25]: a side up (over 50) pushes on and creates more, one down hesitates. None measured: neutral. */
+    private function morale(string $side): int
+    {
+        $morale = $this->s['teams'][$side]['morale'] ?? null;
+
+        return $morale === null ? 0 : ($morale - 50) * (int) $this->eng['morale_bp'];
     }
 
     private function planKey(string $plan): string
@@ -456,7 +504,7 @@ final class MatchEngine
 
         $this->stat($def, 'fouls');
         $this->rate($def, $fouler, -5, 'fouls');
-        $penalty = $where === 'create' && $this->rng->chance((int) $this->eng['penalty_share_bp']);
+        $penalty = $where === 'create' && $this->rng->chance(intdiv((int) $this->eng['penalty_share_bp'] * $this->leaning($atk, 'penalty'), 10000));
         // A foul at the box always gives a free kick in shooting range, further out only sometimes;
         // otherwise the attackers take it quickly and the attack goes on, so fouling never stops an attack for free.
         $setPiece = $penalty || $where === 'create' || ($where === 'progress' && $this->rng->chance((int) $this->eng['progress_free_kick_bp']));
@@ -465,14 +513,19 @@ final class MatchEngine
         }
         $this->event('foul', $def, ['player' => $fouler, 'victim' => $victim, 'penalty' => $penalty]);
 
-        $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
+        $ref = intdiv((int) $this->eng['referee_bp'][$this->s['referee']] * $this->leaning($def, 'card'), 10000);
         if ($where === 'create' && $quality === 'big' && $this->rng->chance(intdiv((int) $this->eng['dogso_red_bp'] * $ref, 10000))) {
             $this->card($def, $fouler, 'red');
         } elseif ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref, 10000))) {
             $this->card($def, $fouler, 'yellow');
         }
 
-        $injured = $this->rng->chance((int) $this->eng['injury_bp'][$level]);
+        // Tired legs break [X21]: under the tired line, the victim is injured three times as often.
+        $chance = (int) $this->eng['injury_bp'][$level];
+        if ($this->fitOf($atk, $victim) < (int) ($this->eng['tired_fit'] ?? 0)) {
+            $chance = intdiv($chance * (int) $this->eng['tired_injury_bp'], 10000);
+        }
+        $injured = $this->rng->chance($chance);
         if ($injured) {
             $this->injure($atk, $victim);
         }
@@ -508,7 +561,7 @@ final class MatchEngine
         $this->rate($side, $fouler, -3, 'fouls');
         $this->event('foul', $side, ['player' => $fouler, 'victim' => $victim, 'penalty' => false]);
         $level = $this->s['teams'][$side]['tactics']['tackling'];
-        $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
+        $ref = intdiv((int) $this->eng['referee_bp'][$this->s['referee']] * $this->leaning($side, 'card'), 10000);
         if ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref * (int) $this->eng['midfield_card_pct'], 1000000))) {
             $this->card($side, $fouler, 'yellow');
         }
@@ -849,6 +902,18 @@ final class MatchEngine
         }
 
         return null;
+    }
+
+    /** One player's fitness, in hundredths of a per cent (100% when not found). */
+    private function fitOf(string $side, int $playerId): int
+    {
+        foreach ($this->s['teams'][$side]['players'] as $p) {
+            if ($p['id'] === $playerId) {
+                return $p['fit'];
+            }
+        }
+
+        return 10000;
     }
 
     private function avgFitness(string $side): int

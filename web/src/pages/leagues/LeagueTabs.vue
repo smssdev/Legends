@@ -13,6 +13,7 @@ type Row = { position: number; id: number; name: string; code: string; crest_url
 type Stage = { stage: string; scheduled_at: string; ties: { id: number; slot: number; home?: { name: string; code: string; crest_url: string } | null; away?: { name: string; code: string; crest_url: string } | null; next?: { slot: number; side: string } | null }[] }
 
 const props = defineProps<{ leagueId: number; myClubId?: number | null; teamCount: number }>()
+const PODIUM: Record<number, string> = { 1: 'bg-gradient-to-b from-gold-light to-gold text-on-gold shadow shadow-gold/30', 2: 'bg-gradient-to-b from-[#E4E9F2] to-[#A9B6CC] text-on-gold', 3: 'bg-gradient-to-b from-[#E0A06A] to-[#B4692A] text-white' }
 const tab = ref<'table' | 'fixtures' | 'cup' | 'honours'>('table')
 // The hall of fame (Sprint 33): loaded when its tab is opened.
 type Honours = components['schemas']['Honours']
@@ -78,12 +79,12 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         :key="key"
         type="button"
         role="tab"
-        class="h-12 rounded-lg font-display text-lg font-extrabold"
+        class="h-12 rounded-lg font-display text-base font-extrabold md:text-lg"
         :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'"
         :aria-selected="tab === key"
         @click="tab = key"
       >{{ label }}</button>
-      <button type="button" role="tab" class="h-12 rounded-lg font-display text-lg font-extrabold" :class="tab === 'honours' ? 'bg-gold text-on-gold' : 'text-text-soft'"
+      <button type="button" role="tab" class="h-12 rounded-lg font-display text-base font-extrabold md:text-lg" :class="tab === 'honours' ? 'bg-gold text-on-gold' : 'text-text-soft'"
         :aria-selected="tab === 'honours'" @click="openHonours">الشرف</button>
     </div>
     <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
@@ -104,8 +105,9 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
           </tr>
         </thead>
         <tbody>
-          <tr v-for="r in table" :key="r.id" :class="r.id === myClubId ? 'bg-surface-raised' : ''">
-            <td class="py-2 font-numbers text-lg text-text-soft">{{ r.position }}</td>
+          <tr v-for="r in table" :key="r.id" class="relative" :class="r.id === myClubId ? 'is-mine' : ''">
+            <!-- [X29] The podium: gold, silver and bronze places, as the sports tables mark them. -->
+            <td class="py-2"><span class="grid size-7 place-items-center rounded-md font-numbers text-base font-bold" :class="PODIUM[r.position] ?? 'text-text-soft'">{{ r.position }}</span></td>
             <td class="py-2">
               <span class="flex items-center gap-2">
                 <ClubCrest :url="r.crest_url" :code="r.code" :size="28" />
@@ -129,8 +131,9 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         <div v-for="f in d.items" :key="f.id" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm" :class="(f.home?.id === myClubId || f.away?.id === myClubId) && myClubId ? 'border border-gold/40' : ''">
           <span class="w-12 shrink-0 font-numbers text-base" dir="ltr">{{ time.format(new Date(f.scheduled_at)) }}</span>
           <UiChip :tone="f.competition === 'cup' ? 'gold' : 'neutral'">
-            {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : `الجولة ${f.round}` }}
+            {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : f.competition === 'alliance' ? `التحالفات ${f.round}` : `الجولة ${f.round}` }}{{ f.slot === 2 ? ' · السهرة' : '' }}
           </UiChip>
+          <UiChip v-if="f.match_of_day" tone="gold">⭐ قمة الجولة</UiChip>
           <span v-if="f.is_bye" class="text-text-muted">استراحة: {{ f.home?.name }}</span>
           <span v-else class="flex min-w-0 flex-1 items-center justify-center gap-2">
             <span class="flex-1 text-end">{{ f.home?.name ?? 'يتحدد' }}</span>

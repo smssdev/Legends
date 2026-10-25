@@ -79,9 +79,9 @@ class TrainingTest extends TestCase
         $theirs = DB::table('players')->where('league_id', $this->league['id'])->where('club_id', '!=', $this->mine)->value('id');
         $this->postJson($this->url(), ['player_id' => $theirs])->assertNotFound()->assertJsonPath('message', 'اللاعب ليس في فريقك.');
         $maxed = $this->trainee('def');
-        DB::table('players')->where('id', $maxed->id)->update(['training_bonus' => $maxed->potential - $maxed->overall]);
+        DB::table('players')->where('id', $maxed->id)->update(['training_bonus' => 99 - $maxed->overall]);
         $maxed = $maxed->id;
-        $this->postJson($this->url(), ['player_id' => $maxed])->assertUnprocessable()->assertJsonPath('message', 'وصل هذا اللاعب إلى أقصى إمكانيته، والتدريب لا يزيده.');
+        $this->postJson($this->url(), ['player_id' => $maxed])->assertUnprocessable()->assertJsonPath('message', 'وصل هذا اللاعب إلى 99، أعلى تقييم في اللعبة.');
 
         $this->deleteJson($this->url('/mid'))->assertOk();
         $this->assertSame(0, DB::table('training_slots')->count());
@@ -137,7 +137,8 @@ class TrainingTest extends TestCase
         $this->assertSame(1, $card['training_bonus']);
     }
 
-    public function test_training_stops_at_the_potential(): void
+    /** [X16] Open training: the potential no longer stops it, it only slows it; 99 is the end. */
+    public function test_training_goes_past_the_potential_slower_up_to_99(): void
     {
         $p = $this->trainee();
         DB::table('players')->where('id', $p->id)->update(['training_bonus' => $p->potential - $p->overall - 1, 'training_progress' => 9999]);
@@ -145,8 +146,17 @@ class TrainingTest extends TestCase
         Carbon::setTestNow(GameClock::now()->addSeconds($this->interval()));
         Training::due();
         $this->assertSame($p->potential - $p->overall, (int) DB::table('players')->where('id', $p->id)->value('training_bonus'));
-        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $p->id])->assertUnprocessable();
-        $this->assertTrue($this->getJson($this->url())->json('players')[array_search($p->id, array_column($this->getJson($this->url())->json('players'), 'id'))]['maxed']);
+        // At the potential: still trainable, and each +1 takes three times the sessions.
+        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $p->id])->assertOk();
+        $row = collect($this->getJson($this->url())->json('players'))->firstWhere('id', $p->id);
+        $this->assertTrue($row['over_potential']);
+        $this->assertFalse($row['maxed']);
+        $gain = Gain::fromConfig();
+        $this->assertSame(3 * $gain->sessions($p->potential), $gain->sessions($p->potential, $p->potential));
+        $this->assertSame(5 * $gain->sessions($p->potential + 1), $gain->sessions($p->potential + 1, $p->potential));
+        // 99 is the end.
+        $this->assertSame(0, $gain->run(99, 70, 500, 'k'));
+        $this->assertGreaterThan(0, $gain->run(70, 70, 500, 'k'));
     }
 
     public function test_without_money_the_session_is_missed_and_a_sold_player_leaves_his_slot(): void
@@ -178,6 +188,8 @@ class TrainingTest extends TestCase
             $this->assertTrue($step >= intdiv(10000 / 6, 2) && $step <= intdiv(10000, 6) * 3 / 2 + 1, (string) $step);
         }
         $this->assertSame($gain->step(80, 'same'), $gain->step(80, 'same'));
-        $this->assertSame(2, $gain->run(70, 72, 10_000, 'cap'));
+        // Past the potential it goes on, far slower than below it [X16]: up to 72 in a few dozen sessions, then a crawl.
+        $this->assertSame(2, $gain->run(70, 72, 30, 'cap'));
+        $this->assertLessThan(10, $gain->run(72, 72, 300, 'cap'));
     }
 }

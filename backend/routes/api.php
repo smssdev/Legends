@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\HonoursController;
+use App\Http\Controllers\Api\IntegrityController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
@@ -16,6 +19,7 @@ use App\Http\Controllers\Api\SpecialistController;
 use App\Http\Controllers\Api\SpyController;
 use App\Http\Controllers\Api\StadiumController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
@@ -38,6 +42,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('forgot-password', 'forgot');
         Route::post('reset-password', 'reset');
     });
+    // A username's check as it is typed, with suggestions [X11].
+    Route::get('username', 'usernameCheck')->middleware('throttle:30,1,username');
     Route::post('logout', 'logout');
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', 'me');
@@ -62,6 +68,7 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
+    Route::get('glossary', 'glossary');
 });
 Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1,data');
 
@@ -73,6 +80,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}', 'show')->whereNumber('league');
     Route::patch('{league}', 'update')->whereNumber('league');
     Route::post('{league}/start', 'start')->whereNumber('league');
+    // The live draw [X26].
+    Route::get('{league}/draw', 'draw')->whereNumber('league');
+    Route::put('{league}/draw', 'scheduleDraw')->whereNumber('league');
     Route::delete('{league}/request', 'cancel')->whereNumber('league');
     Route::get('{league}/requests', 'requests')->whereNumber('league');
     Route::post('{league}/requests/{joinRequest}/approve', 'approve')->whereNumber(['league', 'joinRequest']);
@@ -86,6 +96,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}/fixtures', 'fixtures')->whereNumber('league');
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');
+    Route::get('{league}/stats', 'stats')->whereNumber('league');
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
     // The hall of fame [Sprint 33].
     Route::get('{league}/honours', [HonoursController::class, 'league'])->whereNumber('league');
@@ -99,6 +110,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::put('takers', 'saveTakers');
         Route::get('tactics', 'tactics');
         Route::put('tactics', 'saveTactics');
+        Route::put('scenarios', 'saveScenarios');
         Route::get('next-match', 'nextMatch');
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
@@ -133,6 +145,25 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('/', 'show');
         Route::post('/', 'hire')->middleware('throttle:20,1,specialists');
     });
+    // The integrity system [X28].
+    Route::controller(IntegrityController::class)->prefix('{league}/integrity')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('bribe', 'bribe')->middleware('throttle:20,1,integrity');
+        Route::post('security', 'security')->middleware('throttle:20,1,integrity');
+        Route::post('spies/{spy}/turn', 'turn')->whereNumber('spy')->middleware('throttle:20,1,integrity');
+        Route::post('spies/{spy}/accuse', 'accuse')->whereNumber('spy')->middleware('throttle:20,1,integrity');
+    });
+    // The alliance tournament [X27].
+    Route::controller(AllianceController::class)->prefix('{league}/alliance')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('/', 'store')->middleware('throttle:10,1,alliance');
+        Route::post('ties/{tie}/decide', 'decide')->whereNumber('tie');
+    });
+    // Tickets to cheer at the other clubs' matches [X25].
+    Route::controller(TicketController::class)->prefix('{league}/tickets')->whereNumber('league')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:30,1,tickets');
+    });
     // Spying on the next opponent [Sprint 30].
     Route::controller(SpyController::class)->prefix('{league}/spy')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
@@ -164,6 +195,9 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1,match-show');
     Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:720,1,match-live');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
+    // The broadcast's reactions and side chat [X24].
+    Route::post('{match}/reactions', 'react')->whereNumber('match')->middleware('throttle:90,1,match-react');
+    Route::post('{match}/chat', 'chat')->whereNumber('match')->middleware('throttle:60,1,match-chat');
     Route::get('{match}/replay', 'replay')->whereNumber('match')->middleware('throttle:30,1,match-replay');
     Route::get('{match}/report', 'report')->whereNumber('match')->middleware('throttle:60,1,match-report');
 });
@@ -184,11 +218,17 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
     Route::post('2fa/verify', 'verify')->middleware('throttle:10,1,admin-2fa');
     Route::middleware('admin')->group(function () {
         Route::get('overview', 'overview');
+        Route::get('alliances', 'alliances');
+        Route::post('alliances/{id}/review', 'reviewAlliance')->whereNumber('id');
         Route::get('users', 'users');
         Route::get('leagues', 'leagues');
         Route::get('backups', 'backups');
         Route::post('backups', 'backupNow');
+        Route::get('backups/{name}/download', 'downloadBackup')->where('name', '\d{4}-\d{2}-\d{2}_\d{6}');
         Route::get('commentary', 'commentary');
+        Route::post('mail-test', 'mailTest')->middleware('throttle:10,1,mail-test');
+        Route::post('users/{user}/official', 'official')->whereNumber('user');
+        Route::post('announcements', 'announce');
     });
 });
 
@@ -204,6 +244,12 @@ Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notif
 Route::prefix('wallet')->middleware(['auth:sanctum', 'throttle:60,1,wallet'])->controller(WalletController::class)->group(function () {
     Route::get('/', 'show');
     Route::post('daily', 'daily');
+});
+
+// The coach's home screen and the coaches' global ranking [X18].
+Route::middleware(['auth:sanctum', 'throttle:60,1,home'])->controller(HomeController::class)->group(function () {
+    Route::get('home', 'show');
+    Route::get('rankings/coaches', 'ranking');
 });
 
 // A coach's profile: titles, objectives and record [Sprint 33].

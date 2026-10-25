@@ -7,7 +7,9 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/v1/sim/leagues
-    autoDeploy: true
+    # Off on purpose [X33]: Render starts the new version while the old one still serves, so whatever is done in
+    # that minute stays in the old copy. Deploy by hand (Manual Deploy) when no match is live (docs/PLAN.md 8.1).
+    autoDeploy: false
     # Optional, set in the service's Environment (deploy/render/start.sh): real emails through Gmail, and Google sign-in.
     envVars:
       # One key for every deploy, so sign-ins and encrypted values survive it (start.sh).
@@ -21,6 +23,18 @@ services:
       - key: B2_KEY_ID
         sync: false
       - key: B2_APPLICATION_KEY
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: OWNER_HAMZA_EMAIL
+        sync: false
+      - key: OWNER_SOLIMAN_EMAIL
+        sync: false
+      - key: SUPPORT_WHATSAPP
+        sync: false
+      - key: SUPPORT_TELEGRAM
         sync: false
       - key: GMAIL_ADDRESS
         sync: false

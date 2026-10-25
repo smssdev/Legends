@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Data\Crest;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
+use App\Support\Glossary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -80,5 +81,11 @@ class DataController extends Controller
             'strength_cp' => (int) $c->strength_cp, 'colors' => [$c->color_primary, $c->color_secondary],
             'crest_url' => url("/api/v1/data/clubs/{$c->id}/crest.svg"),
         ];
+    }
+
+    /** The game's words explained, behind each "?" [X19]. */
+    public function glossary(): JsonResponse
+    {
+        return response()->json(['terms' => Glossary::all()]);
     }
 }

@@ -16,6 +16,9 @@ return [
         // A coach's reactions in a match between friends: at most one this often.
         'reaction_gap_ms' => 1200,
         'reactions' => ['fire', 'clap', 'wow', 'laugh', 'angry', 'pray', 'unlucky', 'coming', 'easy', 'focus'],
+        // The league broadcast [X24]: a boo or a cheer for one side at most this often per viewer, the side chat's
+        // pace and length, and how many of each the live poll carries.
+        'cheer_gap_ms' => 30000, 'chat_gap_ms' => 2000, 'chat_max' => 140, 'chat_kept' => 50, 'reactions_kept' => 20,
         // A breath after each scene before the next minute: the timeline and the clock on screen (not after quiet minutes).
         'scene_gap_ms' => 1800,
         'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
@@ -27,6 +30,11 @@ return [
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
         'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
         'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9، السبرنت 29]
+        // [X35] The live broadcast's pace, the owner's (2026-10-25): 18 minutes of football in one real minute, so a minute
+        // lasts 60000/18 ms and a half two and a half minutes, the clock running on screen as on TV; an extra-time half
+        // half a minute (15 minutes of 2000 ms) and the whole shootout half a minute. A match made with these keys plays
+        // every minute at this fixed length (MomentClock); one made before keeps moment_ms below (its config_snapshot).
+        'minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
@@ -38,7 +46,7 @@ return [
     ],
     'league' => [
         'lock_last_bp' => 2500, 'absence_days' => 3,
-        'absence_warning_hours' => 48, 'max_active_teams' => 4,
+        'absence_warning_hours' => 48, 'max_active_teams' => 10,   // the coach's slots: a team in each of up to 10 leagues [X18, 2026-10-25]
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
         'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
@@ -51,6 +59,7 @@ return [
     'matches' => [
         'missed_live_minutes' => 10,      // up to this late a match still starts live; later it is simulated at once
         'rest_recovery' => 30,            // fitness back for a player who rests in his club's match
+        'played_recovery' => 8,           // and for one who played, between that match and the next [X21]
         'injury_matches' => [1, 3],       // an injury keeps a player out this many of his club's matches
         'red_card_matches' => 1,
         'runner_sleep_ms' => 200,         // how often matches:run looks at the clock
@@ -108,8 +117,9 @@ return [
         ],
         // The stadium at stage 0 (Sprint 29 builds on it): seats, and attendance from the club's strength in its league.
         'stadium' => ['capacity' => 20000, 'attendance_min_bp' => 6000, 'attendance_max_bp' => 10000],
-        // A league match's result, as a share of the scale.
-        'win_bonus_bp' => 8, 'draw_bonus_bp' => 3,
+        // A league match's result, as a share of the scale: a bonus for a win, a smaller one for a draw, and a
+        // deduction for a loss [X14].
+        'win_bonus_bp' => 8, 'draw_bonus_bp' => 3, 'loss_penalty_bp' => 2,
         // Season prizes as a share of the scale: the league by place (from the champion down), and the cup.
         'league_prize_bp' => [100, 70, 50, 35, 25, 15, 10, 5],
         'cup_prize_bp' => ['winner' => 50, 'final' => 25, 'sf' => 10],
@@ -135,7 +145,10 @@ return [
         'sessions_by_overall' => [55 => 4, 65 => 6, 75 => 14, 80 => 19, 85 => 23, 89 => 25, 92 => 30, 99 => 40],
         'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
         'cost_bp_per_season' => 40,      // one slot busy all season costs this share of the league's money scale
-        'season_gain_target' => [3, 5]],
+        'season_gain_target' => [3, 5],
+        // Open training [X16]: no stop at the potential. Above it each +1 takes this many times the sessions, one more
+        // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
+        'over_potential_factor' => 2, 'ceiling' => 99],
     // The training camp [docs/features/camp.md, Sprint 28]: players away from matches, training at the camp's pace.
     'camp' => ['max_players' => 5, 'days' => [1, 3], 'min_left' => 16,
         // each level: the session's step and its price, against an ordinary training session (basis points)
@@ -167,11 +180,24 @@ return [
             'tackling' => ['from' => 0, 'to' => 3, 'expect' => ['yellow_home' => 1, 'red_home_%' => 1]],
             'style' => ['from' => 0, 'to' => 100, 'expect' => ['goals_home' => 1, 'counters_away' => 1]],
             'trap' => ['from' => 0, 'to' => 1, 'against' => ['plan' => 'long'], 'expect' => ['offsides_away' => 1]],
+            // Morale [X25] is not a tactic: from 40 to 90 it must win more, by a few points, not by a class.
+            'morale' => ['field' => 'morale', 'from' => 40, 'to' => 90, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
+            // Chemistry [X22] likewise, from 40 to 100.
+            // A bought referee [X28]: more points for the side that paid, but not a class.
+            'bribed' => ['field' => 'bribed', 'from' => 0, 'to' => 1, 'min_shift' => 1, 'max_shift' => 8, 'expect' => ['yellow_home' => -1, 'yellow_away' => 1]],
+            'chem' => ['field' => 'chem', 'from' => 40, 'to' => 100, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
         ],
         'max_win_shift' => 3,
     ],
+    // Chemistry [X22]: each player is linked to his `neighbours` nearest team-mates; a link is worth its colour,
+    // and green also comes from `together_matches` played together for the club. The engine's effect is in engine.chemistry_*.
+    'chemistry' => [
+        'neighbours' => 2,
+        'link_value' => ['green' => 100, 'yellow' => 65, 'red' => 25],
+        'together_matches' => 15,
+    ],
     'engine' => [
-        'version' => 5,
+        'version' => 9,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -183,8 +209,21 @@ return [
             'long_shots' => [-200, -100, 300],
         ],
         'tackling_bonus_cp' => [0, 20, 30, 40],   // قانوني، عادي، حماس، خشونة
-        'fitness_drain_base' => 28, 'fitness_drain_pressing_max' => 17, 'fitness_drain_tempo_max' => 8,
+        // Fatigue [X21]: per minute, in hundredths of a per cent, for a player of stamina 70. About 18% in a normal
+        // match (pressing and tempo at 50), about 24% with the press and the tempo high. Under tired_fit the
+        // injuries come tired_injury_bp as often.
+        'fitness_drain_base' => 12, 'fitness_drain_pressing_max' => 20, 'fitness_drain_tempo_max' => 8,
+        'tired_fit' => 5500, 'tired_injury_bp' => 30000,
         'red_card_drain_bp' => 11500,
+        // Chemistry [X22]: from chemistry_high the phases (passing, counters, cover) gain chemistry_high_bp, from
+        // the first value at the line up to the second at 100; under chemistry_low they lose up to chemistry_low_bp at 0.
+        // Morale [X25]: each point over or under 50 moves the progress and the chance creation by this much, the
+        // attack's against the defence's. A side without a reading (the simulator) is neutral.
+        'morale_bp' => 6,
+        // A bought referee [X28]: the briber's own cards at this share of the usual, its opponent's at this, and the
+        // penalties it is given at this.
+        'bribe_own_card_bp' => 5000, 'bribe_rival_card_bp' => 16000, 'bribe_penalty_bp' => 30000,
+        'chemistry_high' => 85, 'chemistry_high_bp' => [300, 700], 'chemistry_low' => 50, 'chemistry_low_bp' => 600,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
         'live_reading_every_minutes' => 15,
@@ -226,9 +265,26 @@ return [
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
+    // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
+    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'level_step' => 20],
+    // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
+    // for account and sign-up problems and ideas. A channel left empty has no button.
+    'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
+        'message' => 'مرحباً، أحتاج مساعدة في لعبة الأساطير: '],
     // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
-    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256],
+    // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
+    // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
+    'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6'], 'default_commentator' => 'voice-6',
+        'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
+    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
+        // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
+        // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
+        'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
+        'blocked_names' => ['mod', 'dev', 'gm', 'root', 'help', 'team'],
+        'official_usernames' => ['Owner-Hamza', 'Owner-Soliman'],
+        // Each developer's Gmail, on the server only: the confirmed address takes its name and the admin panel.
+        'official_emails' => ['Owner-Hamza' => env('OWNER_HAMZA_EMAIL'), 'Owner-Soliman' => env('OWNER_SOLIMAN_EMAIL')]],
     // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
     // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
     'monitoring' => [
@@ -262,7 +318,7 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report'],
+            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report', 'staff_left'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
         ],
         'match_soon_minutes' => 10,
@@ -272,8 +328,10 @@ return [
     'premium' => [
         'season_cap' => 400,           // the most a coach spends in one league in one season
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
-            'league_1' => 100, 'league_2' => 50, 'league_3' => 25, 'cup_1' => 60, 'cup_2' => 30],
-        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5],
+            // The big season prizes go to the champions alone: the league's and the cup's [X14].
+            'league_1' => 300, 'cup_1' => 200],
+        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
+            'bribe' => 40, 'security_check' => 10, 'double_agent' => 15],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
@@ -298,15 +356,46 @@ return [
     ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    // The integrity system [X28], where the owner switched it on: a bribe of bribe_cost_bp of the league's money scale
+    // (and the coins of premium.price.bribe), caught by the VAR var_bp of the time (lost, and var_morale off); a
+    // lawyer of lawyer_stars or a security check shows the spies, and a spy is turned for double_agent's price; the
+    // FA confiscates fine_bp of the money, bans from the market for market_ban_hours, takes `points`, and the scandal
+    // takes scandal_morale off and scandal_attendance_bp of the next home crowd; the headline shows headline_hours.
+    'integrity' => ['bribe_cost_bp' => 40, 'var_bp' => 2000, 'var_morale' => 10, 'lawyer_stars' => 4,
+        'security_check_cost_bp' => 8, 'double_agent_cost_bp' => 10, 'fine_bp' => 3000, 'market_ban_hours' => 24, 'points' => 3,
+        'scandal_morale' => 15, 'scandal_attendance_bp' => 2500, 'headline_hours' => 24],
+    // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
+    // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
+    // clash_minutes of another match of its clubs.
+    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [2, 7], 'default_size' => 5],
+    // A round in two time slots [X31]: the league's gap to the second slot (min..max minutes; dev_minutes in a
+    // development league), and the reminder to each coach remind_minutes before the round's one lock.
+    'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
+    // The live draw [X26]: one slot revealed this often on every screen.
+    'draw' => ['reveal_ms' => 2500],
+    // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
+    // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
+    // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
+    'morale' => ['start' => 70, 'min' => 20, 'max' => 100, 'win' => 6, 'draw' => -2, 'loss' => -6, 'winless_extra' => 2,
+        'crowd' => 3, 'ticket' => 2, 'tickets_max' => 6, 'ticket_cost_bp' => 5],
     'specialists' => ['contract_days' => 7,
-        'cost_bp' => ['doctor' => 20, 'lawyer' => 15, 'keeper_coach' => 20, 'physio' => 20],
-        'doctor_countdown' => 2,        // each match counts injuries down by this many
-        'lawyer_cancel_bp' => 5000,     // the share of new red-card bans the lawyer cancels
-        'keeper_coach_boost' => 2,      // on the keeper's rating and attributes
-        'physio_rest_bonus' => 15],     // fitness on top of rest_recovery for a player who rests
+        // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
+        // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect
+        // grows with the stars. A contract can be renewed in its last renew_hours (the new one starts when it ends);
+        // one that ends unrenewed is a resignation, and the coach is told.
+        'cost_bp' => ['mental_coach' => 15, 'doctor' => 20, 'lawyer' => 15, 'physio' => 20, 'keeper_coach' => 20, 'def_coach' => 15, 'mid_coach' => 15, 'att_coach' => 15],
+        'stars_cost_bp' => [1 => 5000, 2 => 7500, 3 => 10000, 4 => 14000, 5 => 20000],
+        'renew_hours' => 24,
+        'doctor_countdown' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],         // each match counts injuries down by this many
+        'lawyer_cancel_bp' => [1 => 2000, 2 => 3500, 3 => 5000, 4 => 6500, 5 => 8000],   // the share of new red-card bans cancelled
+        'keeper_coach_boost' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],       // on the keeper's rating and attributes in a match
+        'physio_rest_bonus' => [1 => 5, 2 => 10, 3 => 15, 4 => 20, 5 => 25],     // fitness on top of rest_recovery for a player who rests
+        'mental_coach_boost' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5],    // morale back after a draw or a defeat [X25]
+        'coach_training_bp' => [1 => 1000, 2 => 2000, 3 => 3000, 4 => 4500, 5 => 6000]],  // faster training for the coach's line
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).
     'spy' => ['cost_bp' => 15],
-    // The scout [docs/features/scout.md]: a share of the league's money scale, a day scaled by the season's length.
-    'scout' => ['cost_bp' => 30, 'hours' => 24],
+    // The scout [docs/features/scout.md, X15]: a share of the league's money scale, a 15-hour trip scaled by the
+    // season's length, and five players that match every criterion (the position, the age, the rating, the price).
+    'scout' => ['cost_bp' => 30, 'hours' => 15, 'results' => 5],
 ];

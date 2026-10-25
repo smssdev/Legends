@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\Models\League;
 use App\Models\User;
+use App\Season\Career;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,8 +53,8 @@ class HonoursController extends Controller
                 'club_objectives.target', 'club_objectives.kind', 'club_objectives.result', 'club_objectives.achieved']);
 
         return response()->json([
-            'coach' => ['id' => $user->id, 'name' => $user->name],
-            'record' => $this->record($user->id),
+            'coach' => ['id' => $user->id, 'name' => $user->name, 'official' => Username::official($user->username)],
+            'record' => Career::record($user->id),
             'titles' => $titles->map(fn ($t) => ['league' => $t->league, 'season' => (int) $t->number, 'competition' => $t->competition,
                 'position' => (int) $t->position, 'club' => $t->club])->all(),
             'objectives' => [
@@ -61,24 +63,5 @@ class HonoursController extends Controller
                     'competition' => $o->competition, 'target' => $o->target, 'kind' => $o->kind, 'result' => $o->result, 'achieved' => (bool) $o->achieved])->all(),
             ],
         ]);
-    }
-
-    /** Seasons, matches won, drawn and lost with the clubs he coached, from his memberships. */
-    private function record(int $userId): array
-    {
-        $out = ['seasons' => 0, 'played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0];
-        foreach (DB::table('league_memberships')->where('user_id', $userId)->whereNotNull('club_id')->get() as $m) {
-            $out['seasons']++;
-            $fixtures = DB::table('fixtures')->where('season_id', $m->season_id)->where('status', 'finished')->where('is_bye', false)
-                ->where('scheduled_at', '>=', $m->joined_at)->when($m->left_at, fn ($q) => $q->where('scheduled_at', '<', $m->left_at))
-                ->where(fn ($q) => $q->where('home_id', $m->club_id)->orWhere('away_id', $m->club_id))->get();
-            foreach ($fixtures as $f) {
-                [$for, $against] = $f->home_id === $m->club_id ? [$f->home_goals, $f->away_goals] : [$f->away_goals, $f->home_goals];
-                $out['played']++;
-                $out[$for > $against ? 'won' : ($for < $against ? 'lost' : 'drawn')]++;
-            }
-        }
-
-        return $out;
     }
 }

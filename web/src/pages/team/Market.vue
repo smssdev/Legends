@@ -2,16 +2,21 @@
 // The market (Sprint 24 W1), after the drafts WebMarket and MobileMarket: the pool and the bot clubs as tabs,
 // filters, the players with their value and price, and my players to sell: at once for a fee, at their value, or
 // at my own price up to their cap for a buyer from outside [X6]. Prices, caps and waits come from the API.
+import { useGlossary } from '../../lib/glossary'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import PlayerTile from '../../components/ui/PlayerTile.vue'
 import Trades from './Trades.vue'
 import { currentLeague } from '../../lib/currentLeague'
 import { money, type Line } from '../../lib/format'
 
 type Market = components['schemas']['Market']
+// The "?" texts [X19].
+const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const m = ref<Market | null>(null)
 const loaded = ref(false)
@@ -25,6 +30,12 @@ const line = ref<'' | Line>('')
 const bot = ref<number | ''>('')
 const maxPrice = ref<number | ''>('')
 const q = ref('')
+// The list or the cards, remembered on this device [X29].
+const view = ref<'list' | 'cards'>((() => { try { return localStorage.getItem('legends.marketView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
+function setView(v: 'list' | 'cards') {
+  view.value = v
+  try { localStorage.setItem('legends.marketView', v) } catch {}
+}
 
 const tabs = computed(() => [
   { id: 'pool' as const, label: 'المجموعة', n: m.value?.counts.pool ?? 0 },
@@ -134,14 +145,14 @@ onMounted(load)
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-center gap-3">
       <div class="flex-[1_1_240px]">
-        <h1 class="font-display text-3xl font-extrabold">السوق</h1>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">السوق</h1><HelpTip :text="g.pool" label="مجموعة السوق" /></span>
         <p class="mt-1 text-sm text-text-muted">
           <template v-if="m?.closed">{{ m.closed }}</template>
           <template v-else-if="m">مفتوح حتى الجولة {{ m.open_until_round }} · لاعبون جدد في المجموعة كل 4 ساعات، من كل الدوريات وبقوة دوريك</template>
         </p>
       </div>
       <RouterLink :to="{ name: 'scout' }" class="flex h-11 items-center gap-2 rounded-lg bg-gold/15 px-4 text-sm font-bold">اطلب تقرير الكشاف</RouterLink>
-      <span v-if="m" class="flex h-11 items-center gap-2 rounded-lg bg-surface px-4 text-sm"><span class="text-text-muted">أموال النادي</span><b class="font-numbers text-lg" :class="m.balance < 0 ? 'text-warning' : ''" dir="ltr">{{ money(Math.abs(m.balance)) }}</b></span>
+      <span v-if="m" class="money-box flex h-11 items-center gap-2 px-4 text-sm"><span class="text-text-muted">أموال النادي</span><b class="font-numbers text-lg" :class="m.balance < 0 ? 'text-warning' : ''" dir="ltr">{{ money(Math.abs(m.balance)) }}</b></span>
     </header>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
@@ -171,21 +182,30 @@ onMounted(load)
           </label>
           <input v-model="q" type="search" placeholder="ابحث بالاسم" aria-label="ابحث بالاسم" class="h-11 min-w-0 flex-[1_1_160px] rounded-lg bg-surface px-3 text-sm" />
           <span class="text-xs text-text-muted md:ms-auto">{{ tab === 'pool' ? 'سعر المجموعة = القيمة' : 'سعر ثابت 125% من القيمة · نفس السعر لكل المدربين' }}</span>
+          <div class="flex gap-1 rounded-lg bg-surface p-1" role="group" aria-label="طريقة العرض">
+            <button v-for="(label, v) in { list: 'قائمة', cards: 'بطاقات' }" :key="v" type="button" class="h-9 rounded-md px-3 text-sm font-bold" :class="view === v ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="setView(v)">{{ label }}</button>
+          </div>
         </div>
 
         <section :aria-label="tab === 'pool' ? 'لاعبو المجموعة' : 'لاعبو أندية الحاسوب'" class="rounded-xl bg-surface p-2">
           <p v-if="!m.players.length" class="p-4 text-sm text-text-muted">لا لاعبين بهذه التصفية.</p>
-          <ul class="flex flex-col">
-            <li v-for="p in m.players" :key="p.id" class="flex items-center gap-3 border-t border-text/5 px-2 py-2 first:border-0">
+          <div v-if="view === 'cards'" class="grid grid-cols-2 gap-3 p-1 sm:grid-cols-3 lg:grid-cols-4">
+            <PlayerTile v-for="p in m.players" :key="p.id" :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :price="p.price"
+              :attributes="p.attributes" :status="p.club ? `${p.club.name} · بوت` : `${p.age} سنة`" status-tone="text-text-muted">
+              <button type="button" class="h-10 rounded-md bg-brand font-bold disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
+            </PlayerTile>
+          </div>
+          <ul v-else class="flex flex-col">
+            <li v-for="p in m.players" :key="p.id" class="flex items-center gap-2 border-t sm:gap-3 border-text/5 px-2 py-2 first:border-0">
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">
-                <b class="block truncate" dir="auto">{{ p.name }}</b>
-                <span class="text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة<template v-if="p.club"> · {{ p.club.name }} · بوت</template></span>
+                <b class="block truncate"><bdi>{{ p.name }}</bdi></b>
+                <span class="block text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة<template v-if="p.club"> · {{ p.club.name }} · بوت</template></span>
               </span>
-              <span class="w-10 text-center font-numbers text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
+              <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
               <span class="hidden w-20 text-end font-numbers text-text-muted sm:block" dir="ltr">{{ money(p.value) }}</span>
-              <span class="w-20 text-end font-numbers text-lg font-bold" dir="ltr">{{ money(p.price) }}</span>
-              <button type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
+              <span class="w-14 text-end font-numbers text-base font-bold sm:w-20 sm:text-lg" dir="ltr">{{ money(p.price) }}</span>
+              <button type="button" class="h-touch min-w-14 rounded-md bg-brand px-2 font-bold sm:min-w-20 sm:px-3 disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
             </li>
           </ul>
         </section>
@@ -212,12 +232,13 @@ onMounted(load)
                 <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy !== null" @click="unlist(p)">اسحبه من البيع</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span><b>بيع فوري</b>: تحصل الآن على <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> مقابل {{ fee(p) }}.</span>
+                <span class="inline-flex flex-wrap items-center"><b>بيع فوري</b><HelpTip :text="g.quick_sale" label="البيع الفوري" /></span><span>: تحصل الآن على <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> مقابل {{ fee(p) }}.</span>
                 <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : 'بع الآن' }}</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span><b>بقيمته</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> بلا رسوم، ويُباع خلال {{ hours(p.wait_hours.value) }}.</span>
                 <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">اعرضه بقيمته</button>
+                <HelpTip :text="g.listing" label="العرض في السوق" />
               </div>
               <form class="flex flex-wrap items-end gap-2" @submit.prevent="price && listAt(p, Number(price))">
                 <label class="flex flex-col gap-1"><b>بسعرك</b> <span class="text-xs text-text-muted">من {{ money(p.floor) }} إلى {{ money(p.cap) }}</span>

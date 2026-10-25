@@ -60,10 +60,18 @@ export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null;
 
 const BASE = import.meta.env.BASE_URL + 'commentary/'
 
-/** The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the five full voices by number only. */
-export const AR_VOICES = ['', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5'] as const
+/**
+ * The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the six full voices. The sixth
+ * (hafid) is the default [X9]. Shown by their commentators' names, at the owner's decision (2026-10-25, PLAN 11).
+ */
+export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
 export type ArVoice = (typeof AR_VOICES)[number]
-export const arVoiceName = (v: ArVoice) => (v ? 'صوت ' + v.slice(6) : 'الأساسي')
+export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
+// In the order of tools/commentary/arabic_voice.py's VOICES (voice-1 is ali ... voice-6 is hafid).
+const AR_NAMES: Record<ArVoice, string> = {
+  'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', base: 'الأساسي',
+}
+export const arVoiceName = (v: ArVoice) => AR_NAMES[v] + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : '')
 const GAP = 0.07
 
 export class Commentator {
@@ -73,7 +81,7 @@ export class Commentator {
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
   private wanted: string[] = []
-  private arPack = 'ar/phrases'
+  private arPack = 'ar/voice-6/phrases'
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
   private queue: Line[] = []
@@ -114,7 +122,7 @@ export class Commentator {
 
   /** Which recorded Arabic voice says the Arabic lines. */
   setArVoice(v: ArVoice) {
-    this.arPack = v ? `ar/${v}/phrases` : 'ar/phrases'
+    this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
     if (this.ctx && this.on) this.pack(this.arPack)
   }
 

@@ -42,9 +42,8 @@ RUN composer dump-autoload --optimize --no-dev \
  && sed -i 's/^APP_ENV=.*/APP_ENV=demo/; s/^APP_DEBUG=.*/APP_DEBUG=false/; s/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env \
  && echo "SIMULATOR_ENABLED=true" >> .env \
  && php artisan key:generate --force \
- && php artisan migrate --force \
- && php artisan data:import \
  && chown -R www-data:www-data storage database bootstrap/cache
+
 # The start script: the public address, sign-in, Gmail and Google from the host's run-time variables, the
 # configuration cached then (not here, before they are known), and the queue, scheduler and live matches.
 COPY deploy/render/start.sh /app/start.sh

@@ -125,6 +125,16 @@ class SeasonScheduler
     }
 
     /** Make (or make again, before the start) the season's fixtures, cup bracket and windows. */
+    /** Minutes from the round's time to its second slot, or 0 for a league that plays each round at once [X31]. */
+    public static function secondSlot(League $league): int
+    {
+        if (! $league->second_slot_minutes) {
+            return 0;
+        }
+
+        return $league->is_dev ? (int) config('game.staggered.dev_minutes') : (int) $league->second_slot_minutes;
+    }
+
     public static function build(League $league, Season $season): void
     {
         DB::transaction(function () use ($league, $season) {
@@ -132,6 +142,8 @@ class SeasonScheduler
                 DB::table($table)->where('season_id', $season->id)->delete();
             }
             $clubs = DB::table('clubs')->where('league_id', $league->id)->orderByDesc('strength_snapshot')->orderBy('id')->pluck('id')->all();
+            // After a live draw, its slots [X26].
+            $clubs = LiveDraw::slots($league, $season, $clubs);
             $days = self::plan(count($clubs), $league->rounds_per_day);
             $cal = self::calendar($days, CarbonImmutable::parse($season->starts_at), $league->prep_days, $league->round_times, $league->is_dev);
             $now = GameClock::now();
@@ -149,15 +161,25 @@ class SeasonScheduler
                     $cupTimes[$d['stage']] = $cal['slots'][$i][0];
                 }
             }
+            // A round in two time slots [X31]: half its matches after the league's gap, every match of the round locked
+            // together before the first slot, and the slots shared out fairly (Staggered).
+            $gap = self::secondSlot($league);
+            $strength = DB::table('clubs')->where('league_id', $league->id)->pluck('strength_snapshot', 'id')->map(fn ($v) => (int) $v)->all();
+            $slots = $gap ? Staggered::split(array_column($rounds, 'matches'), $strength) : [];
+            $lock = (int) config('game.match.lock_minutes_before');
             $rows = [];
             foreach ($rounds as $r => $round) {
-                foreach ($round['matches'] as [$home, $away]) {
-                    $rows[] = ['season_id' => $season->id, 'competition' => 'league', 'round' => $r + 1, 'scheduled_at' => $leagueTimes[$r + 1],
-                        'home_id' => $home, 'away_id' => $away, 'is_bye' => false, 'created_at' => $now, 'updated_at' => $now];
+                foreach ($round['matches'] as $i => [$home, $away]) {
+                    $slot = $slots[$r][$i] ?? 1;
+                    $at = $slot === 2 ? $leagueTimes[$r + 1]->addMinutes($gap) : $leagueTimes[$r + 1];
+                    $rows[] = ['season_id' => $season->id, 'competition' => 'league', 'round' => $r + 1, 'scheduled_at' => $at,
+                        'home_id' => $home, 'away_id' => $away, 'is_bye' => false, 'created_at' => $now, 'updated_at' => $now,
+                        'slot' => $slot, 'lock_at' => $gap ? $leagueTimes[$r + 1]->subMinutes($lock) : null];
                 }
                 if ($round['rest'] !== null) {
                     $rows[] = ['season_id' => $season->id, 'competition' => 'league', 'round' => $r + 1, 'scheduled_at' => $leagueTimes[$r + 1],
-                        'home_id' => $round['rest'], 'away_id' => null, 'is_bye' => true, 'created_at' => $now, 'updated_at' => $now];
+                        'home_id' => $round['rest'], 'away_id' => null, 'is_bye' => true, 'created_at' => $now, 'updated_at' => $now,
+                        'slot' => 1, 'lock_at' => null];
                 }
             }
             foreach (array_chunk($rows, 200) as $chunk) {
@@ -167,7 +189,7 @@ class SeasonScheduler
             // Cup: the drawn bracket, each tie with its fixture on its stage's day (teams filled as they win).
             $stages = CupBracket::stages(count($clubs));
             $ids = [];
-            foreach (CupBracket::draw($clubs, crc32('cup:'.$season->id)) as $tie) {
+            foreach (CupBracket::draw($clubs, LiveDraw::cupSeed($league, $season)) as $tie) {
                 $stage = array_search($tie['stage'], $stages, true);
                 $fixture = DB::table('fixtures')->insertGetId(['season_id' => $season->id, 'competition' => 'cup', 'round' => $stage + 1,
                     'scheduled_at' => $cupTimes[$stage], 'home_id' => $tie['home'], 'away_id' => $tie['away'], 'created_at' => $now, 'updated_at' => $now]);

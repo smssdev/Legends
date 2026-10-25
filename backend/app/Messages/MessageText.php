@@ -8,13 +8,17 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
     private const SECTION = ['seats' => 'التذاكر والمقاعد', 'pitch' => 'أرضية الملعب', 'training' => 'منشأة التدريب'];
 
     private const RESULT = ['win' => 'فزت', 'draw' => 'تعادلت', 'loss' => 'خسرت'];
+
+    /** The staff's names [X20]. */
+    public const STAFF = ['att_coach' => 'مدرب الهجوم', 'mid_coach' => 'مدرب الوسط', 'def_coach' => 'مدرب الدفاع', 'keeper_coach' => 'مدرب الحراس',
+        'physio' => 'المعالج البدني', 'doctor' => 'طبيب النادي', 'lawyer' => 'محامي النادي', 'mental_coach' => 'المعد النفسي'];
 
     /** An offer in a sentence: who, for whom, with what. */
     private static function offer(string $type, array $p): string
@@ -147,6 +151,25 @@ class MessageText
                 'title' => 'بِيع '.($p['player'] ?? 'لاعبك'),
                 'body' => sprintf('اشترى نادٍ من خارج الدوري %s بالسعر الذي طلبته: %s. المبلغ في رصيد ناديك.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))),
                 'link' => '/finance',
+            ],
+            // A staff contract ended without a renewal [X20].
+            // The night's big match of a round in two slots [X31].
+            'match_of_day' => [
+                'title' => 'قمة الجولة الليلة',
+                'body' => sprintf('الليلة في سهرة %s: قمة الجولة بين %s و%s. احجز تذكرتك وشاهد اللقاء مباشرة!', $league, $p['home'] ?? '', $p['away'] ?? ''),
+                'link' => '/match',
+            ],
+            'staff_left' => [
+                'title' => 'استقال '.(self::STAFF[$p['type'] ?? ''] ?? 'أحد الطاقم'),
+                'body' => sprintf('انتهى عقد %s (%d نجوم) ولم يُجدَّد، فغادر النادي. يمكنك التعاقد مع غيره من صفحة الطاقم.', self::STAFF[$p['type'] ?? ''] ?? 'الأخصائي', (int) ($p['stars'] ?? 0)),
+                'link' => '/specialists',
+            ],
+            // From the game's developers, with the official badge [X11].
+            'announcement' => [
+                'title' => (string) ($p['title'] ?? 'إعلان من فريق الأساطير'),
+                'body' => (string) ($p['body'] ?? ''),
+                'link' => null,
+                'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

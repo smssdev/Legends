@@ -72,8 +72,9 @@ class EconomyTest extends TestCase
         $this->assertLessThan(0, $away['wages']);
         $this->assertArrayNotHasKey('tickets', $away);
         $this->assertArrayNotHasKey('win_bonus', $away);
-        // The away side only paid; the home side's balance moved by exactly its rows.
-        $this->assertSame((int) $before[$f->away_id] + $away['wages'], (int) DB::table('clubs')->where('id', $f->away_id)->value('balance'));
+        // The loser pays the loss deduction [X14]; the away side only paid; the home side's balance moved by exactly its rows.
+        $this->assertLessThan(0, $away['loss_penalty']);
+        $this->assertSame((int) $before[$f->away_id] + $away['wages'] + $away['loss_penalty'], (int) DB::table('clubs')->where('id', $f->away_id)->value('balance'));
         $this->assertBooksBalance();
         // Unchosen sectors signed the steady sponsor.
         $this->assertSame(['steady'], DB::table('sponsor_contracts')->where('club_id', $f->home_id)->distinct()->pluck('offer')->all());
@@ -181,5 +182,15 @@ class EconomyTest extends TestCase
         $this->assertEqualsWithDelta($m->homeMatch($scale, 38), $full, 30_000);
         $this->assertSame(6000, $m->attendance(10, 10, 90));
         $this->assertSame(10000, $m->attendance(90, 10, 90));
+    }
+
+    /** [X14] A win pays the most, a draw less, and a loss takes money away: all from config. */
+    public function test_the_result_money_from_a_win_down_to_a_loss(): void
+    {
+        $money = new Money(config('game.economy'));
+        $scale = 10_000_000;
+        $this->assertSame(8_000, $money->resultBonus($scale, 2, 1));
+        $this->assertSame(3_000, $money->resultBonus($scale, 1, 1));
+        $this->assertSame(-2_000, $money->resultBonus($scale, 0, 3));
     }
 }

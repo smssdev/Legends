@@ -24,6 +24,10 @@ export const router = createRouter({
         { path: 'wallet', name: 'wallet', component: () => import('./pages/WalletPage.vue'), meta: { auth: true } },
         // Sprint 33: a coach's profile
         { path: 'coaches/:id(\\d+)', name: 'coach', component: () => import('./pages/leagues/CoachProfile.vue'), props: true, meta: { auth: true } },
+        // [X27] The alliance tournament
+        { path: 'leagues/:id(\\d+)/alliance', name: 'league-alliance', component: () => import('./pages/leagues/AlliancePage.vue'), props: true, meta: { auth: true } },
+        // [X26] The live draw
+        { path: 'leagues/:id(\\d+)/draw', name: 'league-draw', component: () => import('./pages/leagues/DrawPage.vue'), props: true, meta: { auth: true } },
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
         // Sprint 16: my club in the current league
         { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true } },
@@ -43,11 +47,13 @@ export const router = createRouter({
         { path: 'market', name: 'market', component: () => import('./pages/team/Market.vue'), meta: { auth: true } },
         // Sprint 23: the club's money
         { path: 'finance', name: 'finance', component: () => import('./pages/team/Finance.vue'), meta: { auth: true } },
+        { path: 'stats', name: 'stats', component: () => import('./pages/team/StatsPage.vue'), meta: { auth: true } },
         // Sprint 22: the inbox
         { path: 'inbox', name: 'inbox', component: () => import('./pages/Inbox.vue'), meta: { auth: true } },
         { path: 'join/:code?', name: 'join', component: () => import('./pages/leagues/JoinLeague.vue'), meta: { auth: true } },
         // Sprint 11: the component library on a real club
         { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },
+        { path: 'dev/status', name: 'dev-status', component: () => import('./pages/DevStatus.vue') },
       ],
     },
     // Signing in (Sprint 10), outside the navigation

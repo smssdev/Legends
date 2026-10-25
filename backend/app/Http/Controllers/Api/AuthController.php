@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
+use App\Auth\OfficialAccounts;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\Leaving;
@@ -13,6 +14,7 @@ use App\Models\User;
 use App\Support\Activity;
 use App\Support\Avatar;
 use App\Support\GameClock;
+use App\Support\Mailer;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
@@ -50,9 +53,10 @@ class AuthController extends Controller
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
         $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => $data['email'], 'password' => $data['password']]);
-        $user->sendEmailVerificationNotification();
+        // The account is made even if the email cannot leave now: the banner in the app sends it again [X8].
+        $sent = Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id);
 
-        return response()->json($this->signIn($request, $user, $data['device_name'] ?? null), 201);
+        return response()->json($this->signIn($request, $user, $data['device_name'] ?? null) + ['verification_sent' => $sent && Mailer::live()], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -83,28 +87,40 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()->toAccount()]);
     }
 
-    /** The name and the username [X4]; either may be sent alone. */
+    /** The name and the username [X4], the commentator [X9] and the simulator [X10]; any of them may be sent alone. */
     public function update(Request $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validate([
-            'name' => ['required_without:username', 'string', 'min:2', 'max:40'],
-            'username' => ['required_without:name', 'string', Username::RULE, $this->usernameFree($user->id)],
+            'name' => ['required_without_all:username,commentator,match_view', 'string', 'min:2', 'max:40'],
+            'username' => ['sometimes', 'string', Username::RULE, $this->usernameFree($user->id)],
+            'commentator' => ['sometimes', 'string', Rule::in(config('game.viewing.commentators'))],
+            'match_view' => ['sometimes', 'string', Rule::in(config('game.viewing.match_views'))],
         ]);
         $user->update(array_filter(['name' => isset($data['name']) ? trim($data['name']) : null,
-            'username' => isset($data['username']) ? strtolower($data['username']) : null]));
+            'username' => isset($data['username']) ? strtolower($data['username']) : null,
+            'commentator' => $data['commentator'] ?? null, 'match_view' => $data['match_view'] ?? null]));
 
         return response()->json(['user' => $user->toAccount()]);
     }
 
-    /** A username nobody else has, whatever its case. */
+    /** A username nobody else has, whatever its case, and not one of the staff's words [X11]. */
     private function usernameFree(?int $except = null): \Closure
     {
         return function (string $attribute, mixed $value, \Closure $fail) use ($except) {
-            if (is_string($value) && Username::taken($value, $except)) {
-                $fail('اسم المستخدم مأخوذ، اختر غيره.');
+            if (is_string($value) && ($why = Username::refusal($value, $except)) !== null) {
+                $fail($why);
             }
         };
+    }
+
+    /** Is this username free? With three free ones near it when it is not [X11]. */
+    public function usernameCheck(Request $request): JsonResponse
+    {
+        $name = (string) $request->validate(['u' => ['required', 'string', 'max:40']])['u'];
+        $why = preg_match('/^[A-Za-z][A-Za-z0-9]{2,19}$/', $name) ? Username::refusal($name, $request->user()?->id) : __('validation.custom.username.regex');
+
+        return response()->json(['available' => $why === null, 'reason' => $why, 'suggestions' => $why === null ? [] : Username::suggestions($name)]);
     }
 
     /** The account's picture [X4]: any image up to game.account.avatar_max_kb, cut to a square and kept as a small JPEG. */
@@ -173,6 +189,8 @@ class AuthController extends Controller
     public function destroy(Request $request): JsonResponse
     {
         $user = $request->user();
+        // The second confirmation [X12]: the word typed, on top of the password (or the email).
+        $request->validate(['phrase' => ['required', 'string', 'in:احذف']], ['phrase.in' => 'اكتب كلمة «احذف» كما هي.', 'phrase.required' => 'اكتب كلمة «احذف» للتأكيد.']);
         if ($user->hasPassword()) {
             $request->validate(['password' => ['required', 'string']]);
             if (! Hash::check($request->input('password'), $user->password)) {
@@ -208,7 +226,14 @@ class AuthController extends Controller
     {
         $user = $request->user();
         abort_if($user->hasVerifiedEmail(), 409, 'بريدك مؤكد من قبل.');
-        $user->sendEmailVerificationNotification();
+        // In production with no way out (no Brevo, Resend or Gmail settings) say so, rather than pretend it was sent [X8].
+        // A developer's own address (OfficialAccounts) is told exactly why and how to fix it: the admin panel's
+        // mail test needs the confirmed account this very email would make.
+        $developer = OfficialAccounts::nameFor($user->email) !== null;
+        $why = fn (string $base) => $developer ? $base.' السبب: '.(Mailer::$lastError ? substr(Mailer::$lastError, 0, 300).' الحل: '.Mailer::explain(Mailer::$lastError) : implode(' ', Mailer::setup()['problems'])) : $base;
+        abort_if(app()->isProduction() && ! Mailer::live(), 503, $why('إرسال البريد غير مفعّل على الخادم بعد. تواصل مع الدعم ليفعّله.'));
+        abort_unless(Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id), 503,
+            $why('تعذر إرسال الرسالة الآن. حاول بعد دقائق، أو تواصل مع الدعم.'));
 
         return response()->json(['sent' => true], 202);
     }
@@ -217,7 +242,7 @@ class AuthController extends Controller
     public function forgot(Request $request): JsonResponse
     {
         $data = $request->validate(['email' => ['required', 'email']]);
-        Password::broker()->sendResetLink(['email' => Str::lower($data['email'])]);
+        Mailer::attempt(fn () => Password::broker()->sendResetLink(['email' => Str::lower($data['email'])]), 'reset');
 
         return response()->json(['message' => 'إن كان البريد مسجلاً عندنا فستصلك رسالة فيها رابط لاختيار كلمة مرور جديدة.'], 202);
     }
@@ -292,6 +317,8 @@ class AuthController extends Controller
     /** Signs the user in: a session for the web, or a token for the app when it names its device. */
     private function signIn(Request $request, User $user, ?string $device = null): array
     {
+        // A developer's confirmed Gmail takes its reserved name and the admin panel [X11].
+        OfficialAccounts::claim($user);
         Activity::record($user->id, 'logins');
         if ($device !== null) {
             $expires = GameClock::now()->addDays((int) config('game.app.token_ttl_days'));

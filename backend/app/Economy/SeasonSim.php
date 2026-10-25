@@ -29,7 +29,7 @@ class SeasonSim
         $book = [];
         foreach ($clubs as $id => $c) {
             rsort($clubs[$id]['players']);
-            $book[$id] = ['balance' => $budget, 'low' => $budget, 'debt' => 0, 'sold' => 0, 'bought' => 0, 'pts' => 0, 'gd' => 0, 'income' => 0, 'wages' => 0];
+            $book[$id] = ['balance' => $budget, 'low' => $budget, 'debt' => 0, 'sold' => 0, 'bought' => 0, 'pts' => 0, 'gd' => 0, 'income' => 0, 'wages' => 0, 'penalties' => 0];
         }
         $spender = $scenario['spender'] ?? null;
         $colluders = $scenario['colluders'] ?? null;
@@ -72,7 +72,8 @@ class SeasonSim
                     // Training: every coach keeps his four slots busy all season [PLAN 2.8, Sprint 27].
                     $wages += intdiv($scale * (int) ($this->cfg['training_bp'] ?? 0), 10000 * $nRounds);
                     $book[$id]['balance'] += $bonus - $wages;
-                    $book[$id]['income'] += $bonus;
+                    $book[$id]['income'] += max(0, $bonus);
+                    $book[$id]['penalties'] += max(0, -$bonus);   // the loss deduction [X14]
                     $book[$id]['wages'] += $wages;
                     $book[$id]['pts'] += $for > $against ? 3 : ($for === $against ? 1 : 0);
                     $book[$id]['gd'] += $for - $against;

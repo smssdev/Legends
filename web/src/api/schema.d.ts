@@ -28,7 +28,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         name: string;
-                        /** @description English letters only, unique whatever the case, kept in lower case */
+                        /** @description English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username) */
                         username: string;
                         /** Format: email */
                         email: string;
@@ -349,7 +349,7 @@ export interface paths {
         post?: never;
         /**
          * Delete the account
-         * @description Asks for the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
+         * @description Asks twice [X12], the word احذف in phrase and the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
          */
         delete: {
             parameters: {
@@ -364,6 +364,11 @@ export interface paths {
                         password?: string;
                         /** @description The email of an account without a password */
                         confirm?: string;
+                        /**
+                         * @description The second confirmation [X12]: the word typed as it is
+                         * @enum {string}
+                         */
+                        phrase?: "احذف";
                     };
                 };
             };
@@ -381,7 +386,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Change the name or the username */
+        /** Change the name, the username, the commentator or the simulator */
         patch: {
             parameters: {
                 query?: never;
@@ -394,6 +399,10 @@ export interface paths {
                     "application/json": {
                         name?: string;
                         username?: string;
+                        /** @enum {string} */
+                        commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                        /** @enum {string} */
+                        match_view?: "cartoon" | "unity";
                     };
                 };
             };
@@ -591,6 +600,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/username": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is this username free? With three free ones near it when not (30 a minute) [X11] */
+        get: {
+            parameters: {
+                query: {
+                    u: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The answer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            available: boolean;
+                            /** @description Why not */
+                            reason: string | null;
+                            suggestions: string[];
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/email/resend": {
         parameters: {
             query?: never;
@@ -619,8 +672,49 @@ export interface paths {
                 };
                 401: components["responses"]["Error"];
                 409: components["responses"]["Error"];
+                503: components["responses"]["Error"];
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/data/glossary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The game's terms explained in Arabic, for the "?" beside each [X19] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The terms */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            terms: {
+                                [key: string]: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -903,6 +997,13 @@ export interface paths {
                                 /** @example ping */
                                 event?: string;
                             };
+                            /** @description The support buttons [X13]: a link per channel, null when not set */
+                            support?: {
+                                /** @example https://wa.me/201000000000?text=... */
+                                whatsapp: string | null;
+                                /** @example https://t.me/legends_support */
+                                telegram: string | null;
+                            };
                         };
                     };
                 };
@@ -1036,6 +1137,13 @@ export interface paths {
                          * @default false
                          */
                         fair_league?: boolean;
+                        /**
+                         * @description Bribes, spies and the FA [X28]
+                         * @default false
+                         */
+                        integrity?: boolean;
+                        /** @description Each round in two slots: half its matches this long after the round time [X31] */
+                        second_slot_minutes?: number | null;
                         /** @description Development league; ignored in production */
                         is_dev?: boolean;
                         /** @description The owner's club */
@@ -1157,6 +1265,8 @@ export interface paths {
                         /** Format: date-time */
                         starts_at?: string;
                         fair_league?: boolean;
+                        integrity?: boolean;
+                        second_slot_minutes?: number | null;
                     };
                 };
             };
@@ -1167,6 +1277,66 @@ export interface paths {
                 422: components["responses"]["ValidationError"];
             };
         };
+        trace?: never;
+    };
+    "/leagues/{league}/draw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The live draw [X26]: the time and the hash before; the seed, the slots, the first league round and cup ties after
+         * @description The screen reveals one slot every `reveal_ms` from `drawn_at` on the server clock, the same for every member.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Draw"];
+                404: components["responses"]["Error"];
+            };
+        };
+        /** The owner sets or moves the draw's time (after now, before the start) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        draw_at: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Draw"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/leagues/{league}/start": {
@@ -1686,11 +1856,55 @@ export interface paths {
                                 points: number;
                                 /** @description Rests in the next round (odd team count) */
                                 rests_next: boolean;
+                                /** @description Points the FA took off [X28] */
+                                deducted?: number;
                             })[];
                         };
                     };
                 };
                 403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The statistics centre [X17]
+         * @description The season's table in detail, scorers and assists, cards of players and clubs, each club's buying and selling, the squads' value, and the runs of results. Members only; nothing hidden (no tactic).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The season's statistics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LeagueStats"];
+                    };
+                };
                 404: components["responses"]["Error"];
             };
         };
@@ -2057,6 +2271,475 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set my pre-match scenarios (up to one per kind) [X23]
+         * @description The whole list replaces the old one; 409 from the lock until the match ends.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        scenarios: components["schemas"]["Scenario"][];
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The integrity system for my club [X28]: my next match's bribe, the spies on me, my proofs, a market ban */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/bribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay the referee of my next match (club money and coins), until its lock */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Integrity"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/security": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A security check that shows the spies sent on me for this fixture */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Integrity"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/spies/{spy}/turn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                spy: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Turn a spy on me into a double agent (his report becomes a fake board) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    spy: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/spies/{spy}/accuse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                spy: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take my spy's proof of a bribe to the FA: a fine, a market ban, points off and a scandal */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    spy: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/alliance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The league's latest alliance tournament [X27]: its alliances, captains and rounds */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Alliance"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * The owner asks for an alliance tournament; it waits for the developers' approval
+         * @description Two captains by username (coaches of the league), 2 to 7 coaches a side (5 by default), the first round at least an hour ahead. The others are shared out at random.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        captain_a: string;
+                        captain_b: string;
+                        size: number;
+                        /** Format: date-time */
+                        first_round_at: string;
+                    };
+                };
+            };
+            responses: {
+                201: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/alliance/ties/{tie}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                tie: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A captain picks which of two of his coaches goes on (team-mates are not played) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    tie: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description A club id of the tie */
+                        winner: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The alliance tournaments waiting for the developers, then the latest [X27] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminAlliances"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve (its first round is drawn) or turn down a tournament */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        approve: boolean;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["AdminAlliances"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The other clubs' coming matches, to cheer one side with a ticket [X25] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Tickets"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * Buy a ticket and cheer one side (its morale for that match goes up)
+         * @description Club money; one per match, not for my own matches (422), until the lock (409).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                        /** @enum {string} */
+                        side: "home" | "away";
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Tickets"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2695,7 +3378,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Ask the scout (one search at a time) */
+        /** Ask the scout (one search at a time; a 15-hour trip, five players) [X15] */
         post: {
             parameters: {
                 query?: never;
@@ -2714,6 +3397,8 @@ export interface paths {
                         min_overall: number;
                         max_overall?: number;
                         max_age?: number;
+                        /** @description The highest price (the player value) [X15] */
+                        max_value?: number;
                         nationality?: string;
                         league?: string;
                         idempotency_key: string;
@@ -2791,7 +3476,9 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                        type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer" | "mental_coach";
+                        /** @description Default 3 [X20] */
+                        stars?: number;
                         idempotency_key: string;
                     };
                 };
@@ -3326,7 +4013,7 @@ export interface paths {
                                 /** @description Once it kicks off: watch it at GET /matches/{id} */
                                 match_id?: number | null;
                                 /** @enum {string} */
-                                competition: "league" | "cup";
+                                competition: "league" | "cup" | "alliance";
                                 round: number;
                                 /** @enum {string} */
                                 venue: "home" | "away";
@@ -3340,6 +4027,23 @@ export interface paths {
                                 lock_at: string;
                                 /** @enum {string|null} */
                                 referee?: "lenient" | "medium" | "strict" | null;
+                                /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
+                                morale: number;
+                                /**
+                                 * @description The round's first or second time slot [X31]
+                                 * @enum {integer}
+                                 */
+                                slot?: 1 | 2;
+                                /** @description The night's big match of the round [X31] */
+                                match_of_day?: boolean;
+                                /** @description My club, for the VS card [X29] */
+                                club: {
+                                    id: number;
+                                    name: string;
+                                    code: string;
+                                    strength_cp: number;
+                                    crest_url: string;
+                                };
                                 opponent: {
                                     id: number;
                                     name: string;
@@ -3483,9 +4187,10 @@ export interface paths {
                                 [key: string]: unknown;
                             }[];
                             readings: components["schemas"]["MatchReading"][];
-                            reactions?: {
-                                [key: string]: unknown;
-                            }[];
+                            /** @description The latest reactions [X24] */
+                            reactions?: components["schemas"]["BroadcastReaction"][];
+                            /** @description The side chat, the latest 50 [X24] */
+                            chat?: components["schemas"]["BroadcastChat"][];
                         };
                     };
                 };
@@ -3577,6 +4282,116 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/reactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A reaction on every viewer's screen [X24]
+         * @description An emoji (one each 1.2 s), or a boo or a cheer for one side (one each 30 s). Any member of the league, while live; 409 otherwise.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        key: "fire" | "clap" | "wow" | "laugh" | "angry" | "pray" | "unlucky" | "coming" | "easy" | "focus" | "boo" | "cheer";
+                        /**
+                         * @description For a boo or a cheer
+                         * @enum {string}
+                         */
+                        target?: "home" | "away";
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BroadcastReaction"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A message in the side chat between the league's viewers [X24]
+         * @description Up to 140 characters, one each 2 s; while live.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BroadcastChat"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -3745,7 +4560,7 @@ export interface paths {
                                 home: string;
                                 away: string;
                                 /** @enum {string} */
-                                competition: "league" | "cup";
+                                competition: "league" | "cup" | "alliance";
                             }[];
                         };
                     };
@@ -3943,6 +4758,13 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @description Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when */
+                            deploy: {
+                                /** @description Matches live or kicking off within 30 minutes */
+                                busy: number;
+                                /** Format: date-time */
+                                next_kickoff: string | null;
+                            };
                             users: number;
                             leagues: {
                                 total: number;
@@ -4115,6 +4937,187 @@ export interface paths {
                         "application/json": components["schemas"]["AdminBackups"];
                     };
                 };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/backups/{name}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One backup's game database (legends.sqlite) to keep off the server [X33] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    name: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The SQLite file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.sqlite3": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/official": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give a developer's account a reserved name (Owner-Hamza, Owner-Soliman) and its badge [X11] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        name: "Owner-Hamza" | "Owner-Soliman";
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mail-test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The email settings and a test email, with the exact error and its fix in Arabic [X8] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        to: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The result */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            mailer: string;
+                            from: string;
+                            /**
+                             * @description The kind of key set
+                             * @enum {string}
+                             */
+                            key: "none" | "api" | "smtp" | "other";
+                            problems: string[];
+                            sent: boolean;
+                            error: string | null;
+                            fix: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A message to every account from an official developer account, with the badge [X11] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
             };
         };
         delete?: never;
@@ -4546,6 +5549,90 @@ export interface paths {
                     };
                 };
                 403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The coach's home screen [X18]
+         * @description The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The home screen */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HomeScreen"];
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/rankings/coaches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The coaches' global ranking, top 50 and the coach's own place [X18] */
+        get: {
+            parameters: {
+                query?: {
+                    by?: "trophies" | "level";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ranking */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            by: "trophies" | "level";
+                            coaches: components["schemas"]["RankedCoach"][];
+                            me: components["schemas"]["RankedCoach"] | null;
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
             };
         };
         put?: never;
@@ -5064,7 +6151,7 @@ export interface paths {
                         away_id: number;
                         seed?: number;
                         /** @enum {string} */
-                        competition?: "league" | "cup";
+                        competition?: "league" | "cup" | "alliance";
                         /**
                          * @description 0 soft
                          * @enum {integer}
@@ -5754,6 +6841,10 @@ export interface components {
                     id?: number;
                     name?: string;
                 } | null;
+                /** @description The six attributes, or the keeper's five, for the card [X29] */
+                attributes?: {
+                    [key: string]: number | null;
+                };
             }[];
             mine: {
                 id: number;
@@ -5837,8 +6928,8 @@ export interface components {
         };
         Message: {
             id: number;
-            /** @enum {string} */
-            type: "referee" | "absence_warning" | "left_absent" | "kicked" | "join_request" | "join_approved" | "join_rejected" | "match_report";
+            /** @description One of App\\Messages\\MessageText::TYPES (referee, match_report, announcement...) */
+            type: string;
             league_id?: number | null;
             read: boolean;
             /** Format: date-time */
@@ -5847,6 +6938,12 @@ export interface components {
             body: string;
             /** @description A web path to open (the app maps it to its own screen) */
             link: string | null;
+            /** @description An announcement only: the developer who sent it, with the official badge [X11] */
+            sender?: {
+                name: string;
+                username: string;
+                official: boolean;
+            };
         };
         /** @description The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only */
         MatchReading: {
@@ -5877,7 +6974,23 @@ export interface components {
             /** Format: date-time */
             starts_at: string;
             starting_budget: number;
+            /**
+             * Format: date-time
+             * @description The live draw's time [X26]
+             */
+            draw_at?: string | null;
+            /** Format: date-time */
+            drawn_at?: string | null;
             fair_league: boolean;
+            /** @description The integrity system: bribes, spies and the FA [X28] */
+            integrity?: boolean;
+            /** @description Rounds in two slots [X31] */
+            second_slot_minutes?: number | null;
+            /** @description The FA verdicts of the last day [X28] */
+            headlines?: {
+                text: string;
+                points: number;
+            }[];
             is_dev: boolean;
             /** @enum {string} */
             status: "waiting" | "running" | "finished";
@@ -5926,6 +7039,8 @@ export interface components {
                     name: string;
                     username?: string | null;
                     avatar_url?: string | null;
+                    /** @description A developer account (Owner-Hamza, Owner-Soliman) [X11] */
+                    official?: boolean;
                 };
                 club?: {
                     id: number;
@@ -6035,6 +7150,16 @@ export interface components {
                 mid: number;
                 att: number;
             };
+            /** @description The eleven's chemistry, 0..100, and the links between neighbours [X22] */
+            chemistry: {
+                score: number;
+                links: {
+                    a: number;
+                    b: number;
+                    /** @enum {string} */
+                    color: "green" | "yellow" | "red";
+                }[];
+            };
         };
         SpecialistsView: {
             balance: number;
@@ -6044,10 +7169,26 @@ export interface components {
             days: number;
             specialists: {
                 /** @enum {string} */
-                type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer" | "mental_coach";
+                /** @description In Arabic */
+                name: string;
+                /** @description The three-star price */
                 cost: number;
                 /** @enum {string} */
                 currency: "coins" | "money";
+                /** @description A price and an effect for each number of stars, 1 to 5 [X20] */
+                offers: {
+                    stars: number;
+                    cost: number;
+                    /** @enum {string} */
+                    currency: "coins" | "money";
+                    /** @description What it gives */
+                    effect: string;
+                }[];
+                /** @description The contract working now (0 without one) */
+                stars: number;
+                /** @description A renewal is signed and starts when this contract ends */
+                renewed: boolean;
                 /**
                  * Format: date-time
                  * @description While a contract works
@@ -6161,8 +7302,10 @@ export interface components {
             /** @description About how many sessions a +1 takes at his rating */
             sessions: number;
             injured: boolean;
-            /** @description At his potential */
+            /** @description At 99, training adds nothing [X16] */
             maxed: boolean;
+            /** @description At or past his potential: training goes on, much slower [X16] */
+            over_potential?: boolean;
             in_camp: boolean;
         };
         TrainingView: {
@@ -6277,7 +7420,7 @@ export interface components {
         Fixture: {
             id: number;
             /** @enum {string} */
-            competition: "league" | "cup";
+            competition: "league" | "cup" | "alliance";
             /** @description League: the round. Cup: the stage order */
             round: number;
             /** @enum {string|null} */
@@ -6291,6 +7434,13 @@ export interface components {
             status: string;
             home_goals?: number | null;
             away_goals?: number | null;
+            /**
+             * @description The round's first or second time slot [X31]
+             * @enum {integer}
+             */
+            slot?: 1 | 2;
+            /** @description The night's big match of the round [X31] */
+            match_of_day?: boolean;
         };
         SeasonCalendar: {
             number: number;
@@ -6400,7 +7550,7 @@ export interface components {
                 status: string;
                 titles: {
                     /** @enum {string} */
-                    competition: "league" | "cup";
+                    competition: "league" | "cup" | "alliance";
                     /** @description League: 1 to 3. Cup: 1 the winner, 2 the finalist */
                     position: number;
                     club: {
@@ -6415,10 +7565,172 @@ export interface components {
                 }[];
             }[];
         };
+        StatsClub: {
+            id: number;
+            name: string;
+            code: string;
+            crest_url: string;
+        };
+        StatsPlayer: {
+            player: {
+                id: number;
+                name: string;
+            };
+            club: components["schemas"]["StatsClub"];
+            goals?: number;
+            assists?: number;
+            yellow?: number;
+            red?: number;
+        };
+        LeagueStats: {
+            season: components["schemas"]["SeasonCalendar"];
+            /** @description Finished matches this season */
+            matches: number;
+            table: {
+                position: number;
+                club: components["schemas"]["StatsClub"];
+                played: number;
+                won: number;
+                drawn: number;
+                lost: number;
+                goals_for: number;
+                goals_against: number;
+                goal_difference: number;
+                points: number;
+                /** @description Goals per match times 100 (integers only): 175 = 1.75 */
+                goals_per_match_x100: number;
+                conceded_per_match_x100: number;
+            }[];
+            scorers: components["schemas"]["StatsPlayer"][];
+            assists: components["schemas"]["StatsPlayer"][];
+            discipline: {
+                /** @description Most red cards */
+                players: components["schemas"]["StatsPlayer"][];
+                /** @description Most yellow cards */
+                bookings: components["schemas"]["StatsPlayer"][];
+                clubs: {
+                    club: components["schemas"]["StatsClub"];
+                    yellow: number;
+                    red: number;
+                }[];
+            };
+            finance: {
+                club: components["schemas"]["StatsClub"];
+                bought: number;
+                bought_count: number;
+                sold: number;
+                sold_count: number;
+                /** @description Sold minus bought */
+                net: number;
+            }[];
+            value: {
+                position: number;
+                club: components["schemas"]["StatsClub"];
+                value: number;
+                players: number;
+            }[];
+            streaks: {
+                club: components["schemas"]["StatsClub"];
+                current: {
+                    /** @enum {string} */
+                    kind: "W" | "D" | "L";
+                    length: number;
+                } | null;
+                best: {
+                    W: number;
+                    D: number;
+                    L: number;
+                };
+                /** @description The last five */
+                form: ("W" | "D" | "L")[];
+            }[];
+        };
+        Trophies: {
+            total: number;
+            league: number;
+            cup: number;
+        };
+        CoachLevel: {
+            level: number;
+            /** @description Points: 3 a win, 1 a draw, 30 a trophy (config game.career) */
+            xp: number;
+            /** @description The points where this level began */
+            from: number;
+            /** @description The points the next level needs */
+            next: number;
+            /** @description The way to the next level */
+            progress_bp: number;
+        };
+        RankedCoach: {
+            position: number;
+            coach: {
+                id: number;
+                name: string;
+                username: string;
+                avatar_url: string | null;
+                official: boolean;
+            };
+            trophies: components["schemas"]["Trophies"];
+            won: number;
+            played: number;
+            level: number;
+        };
+        HomeScreen: {
+            coach: {
+                id: number;
+                name: string;
+                username: string;
+                avatar_url: string | null;
+                official: boolean;
+                level: components["schemas"]["CoachLevel"];
+                record: {
+                    seasons: number;
+                    played: number;
+                    won: number;
+                    drawn: number;
+                    lost: number;
+                };
+            };
+            trophies: components["schemas"]["Trophies"];
+            /** @description The other coaches met in the coach's leagues */
+            colleagues: number;
+            announcements: components["schemas"]["Message"][];
+            /** @description Always game.league.max_active_teams of them (10) */
+            slots: {
+                slot: number;
+                /**
+                 * @description A club, a join request waiting for its answer, or free
+                 * @enum {string}
+                 */
+                state: "club" | "waiting" | "free";
+                league: {
+                    id: number;
+                    name: string;
+                    status: string;
+                } | null;
+                club: {
+                    id: number;
+                    name: string;
+                    crest_url: string;
+                } | null;
+                position: number | null;
+                teams: number | null;
+                next_match: {
+                    opponent: string | null;
+                    /** @enum {string} */
+                    venue: "home" | "away";
+                    live: boolean;
+                    /** Format: date-time */
+                    scheduled_at: string;
+                } | null;
+            }[];
+        };
         CoachProfile: {
             coach: {
                 id: number;
                 name: string;
+                /** @description A developer account [X11] */
+                official?: boolean;
             };
             record: {
                 seasons: number;
@@ -6431,7 +7743,7 @@ export interface components {
                 league: string;
                 season: number;
                 /** @enum {string} */
-                competition: "league" | "cup";
+                competition: "league" | "cup" | "alliance";
                 position: number;
                 club: string;
             }[];
@@ -6443,7 +7755,7 @@ export interface components {
                     season: number;
                     club: string;
                     /** @enum {string} */
-                    competition: "league" | "cup";
+                    competition: "league" | "cup" | "alliance";
                     target: string;
                     kind: string;
                     result: string | null;
@@ -6537,6 +7849,8 @@ export interface components {
             name: string;
             /** @description English letters only, lower case */
             username: string;
+            /** @description A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11] */
+            official: boolean;
             /** @description The picture (GET /users/{id}/avatar), null without one */
             avatar_url: string | null;
             /** Format: email */
@@ -6561,6 +7875,21 @@ export interface components {
                  */
                 next_from: string | null;
                 max_days: number;
+            };
+            /** @description How the coach watches his matches, the same on every device [X9, X10] */
+            viewing: {
+                /**
+                 * @description The Arabic voice; voice-6 is the default
+                 * @enum {string}
+                 */
+                commentator: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                /**
+                 * @description The simulator: the cartoon one (2D) or the advanced one (Unity)
+                 * @enum {string}
+                 */
+                match_view: "cartoon" | "unity";
+                /** @description The Unity web build is deployed; until then the cartoon one plays */
+                unity_ready: boolean;
             };
         };
         /** @description Every API error has this shape (app/Http/Errors/ApiErrors.php). */
@@ -6631,6 +7960,50 @@ export interface components {
             /** @enum {string} */
             marking?: "zone" | "man";
         };
+        BroadcastReaction: {
+            id: number;
+            /**
+             * @description The coach's side
+             * @enum {string|null}
+             */
+            side: "home" | "away" | null;
+            key: string;
+            /** @enum {string|null} */
+            target: "home" | "away" | null;
+            who: string;
+            at: number;
+        };
+        BroadcastChat: {
+            id: number;
+            /** @enum {string|null} */
+            side: "home" | "away" | null;
+            who: string;
+            body: string;
+            user_id: number;
+            at: number;
+        };
+        AllianceSide: {
+            captain: string | null;
+            clubs: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** @description A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival. */
+        Scenario: {
+            /** @enum {string} */
+            kind: "trailing" | "red_card" | "leading";
+            /** @description From this minute (trailing 46..85, leading 60..88); none for red_card */
+            minute?: number | null;
+            tactics?: {
+                pressing?: number;
+                tempo?: number;
+                style?: number;
+            };
+            sub?: {
+                out: number;
+                in: number;
+            } | null;
+        };
         TeamSetup: {
             /** @enum {string} */
             formation?: "4-2-3-1" | "4-3-3" | "4-4-2" | "4-1-4-1" | "3-5-2" | "5-3-2";
@@ -6698,6 +8071,199 @@ export interface components {
                     help: {
                         [key: string]: string;
                     };
+                    scenarios: components["schemas"]["Scenario"][];
+                    scenario_kinds: {
+                        /** @enum {string} */
+                        kind: "trailing" | "red_card" | "leading";
+                        minute: {
+                            default: number;
+                            min: number;
+                            max: number;
+                        } | null;
+                    }[];
+                };
+            };
+        };
+        /** @description The integrity system for my club */
+        Integrity: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    on: boolean;
+                    /** @description After an accusation: the club, the fine, the points, the ban's hours */
+                    verdict?: {
+                        [key: string]: unknown;
+                    };
+                    fixture: {
+                        id: number;
+                        opponent: string;
+                    } | null;
+                    bribe: {
+                        paid: boolean;
+                        money: number;
+                        extra: {
+                            /** @enum {string} */
+                            currency: "coins" | "money";
+                            amount: number;
+                        };
+                        var_percent: number;
+                    };
+                    security: {
+                        sees: boolean;
+                        cost: {
+                            /** @enum {string} */
+                            currency: "coins" | "money";
+                            amount: number;
+                        };
+                    };
+                    double_agent: {
+                        /** @enum {string} */
+                        currency: "coins" | "money";
+                        amount: number;
+                    };
+                    spies_on_me: {
+                        id: number;
+                        club: string;
+                        turned: boolean;
+                    }[];
+                    proofs: {
+                        spy_report_id: number;
+                        club: string;
+                        filed: boolean;
+                    }[];
+                    /** Format: date-time */
+                    banned_until: string | null;
+                    headlines: {
+                        text: string;
+                        points: number;
+                    }[];
+                };
+            };
+        };
+        /** @description The alliance tournament */
+        Alliance: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    can_create: boolean;
+                    sizes: number[];
+                    default_size: number;
+                    coaches: {
+                        username: string | null;
+                        name: string;
+                    }[];
+                    tournament: {
+                        id: number;
+                        name: string;
+                        /** @enum {string} */
+                        status: "pending" | "rejected" | "running" | "finished";
+                        size: number;
+                        /** @enum {string|null} */
+                        winner: "a" | "b" | null;
+                        /** Format: date-time */
+                        first_round_at: string;
+                        review_note: string | null;
+                        /**
+                         * @description The alliance I captain
+                         * @enum {string|null}
+                         */
+                        captain_of: "a" | "b" | null;
+                        alliances: {
+                            a: components["schemas"]["AllianceSide"];
+                            b: components["schemas"]["AllianceSide"];
+                        };
+                        ties: {
+                            id: number;
+                            round: number;
+                            /** @enum {string} */
+                            kind: "match" | "bye" | "captain" | "walkover";
+                            home: {
+                                [key: string]: unknown;
+                            } | null;
+                            away: {
+                                [key: string]: unknown;
+                            } | null;
+                            /**
+                             * @description The home club's alliance
+                             * @enum {string|null}
+                             */
+                            alliance: "a" | "b" | null;
+                            /** Format: date-time */
+                            scheduled_at: string;
+                            winner_id: number | null;
+                            status: string | null;
+                            score: {
+                                home: number;
+                                away: number;
+                            } | null;
+                            match_id: number | null;
+                        }[];
+                    } | null;
+                };
+            };
+        };
+        /** @description The alliance tournaments for review */
+        AdminAlliances: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    tournaments: {
+                        id: number;
+                        league_id: number;
+                        league: string;
+                        name: string;
+                        status: string;
+                        size: number;
+                        captains: (string | null)[];
+                        /** Format: date-time */
+                        first_round_at: string;
+                        review_note: string | null;
+                    }[];
+                };
+            };
+        };
+        /** @description The coming matches of the other clubs, with my ticket */
+        Tickets: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    price: number;
+                    /** @description The morale a ticket adds to the side it cheers */
+                    boost: number;
+                    balance: number;
+                    fixtures: {
+                        id: number;
+                        competition: string;
+                        round: number;
+                        /** Format: date-time */
+                        scheduled_at: string;
+                        home: {
+                            id: number;
+                            name: string;
+                            code: string;
+                            crest_url: string;
+                        };
+                        away: {
+                            id: number;
+                            name: string;
+                            code: string;
+                            crest_url: string;
+                        };
+                        cheering: {
+                            home: number;
+                            away: number;
+                        };
+                        /** @enum {string|null} */
+                        mine: "home" | "away" | null;
+                    }[];
                 };
             };
         };
@@ -6708,6 +8274,18 @@ export interface components {
             };
             content: {
                 "application/json": {
+                    /** @description The squad's morale, 0..100, and its run of matches without a win [X25] */
+                    morale: {
+                        value: number;
+                        winless_run: number;
+                    };
+                    /** @description The team strength by line [X29]: the starters' average rating in each (or the line's best) */
+                    lines: {
+                        att: number;
+                        mid: number;
+                        def: number;
+                        gk: number;
+                    };
                     club: {
                         id: number;
                         name: string;
@@ -6730,6 +8308,55 @@ export interface components {
                         number: number;
                         cells: (string | number)[][];
                     })[];
+                };
+            };
+        };
+        /** @description The live draw */
+        Draw: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** Format: date-time */
+                    draw_at: string | null;
+                    /** @description sha256 of "legends-draw:{league}:{seed}", shown before the draw */
+                    commit: string | null;
+                    /** Format: date-time */
+                    drawn_at: string | null;
+                    /** @description Shown once drawn */
+                    seed: number | null;
+                    reveal_ms: number;
+                    server_now: number;
+                    committee: {
+                        owner: string | null;
+                    };
+                    is_owner: boolean;
+                    can_schedule: boolean;
+                    /** Format: date-time */
+                    starts_at: string;
+                    slots: {
+                        slot: number;
+                        club: {
+                            [key: string]: unknown;
+                        };
+                    }[];
+                    league_round: {
+                        home: {
+                            [key: string]: unknown;
+                        } | null;
+                        away: {
+                            [key: string]: unknown;
+                        } | null;
+                    }[];
+                    cup_round: {
+                        home: {
+                            [key: string]: unknown;
+                        } | null;
+                        away: {
+                            [key: string]: unknown;
+                        } | null;
+                    }[];
                 };
             };
         };
@@ -6779,6 +8406,8 @@ export interface components {
                     token?: string;
                     /** Format: date-time */
                     expires_at?: string;
+                    /** @description Register only: the confirmation email left the server. False when it could not be sent (the app offers to send it again) */
+                    verification_sent?: boolean;
                 };
             };
         };

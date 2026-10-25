@@ -21,6 +21,12 @@ class Standings
                 $rows[$id]['gf'] += $for;
             }
         }
+        // Points the FA took off [X28].
+        foreach (Integrity::deductions($seasonId) as $id => $points) {
+            if (isset($rows[$id])) {
+                $rows[$id]['pts'] -= $points;
+            }
+        }
         usort($rows, fn ($a, $b) => [$b['pts'], $b['gd'], $b['gf'], $b['st']] <=> [$a['pts'], $a['gd'], $a['gf'], $a['st']]);
 
         return array_column($rows, 'id');

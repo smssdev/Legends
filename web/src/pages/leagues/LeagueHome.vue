@@ -2,6 +2,7 @@
 // One league (Sprints 13 to 15): the table, calendar and cup (LeagueTabs), its card, the invite to share, my club, my presence and holiday,
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
+import OfficialBadge from '../../components/OfficialBadge.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -180,9 +181,15 @@ onMounted(load)
         <div class="flex flex-wrap gap-2">
           <UiChip :tone="league.status === 'running' ? 'win' : 'neutral'">{{ STATUS[league.status] }}</UiChip>
           <UiChip v-if="league.fair_league" tone="win">دوري نزيه</UiChip>
+          <UiChip v-if="league.integrity" tone="loss">منظومة النزاهة</UiChip>
           <UiChip v-if="league.is_dev" tone="gold">للتطوير</UiChip>
         </div>
       </header>
+
+      <!-- The FA's verdicts of the last day: a breaking headline for everyone in the league [X28]. -->
+      <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-white" role="alert">
+        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs">📰 عاجل</span><span>{{ h.text }} <span class="font-normal">(خصم {{ h.points }} نقاط)</span></span>
+      </p>
 
       <section v-if="mine?.objectives" aria-label="هدف الإدارة" class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
         <b class="text-gold">هدف الإدارة هذا الموسم</b>
@@ -265,7 +272,7 @@ onMounted(load)
               <img v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
               <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
-                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
+                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
                 <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
               </span>
               <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>
@@ -318,6 +325,17 @@ onMounted(load)
           </li>
         </ul>
       </UiCard>
+
+      <RouterLink v-if="league.draw_at || (league.is_owner && league.status === 'waiting')" :to="{ name: 'league-draw', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
+        <span><b class="block">القرعة المباشرة</b><span class="text-sm text-text-muted">{{ league.drawn_at ? 'سُحبت: شاهد النتيجة' : league.draw_at ? 'موعدها محدد: تابعها حية' : 'حدد موعدها قبل البداية' }}</span></span>
+        <span class="font-bold text-gold">←</span>
+      </RouterLink>
+
+      <RouterLink :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
+        <span><b class="block">بطولة التحالفات</b><span class="text-sm text-text-muted">تحالفان من مدربي الدوري بقائد لكل منهما</span></span>
+        <span class="font-bold text-gold">←</span>
+      </RouterLink>
 
       <UiCard v-if="clubs.length" title="الأندية">
         <template #action>

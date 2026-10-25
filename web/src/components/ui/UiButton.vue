@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Buttons (design system: احفظ التشكيلة / تحسين تلقائي / إلغاء). At least 44px to touch.
-withDefaults(defineProps<{ variant?: 'primary' | 'outline' | 'quiet' | 'danger'; type?: 'button' | 'submit'; block?: boolean; disabled?: boolean }>(), {
+// Buttons (design system: احفظ التشكيلة / تحسين تلقائي / إلغاء). At least 44px to touch. [X32] Gold is the page's one
+// call to action, emerald (brand) the actions repeated down a list.
+withDefaults(defineProps<{ variant?: 'primary' | 'brand' | 'outline' | 'quiet' | 'danger'; type?: 'button' | 'submit'; block?: boolean; disabled?: boolean }>(), {
   variant: 'primary',
   type: 'button',
 })
@@ -15,6 +16,7 @@ withDefaults(defineProps<{ variant?: 'primary' | 'outline' | 'quiet' | 'danger';
       block ? 'w-full' : '',
       {
         primary: 'bg-gold text-on-gold hover:bg-gold-light',
+        brand: 'bg-brand text-white',
         outline: 'border border-gold/70 text-gold hover:bg-gold/10',
         quiet: 'bg-surface-raised text-text hover:bg-surface-raised/80',
         danger: 'bg-live text-white hover:bg-live/90',

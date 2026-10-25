@@ -20,7 +20,10 @@ fi
 # Real emails through Gmail (free): two Codespaces secrets, GMAIL_ADDRESS and GMAIL_APP_PASSWORD (an app
 # password from myaccount.google.com/apppasswords, not the Gmail password). Without them the emails go to
 # backend/storage/logs/laravel.log as before.
-if [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
+# Or the BREVO_API_KEY secret: the same HTTPS way as on Render [X8].
+if [ -n "${BREVO_API_KEY:-}" ]; then
+  export MAIL_MAILER=brevo MAIL_HOST=api.brevo.com MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-${GMAIL_ADDRESS:-}}"
+elif [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
   export MAIL_MAILER=smtp
   export MAIL_HOST=smtp.gmail.com
   export MAIL_PORT=587

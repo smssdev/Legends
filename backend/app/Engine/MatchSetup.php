@@ -111,6 +111,18 @@ final class MatchSetup
         if ($own) {
             $team['slots'] = $slots;
         }
+        // The eleven's chemistry, 0..100 [X22], when the caller measured it (App\League\Chemistry).
+        if (isset($input['chem'])) {
+            $team['chem'] = max(0, min(100, (int) $input['chem']));
+        }
+        // Its morale for this match, 0..100 [X25], with the crowd and the tickets (App\League\Morale).
+        if (isset($input['morale'])) {
+            $team['morale'] = max(0, min(100, (int) $input['morale']));
+        }
+        // A referee it bought, past the VAR [X28] (App\League\Integrity).
+        if (! empty($input['bribed'])) {
+            $team['bribed'] = 1;
+        }
 
         return $team;
     }

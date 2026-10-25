@@ -48,7 +48,7 @@ class MatchReplay
             $choreo = MatchChoreographer::frames($state, $state['out'], $ball);
             $ball = $choreo['ball'];
             $out[] = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
-                'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match']),
+                'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
                 'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
         }
 

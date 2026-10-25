@@ -24,7 +24,21 @@ class HealthController extends Controller
             'time' => GameClock::now()->toIso8601ZuluString(),
             'clock_offset' => GameClock::offset(),
             'broadcast' => ['channel' => ServerPing::CHANNEL, 'event' => ServerPing::NAME],
+            'support' => self::support(),
         ]);
+    }
+
+    /** The support buttons' links [X13]: null for a channel with no number or username. */
+    public static function support(): array
+    {
+        $number = preg_replace('/\D+/', '', (string) config('game.support.whatsapp'));
+        $telegram = ltrim(trim((string) config('game.support.telegram')), '@');
+        $text = rawurlencode((string) config('game.support.message'));
+
+        return [
+            'whatsapp' => $number !== '' ? "https://wa.me/{$number}?text={$text}" : null,
+            'telegram' => preg_match('/^[A-Za-z0-9_]{5,32}$/', $telegram) ? "https://t.me/{$telegram}" : null,
+        ];
     }
 
     /** POST /health/ping: sends the test event, so a screen can see broadcasting work end to end. */

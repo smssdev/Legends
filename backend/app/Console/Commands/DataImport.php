@@ -12,19 +12,28 @@ use RuntimeException;
 
 /**
  * Imports the EA FC 26 files into master_clubs and master_players
- * (docs/PLAN.md 2.6, data/ea-fc26/README.md). Re-running the same version
- * replaces it, so the command is safe to repeat.
+ * (docs/PLAN.md 2.6, data/ea-fc26/README.md), and the Arab leagues EA does not have (data/arab, X34).
+ * Re-running the same version replaces it, so the command is safe to repeat on an empty game.
+ *
+ * With --add it only adds the clubs this version does not have yet, and touches nothing that is there: a running
+ * league's players point at their master rows, so replacing those would cut it from them. That is how new data
+ * reaches the live server (deploy/render/start.sh runs it after the migrations).
  */
 class DataImport extends Command
 {
     protected $signature = 'data:import
         {--data-version=2026 : Version label stored on every row}
-        {--path= : Folder with the CSV files (default: ../data/ea-fc26)}';
+        {--path= : Folder with the CSV files (default: ../data/ea-fc26)}
+        {--arab= : Folder with the Arab leagues file (default: ../data/arab)}
+        {--add : Only add the clubs that are not there yet, never replace or remove}';
 
     protected $description = 'Import real clubs and players (with attributes) from the EA FC 26 files';
 
-    /** South American cup entries are tournaments, not leagues (README). */
-    private const SKIPPED_LEAGUES = ['Libertadores', 'Sudamericana'];
+    /**
+     * South American cup entries are tournaments, not leagues (README). EA's UAE entry is one club; the full UAE Pro
+     * League comes from data/arab [X34].
+     */
+    private const SKIPPED_LEAGUES = ['Libertadores', 'Sudamericana', 'United Emirates League'];
 
     private const MIN_SQUAD = 18;
 
@@ -43,15 +52,26 @@ class DataImport extends Command
         $version = (string) $this->option('data-version');
         $path = $this->option('path') ?: base_path('../data/ea-fc26');
 
+        // The Arab file next to the EA files by default; a given --path (the tests' fixtures) reads only what it names.
+        $arab = $this->option('arab') ?: ($this->option('path') ? '' : base_path('../data/arab'));
+        $files = ["$path/ea_fc26_outfield.csv", "$path/ea_fc26_goalkeepers.csv"];
+        if ($arab !== '' && is_file("$arab/arab_players.csv")) {
+            $files[] = "$arab/arab_players.csv";
+        }
+
         $clubs = [];
         $rows = 0;
-        foreach (['ea_fc26_outfield.csv', 'ea_fc26_goalkeepers.csv'] as $file) {
-            foreach ($this->rows("$path/$file") as $row) {
+        foreach ($files as $file) {
+            foreach ($this->rows($file) as $row) {
                 $rows++;
                 if (in_array($row['leagueName'], self::SKIPPED_LEAGUES, true)) {
                     continue;
                 }
                 $clubs[$row['team']]['league'] = $row['leagueName'];
+                // The Arab file carries each club's kit colours from Wikipedia [X34].
+                if (($row['clubPrimary'] ?? '') !== '') {
+                    $clubs[$row['team']]['colors'] = [$row['clubPrimary'], $row['clubSecondary'] ?: '#FFFFFF'];
+                }
                 $clubs[$row['team']]['players'][] = $this->player($row);
             }
         }
@@ -59,15 +79,23 @@ class DataImport extends Command
         $kept = array_filter($clubs, fn ($club) => count($club['players']) >= self::MIN_SQUAD
             && in_array('gk', array_column($club['players'], 'line'), true));
 
-        DB::transaction(function () use ($kept, $version) {
-            DB::table('master_clubs')->where('data_version', $version)->delete();
+        $add = (bool) $this->option('add');
+        if ($add) {
+            $there = DB::table('master_clubs')->where('data_version', $version)->pluck('name')->flip()->all();
+            $kept = array_diff_key($kept, $there);
+        }
+
+        DB::transaction(function () use ($kept, $version, $add) {
+            if (! $add) {
+                DB::table('master_clubs')->where('data_version', $version)->delete();
+            }
             $now = GameClock::now();
 
             foreach ($kept as $name => $club) {
                 $overalls = array_column($club['players'], 'overall');
                 rsort($overalls);
                 $best = array_slice($overalls, 0, self::MIN_SQUAD);
-                [$primary, $secondary] = ClubIdentity::colors($name);
+                [$primary, $secondary] = $club['colors'] ?? ClubIdentity::colors($name);
 
                 $clubId = DB::table('master_clubs')->insertGetId([
                     'data_version' => $version,
@@ -95,8 +123,10 @@ class DataImport extends Command
         });
 
         $players = array_sum(array_map(fn ($c) => count($c['players']), $kept));
-        $this->info(sprintf('Imported %d clubs and %d players (version %s) from %d rows; skipped %d clubs.',
-            count($kept), $players, $version, $rows, count($clubs) - count($kept)));
+        $this->info($add
+            ? sprintf('Added %d new clubs and %d players (version %s); the clubs already there were left as they are.', count($kept), $players, $version)
+            : sprintf('Imported %d clubs and %d players (version %s) from %d rows; skipped %d clubs.',
+                count($kept), $players, $version, $rows, count($clubs) - count($kept)));
 
         return self::SUCCESS;
     }

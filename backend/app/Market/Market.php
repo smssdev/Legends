@@ -3,6 +3,8 @@
 namespace App\Market;
 
 use App\League\ClubLedger;
+use App\League\Integrity;
+use App\League\MatchPrep;
 use App\Support\GameClock;
 use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +58,8 @@ class Market
     /** Buy a player from the pool or from a bot club. Returns the buyer's balance after. */
     public static function buy(int $clubId, int $playerId, string $key): int
     {
+        Integrity::assertMarket($clubId);
+
         return DB::transaction(function () use ($clubId, $playerId, $key) {
             $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
             if ($done) {
@@ -104,6 +108,9 @@ class Market
      */
     public static function sell(int $clubId, int $playerId, string $key): int
     {
+        Integrity::assertMarket($clubId);
+        MatchPrep::assertFree([$playerId]);
+
         return DB::transaction(function () use ($clubId, $playerId, $key) {
             $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
             if ($done) {

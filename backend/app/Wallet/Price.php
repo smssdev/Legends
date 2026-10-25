@@ -11,19 +11,24 @@ use Illuminate\Support\Facades\DB;
  */
 class Price
 {
-    /** @return array{currency: string, amount: int} */
-    public static function quote(int $leagueId, string $feature, int $money): array
+    /**
+     * $coinsBp scales the coins with the money, for a feature with grades (the staff's stars, X20).
+     *
+     * @return array{currency: string, amount: int}
+     */
+    public static function quote(int $leagueId, string $feature, int $money, int $coinsBp = 10000): array
     {
         $fair = (bool) DB::table('leagues')->where('id', $leagueId)->value('fair_league');
 
-        return $fair ? ['currency' => 'money', 'amount' => $money] : ['currency' => 'coins', 'amount' => (int) config("game.premium.price.{$feature}")];
+        return $fair ? ['currency' => 'money', 'amount' => $money]
+            : ['currency' => 'coins', 'amount' => max(1, intdiv((int) config("game.premium.price.{$feature}") * $coinsBp, 10000))];
     }
 
     /** Charge the club (its coach's coins, or its money in a fair league). Returns what was charged. */
-    public static function charge(int $clubId, string $feature, int $money, string $key, string $reference): array
+    public static function charge(int $clubId, string $feature, int $money, string $key, string $reference, int $coinsBp = 10000): array
     {
         $club = DB::table('clubs')->where('id', $clubId)->first();
-        $quote = self::quote($club->league_id, $feature, $money);
+        $quote = self::quote($club->league_id, $feature, $money, $coinsBp);
         if ($quote['currency'] === 'money') {
             ClubLedger::post($clubId, $feature, -$money, $key, $reference, spend: true);
         } else {

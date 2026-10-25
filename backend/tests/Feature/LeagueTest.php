@@ -145,8 +145,10 @@ class LeagueTest extends TestCase
         $this->assertSame(1, DB::table('clubs')->where('league_id', $league['id'])->where('user_id', $coach->id)->count());
     }
 
-    public function test_four_active_teams_at_most(): void
+    public function test_active_teams_stop_at_the_limit(): void
     {
+        // The limit is 10 (the coach's slots, X18); a smaller one keeps the test short, the rule is the same.
+        config(['game.league.max_active_teams' => 4]);
         $user = User::factory()->create();
         $leagues = [];
         for ($i = 0; $i < 3; $i++) {
@@ -317,7 +319,7 @@ class LeagueTest extends TestCase
         $club = $this->botClub($league['id']);
         $this->actingAs($coach)->postJson("/api/v1/leagues/{$league['id']}/clubs/{$club}/claim")->assertCreated();
 
-        $this->deleteJson('/api/v1/auth/me', ['password' => 'password'])->assertOk();
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'password', 'phrase' => 'احذف'])->assertOk();
         $this->assertNull(DB::table('clubs')->where('id', $club)->value('user_id'));
         $this->assertSame('deleted', DB::table('league_memberships')->where('club_id', $club)->value('left_reason'));
     }

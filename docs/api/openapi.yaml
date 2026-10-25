@@ -55,7 +55,7 @@ paths:
               required: [name, username, email, password, password_confirmation, terms]
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
-                username: { type: string, pattern: '^[A-Za-z]{3,20}$', description: 'English letters only, unique whatever the case, kept in lower case' }
+                username: { type: string, pattern: '^[A-Za-z][A-Za-z0-9]{2,19}$', description: 'English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username)' }
                 email: { type: string, format: email }
                 password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
                 password_confirmation: { type: string, description: The password again }
@@ -187,7 +187,7 @@ paths:
         '401': { $ref: '#/components/responses/Error' }
     patch:
       tags: [auth]
-      summary: Change the name or the username
+      summary: Change the name, the username, the commentator or the simulator
       requestBody:
         required: true
         content:
@@ -196,7 +196,9 @@ paths:
               type: object
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
-                username: { type: string, pattern: '^[A-Za-z]{3,20}$' }
+                username: { type: string, pattern: '^[A-Za-z][A-Za-z0-9]{2,19}$' }
+                commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6] }
+                match_view: { type: string, enum: [cartoon, unity] }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
@@ -204,7 +206,7 @@ paths:
     delete:
       tags: [auth]
       summary: Delete the account
-      description: Asks for the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
+      description: Asks twice [X12], the word احذف in phrase and the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
       requestBody:
         required: true
         content:
@@ -214,6 +216,7 @@ paths:
               properties:
                 password: { type: string }
                 confirm: { type: string, description: The email of an account without a password }
+                phrase: { type: string, enum: ['احذف'], description: 'The second confirmation [X12]: the word typed as it is' }
       responses:
         '200': { description: Done }
         '401': { $ref: '#/components/responses/Error' }
@@ -296,6 +299,26 @@ paths:
       responses:
         '200': { description: The JPEG, content: { image/jpeg: { schema: { type: string, format: binary } } } }
         '404': { $ref: '#/components/responses/Error' }
+  /auth/username:
+    get:
+      tags: [auth]
+      summary: Is this username free? With three free ones near it when not (30 a minute) [X11]
+      security: []
+      parameters:
+        - { name: u, in: query, required: true, schema: { type: string, maxLength: 40 } }
+      responses:
+        '200':
+          description: The answer
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [available, reason, suggestions]
+                properties:
+                  available: { type: boolean }
+                  reason: { type: string, nullable: true, description: Why not, in Arabic }
+                  suggestions: { type: array, items: { type: string } }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /auth/email/resend:
     post:
       tags: [auth]
@@ -304,6 +327,22 @@ paths:
         '202': { description: Done }
         '401': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+  /data/glossary:
+    get:
+      tags: [data]
+      summary: The game's terms explained in Arabic, for the "?" beside each [X19]
+      security: []
+      responses:
+        '200':
+          description: The terms
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [terms]
+                properties:
+                  terms: { type: object, additionalProperties: { type: string } }
   /data/templates:
     get:
       tags: [data]
@@ -432,6 +471,13 @@ paths:
                     properties:
                       channel: { type: string, example: system }
                       event: { type: string, example: ping }
+                  support:
+                    type: object
+                    description: 'The support buttons [X13]: a link per channel, null when not set'
+                    required: [whatsapp, telegram]
+                    properties:
+                      whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
+                      telegram: { type: string, nullable: true, example: 'https://t.me/legends_support' }
   /health/ping:
     post:
       tags: [system]
@@ -490,6 +536,8 @@ paths:
                 starts_at: { type: string, format: date-time, description: From now up to 7 days }
                 starting_budget: { type: integer, minimum: 1000000, maximum: 10000000, default: 3000000 }
                 fair_league: { type: boolean, default: false, description: Locks spending coins inside this league }
+                integrity: { type: boolean, default: false, description: 'Bribes, spies and the FA [X28]' }
+                second_slot_minutes: { type: integer, nullable: true, minimum: 60, maximum: 600, description: 'Each round in two slots: half its matches this long after the round time [X31]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
                 club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
       responses:
@@ -545,11 +593,35 @@ paths:
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
                 fair_league: { type: boolean }
+                integrity: { type: boolean }
+                second_slot_minutes: { type: integer, nullable: true }
       responses:
         '200': { $ref: '#/components/responses/League' }
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/draw:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: 'The live draw [X26]: the time and the hash before; the seed, the slots, the first league round and cup ties after'
+      description: The screen reveals one slot every `reveal_ms` from `drawn_at` on the server clock, the same for every member.
+      responses:
+        '200': { $ref: '#/components/responses/Draw' }
+        '404': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [leagues]
+      summary: The owner sets or moves the draw's time (after now, before the start)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [draw_at], properties: { draw_at: { type: string, format: date-time } } }
+      responses:
+        '200': { $ref: '#/components/responses/Draw' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/start:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
@@ -752,7 +824,22 @@ paths:
                             goal_difference: { type: integer }
                             points: { type: integer }
                             rests_next: { type: boolean, description: Rests in the next round (odd team count) }
+                            deducted: { type: integer, description: 'Points the FA took off [X28]' }
         '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/stats:
+    get:
+      tags: [leagues]
+      summary: The statistics centre [X17]
+      description: The season's table in detail, scorers and assists, cards of players and clubs, each club's buying and selling, the squads' value, and the runs of results. Members only; nothing hidden (no tactic).
+      parameters:
+        - { name: league, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The season's statistics
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeagueStats' }
         '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/cup:
     parameters: [{ $ref: '#/components/parameters/League' }]
@@ -923,6 +1010,170 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/scenarios:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: Set my pre-match scenarios (up to one per kind) [X23]
+      description: The whole list replaces the old one; 409 from the lock until the match ends.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenarios]
+              properties:
+                scenarios: { type: array, maxItems: 3, items: { $ref: '#/components/schemas/Scenario' } }
+      responses:
+        '200': { $ref: '#/components/responses/Tactics' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/integrity:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: 'The integrity system for my club [X28]: my next match''s bribe, the spies on me, my proofs, a market ban'
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/bribe:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: Pay the referee of my next match (club money and coins), until its lock
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [fixture_id], properties: { fixture_id: { type: integer } } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/security:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: A security check that shows the spies sent on me for this fixture
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [fixture_id], properties: { fixture_id: { type: integer } } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/spies/{spy}/turn:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: spy, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: Turn a spy on me into a double agent (his report becomes a fake board)
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/spies/{spy}/accuse:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: spy, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: 'Take my spy''s proof of a bribe to the FA: a fine, a market ban, points off and a scandal'
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/alliance:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: 'The league''s latest alliance tournament [X27]: its alliances, captains and rounds'
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [leagues]
+      summary: The owner asks for an alliance tournament; it waits for the developers' approval
+      description: Two captains by username (coaches of the league), 2 to 7 coaches a side (5 by default), the first round at least an hour ahead. The others are shared out at random.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, captain_a, captain_b, size, first_round_at]
+              properties:
+                name: { type: string, minLength: 3, maxLength: 40 }
+                captain_a: { type: string }
+                captain_b: { type: string }
+                size: { type: integer, minimum: 2, maximum: 7 }
+                first_round_at: { type: string, format: date-time }
+      responses:
+        '201': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/alliance/ties/{tie}/decide:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: tie, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: A captain picks which of two of his coaches goes on (team-mates are not played)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [winner], properties: { winner: { type: integer, description: A club id of the tie } } }
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/alliances:
+    get:
+      tags: [admin]
+      summary: 'The alliance tournaments waiting for the developers, then the latest [X27]'
+      responses:
+        '200': { $ref: '#/components/responses/AdminAlliances' }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/alliances/{id}/review:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: Approve (its first round is drawn) or turn down a tournament
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [approve], properties: { approve: { type: boolean }, note: { type: string, nullable: true, maxLength: 200 } } }
+      responses:
+        '200': { $ref: '#/components/responses/AdminAlliances' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/tickets:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: 'The other clubs'' coming matches, to cheer one side with a ticket [X25]'
+      responses:
+        '200': { $ref: '#/components/responses/Tickets' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: Buy a ticket and cheer one side (its morale for that match goes up)
+      description: Club money; one per match, not for my own matches (422), until the lock (409).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fixture_id, side]
+              properties: { fixture_id: { type: integer }, side: { type: string, enum: [home, away] } }
+      responses:
+        '200': { $ref: '#/components/responses/Tickets' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -1132,7 +1383,7 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
     post:
       tags: [market]
-      summary: Ask the scout (one search at a time)
+      summary: Ask the scout (one search at a time; a 15-hour trip, five players) [X15]
       requestBody:
         required: true
         content:
@@ -1146,6 +1397,7 @@ paths:
                 min_overall: { type: integer, minimum: 40, maximum: 99 }
                 max_overall: { type: integer, minimum: 40, maximum: 99 }
                 max_age: { type: integer }
+                max_value: { type: integer, description: 'The highest price (the player value) [X15]' }
                 nationality: { type: string }
                 league: { type: string }
                 idempotency_key: { type: string, maxLength: 64 }
@@ -1181,7 +1433,8 @@ paths:
               type: object
               required: [type, idempotency_key]
               properties:
-                type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
+                type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer, mental_coach] }
+                stars: { type: integer, minimum: 1, maximum: 5, description: 'Default 3 [X20]' }
                 idempotency_key: { type: string, maxLength: 64 }
       responses:
         '200':
@@ -1412,11 +1665,11 @@ paths:
                   match:
                     type: object
                     nullable: true
-                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, opponent]
+                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, club, opponent, morale]
                     properties:
                       fixture_id: { type: integer }
                       match_id: { type: integer, nullable: true, description: 'Once it kicks off: watch it at GET /matches/{id}' }
-                      competition: { type: string, enum: [league, cup] }
+                      competition: { type: string, enum: [league, cup, alliance] }
                       round: { type: integer }
                       venue: { type: string, enum: [home, away] }
                       scheduled_at: { type: string, format: date-time }
@@ -1424,6 +1677,14 @@ paths:
                       referee_at: { type: string, format: date-time }
                       lock_at: { type: string, format: date-time }
                       referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+                      morale: { type: integer, description: 'My morale for this match with my crowd and the tickets cheering me [X25]' }
+                      slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
+                      match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
+                      club:
+                        type: object
+                        description: 'My club, for the VS card [X29]'
+                        required: [id, name, code, strength_cp, crest_url]
+                        properties: { id: { type: integer }, name: { type: string }, code: { type: string }, strength_cp: { type: integer }, crest_url: { type: string } }
                       opponent:
                         type: object
                         required: [id, name, code, strength_cp, crest_url]
@@ -1502,7 +1763,8 @@ paths:
                         events: { type: array, items: { type: object, additionalProperties: true } }
                   ticks: { type: array, items: { type: object, additionalProperties: true } }
                   readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
-                  reactions: { type: array, items: { type: object, additionalProperties: true } }
+                  reactions: { type: array, items: { $ref: '#/components/schemas/BroadcastReaction' }, description: 'The latest reactions [X24]' }
+                  chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/report:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -1539,6 +1801,43 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /matches/{match}/reactions:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: 'A reaction on every viewer''s screen [X24]'
+      description: An emoji (one each 1.2 s), or a boo or a cheer for one side (one each 30 s). Any member of the league, while live; 409 otherwise.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key]
+              properties:
+                key: { type: string, enum: [fire, clap, wow, laugh, angry, pray, unlucky, coming, easy, focus, boo, cheer] }
+                target: { type: string, enum: [home, away], description: For a boo or a cheer }
+      responses:
+        '201': { description: Sent, content: { application/json: { schema: { $ref: '#/components/schemas/BroadcastReaction' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /matches/{match}/chat:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: 'A message in the side chat between the league''s viewers [X24]'
+      description: Up to 140 characters, one each 2 s; while live.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [body], properties: { body: { type: string, maxLength: 140 } } }
+      responses:
+        '201': { description: Sent, content: { application/json: { schema: { $ref: '#/components/schemas/BroadcastChat' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /matches/{match}/actions:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
     post:
@@ -1621,7 +1920,7 @@ paths:
                         id: { type: integer }
                         home: { type: string, description: The home club's code }
                         away: { type: string }
-                        competition: { type: string, enum: [league, cup] }
+                        competition: { type: string, enum: [league, cup, alliance] }
   /admin/2fa:
     get:
       tags: [admin]
@@ -1667,8 +1966,15 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [users, leagues, live_matches, active_today, weeks]
+                required: [users, leagues, live_matches, active_today, weeks, deploy]
                 properties:
+                  deploy:
+                    type: object
+                    description: 'Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when'
+                    required: [busy, next_kickoff]
+                    properties:
+                      busy: { type: integer, description: Matches live or kicking off within 30 minutes }
+                      next_kickoff: { type: string, format: date-time, nullable: true }
                   users: { type: integer }
                   leagues: { type: object, required: [total, running], properties: { total: { type: integer }, running: { type: integer } } }
                   live_matches: { type: integer }
@@ -1748,6 +2054,82 @@ paths:
       summary: Make a backup now (and send it to Google Drive when set)
       responses:
         '200': { description: The backups after, content: { application/json: { schema: { $ref: '#/components/schemas/AdminBackups' } } } }
+  /admin/backups/{name}/download:
+    get:
+      tags: [admin]
+      summary: 'One backup''s game database (legends.sqlite) to keep off the server [X33]'
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}_\d{6}$' } }
+      responses:
+        '200': { description: The SQLite file, content: { application/vnd.sqlite3: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /admin/users/{user}/official:
+    post:
+      tags: [admin]
+      summary: Give a developer's account a reserved name (Owner-Hamza, Owner-Soliman) and its badge [X11]
+      parameters:
+        - { name: user, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, enum: [Owner-Hamza, Owner-Soliman] }
+      responses:
+        '200': { $ref: '#/components/responses/Account' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/mail-test:
+    post:
+      tags: [admin]
+      summary: The email settings and a test email, with the exact error and its fix in Arabic [X8]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [to], properties: { to: { type: string, format: email } } }
+      responses:
+        '200':
+          description: The result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [mailer, from, key, problems, sent, error, fix]
+                properties:
+                  mailer: { type: string }
+                  from: { type: string }
+                  key: { type: string, enum: [none, api, smtp, other], description: The kind of key set, never the key }
+                  problems: { type: array, items: { type: string } }
+                  sent: { type: boolean }
+                  error: { type: string, nullable: true }
+                  fix: { type: string, nullable: true }
+  /admin/announcements:
+    post:
+      tags: [admin]
+      summary: A message to every account from an official developer account, with the badge [X11]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title: { type: string, maxLength: 120 }
+                body: { type: string, maxLength: 2000 }
+      responses:
+        '201':
+          description: Sent
+          content:
+            application/json:
+              schema: { type: object, required: [sent], properties: { sent: { type: integer } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /admin/commentary:
     get:
       tags: [admin]
@@ -1902,6 +2284,37 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Honours' }
         '403': { $ref: '#/components/responses/Error' }
+  /home:
+    get:
+      tags: [leagues]
+      summary: The coach's home screen [X18]
+      description: The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+      responses:
+        '200':
+          description: The home screen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HomeScreen' }
+        '401': { $ref: '#/components/responses/Error' }
+  /rankings/coaches:
+    get:
+      tags: [leagues]
+      summary: The coaches' global ranking, top 50 and the coach's own place [X18]
+      parameters:
+        - { name: by, in: query, required: false, schema: { type: string, enum: [trophies, level] } }
+      responses:
+        '200':
+          description: The ranking
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [by, coaches, me]
+                properties:
+                  by: { type: string, enum: [trophies, level] }
+                  coaches: { type: array, items: { $ref: '#/components/schemas/RankedCoach' } }
+                  me: { allOf: [{ $ref: '#/components/schemas/RankedCoach' }], nullable: true }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /coaches/{user}:
     parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2095,7 +2508,7 @@ paths:
                 home_id: { type: integer }
                 away_id: { type: integer }
                 seed: { type: integer, minimum: 1 }
-                competition: { type: string, enum: [league, cup] }
+                competition: { type: string, enum: [league, cup, alliance] }
                 referee: { type: integer, enum: [0, 1, 2], description: 0 soft, 1 medium, 2 strict }
                 venue: { type: string, enum: [home, neutral] }
                 mode: { type: string, enum: [solo, live], description: 'solo: the client drives the clock. live: two devices, the server keeps the clock and both coaches are "me".' }
@@ -2319,7 +2732,7 @@ components:
         application/json:
           schema:
             type: object
-            required: [tactics, tips, help]
+            required: [tactics, tips, help, scenarios, scenario_kinds]
             properties:
               tactics: { $ref: '#/components/schemas/TacticsSet' }
               tips: { type: array, items: { type: string } }
@@ -2328,14 +2741,162 @@ components:
                 type: object
                 description: 'What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips'
                 additionalProperties: { type: string }
+              scenarios: { type: array, items: { $ref: '#/components/schemas/Scenario' } }
+              scenario_kinds:
+                type: array
+                items:
+                  type: object
+                  required: [kind, minute]
+                  properties:
+                    kind: { type: string, enum: [trailing, red_card, leading] }
+                    minute:
+                      type: object
+                      nullable: true
+                      required: [default, min, max]
+                      properties: { default: { type: integer }, min: { type: integer }, max: { type: integer } }
+    Integrity:
+      description: The integrity system for my club
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [on, fixture, bribe, security, double_agent, spies_on_me, proofs, banned_until, headlines]
+            properties:
+              on: { type: boolean }
+              verdict: { type: object, additionalProperties: true, description: 'After an accusation: the club, the fine, the points, the ban''s hours' }
+              fixture: { type: object, nullable: true, required: [id, opponent], properties: { id: { type: integer }, opponent: { type: string } } }
+              bribe:
+                type: object
+                required: [paid, money, extra, var_percent]
+                properties:
+                  paid: { type: boolean }
+                  money: { type: integer }
+                  extra: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
+                  var_percent: { type: integer }
+              security: { type: object, required: [sees, cost], properties: { sees: { type: boolean }, cost: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } } } }
+              double_agent: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
+              spies_on_me:
+                type: array
+                items: { type: object, required: [id, club, turned], properties: { id: { type: integer }, club: { type: string }, turned: { type: boolean } } }
+              proofs:
+                type: array
+                items: { type: object, required: [spy_report_id, club, filed], properties: { spy_report_id: { type: integer }, club: { type: string }, filed: { type: boolean } } }
+              banned_until: { type: string, format: date-time, nullable: true }
+              headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } } }
+    Alliance:
+      description: The alliance tournament
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [can_create, sizes, default_size, coaches, tournament]
+            properties:
+              can_create: { type: boolean }
+              sizes: { type: array, items: { type: integer } }
+              default_size: { type: integer }
+              coaches: { type: array, items: { type: object, required: [username, name], properties: { username: { type: string, nullable: true }, name: { type: string } } } }
+              tournament:
+                type: object
+                nullable: true
+                required: [id, name, status, size, winner, first_round_at, review_note, captain_of, alliances, ties]
+                properties:
+                  id: { type: integer }
+                  name: { type: string }
+                  status: { type: string, enum: [pending, rejected, running, finished] }
+                  size: { type: integer }
+                  winner: { type: string, nullable: true, enum: [a, b, null] }
+                  first_round_at: { type: string, format: date-time }
+                  review_note: { type: string, nullable: true }
+                  captain_of: { type: string, nullable: true, enum: [a, b, null], description: The alliance I captain }
+                  alliances:
+                    type: object
+                    required: [a, b]
+                    properties:
+                      a: { $ref: '#/components/schemas/AllianceSide' }
+                      b: { $ref: '#/components/schemas/AllianceSide' }
+                  ties:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, round, kind, home, away, alliance, scheduled_at, winner_id, status, score, match_id]
+                      properties:
+                        id: { type: integer }
+                        round: { type: integer }
+                        kind: { type: string, enum: [match, bye, captain, walkover] }
+                        home: { type: object, nullable: true, additionalProperties: true }
+                        away: { type: object, nullable: true, additionalProperties: true }
+                        alliance: { type: string, nullable: true, enum: [a, b, null], description: The home club's alliance }
+                        scheduled_at: { type: string, format: date-time }
+                        winner_id: { type: integer, nullable: true }
+                        status: { type: string, nullable: true }
+                        score: { type: object, nullable: true, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+                        match_id: { type: integer, nullable: true }
+    AdminAlliances:
+      description: The alliance tournaments for review
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tournaments]
+            properties:
+              tournaments:
+                type: array
+                items:
+                  type: object
+                  required: [id, league_id, league, name, status, size, captains, first_round_at, review_note]
+                  properties:
+                    id: { type: integer }
+                    league_id: { type: integer }
+                    league: { type: string }
+                    name: { type: string }
+                    status: { type: string }
+                    size: { type: integer }
+                    captains: { type: array, items: { type: string, nullable: true } }
+                    first_round_at: { type: string, format: date-time }
+                    review_note: { type: string, nullable: true }
+    Tickets:
+      description: The coming matches of the other clubs, with my ticket
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [price, boost, balance, fixtures]
+            properties:
+              price: { type: integer }
+              boost: { type: integer, description: The morale a ticket adds to the side it cheers }
+              balance: { type: integer }
+              fixtures:
+                type: array
+                items:
+                  type: object
+                  required: [id, competition, round, scheduled_at, home, away, cheering, mine]
+                  properties:
+                    id: { type: integer }
+                    competition: { type: string }
+                    round: { type: integer }
+                    scheduled_at: { type: string, format: date-time }
+                    home: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                    away: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+                    cheering: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+                    mine: { type: string, nullable: true, enum: [home, away, null] }
     Team:
       description: My club and its team sheet
       content:
         application/json:
           schema:
             type: object
-            required: [club, squad_value, players, lineup, takers, custom_formations]
+            required: [club, squad_value, lines, players, lineup, takers, custom_formations, morale]
             properties:
+              morale:
+                type: object
+                description: 'The squad''s morale, 0..100, and its run of matches without a win [X25]'
+                required: [value, winless_run]
+                properties: { value: { type: integer }, winless_run: { type: integer } }
+              lines:
+                type: object
+                description: 'The team strength by line [X29]: the starters'' average rating in each (or the line''s best)'
+                required: [att, mid, def, gk]
+                properties: { att: { type: integer }, mid: { type: integer }, def: { type: integer }, gk: { type: integer } }
               club:
                 type: object
                 required: [id, name, code, strength_cp, balance, crest_url]
@@ -2368,6 +2929,33 @@ components:
                       properties:
                         number: { type: integer }
                         cells: { type: array, items: { type: array, items: { oneOf: [{ type: string }, { type: integer }] } } }
+    Draw:
+      description: The live draw
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [draw_at, commit, drawn_at, seed, reveal_ms, server_now, committee, is_owner, can_schedule, starts_at, slots, league_round, cup_round]
+            properties:
+              draw_at: { type: string, format: date-time, nullable: true }
+              commit: { type: string, nullable: true, description: 'sha256 of "legends-draw:{league}:{seed}", shown before the draw' }
+              drawn_at: { type: string, format: date-time, nullable: true }
+              seed: { type: integer, nullable: true, description: Shown once drawn }
+              reveal_ms: { type: integer }
+              server_now: { type: integer }
+              committee: { type: object, required: [owner], properties: { owner: { type: string, nullable: true } } }
+              is_owner: { type: boolean }
+              can_schedule: { type: boolean }
+              starts_at: { type: string, format: date-time }
+              slots:
+                type: array
+                items: { type: object, required: [slot, club], properties: { slot: { type: integer }, club: { type: object, additionalProperties: true } } }
+              league_round:
+                type: array
+                items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
+              cup_round:
+                type: array
+                items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
     League:
       description: The league
       content:
@@ -2406,6 +2994,7 @@ components:
               user: { $ref: '#/components/schemas/Account' }
               token: { type: string, description: Only when device_name was sent (the app) }
               expires_at: { type: string, format: date-time }
+              verification_sent: { type: boolean, description: 'Register only: the confirmation email left the server. False when it could not be sent (the app offers to send it again)' }
     Error:
       description: Any error, in one shape with an Arabic message
       content:
@@ -2530,6 +3119,7 @@ components:
               value: { type: integer }
               price: { type: integer }
               club: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+              attributes: { type: object, additionalProperties: { type: integer, nullable: true }, description: 'The six attributes, or the keeper''s five, for the card [X29]' }
         mine:
           type: array
           items:
@@ -2599,13 +3189,21 @@ components:
       required: [id, type, read, created_at, title, body, link]
       properties:
         id: { type: integer }
-        type: { type: string, enum: [referee, absence_warning, left_absent, kicked, join_request, join_approved, join_rejected, match_report] }
+        type: { type: string, description: 'One of App\\Messages\\MessageText::TYPES (referee, match_report, announcement...)' }
         league_id: { type: integer, nullable: true }
         read: { type: boolean }
         created_at: { type: string, format: date-time }
         title: { type: string }
         body: { type: string }
         link: { type: string, nullable: true, description: A web path to open (the app maps it to its own screen) }
+        sender:
+          type: object
+          description: 'An announcement only: the developer who sent it, with the official badge [X11]'
+          required: [name, username, official]
+          properties:
+            name: { type: string }
+            username: { type: string }
+            official: { type: boolean }
     MatchReading:
       type: object
       description: The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only
@@ -2637,7 +3235,12 @@ components:
         season_end_mode: { type: string, enum: [renew, end] }
         starts_at: { type: string, format: date-time }
         starting_budget: { type: integer }
+        draw_at: { type: string, format: date-time, nullable: true, description: 'The live draw''s time [X26]' }
+        drawn_at: { type: string, format: date-time, nullable: true }
         fair_league: { type: boolean }
+        integrity: { type: boolean, description: 'The integrity system: bribes, spies and the FA [X28]' }
+        second_slot_minutes: { type: integer, nullable: true, description: 'Rounds in two slots [X31]' }
+        headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } }, description: 'The FA verdicts of the last day [X28]' }
         is_dev: { type: boolean }
         status: { type: string, enum: [waiting, running, finished] }
         locked: { type: boolean, description: Settings are locked once the league starts }
@@ -2670,7 +3273,7 @@ components:
             required: [id, user, is_owner, on_holiday, joined_at]
             properties:
               id: { type: integer, description: Membership id (for the kick) }
-              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, avatar_url: { type: string, nullable: true } } }
+              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, avatar_url: { type: string, nullable: true }, official: { type: boolean, description: 'A developer account (Owner-Hamza, Owner-Soliman) [X11]' } } }
               club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
               is_owner: { type: boolean }
               on_holiday: { type: boolean }
@@ -2748,7 +3351,7 @@ components:
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
     Lineup:
       type: object
-      required: [formation, auto, slots, starters, bench, lines]
+      required: [formation, auto, slots, starters, bench, lines, chemistry]
       properties:
         formation: { type: string }
         auto: { type: boolean, description: Not saved by the coach; picked automatically ("تحسين") }
@@ -2756,6 +3359,21 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+        chemistry:
+          type: object
+          description: 'The eleven''s chemistry, 0..100, and the links between neighbours [X22]'
+          required: [score, links]
+          properties:
+            score: { type: integer }
+            links:
+              type: array
+              items:
+                type: object
+                required: [a, b, color]
+                properties:
+                  a: { type: integer }
+                  b: { type: integer }
+                  color: { type: string, enum: [green, yellow, red] }
     SpecialistsView:
       type: object
       required: [balance, now, days, specialists]
@@ -2767,11 +3385,21 @@ components:
           type: array
           items:
             type: object
-            required: [type, cost, currency, ends_at]
+            required: [type, name, cost, currency, offers, stars, renewed, ends_at]
             properties:
-              type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
-              cost: { type: integer }
+              type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer, mental_coach] }
+              name: { type: string, description: In Arabic }
+              cost: { type: integer, description: The three-star price }
               currency: { type: string, enum: [coins, money] }
+              offers:
+                type: array
+                description: 'A price and an effect for each number of stars, 1 to 5 [X20]'
+                items:
+                  type: object
+                  required: [stars, cost, currency, effect]
+                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: What it gives, in Arabic } }
+              stars: { type: integer, description: 'The contract working now (0 without one)' }
+              renewed: { type: boolean, description: A renewal is signed and starts when this contract ends }
               ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
     SpyPlayer:
       type: object
@@ -2883,7 +3511,8 @@ components:
         progress: { type: integer, description: The bar, 0 to 100 }
         sessions: { type: integer, description: About how many sessions a +1 takes at his rating }
         injured: { type: boolean }
-        maxed: { type: boolean, description: At his potential, training adds nothing }
+        maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
+        over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
         in_camp: { type: boolean }
     TrainingView:
       type: object
@@ -3000,7 +3629,7 @@ components:
       required: [id, competition, round, scheduled_at, is_bye, status]
       properties:
         id: { type: integer }
-        competition: { type: string, enum: [league, cup] }
+        competition: { type: string, enum: [league, cup, alliance] }
         round: { type: integer, description: 'League: the round. Cup: the stage order' }
         stage: { type: string, nullable: true, enum: [preliminary, r16, qf, sf, final, null] }
         scheduled_at: { type: string, format: date-time }
@@ -3010,6 +3639,8 @@ components:
         status: { type: string }
         home_goals: { type: integer, nullable: true }
         away_goals: { type: integer, nullable: true }
+        slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
+        match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
     SeasonCalendar:
       type: object
       required: [number, status, rounds, rounds_played, lock_from_round, starts_at, windows]
@@ -3124,7 +3755,7 @@ components:
                   type: object
                   required: [competition, position, club, coach]
                   properties:
-                    competition: { type: string, enum: [league, cup] }
+                    competition: { type: string, enum: [league, cup, alliance] }
                     position: { type: integer, description: 'League: 1 to 3. Cup: 1 the winner, 2 the finalist' }
                     club:
                       type: object
@@ -3135,11 +3766,140 @@ components:
                       nullable: true
                       required: [id, name]
                       properties: { id: { type: integer }, name: { type: string } }
+    StatsClub:
+      type: object
+      required: [id, name, code, crest_url]
+      properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } }
+    StatsPlayer:
+      type: object
+      required: [player, club]
+      properties:
+        player: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        club: { $ref: '#/components/schemas/StatsClub' }
+        goals: { type: integer }
+        assists: { type: integer }
+        yellow: { type: integer }
+        red: { type: integer }
+    LeagueStats:
+      type: object
+      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks]
+      properties:
+        season: { $ref: '#/components/schemas/SeasonCalendar' }
+        matches: { type: integer, description: Finished matches this season, every competition }
+        table:
+          type: array
+          items:
+            type: object
+            required: [position, club, played, won, drawn, lost, goals_for, goals_against, goal_difference, points, goals_per_match_x100, conceded_per_match_x100]
+            properties:
+              position: { type: integer }
+              club: { $ref: '#/components/schemas/StatsClub' }
+              played: { type: integer }
+              won: { type: integer }
+              drawn: { type: integer }
+              lost: { type: integer }
+              goals_for: { type: integer }
+              goals_against: { type: integer }
+              goal_difference: { type: integer }
+              points: { type: integer }
+              goals_per_match_x100: { type: integer, description: 'Goals per match times 100 (integers only): 175 = 1.75' }
+              conceded_per_match_x100: { type: integer }
+        scorers: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' } }
+        assists: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' } }
+        discipline:
+          type: object
+          required: [players, bookings, clubs]
+          properties:
+            players: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' }, description: Most red cards }
+            bookings: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' }, description: Most yellow cards }
+            clubs:
+              type: array
+              items: { type: object, required: [club, yellow, red], properties: { club: { $ref: '#/components/schemas/StatsClub' }, yellow: { type: integer }, red: { type: integer } } }
+        finance:
+          type: array
+          items:
+            type: object
+            required: [club, bought, bought_count, sold, sold_count, net]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              bought: { type: integer }
+              bought_count: { type: integer }
+              sold: { type: integer }
+              sold_count: { type: integer }
+              net: { type: integer, description: Sold minus bought }
+        value:
+          type: array
+          items: { type: object, required: [position, club, value, players], properties: { position: { type: integer }, club: { $ref: '#/components/schemas/StatsClub' }, value: { type: integer }, players: { type: integer } } }
+        streaks:
+          type: array
+          items:
+            type: object
+            required: [club, current, best, form]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
+              best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
+              form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
+    Trophies:
+      type: object
+      required: [total, league, cup]
+      properties: { total: { type: integer }, league: { type: integer }, cup: { type: integer } }
+    CoachLevel:
+      type: object
+      required: [level, xp, from, next, progress_bp]
+      properties:
+        level: { type: integer }
+        xp: { type: integer, description: 'Points: 3 a win, 1 a draw, 30 a trophy (config game.career)' }
+        from: { type: integer, description: The points where this level began }
+        next: { type: integer, description: The points the next level needs }
+        progress_bp: { type: integer, description: The way to the next level, out of 10000 }
+    RankedCoach:
+      type: object
+      required: [position, coach, trophies, won, played, level]
+      properties:
+        position: { type: integer }
+        coach: { type: object, required: [id, name, username, avatar_url, official], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, avatar_url: { type: string, nullable: true }, official: { type: boolean } } }
+        trophies: { $ref: '#/components/schemas/Trophies' }
+        won: { type: integer }
+        played: { type: integer }
+        level: { type: integer }
+    HomeScreen:
+      type: object
+      required: [coach, trophies, slots, colleagues, announcements]
+      properties:
+        coach:
+          type: object
+          required: [id, name, username, avatar_url, official, level, record]
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            username: { type: string }
+            avatar_url: { type: string, nullable: true }
+            official: { type: boolean }
+            level: { $ref: '#/components/schemas/CoachLevel' }
+            record: { type: object, required: [seasons, played, won, drawn, lost], properties: { seasons: { type: integer }, played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer } } }
+        trophies: { $ref: '#/components/schemas/Trophies' }
+        colleagues: { type: integer, description: The other coaches met in the coach's leagues }
+        announcements: { type: array, items: { $ref: '#/components/schemas/Message' } }
+        slots:
+          type: array
+          description: Always game.league.max_active_teams of them (10)
+          items:
+            type: object
+            required: [slot, state, league, club, position, teams, next_match]
+            properties:
+              slot: { type: integer }
+              state: { type: string, enum: [club, waiting, free], description: 'A club, a join request waiting for its answer, or free' }
+              league: { type: object, nullable: true, required: [id, name, status], properties: { id: { type: integer }, name: { type: string }, status: { type: string } } }
+              club: { type: object, nullable: true, required: [id, name, crest_url], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string } } }
+              position: { type: integer, nullable: true }
+              teams: { type: integer, nullable: true }
+              next_match: { type: object, nullable: true, required: [opponent, venue, live, scheduled_at], properties: { opponent: { type: string, nullable: true }, venue: { type: string, enum: [home, away] }, live: { type: boolean }, scheduled_at: { type: string, format: date-time } } }
     CoachProfile:
       type: object
       required: [coach, record, titles, objectives]
       properties:
-        coach: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        coach: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, official: { type: boolean, description: 'A developer account [X11]' } } }
         record:
           type: object
           required: [seasons, played, won, drawn, lost]
@@ -3157,7 +3917,7 @@ components:
             properties:
               league: { type: string }
               season: { type: integer }
-              competition: { type: string, enum: [league, cup] }
+              competition: { type: string, enum: [league, cup, alliance] }
               position: { type: integer }
               club: { type: string }
         objectives:
@@ -3175,7 +3935,7 @@ components:
                   league: { type: string }
                   season: { type: integer }
                   club: { type: string }
-                  competition: { type: string, enum: [league, cup] }
+                  competition: { type: string, enum: [league, cup, alliance] }
                   target: { type: string }
                   kind: { type: string }
                   result: { type: string, nullable: true }
@@ -3258,11 +4018,12 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, username, avatar_url, email, email_verified, role, has_password, google, vacation]
+      required: [id, name, username, official, avatar_url, email, email_verified, role, has_password, google, vacation, viewing]
       properties:
         id: { type: integer }
         name: { type: string }
         username: { type: string, description: 'English letters only, lower case' }
+        official: { type: boolean, description: 'A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11]' }
         avatar_url: { type: string, nullable: true, description: 'The picture (GET /users/{id}/avatar), null without one' }
         email: { type: string, format: email }
         email_verified: { type: boolean }
@@ -3279,6 +4040,14 @@ components:
             until: { type: string, format: date-time, nullable: true }
             next_from: { type: string, format: date-time, nullable: true, description: When a new one may start }
             max_days: { type: integer }
+        viewing:
+          type: object
+          required: [commentator, match_view, unity_ready]
+          description: How the coach watches his matches, the same on every device [X9, X10]
+          properties:
+            commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6], description: 'The Arabic voice; voice-6 is the default' }
+            match_view: { type: string, enum: [cartoon, unity], description: 'The simulator: the cartoon one (2D) or the advanced one (Unity)' }
+            unity_ready: { type: boolean, description: 'The Unity web build is deployed; until then the cartoon one plays' }
     Error:
       type: object
       required: [message, code]
@@ -3331,6 +4100,47 @@ components:
         def: { type: string, enum: [stay, fullbacks, mid] }
         trap: { type: integer, enum: [0, 1] }
         marking: { type: string, enum: [zone, man] }
+    BroadcastReaction:
+      type: object
+      required: [id, side, key, target, who, at]
+      properties:
+        id: { type: integer }
+        side: { type: string, nullable: true, enum: [home, away, null], description: The coach's side, or null for a league member who watches }
+        key: { type: string }
+        target: { type: string, nullable: true, enum: [home, away, null] }
+        who: { type: string }
+        at: { type: integer }
+    BroadcastChat:
+      type: object
+      required: [id, side, who, body, user_id, at]
+      properties:
+        id: { type: integer }
+        side: { type: string, nullable: true, enum: [home, away, null] }
+        who: { type: string }
+        body: { type: string }
+        user_id: { type: integer }
+        at: { type: integer }
+    AllianceSide:
+      type: object
+      required: [captain, clubs]
+      properties:
+        captain: { type: string, nullable: true }
+        clubs: { type: array, items: { type: object, additionalProperties: true } }
+    Scenario:
+      type: object
+      description: 'A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival.'
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [trailing, red_card, leading] }
+        minute: { type: integer, nullable: true, description: 'From this minute (trailing 46..85, leading 60..88); none for red_card' }
+        tactics:
+          type: object
+          properties: { pressing: { type: integer }, tempo: { type: integer }, style: { type: integer } }
+        sub:
+          type: object
+          nullable: true
+          required: [out, in]
+          properties: { out: { type: integer }, in: { type: integer } }
     TeamSetup:
       type: object
       properties:

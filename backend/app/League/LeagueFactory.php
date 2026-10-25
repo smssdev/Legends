@@ -49,7 +49,7 @@ class LeagueFactory
                 'team_count' => $settings['team_count'], 'rounds_per_day' => $settings['rounds_per_day'],
                 'round_times' => array_values($settings['round_times']), 'prep_days' => $settings['prep_days'],
                 'starts_at' => $settings['starts_at'], 'season_end_mode' => $settings['season_end_mode'],
-                'starting_budget' => $settings['starting_budget'], 'fair_league' => $settings['fair_league'],
+                'starting_budget' => $settings['starting_budget'], 'fair_league' => $settings['fair_league'], 'integrity' => $settings['integrity'] ?? false, 'second_slot_minutes' => $settings['second_slot_minutes'] ?? null,
                 'is_dev' => $settings['is_dev'] ?? false,
             ]);
             $rounds = self::rounds($settings['team_count']);

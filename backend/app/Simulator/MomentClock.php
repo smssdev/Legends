@@ -9,9 +9,15 @@ namespace App\Simulator;
  */
 class MomentClock
 {
-    public static function moment(array $events, array $match): array
+    public static function moment(array $events, array $match, int $period = 1): array
     {
         $kind = self::kind($events);
+        // [X35] The broadcast's fixed pace: every minute as long as the next, so the clock on screen runs like TV's.
+        if (isset($match['minute_ms'])) {
+            $ms = $kind === 'shootout' ? $match['shootout_ms'] : ($period >= 3 ? $match['extra_minute_ms'] : $match['minute_ms']);
+
+            return ['kind' => $kind, 'ms' => (int) $ms];
+        }
         $table = $match['moment_ms'] ?? null;
         if ($table === null) {
             return ['kind' => $kind, 'ms' => (int) $match['tick_ms']];

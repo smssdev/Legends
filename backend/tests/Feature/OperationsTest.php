@@ -56,7 +56,7 @@ class OperationsTest extends TestCase
         DB::table('push_subscriptions')->insert(['user_id' => $coach->id, 'endpoint' => 'https://push.example/x', 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
         Activity::record($coach->id, 'visits');
 
-        $this->actingAs($coach)->deleteJson('/api/v1/auth/me', ['password' => 'secret123'])->assertOk();
+        $this->actingAs($coach)->deleteJson('/api/v1/auth/me', ['password' => 'secret123', 'phrase' => 'احذف'])->assertOk();
 
         // No table keeps a row that points at the account.
         foreach (DB::select("select name from sqlite_master where type = 'table'") as $t) {
@@ -106,6 +106,13 @@ class OperationsTest extends TestCase
         $this->getJson('/api/v1/admin/users')->assertOk()->assertJsonCount(2, 'users');
         $this->getJson('/api/v1/admin/leagues')->assertOk();
         $this->getJson('/api/v1/admin/commentary')->assertOk();
+        // [X33] Whether a deploy is safe now, and a backup to download off the server.
+        $this->getJson('/api/v1/admin/overview')->assertJsonPath('deploy.busy', 0)->assertJsonPath('deploy.next_kickoff', null);
+        $name = $this->postJson('/api/v1/admin/backups')->assertOk()->json('backups.0.name');
+        $download = $this->get("/api/v1/admin/backups/$name/download")->assertOk();
+        $this->assertStringStartsWith('SQLite format 3', (string) file_get_contents($download->baseResponse->getFile()->getPathname()));
+        $this->get('/api/v1/admin/backups/2020-01-01_000000/download')->assertNotFound();
+        $this->get('/api/v1/admin/backups/..%2F..%2F.env/download')->assertNotFound();
         // Hours later the code is asked again.
         Carbon::setTestNow(GameClock::now()->addHours(13));
         $this->getJson('/api/v1/admin/overview')->assertStatus(423);

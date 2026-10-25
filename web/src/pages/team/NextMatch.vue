@@ -6,12 +6,15 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
+import Icon from '../../components/Icon.vue'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
+import RatingRing from '../../components/ui/RatingRing.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
+import TicketsPanel from './TicketsPanel.vue'
+import IntegrityPanel from './IntegrityPanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
-import { strength } from '../../lib/format'
 
 type Match = NonNullable<paths['/leagues/{league}/team/next-match']['get']['responses'][200]['content']['application/json']['match']>
 const match = ref<Match | null>(null)
@@ -66,6 +69,11 @@ onMounted(async () => {
   loaded.value = true
 })
 onBeforeUnmount(() => window.clearInterval(timer))
+const ACTIONS = [
+  { name: 'lineup', label: 'التشكيلة', icon: 'lineup' },
+  { name: 'tactics', label: 'التكتيك', icon: 'tactics' },
+  { name: 'training', label: 'التدريب', icon: 'training' },
+] as const
 </script>
 
 <template>
@@ -75,33 +83,52 @@ onBeforeUnmount(() => window.clearInterval(timer))
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
     <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">لا مباريات قادمة الآن.</p>
     <template v-else-if="match">
-      <section class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4">
-        <div class="flex items-center gap-3">
-          <ClubCrest :url="match.opponent.crest_url" :code="match.opponent.code" :size="56" />
-          <div class="min-w-0 flex-1">
-            <p class="text-sm text-text-muted">{{ match.venue === 'home' ? 'على أرضك ضد' : 'خارج أرضك ضد' }}</p>
-            <p class="truncate font-display text-2xl font-extrabold">{{ match.opponent.name }}</p>
-            <p class="text-sm text-text-muted">{{ match.opponent.coach ?? 'الحاسوب' }} · القوة <span class="font-numbers">{{ strength(match.opponent.strength_cp) }}</span></p>
-          </div>
-          <UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : `الجولة ${match.round}` }}</UiChip>
+      <!-- [X32] The VS dashboard: a blue band with the competition, both clubs on ivory discs with their strength in a
+           ring, the countdown to the lock between them, then the facts and the action cards. -->
+      <section class="overflow-hidden rounded-xl bg-surface">
+        <div class="vs-band flex items-center justify-center gap-2 px-4 py-2 text-sm font-extrabold text-white">
+          {{ match.competition === 'cup' ? 'الكأس' : match.competition === 'alliance' ? `بطولة التحالفات · الدور ${match.round}` : `الجولة ${match.round}` }}{{ match.slot === 2 ? ' · السهرة' : '' }}
+          <span class="rounded bg-black/25 px-2 py-0.5 text-xs">{{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</span>
         </div>
-        <dl class="grid grid-cols-3 gap-2 text-center text-sm">
-          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الموعد</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الحكم</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : 'قبلها بنصف ساعة' }}</dd></div>
-          <div class="rounded-lg bg-surface-sunk p-2">
-            <dt class="text-text-muted">{{ locked ? 'مقفلة' : 'يُقفل بعد' }}</dt>
-            <dd class="font-numbers text-lg font-bold text-gold" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</dd>
+        <div class="relative isolate px-3 pb-4 pt-5 md:px-8">
+          <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40" />
+          <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-panel" aria-hidden="true" />
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-6">
+            <div v-for="(side, i) in [match.club, match.opponent]" :key="i" class="flex flex-col items-center gap-2 text-center" :class="i === 1 ? 'order-last' : ''">
+              <span class="vs-disc"><ClubCrest :url="side.crest_url" :code="side.code" :size="64" /></span>
+              <b class="line-clamp-1 font-display text-base md:text-2xl">{{ side.name }}</b>
+              <span class="text-xs text-text-muted">{{ i === 0 ? 'فريقك' : match.opponent.coach ?? 'الحاسوب' }}</span>
+              <RatingRing :value="Math.round(side.strength_cp / 100)" label="القوة" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="60" />
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="font-display text-4xl font-extrabold italic text-white drop-shadow md:text-6xl">VS</span>
+              <span class="text-[11px] font-bold text-text-muted">{{ locked ? 'مقفلة' : 'يُقفل بعد' }}</span>
+              <span class="rounded-lg bg-black/40 px-3 py-1 font-numbers text-xl font-bold text-ring md:text-2xl" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
+            </div>
           </div>
-        </dl>
-        <p class="text-xs text-text-muted">قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.</p>
-        <RouterLink
-          v-if="match.status === 'live' && match.match_id"
-          :to="{ name: 'league-match', params: { id: match.match_id } }"
-          class="flex h-12 items-center justify-center gap-2 rounded-lg bg-live font-display font-extrabold text-white"
-        ><span class="size-2 rounded-full bg-white" />تابع المباراة مباشرة</RouterLink>
-        <div v-if="!locked" class="flex gap-2">
-          <RouterLink :to="{ name: 'lineup' }" class="flex h-12 flex-1 items-center justify-center rounded-lg bg-gold font-display font-extrabold text-on-gold">التشكيلة</RouterLink>
-          <RouterLink :to="{ name: 'tactics' }" class="flex h-12 flex-1 items-center justify-center rounded-lg border border-gold/70 font-display font-extrabold text-gold">التكتيك</RouterLink>
+        </div>
+        <div class="flex flex-col gap-3 p-4 pt-0">
+          <dl class="grid grid-cols-3 gap-2 text-center text-sm">
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">الموعد</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">المعنويات</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-[#FF8A8A]' : 'text-gold'">{{ match.morale }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">الحكم</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : 'قبلها بنصف ساعة' }}</dd></div>
+          </dl>
+          <p v-if="match.match_of_day" class="rounded-lg bg-gold/15 px-3 py-2 text-center text-sm font-bold text-gold">⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة</p>
+          <RouterLink
+            v-if="match.status === 'live' && match.match_id"
+            :to="{ name: 'league-match', params: { id: match.match_id } }"
+            class="flex h-12 items-center justify-center gap-2 rounded-lg bg-live font-display font-extrabold text-white"
+          ><span class="size-2 animate-pulse rounded-full bg-white" />تابع المباراة مباشرة</RouterLink>
+          <!-- The action cards: what to prepare before the lock. -->
+          <div v-if="!locked" class="grid grid-cols-3 gap-2">
+            <RouterLink v-for="c in ACTIONS" :key="c.name" :to="{ name: c.name }" class="action-card">
+              <span class="grid size-11 place-items-center rounded-full bg-brand text-white shadow-md"><Icon :name="c.icon" /></span>
+              <b class="text-sm">{{ c.label }}</b>
+            </RouterLink>
+          </div>
+          <p class="text-xs text-text-muted">{{ match.slot === 2
+            ? 'جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.'
+            : 'قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.' }}</p>
         </div>
       </section>
 
@@ -156,6 +183,39 @@ onBeforeUnmount(() => window.clearInterval(timer))
         </template>
       </section>
     </template>
-    <p v-else class="text-text-muted">جارٍ التحميل…</p>
+    <IntegrityPanel v-if="leagueId" :league-id="leagueId" />
+    <TicketsPanel v-if="leagueId" :league-id="leagueId" />
+    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>
   </div>
 </template>
+
+<style scoped>
+.vs-band {
+  background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background-blend-mode: soft-light, normal;
+}
+/* The crest on a ivory disc, as on a broadcast's match card. */
+.vs-disc {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 60%, transparent), 0 12px 26px -10px rgb(0 0 0 / 0.8);
+}
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 6rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 22%, transparent), color-mix(in srgb, var(--color-bg-deep) 70%, transparent));
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
+}
+.action-card:hover {
+  border-color: var(--color-brand-light);
+}
+</style>

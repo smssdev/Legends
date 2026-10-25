@@ -6,7 +6,9 @@
 // The server checks every rule and answers in Arabic; this screen only arranges.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
+import { useGlossary } from '../../lib/glossary'
 import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
@@ -83,7 +85,30 @@ const short = (name: string) => {
   const w = name.split(' ')
   return w.length > 1 && w[w.length - 1].length <= 3 ? w.slice(-2).join(' ') : w[w.length - 1]
 }
-const ring = (line: string) => ({ gk: 'border-[#F5B82E]', def: 'border-[#3B82F6]', mid: 'border-[#22A35A]', att: 'border-[#F08A3C]' })[line] ?? 'border-text/30'
+// Chemistry [X22]: measured by the server on the saved eleven, so the links show until the lineup changes.
+const g = useGlossary()
+const chemistry = computed(() => team.value?.lineup.chemistry)
+const chemColor = (score: number) => (score >= 85 ? 'var(--color-success)' : score < 50 ? 'var(--color-live)' : 'var(--color-gold)')
+const LINK_COLOR = { green: 'var(--color-success)', yellow: 'var(--color-gold)', red: 'var(--color-live)' } as const
+const links = computed(() => {
+  if (dirty.value || !chemistry.value || !current.value) return []
+  const at = (id: number) => {
+    const i = starters.value.indexOf(id)
+    const s = current.value!.slots[i]
+    return s ? { x: (s.y / 680) * 100, y: 100 - (s.x / 720) * 100 } : null
+  }
+  return chemistry.value.links.flatMap((l) => {
+    const [a, b] = [at(l.a), at(l.b)]
+    return a && b ? [{ ...l, x1: a.x, y1: a.y, x2: b.x, y2: b.y }] : []
+  })
+})
+// The mini cards on the pitch [X29], as the squad's cards: gold from 85, silver from 75, bronze under.
+const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
+const MINI = {
+  gold: 'border-gold from-[#6b5214] to-surface text-gold',
+  silver: 'border-chrome/70 from-[#4a5a63] to-surface text-text',
+  bronze: 'border-[#B4692A] from-[#55331a] to-surface text-text',
+} as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
 type Spot = { zone: 'slot' | 'bench' | 'reserve'; index: number }
@@ -350,6 +375,15 @@ async function saveCustom() {
         <UiButton variant="outline" class="ms-auto" @click="improve">تحسين</UiButton>
       </div>
 
+      <div v-if="chemistry" class="flex items-center gap-3 rounded-xl bg-surface px-3 py-2">
+        <span class="flex items-center gap-1 text-sm font-bold">الكيمياء<HelpTip :text="g.chemistry" label="الكيمياء" /></span>
+        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" aria-label="الكيمياء">
+          <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
+        </span>
+        <span class="font-numbers text-lg font-bold" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</span>
+      </div>
+      <p v-if="chemistry && dirty" class="text-xs text-text-muted">احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.</p>
+
       <div class="flex gap-1 rounded-xl bg-surface-sunk p-1 text-sm" role="group" aria-label="العرض">
         <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="h-10 flex-1 rounded-lg font-bold" :class="view === v ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="view = v">{{ label }}</button>
       </div>
@@ -358,13 +392,17 @@ async function saveCustom() {
       <p v-if="selected" class="text-sm text-gold">اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.</p>
       <p class="text-xs text-text-muted">اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.</p>
 
-      <div ref="pitch" class="relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl border-2 border-white/20 bg-[repeating-linear-gradient(0deg,#1f8f4e_0,#1f8f4e_8%,#22994f_8%,#22994f_16%)]">
+      <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
+      <div ref="pitch" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
         <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
         <div class="pointer-events-none absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-[28%] bottom-3 h-[13%] border-2 border-b-0 border-white/40" />
         <div class="pointer-events-none absolute inset-x-[28%] top-3 h-[13%] border-2 border-t-0 border-white/40" />
         <div v-if="band" class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15" :style="band" />
+        <svg v-if="links.length" class="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <line v-for="l in links" :key="`${l.a}-${l.b}`" :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2" :stroke="LINK_COLOR[l.color]" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.85" />
+        </svg>
         <button
           v-for="(slot, i) in current.slots"
           :key="i"
@@ -378,11 +416,16 @@ async function saveCustom() {
           @click="click({ zone: 'slot', index: i })"
         >
           <template v-if="starters[i] && players.get(starters[i]!)">
+            <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
             <span
-              class="flex size-12 items-center justify-center rounded-full border-[3px] bg-bg font-numbers text-lg font-bold"
-              :class="[ring(slot.line), isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
-            >{{ shown(players.get(starters[i]!)!) }}</span>
-            <span class="max-w-full truncate rounded bg-bg/85 px-1.5 text-xs font-bold" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
+              class="mini-card relative flex h-16 w-13 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-black/50"
+              :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
+            >
+              <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
+              <b class="font-numbers text-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
+              <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
+            </span>
+            <span class="max-w-full truncate rounded bg-chrome px-1.5 text-xs font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
             <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(starters[i]!)!.fitness)" :style="{ width: `${players.get(starters[i]!)!.fitness}%` }" /></span>
           </template>
           <span v-else class="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-white/70 text-2xl text-white">+</span>
@@ -508,3 +551,21 @@ async function saveCustom() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.lineup-pitch {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 50%, rgb(255 255 255 / 0.12), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 60%, rgb(0 0 0 / 0.35)),
+    repeating-linear-gradient(0deg, #1d8a4b 0, #1d8a4b 7.5%, #23994f 7.5%, #23994f 15%);
+  box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent), 0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+/* A sheen across the top of each mini card, as on a printed card. */
+.mini-card::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 55% 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.22), transparent);
+  pointer-events: none;
+}
+</style>

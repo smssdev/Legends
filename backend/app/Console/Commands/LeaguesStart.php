@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\League\Alliance;
 use App\League\LeagueStarter;
+use App\League\LiveDraw;
 use Illuminate\Console\Command;
 
 /** Every minute: start the leagues whose start time has come, and lock their settings [PLAN 2.1, 2.3]. */
@@ -14,6 +16,10 @@ class LeaguesStart extends Command
 
     public function handle(): int
     {
+        // The live draws whose time has come [X26], then the starts.
+        LiveDraw::due();
+        // The alliance tournaments' captains' picks that ran out of time, and their next rounds [X27].
+        Alliance::tick();
         $n = LeagueStarter::due();
         if ($n > 0) {
             $this->line("بدأ {$n} دوري.");

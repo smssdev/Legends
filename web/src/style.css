@@ -7,5 +7,232 @@
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
+
+  /* [X32] Our own stadium at night, blurred once beforehand (tools/web/stadium_bg.py), behind every screen under a
+     navy veil, as the owner asked after reviewing OSM. On a layer of its own rather than a fixed background, which
+     makes phones repaint the whole page on every frame and every scroll [X30]; the phone gets a lighter copy. */
+  body {
+    min-height: 100dvh;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    will-change: transform;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+      url("/art/stadium-blur.jpg") center top / cover no-repeat,
+      var(--color-bg-deep);
+  }
+  @media (max-width: 767px) {
+    body::after {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+        url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
+        var(--color-bg-deep);
+    }
+  }
+
+  /* One visible focus ring for keyboards, none for taps. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  /* Buttons and links answer the touch: a quick press, colours that ease. */
+  a,
+  button {
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  }
+  button:not(:disabled):active,
+  a:active {
+    transform: scale(0.98);
+  }
+
+  /* Thin scroll bars in the theme. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-text) 20%, transparent) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+/*
+ * [X29] The game's look, in one place: every screen's cards, buttons, titles, tables and fields. Outside the layers on
+ * purpose, so it sits over the utilities it refines; each rule matches only the classes it is for.
+ */
+
+/* Panels [X32]: deep navy over the stadium, a bright blue edge at the top like a broadcast card, depth below. */
+.rounded-xl.bg-surface,
+.rounded-2xl.bg-surface,
+.rounded-xxl.bg-surface,
+.rounded-t-xxl.bg-surface {
+  background-color: color-mix(in srgb, var(--color-panel) 88%, transparent);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 16%, transparent), transparent 70px);
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 18%, transparent);
+  border-top-color: color-mix(in srgb, var(--color-brand-light) 45%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-brand-light) 20%, transparent) inset, 0 18px 40px -24px rgb(0 0 0 / 0.8);
+  backdrop-filter: blur(8px);
+}
+/* The smooth mode on weak phones [X30]: the same cards, solid instead of blurred (no blur to redo on every scroll). */
+html.smooth .rounded-xl.bg-surface,
+html.smooth .rounded-2xl.bg-surface,
+html.smooth .rounded-xxl.bg-surface,
+html.smooth .rounded-t-xxl.bg-surface {
+  backdrop-filter: none;
+  background-color: var(--color-panel);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-text) 6%, transparent) inset;
+}
+html.smooth .backdrop-blur,
+html.smooth .backdrop-blur-sm,
+html.smooth .backdrop-blur-md {
+  backdrop-filter: none;
+}
+.rounded-xl.bg-surface-sunk,
+.rounded-lg.bg-surface-sunk {
+  background-color: color-mix(in srgb, var(--color-bg-deep) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 5%, transparent);
+}
+
+/* The gold call to action: lit from above, with a glow that grows under the finger or the mouse. */
+button.bg-gold,
+a.bg-gold {
+  background-image: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 55%, var(--color-gold-dark));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 8px 22px -10px color-mix(in srgb, var(--color-gold) 80%, transparent);
+}
+button.bg-gold:not(:disabled):hover,
+a.bg-gold:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 12px 30px -10px color-mix(in srgb, var(--color-gold) 90%, transparent);
+}
+
+/* A disabled call to action goes quiet rather than muddy [X32]. */
+button.bg-gold:disabled,
+button.bg-brand:disabled {
+  background-image: none;
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  box-shadow: none;
+}
+
+/* The club's money on the screens that spend it [X32]: an emerald-tinted box, as the money pill of the management games. */
+.money-box {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-brand) 32%, var(--color-panel)), var(--color-panel));
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 35%, transparent);
+  box-shadow: 0 10px 24px -16px rgb(0 0 0 / 0.8);
+}
+.money-box b {
+  color: #fff;
+}
+
+/* The emerald action [X32]: the brand's own button, lit from above like the gold. */
+button.bg-brand,
+a.bg-brand {
+  color: #fff;
+  background-image: linear-gradient(180deg, var(--color-brand-light), var(--color-brand) 55%, var(--color-brand-dark));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.3) inset, 0 8px 22px -10px var(--color-brand);
+}
+button.bg-brand:not(:disabled):hover,
+a.bg-brand:hover {
+  filter: brightness(1.08);
+}
+
+/* Page titles: the cream turning gold, and a short gold bar under them. */
+main h1.font-display {
+  background-image: linear-gradient(90deg, var(--color-gold-light), var(--color-text) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.35rem;
+  position: relative;
+}
+main h1.font-display::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 2.75rem;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+/* A section's title inside a card: a small gold tick before it. */
+main section > h2.font-display,
+main section > div > h2.font-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+main section > h2.font-display::before,
+main section > div > h2.font-display::before {
+  content: "";
+  width: 4px;
+  height: 1.1em;
+  border-radius: 999px;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+/* Tables [X32]: a solid blue header like a broadcast's league table, the rows striped, the coach's own row in gold
+   (UiTable's highlight, or any row marked .is-mine). */
+main table thead th {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  padding-inline: 0.6rem;
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+}
+main table thead th:first-child {
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+main table thead th:last-child {
+  border-start-end-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
+}
+main table tbody tr {
+  transition: background-color 0.15s ease;
+}
+main table tbody tr:nth-child(even):not(.is-mine) {
+  background-color: color-mix(in srgb, var(--color-text) 3.5%, transparent);
+}
+main table tbody tr:hover:not(.is-mine) {
+  background-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent);
+}
+main table tbody tr.is-mine {
+  background: linear-gradient(90deg, var(--color-gold-light), var(--color-gold));
+  color: var(--color-on-gold);
+  font-weight: 700;
+}
+main table tbody tr.is-mine * {
+  color: inherit;
+}
+
+/* Fields: a gold glow when typing. */
+main input:not([type="range"]):not([type="radio"]):focus,
+main select:focus,
+main textarea:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-gold) 22%, transparent);
+  outline: none;
+}
+/* Sliders and radios in the theme's gold. */
+input[type="range"],
+input[type="radio"] {
+  accent-color: var(--color-gold);
 }

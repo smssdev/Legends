@@ -31,7 +31,7 @@ class SeasonSimTest extends TestCase
         $season = $sim->run($this->clubs(), 3_000_000, $this->play());
         $this->assertSame(10, $season['rounds']);
         foreach ($season['clubs'] as $b) {
-            $this->assertSame(3_000_000 + $b['income'] - $b['wages'], $b['balance']);
+            $this->assertSame(3_000_000 + $b['income'] - $b['wages'] - $b['penalties'], $b['balance']);
         }
         // The champion earns more than the last.
         $this->assertGreaterThan($season['clubs'][6]['income'], $season['clubs'][1]['income']);

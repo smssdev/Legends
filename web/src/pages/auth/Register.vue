@@ -1,23 +1,22 @@
 <script setup lang="ts">
 // docs/design/legends-ui: WebRegister, MobileRegister.
+import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { asApiError } from '../../api/client'
 import GoogleButton from '../../components/GoogleButton.vue'
 import TextField from '../../components/TextField.vue'
+import UsernameField from '../../components/UsernameField.vue'
 import { useAuth } from '../../stores/auth'
 
 const auth = useAuth()
 const router = useRouter()
 const name = ref('')
 const username = ref('')
+const usernameField = ref<InstanceType<typeof UsernameField> | null>(null)
 const email = ref('')
 const password = ref('')
 const confirm = ref('')
-// The username is English letters only [X4]: anything else is dropped as it is typed.
-function onlyLetters(v: string) {
-  username.value = v.replace(/[^A-Za-z]/g, '').slice(0, 20)
-}
 const mismatch = computed(() => confirm.value !== '' && confirm.value !== password.value)
 const terms = ref(false)
 const busy = ref(false)
@@ -40,8 +39,9 @@ async function submit() {
   }
   busy.value = true
   try {
-    await auth.register(name.value.trim(), username.value.trim(), email.value.trim(), password.value, confirm.value, terms.value)
-    router.replace('/profile?welcome=1')
+    await usernameField.value?.settle()
+    const sent = await auth.register(name.value.trim(), username.value.trim(), email.value.trim(), password.value, confirm.value, terms.value)
+    router.replace(sent ? '/profile?welcome=1' : '/profile?welcome=unsent')
   } catch (e) {
     const err = asApiError(e)
     errors.value = Object.fromEntries(['name', 'username', 'email', 'password', 'terms'].map((k) => [k, err.field(k)]))
@@ -58,7 +58,7 @@ async function submit() {
   <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />أو بالبريد<span class="h-px flex-1 bg-text/10" /></div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
     <TextField v-model="name" label="اسمك في اللعبة" autocomplete="nickname" placeholder="مثلاً: كوتش حمزة" :error="errors.name" />
-    <TextField :model-value="username" label="اسم المستخدم" type="username" autocomplete="username" placeholder="hamza" :error="errors.username" hint="حروف إنجليزية فقط، من 3 إلى 20 حرفاً" @update:model-value="onlyLetters" />
+    <UsernameField ref="usernameField" v-model="username" :error="errors.username" />
     <TextField v-model="email" label="البريد الإلكتروني" type="email" autocomplete="email" placeholder="you@example.com" :error="errors.email" />
     <div class="flex flex-col gap-2">
       <TextField v-model="password" label="كلمة المرور" type="password" autocomplete="new-password" :error="errors.password" hint="8 أحرف على الأقل، فيها حروف وأرقام" />
@@ -67,7 +67,7 @@ async function submit() {
       </div>
     </div>
     <TextField v-model="confirm" label="تأكيد كلمة المرور" type="password" autocomplete="new-password" :error="errors.confirm || (mismatch ? 'كلمتا المرور غير متطابقتين' : '')" />
-    <label class="flex min-h-touch items-center gap-3 text-sm"><input v-model="terms" type="checkbox" class="size-5 accent-[var(--color-gold)]" />أوافق على الشروط وسياسة الخصوصية</label>
+    <UiToggle v-model="terms" label="أوافق على الشروط وسياسة الخصوصية" />
     <p v-if="errors.terms" class="-mt-3 text-sm text-[#FF8A8A]">{{ errors.terms }}</p>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? 'جارٍ الإنشاء…' : 'إنشاء الحساب' }}</button>

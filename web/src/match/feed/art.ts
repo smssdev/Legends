@@ -9,12 +9,19 @@ const NS = 'http://www.w3.org/2000/svg'
 // The two kits of the match: { kit, ink, trim, name } per side, set by the feed.
 let KITS = { home: { kit: '#E8ECF4', ink: '#0A1F42', trim: '#F5B82E', name: '' }, away: { kit: '#D3122F', ink: '#FFFFFF', trim: '#F6C343', name: '' } }
 export function setKits(k) { KITS = k }
+// The smooth mode [X30]: no glow filter (redrawn every frame on the phone's processor for every line and trail) and a third of the crowd.
+let SMOOTH = false
+export function setSmooth(v) { SMOOTH = !!v }
 const K = (s) => KITS[s] ?? KITS.home
 const other = (s) => (s === 'home' ? 'away' : 'home')
 const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
 const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
 // A keeper's kit that stands apart from both teams.
-const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
+export const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
+
+// Writes an attribute only when it changes [X30]: every write, even of the same value, makes the browser lay the
+// scene out again, and a scene sets hundreds of them a frame (most of them unchanged, like the flashes at rest).
+const sa = (e, k, v) => { const key = '_' + k; if (e[key] === v) return; e[key] = v; e.setAttribute(k, v) }
 
 let uid = 0
 export const crest = ([c1, c2, t]) => {
@@ -41,7 +48,7 @@ export const ICON = {
 
 
 // ---------------------------------------------------------------- the motion kit
-const el = (tag, a, p) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e }
+const el = (tag, a, p) => { const e = document.createElementNS(NS, tag); for (const k in a) sa(e, k, a[k]); p && p.appendChild(e); return e }
 const clamp = (v) => Math.max(0, Math.min(1, v))
 const seg = (t, a, b) => clamp((t - a) / (b - a))
 const ease = (f) => 1 - Math.pow(1 - f, 3)
@@ -77,7 +84,7 @@ function stage(side) {
   <rect width="640" height="340" fill="#040B1C"/>
   <g data-world="1">
   <rect x="-80" y="-40" width="800" height="200" fill="url(#${id}h)"/>
-  <g>${Array.from({ length: 220 }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${['#2B4F8C', '#3D63A8', c, '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
+  <g>${Array.from({ length: SMOOTH ? 70 : 220 }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${['#2B4F8C', '#3D63A8', c, '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
   <rect x="-80" y="122" width="800" height="16" fill="url(#${id}b)"/>
   <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
   ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Alexandria, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
@@ -91,9 +98,9 @@ function stage(side) {
   svg.world = svg.querySelector('[data-world]')
   return svg
 }
-const ref = (svg, name) => `url(#${name}${svg.dataset.id})`
+const ref = (svg, name) => (SMOOTH && name === 'glow' ? 'none' : `url(#${name}${svg.dataset.id})`)
 // The camera: zoom z around a point that stays put on screen.
-const cam = (svg, z, fx = 320, fy = 170, dx = 0, dy = 0) => svg.world.setAttribute('transform', `translate(${fx + dx} ${fy + dy}) scale(${z}) translate(${-fx} ${-fy})`)
+const cam = (svg, z, fx = 320, fy = 170, dx = 0, dy = 0) => sa(svg.world, 'transform', `translate(${fx + dx} ${fy + dy}) scale(${z}) translate(${-fx} ${-fy})`)
 
 // The goal with a net that bulges where the ball hits it.
 function goalFrame(svg, p = svg.world) {
@@ -113,7 +120,7 @@ function goalFrame(svg, p = svg.world) {
     bulge(x0, y0, f) {
       if (f <= 0 && !bulged) return
       bulged = f > 0
-      for (const { e, pts } of lines) e.setAttribute('points', pts.map(([x, y]) => { const k = f * Math.exp(-((x - x0) ** 2 + (y - y0) ** 2) / 1300); return `${x + (x - x0) * 0.18 * k},${y - 13 * k + (y - y0) * 0.1 * k}` }).join(' '))
+      for (const { e, pts } of lines) sa(e, 'points', pts.map(([x, y]) => { const k = f * Math.exp(-((x - x0) ** 2 + (y - y0) ** 2) / 1300); return `${x + (x - x0) * 0.18 * k},${y - 13 * k + (y - y0) * 0.1 * k}` }).join(' '))
     },
   }
 }
@@ -122,7 +129,7 @@ function goalFrame(svg, p = svg.world) {
 // posable (running, striking, diving, celebrating). look picks the skin and hair.
 const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
 const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
-function player(p, kit, no, s = 1, o = {}) {
+export function player(p, kit, no, s = 1, o = {}) {
   if (p.world) p = p.world
   const light = lum(kit) > 150, ink = light ? '#0A1F42' : '#fff', look = o.look ?? 0
   const skin = SKINS[look % SKINS.length], hair = HAIR[Math.floor(look / 7) % HAIR.length], shorts = o.shorts ?? (light ? '#1C2B48' : shade(kit, -80))
@@ -140,11 +147,11 @@ function player(p, kit, no, s = 1, o = {}) {
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
   const arms = [part(-14.5, -7, arm), part(14.5, -7, arm)]
   part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/>`)
-  const setLeg = (i, r, lift) => legs[i].e.setAttribute('transform', `translate(${legs[i].x} ${legs[i].y}) rotate(${r}) scale(1 ${1 - 0.45 * lift})`)
-  const setArm = (i, r) => arms[i].e.setAttribute('transform', `translate(${arms[i].x} ${arms[i].y}) rotate(${r})`)
+  const setLeg = (i, r, lift) => sa(legs[i].e, 'transform', `translate(${legs[i].x} ${legs[i].y}) rotate(${r}) scale(1 ${1 - 0.45 * lift})`)
+  const setArm = (i, r) => sa(arms[i].e, 'transform', `translate(${arms[i].x} ${arms[i].y}) rotate(${r})`)
   const api = {
     g,
-    at(x, y, r = 0, k = s) { g.setAttribute('transform', `translate(${x} ${y}) rotate(${r}) scale(${k})`) },
+    at(x, y, r = 0, k = s) { sa(g, 'transform', `translate(${x} ${y}) rotate(${r}) scale(${k})`) },
     // Arm angles: 0 hangs down, positive swings the left arm out (the right arm takes the negative).
     pose(l1 = 3, l2 = -3, a1 = 10, a2 = -10, lift1 = 0, lift2 = 0) { setLeg(0, l1, lift1); setLeg(1, l2, lift2); setArm(0, a1); setArm(1, a2) },
     run(ph, amp = 1) { const q = Math.sin(ph); api.pose(4, -4, 16 + 24 * q * amp, -16 + 24 * q * amp, Math.max(0, q) * amp, Math.max(0, -q) * amp) },
@@ -203,33 +210,33 @@ function ball(svg, p = svg.world) {
     // Screen point, its depth on the ground (for size and shadow), and how much it has spun.
     set(x, y, ground, turn = 0, op = 1) {
       const s = persp(ground) * 1.05
-      g.setAttribute('transform', `translate(${x} ${y}) scale(${s})`)
-      g.setAttribute('opacity', op)
-      spin.setAttribute('transform', `rotate(${turn})`)
+      sa(g, 'transform', `translate(${x} ${y}) scale(${s})`)
+      sa(g, 'opacity', op)
+      sa(spin, 'transform', `rotate(${turn})`)
       const h = clamp((ground - y) / 90)
-      shadow.setAttribute('cx', x + h * 6); shadow.setAttribute('cy', ground); shadow.setAttribute('rx', 6 * s * (1 - h * 0.5)); shadow.setAttribute('ry', 2 * s * (1 - h * 0.5))
-      shadow.setAttribute('opacity', op * (1 - h * 0.7))
+      sa(shadow, 'cx', x + h * 6); sa(shadow, 'cy', ground); sa(shadow, 'rx', 6 * s * (1 - h * 0.5)); sa(shadow, 'ry', 2 * s * (1 - h * 0.5))
+      sa(shadow, 'opacity', op * (1 - h * 0.7))
     },
   }
 }
 function trail(svg, p = svg.world, color = '#FFE7A8') { return el('path', { d: '', fill: 'none', stroke: color, 'stroke-width': 2.5, 'stroke-linecap': 'round', opacity: 0, filter: ref(svg, 'glow') }, p) }
-const drawTrail = (tr, path, f, op, from = 0) => { const pts = Array.from({ length: 14 }, (_, i) => bez(path, Math.max(from, f - 0.35) + ((f - Math.max(from, f - 0.35)) * i) / 13)); tr.setAttribute('d', 'M' + pts.map((q) => q.join(' ')).join(' L')); tr.setAttribute('opacity', op) }
+const drawTrail = (tr, path, f, op, from = 0) => { const pts = Array.from({ length: 14 }, (_, i) => bez(path, Math.max(from, f - 0.35) + ((f - Math.max(from, f - 0.35)) * i) / 13)); sa(tr, 'd', 'M' + pts.map((q) => q.join(' ')).join(' L')); sa(tr, 'opacity', op) }
 // The headline: a dark band with gold rules sliding in, the word over it.
 function title(svg, text, color) {
   const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: 'rgba(4,11,28,.75)', opacity: 0 }, svg)
   const r1 = el('rect', { x: 0, y: 4, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg), r2 = el('rect', { x: 0, y: 62, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg)
   const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), opacity: 0 }, svg)
   t.textContent = text
-  return (f) => { const e = ease(f); band.setAttribute('opacity', f); r1.setAttribute('opacity', f); r2.setAttribute('opacity', f); r1.setAttribute('transform', `translate(${(1 - e) * -640} 0)`); r2.setAttribute('transform', `translate(${(1 - e) * 640} 0)`); t.setAttribute('opacity', f); t.setAttribute('transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`) }
+  return (f) => { const e = ease(f); sa(band, 'opacity', f); sa(r1, 'opacity', f); sa(r2, 'opacity', f); sa(r1, 'transform', `translate(${(1 - e) * -640} 0)`); sa(r2, 'transform', `translate(${(1 - e) * 640} 0)`); sa(t, 'opacity', f); sa(t, 'transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`) }
 }
 function bigNumber(svg, no, kit) {
   const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Alexandria, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
   t.textContent = no ?? ''
-  return (f) => { t.setAttribute('opacity', f * 0.35); t.setAttribute('transform', `translate(${(1 - ease(f)) * 60} 0)`) }
+  return (f) => { sa(t, 'opacity', f * 0.35); sa(t, 'transform', `translate(${(1 - ease(f)) * 60} 0)`) }
 }
-function flash(svg) { const r = el('rect', { width: 640, height: 340, fill: '#FFF6DA', opacity: 0 }, svg); return (f) => r.setAttribute('opacity', f) }
+function flash(svg) { const r = el('rect', { width: 640, height: 340, fill: '#FFF6DA', opacity: 0 }, svg); return (f) => sa(r, 'opacity', f) }
 // Camera flashes in the stands after a goal.
-function flashes(svg, p = svg.world) { const d = Array.from({ length: 26 }, (_, i) => el('circle', { cx: ((i * 97) % 720) - 40, cy: 12 + ((i * 53) % 100), r: 2.2, fill: '#fff', opacity: 0 }, p)); return (t, on) => d.forEach((c, i) => c.setAttribute('opacity', on && Math.sin(t * 23 + i * 7.3) > 0.92 ? 0.95 : 0)) }
+function flashes(svg, p = svg.world) { const d = Array.from({ length: 26 }, (_, i) => el('circle', { cx: ((i * 97) % 720) - 40, cy: 12 + ((i * 53) % 100), r: 2.2, fill: '#fff', opacity: 0 }, p)); return (t, on) => d.forEach((c, i) => sa(c, 'opacity', on && Math.sin(t * 23 + i * 7.3) > 0.92 ? 0.95 : 0)) }
 const run = (t, a, b) => Math.sin(t * 12) * 4 * (t > a && t < b ? 1 : 0)
 
 /**
@@ -366,7 +373,7 @@ function openPlay(e, outcome, KT) {
     } else {
       // What happens once it gets there.
       const a = t - KT
-      tr.setAttribute('opacity', Math.max(0, 0.55 - a * 1.5))
+      sa(tr, 'opacity', Math.max(0, 0.55 - a * 1.5))
       if (after === 'net') { const f = ease(clamp(a / 0.18)), d = clamp((a - 0.18) / 0.5); bx = target[0] + (target[0] - 320) * 0.05 * f; by = lerp(target[1] - 10 * f, 146, d * d) - Math.abs(Math.sin(d * 9)) * 4 * (1 - d); gr = LINE - 8 }
       else if (after === 'hold') { landed ??= glove; bx = (glove ?? landed)[0]; by = (glove ?? landed)[1]; gr = LINE + 2; turn = 0 }
       else if (after === 'parry') { const f = ease(clamp(a / 0.8)), dx = Math.sign(target[0] - 320) || 1; const p = bez([target, [target[0] + dx * 70, target[1] - 26], [target[0] + dx * (e.corner ? 150 : 96), 196]], f); bx = p[0]; by = p[1] - Math.abs(Math.sin(f * 7)) * 8 * (1 - f); gr = lerp(LINE, 196, f) }
@@ -377,7 +384,7 @@ function openPlay(e, outcome, KT) {
     }
     b.set(bx, by, gr, turn, op)
     if (after === 'net') G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2)))
-    if (after === 'post') G.frame.setAttribute('transform', `translate(${Math.sin(t * 70) * 1.8 * seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 0.6))} 0)`)
+    if (after === 'post') sa(G.frame, 'transform', `translate(${Math.sin(t * 70) * 1.8 * seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 0.6))} 0)`)
     return { target }
   } }
 }
@@ -400,7 +407,7 @@ export const SCENES = {
     const tt = title(svg, 'تصدٍّ رائع', '#2BB673')
     return { dur: 5.4, svg, update(t) {
       const { target } = go(t)
-      const s = seg(t, KT - 0.02, KT + 0.6); ring.setAttribute('transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); ring.setAttribute('opacity', s > 0 ? 1 - s : 0)
+      const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
       tt(seg(t, KT + 0.3, KT + 0.7))
     } }
   },
@@ -415,7 +422,7 @@ export const SCENES = {
     const tt = title(svg, 'صدّها الدفاع', '#7FB4FF')
     return { dur: 4.8, svg, update(t) {
       const { target } = go(t)
-      const s = seg(t, KT - 0.02, KT + 0.6); ring.setAttribute('transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.5})`); ring.setAttribute('opacity', s > 0 ? 1 - s : 0)
+      const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.5})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
       tt(seg(t, KT + 0.3, KT + 0.7))
     } }
   },
@@ -430,7 +437,7 @@ export const SCENES = {
     const spot = [320, 207], path = [[spot[0], spot[1]], [lerp(spot[0], target[0], 0.5), Math.min(spot[1], target[1]) - 18], target]
     return { dur: 5.6, svg, update(t) {
       cam(svg, 1.15 + 0.1 * inout(seg(t, 0.3, tS)), 320, 160)
-      hush.setAttribute('opacity', seg(t, 0.2, 0.6) * (1 - seg(t, 2, 2.3)))
+      sa(hush, 'opacity', seg(t, 0.2, 0.6) * (1 - seg(t, 2, 2.3)))
       // The run-up from the edge of the box, a stutter, then the kick.
       const f = inout(seg(t, 1.1, tS)); put(tk, lerp(352, 324, f), lerp(256, spot[1] + 6, f))
       if (t < 1.1) tk.pose(4, -4, 8, -8); else if (t < tS - 0.3) tk.run(t * 11, 0.8); else tk.kick(seg(t, tS - 0.3, tS + 0.12))
@@ -443,8 +450,8 @@ export const SCENES = {
       let p, gr = LINE + 2
       if (t < tS) { p = spot; gr = spot[1] }
       else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(tr, path, g, 0.55) }
-      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; tr.setAttribute('opacity', 0) }
-      else { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] - dir * 30, target[1] - 30], [target[0] + dir * 110, 200]], a); gr = lerp(LINE, 200, a); tr.setAttribute('opacity', 0) }
+      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(tr, 'opacity', 0) }
+      else { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] - dir * 30, target[1] - 30], [target[0] + dir * 110, 200]], a); gr = lerp(LINE, 200, a); sa(tr, 'opacity', 0) }
       b.set(p[0], p[1], gr, t > tS ? t * 2000 : 0)
       if (e.scored) { G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT) }
       tt(seg(t, KT + 0.2, KT + 0.6))
@@ -473,9 +480,9 @@ export const SCENES = {
       let p, gr
       if (t < tS) { p = spot; gr = spot[1] }
       else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(tr, path, g, 0.6) }
-      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; tr.setAttribute('opacity', 0) }
-      else if (e.saved) { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] + side * 40, target[1] - 20], [target[0] + side * 120, 190]], a); gr = lerp(LINE, 190, a); tr.setAttribute('opacity', 0) }
-      else { const a = clamp((t - KT) / 0.7); p = [target[0] + side * 12 * a, target[1] - 28 * a]; gr = LINE - 20 * a; tr.setAttribute('opacity', 0) }
+      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(tr, 'opacity', 0) }
+      else if (e.saved) { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] + side * 40, target[1] - 20], [target[0] + side * 120, 190]], a); gr = lerp(LINE, 190, a); sa(tr, 'opacity', 0) }
+      else { const a = clamp((t - KT) / 0.7); p = [target[0] + side * 12 * a, target[1] - 28 * a]; gr = LINE - 20 * a; sa(tr, 'opacity', 0) }
       b.set(p[0], p[1], gr, t > tS ? t * 1600 : 0, !e.scored && !e.saved ? 1 - seg(t, KT + 0.3, KT + 0.7) : 1)
       if (e.scored) { G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT) }
       tt(seg(t, KT + 0.2, KT + 0.6))
@@ -502,8 +509,8 @@ export const SCENES = {
       let p, gr
       if (t < 0.6) { p = from; gr = from[1] }
       else if (t < 1.7) { const g = ease(f); p = bez(path, g); gr = lerp(from[1], head[1], g); drawTrail(tr, path, g, 0.5) }
-      else if (e.claim) { p = glove ?? [head[0], 100]; gr = LINE + 2; tr.setAttribute('opacity', 0) }
-      else { const g = ease(seg(t, 1.7, 2.4)); p = bez([[head[0], head[1] - 44], [head[0] - 6, 60], [head[0] - 10, 40]], g); gr = lerp(head[1], LINE - 10, g); tr.setAttribute('opacity', 0) }
+      else if (e.claim) { p = glove ?? [head[0], 100]; gr = LINE + 2; sa(tr, 'opacity', 0) }
+      else { const g = ease(seg(t, 1.7, 2.4)); p = bez([[head[0], head[1] - 44], [head[0] - 6, 60], [head[0] - 10, 40]], g); gr = lerp(head[1], LINE - 10, g); sa(tr, 'opacity', 0) }
       b.set(p[0], p[1], gr, t * 1200, e.claim ? 1 : 1 - seg(t, 2.2, 2.5))
       tt(seg(t, 2.2, 2.6))
     } }
@@ -517,8 +524,8 @@ export const SCENES = {
     return { dur: 4.4, svg, update(t) {
       pl.at(230, 228, t > 1.4 ? -6 : 0)
       const f = ease(seg(t, 0.4, 1.1))
-      card.setAttribute('transform', `translate(430 ${lerp(360, 150, f)}) rotate(${lerp(-35, 8, f)}) scale(${Math.max(0.05, Math.cos((1 - f) * 1.4))} 1)`)
-      glow.setAttribute('opacity', 0.45 * seg(t, 1, 1.4))
+      sa(card, 'transform', `translate(430 ${lerp(360, 150, f)}) rotate(${lerp(-35, 8, f)}) scale(${Math.max(0.05, Math.cos((1 - f) * 1.4))} 1)`)
+      sa(glow, 'opacity', 0.45 * seg(t, 1, 1.4))
       tt(seg(t, 1.3, 1.7))
     } }
   },
@@ -533,8 +540,8 @@ export const SCENES = {
       const fz = t > 1.5 && t < 2.6
       defs.forEach((d, i) => d.at(200 + i * 80, 220, 0, 0.9))
       rn.at(lerp(330, 300, ease(seg(t, 0, 1.4))), lerp(260, 196, ease(seg(t, 0, 1.4))), 0, 1.1)
-      line.setAttribute('opacity', seg(t, 1.4, 1.7)); fr.setAttribute('opacity', fz ? 1 : 0)
-      flag.setAttribute('opacity', seg(t, 1.2, 1.4)); flag.setAttribute('transform', `translate(560 ${lerp(250, 170, ease(seg(t, 1.2, 1.5)))}) rotate(${Math.sin(t * 9) * 8})`)
+      sa(line, 'opacity', seg(t, 1.4, 1.7)); sa(fr, 'opacity', fz ? 1 : 0)
+      sa(flag, 'opacity', seg(t, 1.2, 1.4)); sa(flag, 'transform', `translate(560 ${lerp(250, 170, ease(seg(t, 1.2, 1.5)))}) rotate(${Math.sin(t * 9) * 8})`)
       tt(seg(t, 2.4, 2.8))
     } }
   },
@@ -544,7 +551,7 @@ export const SCENES = {
     const board = el('g', {}, svg)
     board.innerHTML = `<rect x="-62" y="-44" width="124" height="88" rx="10" fill="#071733" stroke="rgba(245,184,46,.6)" stroke-width="2"/><text x="-26" y="-2" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="36" fill="#EF4444">${e.outNo ?? ''}</text><text x="26" y="-2" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="36" fill="#2BB673">${e.inNo ?? ''}</text><path d="M-26 12 V32 M-32 26 L-26 34 L-20 26" stroke="#EF4444" stroke-width="3" fill="none"/><path d="M26 34 V14 M20 20 L26 12 L32 20" stroke="#2BB673" stroke-width="3" fill="none"/>`
     return { dur: 4.2, svg, update(t) {
-      board.setAttribute('transform', `translate(320 ${lerp(400, 110, ease(seg(t, 0, 0.6)))})`)
+      sa(board, 'transform', `translate(320 ${lerp(400, 110, ease(seg(t, 0, 0.6)))})`)
       const w = Math.sin(t * 10) * 3
       out.at(lerp(250, 60, ease(seg(t, 0.8, 3))), 270, w); inn.at(lerp(600, 400, ease(seg(t, 0.8, 3))), 270, -w)
     } }
@@ -555,7 +562,7 @@ export const SCENES = {
     const halo = el('circle', { cx: 440, cy: 120, r: 50, fill: '#EF4444', opacity: 0.2, filter: ref(svg, 'soft') }, svg)
     return { dur: 3.8, svg, update(t) {
       pl.at(300, 270, 82)
-      med.setAttribute('transform', `translate(440 120) scale(${0.9 + 0.1 * Math.sin(t * 6)})`); halo.setAttribute('opacity', 0.15 + 0.1 * Math.sin(t * 6))
+      sa(med, 'transform', `translate(440 120) scale(${0.9 + 0.1 * Math.sin(t * 6)})`); sa(halo, 'opacity', 0.15 + 0.1 * Math.sin(t * 6))
     } }
   },
   coach(e) {
@@ -568,10 +575,10 @@ export const SCENES = {
     const A = [[-20, -35, 30, -60], [-20, 35, 30, 60], [-70, -50, -30, -75], [-70, 50, -30, 75]].map(([a, b, c, d]) => el('path', { d: `M${a} ${b} L${c} ${d}`, 'stroke-dasharray': 80, 'stroke-dashoffset': 80 }, ar))
     const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
     return { dur: 4.6, svg, update(t) {
-      tab.setAttribute('transform', `translate(320 ${lerp(380, 158, ease(seg(t, 0, 0.6)))}) scale(.9)`)
-      const push = ease(seg(t, 1, 2)); dots.forEach((d) => { d.setAttribute('cx', +d.dataset.x + (+d.dataset.x > -100 ? push * 26 : 0)); d.setAttribute('cy', d.dataset.y) })
-      A.forEach((a, i) => a.setAttribute('stroke-dashoffset', 80 * (1 - ease(seg(t, 0.9 + i * 0.15, 1.6 + i * 0.15)))))
-      chip.setAttribute('opacity', seg(t, 1.6, 2)); chip.setAttribute('transform', `translate(320 306) scale(${0.85 + 0.15 * ease(seg(t, 1.6, 2))})`)
+      sa(tab, 'transform', `translate(320 ${lerp(380, 158, ease(seg(t, 0, 0.6)))}) scale(.9)`)
+      const push = ease(seg(t, 1, 2)); dots.forEach((d) => { sa(d, 'cx', +d.dataset.x + (+d.dataset.x > -100 ? push * 26 : 0)); sa(d, 'cy', d.dataset.y) })
+      A.forEach((a, i) => sa(a, 'stroke-dashoffset', 80 * (1 - ease(seg(t, 0.9 + i * 0.15, 1.6 + i * 0.15)))))
+      sa(chip, 'opacity', seg(t, 1.6, 2)); sa(chip, 'transform', `translate(320 306) scale(${0.85 + 0.15 * ease(seg(t, 1.6, 2))})`)
     } }
   },
   whistle(e) {
@@ -590,14 +597,14 @@ export const SCENES = {
       return { hb: el('rect', { x: 320, y: y + 3, width: 0, height: 8, rx: 4, fill: K('home').kit }, g), ab: el('rect', { x: 320, y: y + 3, width: 0, height: 8, rx: 4, fill: K('away').kit }, g), h, a }
     })
     return { dur: 3.6, svg, update(t) {
-      g.setAttribute('opacity', seg(t, 0, 0.4))
+      sa(g, 'opacity', seg(t, 0, 0.4))
       // Home on the right, as on the scoreboard.
-      bars.forEach((b, i) => { const f = ease(seg(t, 0.4 + i * 0.15, 1.2 + i * 0.15)), tot = b.h + b.a || 1, wh = (150 * b.h / tot) * f, wa = (150 * b.a / tot) * f; b.hb.setAttribute('width', wh); b.ab.setAttribute('x', 320 - wa); b.ab.setAttribute('width', wa) })
+      bars.forEach((b, i) => { const f = ease(seg(t, 0.4 + i * 0.15, 1.2 + i * 0.15)), tot = b.h + b.a || 1, wh = (150 * b.h / tot) * f, wa = (150 * b.a / tot) * f; sa(b.hb, 'width', wh); sa(b.ab, 'x', 320 - wa); sa(b.ab, 'width', wa) })
     } }
   },
   board(e) {
     const svg = stage('home'), bd = el('g', {}, svg)
     bd.innerHTML = `<rect x="-90" y="-56" width="180" height="112" rx="14" fill="#071733" stroke="rgba(245,184,46,.6)" stroke-width="2"/><text y="-22" text-anchor="middle" font-family="IBM Plex Sans Arabic, sans-serif" font-size="15" fill="#93A3BF">الوقت بدل الضائع</text><text y="34" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="60" fill="#2BB673">+${e.plus ?? ''}</text>`
-    return { dur: 3, svg, update(t) { bd.setAttribute('transform', `translate(320 ${lerp(400, 170, ease(seg(t, 0.1, 0.7)))}) scale(${1 + 0.03 * Math.sin(t * 8)})`) } }
+    return { dur: 3, svg, update(t) { sa(bd, 'transform', `translate(320 ${lerp(400, 170, ease(seg(t, 0.1, 0.7)))}) scale(${1 + 0.03 * Math.sin(t * 8)})`) } }
   },
 }

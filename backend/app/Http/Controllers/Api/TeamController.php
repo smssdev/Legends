@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\Http\Controllers\Controller;
+use App\League\Chemistry;
 use App\League\ClubLedger;
 use App\League\FormationBook;
 use App\League\MatchPrep;
+use App\League\Morale;
+use App\League\Scenarios;
 use App\League\Tactics;
 use App\League\TeamSheet;
 use App\Models\Club;
@@ -52,9 +55,12 @@ class TeamController extends Controller
         return response()->json([
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
                 'balance' => (int) $club->balance, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+            // The squad's morale and its run without a win [X25].
+            'morale' => ['value' => (int) $club->morale, 'winless_run' => (int) $club->winless_run],
             'squad_value' => (int) $players->sum('value'),
+            'lines' => $this->lineStrength($players),
             'players' => $players->values(),
-            'lineup' => $this->lineup($lineup),
+            'lineup' => $this->lineup($lineup, $club),
             'takers' => TeamSheet::takers($club, $lineup),
             'custom_formations' => collect(TeamSheet::customs($club))->map(fn ($c) => $this->formation('custom:'.$c['number'], $c['name'], FormationBook::custom($c['cells'])) + ['number' => $c['number'], 'cells' => $c['cells']]),
         ]);
@@ -65,7 +71,7 @@ class TeamController extends Controller
     {
         $club = $this->club($request->user(), $league);
 
-        return response()->json(['lineup' => $this->lineup(TeamSheet::best($club) + ['auto' => true])]);
+        return response()->json(['lineup' => $this->lineup(TeamSheet::best($club) + ['auto' => true], $club)]);
     }
 
     public function saveLineup(Request $request, League $league): JsonResponse
@@ -129,7 +135,27 @@ class TeamController extends Controller
         $next = $this->nextFixture($club);
 
         return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
-            'help' => Tactics::HELP]);
+            'help' => Tactics::HELP, 'scenarios' => Scenarios::of($club),
+            'scenario_kinds' => collect(Scenarios::KINDS)->map(fn ($m, $kind) => ['kind' => $kind, 'minute' => $m ? ['default' => $m[0], 'min' => $m[1], 'max' => $m[2]] : null])->values()]);
+    }
+
+    /** The pre-match scenarios [X23]: the whole list, up to one per kind. */
+    public function saveScenarios(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $data = $request->validate([
+            'scenarios' => ['present', 'array', 'max:'.count(Scenarios::KINDS)],
+            'scenarios.*.kind' => ['required', Rule::in(array_keys(Scenarios::KINDS))],
+            'scenarios.*.minute' => ['nullable', 'integer'],
+            'scenarios.*.tactics' => ['sometimes', 'array'],
+            ...collect(Scenarios::TACTICS)->mapWithKeys(fn ($k) => ["scenarios.*.tactics.{$k}" => ['sometimes', 'integer', 'between:0,100']])->all(),
+            'scenarios.*.sub' => ['nullable', 'array'],
+            'scenarios.*.sub.out' => ['required_with:scenarios.*.sub', 'integer'],
+            'scenarios.*.sub.in' => ['required_with:scenarios.*.sub', 'integer'],
+        ]);
+        Scenarios::save($club, $data['scenarios']);
+
+        return $this->tactics($request, $league);
     }
 
     public function saveTactics(Request $request, League $league): JsonResponse
@@ -169,9 +195,16 @@ class TeamController extends Controller
         return response()->json(['match' => [
             'fixture_id' => $f->id, 'match_id' => DB::table('matches')->where('fixture_id', $f->id)->value('id'), 'competition' => $f->competition, 'round' => $f->round, 'venue' => $home ? 'home' : 'away',
             'scheduled_at' => $at->toIso8601ZuluString(), 'status' => $f->status,
-            'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
-            'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
+            'referee_at' => MatchPrep::lockAt($f)->addMinutes(config('game.match.lock_minutes_before'))->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
+            // A round in two slots [X31]: mine, and whether it is the night's big match.
+            'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
+            'lock_at' => MatchPrep::lockAt($f)->toIso8601ZuluString(),
             'referee' => $f->referee_strictness,
+            // My morale for this match with my crowd and the tickets cheering me [X25] (the opponent's is not shown).
+            'morale' => Morale::forMatch($f, $home ? 'home' : 'away'),
+            // My club beside the opponent, for the VS card [X29].
+            'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
+                'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
             'opponent' => [
                 'id' => $opponent->id, 'name' => $opponent->name, 'code' => $opponent->code, 'strength_cp' => (int) $opponent->strength_snapshot,
                 'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name,
@@ -307,10 +340,27 @@ class TeamController extends Controller
             ]);
     }
 
-    private function lineup(array $l): array
+    /**
+     * The team's strength by line [X29], as the squad screen's four rings: the average rating of the starters in each
+     * line (with their training), or of the line's best when no starter plays there. Integers, rounded down.
+     */
+    private function lineStrength($players): array
+    {
+        $out = [];
+        foreach (['att' => 2, 'mid' => 4, 'def' => 4, 'gk' => 1] as $line => $n) {
+            $all = $players->where('line', $line);
+            $pick = $all->where('role', 'starter');
+            $pick = $pick->isEmpty() ? $all->sortByDesc('overall')->take($n) : $pick;
+            $out[$line] = $pick->isEmpty() ? 0 : intdiv((int) $pick->sum('overall'), $pick->count());
+        }
+
+        return $out;
+    }
+
+    private function lineup(array $l, Club $club): array
     {
         return ['formation' => $l['formation'], 'auto' => $l['auto'], 'slots' => $l['slots'], 'starters' => $l['starters'], 'bench' => $l['bench'],
-            'lines' => FormationBook::lines($l['slots'])];
+            'lines' => FormationBook::lines($l['slots']), 'chemistry' => Chemistry::of($club->id, $l['starters'], $l['slots'])];
     }
 
     private function formation(string $name, string $label, array $slots): array

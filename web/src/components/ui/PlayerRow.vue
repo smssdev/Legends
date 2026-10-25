@@ -12,7 +12,9 @@ const fill = computed(() => Math.max(6, Math.min(100, 100 - room.value * 6)))
 </script>
 
 <template>
-  <div class="flex min-h-touch items-center gap-3 rounded-xl p-3" :class="selected ? 'bg-surface-raised ring-1 ring-gold/60' : 'bg-surface'">
+  <!-- [X32] The line's colour along the start edge, as the management games colour their squad rows. -->
+  <div class="relative flex min-h-touch items-center gap-3 overflow-hidden rounded-xl p-3 ps-4" :class="selected ? 'bg-surface-raised ring-1 ring-gold/60' : 'bg-surface'">
+    <span class="absolute inset-y-0 start-0 w-1" :style="{ background: `var(--color-line-${line})` }" aria-hidden="true" />
     <LineBadge :line="line" />
     <div class="min-w-0 flex-1">
       <div class="truncate font-display text-base font-extrabold">{{ name }}</div>

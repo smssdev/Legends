@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
+use App\League\Integrity;
 use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
 use App\League\Leaving;
+use App\League\LiveDraw;
 use App\League\Presence;
 use App\League\SeasonScheduler;
+use App\League\SeasonStats;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\LeagueJoinRequest;
@@ -50,6 +54,7 @@ class LeagueController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $this->settings($request, true);
+        self::slotsFit($data['round_times'] ?? [], $data['second_slot_minutes'] ?? null);
         $league = LeagueFactory::create($request->user(), $data);
 
         return response()->json(['league' => $this->leagueData($league->load('season', 'owner'), $request->user())], 201);
@@ -68,6 +73,7 @@ class LeagueController extends Controller
         $this->owner($request->user(), $league);
         abort_if($league->isLocked(), 409, 'إعدادات الدوري مقفلة منذ بدايته.');
         $data = $this->settings($request, false);
+        self::slotsFit($data['round_times'] ?? $league->round_times ?? [], array_key_exists('second_slot_minutes', $data) ? $data['second_slot_minutes'] : $league->second_slot_minutes);
         if (array_key_exists('name', $data)) {
             $name = trim((string) $data['name']);
             $data['name'] = $name !== '' ? $name : $league->template.' #'.$league->code;
@@ -81,13 +87,71 @@ class LeagueController extends Controller
                 DB::table('seasons')->where('league_id', $league->id)->where('number', 1)->update(['starts_at' => $data['starts_at']]);
             }
             // New times make the calendar again (nothing has been played before the start).
-            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times']))) {
+            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times', 'second_slot_minutes']))) {
                 $fresh = $league->fresh();
                 SeasonScheduler::build($fresh, $fresh->season);
             }
         });
 
         return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
+    }
+
+    /**
+     * The live draw [X26]: its time and the hash announced before it; once drawn, the seed, the clubs in their
+     * slots, the first league round and the cup's first ties. The screen reveals one slot every reveal_ms
+     * from drawn_at, so every member sees the same slot at the same moment.
+     */
+    public function draw(Request $request, League $league): JsonResponse
+    {
+        $this->visible($request->user(), $league);
+        $league->load('owner', 'season');
+        $cards = $league->drawn_at ? $this->clubCards($league) : [];
+        $first = fn (string $competition) => DB::table('fixtures')->where('season_id', $league->season->id)->where('competition', $competition)
+            ->where('round', 1)->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('id')->get()
+            ->map(fn ($f) => ['home' => $cards[$f->home_id] ?? null, 'away' => $cards[$f->away_id] ?? null])->values();
+
+        return response()->json([
+            'draw_at' => $league->draw_at?->toIso8601ZuluString(),
+            'commit' => $league->draw_commit,
+            'drawn_at' => $league->drawn_at?->toIso8601ZuluString(),
+            'seed' => $league->drawn_at ? (int) $league->draw_seed : null,
+            'reveal_ms' => (int) config('game.draw.reveal_ms'),
+            'server_now' => GameClock::nowMs(),
+            'committee' => ['owner' => $league->owner?->name],
+            'is_owner' => $league->isOwner($request->user()),
+            'can_schedule' => $league->isOwner($request->user()) && ! $league->settings_locked_at && ! $league->drawn_at,
+            'starts_at' => $league->starts_at->toIso8601ZuluString(),
+            'slots' => $league->drawn_at ? collect(json_decode($league->draw_order, true))->filter(fn ($id) => isset($cards[$id]))
+                ->values()->map(fn ($id, $i) => ['slot' => $i + 1, 'club' => $cards[$id]]) : [],
+            'league_round' => $league->drawn_at ? $first('league') : [],
+            'cup_round' => $league->drawn_at ? $first('cup') : [],
+        ]);
+    }
+
+    public function scheduleDraw(Request $request, League $league): JsonResponse
+    {
+        $this->owner($request->user(), $league);
+        $data = $request->validate(['draw_at' => ['required', 'date']]);
+        LiveDraw::schedule($league, $data['draw_at']);
+
+        return $this->draw($request, $league->fresh());
+    }
+
+    /**
+     * A round's second slot [X31] ends before the next round of the day locks: its gap and a match's length (half an
+     * hour, room to spare) fit between two round times.
+     */
+    private static function slotsFit(array $times, ?int $gap): void
+    {
+        if (! $gap || count($times) < 2) {
+            return;
+        }
+        $minutes = array_map(fn ($t) => (int) substr($t, 0, 2) * 60 + (int) substr($t, 3, 2), $times);
+        sort($minutes);
+        $tightest = min(array_map(fn ($a, $b) => $b - $a, array_slice($minutes, 0, -1), array_slice($minutes, 1)));
+        if ($gap + 30 > $tightest) {
+            throw ValidationException::withMessages(['second_slot_minutes' => 'الفترة الثانية تتداخل مع الجولة التالية في نفس اليوم: قلّل المدة إلى '.max(0, $tightest - 30).' دقيقة أو أقل.']);
+        }
     }
 
     /** "Start now" for the owner, in development only [PLAN 2.1]. */
@@ -249,6 +313,8 @@ class LeagueController extends Controller
                 'scheduled_at' => Carbon::parse($f->scheduled_at, 'UTC')->toIso8601ZuluString(),
                 'home' => $f->home_id ? $clubs[$f->home_id] : null, 'away' => $f->away_id ? $clubs[$f->away_id] : null,
                 'is_bye' => (bool) $f->is_bye, 'status' => $f->status, 'home_goals' => $f->home_goals, 'away_goals' => $f->away_goals,
+                // A round in two slots [X31].
+                'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
             ])->values(),
         ]);
     }
@@ -274,11 +340,23 @@ class LeagueController extends Controller
         }
         $next = DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('status', 'scheduled')->min('round');
         $resting = $next ? DB::table('fixtures')->where('season_id', $season->id)->where('round', $next)->where('competition', 'league')->where('is_bye', true)->value('home_id') : null;
-        $table = $rows->map(fn ($r) => $r + ['goal_difference' => $r['goals_for'] - $r['goals_against'], 'points' => 3 * $r['won'] + $r['drawn'], 'rests_next' => $r['id'] === $resting])
+        // Points the FA took off [X28].
+        $off = Integrity::deductions($season->id);
+        $table = $rows->map(fn ($r) => $r + ['goal_difference' => $r['goals_for'] - $r['goals_against'], 'points' => 3 * $r['won'] + $r['drawn'] - ($off[$r['id']] ?? 0),
+            'deducted' => $off[$r['id']] ?? 0, 'rests_next' => $r['id'] === $resting])
             ->sortBy([['points', 'desc'], ['goal_difference', 'desc'], ['goals_for', 'desc'], ['strength_cp', 'desc']])->values()
             ->map(fn ($r, $i) => ['position' => $i + 1] + $r);
 
         return response()->json(['season' => $this->seasonData($league), 'next_round' => $next, 'table' => $table]);
+    }
+
+    /** The statistics centre [X17]: the season's table in detail, scorers, assists, cards, money, value and runs. */
+    public function stats(Request $request, League $league): JsonResponse
+    {
+        $this->approvedOnly($request->user(), $league);
+        $this->ensureCalendar($league);
+
+        return response()->json(['season' => $this->seasonData($league)] + SeasonStats::of($league->id, $league->season->id));
     }
 
     /** The cup's bracket, stage by stage with each stage's day [PLAN 2.5]. */
@@ -337,6 +415,10 @@ class LeagueController extends Controller
             'season_end_mode' => [$sometimes, Rule::in(League::END_MODES)],
             'starts_at' => [$sometimes, 'date'],
             'fair_league' => ['sometimes', 'boolean'],
+            // The integrity system: bribes, spies and the FA [X28], the owner's choice before the start.
+            'integrity' => ['sometimes', 'boolean'],
+            // A round in two slots [X31]: minutes from the round's time to its second slot, or none.
+            'second_slot_minutes' => ['sometimes', 'nullable', 'integer', 'between:'.config('game.staggered.min_minutes').','.config('game.staggered.max_minutes')],
         ];
         if ($creating) {
             $rules += [
@@ -364,6 +446,7 @@ class LeagueController extends Controller
             unset($data['club_id']);
             $data['starting_budget'] ??= $e['starting_budget'];
             $data['fair_league'] = (bool) ($data['fair_league'] ?? false);
+            $data['integrity'] = (bool) ($data['integrity'] ?? false);
             $data['is_dev'] = ! app()->isProduction() && ($data['is_dev'] ?? false);
         }
 
@@ -445,7 +528,12 @@ class LeagueController extends Controller
             'team_count' => $l->team_count, 'rounds_per_day' => $l->rounds_per_day, 'round_times' => $l->round_times,
             'prep_days' => $l->prep_days, 'season_end_mode' => $l->season_end_mode,
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
-            'fair_league' => $l->fair_league, 'is_dev' => $l->is_dev, 'status' => $l->status, 'locked' => $l->isLocked(),
+            // The live draw [X26]: when, and whether it has been drawn.
+            'draw_at' => $l->draw_at?->toIso8601ZuluString(), 'drawn_at' => $l->drawn_at?->toIso8601ZuluString(),
+            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity,
+            'second_slot_minutes' => $l->second_slot_minutes ? (int) $l->second_slot_minutes : null, 'is_dev' => $l->is_dev,
+            // The FA's verdicts of the last day, as a breaking headline [X28].
+            'headlines' => $l->integrity ? Integrity::headlines($l->id) : [], 'status' => $l->status, 'locked' => $l->isLocked(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,
             'is_owner' => $l->isOwner($user),
             'my_club_id' => $mine,
@@ -492,7 +580,7 @@ class LeagueController extends Controller
         return LeagueMembership::where('season_id', $seasonId)->whereNull('left_at')->with('user', 'club')->orderBy('joined_at')->get()
             ->map(fn (LeagueMembership $m) => [
                 'id' => $m->id,
-                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl()],
+                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl(), 'official' => Username::official($m->user?->username)],
                 'club' => $m->club ? ['id' => $m->club->id, 'name' => $m->club->name] : null,
                 'is_owner' => $m->user_id === $l->owner_id,
                 'on_holiday' => Presence::onHoliday($m),
@@ -523,7 +611,7 @@ class LeagueController extends Controller
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'colors' => [$c->color_primary, $c->color_secondary],
             'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"),
             'strength_cp' => (int) $c->strength_snapshot,
-            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name] : null,
+            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'official' => Username::official($c->user->username)] : null,
             'bot' => $c->isBot(),
             'balance' => (int) $c->balance,
             'squad_value' => (int) $c->squad_value,
