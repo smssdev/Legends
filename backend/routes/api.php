@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\HonoursController;
+use App\Http\Controllers\Api\IntegrityController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
@@ -143,6 +144,14 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(SpecialistController::class)->prefix('{league}/specialists')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'hire')->middleware('throttle:20,1,specialists');
+    });
+    // The integrity system [X28].
+    Route::controller(IntegrityController::class)->prefix('{league}/integrity')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('bribe', 'bribe')->middleware('throttle:20,1,integrity');
+        Route::post('security', 'security')->middleware('throttle:20,1,integrity');
+        Route::post('spies/{spy}/turn', 'turn')->whereNumber('spy')->middleware('throttle:20,1,integrity');
+        Route::post('spies/{spy}/accuse', 'accuse')->whereNumber('spy')->middleware('throttle:20,1,integrity');
     });
     // The alliance tournament [X27].
     Route::controller(AllianceController::class)->prefix('{league}/alliance')->whereNumber('league')->group(function () {

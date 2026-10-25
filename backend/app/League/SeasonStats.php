@@ -25,7 +25,7 @@ class SeasonStats
 
         return [
             'matches' => $matches->count(),
-            'table' => self::table($matches->where('competition', 'league'), $clubs->keys()->all(), $card),
+            'table' => self::table($matches->where('competition', 'league'), $clubs->keys()->all(), $card, Integrity::deductions($seasonId)),
             ...self::people($matches->pluck('id')->all(), $card, $top),
             'finance' => self::finance($seasonId, $clubs->keys()->all(), $card),
             'value' => self::value($leagueId, $card),
@@ -34,7 +34,7 @@ class SeasonStats
     }
 
     /** The table with the goals per match (in hundredths, integers only). */
-    private static function table($league, array $ids, \Closure $card): array
+    private static function table($league, array $ids, \Closure $card, array $deducted = []): array
     {
         $rows = [];
         foreach ($ids as $id) {
@@ -53,7 +53,7 @@ class SeasonStats
         }
         $out = array_map(fn ($r) => $r + [
             'goal_difference' => $r['goals_for'] - $r['goals_against'],
-            'points' => 3 * $r['won'] + $r['drawn'],
+            'points' => 3 * $r['won'] + $r['drawn'] - ($deducted[$r['club']['id']] ?? 0),
             'goals_per_match_x100' => $r['played'] ? intdiv(100 * $r['goals_for'], $r['played']) : 0,
             'conceded_per_match_x100' => $r['played'] ? intdiv(100 * $r['goals_against'], $r['played']) : 0,
         ], array_values($rows));

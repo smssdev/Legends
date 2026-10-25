@@ -10,6 +10,7 @@ import ClubCrest from '../../components/ui/ClubCrest.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import TicketsPanel from './TicketsPanel.vue'
+import IntegrityPanel from './IntegrityPanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { strength } from '../../lib/format'
@@ -181,6 +182,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         </template>
       </section>
     </template>
+    <IntegrityPanel v-if="leagueId" :league-id="leagueId" />
     <TicketsPanel v-if="leagueId" :league-id="leagueId" />
     <p v-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>
   </div>

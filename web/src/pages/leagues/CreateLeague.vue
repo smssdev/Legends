@@ -27,6 +27,8 @@ const roundsPerDay = ref(1)
 const times = ref(['21:00', '18:00'])
 const startingBudget = ref(3_000_000)
 const fair = ref(true)
+// The integrity system: bribes, spies and the FA [X28], off unless the owner wants it.
+const integrity = ref(false)
 const endMode = ref<'renew' | 'end'>('renew')
 
 const step = ref<'settings' | 'club'>('settings')
@@ -97,6 +99,7 @@ async function create() {
         starts_at: new Date(startsAt.value).toISOString(),
         starting_budget: startingBudget.value,
         fair_league: fair.value,
+        integrity: integrity.value,
         is_dev: import.meta.env.DEV,
         club_id: club.value.id,
       },
@@ -208,6 +211,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
             <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
           </label>
           <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف العملة المميزة داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
+          <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" hint="رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح"><b>منظومة النزاهة والمؤامرات</b></UiToggle>
           <fieldset class="flex flex-col gap-2">
             <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>
             <div class="grid gap-2 md:grid-cols-2">

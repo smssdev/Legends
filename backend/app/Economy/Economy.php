@@ -55,8 +55,13 @@ class Economy
         }
         [$min, $max] = self::strengthRange($season->league_id);
         $strength = (int) DB::table('clubs')->where('id', $f->home_id)->value('strength_snapshot');
-        ClubLedger::post($f->home_id, 'tickets', $money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max), Stadium::capacity($f->home_id)),
-            "tickets:{$f->id}", "fixture:{$f->id}");
+        // A scandal cuts the next home crowd [X28], once.
+        $cut = (int) DB::table('clubs')->where('id', $f->home_id)->value('attendance_cut_bp');
+        $gate = $money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max), Stadium::capacity($f->home_id));
+        ClubLedger::post($f->home_id, 'tickets', intdiv($gate * (10000 - $cut), 10000), "tickets:{$f->id}", "fixture:{$f->id}");
+        if ($cut) {
+            DB::table('clubs')->where('id', $f->home_id)->update(['attendance_cut_bp' => 0]);
+        }
 
         if ($f->competition !== 'league') {
             return;

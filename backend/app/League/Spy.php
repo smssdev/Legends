@@ -35,6 +35,10 @@ class Spy
             $club = DB::table('clubs')->where('id', $clubId)->first();
             $target = Club::findOrFail($fixture->home_id === $clubId ? $fixture->away_id : $fixture->home_id);
             $report = self::report($target);
+            // In a league with the integrity system, the spy also finds out about a bribe [X28].
+            if (Integrity::on($club->league_id)) {
+                $report['bribed'] = DB::table('bribes')->where('fixture_id', $fixture->id)->where('club_id', $target->id)->exists();
+            }
             $cost = self::cost($club->league_id);
             $now = GameClock::now();
             $id = DB::table('spy_reports')->insertGetId(['club_id' => $clubId, 'fixture_id' => $fixture->id, 'target_club_id' => $target->id,

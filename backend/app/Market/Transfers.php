@@ -3,6 +3,7 @@
 namespace App\Market;
 
 use App\League\ClubLedger;
+use App\League\Integrity;
 use App\Messages\Inbox;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class Transfers
      */
     public static function list(int $clubId, int $playerId, int $price): void
     {
+        Integrity::assertMarket($clubId);
         $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
         $leagueId = (int) DB::table('clubs')->where('id', $clubId)->value('league_id');
@@ -53,6 +55,8 @@ class Transfers
      */
     public static function offer(int $fromClub, int $toClub, int $money, array $in, array $out, string $key, ?int $counterOf = null): int
     {
+        Integrity::assertMarket($fromClub);
+
         return DB::transaction(function () use ($fromClub, $toClub, $money, $in, $out, $key, $counterOf) {
             $done = DB::table('transfer_offers')->where('idempotency_key', $key)->value('id');
             if ($done) {
@@ -85,6 +89,7 @@ class Transfers
     /** The other coach takes it: everything moves now, or nothing. */
     public static function accept(int $offerId, int $byClub): void
     {
+        Integrity::assertMarket($byClub);
         DB::transaction(function () use ($offerId, $byClub) {
             $o = self::pending($offerId, $byClub, 'to_club_id');
             $from = DB::table('clubs')->where('id', $o->from_club_id)->first();

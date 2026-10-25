@@ -1137,6 +1137,11 @@ export interface paths {
                          * @default false
                          */
                         fair_league?: boolean;
+                        /**
+                         * @description Bribes, spies and the FA [X28]
+                         * @default false
+                         */
+                        integrity?: boolean;
                         /** @description Development league; ignored in production */
                         is_dev?: boolean;
                         /** @description The owner's club */
@@ -1258,6 +1263,7 @@ export interface paths {
                         /** Format: date-time */
                         starts_at?: string;
                         fair_league?: boolean;
+                        integrity?: boolean;
                     };
                 };
             };
@@ -1847,6 +1853,8 @@ export interface paths {
                                 points: number;
                                 /** @description Rests in the next round (odd team count) */
                                 rests_next: boolean;
+                                /** @description Points the FA took off [X28] */
+                                deducted?: number;
                             })[];
                         };
                     };
@@ -2304,6 +2312,191 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The integrity system for my club [X28]: my next match's bribe, the spies on me, my proofs, a market ban */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/bribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pay the referee of my next match (club money and coins), until its lock */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Integrity"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/security": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A security check that shows the spies sent on me for this fixture */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Integrity"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/spies/{spy}/turn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                spy: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Turn a spy on me into a double agent (his report becomes a fake board) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    spy: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/integrity/spies/{spy}/accuse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                spy: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take my spy's proof of a bribe to the FA: a fine, a market ban, points off and a scandal */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    spy: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Integrity"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -6729,6 +6922,13 @@ export interface components {
             /** Format: date-time */
             drawn_at?: string | null;
             fair_league: boolean;
+            /** @description The integrity system: bribes, spies and the FA [X28] */
+            integrity?: boolean;
+            /** @description The FA verdicts of the last day [X28] */
+            headlines?: {
+                text: string;
+                points: number;
+            }[];
             is_dev: boolean;
             /** @enum {string} */
             status: "waiting" | "running" | "finished";
@@ -7811,6 +8011,64 @@ export interface components {
                             min: number;
                             max: number;
                         } | null;
+                    }[];
+                };
+            };
+        };
+        /** @description The integrity system for my club */
+        Integrity: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    on: boolean;
+                    /** @description After an accusation: the club, the fine, the points, the ban's hours */
+                    verdict?: {
+                        [key: string]: unknown;
+                    };
+                    fixture: {
+                        id: number;
+                        opponent: string;
+                    } | null;
+                    bribe: {
+                        paid: boolean;
+                        money: number;
+                        extra: {
+                            /** @enum {string} */
+                            currency: "coins" | "money";
+                            amount: number;
+                        };
+                        var_percent: number;
+                    };
+                    security: {
+                        sees: boolean;
+                        cost: {
+                            /** @enum {string} */
+                            currency: "coins" | "money";
+                            amount: number;
+                        };
+                    };
+                    double_agent: {
+                        /** @enum {string} */
+                        currency: "coins" | "money";
+                        amount: number;
+                    };
+                    spies_on_me: {
+                        id: number;
+                        club: string;
+                        turned: boolean;
+                    }[];
+                    proofs: {
+                        spy_report_id: number;
+                        club: string;
+                        filed: boolean;
+                    }[];
+                    /** Format: date-time */
+                    banned_until: string | null;
+                    headlines: {
+                        text: string;
+                        points: number;
                     }[];
                 };
             };

@@ -119,6 +119,10 @@ final class MatchSetup
         if (isset($input['morale'])) {
             $team['morale'] = max(0, min(100, (int) $input['morale']));
         }
+        // A referee it bought, past the VAR [X28] (App\League\Integrity).
+        if (! empty($input['bribed'])) {
+            $team['bribed'] = 1;
+        }
 
         return $team;
     }

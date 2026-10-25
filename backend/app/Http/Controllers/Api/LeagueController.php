@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
+use App\League\Integrity;
 use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
@@ -318,7 +319,10 @@ class LeagueController extends Controller
         }
         $next = DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('status', 'scheduled')->min('round');
         $resting = $next ? DB::table('fixtures')->where('season_id', $season->id)->where('round', $next)->where('competition', 'league')->where('is_bye', true)->value('home_id') : null;
-        $table = $rows->map(fn ($r) => $r + ['goal_difference' => $r['goals_for'] - $r['goals_against'], 'points' => 3 * $r['won'] + $r['drawn'], 'rests_next' => $r['id'] === $resting])
+        // Points the FA took off [X28].
+        $off = Integrity::deductions($season->id);
+        $table = $rows->map(fn ($r) => $r + ['goal_difference' => $r['goals_for'] - $r['goals_against'], 'points' => 3 * $r['won'] + $r['drawn'] - ($off[$r['id']] ?? 0),
+            'deducted' => $off[$r['id']] ?? 0, 'rests_next' => $r['id'] === $resting])
             ->sortBy([['points', 'desc'], ['goal_difference', 'desc'], ['goals_for', 'desc'], ['strength_cp', 'desc']])->values()
             ->map(fn ($r, $i) => ['position' => $i + 1] + $r);
 
@@ -390,6 +394,8 @@ class LeagueController extends Controller
             'season_end_mode' => [$sometimes, Rule::in(League::END_MODES)],
             'starts_at' => [$sometimes, 'date'],
             'fair_league' => ['sometimes', 'boolean'],
+            // The integrity system: bribes, spies and the FA [X28], the owner's choice before the start.
+            'integrity' => ['sometimes', 'boolean'],
         ];
         if ($creating) {
             $rules += [
@@ -417,6 +423,7 @@ class LeagueController extends Controller
             unset($data['club_id']);
             $data['starting_budget'] ??= $e['starting_budget'];
             $data['fair_league'] = (bool) ($data['fair_league'] ?? false);
+            $data['integrity'] = (bool) ($data['integrity'] ?? false);
             $data['is_dev'] = ! app()->isProduction() && ($data['is_dev'] ?? false);
         }
 
@@ -500,7 +507,9 @@ class LeagueController extends Controller
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
             // The live draw [X26]: when, and whether it has been drawn.
             'draw_at' => $l->draw_at?->toIso8601ZuluString(), 'drawn_at' => $l->drawn_at?->toIso8601ZuluString(),
-            'fair_league' => $l->fair_league, 'is_dev' => $l->is_dev, 'status' => $l->status, 'locked' => $l->isLocked(),
+            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity, 'is_dev' => $l->is_dev,
+            // The FA's verdicts of the last day, as a breaking headline [X28].
+            'headlines' => $l->integrity ? Integrity::headlines($l->id) : [], 'status' => $l->status, 'locked' => $l->isLocked(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,
             'is_owner' => $l->isOwner($user),
             'my_club_id' => $mine,

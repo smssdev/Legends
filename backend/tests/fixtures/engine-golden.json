@@ -1,5 +1,5 @@
 {
-    "engine_version": 8,
+    "engine_version": 9,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -78,7 +78,7 @@
             }
         },
         "engine": {
-            "version": 8,
+            "version": 9,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -129,6 +129,9 @@
             "tired_injury_bp": 30000,
             "red_card_drain_bp": 11500,
             "morale_bp": 6,
+            "bribe_own_card_bp": 5000,
+            "bribe_rival_card_bp": 16000,
+            "bribe_penalty_bp": 30000,
             "chemistry_high": 85,
             "chemistry_high_bp": [
                 300,
