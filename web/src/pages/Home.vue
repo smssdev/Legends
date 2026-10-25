@@ -66,10 +66,10 @@ async function openRanking(by: 'trophies' | 'level') {
 
   <div v-else class="flex flex-col gap-4">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
-    <div v-if="home" class="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      <!-- Right (first in RTL): the coach. -->
-      <div class="flex flex-col gap-3">
-        <h2 class="text-sm font-bold text-text-muted">ملف المدرب</h2>
+    <div v-if="home" class="flex flex-col gap-5">
+      <!-- The coach: the card, the announcements, the trophies and the rankings, in one row on the computer. -->
+      <div class="grid gap-3 lg:grid-cols-2">
+        <h2 class="text-sm font-bold text-text-muted lg:col-span-2">ملف المدرب</h2>
         <div class="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-3">
           <section class="relative flex flex-col gap-3 overflow-hidden rounded-xl bg-gradient-to-bl from-gold/25 via-surface to-surface p-4" aria-label="ملف المدرب">
             <div class="absolute end-3 top-3 flex flex-col gap-2">
@@ -104,6 +104,7 @@ async function openRanking(by: 'trophies' | 'level') {
           </div>
         </div>
 
+        <div class="flex flex-col gap-3">
         <!-- The developers' announcements: updates and news [X11, X18]. -->
         <section class="flex min-h-28 flex-col gap-1 rounded-xl bg-gradient-to-l from-[#B4692A]/60 via-surface-raised to-surface p-4" aria-label="الإعلانات">
           <div class="flex items-center gap-2 text-sm font-bold"><svg viewBox="0 0 24 24" class="size-5 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1ZM16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14" /></svg>الإعلانات
@@ -136,12 +137,13 @@ async function openRanking(by: 'trophies' | 'level') {
             <span class="text-sm">ترتيب المستويات</span>
           </button>
         </div>
+        </div>
       </div>
 
-      <!-- Left: the four slots, the screen's heart (first on the phone). -->
+      <!-- The slots, the screen's heart: first on the phone, five a row on the computer. -->
       <div class="order-first flex flex-col gap-3 lg:order-none">
         <h2 class="text-sm font-bold text-text-muted">فتحات المدرب</h2>
-        <div class="grid grid-cols-2 gap-3 xl:grid-cols-3">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <button v-for="s in home.slots" :key="s.slot" type="button" class="relative flex aspect-[5/4] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-3 text-center transition hover:border-gold/60"
             :class="s.state === 'club' ? 'border-gold/30 bg-gradient-to-b from-surface-raised to-surface' : 'border-text/10 bg-[repeating-linear-gradient(135deg,var(--color-surface)_0_14px,var(--color-surface-raised)_14px_15px)]'"
             :aria-label="s.state === 'free' ? `الفتحة ${s.slot}: دوري جديد` : `الفتحة ${s.slot}: ${s.league?.name}`" @click="openSlot(s)">
