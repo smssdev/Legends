@@ -13,7 +13,10 @@
 
     <!-- [X35] The whole match on a pitch seen from above: all 22 and the ball moving through every minute from the
          server's keyframes, never only the key moments. -->
-    <div ref="pitchHost" class="pitch" aria-hidden="true" />
+    <div class="pitch">
+      <div ref="pitchHost" class="pitch-in" aria-hidden="true" />
+      <button type="button" class="cam" :aria-label="camera === 'tv' ? 'عرض الخطة من أعلى' : 'كاميرا البث'" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? 'الخطة' : 'البث' }}</button>
+    </div>
 
     <div class="tl" aria-label="مجريات المباراة" aria-live="polite">
       <div class="spine" />
@@ -86,7 +89,7 @@
 // bar. The parent calls play(tick) per minute; the minute's length is the
 // server's (tick.moment.ms).
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, setKits, setSmooth } from './art'
+import { ICON, SCENES, crest, keeperKit, player as cartoon, setKits, setSmooth } from './art'
 import { noteFrame, smooth } from '../perf'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
@@ -95,6 +98,9 @@ const props = defineProps<{ kits: any; clubs: { home: string; away: string }; co
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
+// [X35] The live pitch's camera: the broadcast's (the cartoon players, following the ball) or the plan from above.
+const camera = ref((() => { try { return localStorage.getItem('legends.camera') === 'top' ? 'top' : 'tv' } catch { return 'tv' } })())
+function setCamera(c) { camera.value = c; try { localStorage.setItem('legends.camera', c) } catch {} ; buildPitch(); if (plan) drawPitch(plan.tick, 0) }
 // [X35] The broadcast clock, minutes and seconds running through each minute as on TV ('' between minutes: the parent's).
 const clock = ref('')
 const items = ref<any[]>([])
@@ -245,7 +251,7 @@ let pitchSvg = null, dots = new Map(), ballEl = null, shadowEl = null
 const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.appendChild(e); return e }
 // Writes an attribute only when it changes: a weak phone lays the page out again on every write [X30].
 const sa = (e, k, v) => { const s = String(v); if (e.getAttribute(k) !== s) e.setAttribute(k, s) }
-function buildPitch() {
+function buildTop() {
   if (!pitchHost.value) return
   pitchSvg = mk('svg', { viewBox: '-20 -20 1090 720', preserveAspectRatio: 'xMidYMid meet' })
   const g = mk('g', { fill: 'none', stroke: 'rgba(255,255,255,.55)', 'stroke-width': 4 }, pitchSvg)
@@ -280,7 +286,7 @@ function dotFor(id, side) {
   return d
 }
 const lerp = (a, b, u) => a + (b - a) * u
-function drawPitch(tick, u) {
+function drawTop(tick, u) {
   const f = tick?.frames
   if (!pitchSvg || !f?.length) return
   const x = u * (f.length - 1), i = Math.min(f.length - 2, Math.floor(x)), k = f.length > 1 ? x - i : 0
@@ -298,6 +304,91 @@ function drawPitch(tick, u) {
   sa(shadowEl, 'cx', Math.round(bx)); sa(shadowEl, 'cy', Math.round(by) + 6)
   sa(ballEl, 'cx', Math.round(bx)); sa(ballEl, 'cy', Math.round(by - bz * 0.6)); sa(ballEl, 'r', Math.round(8 + bz * 0.08))
 }
+// The broadcast camera [X35]: the pitch in perspective as the main TV camera sees it from the stand, panning with the
+// ball, and the cartoon players of the scenes (art.ts) running between the server's keyframes.
+const TV = { far: 64, near: 292, span: 620 }
+let camX = 525, tvPlayers = new Map(), tvLines = null, tvLayer = null, tvBall = null, tvShadow = null, lastCam = -1, sortTick = 0
+const depth = (y) => Math.max(0, Math.min(1, y / 680))
+const proj = (x, y) => { const d = depth(y), k = (640 / TV.span) * (0.62 + 0.38 * d); return [320 + (x - camX) * k, TV.far + (TV.near - TV.far) * d, 0.5 + 0.5 * d] }
+function buildTv() {
+  pitchSvg = mk('svg', { viewBox: '0 0 640 300', preserveAspectRatio: 'xMidYMid slice' })
+  mk('rect', { width: 640, height: 300, fill: '#0B1D2E' }, pitchSvg)
+  // The stand behind the far touchline: rows of crowd as a soft band.
+  for (let r = 0; r < 4; r++) mk('rect', { x: 0, y: 8 + r * 13, width: 640, height: 11, fill: r % 2 ? '#14304A' : '#183A57' }, pitchSvg)
+  mk('rect', { x: 0, y: 56, width: 640, height: 6, fill: '#0A7559' }, pitchSvg)
+  tvLines = mk('g', {}, pitchSvg)
+  tvLayer = mk('g', {}, pitchSvg)
+  tvShadow = mk('ellipse', { rx: 6, ry: 2.5, fill: 'rgba(0,0,0,.35)' }, tvLayer)
+  tvBall = mk('circle', { r: 4.5, fill: '#fff', stroke: '#111', 'stroke-width': 1 }, tvLayer)
+  pitchHost.value.replaceChildren(pitchSvg)
+  tvPlayers = new Map(); lastCam = -1
+}
+const pt = (x, y) => proj(x, y).slice(0, 2).map((v) => v.toFixed(1)).join(',')
+function drawTvLines() {
+  if (Math.abs(camX - lastCam) < 0.8) return
+  lastCam = camX
+  const html = []
+  for (let i = 0; i < 10; i++) html.push(`<polygon points="${pt(i * 105, 0)} ${pt(i * 105 + 105, 0)} ${pt(i * 105 + 105, 680)} ${pt(i * 105, 680)}" fill="${i % 2 ? '#1d8a4b' : '#23994f'}"/>`)
+  const line = (pts) => `<polyline points="${pts.map(([x, y]) => pt(x, y)).join(' ')}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6"/>`
+  html.push(line([[0, 0], [1050, 0], [1050, 680], [0, 680], [0, 0]]), line([[525, 0], [525, 680]]))
+  html.push(line(Array.from({ length: 33 }, (_, i) => [525 + 91 * Math.cos(i * Math.PI / 16), 340 + 91 * Math.sin(i * Math.PI / 16)])))
+  for (const [x, d] of [[0, 1], [1050, -1]]) {
+    html.push(line([[x, 138], [x + d * 165, 138], [x + d * 165, 542], [x, 542]]), line([[x, 248], [x + d * 55, 248], [x + d * 55, 432], [x, 432]]))
+    // The goal: posts and bar standing up from the line.
+    const [p1x, p1y, s1] = proj(x, 303), [p2x, p2y, s2] = proj(x, 377)
+    html.push(`<path d="M${p1x} ${p1y} V${p1y - 22 * s1} L${p2x} ${p2y - 22 * s2} V${p2y}" fill="none" stroke="#fff" stroke-width="2.4"/>`)
+  }
+  tvLines.innerHTML = html.join('')
+}
+function tvFor(id, side) {
+  let t = tvPlayers.get(id)
+  if (!t) {
+    const info = (props.teams?.[side]?.players ?? []).find((p) => String(p.id) === String(id))
+    const gk = info?.pos === 'GK'
+    const kit = gk ? keeperKit(side) : props.kits[side].kit
+    const f = cartoon(tvLayer, kit, info?.no ?? '', 1, { look: Number(id) % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim })
+    t = { f, ph: Number(id) % 7, x: null, y: null, sy: 0 }
+    tvPlayers.set(id, t)
+  }
+  return t
+}
+function drawTv(tick, u) {
+  const f = tick?.frames
+  if (!pitchSvg || !f?.length) return
+  const x = u * (f.length - 1), i = Math.min(f.length - 2, Math.floor(x)), k = f.length > 1 ? x - i : 0
+  const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
+  const bx = lerp(A.b[0], B.b[0], k), by = lerp(A.b[1], B.b[1], k), bz = lerp(A.b[2] ?? 0, B.b[2] ?? 0, k)
+  // The camera pans after the ball, gently, and never past the ends of the pitch.
+  camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx)) - camX) * 0.06
+  drawTvLines()
+  const seen = new Set()
+  for (const id in A.p) {
+    const side = players.value[id]?.side
+    if (!side) continue
+    const a = A.p[id], b = B.p[id] ?? a, wx = lerp(a[0], b[0], k), wy = lerp(a[1], b[1], k), t = tvFor(id, side)
+    const moved = t.x === null ? 0 : Math.hypot(wx - t.x, wy - t.y)
+    t.x = wx; t.y = wy
+    const [sx, sy, sc] = proj(wx, wy)
+    t.sy = sy
+    const scale = sc * 0.48
+    t.f.at(sx, sy - 58 * scale, 0, scale)
+    if (!smooth.value) { if (moved > 0.4) { t.ph += Math.min(0.5, moved * 0.18); t.f.run(t.ph, Math.min(1, moved / 3)) } else t.f.pose() }
+    sa(t.f.g, 'opacity', 1)
+    seen.add(id)
+  }
+  for (const [id, t] of tvPlayers) if (!seen.has(id)) sa(t.f.g, 'opacity', 0)
+  const [px, py, ps] = proj(bx, by)
+  sa(tvShadow, 'cx', px.toFixed(1)); sa(tvShadow, 'cy', (py + 1).toFixed(1))
+  sa(tvBall, 'cx', px.toFixed(1)); sa(tvBall, 'cy', (py - 3 * ps - bz * 0.35 * ps).toFixed(1)); sa(tvBall, 'r', (4.5 * ps + bz * 0.02).toFixed(1))
+  // Nearer players drawn over farther ones: the order is set again a few times a second.
+  if (++sortTick % 8 === 0) {
+    const order = [...tvPlayers.values()].sort((p, q) => p.sy - q.sy)
+    for (const t of order) tvLayer.appendChild(t.f.g)
+    tvLayer.appendChild(tvShadow); tvLayer.appendChild(tvBall)
+  }
+}
+function buildPitch() { if (!pitchHost.value) return; camera.value === 'tv' ? buildTv() : buildTop() }
+function drawPitch(tick, u) { camera.value === 'tv' ? drawTv(tick, u) : drawTop(tick, u) }
 function tickClock(tick, u) {
   const m = tick?.minute
   if (!m || (tick.moment?.kind === 'shootout')) { clock.value = ''; return }
@@ -305,7 +396,7 @@ function tickClock(tick, u) {
   const text = `${String(base).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
   if (clock.value !== text) clock.value = text
 }
-watch(() => props.kits, () => { for (const d of dots.values()) d.remove(); dots = new Map() }, { deep: true })
+watch(() => props.kits, () => buildPitch(), { deep: true })
 onMounted(buildPitch)
 onMounted(() => { raf = requestAnimationFrame((n) => { last = n; frame(n) }) })
 onBeforeUnmount(() => cancelAnimationFrame(raf))
@@ -346,7 +437,9 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .mom i { display: block; height: 100%; transition: width .8s }
 
 .pitch { position: absolute; z-index: 1; top: clamp(84px, 16cqw, 106px); left: 10px; right: 10px; height: min(40cqh, 62cqw); border-radius: 14px; overflow: hidden; background: #1a7d44; box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 16px 30px rgba(0,0,0,.45) }
+.pitch-in { position: absolute; inset: 0 }
 .pitch :deep(svg) { width: 100%; height: 100%; display: block }
+.cam { position: absolute; z-index: 2; top: 8px; inset-inline-end: 8px; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #fff; background: rgba(6,17,30,.7); border: 1px solid rgba(255,255,255,.18) }
 .tl { position: absolute; top: calc(clamp(84px, 16cqw, 106px) + min(40cqh, 62cqw) + 6px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
 .spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, rgba(245,184,46,.55) 10%, rgba(245,184,46,.15)) }
 .list { position: relative; padding: 22px 10px 0; display: grid; gap: 10px }
