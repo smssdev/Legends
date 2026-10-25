@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
@@ -143,6 +144,12 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('/', 'show');
         Route::post('/', 'hire')->middleware('throttle:20,1,specialists');
     });
+    // The alliance tournament [X27].
+    Route::controller(AllianceController::class)->prefix('{league}/alliance')->whereNumber('league')->group(function () {
+        Route::get('/', 'show');
+        Route::post('/', 'store')->middleware('throttle:10,1,alliance');
+        Route::post('ties/{tie}/decide', 'decide')->whereNumber('tie');
+    });
     // Tickets to cheer at the other clubs' matches [X25].
     Route::controller(TicketController::class)->prefix('{league}/tickets')->whereNumber('league')->group(function () {
         Route::get('/', 'index');
@@ -202,6 +209,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
     Route::post('2fa/verify', 'verify')->middleware('throttle:10,1,admin-2fa');
     Route::middleware('admin')->group(function () {
         Route::get('overview', 'overview');
+        Route::get('alliances', 'alliances');
+        Route::post('alliances/{id}/review', 'reviewAlliance')->whereNumber('id');
         Route::get('users', 'users');
         Route::get('leagues', 'leagues');
         Route::get('backups', 'backups');

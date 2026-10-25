@@ -1025,6 +1025,74 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/alliance:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: 'The league''s latest alliance tournament [X27]: its alliances, captains and rounds'
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [leagues]
+      summary: The owner asks for an alliance tournament; it waits for the developers' approval
+      description: Two captains by username (coaches of the league), 2 to 7 coaches a side (5 by default), the first round at least an hour ahead. The others are shared out at random.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, captain_a, captain_b, size, first_round_at]
+              properties:
+                name: { type: string, minLength: 3, maxLength: 40 }
+                captain_a: { type: string }
+                captain_b: { type: string }
+                size: { type: integer, minimum: 2, maximum: 7 }
+                first_round_at: { type: string, format: date-time }
+      responses:
+        '201': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/alliance/ties/{tie}/decide:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: tie, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: A captain picks which of two of his coaches goes on (team-mates are not played)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [winner], properties: { winner: { type: integer, description: A club id of the tie } } }
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/alliances:
+    get:
+      tags: [admin]
+      summary: 'The alliance tournaments waiting for the developers, then the latest [X27]'
+      responses:
+        '200': { $ref: '#/components/responses/AdminAlliances' }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/alliances/{id}/review:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: Approve (its first round is drawn) or turn down a tournament
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [approve], properties: { approve: { type: boolean }, note: { type: string, nullable: true, maxLength: 200 } } }
+      responses:
+        '200': { $ref: '#/components/responses/AdminAlliances' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/tickets:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -1546,7 +1614,7 @@ paths:
                     properties:
                       fixture_id: { type: integer }
                       match_id: { type: integer, nullable: true, description: 'Once it kicks off: watch it at GET /matches/{id}' }
-                      competition: { type: string, enum: [league, cup] }
+                      competition: { type: string, enum: [league, cup, alliance] }
                       round: { type: integer }
                       venue: { type: string, enum: [home, away] }
                       scheduled_at: { type: string, format: date-time }
@@ -1795,7 +1863,7 @@ paths:
                         id: { type: integer }
                         home: { type: string, description: The home club's code }
                         away: { type: string }
-                        competition: { type: string, enum: [league, cup] }
+                        competition: { type: string, enum: [league, cup, alliance] }
   /admin/2fa:
     get:
       tags: [admin]
@@ -2367,7 +2435,7 @@ paths:
                 home_id: { type: integer }
                 away_id: { type: integer }
                 seed: { type: integer, minimum: 1 }
-                competition: { type: string, enum: [league, cup] }
+                competition: { type: string, enum: [league, cup, alliance] }
                 referee: { type: integer, enum: [0, 1, 2], description: 0 soft, 1 medium, 2 strict }
                 venue: { type: string, enum: [home, neutral] }
                 mode: { type: string, enum: [solo, live], description: 'solo: the client drives the clock. live: two devices, the server keeps the clock and both coaches are "me".' }
@@ -2613,6 +2681,77 @@ components:
                       nullable: true
                       required: [default, min, max]
                       properties: { default: { type: integer }, min: { type: integer }, max: { type: integer } }
+    Alliance:
+      description: The alliance tournament
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [can_create, sizes, default_size, coaches, tournament]
+            properties:
+              can_create: { type: boolean }
+              sizes: { type: array, items: { type: integer } }
+              default_size: { type: integer }
+              coaches: { type: array, items: { type: object, required: [username, name], properties: { username: { type: string, nullable: true }, name: { type: string } } } }
+              tournament:
+                type: object
+                nullable: true
+                required: [id, name, status, size, winner, first_round_at, review_note, captain_of, alliances, ties]
+                properties:
+                  id: { type: integer }
+                  name: { type: string }
+                  status: { type: string, enum: [pending, rejected, running, finished] }
+                  size: { type: integer }
+                  winner: { type: string, nullable: true, enum: [a, b, null] }
+                  first_round_at: { type: string, format: date-time }
+                  review_note: { type: string, nullable: true }
+                  captain_of: { type: string, nullable: true, enum: [a, b, null], description: The alliance I captain }
+                  alliances:
+                    type: object
+                    required: [a, b]
+                    properties:
+                      a: { $ref: '#/components/schemas/AllianceSide' }
+                      b: { $ref: '#/components/schemas/AllianceSide' }
+                  ties:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, round, kind, home, away, alliance, scheduled_at, winner_id, status, score, match_id]
+                      properties:
+                        id: { type: integer }
+                        round: { type: integer }
+                        kind: { type: string, enum: [match, bye, captain, walkover] }
+                        home: { type: object, nullable: true, additionalProperties: true }
+                        away: { type: object, nullable: true, additionalProperties: true }
+                        alliance: { type: string, nullable: true, enum: [a, b, null], description: The home club's alliance }
+                        scheduled_at: { type: string, format: date-time }
+                        winner_id: { type: integer, nullable: true }
+                        status: { type: string, nullable: true }
+                        score: { type: object, nullable: true, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+                        match_id: { type: integer, nullable: true }
+    AdminAlliances:
+      description: The alliance tournaments for review
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tournaments]
+            properties:
+              tournaments:
+                type: array
+                items:
+                  type: object
+                  required: [id, league_id, league, name, status, size, captains, first_round_at, review_note]
+                  properties:
+                    id: { type: integer }
+                    league_id: { type: integer }
+                    league: { type: string }
+                    name: { type: string }
+                    status: { type: string }
+                    size: { type: integer }
+                    captains: { type: array, items: { type: string, nullable: true } }
+                    first_round_at: { type: string, format: date-time }
+                    review_note: { type: string, nullable: true }
     Tickets:
       description: The coming matches of the other clubs, with my ticket
       content:
@@ -3384,7 +3523,7 @@ components:
       required: [id, competition, round, scheduled_at, is_bye, status]
       properties:
         id: { type: integer }
-        competition: { type: string, enum: [league, cup] }
+        competition: { type: string, enum: [league, cup, alliance] }
         round: { type: integer, description: 'League: the round. Cup: the stage order' }
         stage: { type: string, nullable: true, enum: [preliminary, r16, qf, sf, final, null] }
         scheduled_at: { type: string, format: date-time }
@@ -3508,7 +3647,7 @@ components:
                   type: object
                   required: [competition, position, club, coach]
                   properties:
-                    competition: { type: string, enum: [league, cup] }
+                    competition: { type: string, enum: [league, cup, alliance] }
                     position: { type: integer, description: 'League: 1 to 3. Cup: 1 the winner, 2 the finalist' }
                     club:
                       type: object
@@ -3670,7 +3809,7 @@ components:
             properties:
               league: { type: string }
               season: { type: integer }
-              competition: { type: string, enum: [league, cup] }
+              competition: { type: string, enum: [league, cup, alliance] }
               position: { type: integer }
               club: { type: string }
         objectives:
@@ -3688,7 +3827,7 @@ components:
                   league: { type: string }
                   season: { type: integer }
                   club: { type: string }
-                  competition: { type: string, enum: [league, cup] }
+                  competition: { type: string, enum: [league, cup, alliance] }
                   target: { type: string }
                   kind: { type: string }
                   result: { type: string, nullable: true }
@@ -3873,6 +4012,12 @@ components:
         body: { type: string }
         user_id: { type: integer }
         at: { type: integer }
+    AllianceSide:
+      type: object
+      required: [captain, clubs]
+      properties:
+        captain: { type: string, nullable: true }
+        clubs: { type: array, items: { type: object, additionalProperties: true } }
     Scenario:
       type: object
       description: 'A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival.'

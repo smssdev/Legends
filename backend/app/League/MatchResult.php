@@ -34,6 +34,8 @@ class MatchResult
 
         if ($f->competition === 'league') {
             self::roundsPlayed($f->season_id);
+        } elseif ($f->competition === 'alliance') {
+            Alliance::fixtureDone($f, $state);
         } else {
             self::cupWinner($f, $state);
         }

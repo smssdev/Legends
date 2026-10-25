@@ -2310,6 +2310,184 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/alliance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The league's latest alliance tournament [X27]: its alliances, captains and rounds */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Alliance"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * The owner asks for an alliance tournament; it waits for the developers' approval
+         * @description Two captains by username (coaches of the league), 2 to 7 coaches a side (5 by default), the first round at least an hour ahead. The others are shared out at random.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        captain_a: string;
+                        captain_b: string;
+                        size: number;
+                        /** Format: date-time */
+                        first_round_at: string;
+                    };
+                };
+            };
+            responses: {
+                201: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/alliance/ties/{tie}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                tie: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A captain picks which of two of his coaches goes on (team-mates are not played) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    tie: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description A club id of the tie */
+                        winner: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The alliance tournaments waiting for the developers, then the latest [X27] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminAlliances"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/alliances/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve (its first round is drawn) or turn down a tournament */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        approve: boolean;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["AdminAlliances"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/tickets": {
         parameters: {
             query?: never;
@@ -3639,7 +3817,7 @@ export interface paths {
                                 /** @description Once it kicks off: watch it at GET /matches/{id} */
                                 match_id?: number | null;
                                 /** @enum {string} */
-                                competition: "league" | "cup";
+                                competition: "league" | "cup" | "alliance";
                                 round: number;
                                 /** @enum {string} */
                                 venue: "home" | "away";
@@ -4179,7 +4357,7 @@ export interface paths {
                                 home: string;
                                 away: string;
                                 /** @enum {string} */
-                                competition: "league" | "cup";
+                                competition: "league" | "cup" | "alliance";
                             }[];
                         };
                     };
@@ -5724,7 +5902,7 @@ export interface paths {
                         away_id: number;
                         seed?: number;
                         /** @enum {string} */
-                        competition?: "league" | "cup";
+                        competition?: "league" | "cup" | "alliance";
                         /**
                          * @description 0 soft
                          * @enum {integer}
@@ -6980,7 +7158,7 @@ export interface components {
         Fixture: {
             id: number;
             /** @enum {string} */
-            competition: "league" | "cup";
+            competition: "league" | "cup" | "alliance";
             /** @description League: the round. Cup: the stage order */
             round: number;
             /** @enum {string|null} */
@@ -7103,7 +7281,7 @@ export interface components {
                 status: string;
                 titles: {
                     /** @enum {string} */
-                    competition: "league" | "cup";
+                    competition: "league" | "cup" | "alliance";
                     /** @description League: 1 to 3. Cup: 1 the winner, 2 the finalist */
                     position: number;
                     club: {
@@ -7296,7 +7474,7 @@ export interface components {
                 league: string;
                 season: number;
                 /** @enum {string} */
-                competition: "league" | "cup";
+                competition: "league" | "cup" | "alliance";
                 position: number;
                 club: string;
             }[];
@@ -7308,7 +7486,7 @@ export interface components {
                     season: number;
                     club: string;
                     /** @enum {string} */
-                    competition: "league" | "cup";
+                    competition: "league" | "cup" | "alliance";
                     target: string;
                     kind: string;
                     result: string | null;
@@ -7535,6 +7713,12 @@ export interface components {
             user_id: number;
             at: number;
         };
+        AllianceSide: {
+            captain: string | null;
+            clubs: {
+                [key: string]: unknown;
+            }[];
+        };
         /** @description A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival. */
         Scenario: {
             /** @enum {string} */
@@ -7627,6 +7811,92 @@ export interface components {
                             min: number;
                             max: number;
                         } | null;
+                    }[];
+                };
+            };
+        };
+        /** @description The alliance tournament */
+        Alliance: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    can_create: boolean;
+                    sizes: number[];
+                    default_size: number;
+                    coaches: {
+                        username: string | null;
+                        name: string;
+                    }[];
+                    tournament: {
+                        id: number;
+                        name: string;
+                        /** @enum {string} */
+                        status: "pending" | "rejected" | "running" | "finished";
+                        size: number;
+                        /** @enum {string|null} */
+                        winner: "a" | "b" | null;
+                        /** Format: date-time */
+                        first_round_at: string;
+                        review_note: string | null;
+                        /**
+                         * @description The alliance I captain
+                         * @enum {string|null}
+                         */
+                        captain_of: "a" | "b" | null;
+                        alliances: {
+                            a: components["schemas"]["AllianceSide"];
+                            b: components["schemas"]["AllianceSide"];
+                        };
+                        ties: {
+                            id: number;
+                            round: number;
+                            /** @enum {string} */
+                            kind: "match" | "bye" | "captain" | "walkover";
+                            home: {
+                                [key: string]: unknown;
+                            } | null;
+                            away: {
+                                [key: string]: unknown;
+                            } | null;
+                            /**
+                             * @description The home club's alliance
+                             * @enum {string|null}
+                             */
+                            alliance: "a" | "b" | null;
+                            /** Format: date-time */
+                            scheduled_at: string;
+                            winner_id: number | null;
+                            status: string | null;
+                            score: {
+                                home: number;
+                                away: number;
+                            } | null;
+                            match_id: number | null;
+                        }[];
+                    } | null;
+                };
+            };
+        };
+        /** @description The alliance tournaments for review */
+        AdminAlliances: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    tournaments: {
+                        id: number;
+                        league_id: number;
+                        league: string;
+                        name: string;
+                        status: string;
+                        size: number;
+                        captains: (string | null)[];
+                        /** Format: date-time */
+                        first_round_at: string;
+                        review_note: string | null;
                     }[];
                 };
             };

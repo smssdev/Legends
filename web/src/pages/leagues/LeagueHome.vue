@@ -326,6 +326,11 @@ onMounted(load)
         <span class="font-bold text-gold">←</span>
       </RouterLink>
 
+      <RouterLink :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
+        <span><b class="block">بطولة التحالفات</b><span class="text-sm text-text-muted">تحالفان من مدربي الدوري بقائد لكل منهما</span></span>
+        <span class="font-bold text-gold">←</span>
+      </RouterLink>
+
       <UiCard v-if="clubs.length" title="الأندية">
         <template #action>
           <RouterLink v-if="!league.my_club_id" :to="{ name: 'pick-team', params: { id } }" class="font-bold text-gold">اختر فريقك</RouterLink>
