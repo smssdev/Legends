@@ -51,6 +51,7 @@ return [
     'matches' => [
         'missed_live_minutes' => 10,      // up to this late a match still starts live; later it is simulated at once
         'rest_recovery' => 30,            // fitness back for a player who rests in his club's match
+        'played_recovery' => 8,           // and for one who played, between that match and the next [X21]
         'injury_matches' => [1, 3],       // an injury keeps a player out this many of his club's matches
         'red_card_matches' => 1,
         'runner_sleep_ms' => 200,         // how often matches:run looks at the clock
@@ -175,7 +176,7 @@ return [
         'max_win_shift' => 3,
     ],
     'engine' => [
-        'version' => 5,
+        'version' => 6,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -187,7 +188,11 @@ return [
             'long_shots' => [-200, -100, 300],
         ],
         'tackling_bonus_cp' => [0, 20, 30, 40],   // قانوني، عادي، حماس، خشونة
-        'fitness_drain_base' => 28, 'fitness_drain_pressing_max' => 17, 'fitness_drain_tempo_max' => 8,
+        // Fatigue [X21]: per minute, in hundredths of a per cent, for a player of stamina 70. About 18% in a normal
+        // match (pressing and tempo at 50), about 24% with the press and the tempo high. Under tired_fit the
+        // injuries come tired_injury_bp as often.
+        'fitness_drain_base' => 12, 'fitness_drain_pressing_max' => 20, 'fitness_drain_tempo_max' => 8,
+        'tired_fit' => 5500, 'tired_injury_bp' => 30000,
         'red_card_drain_bp' => 11500,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix

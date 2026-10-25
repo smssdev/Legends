@@ -36,7 +36,7 @@ const shortName = computed(() => {
     <div class="mt-auto flex flex-col gap-1.5">
       <b class="truncate text-center font-display text-base leading-tight" :title="name"><bdi>{{ shortName }}</bdi></b>
       <span v-if="status" class="truncate text-center text-[11px]" :class="statusTone">{{ status }}</span>
-      <div class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="`اللياقة ${fitness}%`"><span class="block h-full rounded-pill" :class="fitness >= 80 ? 'bg-success' : fitness >= 60 ? 'bg-gold' : 'bg-warning'" :style="{ width: fitness + '%' }" /></div>
+      <div class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="`اللياقة ${fitness}%`"><span class="block h-full rounded-pill" :class="fitness >= 75 ? 'bg-success' : fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: fitness + '%' }" /></div>
       <span class="text-center font-numbers text-xs text-text-muted" dir="ltr">{{ money(value) }}</span>
     </div>
   </div>

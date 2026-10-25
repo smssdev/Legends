@@ -45,7 +45,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       </div>
 
       <dl class="grid grid-cols-3 gap-2 text-center">
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">اللياقة</dt><dd class="font-numbers text-2xl" :class="player.fitness >= 80 ? 'text-success' : 'text-warning'">{{ player.fitness }}%</dd></div>
+        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">اللياقة</dt><dd class="font-numbers text-2xl" :class="player.fitness >= 75 ? 'text-success' : player.fitness >= 55 ? 'text-warning' : 'text-[#FF8A8A]'">{{ player.fitness }}%</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">سقف التطور</dt><dd class="font-numbers text-2xl">{{ player.potential }}</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">القيمة</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
       </dl>

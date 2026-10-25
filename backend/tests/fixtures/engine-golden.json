@@ -1,5 +1,5 @@
 {
-    "engine_version": 5,
+    "engine_version": 6,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -73,7 +73,7 @@
             }
         },
         "engine": {
-            "version": 5,
+            "version": 6,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -117,9 +117,11 @@
                 30,
                 40
             ],
-            "fitness_drain_base": 28,
-            "fitness_drain_pressing_max": 17,
+            "fitness_drain_base": 12,
+            "fitness_drain_pressing_max": 20,
             "fitness_drain_tempo_max": 8,
+            "tired_fit": 5500,
+            "tired_injury_bp": 30000,
             "red_card_drain_bp": 11500,
             "trailing_push_from_minute": 60,
             "tactics_max_win_bp": 5800,
@@ -229,10 +231,10 @@
             "minutes": 94,
             "score": {
                 "home": 2,
-                "away": 0
+                "away": 1
             },
             "shootout": null,
-            "sha256": "81f3460dd7d2bc1c937e703ad6a87c16797c3b04e526d02365142a5607a44228"
+            "sha256": "3210c4294dedc15964321abf5ec7ba88b4e5022ef6092662976f2bfb8a9e9785"
         },
         {
             "seed": 42,
@@ -243,7 +245,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "0f1fa23d4b44633b1527c25823c52dd2d9bc69b3dbb78fd1f6ee7a1328bcec37"
+            "sha256": "91d2f338014c2fdb0b1f45bd93af0e75e89c6bb0f437eb289925bafa6d245a6d"
         },
         {
             "seed": 48213,
@@ -254,7 +256,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "779bcaa5165a0f376bcbc047b55f72a8390ce259296fa65d1a216a0eb11cddc6"
+            "sha256": "a49075576d2ff252a58e4bfcafcfeca2a6ac2a3d7ee8216805143becbf39291f"
         },
         {
             "seed": 7,
@@ -265,7 +267,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "91d7ce80c608037d5227cae644954713504a5c44aac7d124c4c6cf21b39858b6"
+            "sha256": "543c7cd97c9ef62e127c9e2ac85c606393d27ae2c9b0cd5f6ff1d2e5e6861fab"
         },
         {
             "seed": 99,
@@ -276,7 +278,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "81c0754cee79834fbc02e9509e6b81c9b70547496693c8ee6e3cb27e416ff4d5"
+            "sha256": "2cceb9a505090b37d4bf04a1e9bd8d6e293d767ad7a1da22343754a1af9dc315"
         }
     ]
 }
