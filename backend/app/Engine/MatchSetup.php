@@ -111,6 +111,10 @@ final class MatchSetup
         if ($own) {
             $team['slots'] = $slots;
         }
+        // The eleven's chemistry, 0..100 [X22], when the caller measured it (App\League\Chemistry).
+        if (isset($input['chem'])) {
+            $team['chem'] = max(0, min(100, (int) $input['chem']));
+        }
 
         return $team;
     }

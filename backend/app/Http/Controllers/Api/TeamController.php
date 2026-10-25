@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\Http\Controllers\Controller;
+use App\League\Chemistry;
 use App\League\ClubLedger;
 use App\League\FormationBook;
 use App\League\MatchPrep;
@@ -55,7 +56,7 @@ class TeamController extends Controller
             'squad_value' => (int) $players->sum('value'),
             'lines' => $this->lineStrength($players),
             'players' => $players->values(),
-            'lineup' => $this->lineup($lineup),
+            'lineup' => $this->lineup($lineup, $club),
             'takers' => TeamSheet::takers($club, $lineup),
             'custom_formations' => collect(TeamSheet::customs($club))->map(fn ($c) => $this->formation('custom:'.$c['number'], $c['name'], FormationBook::custom($c['cells'])) + ['number' => $c['number'], 'cells' => $c['cells']]),
         ]);
@@ -66,7 +67,7 @@ class TeamController extends Controller
     {
         $club = $this->club($request->user(), $league);
 
-        return response()->json(['lineup' => $this->lineup(TeamSheet::best($club) + ['auto' => true])]);
+        return response()->json(['lineup' => $this->lineup(TeamSheet::best($club) + ['auto' => true], $club)]);
     }
 
     public function saveLineup(Request $request, League $league): JsonResponse
@@ -328,10 +329,10 @@ class TeamController extends Controller
         return $out;
     }
 
-    private function lineup(array $l): array
+    private function lineup(array $l, Club $club): array
     {
         return ['formation' => $l['formation'], 'auto' => $l['auto'], 'slots' => $l['slots'], 'starters' => $l['starters'], 'bench' => $l['bench'],
-            'lines' => FormationBook::lines($l['slots'])];
+            'lines' => FormationBook::lines($l['slots']), 'chemistry' => Chemistry::of($club->id, $l['starters'], $l['slots'])];
     }
 
     private function formation(string $name, string $label, array $slots): array

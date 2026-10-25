@@ -6,7 +6,9 @@
 // The server checks every rule and answers in Arabic; this screen only arranges.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
+import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
+import { useGlossary } from '../../lib/glossary'
 import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
@@ -83,6 +85,23 @@ const short = (name: string) => {
   const w = name.split(' ')
   return w.length > 1 && w[w.length - 1].length <= 3 ? w.slice(-2).join(' ') : w[w.length - 1]
 }
+// Chemistry [X22]: measured by the server on the saved eleven, so the links show until the lineup changes.
+const g = useGlossary()
+const chemistry = computed(() => team.value?.lineup.chemistry)
+const chemColor = (score: number) => (score >= 85 ? 'var(--color-success)' : score < 50 ? 'var(--color-live)' : 'var(--color-gold)')
+const LINK_COLOR = { green: 'var(--color-success)', yellow: 'var(--color-gold)', red: 'var(--color-live)' } as const
+const links = computed(() => {
+  if (dirty.value || !chemistry.value || !current.value) return []
+  const at = (id: number) => {
+    const i = starters.value.indexOf(id)
+    const s = current.value!.slots[i]
+    return s ? { x: (s.y / 680) * 100, y: 100 - (s.x / 720) * 100 } : null
+  }
+  return chemistry.value.links.flatMap((l) => {
+    const [a, b] = [at(l.a), at(l.b)]
+    return a && b ? [{ ...l, x1: a.x, y1: a.y, x2: b.x, y2: b.y }] : []
+  })
+})
 const ring = (line: string) => ({ gk: 'border-[#F5B82E]', def: 'border-[#3B82F6]', mid: 'border-[#22A35A]', att: 'border-[#F08A3C]' })[line] ?? 'border-text/30'
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
@@ -350,6 +369,15 @@ async function saveCustom() {
         <UiButton variant="outline" class="ms-auto" @click="improve">تحسين</UiButton>
       </div>
 
+      <div v-if="chemistry" class="flex items-center gap-3 rounded-xl bg-surface px-3 py-2">
+        <span class="flex items-center gap-1 text-sm font-bold">الكيمياء<HelpTip :text="g.chemistry" label="الكيمياء" /></span>
+        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" aria-label="الكيمياء">
+          <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
+        </span>
+        <span class="font-numbers text-lg font-bold" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</span>
+      </div>
+      <p v-if="chemistry && dirty" class="text-xs text-text-muted">احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.</p>
+
       <div class="flex gap-1 rounded-xl bg-surface-sunk p-1 text-sm" role="group" aria-label="العرض">
         <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="h-10 flex-1 rounded-lg font-bold" :class="view === v ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="view = v">{{ label }}</button>
       </div>
@@ -365,6 +393,9 @@ async function saveCustom() {
         <div class="pointer-events-none absolute inset-x-[28%] bottom-3 h-[13%] border-2 border-b-0 border-white/40" />
         <div class="pointer-events-none absolute inset-x-[28%] top-3 h-[13%] border-2 border-t-0 border-white/40" />
         <div v-if="band" class="pointer-events-none absolute inset-x-0 border-y-2 border-dashed border-gold/70 bg-gold/15" :style="band" />
+        <svg v-if="links.length" class="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <line v-for="l in links" :key="`${l.a}-${l.b}`" :x1="l.x1" :y1="l.y1" :x2="l.x2" :y2="l.y2" :stroke="LINK_COLOR[l.color]" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.85" />
+        </svg>
         <button
           v-for="(slot, i) in current.slots"
           :key="i"

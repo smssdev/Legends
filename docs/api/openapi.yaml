@@ -2927,7 +2927,7 @@ components:
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
     Lineup:
       type: object
-      required: [formation, auto, slots, starters, bench, lines]
+      required: [formation, auto, slots, starters, bench, lines, chemistry]
       properties:
         formation: { type: string }
         auto: { type: boolean, description: Not saved by the coach; picked automatically ("تحسين") }
@@ -2935,6 +2935,21 @@ components:
         starters: { type: array, items: { type: integer, nullable: true }, description: Player ids in slot order; null when a slot lost its player }
         bench: { type: array, items: { type: integer } }
         lines: { type: object, required: [def, mid, att], properties: { def: { type: integer }, mid: { type: integer }, att: { type: integer } } }
+        chemistry:
+          type: object
+          description: 'The eleven''s chemistry, 0..100, and the links between neighbours [X22]'
+          required: [score, links]
+          properties:
+            score: { type: integer }
+            links:
+              type: array
+              items:
+                type: object
+                required: [a, b, color]
+                properties:
+                  a: { type: integer }
+                  b: { type: integer }
+                  color: { type: string, enum: [green, yellow, red] }
     SpecialistsView:
       type: object
       required: [balance, now, days, specialists]

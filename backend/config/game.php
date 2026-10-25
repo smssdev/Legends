@@ -172,11 +172,20 @@ return [
             'tackling' => ['from' => 0, 'to' => 3, 'expect' => ['yellow_home' => 1, 'red_home_%' => 1]],
             'style' => ['from' => 0, 'to' => 100, 'expect' => ['goals_home' => 1, 'counters_away' => 1]],
             'trap' => ['from' => 0, 'to' => 1, 'against' => ['plan' => 'long'], 'expect' => ['offsides_away' => 1]],
+            // Chemistry [X22] is not a tactic: from 40 to 100 it must win more, by a few points, not by a class.
+            'chem' => ['field' => 'chem', 'from' => 40, 'to' => 100, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
         ],
         'max_win_shift' => 3,
     ],
+    // Chemistry [X22]: each player is linked to his `neighbours` nearest team-mates; a link is worth its colour,
+    // and green also comes from `together_matches` played together for the club. The engine's effect is in engine.chemistry_*.
+    'chemistry' => [
+        'neighbours' => 2,
+        'link_value' => ['green' => 100, 'yellow' => 65, 'red' => 25],
+        'together_matches' => 15,
+    ],
     'engine' => [
-        'version' => 6,
+        'version' => 7,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -194,6 +203,9 @@ return [
         'fitness_drain_base' => 12, 'fitness_drain_pressing_max' => 20, 'fitness_drain_tempo_max' => 8,
         'tired_fit' => 5500, 'tired_injury_bp' => 30000,
         'red_card_drain_bp' => 11500,
+        // Chemistry [X22]: from chemistry_high the phases (passing, counters, cover) gain chemistry_high_bp, from
+        // the first value at the line up to the second at 100; under chemistry_low they lose up to chemistry_low_bp at 0.
+        'chemistry_high' => 85, 'chemistry_high_bp' => [300, 700], 'chemistry_low' => 50, 'chemistry_low_bp' => 600,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
         'live_reading_every_minutes' => 15,

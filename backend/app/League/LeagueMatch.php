@@ -61,6 +61,8 @@ class LeagueMatch
             'bench' => json_decode($sheet->bench, true),
             'takers' => array_filter(array_map(fn ($t) => $t['player_id'] ?? null, $takers)),
             'tactics' => json_decode($sheet->tactics, true),
+            // The eleven's chemistry on the frozen sheet [X22].
+            'chem' => Chemistry::of($club->id, json_decode($sheet->starters, true), json_decode($sheet->slots, true))['score'],
         ];
     }
 
