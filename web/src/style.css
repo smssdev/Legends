@@ -11,9 +11,9 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* [X29] Depth behind every screen: a soft gold glow at the top and the deep navy below, fixed while scrolling.
-     On a layer of its own rather than a fixed background, which makes phones repaint the whole page on every
-     frame and every scroll [X30]. */
+  /* [X32] Our own stadium at night, blurred once beforehand (tools/web/stadium_bg.py), behind every screen under a
+     navy veil, as the owner asked after reviewing OSM. On a layer of its own rather than a fixed background, which
+     makes phones repaint the whole page on every frame and every scroll [X30]; the phone gets a lighter copy. */
   body {
     min-height: 100dvh;
   }
@@ -24,24 +24,18 @@
     z-index: -2;
     pointer-events: none;
     will-change: transform;
-    background-image:
-      radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--color-gold) 9%, transparent), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--color-pitch) 8%, transparent), transparent 60%),
-      linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-deep) 100%);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+      url("/art/stadium-blur.jpg") center top / cover no-repeat,
+      var(--color-bg-deep);
   }
-
-  /* [X29] A full pitch's markings behind everything, very faint, tilted a little like a camera's view. */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: -10% -10% auto;
-    height: 120%;
-    z-index: -1;
-    pointer-events: none;
-    background: url("/art/pitch-lines.svg") center 60% / min(1500px, 160vw) auto no-repeat;
-    opacity: 0.045;
-    transform: perspective(1200px) rotateX(38deg);
-    transform-origin: 50% 100%;
+  @media (max-width: 767px) {
+    body::after {
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+        url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
+        var(--color-bg-deep);
+    }
   }
 
   /* One visible focus ring for keyboards, none for taps. */
@@ -81,16 +75,17 @@
  * purpose, so it sits over the utilities it refines; each rule matches only the classes it is for.
  */
 
-/* Cards: glass over the background art, a hairline edge, a soft sheen at the top and depth below. */
+/* Panels [X32]: deep navy over the stadium, a bright blue edge at the top like a broadcast card, depth below. */
 .rounded-xl.bg-surface,
 .rounded-2xl.bg-surface,
 .rounded-xxl.bg-surface,
 .rounded-t-xxl.bg-surface {
-  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-  background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-text) 4%, transparent), transparent 45%);
-  border: 1px solid color-mix(in srgb, var(--color-text) 7%, transparent);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-text) 6%, transparent) inset, 0 18px 40px -24px rgb(0 0 0 / 0.7);
-  backdrop-filter: blur(10px);
+  background-color: color-mix(in srgb, var(--color-panel) 88%, transparent);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 16%, transparent), transparent 70px);
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 18%, transparent);
+  border-top-color: color-mix(in srgb, var(--color-brand-light) 45%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-brand-light) 20%, transparent) inset, 0 18px 40px -24px rgb(0 0 0 / 0.8);
+  backdrop-filter: blur(8px);
 }
 /* The smooth mode on weak phones [X30]: the same cards, solid instead of blurred (no blur to redo on every scroll). */
 html.smooth .rounded-xl.bg-surface,
@@ -98,7 +93,7 @@ html.smooth .rounded-2xl.bg-surface,
 html.smooth .rounded-xxl.bg-surface,
 html.smooth .rounded-t-xxl.bg-surface {
   backdrop-filter: none;
-  background-color: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  background-color: var(--color-panel);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--color-text) 6%, transparent) inset;
 }
 html.smooth .backdrop-blur,
@@ -122,6 +117,18 @@ button.bg-gold:not(:disabled):hover,
 a.bg-gold:hover {
   filter: brightness(1.06);
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 12px 30px -10px color-mix(in srgb, var(--color-gold) 90%, transparent);
+}
+
+/* The blue action [X32]: the brand's own button, lit from above like the gold. */
+button.bg-brand,
+a.bg-brand {
+  color: #fff;
+  background-image: linear-gradient(180deg, var(--color-brand-light), var(--color-brand) 55%, var(--color-brand-dark));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.3) inset, 0 8px 22px -10px var(--color-brand);
+}
+button.bg-brand:not(:disabled):hover,
+a.bg-brand:hover {
+  filter: brightness(1.08);
 }
 
 /* Page titles: the cream turning gold, and a short gold bar under them. */
@@ -160,18 +167,40 @@ main section > div > h2.font-display::before {
   flex-shrink: 0;
 }
 
-/* Tables: quiet headers, a row lit under the pointer. */
+/* Tables [X32]: a solid blue header like a broadcast's league table, the rows striped, the coach's own row in gold
+   (UiTable's highlight, or any row marked .is-mine). */
 main table thead th {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.02em;
-  color: var(--color-text-muted);
+  color: #fff;
+  padding-inline: 0.6rem;
+  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+}
+main table thead th:first-child {
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+main table thead th:last-child {
+  border-start-end-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
 }
 main table tbody tr {
   transition: background-color 0.15s ease;
 }
-main table tbody tr:hover {
-  background-color: color-mix(in srgb, var(--color-gold) 6%, transparent);
+main table tbody tr:nth-child(even):not(.is-mine) {
+  background-color: color-mix(in srgb, var(--color-text) 3.5%, transparent);
+}
+main table tbody tr:hover:not(.is-mine) {
+  background-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent);
+}
+main table tbody tr.is-mine {
+  background: linear-gradient(90deg, var(--color-gold-light), var(--color-gold));
+  color: var(--color-on-gold);
+  font-weight: 700;
+}
+main table tbody tr.is-mine * {
+  color: inherit;
 }
 
 /* Fields: a gold glow when typing. */

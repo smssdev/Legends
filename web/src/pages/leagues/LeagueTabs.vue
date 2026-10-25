@@ -105,7 +105,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
           </tr>
         </thead>
         <tbody>
-          <tr v-for="r in table" :key="r.id" class="relative" :class="r.id === myClubId ? 'bg-gold/10 outline outline-1 -outline-offset-1 outline-gold/40' : ''">
+          <tr v-for="r in table" :key="r.id" class="relative" :class="r.id === myClubId ? 'is-mine' : ''">
             <!-- [X29] The podium: gold, silver and bronze places, as the sports tables mark them. -->
             <td class="py-2"><span class="grid size-7 place-items-center rounded-md font-numbers text-base font-bold" :class="PODIUM[r.position] ?? 'text-text-soft'">{{ r.position }}</span></td>
             <td class="py-2">

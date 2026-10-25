@@ -6,19 +6,25 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 
 type Slot = components['schemas']['HomeScreen']['slots'][number]
+type Coach = components['schemas']['HomeScreen']['coach']
 
 export const useSlot = defineStore('slot', () => {
   const slots = ref<Slot[]>([])
   const current = ref<Slot | null>(null)
+  // The coach's own tab on the shell's header (level and avatar) [X32].
+  const coach = ref<Coach | null>(null)
   let loadedFor = 0
 
   async function load(userId: number, force = false) {
     if (!force && loadedFor === userId) return pick()
     loadedFor = userId
     try {
-      slots.value = (await api.GET('/home')).data?.slots ?? []
+      const home = (await api.GET('/home')).data
+      slots.value = home?.slots ?? []
+      coach.value = home?.coach ?? null
     } catch {
       slots.value = []
+      coach.value = null
     }
     pick()
   }
@@ -32,5 +38,5 @@ export const useSlot = defineStore('slot', () => {
     current.value = clubs.find((s) => s.league?.id === saved) ?? clubs[0] ?? null
   }
 
-  return { slots, current, load, pick }
+  return { slots, current, coach, load, pick }
 })
