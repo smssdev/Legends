@@ -1242,7 +1242,8 @@ paths:
               type: object
               required: [type, idempotency_key]
               properties:
-                type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
+                type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer] }
+                stars: { type: integer, minimum: 1, maximum: 5, description: 'Default 3 [X20]' }
                 idempotency_key: { type: string, maxLength: 64 }
       responses:
         '200':
@@ -2945,11 +2946,21 @@ components:
           type: array
           items:
             type: object
-            required: [type, cost, currency, ends_at]
+            required: [type, name, cost, currency, offers, stars, renewed, ends_at]
             properties:
-              type: { type: string, enum: [doctor, lawyer, keeper_coach, physio] }
-              cost: { type: integer }
+              type: { type: string, enum: [att_coach, mid_coach, def_coach, keeper_coach, physio, doctor, lawyer] }
+              name: { type: string, description: In Arabic }
+              cost: { type: integer, description: The three-star price }
               currency: { type: string, enum: [coins, money] }
+              offers:
+                type: array
+                description: 'A price and an effect for each number of stars, 1 to 5 [X20]'
+                items:
+                  type: object
+                  required: [stars, cost, currency, effect]
+                  properties: { stars: { type: integer }, cost: { type: integer }, currency: { type: string, enum: [coins, money] }, effect: { type: string, description: What it gives, in Arabic } }
+              stars: { type: integer, description: 'The contract working now (0 without one)' }
+              renewed: { type: boolean, description: A renewal is signed and starts when this contract ends }
               ends_at: { type: string, format: date-time, nullable: true, description: While a contract works }
     SpyPlayer:
       type: object

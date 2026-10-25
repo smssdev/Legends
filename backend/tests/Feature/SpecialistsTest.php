@@ -45,6 +45,13 @@ class SpecialistsTest extends TestCase
         parent::tearDown();
     }
 
+    private function url(): string
+    {
+        $this->actingAs($this->owner);
+
+        return "/api/v1/leagues/{$this->league['id']}/specialists";
+    }
+
     private function hire(string $type, string $key = 'k1')
     {
         return $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/specialists", ['type' => $type, 'idempotency_key' => $key]);
@@ -73,10 +80,11 @@ class SpecialistsTest extends TestCase
     public function test_1_hiring_pays_once_one_of_a_kind_and_ends_on_time(): void
     {
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
-        $this->hire('doctor')->assertOk()->assertJsonPath('specialists.0.type', 'doctor');
+        $doctor = collect($this->hire('doctor')->assertOk()->json('specialists'))->firstWhere('type', 'doctor');
+        $this->assertSame([3, 'طبيب النادي'], [$doctor['stars'], $doctor['name']]);
         $this->hire('doctor')->assertOk();
         $this->assertSame($before - Specialists::cost($this->league['id'], 'doctor'), (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
-        $this->hire('doctor', 'k2')->assertConflict()->assertJsonPath('message', 'لديك هذا الأخصائي الآن، جدّد عقده بعد أن ينتهي.');
+        $this->hire('doctor', 'k2')->assertConflict()->assertJsonPath('message', 'لديك هذا الأخصائي الآن. يُجدَّد عقده في آخر يوم منه.');
         $this->hire('lawyer', 'k3')->assertOk();
 
         $seconds = Specialists::seconds($this->league['id']);
@@ -104,21 +112,22 @@ class SpecialistsTest extends TestCase
 
     public function test_3_the_lawyer_cancels_about_half_the_bans_and_always_the_same_ones(): void
     {
-        $cancelled = 0;
-        foreach (range(1, 400) as $seed) {
-            $cancelled += Specialists::lawyerCancels($seed, 5) ? 1 : 0;
-            $this->assertSame(Specialists::lawyerCancels($seed, 5), Specialists::lawyerCancels($seed, 5));
-        }
-        $this->assertTrue($cancelled > 160 && $cancelled < 240, (string) $cancelled);
-
         $red = $this->squad()[3];
-        $seed = collect(range(1, 50))->first(fn ($s) => Specialists::lawyerCancels($s, $red));
+        // A seed a three-star lawyer cancels (his share is 50%), chosen before he is hired.
+        $seed = collect(range(1, 50))->first(fn ($s) => crc32("lawyer:{$s}:{$red}") % 10000 < 5000);
         $this->afterMatch([['card', $red, ['color' => 'red']]], $seed);
         $this->assertSame(1, (int) DB::table('players')->where('id', $red)->value('suspended_matches'));
         DB::table('players')->where('id', $red)->update(['suspended_matches' => 0]);
         $this->hire('lawyer')->assertOk();
         $this->afterMatch([['card', $red, ['color' => 'red']]], $seed);
         $this->assertSame(0, (int) DB::table('players')->where('id', $red)->value('suspended_matches'));
+
+        $cancelled = 0;
+        foreach (range(1, 400) as $s) {
+            $cancelled += Specialists::lawyerCancels($this->mine, $s, 5) ? 1 : 0;
+            $this->assertSame(Specialists::lawyerCancels($this->mine, $s, 5), Specialists::lawyerCancels($this->mine, $s, 5));
+        }
+        $this->assertTrue($cancelled > 160 && $cancelled < 240, (string) $cancelled);
     }
 
     public function test_4_the_keeper_coach_lifts_the_keeper_alone(): void
@@ -150,5 +159,50 @@ class SpecialistsTest extends TestCase
         $this->hire('physio')->assertOk();
         $this->afterMatch([]);
         $this->assertSame(85, (int) DB::table('players')->where('id', $rested)->value('fitness'));
+    }
+
+    /** [X20] More stars: a dearer contract and a bigger effect; a renewal in the last day; a resignation told. */
+    public function test_5_stars_price_effect_renewal_and_resignation(): void
+    {
+        $three = Specialists::cost($this->league['id'], 'physio', 3);
+        $this->assertSame(2 * $three, Specialists::cost($this->league['id'], 'physio', 5));
+        $this->assertSame(intdiv($three, 2), Specialists::cost($this->league['id'], 'physio', 1));
+        // Paid in coins (a league that is not fair), the coins follow the stars too.
+        DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
+        $coins = collect($this->getJson($this->url())->json('specialists'))->firstWhere('type', 'physio')['offers'];
+        $this->assertSame([12, 18, 25, 35, 50], array_column($coins, 'cost'));
+        $this->assertSame('coins', $coins[0]['currency']);
+        DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => true]);
+
+        $this->postJson($this->url(), ['type' => 'physio', 'stars' => 5, 'idempotency_key' => 's5'])->assertOk();
+        $this->assertSame(5, Specialists::stars($this->mine, 'physio'));
+        $this->assertSame(25, Specialists::effect($this->mine, 'physio', 'physio_rest_bonus'));
+        $this->postJson($this->url(), ['type' => 'physio', 'stars' => 9, 'idempotency_key' => 's9'])->assertUnprocessable();
+
+        // The line coach speeds his line's training only.
+        $this->postJson($this->url(), ['type' => 'mid_coach', 'stars' => 4, 'idempotency_key' => 'm4'])->assertOk();
+        $this->assertSame(14500, Specialists::trainingStep($this->mine, 'mid', 10000));
+        $this->assertSame(10000, Specialists::trainingStep($this->mine, 'att', 10000));
+
+        // Renewal: refused until the last day, then it waits for the current contract to end.
+        $seconds = Specialists::seconds($this->league['id']);
+        $window = intdiv(24 * 3600 * (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale'), 10000);
+        if ($seconds > $window + 60) {
+            $this->postJson($this->url(), ['type' => 'physio', 'stars' => 2, 'idempotency_key' => 'r0'])->assertConflict();
+        }
+        Carbon::setTestNow(GameClock::now()->addSeconds(max(0, $seconds - $window + 1)));
+        $this->postJson($this->url(), ['type' => 'physio', 'stars' => 2, 'idempotency_key' => 'r1'])->assertOk()->assertJsonPath('specialists.4.renewed', true);
+        $this->postJson($this->url(), ['type' => 'physio', 'stars' => 2, 'idempotency_key' => 'r2'])->assertConflict();
+        $this->assertSame(5, Specialists::stars($this->mine, 'physio'));
+
+        // The first contracts end: the renewed physio stays (2 stars), the midfield coach resigns and the coach hears it.
+        Carbon::setTestNow(GameClock::now()->addSeconds($window + 120));
+        $this->assertSame(2, Specialists::stars($this->mine, 'physio'));
+        $this->artisan('staff:due')->assertSuccessful();
+        $left = DB::table('messages')->where('type', 'staff_left')->get();
+        $this->assertCount(1, $left);
+        $this->assertSame('mid_coach', json_decode($left[0]->payload, true)['type']);
+        $this->artisan('staff:due')->assertSuccessful();
+        $this->assertSame(1, DB::table('messages')->where('type', 'staff_left')->count());
     }
 }
