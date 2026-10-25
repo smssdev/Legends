@@ -65,7 +65,14 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
     file="database/$db.sqlite"
     rm -f "$file.restore"
     # shellcheck disable=SC2086
-    litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file"
+    if ! litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file" 2> /tmp/restore.err; then
+      cat /tmp/restore.err
+      if grep -q "cap exceeded" /tmp/restore.err; then
+        echo "Saved game: B2 refused (its daily cap). The saved game is safe; nothing started over it. Raise the cap of"
+        echo "  Class B and Class C transactions in Backblaze (Caps & Alerts) or wait for midnight UTC, then deploy again."
+      fi
+      exit 1
+    fi
     if [ -f "$file.restore" ]; then
       rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
       mv "$file.restore" "$file"

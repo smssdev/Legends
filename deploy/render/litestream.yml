@@ -2,8 +2,12 @@
 # so every change to the game's databases is copied within a second to Backblaze B2 (free up to 10 GB), and
 # brought back before the site starts. The ${...} values are set by start.sh from the B2_* variables in Render.
 # The cache (cache.sqlite) is not copied: it rebuilds itself.
-# B2 keeps a week of history (retention) with a full snapshot every 6 hours, so the game can be brought back to
-# any moment of the last 7 days (RESTORE_AT in start.sh), for example to just before a deploy that went wrong.
+# Within B2's free daily operations [X38]: with the caps at $0 (docs/PLAN.md 8.1) a burst over 2,500 a day stops
+# every restore ("Transaction cap exceeded") until midnight UTC. A start downloads the last snapshot and every WAL
+# piece since it, one operation each: so the pieces are sent every 15 s (not every second, which made thousands a
+# restore), a full snapshot is taken every hour (a start reads at most 240 pieces a database), and the old pieces
+# are listed for deletion every 6 hours. A crash loses at most the last 15 s; a stop from Render sends everything first.
+# B2 keeps three days of history, so the game can be brought back to any moment of them (RESTORE_AT in start.sh).
 dbs:
   - path: /app/backend/database/legends.sqlite
     replicas:
@@ -13,8 +17,10 @@ dbs:
         endpoint: ${LITESTREAM_ENDPOINT}
         region: ${LITESTREAM_REGION}
         force-path-style: true
-        retention: 168h
-        snapshot-interval: 6h
+        sync-interval: 15s
+        snapshot-interval: 1h
+        retention: 72h
+        retention-check-interval: 6h
   - path: /app/backend/database/queue.sqlite
     replicas:
       - type: s3
@@ -23,5 +29,7 @@ dbs:
         endpoint: ${LITESTREAM_ENDPOINT}
         region: ${LITESTREAM_REGION}
         force-path-style: true
-        retention: 168h
-        snapshot-interval: 6h
+        sync-interval: 15s
+        snapshot-interval: 1h
+        retention: 72h
+        retention-check-interval: 6h
