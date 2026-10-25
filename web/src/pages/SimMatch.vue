@@ -22,6 +22,7 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
       <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">العرض: {{ viewing.chosenView.value === 'unity' ? 'المطوّر' : 'الكرتوني' }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
@@ -32,6 +33,7 @@
     </nav>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
+    <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
@@ -198,6 +200,7 @@ import { clubColors, leagueMatch, seats, sim, type LiveSync, type MatchEvent, ty
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
+import { useViewing } from '../match/viewing'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -766,25 +769,33 @@ function toggleSound() {
   voice.setOn(soundOn.value && commentary.value !== 'off')
   if (soundOn.value) sound.whistle()
 }
-// The commentator speaks when the sound is on: English (the default), Arabic, or not at all.
+// The commentator speaks when the sound is on: Arabic (the default), English, or not at all.
 function toggleCommentary() {
-  commentary.value = ({ en: 'ar', ar: 'off', off: 'en' } as const)[commentary.value]
+  commentary.value = ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value]
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
-// The Arabic voice: the first recording or one of the five full voices [audio review 2026-10-23].
-const arVoice = ref<ArVoice>(readArVoice())
+// The Arabic voice: the sixth (hafid) by default, or the coach's choice from their account [X9].
+const viewing = useViewing()
+const arVoice = ref<ArVoice>(viewing.commentator.value)
 voice.setArVoice(arVoice.value)
+watch(viewing.commentator, (v) => {
+  arVoice.value = v
+  voice.setArVoice(v)
+})
 function nextArVoice() {
   arVoice.value = AR_VOICES[(AR_VOICES.indexOf(arVoice.value) + 1) % AR_VOICES.length]
   voice.setArVoice(arVoice.value)
-  try { localStorage.setItem('legends.arVoice', arVoice.value) } catch {}
+  void viewing.save({ commentator: arVoice.value }).catch(() => {})
 }
-function readArVoice(): ArVoice {
-  try { const v = localStorage.getItem('legends.arVoice') as ArVoice; return AR_VOICES.includes(v) ? v : '' } catch { return '' }
+// The simulator: cartoon or Unity, switched here or in the account [X10]. Until Unity's web build is deployed
+// (Sprint 8) the cartoon one keeps playing, with a note.
+function switchView() {
+  void viewing.save({ match_view: viewing.chosenView.value === 'unity' ? 'cartoon' : 'unity' }).catch(() => {})
 }
+// Arabic by default, now that the default commentator is an Arabic voice [X9].
 function readPref(): Lang | 'off' {
-  try { const v = localStorage.getItem('legends.commentary'); return v === 'ar' || v === 'off' ? v : 'en' } catch { return 'en' }
+  try { const v = localStorage.getItem('legends.commentary'); return v === 'en' || v === 'off' ? v : 'ar' } catch { return 'ar' }
 }
 
 onMounted(async () => {

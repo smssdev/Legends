@@ -60,10 +60,15 @@ export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null;
 
 const BASE = import.meta.env.BASE_URL + 'commentary/'
 
-/** The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the five full voices by number only. */
-export const AR_VOICES = ['', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5'] as const
+/**
+ * The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the six full voices. The sixth
+ * (hafid) is the default [X9]. Shown by number only: whether the real commentators' names are shown waits for the
+ * owner (PLAN 11), and it is this one line.
+ */
+export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
 export type ArVoice = (typeof AR_VOICES)[number]
-export const arVoiceName = (v: ArVoice) => (v ? 'صوت ' + v.slice(6) : 'الأساسي')
+export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
+export const arVoiceName = (v: ArVoice) => (v === 'base' ? 'الأساسي' : 'المعلق ' + v.slice(6) + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : ''))
 const GAP = 0.07
 
 export class Commentator {
@@ -73,7 +78,7 @@ export class Commentator {
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
   private wanted: string[] = []
-  private arPack = 'ar/phrases'
+  private arPack = 'ar/voice-6/phrases'
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
   private queue: Line[] = []
@@ -114,7 +119,7 @@ export class Commentator {
 
   /** Which recorded Arabic voice says the Arabic lines. */
   setArVoice(v: ArVoice) {
-    this.arPack = v ? `ar/${v}/phrases` : 'ar/phrases'
+    this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
     if (this.ctx && this.on) this.pack(this.arPack)
   }
 
