@@ -60,11 +60,11 @@ class AuthTest extends TestCase
             ->assertJsonPath('errors.terms.0', 'يجب قبول الشروط.');
     }
 
-    public function test_the_username_is_english_letters_only_and_the_password_is_confirmed(): void
+    public function test_the_username_is_english_letters_and_digits_and_the_password_is_confirmed(): void
     {
-        foreach (['ab', 'hamza1', 'حمزة', 'ham_za', 'ham za', str_repeat('a', 21)] as $i => $bad) {
+        foreach (['ab', '1hamza', 'حمزة', 'ham_za', 'ham za', 'Owner-Hamza', str_repeat('a', 21)] as $i => $bad) {
             $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => $bad, 'email' => "h{$i}@example.com", 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
-                ->assertStatus(422)->assertJsonPath('errors.username.0', 'اسم المستخدم حروف إنجليزية فقط، من 3 إلى 20 حرفاً.');
+                ->assertStatus(422)->assertJsonPath('errors.username.0', 'اسم المستخدم حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف.');
         }
         $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'hamza', 'email' => 'h@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret124', 'terms' => true])
             ->assertStatus(422)->assertJsonPath('errors.password.0', 'تأكيد كلمة المرور غير مطابق.');
@@ -236,8 +236,11 @@ class AuthTest extends TestCase
         $user = $this->user();
         $user->createToken('phone');
         Sanctum::actingAs($user);
-        $this->deleteJson('/api/v1/auth/me', ['password' => 'wrong'])->assertStatus(422)->assertJsonPath('errors.password.0', 'كلمة المرور غير صحيحة.');
-        $this->deleteJson('/api/v1/auth/me', ['password' => 'secret123'])->assertOk()->assertJsonPath('deleted', true);
+        // Asked twice [X12]: without the word, nothing goes, whatever the password.
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'secret123'])->assertStatus(422)->assertJsonPath('errors.phrase.0', 'اكتب كلمة «احذف» للتأكيد.');
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'secret123', 'phrase' => 'نعم'])->assertStatus(422)->assertJsonPath('errors.phrase.0', 'اكتب كلمة «احذف» كما هي.');
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'wrong', 'phrase' => 'احذف'])->assertStatus(422)->assertJsonPath('errors.password.0', 'كلمة المرور غير صحيحة.');
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'secret123', 'phrase' => 'احذف'])->assertOk()->assertJsonPath('deleted', true);
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
@@ -246,8 +249,8 @@ class AuthTest extends TestCase
     {
         $user = $this->user(['password' => null, 'google_id' => 'g-1']);
         Sanctum::actingAs($user);
-        $this->deleteJson('/api/v1/auth/me', ['confirm' => 'other@example.com'])->assertStatus(422);
-        $this->deleteJson('/api/v1/auth/me', ['confirm' => 'SLIMAN@example.com'])->assertOk();
+        $this->deleteJson('/api/v1/auth/me', ['confirm' => 'other@example.com', 'phrase' => 'احذف'])->assertStatus(422);
+        $this->deleteJson('/api/v1/auth/me', ['confirm' => 'SLIMAN@example.com', 'phrase' => 'احذف'])->assertOk();
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 

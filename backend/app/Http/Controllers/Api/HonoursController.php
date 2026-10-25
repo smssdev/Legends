@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\Models\League;
 use App\Models\User;
@@ -51,7 +52,7 @@ class HonoursController extends Controller
                 'club_objectives.target', 'club_objectives.kind', 'club_objectives.result', 'club_objectives.achieved']);
 
         return response()->json([
-            'coach' => ['id' => $user->id, 'name' => $user->name],
+            'coach' => ['id' => $user->id, 'name' => $user->name, 'official' => Username::official($user->username)],
             'record' => $this->record($user->id),
             'titles' => $titles->map(fn ($t) => ['league' => $t->league, 'season' => (int) $t->number, 'competition' => $t->competition,
                 'position' => (int) $t->position, 'club' => $t->club])->all(),

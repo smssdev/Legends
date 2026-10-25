@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -147,6 +147,13 @@ class MessageText
                 'title' => 'بِيع '.($p['player'] ?? 'لاعبك'),
                 'body' => sprintf('اشترى نادٍ من خارج الدوري %s بالسعر الذي طلبته: %s. المبلغ في رصيد ناديك.', $p['player'] ?? '', number_format((int) ($p['price'] ?? 0))),
                 'link' => '/finance',
+            ],
+            // From the game's developers, with the official badge [X11].
+            'announcement' => [
+                'title' => (string) ($p['title'] ?? 'إعلان من فريق الأساطير'),
+                'body' => (string) ($p['body'] ?? ''),
+                'link' => null,
+                'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],
         };

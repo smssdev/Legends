@@ -2,6 +2,7 @@
 // One league (Sprints 13 to 15): the table, calendar and cup (LeagueTabs), its card, the invite to share, my club, my presence and holiday,
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
+import OfficialBadge from '../../components/OfficialBadge.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -265,7 +266,7 @@ onMounted(load)
               <img v-if="m.user.avatar_url" :src="m.user.avatar_url" alt="" class="size-10 rounded-full object-cover" />
               <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
-                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
+                <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
                 <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
               </span>
               <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>

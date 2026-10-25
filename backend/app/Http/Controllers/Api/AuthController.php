@@ -103,14 +103,23 @@ class AuthController extends Controller
         return response()->json(['user' => $user->toAccount()]);
     }
 
-    /** A username nobody else has, whatever its case. */
+    /** A username nobody else has, whatever its case, and not one of the staff's words [X11]. */
     private function usernameFree(?int $except = null): \Closure
     {
         return function (string $attribute, mixed $value, \Closure $fail) use ($except) {
-            if (is_string($value) && Username::taken($value, $except)) {
-                $fail('اسم المستخدم مأخوذ، اختر غيره.');
+            if (is_string($value) && ($why = Username::refusal($value, $except)) !== null) {
+                $fail($why);
             }
         };
+    }
+
+    /** Is this username free? With three free ones near it when it is not [X11]. */
+    public function usernameCheck(Request $request): JsonResponse
+    {
+        $name = (string) $request->validate(['u' => ['required', 'string', 'max:40']])['u'];
+        $why = preg_match('/^[A-Za-z][A-Za-z0-9]{2,19}$/', $name) ? Username::refusal($name, $request->user()?->id) : __('validation.custom.username.regex');
+
+        return response()->json(['available' => $why === null, 'reason' => $why, 'suggestions' => $why === null ? [] : Username::suggestions($name)]);
     }
 
     /** The account's picture [X4]: any image up to game.account.avatar_max_kb, cut to a square and kept as a small JPEG. */
@@ -179,6 +188,8 @@ class AuthController extends Controller
     public function destroy(Request $request): JsonResponse
     {
         $user = $request->user();
+        // The second confirmation [X12]: the word typed, on top of the password (or the email).
+        $request->validate(['phrase' => ['required', 'string', 'in:احذف']], ['phrase.in' => 'اكتب كلمة «احذف» كما هي.', 'phrase.required' => 'اكتب كلمة «احذف» للتأكيد.']);
         if ($user->hasPassword()) {
             $request->validate(['password' => ['required', 'string']]);
             if (! Hash::check($request->input('password'), $user->password)) {

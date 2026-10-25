@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
 use App\League\Joining;
@@ -492,7 +493,7 @@ class LeagueController extends Controller
         return LeagueMembership::where('season_id', $seasonId)->whereNull('left_at')->with('user', 'club')->orderBy('joined_at')->get()
             ->map(fn (LeagueMembership $m) => [
                 'id' => $m->id,
-                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl()],
+                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl(), 'official' => Username::official($m->user?->username)],
                 'club' => $m->club ? ['id' => $m->club->id, 'name' => $m->club->name] : null,
                 'is_owner' => $m->user_id === $l->owner_id,
                 'on_holiday' => Presence::onHoliday($m),
@@ -523,7 +524,7 @@ class LeagueController extends Controller
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'colors' => [$c->color_primary, $c->color_secondary],
             'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"),
             'strength_cp' => (int) $c->strength_snapshot,
-            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name] : null,
+            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'official' => Username::official($c->user->username)] : null,
             'bot' => $c->isBot(),
             'balance' => (int) $c->balance,
             'squad_value' => (int) $c->squad_value,

@@ -56,7 +56,7 @@ class OperationsTest extends TestCase
         DB::table('push_subscriptions')->insert(['user_id' => $coach->id, 'endpoint' => 'https://push.example/x', 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
         Activity::record($coach->id, 'visits');
 
-        $this->actingAs($coach)->deleteJson('/api/v1/auth/me', ['password' => 'secret123'])->assertOk();
+        $this->actingAs($coach)->deleteJson('/api/v1/auth/me', ['password' => 'secret123', 'phrase' => 'احذف'])->assertOk();
 
         // No table keeps a row that points at the account.
         foreach (DB::select("select name from sqlite_master where type = 'table'") as $t) {

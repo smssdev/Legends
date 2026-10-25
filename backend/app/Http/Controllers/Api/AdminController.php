@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Admin\TwoFactor;
+use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\Messages\Inbox;
+use App\Models\User;
 use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\GameClock;
@@ -13,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 
 /**
  * The admin panel [PLAN 2.17, 2.22, Sprint 37]: for the admin only, after the two-step code. The users, the
@@ -90,6 +94,44 @@ class AdminController extends Controller
             'dev' => (bool) $l->is_dev, 'owner' => $l->owner,
             'coaches' => DB::table('clubs')->where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'season' => (int) DB::table('seasons')->where('league_id', $l->id)->max('number')])]);
+    }
+
+    /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */
+    public function official(Request $request, User $user): JsonResponse
+    {
+        $name = (string) $request->validate(['name' => ['required', 'string', Rule::in(config('game.account.official_usernames'))]])['name'];
+        abort_if(Username::taken($name, $user->id), 409, 'هذا الاسم الرسمي لحساب آخر.');
+        $user->forceFill(['username' => strtolower($name)])->save();
+
+        return response()->json(['user' => $user->toAccount()]);
+    }
+
+    /** A message from the developers to every account, signed with the official badge [X11]. Only from an official account. */
+    public function announce(Request $request): JsonResponse
+    {
+        $from = $request->user();
+        abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Hamza أو Owner-Soliman).');
+        $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000']]);
+        $payload = ['title' => $data['title'], 'body' => $data['body'], 'from' => $from->name, 'username' => $this->officialName($from->username)];
+        $sent = 0;
+        foreach (User::query()->pluck('id') as $id) {
+            Inbox::send($id, 'announcement', $payload);
+            $sent++;
+        }
+
+        return response()->json(['sent' => $sent], 201);
+    }
+
+    /** owner-hamza → Owner-Hamza, as written in the settings. */
+    private function officialName(string $username): string
+    {
+        foreach (config('game.account.official_usernames') as $name) {
+            if (strtolower($name) === $username) {
+                return $name;
+            }
+        }
+
+        return $username;
     }
 
     /** The backups on this machine (newest first), and making one now. */
