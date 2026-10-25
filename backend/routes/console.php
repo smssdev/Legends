@@ -20,6 +20,8 @@ Schedule::command('training:tick')->everyMinute()->withoutOverlapping();
 Schedule::command('seasons:close')->everyMinute()->withoutOverlapping();
 // The stadium's parts, coach online or not [Sprint 29].
 Schedule::command('stadium:due')->everyMinute()->withoutOverlapping();
+// Staff whose contract ended unrenewed resign [X20].
+Schedule::command('staff:due')->everyMinute()->withoutOverlapping();
 
 // The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
 Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');

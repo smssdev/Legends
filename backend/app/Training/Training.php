@@ -7,6 +7,7 @@ use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
 use App\Stadium\Stadium;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -123,7 +124,8 @@ class Training
                 return 0;   // no money: the session is missed, the bar stays
             }
             $key = "{$p->id}:{$slotId}:{$session}";
-            $step = Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key, (int) $p->potential), $key);
+            // The stadium's training ground, then the line's coach by his stars [X20].
+            $step = Specialists::trainingStep($club->id, $p->line, Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key, (int) $p->potential), $key));
             if (! self::advance($p, $step)) {
                 return 1;
             }

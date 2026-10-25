@@ -41,8 +41,8 @@ class LeagueMatch
         // Secret training: one line, this match only [docs/features/secret-training.md].
         $boosts = SecretTraining::boosts($club->id, $sheet->fixture_id);
         // The keeper coach [docs/features/specialists.md].
-        if (Specialists::has($club->id, 'keeper_coach')) {
-            $boosts['gk'] = ($boosts['gk'] ?? 0) + (int) config('game.specialists.keeper_coach_boost');
+        if ($boost = Specialists::effect($club->id, 'keeper_coach', 'keeper_coach_boost')) {
+            $boosts['gk'] = ($boosts['gk'] ?? 0) + $boost;
         }
 
         return [

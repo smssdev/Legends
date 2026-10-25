@@ -283,7 +283,7 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report'],
+            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report', 'staff_left'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
         ],
         'match_soon_minutes' => 10,
@@ -321,11 +321,18 @@ return [
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
     'specialists' => ['contract_days' => 7,
-        'cost_bp' => ['doctor' => 20, 'lawyer' => 15, 'keeper_coach' => 20, 'physio' => 20],
-        'doctor_countdown' => 2,        // each match counts injuries down by this many
-        'lawyer_cancel_bp' => 5000,     // the share of new red-card bans the lawyer cancels
-        'keeper_coach_boost' => 2,      // on the keeper's rating and attributes
-        'physio_rest_bonus' => 15],     // fitness on top of rest_recovery for a player who rests
+        // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
+        // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect
+        // grows with the stars. A contract can be renewed in its last renew_hours (the new one starts when it ends);
+        // one that ends unrenewed is a resignation, and the coach is told.
+        'cost_bp' => ['doctor' => 20, 'lawyer' => 15, 'physio' => 20, 'keeper_coach' => 20, 'def_coach' => 15, 'mid_coach' => 15, 'att_coach' => 15],
+        'stars_cost_bp' => [1 => 5000, 2 => 7500, 3 => 10000, 4 => 14000, 5 => 20000],
+        'renew_hours' => 24,
+        'doctor_countdown' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],         // each match counts injuries down by this many
+        'lawyer_cancel_bp' => [1 => 2000, 2 => 3500, 3 => 5000, 4 => 6500, 5 => 8000],   // the share of new red-card bans cancelled
+        'keeper_coach_boost' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],       // on the keeper's rating and attributes in a match
+        'physio_rest_bonus' => [1 => 5, 2 => 10, 3 => 15, 4 => 20, 5 => 25],     // fitness on top of rest_recovery for a player who rests
+        'coach_training_bp' => [1 => 1000, 2 => 2000, 3 => 3000, 4 => 4500, 5 => 6000]],  // faster training for the coach's line
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).
     'spy' => ['cost_bp' => 15],

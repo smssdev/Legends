@@ -5,6 +5,7 @@ namespace App\Training;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
 use App\Stadium\Stadium;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -130,7 +131,7 @@ class Camp
                     continue;
                 }
                 $key = "camp:{$campId}:{$id}:{$done}";
-                $step = Stadium::trainingStep($club->id, intdiv($gain->step($p->overall + $p->training_bonus, $key, (int) $p->potential) * $level, 10000), $key);
+                $step = Specialists::trainingStep($club->id, $p->line, Stadium::trainingStep($club->id, intdiv($gain->step($p->overall + $p->training_bonus, $key, (int) $p->potential) * $level, 10000), $key));
                 if (Training::advance($p, $step)) {
                     $gains[$id] = ($gains[$id] ?? 0) + 1;
                 }

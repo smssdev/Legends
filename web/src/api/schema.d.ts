@@ -2936,7 +2936,9 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                        type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer";
+                        /** @description Default 3 [X20] */
+                        stars?: number;
                         idempotency_key: string;
                     };
                 };
@@ -6431,10 +6433,26 @@ export interface components {
             days: number;
             specialists: {
                 /** @enum {string} */
-                type: "doctor" | "lawyer" | "keeper_coach" | "physio";
+                type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer";
+                /** @description In Arabic */
+                name: string;
+                /** @description The three-star price */
                 cost: number;
                 /** @enum {string} */
                 currency: "coins" | "money";
+                /** @description A price and an effect for each number of stars, 1 to 5 [X20] */
+                offers: {
+                    stars: number;
+                    cost: number;
+                    /** @enum {string} */
+                    currency: "coins" | "money";
+                    /** @description What it gives */
+                    effect: string;
+                }[];
+                /** @description The contract working now (0 without one) */
+                stars: number;
+                /** @description A renewal is signed and starts when this contract ends */
+                renewed: boolean;
                 /**
                  * Format: date-time
                  * @description While a contract works
