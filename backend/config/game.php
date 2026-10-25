@@ -232,7 +232,12 @@ return [
     // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
-    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256],
+    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
+        // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
+        // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
+        'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
+        'blocked_names' => ['mod', 'dev', 'gm', 'root', 'help', 'team'],
+        'official_usernames' => ['Owner-Hamza', 'Owner-Soliman']],
     // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
     // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
     'monitoring' => [

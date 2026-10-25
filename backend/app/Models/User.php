@@ -83,6 +83,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'id' => $this->id,
             'name' => $this->name,
             'username' => $this->username,
+            // The developers' accounts carry the official badge everywhere [X11].
+            'official' => Username::official($this->username),
             'avatar_url' => $this->avatarUrl(),
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),

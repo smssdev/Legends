@@ -28,7 +28,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         name: string;
-                        /** @description English letters only, unique whatever the case, kept in lower case */
+                        /** @description English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username) */
                         username: string;
                         /** Format: email */
                         email: string;
@@ -349,7 +349,7 @@ export interface paths {
         post?: never;
         /**
          * Delete the account
-         * @description Asks for the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
+         * @description Asks twice [X12], the word احذف in phrase and the password, or for an account without one (Google only) its email in confirm. Its teams go back to the bots.
          */
         delete: {
             parameters: {
@@ -364,6 +364,11 @@ export interface paths {
                         password?: string;
                         /** @description The email of an account without a password */
                         confirm?: string;
+                        /**
+                         * @description The second confirmation [X12]: the word typed as it is
+                         * @enum {string}
+                         */
+                        phrase?: "احذف";
                     };
                 };
             };
@@ -585,6 +590,50 @@ export interface paths {
                     };
                 };
                 404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/username": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is this username free? With three free ones near it when not (30 a minute) [X11] */
+        get: {
+            parameters: {
+                query: {
+                    u: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The answer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            available: boolean;
+                            /** @description Why not */
+                            reason: string | null;
+                            suggestions: string[];
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
             };
         };
         put?: never;
@@ -4128,6 +4177,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/users/{user}/official": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give a developer's account a reserved name (Owner-Hamza, Owner-Soliman) and its badge [X11] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        name: "Owner-Hamza" | "Owner-Soliman";
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Account"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A message to every account from an official developer account, with the badge [X11] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/commentary": {
         parameters: {
             query?: never;
@@ -5842,8 +5978,8 @@ export interface components {
         };
         Message: {
             id: number;
-            /** @enum {string} */
-            type: "referee" | "absence_warning" | "left_absent" | "kicked" | "join_request" | "join_approved" | "join_rejected" | "match_report";
+            /** @description One of App\\Messages\\MessageText::TYPES (referee, match_report, announcement...) */
+            type: string;
             league_id?: number | null;
             read: boolean;
             /** Format: date-time */
@@ -5852,6 +5988,12 @@ export interface components {
             body: string;
             /** @description A web path to open (the app maps it to its own screen) */
             link: string | null;
+            /** @description An announcement only: the developer who sent it, with the official badge [X11] */
+            sender?: {
+                name: string;
+                username: string;
+                official: boolean;
+            };
         };
         /** @description The assistant's live note to his coach [ENGINE 8.2], from the public events and his own side only */
         MatchReading: {
@@ -5931,6 +6073,8 @@ export interface components {
                     name: string;
                     username?: string | null;
                     avatar_url?: string | null;
+                    /** @description A developer account (Owner-Hamza, Owner-Soliman) [X11] */
+                    official?: boolean;
                 };
                 club?: {
                     id: number;
@@ -6424,6 +6568,8 @@ export interface components {
             coach: {
                 id: number;
                 name: string;
+                /** @description A developer account [X11] */
+                official?: boolean;
             };
             record: {
                 seasons: number;
@@ -6542,6 +6688,8 @@ export interface components {
             name: string;
             /** @description English letters only, lower case */
             username: string;
+            /** @description A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11] */
+            official: boolean;
             /** @description The picture (GET /users/{id}/avatar), null without one */
             avatar_url: string | null;
             /** Format: email */

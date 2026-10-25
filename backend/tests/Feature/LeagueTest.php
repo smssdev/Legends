@@ -317,7 +317,7 @@ class LeagueTest extends TestCase
         $club = $this->botClub($league['id']);
         $this->actingAs($coach)->postJson("/api/v1/leagues/{$league['id']}/clubs/{$club}/claim")->assertCreated();
 
-        $this->deleteJson('/api/v1/auth/me', ['password' => 'password'])->assertOk();
+        $this->deleteJson('/api/v1/auth/me', ['password' => 'password', 'phrase' => 'احذف'])->assertOk();
         $this->assertNull(DB::table('clubs')->where('id', $club)->value('user_id'));
         $this->assertSame('deleted', DB::table('league_memberships')->where('club_id', $club)->value('left_reason'));
     }

@@ -35,6 +35,19 @@ async function run(fn: () => Promise<void>) {
   busy.value = false
 }
 
+const annTitle = ref('')
+const annBody = ref('')
+const annMsg = ref('')
+const announce = () => run(async () => {
+  const { data } = await api.POST('/admin/announcements', { body: { title: annTitle.value, body: annBody.value } })
+  annMsg.value = `أُرسل إلى ${data!.sent} حساب.`
+  annTitle.value = annBody.value = ''
+})
+const makeOfficial = (id: number, name: string) => name && run(async () => {
+  await api.POST('/admin/users/{user}/official', { params: { path: { user: id } }, body: { name: name as 'Owner-Hamza' | 'Owner-Soliman' } })
+  annMsg.value = `صار اسم الحساب ${name}.`
+})
+
 const load = () => run(async () => {
   state.value = (await api.GET('/admin/2fa')).data!
   if (open.value) await show('overview')
@@ -111,14 +124,29 @@ onMounted(load)
         </div>
       </section>
 
+      <!-- The developers' official names and their announcements [X11]. -->
+      <section v-if="tab === 'users'" aria-label="إعلان للجميع" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+        <h2 class="font-display text-lg font-bold">إعلان لكل اللاعبين</h2>
+        <p class="text-xs text-text-muted">يُرسل من حسابك بالشارة الرسمية، فيلزم أن يكون اسمه Owner-Hamza أو Owner-Soliman (من الجدول تحت).</p>
+        <input v-model="annTitle" maxlength="120" placeholder="العنوان" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" />
+        <textarea v-model="annBody" maxlength="2000" rows="3" placeholder="النص" class="rounded-md border border-text/10 bg-surface-sunk p-3" />
+        <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !annTitle || !annBody" @click="announce">أرسل للجميع</button>
+        <p v-if="annMsg" class="text-sm text-success" role="status">{{ annMsg }}</p>
+      </section>
+
       <section v-if="tab === 'users'" aria-label="المستخدمون" class="overflow-x-auto rounded-xl bg-surface p-4">
         <table class="w-full text-sm">
-          <thead class="text-text-muted"><tr><th class="py-2 text-start">الاسم</th><th class="text-start">البريد</th><th>انضم</th><th>آخر يوم</th><th>مباريات حية</th></tr></thead>
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">الاسم</th><th class="text-start">البريد</th><th>انضم</th><th>آخر يوم</th><th>مباريات حية</th><th>اسم رسمي</th></tr></thead>
           <tbody>
             <tr v-for="u in users" :key="u.id" class="border-t border-text/5">
               <td class="py-2">{{ u.name }}<span v-if="u.role === 'admin'" class="ms-1 text-xs text-gold">مدير</span></td>
               <td dir="ltr" class="text-start">{{ u.email }}</td><td class="whitespace-nowrap text-center">{{ day(u.joined) }}</td>
               <td class="whitespace-nowrap text-center font-numbers">{{ u.last_day ?? '-' }}</td><td class="text-center font-numbers">{{ u.matches_watched }}</td>
+              <td class="text-center">
+                <select class="h-10 rounded-md bg-surface-sunk px-2 text-xs" aria-label="أعطه اسماً رسمياً" @change="makeOfficial(u.id, ($event.target as HTMLSelectElement).value)">
+                  <option value="">-</option><option>Owner-Hamza</option><option>Owner-Soliman</option>
+                </select>
+              </td>
             </tr>
           </tbody>
         </table>

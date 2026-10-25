@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The inbox (Sprint 22 W1): the game's messages, newest first, the unread ones marked, each one leading to
 // its screen. No draft of its own: the design system's cards and the "الرسائل" section of WebHome's side bar.
+import OfficialBadge from '../components/OfficialBadge.vue'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import UiButton from '../components/ui/UiButton.vue'
@@ -51,6 +52,7 @@ onMounted(() => inbox.load())
           <span class="min-w-0 flex-1">
             <span class="flex flex-wrap items-baseline justify-between gap-x-3">
               <b class="font-display" :class="m.read ? 'font-bold text-text-soft' : 'font-extrabold'">{{ m.title }}</b>
+              <span v-if="m.sender" class="text-xs text-text-muted">من {{ m.sender.name }} <span dir="ltr">@{{ m.sender.username }}</span> <OfficialBadge v-if="m.sender.official" /></span>
               <time class="text-xs text-text-muted" :datetime="m.created_at">{{ when(m.created_at) }}</time>
             </span>
             <span class="mt-1 block text-sm" :class="m.read ? 'text-text-muted' : 'text-text-soft'">{{ m.body }}</span>

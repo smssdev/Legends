@@ -38,6 +38,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('forgot-password', 'forgot');
         Route::post('reset-password', 'reset');
     });
+    // A username's check as it is typed, with suggestions [X11].
+    Route::get('username', 'usernameCheck')->middleware('throttle:30,1,username');
     Route::post('logout', 'logout');
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', 'me');
@@ -189,6 +191,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('backups', 'backups');
         Route::post('backups', 'backupNow');
         Route::get('commentary', 'commentary');
+        Route::post('users/{user}/official', 'official')->whereNumber('user');
+        Route::post('announcements', 'announce');
     });
 });
 
