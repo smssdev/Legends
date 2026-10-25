@@ -983,6 +983,26 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/team/scenarios:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: Set my pre-match scenarios (up to one per kind) [X23]
+      description: The whole list replaces the old one; 409 from the lock until the match ends.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenarios]
+              properties:
+                scenarios: { type: array, maxItems: 3, items: { $ref: '#/components/schemas/Scenario' } }
+      responses:
+        '200': { $ref: '#/components/responses/Tactics' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /leagues/{league}/market:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2484,7 +2504,7 @@ components:
         application/json:
           schema:
             type: object
-            required: [tactics, tips, help]
+            required: [tactics, tips, help, scenarios, scenario_kinds]
             properties:
               tactics: { $ref: '#/components/schemas/TacticsSet' }
               tips: { type: array, items: { type: string } }
@@ -2493,6 +2513,19 @@ components:
                 type: object
                 description: 'What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips'
                 additionalProperties: { type: string }
+              scenarios: { type: array, items: { $ref: '#/components/schemas/Scenario' } }
+              scenario_kinds:
+                type: array
+                items:
+                  type: object
+                  required: [kind, minute]
+                  properties:
+                    kind: { type: string, enum: [trailing, red_card, leading] }
+                    minute:
+                      type: object
+                      nullable: true
+                      required: [default, min, max]
+                      properties: { default: { type: integer }, min: { type: integer }, max: { type: integer } }
     Team:
       description: My club and its team sheet
       content:
@@ -3674,6 +3707,21 @@ components:
         def: { type: string, enum: [stay, fullbacks, mid] }
         trap: { type: integer, enum: [0, 1] }
         marking: { type: string, enum: [zone, man] }
+    Scenario:
+      type: object
+      description: 'A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival.'
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [trailing, red_card, leading] }
+        minute: { type: integer, nullable: true, description: 'From this minute (trailing 46..85, leading 60..88); none for red_card' }
+        tactics:
+          type: object
+          properties: { pressing: { type: integer }, tempo: { type: integer }, style: { type: integer } }
+        sub:
+          type: object
+          nullable: true
+          required: [out, in]
+          properties: { out: { type: integer }, in: { type: integer } }
     TeamSetup:
       type: object
       properties:

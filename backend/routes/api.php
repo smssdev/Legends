@@ -104,6 +104,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::put('takers', 'saveTakers');
         Route::get('tactics', 'tactics');
         Route::put('tactics', 'saveTactics');
+        Route::put('scenarios', 'saveScenarios');
         Route::get('next-match', 'nextMatch');
         // Club money [Sprint 23].
         Route::get('finance', 'finance');

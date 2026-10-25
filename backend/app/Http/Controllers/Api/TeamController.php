@@ -9,6 +9,7 @@ use App\League\Chemistry;
 use App\League\ClubLedger;
 use App\League\FormationBook;
 use App\League\MatchPrep;
+use App\League\Scenarios;
 use App\League\Tactics;
 use App\League\TeamSheet;
 use App\Models\Club;
@@ -131,7 +132,27 @@ class TeamController extends Controller
         $next = $this->nextFixture($club);
 
         return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
-            'help' => Tactics::HELP]);
+            'help' => Tactics::HELP, 'scenarios' => Scenarios::of($club),
+            'scenario_kinds' => collect(Scenarios::KINDS)->map(fn ($m, $kind) => ['kind' => $kind, 'minute' => $m ? ['default' => $m[0], 'min' => $m[1], 'max' => $m[2]] : null])->values()]);
+    }
+
+    /** The pre-match scenarios [X23]: the whole list, up to one per kind. */
+    public function saveScenarios(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $data = $request->validate([
+            'scenarios' => ['present', 'array', 'max:'.count(Scenarios::KINDS)],
+            'scenarios.*.kind' => ['required', Rule::in(array_keys(Scenarios::KINDS))],
+            'scenarios.*.minute' => ['nullable', 'integer'],
+            'scenarios.*.tactics' => ['sometimes', 'array'],
+            ...collect(Scenarios::TACTICS)->mapWithKeys(fn ($k) => ["scenarios.*.tactics.{$k}" => ['sometimes', 'integer', 'between:0,100']])->all(),
+            'scenarios.*.sub' => ['nullable', 'array'],
+            'scenarios.*.sub.out' => ['required_with:scenarios.*.sub', 'integer'],
+            'scenarios.*.sub.in' => ['required_with:scenarios.*.sub', 'integer'],
+        ]);
+        Scenarios::save($club, $data['scenarios']);
+
+        return $this->tactics($request, $league);
     }
 
     public function saveTactics(Request $request, League $league): JsonResponse

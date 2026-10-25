@@ -62,28 +62,78 @@ class MatchOrders
         if ($kept) {
             DB::table('match_actions')->insert($kept);
         }
+        // Live, the rows are the record of what went in.
+        self::forget($matchId);
 
         return [...$actions, ...$auto];
     }
 
-    /** The assistant's and the computer's orders for the next minute, and their rows. */
+    /** The scenarios' (any side that set them), the assistant's and the computer's orders for the next minute, and their rows. */
     public static function auto(int $matchId, array $state, array $managers): array
     {
         $tick = $state['tick'] + 1;
         $actions = [];
         $rows = [];
+        $row = fn (string $side, string $source, string $key, array $order) => ['match_id' => $matchId, 'side' => $side, 'source' => $source, 'user_id' => null,
+            'idempotency_key' => $key, 'target_tick' => $tick, 'applied_tick' => $tick, 'action' => json_encode(array_diff_key($order, ['team' => 1])), 'created_at' => GameClock::now()];
+        $scenarios = isset($state['out']) ? self::scenarios($matchId) : [];
         foreach ($managers as $side => $who) {
+            // The coach's own plans [X23] go in at their moment, watching or not; each once.
+            foreach (Scenarios::due($state, $side, $scenarios[$side] ?? [], self::fired($matchId, $side)) as $due) {
+                self::$fired[$matchId][$side][] = $due['kind'];
+                foreach ($due['orders'] as $i => $order) {
+                    $actions[] = $order;
+                    $rows[] = $row($side, 'scenario', "scenario:{$due['kind']}:{$side}:{$i}", $order);
+                }
+            }
             if ($who === 'coach' || ! isset($state['out'])) {
                 continue;
             }
             foreach (CpuCoach::orders($state, $side) as $i => $order) {
+                // A coach who planned his scenarios keeps his tactics: his assistant only rests the tired.
+                if (! empty($scenarios[$side]) && $order['type'] === 'tactics') {
+                    continue;
+                }
                 $actions[] = $order;
-                $rows[] = ['match_id' => $matchId, 'side' => $side, 'source' => $who, 'user_id' => null, 'idempotency_key' => "{$who}:{$tick}:{$side}:{$i}",
-                    'target_tick' => $tick, 'applied_tick' => $tick, 'action' => json_encode(array_diff_key($order, ['team' => 1])), 'created_at' => GameClock::now()];
+                $rows[] = $row($side, $who, "{$who}:{$tick}:{$side}:{$i}", $order);
             }
         }
 
         return [$actions, $rows];
+    }
+
+    /** @var array<int, array<string, list<string>>> the scenarios gone in, while an instant match is made (its rows are written at the end) */
+    private static array $fired = [];
+
+    /** An instant match is made from the start: nothing of its scenarios is remembered from before. */
+    public static function forget(int $matchId): void
+    {
+        unset(self::$fired[$matchId]);
+    }
+
+    /** The kinds of scenario that already went in for this side. */
+    private static function fired(int $matchId, string $side): array
+    {
+        $kept = DB::table('match_actions')->where('match_id', $matchId)->where('side', $side)->where('source', 'scenario')->pluck('idempotency_key')
+            ->map(fn ($k) => explode(':', $k)[1])->all();
+
+        return array_values(array_unique([...$kept, ...(self::$fired[$matchId][$side] ?? [])]));
+    }
+
+    /** Both sides' scenarios, as frozen with their sheets at the lock. */
+    private static function scenarios(int $matchId): array
+    {
+        $fixture = DB::table('matches')->join('fixtures', 'fixtures.id', '=', 'matches.fixture_id')->where('matches.id', $matchId)
+            ->first(['fixtures.id', 'fixtures.home_id', 'fixtures.away_id']);
+        if (! $fixture) {
+            return [];
+        }
+        $sheets = DB::table('fixture_sheets')->where('fixture_id', $fixture->id)->pluck('scenarios', 'club_id');
+
+        return [
+            'home' => json_decode($sheets[$fixture->home_id] ?? 'null', true) ?? [],
+            'away' => json_decode($sheets[$fixture->away_id] ?? 'null', true) ?? [],
+        ];
     }
 
     /** Every order that went in, by minute: what a replay gives the engine. */

@@ -2206,6 +2206,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set my pre-match scenarios (up to one per kind) [X23]
+         * @description The whole list replaces the old one; 409 from the lock until the match ends.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        scenarios: components["schemas"]["Scenario"][];
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Tactics"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/market": {
         parameters: {
             query?: never;
@@ -7227,6 +7271,22 @@ export interface components {
             /** @enum {string} */
             marking?: "zone" | "man";
         };
+        /** @description A pre-match scenario [X23]: carried out once by the server at its moment, watching or not. Never sent to the rival. */
+        Scenario: {
+            /** @enum {string} */
+            kind: "trailing" | "red_card" | "leading";
+            /** @description From this minute (trailing 46..85, leading 60..88); none for red_card */
+            minute?: number | null;
+            tactics?: {
+                pressing?: number;
+                tempo?: number;
+                style?: number;
+            };
+            sub?: {
+                out: number;
+                in: number;
+            } | null;
+        };
         TeamSetup: {
             /** @enum {string} */
             formation?: "4-2-3-1" | "4-3-3" | "4-4-2" | "4-1-4-1" | "3-5-2" | "5-3-2";
@@ -7294,6 +7354,16 @@ export interface components {
                     help: {
                         [key: string]: string;
                     };
+                    scenarios: components["schemas"]["Scenario"][];
+                    scenario_kinds: {
+                        /** @enum {string} */
+                        kind: "trailing" | "red_card" | "leading";
+                        minute: {
+                            default: number;
+                            min: number;
+                            max: number;
+                        } | null;
+                    }[];
                 };
             };
         };
