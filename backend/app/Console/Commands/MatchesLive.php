@@ -18,14 +18,20 @@ class MatchesLive extends Command
 
     public function handle(): int
     {
+        $this->line((string) self::busy((int) $this->option('soon')));
+
+        return self::SUCCESS;
+    }
+
+    /** The matches live now, and those kicking off within $soon minutes; also the admin panel's "safe to deploy" [X33]. */
+    public static function busy(int $soon = 0): int
+    {
         $live = DB::table('matches')->where('status', 'live')->count();
-        $soon = (int) $this->option('soon');
         if ($soon > 0) {
             $live += DB::table('fixtures')->whereIn('status', ['scheduled', 'locked'])->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
                 ->whereBetween('scheduled_at', [GameClock::now()->subMinutes(15), GameClock::now()->addMinutes($soon)])->count();
         }
-        $this->line((string) $live);
 
-        return self::SUCCESS;
+        return $live;
     }
 }

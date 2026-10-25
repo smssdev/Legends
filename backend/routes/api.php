@@ -224,6 +224,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('leagues', 'leagues');
         Route::get('backups', 'backups');
         Route::post('backups', 'backupNow');
+        Route::get('backups/{name}/download', 'downloadBackup')->where('name', '\d{4}-\d{2}-\d{2}_\d{6}');
         Route::get('commentary', 'commentary');
         Route::post('mail-test', 'mailTest')->middleware('throttle:10,1,mail-test');
         Route::post('users/{user}/official', 'official')->whereNumber('user');

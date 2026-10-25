@@ -1966,8 +1966,15 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [users, leagues, live_matches, active_today, weeks]
+                required: [users, leagues, live_matches, active_today, weeks, deploy]
                 properties:
+                  deploy:
+                    type: object
+                    description: 'Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when'
+                    required: [busy, next_kickoff]
+                    properties:
+                      busy: { type: integer, description: Matches live or kicking off within 30 minutes }
+                      next_kickoff: { type: string, format: date-time, nullable: true }
                   users: { type: integer }
                   leagues: { type: object, required: [total, running], properties: { total: { type: integer }, running: { type: integer } } }
                   live_matches: { type: integer }
@@ -2047,6 +2054,15 @@ paths:
       summary: Make a backup now (and send it to Google Drive when set)
       responses:
         '200': { description: The backups after, content: { application/json: { schema: { $ref: '#/components/schemas/AdminBackups' } } } }
+  /admin/backups/{name}/download:
+    get:
+      tags: [admin]
+      summary: 'One backup''s game database (legends.sqlite) to keep off the server [X33]'
+      parameters:
+        - { name: name, in: path, required: true, schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}_\d{6}$' } }
+      responses:
+        '200': { description: The SQLite file, content: { application/vnd.sqlite3: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
   /admin/users/{user}/official:
     post:
       tags: [admin]

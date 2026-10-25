@@ -118,6 +118,14 @@ onMounted(load)
       </nav>
 
       <section v-if="tab === 'overview' && overview" aria-label="النشاط" class="flex flex-col gap-3">
+        <!-- [X33] Before pressing Manual Deploy on Render: nothing live nor about to kick off. -->
+        <div class="flex items-center gap-3 rounded-xl p-4" :class="overview.deploy.busy ? 'bg-live/15' : 'bg-success/15'" role="status">
+          <span class="text-2xl" aria-hidden="true">{{ overview.deploy.busy ? '⛔' : '✅' }}</span>
+          <div class="text-sm">
+            <b class="block">{{ overview.deploy.busy ? `لا تنشر الآن: ${overview.deploy.busy} مباراة مباشرة أو تبدأ خلال نصف ساعة` : 'آمن للنشر الآن' }}</b>
+            <span class="text-text-muted">{{ overview.deploy.next_kickoff ? `أقرب مباراة: ${new Date(overview.deploy.next_kickoff).toLocaleString('ar-EG', { weekday: 'long', hour: 'numeric', minute: '2-digit' })}` : 'لا مباريات مجدولة' }}</span>
+          </div>
+        </div>
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <div v-for="[label, n] in [['المستخدمون', overview.users], ['الدوريات الجارية', overview.leagues.running], ['مباريات حية', overview.live_matches], ['نشطون اليوم', overview.active_today]]" :key="label" class="rounded-xl bg-surface p-4">
             <span class="block text-sm text-text-muted">{{ label }}</span><b class="font-numbers text-3xl" dir="ltr">{{ n }}</b>
@@ -213,10 +221,12 @@ onMounted(load)
           <h2 class="font-display text-lg font-bold">النسخ على هذا الجهاز</h2>
           <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="backupNow">نسخة الآن</button>
         </div>
-        <p class="text-xs text-text-muted">نسخة يومية تلقائية، وتُرفع إلى Google Drive لو ضُبط. والاسترجاع: <code dir="ltr">php artisan db:restore &lt;الاسم&gt;</code> واللعبة متوقفة.</p>
+        <p class="text-xs text-text-muted">نسخة يومية تلقائية، ونسخة قبل كل نشر. على Render تبقى حتى إعادة التشغيل فقط: نزّل ما تريد الاحتفاظ به. والاسترجاع: <code dir="ltr">php artisan db:restore &lt;الاسم&gt;</code> واللعبة متوقفة، أو <code dir="ltr">RESTORE_AT</code> على Render لأي لحظة من آخر 7 أيام.</p>
         <p v-if="!backups.length" class="text-sm text-text-muted">لا نسخ بعد.</p>
         <div v-for="b in backups" :key="b.name" class="flex min-h-touch items-center justify-between border-b border-text/5 text-sm last:border-0">
-          <span class="font-numbers" dir="ltr">{{ b.name }}</span><span class="font-numbers text-text-muted" dir="ltr">{{ size(b.bytes) }}</span>
+          <span class="font-numbers" dir="ltr">{{ b.name }}</span>
+          <span class="flex items-center gap-3"><span class="font-numbers text-text-muted" dir="ltr">{{ size(b.bytes) }}</span>
+            <a :href="`/api/v1/admin/backups/${b.name}/download`" class="flex h-touch items-center rounded-md bg-brand px-3 font-bold" download>تنزيل</a></span>
         </div>
       </section>
 

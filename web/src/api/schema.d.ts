@@ -4758,6 +4758,13 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @description Whether a deploy now is safe [X33]: nothing live nor kicking off within 30 minutes (busy 0), and until when */
+                            deploy: {
+                                /** @description Matches live or kicking off within 30 minutes */
+                                busy: number;
+                                /** Format: date-time */
+                                next_kickoff: string | null;
+                            };
                             users: number;
                             leagues: {
                                 total: number;
@@ -4932,6 +4939,45 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/backups/{name}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One backup's game database (legends.sqlite) to keep off the server [X33] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    name: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The SQLite file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.sqlite3": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
