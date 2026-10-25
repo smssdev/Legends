@@ -159,28 +159,33 @@ async function openRanking(by: 'trophies' | 'level') {
       <div class="order-first flex flex-col gap-3 lg:order-none">
         <h2 class="text-sm font-bold text-text-muted">فتحات المدرب</h2>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <button v-for="s in home.slots" :key="s.slot" type="button" class="relative flex aspect-[5/4] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-3 text-center transition hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-xl hover:shadow-black/30"
-            :class="s.state === 'club' ? 'border-gold/30 bg-gradient-to-b from-surface-raised/90 to-surface/90 shadow-lg shadow-black/20' : 'border-text/10 bg-surface/80 bg-[url(/art/tactics-board.svg)] bg-cover bg-center backdrop-blur-sm'"
+          <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a silver disc,
+               and the next match at its foot. -->
+          <button v-for="s in home.slots" :key="s.slot" type="button" class="slot-card group" :class="`is-${s.state}`"
             :aria-label="s.state === 'free' ? `الفتحة ${s.slot}: دوري جديد` : `الفتحة ${s.slot}: ${s.league?.name}`" @click="openSlot(s)">
-            <span class="absolute end-0 top-0 grid h-12 w-10 place-items-center rounded-es-lg bg-bg/80 font-numbers text-2xl font-extrabold" :class="s.slot === 1 ? 'text-gold' : ''">{{ s.slot }}</span>
-            <template v-if="s.state === 'club'">
-              <img :src="s.club!.crest_url" alt="" aria-hidden="true" class="pointer-events-none absolute -bottom-6 -start-6 size-32 opacity-[0.07]" />
-              <img :src="s.club!.crest_url" alt="" class="relative size-14 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
-              <b class="font-display text-lg leading-tight">{{ s.club!.name }}</b>
-              <span class="text-xs text-text-muted">{{ s.league!.name }}<template v-if="s.position"> · المركز <span class="font-numbers">{{ s.position }}</span>/{{ s.teams }}</template></span>
-              <span v-if="s.next_match" class="rounded-pill px-2 py-0.5 text-[11px]" :class="s.next_match.live ? 'bg-live/20 text-[#FF8A8A]' : 'bg-surface-sunk text-text-soft'">
-                {{ s.next_match.live ? 'مباشر الآن' : when(s.next_match.scheduled_at) }} · {{ s.next_match.venue === 'home' ? 'ضد' : 'عند' }} {{ s.next_match.opponent }}
-              </span>
-            </template>
-            <template v-else-if="s.state === 'waiting'">
-              <span class="grid size-14 place-items-center rounded-full bg-warning/20 text-2xl" aria-hidden="true">⏳</span>
-              <b class="font-display">{{ s.league!.name }}</b>
-              <span class="text-xs text-text-muted">طلب الانضمام ينتظر موافقة المنشئ</span>
-            </template>
-            <template v-else>
-              <span class="grid size-16 place-items-center rounded-full border-4 border-bg/60 bg-gradient-to-b from-[#5FD4FF] to-[#1E88E5] text-4xl font-extrabold text-white shadow-lg" aria-hidden="true">+</span>
-              <b class="font-display text-lg" :class="s.slot === 1 ? 'text-gold' : ''">دوري جديد</b>
-            </template>
+            <span class="slot-band">
+              <b class="font-numbers text-lg">{{ s.slot }}</b>
+              <span class="min-w-0 flex-1 truncate text-start text-xs font-bold">{{ s.state === 'free' ? 'فتحة فارغة' : s.league!.name }}</span>
+              <span v-if="s.position" class="rounded bg-black/30 px-1.5 font-numbers text-xs" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
+            </span>
+            <span class="flex flex-1 flex-col items-center justify-center gap-1.5 p-3">
+              <template v-if="s.state === 'club'">
+                <span class="slot-disc"><img :src="s.club!.crest_url" alt="" class="size-12" /></span>
+                <b class="line-clamp-1 font-display text-base leading-tight md:text-lg">{{ s.club!.name }}</b>
+              </template>
+              <template v-else-if="s.state === 'waiting'">
+                <span class="grid size-14 place-items-center rounded-full bg-warning/20 text-2xl" aria-hidden="true">⏳</span>
+                <span class="text-xs text-text-muted">طلب الانضمام ينتظر موافقة المنشئ</span>
+              </template>
+              <template v-else>
+                <span class="grid size-14 place-items-center rounded-full bg-gradient-to-b from-brand-light to-brand text-3xl font-extrabold text-white shadow-lg transition group-hover:scale-105" aria-hidden="true">+</span>
+                <b class="font-display">دوري جديد</b>
+              </template>
+            </span>
+            <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
+              <template v-if="s.next_match">{{ s.next_match.live ? '● مباشر الآن' : when(s.next_match.scheduled_at) }} · {{ s.next_match.venue === 'home' ? 'ضد' : 'عند' }} {{ s.next_match.opponent }}</template>
+              <template v-else>لا مباريات قادمة</template>
+            </span>
           </button>
         </div>
       </div>
@@ -212,3 +217,51 @@ async function openRanking(by: 'trophies' | 'level') {
     </div>
   </div>
 </template>
+
+<style scoped>
+.slot-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 9.5rem;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-panel) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 22%, transparent);
+  box-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.8);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.slot-card:hover { transform: translateY(-2px); border-color: var(--color-brand-light); }
+.slot-card.is-free { border-style: dashed; background: color-mix(in srgb, var(--color-panel) 60%, transparent); }
+.slot-band {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  color: #fff;
+  background: color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+.slot-card.is-club .slot-band { background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); }
+.slot-card.is-waiting .slot-band { background: color-mix(in srgb, var(--color-warning) 35%, transparent); }
+.slot-disc {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
+  box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.8);
+}
+.slot-foot {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-on-chrome);
+  background: linear-gradient(180deg, #ffffff, var(--color-chrome));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slot-foot.is-live { color: #fff; background: var(--color-live); }
+</style>
