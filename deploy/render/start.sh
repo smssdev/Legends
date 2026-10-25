@@ -80,6 +80,8 @@ mkdir -p storage/logs
 # next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
 if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
 php artisan migrate --force
+# New clubs and leagues from the data files (the Arab leagues, X34) join the saved game; what is there stays as it is.
+php artisan data:import --add
 # Cache the configuration now that the run-time variables are known.
 php artisan config:cache
 
