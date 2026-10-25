@@ -38,7 +38,7 @@ return [
     ],
     'league' => [
         'lock_last_bp' => 2500, 'absence_days' => 3,
-        'absence_warning_hours' => 48, 'max_active_teams' => 4,
+        'absence_warning_hours' => 48, 'max_active_teams' => 10,   // the coach's slots: a team in each of up to 10 leagues [X18, 2026-10-25]
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
         'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
@@ -230,6 +230,8 @@ return [
     // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
     'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
+    // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
+    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'level_step' => 20],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),

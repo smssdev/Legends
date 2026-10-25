@@ -1990,6 +1990,37 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Honours' }
         '403': { $ref: '#/components/responses/Error' }
+  /home:
+    get:
+      tags: [leagues]
+      summary: The coach's home screen [X18]
+      description: The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+      responses:
+        '200':
+          description: The home screen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HomeScreen' }
+        '401': { $ref: '#/components/responses/Error' }
+  /rankings/coaches:
+    get:
+      tags: [leagues]
+      summary: The coaches' global ranking, top 50 and the coach's own place [X18]
+      parameters:
+        - { name: by, in: query, required: false, schema: { type: string, enum: [trophies, level] } }
+      responses:
+        '200':
+          description: The ranking
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [by, coaches, me]
+                properties:
+                  by: { type: string, enum: [trophies, level] }
+                  coaches: { type: array, items: { $ref: '#/components/schemas/RankedCoach' } }
+                  me: { allOf: [{ $ref: '#/components/schemas/RankedCoach' }], nullable: true }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /coaches/{user}:
     parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
     get:
@@ -3307,6 +3338,61 @@ components:
               current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
               best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
               form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
+    Trophies:
+      type: object
+      required: [total, league, cup]
+      properties: { total: { type: integer }, league: { type: integer }, cup: { type: integer } }
+    CoachLevel:
+      type: object
+      required: [level, xp, from, next, progress_bp]
+      properties:
+        level: { type: integer }
+        xp: { type: integer, description: 'Points: 3 a win, 1 a draw, 30 a trophy (config game.career)' }
+        from: { type: integer, description: The points where this level began }
+        next: { type: integer, description: The points the next level needs }
+        progress_bp: { type: integer, description: The way to the next level, out of 10000 }
+    RankedCoach:
+      type: object
+      required: [position, coach, trophies, won, played, level]
+      properties:
+        position: { type: integer }
+        coach: { type: object, required: [id, name, username, avatar_url, official], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, avatar_url: { type: string, nullable: true }, official: { type: boolean } } }
+        trophies: { $ref: '#/components/schemas/Trophies' }
+        won: { type: integer }
+        played: { type: integer }
+        level: { type: integer }
+    HomeScreen:
+      type: object
+      required: [coach, trophies, slots, colleagues, announcements]
+      properties:
+        coach:
+          type: object
+          required: [id, name, username, avatar_url, official, level, record]
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            username: { type: string }
+            avatar_url: { type: string, nullable: true }
+            official: { type: boolean }
+            level: { $ref: '#/components/schemas/CoachLevel' }
+            record: { type: object, required: [seasons, played, won, drawn, lost], properties: { seasons: { type: integer }, played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer } } }
+        trophies: { $ref: '#/components/schemas/Trophies' }
+        colleagues: { type: integer, description: The other coaches met in the coach's leagues }
+        announcements: { type: array, items: { $ref: '#/components/schemas/Message' } }
+        slots:
+          type: array
+          description: Always game.league.max_active_teams of them (10)
+          items:
+            type: object
+            required: [slot, state, league, club, position, teams, next_match]
+            properties:
+              slot: { type: integer }
+              state: { type: string, enum: [club, waiting, free], description: 'A club, a join request waiting for its answer, or free' }
+              league: { type: object, nullable: true, required: [id, name, status], properties: { id: { type: integer }, name: { type: string }, status: { type: string } } }
+              club: { type: object, nullable: true, required: [id, name, crest_url], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string } } }
+              position: { type: integer, nullable: true }
+              teams: { type: integer, nullable: true }
+              next_match: { type: object, nullable: true, required: [opponent, venue, live, scheduled_at], properties: { opponent: { type: string, nullable: true }, venue: { type: string, enum: [home, away] }, live: { type: boolean }, scheduled_at: { type: string, format: date-time } } }
     CoachProfile:
       type: object
       required: [coach, record, titles, objectives]
