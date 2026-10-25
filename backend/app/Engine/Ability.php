@@ -73,14 +73,16 @@ final class Ability
         return $weight > 0 ? intdiv($total, $weight) : 3000;
     }
 
-    /** Fitness effect in basis points (docs/ENGINE.md 3): none above 75%. */
+    /**
+     * Fitness effect in basis points (docs/ENGINE.md 3, X21): none from 75%; from 55% to 75% up to a tenth less (slower,
+     * and the shots less sure); under 55% a sharp drop, from 85% down to 55%.
+     */
     public static function fitness(int $fit): int
     {
         return match (true) {
             $fit >= 7500 => 10000,
-            $fit >= 5000 => 9200 + intdiv(($fit - 5000) * 800, 2500),
-            $fit >= 2500 => 8200 + intdiv(($fit - 2500) * 1000, 2500),
-            default => max(6000, intdiv(8200 * $fit, 2500)),
+            $fit >= 5500 => 9000 + intdiv(($fit - 5500) * 1000, 2000),
+            default => 5500 + intdiv(max(0, $fit) * 3000, 5500),
         };
     }
 

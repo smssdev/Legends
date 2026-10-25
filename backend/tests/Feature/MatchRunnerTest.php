@@ -231,7 +231,8 @@ class MatchRunnerTest extends TestCase
         $stats = collect(json_decode(DB::table('match_stats')->where('match_id', $match->id)->where('club_id', $club)->value('players'), true))->keyBy('id');
         foreach ($stats as $id => $s) {
             if ($s['played']) {
-                $this->assertSame($s['fit'], (int) $after[$id]->fitness, "player {$id} ends with his match fitness");
+                // His match fitness and a little back before the next match [X21].
+                $this->assertSame(min(100, $s['fit'] + (int) config('game.matches.played_recovery')), (int) $after[$id]->fitness, "player {$id} ends with his match fitness");
                 $this->assertLessThan(100, $s['fit']);
             }
         }

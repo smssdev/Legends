@@ -29,7 +29,9 @@ function status(p: SquadPlayer) {
   if (p.in_camp) return { text: 'في المعسكر', tone: 'text-gold' }
   if (p.suspended_matches) return { text: `موقوف · ${p.suspended_matches}`, tone: 'text-[#FF8A8A]' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
-  if (p.fitness < 70) return { text: 'مرهق', tone: 'text-warning' }
+  // The fatigue lines [X21]: from 75% full, from 55% slower, under 55% a sharp drop and three times the injuries.
+  if (p.fitness < 55) return { text: 'مرهق: خطر إصابة', tone: 'text-[#FF8A8A]' }
+  if (p.fitness < 75) return { text: 'متعب', tone: 'text-warning' }
   return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
 }
 </script>
@@ -97,7 +99,7 @@ function status(p: SquadPlayer) {
             <span class="min-w-0 flex-1">
               <span class="block truncate font-display text-lg font-extrabold">{{ p.name }}</span>
               <span class="flex items-center gap-2 text-sm">
-                <span class="h-1.5 w-16 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 80 ? 'bg-success' : p.fitness >= 60 ? 'bg-gold' : 'bg-warning'" :style="{ width: `${p.fitness}%` }" /></span>
+                <span class="h-1.5 w-16 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 75 ? 'bg-success' : p.fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: `${p.fitness}%` }" /></span>
                 <span :class="status(p).tone">{{ status(p).text }}</span>
               </span>
             </span>

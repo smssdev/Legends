@@ -472,7 +472,12 @@ final class MatchEngine
             $this->card($def, $fouler, 'yellow');
         }
 
-        $injured = $this->rng->chance((int) $this->eng['injury_bp'][$level]);
+        // Tired legs break [X21]: under the tired line, the victim is injured three times as often.
+        $chance = (int) $this->eng['injury_bp'][$level];
+        if ($this->fitOf($atk, $victim) < (int) ($this->eng['tired_fit'] ?? 0)) {
+            $chance = intdiv($chance * (int) $this->eng['tired_injury_bp'], 10000);
+        }
+        $injured = $this->rng->chance($chance);
         if ($injured) {
             $this->injure($atk, $victim);
         }
@@ -849,6 +854,18 @@ final class MatchEngine
         }
 
         return null;
+    }
+
+    /** One player's fitness, in hundredths of a per cent (100% when not found). */
+    private function fitOf(string $side, int $playerId): int
+    {
+        foreach ($this->s['teams'][$side]['players'] as $p) {
+            if ($p['id'] === $playerId) {
+                return $p['fit'];
+            }
+        }
+
+        return 10000;
     }
 
     private function avgFitness(string $side): int

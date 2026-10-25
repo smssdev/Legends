@@ -77,9 +77,10 @@ class MatchResult
         // Each by his stars [X20].
         $lawyer = Specialists::has($clubId, 'lawyer');
         $rest = (int) config('game.matches.rest_recovery') + Specialists::effect($clubId, 'physio', 'physio_rest_bonus');
-        // Fitness: as they ended, or a rest.
+        // Fitness: as they ended and a little back before the next match [X21], or a rest.
+        $back = (int) config('game.matches.played_recovery');
         foreach ($played as $id => $fit) {
-            DB::table('players')->where('id', $id)->update(['fitness' => max(0, min(100, $fit))]);
+            DB::table('players')->where('id', $id)->update(['fitness' => max(0, min(100, $fit + $back))]);
         }
         DB::table('players')->where('club_id', $clubId)->whereNotIn('id', array_keys($played))
             ->update(['fitness' => DB::raw("min(100, fitness + {$rest})")]);
