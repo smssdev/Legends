@@ -76,14 +76,37 @@ onBeforeUnmount(() => window.clearInterval(timer))
     <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">لا مباريات قادمة الآن.</p>
     <template v-else-if="match">
       <section class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4">
-        <div class="flex items-center gap-3">
-          <ClubCrest :url="match.opponent.crest_url" :code="match.opponent.code" :size="56" />
-          <div class="min-w-0 flex-1">
-            <p class="text-sm text-text-muted">{{ match.venue === 'home' ? 'على أرضك ضد' : 'خارج أرضك ضد' }}</p>
-            <p class="truncate font-display text-2xl font-extrabold">{{ match.opponent.name }}</p>
-            <p class="text-sm text-text-muted">{{ match.opponent.coach ?? 'الحاسوب' }} · القوة <span class="font-numbers">{{ strength(match.opponent.strength_cp) }}</span></p>
+        <!-- [X29] The VS card of the sports games: both clubs face to face, the stadium behind, and the strengths compared. -->
+        <div class="relative isolate -m-4 mb-0 overflow-hidden rounded-t-xl px-4 pb-4 pt-3">
+          <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-70" />
+          <div class="absolute inset-0 -z-10 bg-gradient-to-b from-bg/30 via-bg/50 to-surface" aria-hidden="true" />
+          <div class="mb-2 flex justify-center"><UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : `الجولة ${match.round}` }} · {{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</UiChip></div>
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <div class="flex flex-col items-center gap-1 text-center">
+              <ClubCrest :url="match.club.crest_url" :code="match.club.code" :size="72" />
+              <b class="line-clamp-1 font-display text-lg md:text-xl">{{ match.club.name }}</b>
+              <span class="text-xs text-text-muted">فريقك</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="grid size-14 place-items-center rounded-full border-2 border-gold/60 bg-bg/70 font-display text-xl font-extrabold text-gold shadow-lg shadow-gold/20">VS</span>
+              <span class="mt-1 font-numbers text-sm text-text-soft" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-center">
+              <ClubCrest :url="match.opponent.crest_url" :code="match.opponent.code" :size="72" />
+              <b class="line-clamp-1 font-display text-lg md:text-xl">{{ match.opponent.name }}</b>
+              <span class="text-xs text-text-muted">{{ match.opponent.coach ?? 'الحاسوب' }}</span>
+            </div>
           </div>
-          <UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : `الجولة ${match.round}` }}</UiChip>
+          <!-- The two strengths on one bar. -->
+          <div class="mt-3 flex items-center gap-2 text-sm">
+            <b class="font-numbers text-gold">{{ strength(match.club.strength_cp) }}</b>
+            <div class="flex h-2.5 flex-1 overflow-hidden rounded-pill bg-bg/60" role="img" :aria-label="`القوة ${strength(match.club.strength_cp)} مقابل ${strength(match.opponent.strength_cp)}`">
+              <span class="h-full bg-gradient-to-l from-gold to-gold-dark" :style="{ width: (100 * match.club.strength_cp) / (match.club.strength_cp + match.opponent.strength_cp) + '%' }" />
+              <span class="h-full flex-1 bg-gradient-to-r from-[#2F6FDB] to-[#1d4ea5]" />
+            </div>
+            <b class="font-numbers text-[#7FA8F0]">{{ strength(match.opponent.strength_cp) }}</b>
+          </div>
+          <p class="mt-1 text-center text-xs text-text-muted">القوة</p>
         </div>
         <dl class="grid grid-cols-3 gap-2 text-center text-sm">
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">الموعد</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>

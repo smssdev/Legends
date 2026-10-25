@@ -1473,7 +1473,7 @@ paths:
                   match:
                     type: object
                     nullable: true
-                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, opponent]
+                    required: [fixture_id, competition, round, venue, scheduled_at, status, referee_at, lock_at, club, opponent]
                     properties:
                       fixture_id: { type: integer }
                       match_id: { type: integer, nullable: true, description: 'Once it kicks off: watch it at GET /matches/{id}' }
@@ -1485,6 +1485,11 @@ paths:
                       referee_at: { type: string, format: date-time }
                       lock_at: { type: string, format: date-time }
                       referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+                      club:
+                        type: object
+                        description: 'My club, for the VS card [X29]'
+                        required: [id, name, code, strength_cp, crest_url]
+                        properties: { id: { type: integer }, name: { type: string }, code: { type: string }, strength_cp: { type: integer }, crest_url: { type: string } }
                       opponent:
                         type: object
                         required: [id, name, code, strength_cp, crest_url]
@@ -2493,8 +2498,13 @@ components:
         application/json:
           schema:
             type: object
-            required: [club, squad_value, players, lineup, takers, custom_formations]
+            required: [club, squad_value, lines, players, lineup, takers, custom_formations]
             properties:
+              lines:
+                type: object
+                description: 'The team strength by line [X29]: the starters'' average rating in each (or the line''s best)'
+                required: [att, mid, def, gk]
+                properties: { att: { type: integer }, mid: { type: integer }, def: { type: integer }, gk: { type: integer } }
               club:
                 type: object
                 required: [id, name, code, strength_cp, balance, crest_url]

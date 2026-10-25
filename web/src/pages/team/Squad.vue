@@ -3,6 +3,8 @@
 // each player with his line, status, fitness, value and rating. A tap opens his card.
 import { computed, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import PlayerTile from '../../components/ui/PlayerTile.vue'
+import RatingRing from '../../components/ui/RatingRing.vue'
 import { LINES, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
@@ -10,6 +12,12 @@ import { useTeam, type SquadPlayer } from './team'
 const { team, error, loaded, load } = useTeam()
 const line = ref<'all' | Line>('all')
 const open = ref<SquadPlayer | null>(null)
+// The list or the cards, remembered on this device [X29].
+const view = ref<'list' | 'cards'>((() => { try { return localStorage.getItem('legends.squadView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
+function setView(v: 'list' | 'cards') {
+  view.value = v
+  try { localStorage.setItem('legends.squadView', v) } catch {}
+}
 onMounted(load)
 
 const players = computed(() => (team.value?.players ?? []).filter((p) => line.value === 'all' || p.line === line.value))
@@ -46,7 +54,13 @@ function status(p: SquadPlayer) {
         <RouterLink :to="{ name: 'lineup' }" class="flex h-12 shrink-0 items-center rounded-lg bg-surface-raised px-4 font-display font-extrabold text-gold">التشكيلة</RouterLink>
       </header>
 
-      <div class="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="الخطوط">
+      <!-- [X29] The team's strength by line, four rings as in the classic manager games. -->
+      <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" aria-label="قوة الفريق بالخطوط">
+        <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? 'الحارس' : LINES[l].plural" :color="`var(--color-line-${l})`" />
+      </section>
+
+      <div class="flex items-center gap-2">
+      <div class="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" role="tablist" aria-label="الخطوط">
         <button
           v-for="l in ['all', 'gk', 'def', 'mid', 'att'] as const"
           :key="l"
@@ -60,8 +74,23 @@ function status(p: SquadPlayer) {
           {{ l === 'all' ? 'الكل' : LINES[l].plural }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
         </button>
       </div>
+      <div class="flex shrink-0 gap-1 rounded-xl bg-surface p-1" role="group" aria-label="طريقة العرض">
+        <button v-for="[k, label, icon] in ([['list', 'قائمة', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="grid size-10 place-items-center rounded-lg" :class="view === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === k" :aria-label="label" @click="setView(k)">
+          <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
+        </button>
+      </div>
+      </div>
 
-      <ul class="flex flex-col gap-2">
+      <!-- The cards, five or six a row on the computer. -->
+      <ul v-if="view === 'cards'" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <li v-for="p in players" :key="p.id">
+          <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
+            <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
+          </button>
+        </li>
+      </ul>
+
+      <ul v-else class="flex flex-col gap-2">
         <li v-for="p in players" :key="p.id">
           <button type="button" class="flex min-h-20 w-full items-center gap-3 rounded-xl bg-surface p-3 text-start hover:bg-surface-raised" @click="open = p">
             <LineBadge :line="p.line as Line" />
