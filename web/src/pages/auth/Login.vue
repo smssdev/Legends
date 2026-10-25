@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { asApiError } from '../../api/client'
 import GoogleButton from '../../components/GoogleButton.vue'
 import TextField from '../../components/TextField.vue'
+import SupportLinks from '../../components/SupportLinks.vue'
 import { useAuth } from '../../stores/auth'
 
 const auth = useAuth()
@@ -63,4 +64,5 @@ async function submit() {
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? 'جارٍ الدخول…' : 'دخول' }}</button>
   </form>
   <p class="text-center text-sm text-text-muted">ليس لديك حساب؟ <RouterLink to="/register" class="font-bold text-gold">أنشئ حساباً</RouterLink></p>
+  <SupportLinks />
 </template>

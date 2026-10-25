@@ -957,6 +957,13 @@ export interface paths {
                                 /** @example ping */
                                 event?: string;
                             };
+                            /** @description The support buttons [X13]: a link per channel, null when not set */
+                            support?: {
+                                /** @example https://wa.me/201000000000?text=... */
+                                whatsapp: string | null;
+                                /** @example https://t.me/legends_support */
+                                telegram: string | null;
+                            };
                         };
                     };
                 };

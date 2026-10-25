@@ -59,10 +59,10 @@ class Money
         return intdiv(($capacity ?? $this->cfg['stadium']['capacity']) * $attendanceBp, 10000) * $this->ticketPrice($scale, $rounds);
     }
 
-    /** A league match's bonus: a win, a draw, or nothing. */
+    /** A league match's result in money: a bonus for a win, a smaller one for a draw, a deduction (below zero) for a loss [X14]. */
     public function resultBonus(int $scale, int $goalsFor, int $goalsAgainst): int
     {
-        $bp = $goalsFor > $goalsAgainst ? $this->cfg['win_bonus_bp'] : ($goalsFor === $goalsAgainst ? $this->cfg['draw_bonus_bp'] : 0);
+        $bp = $goalsFor > $goalsAgainst ? $this->cfg['win_bonus_bp'] : ($goalsFor === $goalsAgainst ? $this->cfg['draw_bonus_bp'] : -(int) ($this->cfg['loss_penalty_bp'] ?? 0));
 
         return intdiv($scale * $bp, 10000);
     }

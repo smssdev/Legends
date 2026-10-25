@@ -65,8 +65,9 @@ class Economy
             $other = $side === 'home' ? 'away' : 'home';
             ClubLedger::post($clubId, 'wages', -$money->wages(self::squadValue($clubId), $season->rounds), "wages:{$f->id}:{$clubId}", "fixture:{$f->id}");
             $bonus = $money->resultBonus($scale, $score[$side], $score[$other]);
-            if ($bonus > 0) {
-                ClubLedger::post($clubId, $score[$side] > $score[$other] ? 'win_bonus' : 'draw_bonus', $bonus, "bonus:{$f->id}:{$clubId}", "fixture:{$f->id}");
+            if ($bonus !== 0) {
+                $type = $score[$side] > $score[$other] ? 'win_bonus' : ($score[$side] === $score[$other] ? 'draw_bonus' : 'loss_penalty');
+                ClubLedger::post($clubId, $type, $bonus, "bonus:{$f->id}:{$clubId}", "fixture:{$f->id}");
             }
             self::debt($clubId, $f->id, $money);
         }

@@ -92,7 +92,7 @@ class WalletTest extends TestCase
         $met = DB::table('club_objectives')->where('club_id', $this->mine)->where('achieved', true)->get();
         $this->assertSame($met->sum(fn ($o) => $earn['objective_'.$o->competition]), (int) $t->where('type', 'objective')->sum('amount'));
         $titles = DB::table('titles')->where('club_id', $this->mine)->get();
-        $this->assertSame($titles->sum(fn ($x) => $earn[$x->competition.'_'.$x->position]), (int) $t->where('type', 'title')->sum('amount'));
+        $this->assertSame($titles->sum(fn ($x) => $earn[$x->competition.'_'.$x->position] ?? 0), (int) $t->where('type', 'title')->sum('amount'));
         $this->assertSame(Wallet::sum($this->owner->id), Wallet::balance($this->owner->id));
     }
 
