@@ -12,7 +12,8 @@ average of their best 18, on EA's scale where the Saudi champion is about 77), a
 peak at 24 to 31), a foreign player (+3: the Arab clubs' imports are usually among their best), a full international
 (+3), and a stable spread from the name (+/-3). The squad is then shifted so its best 18 average the club's level.
 Positions: Wikipedia says only GK, DF, MF or FW, so the squad is spread over the roles in order (CB, RB, LB, ...).
-The CSV has EA's columns, so data:import reads it as it reads the EA files.
+The CSV has EA's columns, so data:import reads it as it reads the EA files. The name shown (commonName) is the
+player's Arabic name from Wikidata where it has one, else the Latin one (nameLatin keeps the Latin one always).
 """
 import csv
 import datetime
@@ -85,14 +86,26 @@ HEADER = ['id', 'rank', 'overallRating', 'firstName', 'lastName', 'commonName', 
           'weakFootAbility', 'preferredFoot', 'position', 'positionType', 'alternatePositions', 'nationality', 'team', 'leagueName',
           'playStyles', 'playStylesPlus', 'age', 'pac', 'sho', 'pas', 'dri', 'def', 'phy', 'gkDiving', 'gkHandling', 'gkKicking',
           'gkPositioning', 'gkReflexes', 'penalties', 'freeKickAccuracy', 'crossing', 'headingAccuracy', 'stamina', 'aggression',
-          'clubPrimary', 'clubSecondary', 'source']
+          'clubPrimary', 'clubSecondary', 'nameLatin', 'source']
+
+
+CACHE = os.environ.get('LEGENDS_WP_CACHE', os.path.join(os.path.expanduser('~'), '.cache', 'legends-wikipedia'))
 
 
 def get(url):
+    """A Wikipedia or Wikidata answer, kept on disk for a day so a second run (after a fix) asks nothing again."""
+    os.makedirs(CACHE, exist_ok=True)
+    path = os.path.join(CACHE, hashlib.sha256(url.encode()).hexdigest() + '.json')
+    if os.path.exists(path) and time.time() - os.path.getmtime(path) < 86400:
+        with open(path) as f:
+            return json.load(f)
     for attempt in range(5):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
-                return json.load(r)
+                data = json.load(r)
+            with open(path, 'w') as f:
+                json.dump(data, f)
+            return data
         except Exception:
             time.sleep(2 * (attempt + 1))
     return {}
@@ -163,7 +176,7 @@ def squad(article):
 
 
 def wikidata(articles):
-    """For each player article: (birth date, played for a senior national team)."""
+    """For each player article: (birth date, played for a senior national team, his name in Arabic or '')."""
     qid = {}
     arts = list(articles)
     for i in range(0, len(arts), 50):
@@ -181,7 +194,7 @@ def wikidata(articles):
     items = sorted(set(qid.values()))
     for i in range(0, len(items), 50):
         d = get('https://www.wikidata.org/w/api.php?' + urllib.parse.urlencode(
-            {'action': 'wbgetentities', 'ids': '|'.join(items[i:i + 50]), 'props': 'claims', 'format': 'json'}))
+            {'action': 'wbgetentities', 'ids': '|'.join(items[i:i + 50]), 'props': 'claims|labels', 'languages': 'ar', 'format': 'json'}))
         time.sleep(0.2)
         for k, e in (d.get('entities') or {}).items():
             c = e.get('claims', {})
@@ -192,7 +205,8 @@ def wikidata(articles):
                     born = v[1:11]
                     break
             clubs = [((s.get('mainsnak') or {}).get('datavalue') or {}).get('value', {}).get('id') for s in c.get('P54', [])]
-            claims[k] = (born, [x for x in clubs if x])
+            arabic = ((e.get('labels') or {}).get('ar') or {}).get('value', '')
+            claims[k] = (born, [x for x in clubs if x], re.sub(r'\s*\(.*?\)\s*$', '', arabic).strip())
             teams.update(x for x in clubs if x)
     national = set()
     team_list = sorted(teams)
@@ -206,8 +220,8 @@ def wikidata(articles):
                 national.add(k)
     out = {}
     for art, q in qid.items():
-        born, clubs = claims.get(q, (None, []))
-        out[art] = (born, any(c in national for c in clubs))
+        born, clubs, arabic = claims.get(q, (None, [], ''))
+        out[art] = (born, any(c in national for c in clubs), arabic)
     return out
 
 
@@ -256,17 +270,17 @@ def main():
             local = max((NATIONS.get(p[1], p[1]) for p in players), key=[NATIONS.get(q[1], q[1]) for q in players].count)
             made, used = [], {k: 0 for k in ROLES}
             for no, nat, art, name, pos, captain in players:
-                born, international = info.get(art, (None, False)) if art else (None, False)
+                born, international, arabic = info.get(art, (None, False, '')) if art else (None, False, '')
                 age = age_of(born) or 18 + stable(name, 'age') % 15
                 nation = NATIONS.get(nat, nat or local)
                 role = ROLES[pos][used[pos] % len(ROLES[pos])]
                 used[pos] += 1
                 raw = (age_offset(age) + (3 if nation != local else 0) + (3 if international else 0) + (2 if captain else 0)
                        + stable(name, article) % 7 - 3)
-                made.append([no, nation, name, pos, role, age, born, raw])
+                made.append([no, nation, name, pos, role, age, born, raw, arabic])
             best = sorted((m[7] for m in made), reverse=True)[:18]
             shift = level - sum(best) / len(best)
-            for no, nation, name, pos, role, age, born, raw in made:
+            for no, nation, name, pos, role, age, born, raw, arabic in made:
                 ovr = int(round(clamp(raw + shift, 40, 90)))
                 h = stable(name, 'attr')
                 j = lambda k: (h >> (k * 3)) % 5 - 2
@@ -280,7 +294,7 @@ def main():
                 pid = prefix * 10 ** 8 + stable(league, article, name) % 10 ** 8
                 rows.append({
                     'id': pid, 'rank': '', 'overallRating': ovr, 'firstName': first if rest else '', 'lastName': rest or name,
-                    'commonName': name, 'birthdate': born or '', 'height': '', 'weight': '', 'skillMoves': '', 'weakFootAbility': '',
+                    'commonName': arabic or name, 'birthdate': born or '', 'height': '', 'weight': '', 'skillMoves': '', 'weakFootAbility': '',
                     'preferredFoot': 'Left' if role in ('LB', 'LM', 'LW') else 'Right', 'position': role,
                     'positionType': {'GK': 'GK', 'DF': 'DEF', 'MF': 'MID', 'FW': 'ATT'}[pos], 'alternatePositions': '',
                     'nationality': nation, 'team': shown, 'leagueName': league, 'playStyles': '', 'playStylesPlus': '', 'age': age,
@@ -288,7 +302,7 @@ def main():
                     'gkDiving': gk[0], 'gkHandling': gk[1], 'gkKicking': gk[2], 'gkPositioning': gk[3], 'gkReflexes': gk[4],
                     'penalties': clamp(ovr - 8 + j(5)), 'freeKickAccuracy': clamp(ovr - 12 + j(6)), 'crossing': clamp(ovr - 10 + j(7)),
                     'headingAccuracy': clamp(ovr - 6 + j(8)), 'stamina': clamp(ovr - 2 + j(9)), 'aggression': clamp(ovr - 5 + j(10)),
-                    'clubPrimary': colours[0] if colours else '', 'clubSecondary': colours[1] if colours else '',
+                    'nameLatin': name, 'clubPrimary': colours[0] if colours else '', 'clubSecondary': colours[1] if colours else '',
                     'source': 'https://en.wikipedia.org/wiki/' + urllib.parse.quote(article.replace(' ', '_')),
                 })
             report.append(f'{league}: {shown} {len(made)} players, level {level:.1f}')
