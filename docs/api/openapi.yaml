@@ -187,7 +187,7 @@ paths:
         '401': { $ref: '#/components/responses/Error' }
     patch:
       tags: [auth]
-      summary: Change the name or the username
+      summary: Change the name, the username, the commentator or the simulator
       requestBody:
         required: true
         content:
@@ -197,6 +197,8 @@ paths:
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
                 username: { type: string, pattern: '^[A-Za-z]{3,20}$' }
+                commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6] }
+                match_view: { type: string, enum: [cartoon, unity] }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
@@ -3260,7 +3262,7 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, username, avatar_url, email, email_verified, role, has_password, google, vacation]
+      required: [id, name, username, avatar_url, email, email_verified, role, has_password, google, vacation, viewing]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -3281,6 +3283,14 @@ components:
             until: { type: string, format: date-time, nullable: true }
             next_from: { type: string, format: date-time, nullable: true, description: When a new one may start }
             max_days: { type: integer }
+        viewing:
+          type: object
+          required: [commentator, match_view, unity_ready]
+          description: How the coach watches his matches, the same on every device [X9, X10]
+          properties:
+            commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6], description: 'The Arabic voice; voice-6 is the default' }
+            match_view: { type: string, enum: [cartoon, unity], description: 'The simulator: the cartoon one (2D) or the advanced one (Unity)' }
+            unity_ready: { type: boolean, description: 'The Unity web build is deployed; until then the cartoon one plays' }
     Error:
       type: object
       required: [message, code]

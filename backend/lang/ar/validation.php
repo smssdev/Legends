@@ -71,6 +71,8 @@ return [
     'attributes' => [
         'name' => 'الاسم',
         'username' => 'اسم المستخدم',
+        'commentator' => 'المعلق',
+        'match_view' => 'طريقة عرض المباراة',
         'image' => 'الصورة',
         'reason' => 'السبب',
         'positions' => 'أماكن اللاعبين',

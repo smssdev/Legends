@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
@@ -85,16 +86,19 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()->toAccount()]);
     }
 
-    /** The name and the username [X4]; either may be sent alone. */
+    /** The name and the username [X4], the commentator [X9] and the simulator [X10]; any of them may be sent alone. */
     public function update(Request $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validate([
-            'name' => ['required_without:username', 'string', 'min:2', 'max:40'],
-            'username' => ['required_without:name', 'string', Username::RULE, $this->usernameFree($user->id)],
+            'name' => ['required_without_all:username,commentator,match_view', 'string', 'min:2', 'max:40'],
+            'username' => ['sometimes', 'string', Username::RULE, $this->usernameFree($user->id)],
+            'commentator' => ['sometimes', 'string', Rule::in(config('game.viewing.commentators'))],
+            'match_view' => ['sometimes', 'string', Rule::in(config('game.viewing.match_views'))],
         ]);
         $user->update(array_filter(['name' => isset($data['name']) ? trim($data['name']) : null,
-            'username' => isset($data['username']) ? strtolower($data['username']) : null]));
+            'username' => isset($data['username']) ? strtolower($data['username']) : null,
+            'commentator' => $data['commentator'] ?? null, 'match_view' => $data['match_view'] ?? null]));
 
         return response()->json(['user' => $user->toAccount()]);
     }

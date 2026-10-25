@@ -6,6 +6,8 @@ import { api, asApiError, ensureCsrf } from '../api/client'
 import NotificationsCard from '../components/NotificationsCard.vue'
 import TextField from '../components/TextField.vue'
 import { useAuth } from '../stores/auth'
+import { AR_VOICES, arVoiceName, type ArVoice } from '../match/voice'
+import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 
 const auth = useAuth()
 const route = useRoute()
@@ -17,6 +19,22 @@ let last = auth.user!
 const welcome = computed(() =>
   route.query.verified === '1' ? 'تم تأكيد بريدك. حسابك جاهز.' : route.query.welcome === '1' ? 'أهلاً بك! أرسلنا رسالة إلى بريدك، اضغط الرابط فيها لتأكيده.' : route.query.welcome === 'unsent' ? 'أهلاً بك! تعذر إرسال رسالة التأكيد الآن، اضغط «أرسل الرابط من جديد» بعد قليل.' : '',
 )
+
+// The simulator and the commentator [X9, X10].
+const viewing = useViewing()
+const viewMsg = ref('')
+const viewErr = ref(false)
+async function saveViewing(body: { commentator?: ArVoice; match_view?: MatchView }) {
+  viewMsg.value = ''
+  try {
+    await viewing.save(body)
+    viewErr.value = false
+    viewMsg.value = 'حُفظ.'
+  } catch (e) {
+    viewErr.value = true
+    viewMsg.value = asApiError(e).message
+  }
+}
 
 const name = ref(user.value.name)
 const username = ref(user.value.username)
@@ -194,6 +212,29 @@ async function remove() {
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold sm:col-span-2 sm:justify-self-start">احفظ كلمة المرور</button>
       </form>
       <p v-if="pwMsg" class="text-sm text-success" role="status">{{ pwMsg }}</p>
+    </section>
+
+    <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-viewing">
+      <h2 id="h-viewing" class="font-display text-xl font-extrabold">مشاهدة المباريات</h2>
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 text-sm font-bold">المحاكي</legend>
+        <label v-for="v in MATCH_VIEWS" :key="v.id" class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border px-3 py-2" :class="viewing.chosenView.value === v.id ? 'border-gold bg-gold/10' : 'border-text/10'">
+          <input type="radio" name="match-view" class="size-5 accent-[var(--color-gold)]" :value="v.id" :checked="viewing.chosenView.value === v.id" @change="saveViewing({ match_view: v.id })" />
+          <span class="flex flex-col">
+            <span class="font-bold">{{ v.name }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">قريباً</span></span>
+            <span class="text-xs text-text-muted">{{ v.hint }}</span>
+          </span>
+        </label>
+        <p v-if="viewing.chosenView.value === 'unity' && !viewing.unityReady.value" class="text-xs text-text-muted">حتى يجهز المطوّر تُعرض مبارياتك بالكرتوني، وتنتقل إليه تلقائياً حين يجهز.</p>
+      </fieldset>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm font-bold">المعلق العربي</span>
+        <select class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" :value="viewing.commentator.value" @change="saveViewing({ commentator: ($event.target as HTMLSelectElement).value as ArVoice })">
+          <option v-for="v in AR_VOICES" :key="v" :value="v">{{ arVoiceName(v) }}</option>
+        </select>
+        <span class="text-xs text-text-muted">يُسمع في كل مبارياتك، ويُبدَّل أثناء المباراة أيضاً.</span>
+      </label>
+      <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ viewMsg }}</p>
     </section>
 
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-holiday">

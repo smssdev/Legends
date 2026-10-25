@@ -381,7 +381,7 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Change the name or the username */
+        /** Change the name, the username, the commentator or the simulator */
         patch: {
             parameters: {
                 query?: never;
@@ -394,6 +394,10 @@ export interface paths {
                     "application/json": {
                         name?: string;
                         username?: string;
+                        /** @enum {string} */
+                        commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                        /** @enum {string} */
+                        match_view?: "cartoon" | "unity";
                     };
                 };
             };
@@ -6562,6 +6566,21 @@ export interface components {
                  */
                 next_from: string | null;
                 max_days: number;
+            };
+            /** @description How the coach watches his matches, the same on every device [X9, X10] */
+            viewing: {
+                /**
+                 * @description The Arabic voice; voice-6 is the default
+                 * @enum {string}
+                 */
+                commentator: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                /**
+                 * @description The simulator: the cartoon one (2D) or the advanced one (Unity)
+                 * @enum {string}
+                 */
+                match_view: "cartoon" | "unity";
+                /** @description The Unity web build is deployed; until then the cartoon one plays */
+                unity_ready: boolean;
             };
         };
         /** @description Every API error has this shape (app/Http/Errors/ApiErrors.php). */

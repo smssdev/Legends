@@ -7,6 +7,7 @@ line's tone and text, is in audio/raw/ar/story/files.txt.
   python3 tools/commentary/arabic_voice.py list     # rewrite files.txt after changing a line in backend/resources/commentary/voice.json
   python3 tools/commentary/arabic_voice.py build    # make web/public/commentary/ar/phrases.mp3 + .json
   python3 tools/commentary/arabic_voice.py voices   # one pack per uploaded voice: web/public/commentary/ar/voice-<n>/phrases.*
+  python3 tools/commentary/arabic_voice.py voices 6 # only the sixth (hafid)
 
 build takes each recording in audio/raw/ar/story/ (wav, mp3, m4a, ogg or flac, same name), trims the
 silence and levels the loudness. A line not recorded yet keeps its clip from the current
@@ -22,8 +23,9 @@ LIST = os.path.join(VOICE, 'files.txt')
 SR = 24000
 EXT = ('.wav', '.mp3', '.m4a', '.ogg', '.flac', '.aac')
 # The full voices Hamza uploaded (all 428 clips of catalog.tsv each, MP3 named .wav; ffmpeg reads them as they are).
-# Shown in the game only as «صوت 1..5»: the folder names are real commentators' names, and the game names no real person.
-VOICES = ['ali', 'chawali_audio_output', 'fahad_audio_output', 'faris_audio_output', 'medhat']
+# Shown in the game only as «المعلق 1..6»: the folder names are real commentators' names, and the game names no real person
+# (PLAN 11). The sixth (hafid, 2026-10-25) is the default Arabic voice [X9].
+VOICES = ['ali', 'chawali_audio_output', 'fahad_audio_output', 'faris_audio_output', 'medhat', 'hafid_audio_output']
 
 HEADER = """# أصوات المعلق العربي: سجّل كل سطر بالاسم المكتوب أمامه وضعه في هذا المجلد.
 # الصيغة: WAV أحادي (mono)، 44.1 أو 48 كيلوهرتز، 16 أو 24 بت. (m4a أو mp3 من الهاتف تعمل أيضاً بنفس الاسم.)
@@ -112,7 +114,11 @@ def build(voice=VOICE, pack=PACK, fallback=True):
 
 
 def voices():
+    # voices 6 builds only the sixth; with no number, all of them.
+    only = int(sys.argv[2]) if len(sys.argv) > 2 else None
     for n, folder in enumerate(VOICES, 1):
+        if only and n != only:
+            continue
         build(os.path.join(ROOT, 'audio', 'raw', folder), os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', f'voice-{n}', 'phrases'), False)
 
 
