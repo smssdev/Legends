@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\HonoursController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
@@ -209,6 +210,12 @@ Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notif
 Route::prefix('wallet')->middleware(['auth:sanctum', 'throttle:60,1,wallet'])->controller(WalletController::class)->group(function () {
     Route::get('/', 'show');
     Route::post('daily', 'daily');
+});
+
+// The coach's home screen and the coaches' global ranking [X18].
+Route::middleware(['auth:sanctum', 'throttle:60,1,home'])->controller(HomeController::class)->group(function () {
+    Route::get('home', 'show');
+    Route::get('rankings/coaches', 'ranking');
 });
 
 // A coach's profile: titles, objectives and record [Sprint 33].

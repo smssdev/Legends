@@ -145,8 +145,10 @@ class LeagueTest extends TestCase
         $this->assertSame(1, DB::table('clubs')->where('league_id', $league['id'])->where('user_id', $coach->id)->count());
     }
 
-    public function test_four_active_teams_at_most(): void
+    public function test_active_teams_stop_at_the_limit(): void
     {
+        // The limit is 10 (the coach's slots, X18); a smaller one keeps the test short, the rule is the same.
+        config(['game.league.max_active_teams' => 4]);
         $user = User::factory()->create();
         $leagues = [];
         for ($i = 0; $i < 3; $i++) {

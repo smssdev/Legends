@@ -4748,6 +4748,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The coach's home screen [X18]
+         * @description The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The home screen */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HomeScreen"];
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/rankings/coaches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The coaches' global ranking, top 50 and the coach's own place [X18] */
+        get: {
+            parameters: {
+                query?: {
+                    by?: "trophies" | "level";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ranking */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            by: "trophies" | "level";
+                            coaches: components["schemas"]["RankedCoach"][];
+                            me: components["schemas"]["RankedCoach"] | null;
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/coaches/{user}": {
         parameters: {
             query?: never;
@@ -6695,6 +6779,86 @@ export interface components {
                 };
                 /** @description The last five */
                 form: ("W" | "D" | "L")[];
+            }[];
+        };
+        Trophies: {
+            total: number;
+            league: number;
+            cup: number;
+        };
+        CoachLevel: {
+            level: number;
+            /** @description Points: 3 a win, 1 a draw, 30 a trophy (config game.career) */
+            xp: number;
+            /** @description The points where this level began */
+            from: number;
+            /** @description The points the next level needs */
+            next: number;
+            /** @description The way to the next level */
+            progress_bp: number;
+        };
+        RankedCoach: {
+            position: number;
+            coach: {
+                id: number;
+                name: string;
+                username: string;
+                avatar_url: string | null;
+                official: boolean;
+            };
+            trophies: components["schemas"]["Trophies"];
+            won: number;
+            played: number;
+            level: number;
+        };
+        HomeScreen: {
+            coach: {
+                id: number;
+                name: string;
+                username: string;
+                avatar_url: string | null;
+                official: boolean;
+                level: components["schemas"]["CoachLevel"];
+                record: {
+                    seasons: number;
+                    played: number;
+                    won: number;
+                    drawn: number;
+                    lost: number;
+                };
+            };
+            trophies: components["schemas"]["Trophies"];
+            /** @description The other coaches met in the coach's leagues */
+            colleagues: number;
+            announcements: components["schemas"]["Message"][];
+            /** @description Always game.league.max_active_teams of them (10) */
+            slots: {
+                slot: number;
+                /**
+                 * @description A club, a join request waiting for its answer, or free
+                 * @enum {string}
+                 */
+                state: "club" | "waiting" | "free";
+                league: {
+                    id: number;
+                    name: string;
+                    status: string;
+                } | null;
+                club: {
+                    id: number;
+                    name: string;
+                    crest_url: string;
+                } | null;
+                position: number | null;
+                teams: number | null;
+                next_match: {
+                    opponent: string | null;
+                    /** @enum {string} */
+                    venue: "home" | "away";
+                    live: boolean;
+                    /** Format: date-time */
+                    scheduled_at: string;
+                } | null;
             }[];
         };
         CoachProfile: {
