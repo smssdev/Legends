@@ -23,6 +23,7 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
       <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">العرض: {{ viewing.chosenView.value === 'unity' ? 'المطوّر' : 'الكرتوني' }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">الأداء: {{ PERF_NAMES[perfPref] }}{{ perfPref === 'auto' ? (smooth ? ' (سلس)' : ' (كامل)') : '' }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
     </header>
@@ -227,6 +228,7 @@ import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
 import { useViewing } from '../match/viewing'
+import { perfPref, setPerfPref, smooth, type PerfPref } from '../match/perf'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
@@ -863,6 +865,12 @@ function nextArVoice() {
 }
 // The simulator: cartoon or Unity, switched here or in the account [X10]. Until Unity's web build is deployed
 // (Sprint 8) the cartoon one keeps playing, with a note.
+// The smooth mode for weak phones [X30]: automatic by default, or forced either way by the coach.
+const PERF_NAMES: Record<PerfPref, string> = { auto: 'تلقائي', smooth: 'سلس', full: 'كامل' }
+const PERF_HINT = 'سلس: رسوم أخف وحركة أنعم على الجوالات الضعيفة. كامل: كل المؤثرات. تلقائي: يختار حسب جهازك.'
+function nextPerf() {
+  setPerfPref(({ auto: 'smooth', smooth: 'full', full: 'auto' } as const)[perfPref.value])
+}
 function switchView() {
   void viewing.save({ match_view: viewing.chosenView.value === 'unity' ? 'cartoon' : 'unity' }).catch(() => {})
 }

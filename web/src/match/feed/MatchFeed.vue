@@ -1,5 +1,5 @@
 <template>
-  <div ref="host" class="mc" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
+  <div ref="host" class="mc" :class="{ smooth, scene: sceneOn }" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
     <div class="atmo" aria-hidden="true" />
 
     <div class="sb">
@@ -30,7 +30,7 @@
         <div ref="stage" class="stage" :class="{ shake }" />
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
-          <i v-for="c in confetti" :key="c.i" :style="c.style" />
+          <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
           <span class="burst"><b>{{ party.who }}</b><small>{{ clubs[party.side] }}</small></span>
         </div>
         <div class="lower" :style="{ '--c': barKit }">
@@ -82,7 +82,8 @@
 // bar. The parent calls play(tick) per minute; the minute's length is the
 // server's (tick.moment.ms).
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, setKits } from './art'
+import { ICON, SCENES, crest, setKits, setSmooth } from './art'
+import { noteFrame, smooth } from '../perf'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
@@ -116,6 +117,8 @@ const barKit = computed(() => {
 const crestOf = (s) => crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || ''])
 const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? 'أنت' : props.live ? '' : props.mine ? 'الحاسوب' : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
+// The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
+watch(smooth, (v) => setSmooth(v), { immediate: true })
 watch(() => [props.score.home, props.score.away], () => { pop.value = false; requestAnimationFrame(() => (pop.value = true)) })
 
 // Every player of the match by id, for names and shirt numbers.
@@ -133,7 +136,7 @@ const compare = computed(() => [
 ].map((r) => ({ ...r, hp: r.h + r.a ? (r.h / (r.h + r.a)) * 100 : 50 })))
 
 // ---------------------------------------------------------------- playing a minute
-let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0
+let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
 function play(tick, startAt = null) {
@@ -168,7 +171,9 @@ function addItems(tell = true) {
   plan.itemsAdded = true
   if (tell) emit('cue', 'reveal')
   for (const it of plan.s.items) items.value.unshift({ ...it, key: ++keySeq, score: it.goal ? plan.score : null })
-  if (items.value.length > 40) items.value.length = 40
+  // A long timeline is kept short: the oldest cards leave (fewer on a weak phone).
+  const keep = smooth.value ? 16 : 30
+  if (items.value.length > keep) items.value.length = keep
 }
 function showBubble() {
   const s = plan.s
@@ -196,6 +201,8 @@ const SOUNDS = {
   card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
 }
 function frame(now) {
+  // Frames that fall behind while a scene plays turn the smooth mode on (auto) [X30].
+  if (scene && sceneOn.value) noteFrame(now - last)
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
   last = now
   if (plan) {
@@ -204,7 +211,8 @@ function frame(now) {
     const fire = (k, fn) => { if (!fired.has(k)) { fired.add(k); fn() } }
     // A line or a sound long past (the screen joined late) is dropped, not played out of time.
     const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
-    if (scene && t < sceneT) scene.update(t * rate)
+    // The scene follows the clock, so drawing it 30 times a second in the smooth mode only skips frames, never time.
+    if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; scene.update(t * rate) }
     const keyT = s.keyAt * sceneT
     // Commentary: line times are fractions of the scene (or of the minute when there is none).
     for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs))) }
@@ -228,7 +236,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 
 <style scoped>
 /* Brand navy and gold; each team's colour is light from its side. */
-.mc { position: absolute; inset: 0; overflow: hidden; isolation: isolate; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; container-type: size; background: #050D1F }
+.mc { position: absolute; inset: 0; overflow: hidden; isolation: isolate; contain: strict; will-change: transform; color: #F7F4EA; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; container-type: size; background: #050D1F }
 .atmo { position: absolute; inset: 0; z-index: -1; background:
   radial-gradient(60% 50% at 100% 20%, color-mix(in srgb, var(--H) 22%, transparent), transparent 70%),
   radial-gradient(60% 50% at 0% 20%, color-mix(in srgb, var(--A) 26%, transparent), transparent 70%),
@@ -253,8 +261,10 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .score.pop { animation: pop .7s }
 @keyframes pop { 25% { transform: scale(1.25); color: #FFD36B; text-shadow: 0 0 18px #F5B82E } }
 .live { display: flex; align-items: center; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .06em; color: #FFD36B }
-.live i { width: 7px; height: 7px; border-radius: 50%; background: #EF4444; animation: ping 1.4s infinite }
-@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,.7) } 70% { box-shadow: 0 0 0 7px rgba(239,68,68,0) } }
+/* The live dot's ring grows by transform and fades by opacity: no repaint on every frame [X30]. */
+.live i { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #EF4444 }
+.live i::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(239,68,68,.7); animation: ping 1.4s infinite }
+@keyframes ping { 0% { transform: scale(1); opacity: .9 } 70%, 100% { transform: scale(3); opacity: 0 } }
 .mom { height: 3px; display: flex; margin: 0 14px; border-radius: 2px; overflow: hidden }
 .mom i { display: block; height: 100%; transition: width .8s }
 
@@ -290,7 +300,9 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7); backdrop-filter: blur(6px) }
 .mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(14px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.25,1.15) }
 .moment.on .mbox { transform: none }
-.stage :deep(svg) { display: block; width: 100%; height: auto }
+/* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */
+.stage { aspect-ratio: 640 / 340; contain: strict; will-change: transform }
+.stage :deep(svg) { display: block; width: 100%; height: 100% }
 .stage.shake { animation: shake .45s }
 @keyframes shake { 20% { transform: translate(-6px, 3px) } 40% { transform: translate(5px, -4px) } 60% { transform: translate(-4px, 2px) } 80% { transform: translate(3px, -1px) } }
 .lower { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #071733), #071733 55%); border-top: 1px solid rgba(255,255,255,.08) }
@@ -305,9 +317,10 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .mic .m { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #FFD36B, #C08A0C) }
 .mic .m svg { width: 19px; height: 19px }
 .wave { display: flex; align-items: center; gap: 3px; height: 24px; flex: none }
-.wave i { width: 3px; border-radius: 2px; background: #F5B82E; height: 30%; animation: w .9s ease-in-out infinite }
+/* The mic's bars grow by transform, not by height: no layout on every frame [X30]. */
+.wave i { width: 3px; border-radius: 2px; background: #F5B82E; height: 100%; transform: scaleY(.3); animation: w .9s ease-in-out infinite }
 .wave i:nth-child(2n) { animation-delay: -.3s } .wave i:nth-child(3n) { animation-delay: -.6s } .wave i:nth-child(5n) { animation-delay: -.15s }
-@keyframes w { 50% { height: 100% } }
+@keyframes w { 50% { transform: scaleY(1) } }
 .mic .tx { min-width: 0; display: grid; gap: 1px }
 .mic .tx b { font-weight: 600; font-size: clamp(13px, 2.8cqw, 16px); line-height: 1.55 }
 .mic .tx span { text-align: left; color: #FFD36B; font-size: 12px; font-weight: 600 }
@@ -343,8 +356,9 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 @keyframes beat { 0%, 100% { opacity: 1 } 15% { opacity: .65 } 30% { opacity: 1 } 45% { opacity: .8 } }
 
 .party { position: absolute; inset: 0 0 auto; aspect-ratio: 640 / 340; overflow: hidden; pointer-events: none }
-.party i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards }
-@keyframes fall { to { top: 105%; transform: rotate(540deg) translateX(30px) } }
+.party i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards; will-change: transform }
+/* Falling by transform, not by top: no layout on every frame [X30]. */
+@keyframes fall { to { transform: translate3d(30px, 420px, 0) rotate(540deg) } }
 .party .burst { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); display: grid; justify-items: center; padding: 6px 18px; border-radius: 12px; background: color-mix(in srgb, var(--c) 80%, #071733); border: 2px solid #F5B82E; box-shadow: 0 10px 30px rgba(0,0,0,.5); animation: burst .6s cubic-bezier(.2,.9,.25,1.4) .35s both }
 .party .burst b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(16px, 4cqw, 26px); white-space: nowrap }
 .party .burst small { color: #FFD36B; font-weight: 700; font-size: 12px }
@@ -361,5 +375,21 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
 .rx-leave-active { transition: opacity .3s }
 .rx-leave-to { opacity: 0 }
 
-@media (prefers-reduced-motion: reduce) { .atmo::before, .wave i, .live i, .moment.tense .mbox, .moment.tense::after, .party i { animation: none } .party i { display: none } }
+/* While a scene plays, what is under its dark glass stands still, so the glass is not blurred afresh every frame [X30]. */
+.mc.scene .atmo::before, .mc.scene .wave i, .mc.scene .live i::after { animation-play-state: paused }
+/* The smooth mode for weak phones [X30]: solid panels instead of blurred glass, no moving beams, lighter shadows. */
+.smooth .atmo::before { display: none }
+.smooth .sb-in, .smooth .card, .smooth .mic, .smooth .moment::before { backdrop-filter: none }
+.smooth .sb-in { background: rgba(16,40,79,.94); box-shadow: 0 8px 18px rgba(0,0,0,.35) }
+.smooth .card { background: #10284F; box-shadow: none }
+.smooth .card.goal { background: linear-gradient(100deg, #4a3a12, #10284F 60%) }
+.smooth .mic { background: #0A1F42 }
+.smooth .moment::before { background: rgba(3,8,20,.9) }
+.smooth .crest { filter: none }
+.smooth .node { box-shadow: none }
+.smooth .tl { mask-image: none }
+.smooth .row-enter-active { transition: opacity .3s }
+.smooth .row-enter-from { transform: none }
+.smooth .mbox { box-shadow: 0 12px 30px rgba(0,0,0,.6) }
+@media (prefers-reduced-motion: reduce) { .atmo::before, .wave i, .live i::after, .moment.tense .mbox, .moment.tense::after, .party i { animation: none } .party i { display: none } }
 </style>
