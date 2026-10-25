@@ -30,6 +30,11 @@ return [
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
         'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
         'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9، السبرنت 29]
+        // [X35] The live broadcast's pace, the owner's (2026-10-25): 18 minutes of football in one real minute, so a minute
+        // lasts 60000/18 ms and a half two and a half minutes, the clock running on screen as on TV; an extra-time half
+        // half a minute (15 minutes of 2000 ms) and the whole shootout half a minute. A match made with these keys plays
+        // every minute at this fixed length (MomentClock); one made before keeps moment_ms below (its config_snapshot).
+        'minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
