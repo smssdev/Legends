@@ -7,5 +7,48 @@
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* [X29] Depth behind every screen: a soft gold glow at the top and the deep navy below, fixed while scrolling. */
+  body {
+    background-image:
+      radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--color-gold) 9%, transparent), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--color-pitch) 8%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-deep) 100%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  /* One visible focus ring for keyboards, none for taps. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  /* Buttons and links answer the touch: a quick press, colours that ease. */
+  a,
+  button {
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  }
+  button:not(:disabled):active,
+  a:active {
+    transform: scale(0.98);
+  }
+
+  /* Thin scroll bars in the theme. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-text) 20%, transparent) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 }
