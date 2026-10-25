@@ -247,7 +247,9 @@ return [
         // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
         'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
         'blocked_names' => ['mod', 'dev', 'gm', 'root', 'help', 'team'],
-        'official_usernames' => ['Owner-Hamza', 'Owner-Soliman']],
+        'official_usernames' => ['Owner-Hamza', 'Owner-Soliman'],
+        // Each developer's Gmail, on the server only: the confirmed address takes its name and the admin panel.
+        'official_emails' => ['Owner-Hamza' => env('OWNER_HAMZA_EMAIL'), 'Owner-Soliman' => env('OWNER_SOLIMAN_EMAIL')]],
     // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
     // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
     'monitoring' => [
