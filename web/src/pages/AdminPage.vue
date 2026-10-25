@@ -221,7 +221,7 @@ onMounted(load)
           <h2 class="font-display text-lg font-bold">النسخ على هذا الجهاز</h2>
           <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="backupNow">نسخة الآن</button>
         </div>
-        <p class="text-xs text-text-muted">نسخة يومية تلقائية، ونسخة قبل كل نشر. على Render تبقى حتى إعادة التشغيل فقط: نزّل ما تريد الاحتفاظ به. والاسترجاع: <code dir="ltr">php artisan db:restore &lt;الاسم&gt;</code> واللعبة متوقفة، أو <code dir="ltr">RESTORE_AT</code> على Render لأي لحظة من آخر 7 أيام.</p>
+        <p class="text-xs text-text-muted">نسخة يومية تلقائية، ونسخة قبل كل نشر. على Render تبقى حتى إعادة التشغيل فقط: نزّل ما تريد الاحتفاظ به. والاسترجاع: <code dir="ltr">php artisan db:restore &lt;الاسم&gt;</code> واللعبة متوقفة، أو <code dir="ltr">RESTORE_AT</code> على Render لأي لحظة من آخر 3 أيام.</p>
         <p v-if="!backups.length" class="text-sm text-text-muted">لا نسخ بعد.</p>
         <div v-for="b in backups" :key="b.name" class="flex min-h-touch items-center justify-between border-b border-text/5 text-sm last:border-0">
           <span class="font-numbers" dir="ltr">{{ b.name }}</span>

@@ -83,6 +83,8 @@ NATIONS = {
     'LUX': 'Luxembourg', 'JPN': 'Japan', 'KOR': 'Korea Republic', 'CHN': 'China PR', 'AUS': 'Australia', 'UZB': 'Uzbekistan',
     'TJK': 'Tajikistan', 'KGZ': 'Kyrgyzstan', 'TKM': 'Turkmenistan', 'KAZ': 'Kazakhstan', 'AFG': 'Afghanistan', 'IND': 'India',
     'PAK': 'Pakistan', 'IDN': 'Indonesia', 'MAS': 'Malaysia', 'THA': 'Thailand', 'VIE': 'Vietnam', 'PHI': 'Philippines',
+    'NGR': 'Nigeria', 'DRC': 'Congo DR', 'MRT': 'Mauritania', 'PSE': 'Palestine', 'LBN': 'Lebanon', 'GIN': 'Guinea',
+    'SER': 'Serbia', 'SLO': 'Slovenia', 'JAP': 'Japan',
     'SOM': 'Somalia', 'ERI': 'Eritrea', 'SSD': 'South Sudan', 'LTU': 'Lithuania', 'LVA': 'Latvia', 'EST': 'Estonia', 'MDA': 'Moldova',
 }
 ROLES = {'GK': ['GK'], 'DF': ['CB', 'CB', 'RB', 'LB', 'CB', 'RB', 'LB', 'CB'], 'MF': ['CDM', 'CM', 'CAM', 'CM', 'RM', 'LM', 'CDM', 'CM', 'CAM'],
@@ -282,6 +284,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     rows, report = [], []
     taken = ea_clubs()
+    ids = set()
     for league, (season, last, top, bottom, prefix) in LEAGUES.items():
         clubs = [(c, None) for c in CLUBS[league]] if league in CLUBS else season_clubs(season)
         giants = GIANTS.get(league, [])
@@ -329,6 +332,10 @@ def main():
                     gk = [''] * 5
                 first, _, rest = name.partition(' ')
                 pid = prefix * 10 ** 8 + stable(league, article, name) % 10 ** 8
+                # Two players of one squad may share a name (two Mohamed Samirs): each keeps an id of his own.
+                while pid in ids:
+                    pid += 1
+                ids.add(pid)
                 rows.append({
                     'id': pid, 'rank': '', 'overallRating': ovr, 'firstName': first if rest else '', 'lastName': rest or name,
                     'commonName': arabic or name, 'birthdate': born or '', 'height': '', 'weight': '', 'skillMoves': '', 'weakFootAbility': '',
