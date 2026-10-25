@@ -62,13 +62,16 @@ const BASE = import.meta.env.BASE_URL + 'commentary/'
 
 /**
  * The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the six full voices. The sixth
- * (hafid) is the default [X9]. Shown by number only: whether the real commentators' names are shown waits for the
- * owner (PLAN 11), and it is this one line.
+ * (hafid) is the default [X9]. Shown by their commentators' names, at the owner's decision (2026-10-25, PLAN 11).
  */
 export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
 export type ArVoice = (typeof AR_VOICES)[number]
 export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
-export const arVoiceName = (v: ArVoice) => (v === 'base' ? 'الأساسي' : 'المعلق ' + v.slice(6) + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : ''))
+// In the order of tools/commentary/arabic_voice.py's VOICES (voice-1 is ali ... voice-6 is hafid).
+const AR_NAMES: Record<ArVoice, string> = {
+  'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', base: 'الأساسي',
+}
+export const arVoiceName = (v: ArVoice) => AR_NAMES[v] + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : '')
 const GAP = 0.07
 
 export class Commentator {
