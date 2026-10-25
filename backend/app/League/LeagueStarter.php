@@ -27,6 +27,12 @@ class LeagueStarter
     /** Start one league now (the scheduler, or "start now" in development). False when it had already started. */
     public static function start(League $league): bool
     {
+        // A draw set for the start or still waiting is made first [X26].
+        if ($league->draw_at && ! $league->drawn_at) {
+            LiveDraw::draw($league);
+            $league = $league->fresh();
+        }
+
         return DB::transaction(function () use ($league) {
             $now = GameClock::now();
             // "Start now" moves an early start to this minute; the scheduler starts on time anyway.

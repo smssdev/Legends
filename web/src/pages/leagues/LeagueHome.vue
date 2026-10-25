@@ -320,6 +320,12 @@ onMounted(load)
         </ul>
       </UiCard>
 
+      <RouterLink v-if="league.draw_at || (league.is_owner && league.status === 'waiting')" :to="{ name: 'league-draw', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
+        <span><b class="block">القرعة المباشرة</b><span class="text-sm text-text-muted">{{ league.drawn_at ? 'سُحبت: شاهد النتيجة' : league.draw_at ? 'موعدها محدد: تابعها حية' : 'حدد موعدها قبل البداية' }}</span></span>
+        <span class="font-bold text-gold">←</span>
+      </RouterLink>
+
       <UiCard v-if="clubs.length" title="الأندية">
         <template #action>
           <RouterLink v-if="!league.my_club_id" :to="{ name: 'pick-team', params: { id } }" class="font-bold text-gold">اختر فريقك</RouterLink>

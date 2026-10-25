@@ -1270,6 +1270,66 @@ export interface paths {
         };
         trace?: never;
     };
+    "/leagues/{league}/draw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The live draw [X26]: the time and the hash before; the seed, the slots, the first league round and cup ties after
+         * @description The screen reveals one slot every `reveal_ms` from `drawn_at` on the server clock, the same for every member.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Draw"];
+                404: components["responses"]["Error"];
+            };
+        };
+        /** The owner sets or moves the draw's time (after now, before the start) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        draw_at: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Draw"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/start": {
         parameters: {
             query?: never;
@@ -6483,6 +6543,13 @@ export interface components {
             /** Format: date-time */
             starts_at: string;
             starting_budget: number;
+            /**
+             * Format: date-time
+             * @description The live draw's time [X26]
+             */
+            draw_at?: string | null;
+            /** Format: date-time */
+            drawn_at?: string | null;
             fair_league: boolean;
             is_dev: boolean;
             /** @enum {string} */
@@ -7644,6 +7711,55 @@ export interface components {
                         number: number;
                         cells: (string | number)[][];
                     })[];
+                };
+            };
+        };
+        /** @description The live draw */
+        Draw: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** Format: date-time */
+                    draw_at: string | null;
+                    /** @description sha256 of "legends-draw:{league}:{seed}", shown before the draw */
+                    commit: string | null;
+                    /** Format: date-time */
+                    drawn_at: string | null;
+                    /** @description Shown once drawn */
+                    seed: number | null;
+                    reveal_ms: number;
+                    server_now: number;
+                    committee: {
+                        owner: string | null;
+                    };
+                    is_owner: boolean;
+                    can_schedule: boolean;
+                    /** Format: date-time */
+                    starts_at: string;
+                    slots: {
+                        slot: number;
+                        club: {
+                            [key: string]: unknown;
+                        };
+                    }[];
+                    league_round: {
+                        home: {
+                            [key: string]: unknown;
+                        } | null;
+                        away: {
+                            [key: string]: unknown;
+                        } | null;
+                    }[];
+                    cup_round: {
+                        home: {
+                            [key: string]: unknown;
+                        } | null;
+                        away: {
+                            [key: string]: unknown;
+                        } | null;
+                    }[];
                 };
             };
         };

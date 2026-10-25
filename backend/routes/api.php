@@ -78,6 +78,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}', 'show')->whereNumber('league');
     Route::patch('{league}', 'update')->whereNumber('league');
     Route::post('{league}/start', 'start')->whereNumber('league');
+    // The live draw [X26].
+    Route::get('{league}/draw', 'draw')->whereNumber('league');
+    Route::put('{league}/draw', 'scheduleDraw')->whereNumber('league');
     Route::delete('{league}/request', 'cancel')->whereNumber('league');
     Route::get('{league}/requests', 'requests')->whereNumber('league');
     Route::post('{league}/requests/{joinRequest}/approve', 'approve')->whereNumber(['league', 'joinRequest']);
