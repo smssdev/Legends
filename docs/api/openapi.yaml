@@ -785,6 +785,20 @@ paths:
                             rests_next: { type: boolean, description: Rests in the next round (odd team count) }
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/stats:
+    get:
+      tags: [leagues]
+      summary: The statistics centre [X17]
+      description: The season's table in detail, scorers and assists, cards of players and clubs, each club's buying and selling, the squads' value, and the runs of results. Members only; nothing hidden (no tactic).
+      parameters:
+        - { name: league, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The season's statistics
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeagueStats' }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/cup:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -3219,6 +3233,80 @@ components:
                       nullable: true
                       required: [id, name]
                       properties: { id: { type: integer }, name: { type: string } }
+    StatsClub:
+      type: object
+      required: [id, name, code, crest_url]
+      properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } }
+    StatsPlayer:
+      type: object
+      required: [player, club]
+      properties:
+        player: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        club: { $ref: '#/components/schemas/StatsClub' }
+        goals: { type: integer }
+        assists: { type: integer }
+        yellow: { type: integer }
+        red: { type: integer }
+    LeagueStats:
+      type: object
+      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks]
+      properties:
+        season: { $ref: '#/components/schemas/SeasonCalendar' }
+        matches: { type: integer, description: Finished matches this season, every competition }
+        table:
+          type: array
+          items:
+            type: object
+            required: [position, club, played, won, drawn, lost, goals_for, goals_against, goal_difference, points, goals_per_match_x100, conceded_per_match_x100]
+            properties:
+              position: { type: integer }
+              club: { $ref: '#/components/schemas/StatsClub' }
+              played: { type: integer }
+              won: { type: integer }
+              drawn: { type: integer }
+              lost: { type: integer }
+              goals_for: { type: integer }
+              goals_against: { type: integer }
+              goal_difference: { type: integer }
+              points: { type: integer }
+              goals_per_match_x100: { type: integer, description: 'Goals per match times 100 (integers only): 175 = 1.75' }
+              conceded_per_match_x100: { type: integer }
+        scorers: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' } }
+        assists: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' } }
+        discipline:
+          type: object
+          required: [players, bookings, clubs]
+          properties:
+            players: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' }, description: Most red cards }
+            bookings: { type: array, items: { $ref: '#/components/schemas/StatsPlayer' }, description: Most yellow cards }
+            clubs:
+              type: array
+              items: { type: object, required: [club, yellow, red], properties: { club: { $ref: '#/components/schemas/StatsClub' }, yellow: { type: integer }, red: { type: integer } } }
+        finance:
+          type: array
+          items:
+            type: object
+            required: [club, bought, bought_count, sold, sold_count, net]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              bought: { type: integer }
+              bought_count: { type: integer }
+              sold: { type: integer }
+              sold_count: { type: integer }
+              net: { type: integer, description: Sold minus bought }
+        value:
+          type: array
+          items: { type: object, required: [position, club, value, players], properties: { position: { type: integer }, club: { $ref: '#/components/schemas/StatsClub' }, value: { type: integer }, players: { type: integer } } }
+        streaks:
+          type: array
+          items:
+            type: object
+            required: [club, current, best, form]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
+              best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
+              form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
     CoachProfile:
       type: object
       required: [coach, record, titles, objectives]
