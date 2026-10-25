@@ -48,23 +48,17 @@ watch(() => route.fullPath, () => (more.value = false))
       <RouterLink to="/" class="mb-1 flex min-h-touch items-center gap-2 rounded-lg px-2 text-sm font-bold text-text-soft hover:text-gold" aria-label="العودة إلى فتحات المدرب">
         <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>الفتحات
       </RouterLink>
-      <div v-if="slot.current?.club" class="mb-2 flex items-center gap-3 rounded-xl bg-gradient-to-bl from-gold/20 to-surface p-3">
-        <img :src="slot.current.club.crest_url" alt="" class="size-11 drop-shadow" />
-        <div class="min-w-0">
-          <b class="block truncate font-display text-lg leading-tight">{{ slot.current.club.name }}</b>
-          <span class="block truncate text-xs text-text-muted">{{ slot.current.league?.name }}<template v-if="slot.current.position"> · المركز {{ slot.current.position }}</template></span>
-        </div>
-      </div>
       <nav class="flex flex-1 flex-col gap-0.5 overflow-y-auto">
         <RouterLink
           v-for="s in clubSections"
           :key="s.name"
           :to="pathOf(s)"
-          class="group flex min-h-touch items-center gap-3 rounded-lg px-3 font-semibold transition-colors"
+          class="group relative flex min-h-touch items-center gap-3 rounded-lg px-2 font-semibold transition-colors"
           :class="active(pathOf(s)) ? 'bg-gold/15 text-gold' : 'text-text-soft hover:bg-surface hover:text-text'"
           :aria-current="active(pathOf(s)) ? 'page' : undefined"
         >
-          <Icon :name="s.icon" />
+          <span v-if="active(pathOf(s))" class="absolute inset-y-2 start-0 w-1 rounded-pill bg-gold" aria-hidden="true" />
+          <span class="grid size-9 place-items-center rounded-lg transition-colors" :class="active(pathOf(s)) ? 'bg-gold text-on-gold shadow-md shadow-gold/30' : 'bg-surface/70 group-hover:bg-surface-raised'"><Icon :name="s.icon" /></span>
           <span class="flex-1">{{ s.label }}</span>
           <span v-if="s.dev" class="rounded-pill bg-gold/15 px-2 text-xs text-gold">للمطور</span>
         </RouterLink>
@@ -77,11 +71,7 @@ watch(() => route.fullPath, () => (more.value = false))
         <RouterLink v-if="inSlot" to="/" class="flex size-touch items-center justify-center rounded-full bg-surface md:hidden" aria-label="العودة إلى فتحات المدرب">
           <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
         </RouterLink>
-        <template v-if="inSlot && slot.current?.club">
-          <img :src="slot.current.club.crest_url" alt="" class="size-8 md:hidden" />
-          <b class="truncate font-display md:hidden">{{ slot.current.club.name }}</b>
-        </template>
-        <RouterLink v-else to="/" aria-label="الرئيسية"><BrandMark size="sm" /></RouterLink>
+        <RouterLink to="/" aria-label="الرئيسية" :class="inSlot ? 'hidden md:block' : ''"><BrandMark size="sm" /></RouterLink>
         <div class="flex-1" />
         <template v-if="auth.user">
           <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-touch items-center rounded-pill px-3 text-sm font-bold text-text-soft hover:bg-surface md:flex">لوحة الإدارة</RouterLink>
@@ -105,6 +95,22 @@ watch(() => route.fullPath, () => (more.value = false))
         بريدك غير مؤكد بعد. <span class="font-bold text-gold">أكّده من صفحة حسابي</span>
       </RouterLink>
       <main class="mx-auto w-full flex-1 px-4 py-5 md:px-8 md:pb-8" :class="[inSlot ? 'max-w-6xl pb-28' : 'max-w-7xl pb-10']">
+        <!-- [X29] Inside a slot every screen opens under the club's banner: where you are, in whose colours. -->
+        <div v-if="inSlot && slot.current?.club" class="relative isolate mb-5 flex items-center gap-3 overflow-hidden rounded-2xl border border-gold/15 px-4 py-3 shadow-lg shadow-black/30 md:px-5">
+          <div class="absolute inset-0 -z-10 bg-gradient-to-l from-gold/20 via-surface/90 to-pitch/25" aria-hidden="true" />
+          <div class="absolute inset-0 -z-10 bg-[url(/art/pitch-lines.svg)] bg-[length:520px_auto] bg-[position:left_center] bg-no-repeat opacity-[0.12]" aria-hidden="true" />
+          <img :src="slot.current.club.crest_url" alt="" class="size-12 shrink-0 drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)]" />
+          <div class="min-w-0 flex-1">
+            <b class="block truncate font-display text-lg leading-tight md:text-xl">{{ slot.current.club.name }}</b>
+            <span class="flex flex-wrap items-center gap-x-2 text-xs text-text-muted">
+              <span>{{ slot.current.league?.name }}</span>
+              <span v-if="slot.current.position" class="rounded-pill bg-bg/50 px-2 py-0.5 font-bold text-gold">المركز {{ slot.current.position }}/{{ slot.current.teams }}</span>
+            </span>
+          </div>
+          <RouterLink v-if="slot.current.next_match" to="/match" class="hidden shrink-0 items-center gap-2 rounded-pill px-3 py-1.5 text-xs font-bold sm:flex" :class="slot.current.next_match.live ? 'bg-live/20 text-[#FF8A8A]' : 'bg-bg/60 text-text-soft'">
+            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-live" />{{ slot.current.next_match.live ? 'مباشر الآن' : 'القادمة' }}: {{ slot.current.next_match.opponent }}
+          </RouterLink>
+        </div>
         <RouterView />
       </main>
     </div>
