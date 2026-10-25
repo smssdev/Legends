@@ -4,6 +4,7 @@ namespace App\Market;
 
 use App\League\ClubLedger;
 use App\League\Integrity;
+use App\League\MatchPrep;
 use App\Support\GameClock;
 use App\Wallet\Price;
 use Illuminate\Support\Facades\DB;
@@ -108,6 +109,7 @@ class Market
     public static function sell(int $clubId, int $playerId, string $key): int
     {
         Integrity::assertMarket($clubId);
+        MatchPrep::assertFree([$playerId]);
 
         return DB::transaction(function () use ($clubId, $playerId, $key) {
             $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();

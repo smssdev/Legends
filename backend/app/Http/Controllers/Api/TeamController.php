@@ -195,8 +195,10 @@ class TeamController extends Controller
         return response()->json(['match' => [
             'fixture_id' => $f->id, 'match_id' => DB::table('matches')->where('fixture_id', $f->id)->value('id'), 'competition' => $f->competition, 'round' => $f->round, 'venue' => $home ? 'home' : 'away',
             'scheduled_at' => $at->toIso8601ZuluString(), 'status' => $f->status,
-            'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
-            'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
+            'referee_at' => MatchPrep::lockAt($f)->addMinutes(config('game.match.lock_minutes_before'))->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
+            // A round in two slots [X31]: mine, and whether it is the night's big match.
+            'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
+            'lock_at' => MatchPrep::lockAt($f)->toIso8601ZuluString(),
             'referee' => $f->referee_strictness,
             // My morale for this match with my crowd and the tickets cheering me [X25] (the opponent's is not shown).
             'morale' => Morale::forMatch($f, $home ? 'home' : 'away'),
