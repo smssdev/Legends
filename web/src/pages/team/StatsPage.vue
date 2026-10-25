@@ -6,6 +6,7 @@ import { computed, onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
+import { useSlot } from '../../stores/slot'
 import { count, money } from '../../lib/format'
 
 type Stats = components['schemas']['LeagueStats']
@@ -46,6 +47,9 @@ async function openSquad(c: Club) {
   }
   squadBusy.value = false
 }
+// The coach's own club in gold in every table [X32].
+const slot = useSlot()
+const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
 </script>
 
 <template>
@@ -68,7 +72,7 @@ async function openSquad(c: Club) {
         <table class="w-full min-w-[640px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">النادي</th><th>لعب</th><th>فاز</th><th>تعادل</th><th>خسر</th><th>له</th><th>عليه</th><th>الفارق</th><th>معدل التسجيل</th><th>معدل الاستقبال</th><th>النقاط</th></tr></thead>
           <tbody class="font-numbers">
-            <tr v-for="r in s.table" :key="r.club.id" class="border-t border-text/5 text-center">
+            <tr v-for="r in s.table" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
               <td class="py-2">{{ r.position }}</td>
               <td class="text-start font-sans"><button type="button" class="flex min-h-touch items-center gap-2 font-bold hover:text-gold" @click="openSquad(r.club)"><img :src="r.club.crest_url" alt="" class="size-6" />{{ r.club.name }}</button></td>
               <td>{{ r.played }}</td><td>{{ r.won }}</td><td>{{ r.drawn }}</td><td>{{ r.lost }}</td><td>{{ r.goals_for }}</td><td>{{ r.goals_against }}</td>
@@ -94,7 +98,7 @@ async function openSquad(c: Club) {
           <h2 class="mb-2 font-display text-lg font-bold">الأندية</h2>
           <table class="w-full text-sm">
             <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>صفراء</th><th>حمراء</th></tr></thead>
-            <tbody class="font-numbers"><tr v-for="c in s.discipline.clubs" :key="c.club.id" class="border-t border-text/5 text-center">
+            <tbody class="font-numbers"><tr v-for="c in s.discipline.clubs" :key="c.club.id" class="border-t border-text/5 text-center" :class="mine(c.club.id)">
               <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(c.club)">{{ c.club.name }}</button></td>
               <td><span class="inline-block h-4 w-3 rounded-sm bg-warning align-middle" aria-hidden="true" /> {{ c.yellow }}</td><td><span class="inline-block h-4 w-3 rounded-sm bg-live align-middle" aria-hidden="true" /> {{ c.red }}</td>
             </tr></tbody>
@@ -113,7 +117,7 @@ async function openSquad(c: Club) {
       <section v-if="tab === 'money'" class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="التقرير المالي">
         <table class="w-full min-w-[520px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>اشترى</th><th>صفقات</th><th>باع</th><th>صفقات</th><th>الصافي</th></tr></thead>
-          <tbody class="font-numbers"><tr v-for="f in s.finance" :key="f.club.id" class="border-t border-text/5 text-center">
+          <tbody class="font-numbers"><tr v-for="f in s.finance" :key="f.club.id" class="border-t border-text/5 text-center" :class="mine(f.club.id)">
             <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(f.club)">{{ f.club.name }}</button></td>
             <td dir="ltr">{{ money(f.bought) }}</td><td>{{ f.bought_count }}</td><td dir="ltr">{{ money(f.sold) }}</td><td>{{ f.sold_count }}</td>
             <td dir="ltr" :class="f.net >= 0 ? 'text-success' : 'text-[#FF8A8A]'">{{ f.net >= 0 ? '+' : '' }}{{ money(f.net) }}</td>
@@ -134,7 +138,7 @@ async function openSquad(c: Club) {
       <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="سلاسل النتائج">
         <table class="w-full min-w-[560px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>آخر 5</th><th>الحالية</th><th>أطول فوز</th><th>أطول تعادل</th><th>أطول خسارة</th></tr></thead>
-          <tbody class="font-numbers"><tr v-for="r in s.streaks" :key="r.club.id" class="border-t border-text/5 text-center">
+          <tbody class="font-numbers"><tr v-for="r in s.streaks" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
             <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(r.club)">{{ r.club.name }}</button></td>
             <td><span class="inline-flex gap-1" dir="ltr"><span v-for="(k, i) in r.form" :key="i" class="grid size-6 place-items-center rounded-sm text-xs font-bold" :class="RUN_CLASS[k]" :title="RUN[k]">{{ k === 'W' ? 'ف' : k === 'D' ? 'ت' : 'خ' }}</span></span></td>
             <td class="font-sans">{{ r.current ? `${r.current.length} ${RUN[r.current.kind]}` : '-' }}</td>

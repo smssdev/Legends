@@ -62,7 +62,7 @@ function link(l: League) {
     </div>
 
     <div v-else class="grid gap-3 md:grid-cols-2">
-      <RouterLink v-for="l in leagues" :key="l.id" :to="link(l)" class="flex flex-col gap-3 rounded-xl bg-surface p-4 hover:bg-surface-raised">
+      <RouterLink v-for="l in leagues" :key="l.id" :to="link(l)" class="flex flex-col gap-3 rounded-xl border-t-4 !border-t-brand bg-surface p-4 hover:bg-surface-raised">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h2 class="truncate font-display text-xl font-extrabold">{{ l.name }}</h2>
