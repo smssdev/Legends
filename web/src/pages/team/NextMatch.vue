@@ -83,7 +83,7 @@ const ACTIONS = [
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
     <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">لا مباريات قادمة الآن.</p>
     <template v-else-if="match">
-      <!-- [X32] The VS dashboard: a blue band with the competition, both clubs on silver discs with their strength in a
+      <!-- [X32] The VS dashboard: a blue band with the competition, both clubs on ivory discs with their strength in a
            ring, the countdown to the lock between them, then the facts and the action cards. -->
       <section class="overflow-hidden rounded-xl bg-surface">
         <div class="vs-band flex items-center justify-center gap-2 px-4 py-2 text-sm font-extrabold text-white">
@@ -191,9 +191,10 @@ const ACTIONS = [
 
 <style scoped>
 .vs-band {
-  background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background-blend-mode: soft-light, normal;
 }
-/* The crest on a silver disc, as on a broadcast's match card. */
+/* The crest on a ivory disc, as on a broadcast's match card. */
 .vs-disc {
   display: grid;
   place-items: center;

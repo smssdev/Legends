@@ -159,7 +159,7 @@ async function openRanking(by: 'trophies' | 'level') {
       <div class="order-first flex flex-col gap-3 lg:order-none">
         <h2 class="text-sm font-bold text-text-muted">فتحات المدرب</h2>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a silver disc,
+          <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
           <button v-for="s in home.slots" :key="s.slot" type="button" class="slot-card group" :class="`is-${s.state}`"
             :aria-label="s.state === 'free' ? `الفتحة ${s.slot}: دوري جديد` : `الفتحة ${s.slot}: ${s.league?.name}`" @click="openSlot(s)">
@@ -242,7 +242,7 @@ async function openRanking(by: 'trophies' | 'level') {
   color: #fff;
   background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.slot-card.is-club .slot-band { background: linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); }
+.slot-card.is-club .slot-band { background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); background-blend-mode: soft-light, normal; }
 .slot-card.is-waiting .slot-band { background: color-mix(in srgb, var(--color-warning) 35%, transparent); }
 .slot-disc {
   display: grid;

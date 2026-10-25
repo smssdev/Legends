@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // The frame around every game screen (Sprint 9 W1, X29, and redrawn by X32 after the owner's review of OSM, 2026-10-25):
-// - On the computer a header of two rows over the blurred stadium: silver tabs with the club (crest, name, league and
+// - On the computer a header of two rows over the blurred stadium: ivory tabs with the club (crest, name, league and
 //   place) on one side and the coach (avatar, name, level) on the other, the mark between them; under it, inside a
 //   slot, the club's sections in one row of icons, the side bar gone, so the screen has the full width.
 // - On the phone a compact bar (back to the slots, the club, coins, messages, account) and, inside a slot, a bottom
@@ -177,12 +177,24 @@ watch(() => route.fullPath, () => (more.value = false))
 </template>
 
 <style scoped>
-/* [X32] The header's first row: deep navy lit from above, a thin bright line under it. */
+/* [X32] The header's first row: night ink lit from above with Legends' star lattice faint over it, and under it the
+   signature seam, emerald fading into gold. */
 .shell-top {
-  background: linear-gradient(180deg, #0f2f66 0%, var(--color-panel) 60%, var(--color-bg-deep) 100%);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-brand-light) 35%, transparent) inset;
+  background:
+    url("/art/pattern-star.svg") center / 40px 40px repeat,
+    linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 22%, var(--color-panel)) 0%, var(--color-panel) 55%, var(--color-bg-deep) 100%);
+  background-blend-mode: soft-light, normal;
 }
-/* The silver tabs: the club and the coach, cut at an angle toward the middle like a broadcast graphic. */
+.shell-top::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-brand-light) 25%, var(--color-gold) 75%, transparent);
+  opacity: 0.85;
+}
+/* The ivory tabs: the club and the coach, cut at an angle toward the middle like a broadcast graphic. */
 .chrome-tab {
   display: flex;
   align-items: center;
@@ -231,9 +243,12 @@ watch(() => route.fullPath, () => (more.value = false))
   background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 60%, var(--color-gold-dark));
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, 0 4px 12px -6px rgb(0 0 0 / 0.6);
 }
-/* Row two: the brand's blue, each section an icon over its name, the current one lifted in silver. */
+/* Row two: Legends' emerald, each section an icon over its name, the current one lifted in ivory with a gold mark. */
 .shell-nav {
-  background: linear-gradient(180deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
+  background:
+    url("/art/pattern-star.svg") center / 40px 40px repeat,
+    linear-gradient(180deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
+  background-blend-mode: soft-light, normal;
   box-shadow: 0 8px 20px -12px rgb(0 0 0 / 0.8);
 }
 .nav-item {
@@ -252,11 +267,23 @@ watch(() => route.fullPath, () => (more.value = false))
   margin-top: 0.3rem;
 }
 .nav-item:hover { background: rgb(255 255 255 / 0.12); color: #fff; }
+.nav-item {
+  position: relative;
+}
 .nav-item.is-active {
   color: var(--color-brand-dark);
   background: linear-gradient(180deg, #ffffff, var(--color-chrome));
 }
-/* The phone's bottom bar: solid navy, the current tab in the brand's blue. */
+.nav-item.is-active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  inset-inline: 30%;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--color-gold);
+}
+/* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
 .shell-tabs {
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
   border-top: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
@@ -274,8 +301,18 @@ watch(() => route.fullPath, () => (more.value = false))
   color: var(--color-text-soft);
 }
 .tab-item.is-active {
+  position: relative;
   color: #fff;
   background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand));
   box-shadow: 0 6px 14px -8px var(--color-brand);
+}
+.tab-item.is-active::before {
+  content: "";
+  position: absolute;
+  top: -0.4rem;
+  width: 1.5rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-gold);
 }
 </style>
