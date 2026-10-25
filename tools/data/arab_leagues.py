@@ -110,7 +110,7 @@ def get(url):
     if os.path.exists(path) and time.time() - os.path.getmtime(path) < 86400:
         with open(path) as f:
             return json.load(f)
-    for attempt in range(5):
+    for attempt in range(7):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40) as r:
                 data = json.load(r)
@@ -118,7 +118,8 @@ def get(url):
                 json.dump(data, f)
             return data
         except Exception:
-            time.sleep(2 * (attempt + 1))
+            # Wikipedia answers a burst with "too many requests": wait longer each time.
+            time.sleep(5 * (attempt + 1))
     return {}
 
 
@@ -267,9 +268,20 @@ def clamp(v, lo=25, hi=95):
     return max(lo, min(hi, v))
 
 
+def ea_clubs():
+    """The club names in the EA files: an Arab club with the same name (Qatar's Al Ahli, Egypt's Al Ittihad) takes its
+    article's fuller name, or data:import would merge the two squads into one club."""
+    names = set()
+    for f in ('ea_fc26_outfield.csv', 'ea_fc26_goalkeepers.csv'):
+        with open(os.path.join(ROOT, 'data', 'ea-fc26', f), encoding='utf-8') as h:
+            names.update(r['team'] for r in csv.DictReader(h))
+    return names
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     rows, report = [], []
+    taken = ea_clubs()
     for league, (season, last, top, bottom, prefix) in LEAGUES.items():
         clubs = [(c, None) for c in CLUBS[league]] if league in CLUBS else season_clubs(season)
         giants = GIANTS.get(league, [])
@@ -283,6 +295,9 @@ def main():
         for article, _ in clubs:
             players, colours = squads[article]
             shown = names.get(article) or re.sub(r'\s*\((football|football club|Dubai)\)|\s+(SC|FC|F\.C\.|Club|SCC)$', '', article).strip()
+            if shown in taken:
+                shown = re.sub(r'\s*\(([^)]*)\)', r' \1', article).replace(' Club', '').strip()
+            taken.add(shown)
             if len(players) < 18 or not any(p[4] == 'GK' for p in players):
                 report.append(f'{league}: {shown} skipped ({len(players)} players on Wikipedia)')
                 continue
