@@ -5,11 +5,16 @@ import { computed, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import RatingRing from '../../components/ui/RatingRing.vue'
+import HelpTip from '../../components/ui/HelpTip.vue'
+import { useGlossary } from '../../lib/glossary'
 import { LINES, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
 
 const { team, error, loaded, load } = useTeam()
+const g = useGlossary()
+// Morale [X25]: green from 75, red under 50.
+const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 'var(--color-live)' : 'var(--color-gold)')
 const line = ref<'all' | Line>('all')
 const open = ref<SquadPlayer | null>(null)
 // The list or the cards, remembered on this device [X29].
@@ -59,6 +64,14 @@ function status(p: SquadPlayer) {
       <!-- [X29] The team's strength by line, four rings as in the classic manager games. -->
       <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" aria-label="قوة الفريق بالخطوط">
         <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? 'الحارس' : LINES[l].plural" :color="`var(--color-line-${l})`" />
+      </section>
+      <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" aria-label="المعنويات">
+        <span class="flex items-center gap-1 font-bold">المعنويات<HelpTip :text="g.morale" label="المعنويات" /></span>
+        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="team.morale.value" aria-valuemin="0" aria-valuemax="100" aria-label="المعنويات">
+          <span class="block h-full rounded-full" :style="{ width: `${team.morale.value}%`, background: moraleColor(team.morale.value) }" />
+        </span>
+        <b class="font-numbers text-lg" :style="{ color: moraleColor(team.morale.value) }">{{ team.morale.value }}</b>
+        <span v-if="team.morale.winless_run >= 2" class="text-xs text-[#FF8A8A]">{{ team.morale.winless_run }} بلا فوز</span>
       </section>
 
       <div class="flex items-center gap-2">

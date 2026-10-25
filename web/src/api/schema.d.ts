@@ -2250,6 +2250,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The other clubs' coming matches, to cheer one side with a ticket [X25] */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["Tickets"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /**
+         * Buy a ticket and cheer one side (its morale for that match goes up)
+         * @description Club money; one per match, not for my own matches (422), until the lock (409).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                        /** @enum {string} */
+                        side: "home" | "away";
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Tickets"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/market": {
         parameters: {
             query?: never;
@@ -2980,7 +3042,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer";
+                        type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer" | "mental_coach";
                         /** @description Default 3 [X20] */
                         stars?: number;
                         idempotency_key: string;
@@ -3531,6 +3593,8 @@ export interface paths {
                                 lock_at: string;
                                 /** @enum {string|null} */
                                 referee?: "lenient" | "medium" | "strict" | null;
+                                /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
+                                morale: number;
                                 /** @description My club, for the VS card [X29] */
                                 club: {
                                     id: number;
@@ -6598,7 +6662,7 @@ export interface components {
             days: number;
             specialists: {
                 /** @enum {string} */
-                type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer";
+                type: "att_coach" | "mid_coach" | "def_coach" | "keeper_coach" | "physio" | "doctor" | "lawyer" | "mental_coach";
                 /** @description In Arabic */
                 name: string;
                 /** @description The three-star price */
@@ -7500,6 +7564,45 @@ export interface components {
                 };
             };
         };
+        /** @description The coming matches of the other clubs, with my ticket */
+        Tickets: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    price: number;
+                    /** @description The morale a ticket adds to the side it cheers */
+                    boost: number;
+                    balance: number;
+                    fixtures: {
+                        id: number;
+                        competition: string;
+                        round: number;
+                        /** Format: date-time */
+                        scheduled_at: string;
+                        home: {
+                            id: number;
+                            name: string;
+                            code: string;
+                            crest_url: string;
+                        };
+                        away: {
+                            id: number;
+                            name: string;
+                            code: string;
+                            crest_url: string;
+                        };
+                        cheering: {
+                            home: number;
+                            away: number;
+                        };
+                        /** @enum {string|null} */
+                        mine: "home" | "away" | null;
+                    }[];
+                };
+            };
+        };
         /** @description My club and its team sheet */
         Team: {
             headers: {
@@ -7507,6 +7610,11 @@ export interface components {
             };
             content: {
                 "application/json": {
+                    /** @description The squad's morale, 0..100, and its run of matches without a win [X25] */
+                    morale: {
+                        value: number;
+                        winless_run: number;
+                    };
                     /** @description The team strength by line [X29]: the starters' average rating in each (or the line's best) */
                     lines: {
                         att: number;

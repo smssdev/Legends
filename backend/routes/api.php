@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\SpecialistController;
 use App\Http\Controllers\Api\SpyController;
 use App\Http\Controllers\Api\StadiumController;
 use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
@@ -138,6 +139,11 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(SpecialistController::class)->prefix('{league}/specialists')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'hire')->middleware('throttle:20,1,specialists');
+    });
+    // Tickets to cheer at the other clubs' matches [X25].
+    Route::controller(TicketController::class)->prefix('{league}/tickets')->whereNumber('league')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:30,1,tickets');
     });
     // Spying on the next opponent [Sprint 30].
     Route::controller(SpyController::class)->prefix('{league}/spy')->whereNumber('league')->group(function () {

@@ -1,5 +1,5 @@
 {
-    "engine_version": 7,
+    "engine_version": 8,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -21,6 +21,11 @@
                 "easy",
                 "focus"
             ],
+            "cheer_gap_ms": 30000,
+            "chat_gap_ms": 2000,
+            "chat_max": 140,
+            "chat_kept": 50,
+            "reactions_kept": 20,
             "scene_gap_ms": 1800,
             "extra_time_tick_ms": 2000,
             "extra_time_break_seconds": 10,
@@ -73,7 +78,7 @@
             }
         },
         "engine": {
-            "version": 7,
+            "version": 8,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -123,6 +128,7 @@
             "tired_fit": 5500,
             "tired_injury_bp": 30000,
             "red_card_drain_bp": 11500,
+            "morale_bp": 6,
             "chemistry_high": 85,
             "chemistry_high_bp": [
                 300,

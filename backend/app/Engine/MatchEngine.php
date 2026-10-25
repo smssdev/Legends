@@ -338,7 +338,7 @@ final class MatchEngine
             $createBonus = (int) $this->eng['trap_fail_bonus_cp'];
         }
 
-        $r = $this->phase('progress', $a, $d, 0, $counter ? $this->chemistry($atk) : 0);
+        $r = $this->phase('progress', $a, $d, 0, ($counter ? $this->chemistry($atk) : 0) + $this->morale($atk) - $this->morale($def));
         $phases[] = ['n' => 'progress', 'ok' => $r['ok'], 'p' => $r['p']];
         if (! $r['ok']) {
             $this->rate($def, $marker, 6, 'tackles');
@@ -369,7 +369,7 @@ final class MatchEngine
         if ($plan !== 'shots') {
             $a = $this->ability($atk, 'create', Ability::LINES['create']) - $tempoLoss + $createBonus + $this->posMod($ta, 'create');
             $d = $this->ability($def, 'mark', Ability::LINES['mark']) + $this->markingMod($td, $A);
-            $r = $this->phase('create', $a, $d, 0, -$this->chemistry($def));
+            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def));
             $phases[] = ['n' => 'create', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $corner = $this->rng->chance(2500);
@@ -416,6 +416,14 @@ final class MatchEngine
             $chem < $low => -intdiv(($low - $chem) * (int) $this->eng['chemistry_low_bp'], max(1, $low)),
             default => 0,
         };
+    }
+
+    /** Morale [X25]: a side up (over 50) pushes on and creates more, one down hesitates. None measured: neutral. */
+    private function morale(string $side): int
+    {
+        $morale = $this->s['teams'][$side]['morale'] ?? null;
+
+        return $morale === null ? 0 : ($morale - 50) * (int) $this->eng['morale_bp'];
     }
 
     private function planKey(string $plan): string

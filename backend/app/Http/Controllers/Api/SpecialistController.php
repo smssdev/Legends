@@ -64,6 +64,7 @@ class SpecialistController extends Controller
             'physio' => sprintf('+%d لياقة لمن يرتاح بين المباراتين', $c('physio_rest_bonus')),
             'doctor' => sprintf('كل مباراة تُنقص الإصابة %d %s', $c('doctor_countdown'), $c('doctor_countdown') > 1 ? 'مباريات' : 'مباراة'),
             'lawyer' => sprintf('يلغي %d%% من إيقافات البطاقة الحمراء', intdiv($c('lawyer_cancel_bp'), 100)),
+            'mental_coach' => sprintf('يعيد %d من المعنويات بعد التعادل أو الخسارة', $c('mental_coach_boost')),
             default => '',
         };
     }

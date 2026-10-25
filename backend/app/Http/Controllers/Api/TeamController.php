@@ -9,6 +9,7 @@ use App\League\Chemistry;
 use App\League\ClubLedger;
 use App\League\FormationBook;
 use App\League\MatchPrep;
+use App\League\Morale;
 use App\League\Scenarios;
 use App\League\Tactics;
 use App\League\TeamSheet;
@@ -54,6 +55,8 @@ class TeamController extends Controller
         return response()->json([
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
                 'balance' => (int) $club->balance, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+            // The squad's morale and its run without a win [X25].
+            'morale' => ['value' => (int) $club->morale, 'winless_run' => (int) $club->winless_run],
             'squad_value' => (int) $players->sum('value'),
             'lines' => $this->lineStrength($players),
             'players' => $players->values(),
@@ -195,6 +198,8 @@ class TeamController extends Controller
             'referee_at' => $at->copy()->subMinutes(config('game.match.referee_minutes_before'))->toIso8601ZuluString(),
             'lock_at' => $at->copy()->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
             'referee' => $f->referee_strictness,
+            // My morale for this match with my crowd and the tickets cheering me [X25] (the opponent's is not shown).
+            'morale' => Morale::forMatch($f, $home ? 'home' : 'away'),
             // My club beside the opponent, for the VS card [X29].
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
                 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
