@@ -17,7 +17,7 @@ const other = (s) => (s === 'home' ? 'away' : 'home')
 const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
 const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
 // A keeper's kit that stands apart from both teams.
-const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
+export const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
 
 // Writes an attribute only when it changes [X30]: every write, even of the same value, makes the browser lay the
 // scene out again, and a scene sets hundreds of them a frame (most of them unchanged, like the flashes at rest).
@@ -129,7 +129,7 @@ function goalFrame(svg, p = svg.world) {
 // posable (running, striking, diving, celebrating). look picks the skin and hair.
 const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
 const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
-function player(p, kit, no, s = 1, o = {}) {
+export function player(p, kit, no, s = 1, o = {}) {
   if (p.world) p = p.world
   const light = lum(kit) > 150, ink = light ? '#0A1F42' : '#fff', look = o.look ?? 0
   const skin = SKINS[look % SKINS.length], hair = HAIR[Math.floor(look / 7) % HAIR.length], shorts = o.shorts ?? (light ? '#1C2B48' : shade(kit, -80))
