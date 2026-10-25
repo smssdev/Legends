@@ -537,6 +537,7 @@ paths:
                 starting_budget: { type: integer, minimum: 1000000, maximum: 10000000, default: 3000000 }
                 fair_league: { type: boolean, default: false, description: Locks spending coins inside this league }
                 integrity: { type: boolean, default: false, description: 'Bribes, spies and the FA [X28]' }
+                second_slot_minutes: { type: integer, nullable: true, minimum: 60, maximum: 600, description: 'Each round in two slots: half its matches this long after the round time [X31]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
                 club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
       responses:
@@ -593,6 +594,7 @@ paths:
                 starts_at: { type: string, format: date-time }
                 fair_league: { type: boolean }
                 integrity: { type: boolean }
+                second_slot_minutes: { type: integer, nullable: true }
       responses:
         '200': { $ref: '#/components/responses/League' }
         '403': { $ref: '#/components/responses/Error' }
@@ -1676,6 +1678,8 @@ paths:
                       lock_at: { type: string, format: date-time }
                       referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
                       morale: { type: integer, description: 'My morale for this match with my crowd and the tickets cheering me [X25]' }
+                      slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
+                      match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
                       club:
                         type: object
                         description: 'My club, for the VS card [X29]'
@@ -3219,6 +3223,7 @@ components:
         drawn_at: { type: string, format: date-time, nullable: true }
         fair_league: { type: boolean }
         integrity: { type: boolean, description: 'The integrity system: bribes, spies and the FA [X28]' }
+        second_slot_minutes: { type: integer, nullable: true, description: 'Rounds in two slots [X31]' }
         headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } }, description: 'The FA verdicts of the last day [X28]' }
         is_dev: { type: boolean }
         status: { type: string, enum: [waiting, running, finished] }
@@ -3618,6 +3623,8 @@ components:
         status: { type: string }
         home_goals: { type: integer, nullable: true }
         away_goals: { type: integer, nullable: true }
+        slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
+        match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
     SeasonCalendar:
       type: object
       required: [number, status, rounds, rounds_played, lock_from_round, starts_at, windows]

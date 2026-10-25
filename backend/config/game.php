@@ -363,6 +363,9 @@ return [
     // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
     // clash_minutes of another match of its clubs.
     'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [2, 7], 'default_size' => 5],
+    // A round in two time slots [X31]: the league's gap to the second slot (min..max minutes; dev_minutes in a
+    // development league), and the reminder to each coach remind_minutes before the round's one lock.
+    'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a

@@ -1142,6 +1142,8 @@ export interface paths {
                          * @default false
                          */
                         integrity?: boolean;
+                        /** @description Each round in two slots: half its matches this long after the round time [X31] */
+                        second_slot_minutes?: number | null;
                         /** @description Development league; ignored in production */
                         is_dev?: boolean;
                         /** @description The owner's club */
@@ -1264,6 +1266,7 @@ export interface paths {
                         starts_at?: string;
                         fair_league?: boolean;
                         integrity?: boolean;
+                        second_slot_minutes?: number | null;
                     };
                 };
             };
@@ -4026,6 +4029,13 @@ export interface paths {
                                 referee?: "lenient" | "medium" | "strict" | null;
                                 /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
                                 morale: number;
+                                /**
+                                 * @description The round's first or second time slot [X31]
+                                 * @enum {integer}
+                                 */
+                                slot?: 1 | 2;
+                                /** @description The night's big match of the round [X31] */
+                                match_of_day?: boolean;
                                 /** @description My club, for the VS card [X29] */
                                 club: {
                                     id: number;
@@ -6928,6 +6938,8 @@ export interface components {
             fair_league: boolean;
             /** @description The integrity system: bribes, spies and the FA [X28] */
             integrity?: boolean;
+            /** @description Rounds in two slots [X31] */
+            second_slot_minutes?: number | null;
             /** @description The FA verdicts of the last day [X28] */
             headlines?: {
                 text: string;
@@ -7376,6 +7388,13 @@ export interface components {
             status: string;
             home_goals?: number | null;
             away_goals?: number | null;
+            /**
+             * @description The round's first or second time slot [X31]
+             * @enum {integer}
+             */
+            slot?: 1 | 2;
+            /** @description The night's big match of the round [X31] */
+            match_of_day?: boolean;
         };
         SeasonCalendar: {
             number: number;

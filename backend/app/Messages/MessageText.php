@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -153,6 +153,12 @@ class MessageText
                 'link' => '/finance',
             ],
             // A staff contract ended without a renewal [X20].
+            // The night's big match of a round in two slots [X31].
+            'match_of_day' => [
+                'title' => 'قمة الجولة الليلة',
+                'body' => sprintf('الليلة في سهرة %s: قمة الجولة بين %s و%s. احجز تذكرتك وشاهد اللقاء مباشرة!', $league, $p['home'] ?? '', $p['away'] ?? ''),
+                'link' => '/match',
+            ],
             'staff_left' => [
                 'title' => 'استقال '.(self::STAFF[$p['type'] ?? ''] ?? 'أحد الطاقم'),
                 'body' => sprintf('انتهى عقد %s (%d نجوم) ولم يُجدَّد، فغادر النادي. يمكنك التعاقد مع غيره من صفحة الطاقم.', self::STAFF[$p['type'] ?? ''] ?? 'الأخصائي', (int) ($p['stars'] ?? 0)),

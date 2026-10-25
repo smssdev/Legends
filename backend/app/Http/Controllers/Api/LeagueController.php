@@ -54,6 +54,7 @@ class LeagueController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $this->settings($request, true);
+        self::slotsFit($data['round_times'] ?? [], $data['second_slot_minutes'] ?? null);
         $league = LeagueFactory::create($request->user(), $data);
 
         return response()->json(['league' => $this->leagueData($league->load('season', 'owner'), $request->user())], 201);
@@ -72,6 +73,7 @@ class LeagueController extends Controller
         $this->owner($request->user(), $league);
         abort_if($league->isLocked(), 409, 'إعدادات الدوري مقفلة منذ بدايته.');
         $data = $this->settings($request, false);
+        self::slotsFit($data['round_times'] ?? $league->round_times ?? [], array_key_exists('second_slot_minutes', $data) ? $data['second_slot_minutes'] : $league->second_slot_minutes);
         if (array_key_exists('name', $data)) {
             $name = trim((string) $data['name']);
             $data['name'] = $name !== '' ? $name : $league->template.' #'.$league->code;
@@ -85,7 +87,7 @@ class LeagueController extends Controller
                 DB::table('seasons')->where('league_id', $league->id)->where('number', 1)->update(['starts_at' => $data['starts_at']]);
             }
             // New times make the calendar again (nothing has been played before the start).
-            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times']))) {
+            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times', 'second_slot_minutes']))) {
                 $fresh = $league->fresh();
                 SeasonScheduler::build($fresh, $fresh->season);
             }
@@ -133,6 +135,23 @@ class LeagueController extends Controller
         LiveDraw::schedule($league, $data['draw_at']);
 
         return $this->draw($request, $league->fresh());
+    }
+
+    /**
+     * A round's second slot [X31] ends before the next round of the day locks: its gap and a match's length (half an
+     * hour, room to spare) fit between two round times.
+     */
+    private static function slotsFit(array $times, ?int $gap): void
+    {
+        if (! $gap || count($times) < 2) {
+            return;
+        }
+        $minutes = array_map(fn ($t) => (int) substr($t, 0, 2) * 60 + (int) substr($t, 3, 2), $times);
+        sort($minutes);
+        $tightest = min(array_map(fn ($a, $b) => $b - $a, array_slice($minutes, 0, -1), array_slice($minutes, 1)));
+        if ($gap + 30 > $tightest) {
+            throw ValidationException::withMessages(['second_slot_minutes' => 'الفترة الثانية تتداخل مع الجولة التالية في نفس اليوم: قلّل المدة إلى '.max(0, $tightest - 30).' دقيقة أو أقل.']);
+        }
     }
 
     /** "Start now" for the owner, in development only [PLAN 2.1]. */
@@ -294,6 +313,8 @@ class LeagueController extends Controller
                 'scheduled_at' => Carbon::parse($f->scheduled_at, 'UTC')->toIso8601ZuluString(),
                 'home' => $f->home_id ? $clubs[$f->home_id] : null, 'away' => $f->away_id ? $clubs[$f->away_id] : null,
                 'is_bye' => (bool) $f->is_bye, 'status' => $f->status, 'home_goals' => $f->home_goals, 'away_goals' => $f->away_goals,
+                // A round in two slots [X31].
+                'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
             ])->values(),
         ]);
     }
@@ -396,6 +417,8 @@ class LeagueController extends Controller
             'fair_league' => ['sometimes', 'boolean'],
             // The integrity system: bribes, spies and the FA [X28], the owner's choice before the start.
             'integrity' => ['sometimes', 'boolean'],
+            // A round in two slots [X31]: minutes from the round's time to its second slot, or none.
+            'second_slot_minutes' => ['sometimes', 'nullable', 'integer', 'between:'.config('game.staggered.min_minutes').','.config('game.staggered.max_minutes')],
         ];
         if ($creating) {
             $rules += [
@@ -507,7 +530,8 @@ class LeagueController extends Controller
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
             // The live draw [X26]: when, and whether it has been drawn.
             'draw_at' => $l->draw_at?->toIso8601ZuluString(), 'drawn_at' => $l->drawn_at?->toIso8601ZuluString(),
-            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity, 'is_dev' => $l->is_dev,
+            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity,
+            'second_slot_minutes' => $l->second_slot_minutes ? (int) $l->second_slot_minutes : null, 'is_dev' => $l->is_dev,
             // The FA's verdicts of the last day, as a breaking headline [X28].
             'headlines' => $l->integrity ? Integrity::headlines($l->id) : [], 'status' => $l->status, 'locked' => $l->isLocked(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,

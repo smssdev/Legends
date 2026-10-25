@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\League\MatchPrep;
 use App\Models\Club;
 use App\Models\League;
 use App\Support\GameClock;
@@ -125,7 +126,7 @@ class TrainingController extends Controller
             'fixture' => $f ? [
                 'id' => $f->id, 'competition' => $f->competition, 'round' => (int) $f->round, 'status' => $f->status,
                 'opponent' => DB::table('clubs')->where('id', $f->home_id === $club->id ? $f->away_id : $f->home_id)->value('name'),
-                'lock_at' => Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(config('game.match.lock_minutes_before'))->toIso8601ZuluString(),
+                'lock_at' => MatchPrep::lockAt($f)->toIso8601ZuluString(),
                 'line' => array_key_first(SecretTraining::boosts($club->id, $f->id)),
             ] : null,
         ];

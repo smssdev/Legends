@@ -82,7 +82,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
         <div class="relative isolate -m-4 mb-0 overflow-hidden rounded-t-xl px-4 pb-4 pt-3">
           <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-70" />
           <div class="absolute inset-0 -z-10 bg-gradient-to-b from-bg/30 via-bg/50 to-surface" aria-hidden="true" />
-          <div class="mb-2 flex justify-center"><UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : match.competition === 'alliance' ? `بطولة التحالفات · الدور ${match.round}` : `الجولة ${match.round}` }} · {{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</UiChip></div>
+          <div class="mb-2 flex justify-center"><UiChip :tone="match.competition === 'cup' ? 'gold' : 'neutral'">{{ match.competition === 'cup' ? 'الكأس' : match.competition === 'alliance' ? `بطولة التحالفات · الدور ${match.round}` : `الجولة ${match.round}` }}{{ match.slot === 2 ? ' · السهرة' : '' }} · {{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</UiChip></div>
           <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
             <div class="flex flex-col items-center gap-1 text-center">
               <ClubCrest :url="match.club.crest_url" :code="match.club.code" :size="72" />
@@ -119,7 +119,10 @@ onBeforeUnmount(() => window.clearInterval(timer))
             <dd class="font-numbers text-lg font-bold text-gold" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</dd>
           </div>
         </dl>
-        <p class="text-xs text-text-muted">قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.</p>
+        <p v-if="match.match_of_day" class="rounded-lg bg-gold/15 px-3 py-2 text-center text-sm font-bold text-gold">⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة</p>
+        <p class="text-xs text-text-muted">{{ match.slot === 2
+          ? 'جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.'
+          : 'قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.' }}</p>
         <RouterLink
           v-if="match.status === 'live' && match.match_id"
           :to="{ name: 'league-match', params: { id: match.match_id } }"
