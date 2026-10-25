@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Auth\GoogleIdentity;
 use App\Auth\GoogleLinker;
+use App\Auth\OfficialAccounts;
 use App\Models\User;
 use App\Support\Activity;
 use Illuminate\Auth\Events\Verified;
@@ -34,6 +35,8 @@ class AccountLinkController extends Controller
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
+        // A developer's Gmail, now confirmed, takes its reserved name [X11].
+        OfficialAccounts::claim($user);
 
         return $this->to('/profile?verified=1');
     }
@@ -61,6 +64,7 @@ class AccountLinkController extends Controller
         } catch (ValidationException) {
             return $this->to('/login?google=unverified');
         }
+        OfficialAccounts::claim($user);
         Auth::guard('web')->login($user, true);
         $request->session()->regenerate();
         Activity::record($user->id, 'logins');

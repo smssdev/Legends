@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
+use App\Auth\OfficialAccounts;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\Leaving;
@@ -312,6 +313,8 @@ class AuthController extends Controller
     /** Signs the user in: a session for the web, or a token for the app when it names its device. */
     private function signIn(Request $request, User $user, ?string $device = null): array
     {
+        // A developer's confirmed Gmail takes its reserved name and the admin panel [X11].
+        OfficialAccounts::claim($user);
         Activity::record($user->id, 'logins');
         if ($device !== null) {
             $expires = GameClock::now()->addDays((int) config('game.app.token_ttl_days'));
