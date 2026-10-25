@@ -8,6 +8,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
+import ScenariosPanel from './ScenariosPanel.vue'
 import { currentLeague } from '../../lib/currentLeague'
 
 type T = Required<components['schemas']['TacticsSet']>
@@ -20,6 +21,9 @@ const help = ref<Record<string, string>>({})
 const referee = ref<string | null>(null)
 const message = ref('')
 const loaded = ref(false)
+// The pre-match scenarios [X23], saved on their own.
+const scenarios = ref<components['schemas']['Scenario'][] | null>(null)
+const kinds = ref<components['responses']['Tactics']['content']['application/json']['scenario_kinds']>([])
 
 const PLANS = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' } as const
 const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
@@ -44,6 +48,8 @@ async function load() {
   }
   const { data } = await api.GET('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } } })
   apply(data!)
+  scenarios.value = data!.scenarios
+  kinds.value = data!.scenario_kinds
   loaded.value = true
 }
 function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null; help?: Record<string, string> }) {
@@ -138,6 +144,8 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
           </div>
         </div>
       </div>
+
+      <ScenariosPanel v-if="leagueId && scenarios" :league-id="leagueId" :scenarios="scenarios" :kinds="kinds" />
     </template>
     <p v-else class="text-text-muted">{{ message || 'جارٍ التحميل…' }}</p>
   </div>

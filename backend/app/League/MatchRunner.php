@@ -136,6 +136,7 @@ class MatchRunner
         $events = [];
         $orders = [];
         $ms = 0;
+        MatchOrders::forget($id);
         while (! $state['finished']) {
             [$actions, $rows] = MatchOrders::auto($id, $state, $managers);
             $orders = [...$orders, ...$rows];
@@ -146,6 +147,7 @@ class MatchRunner
         foreach (array_chunk($orders, 200) as $chunk) {
             DB::table('match_actions')->insert($chunk);
         }
+        MatchOrders::forget($id);
         self::save($id, $state, $events);
         // Bot against bot shows at its natural end; a long missed match is already over, so at once.
         DB::table('matches')->where('id', $id)->update(['status' => 'done', 'finished_at' => GameClock::now(),

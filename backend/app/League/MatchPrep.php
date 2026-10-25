@@ -100,6 +100,8 @@ class MatchPrep
                     'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']), 'bench' => json_encode($lineup['bench']),
                     'takers' => json_encode(TeamSheet::takers($club, $lineup)), 'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : Tactics::of($club)),
                     'fixes' => json_encode($fixes), 'locked_at' => $now,
+                    // The coach's pre-match scenarios [X23], frozen like the rest.
+                    'scenarios' => $club->isBot() ? null : json_encode(Scenarios::of($club)),
                 ]);
             }
 
