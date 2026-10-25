@@ -132,6 +132,8 @@ class SeasonScheduler
                 DB::table($table)->where('season_id', $season->id)->delete();
             }
             $clubs = DB::table('clubs')->where('league_id', $league->id)->orderByDesc('strength_snapshot')->orderBy('id')->pluck('id')->all();
+            // After a live draw, its slots [X26].
+            $clubs = LiveDraw::slots($league, $season, $clubs);
             $days = self::plan(count($clubs), $league->rounds_per_day);
             $cal = self::calendar($days, CarbonImmutable::parse($season->starts_at), $league->prep_days, $league->round_times, $league->is_dev);
             $now = GameClock::now();
@@ -167,7 +169,7 @@ class SeasonScheduler
             // Cup: the drawn bracket, each tie with its fixture on its stage's day (teams filled as they win).
             $stages = CupBracket::stages(count($clubs));
             $ids = [];
-            foreach (CupBracket::draw($clubs, crc32('cup:'.$season->id)) as $tie) {
+            foreach (CupBracket::draw($clubs, LiveDraw::cupSeed($league, $season)) as $tie) {
                 $stage = array_search($tie['stage'], $stages, true);
                 $fixture = DB::table('fixtures')->insertGetId(['season_id' => $season->id, 'competition' => 'cup', 'round' => $stage + 1,
                     'scheduled_at' => $cupTimes[$stage], 'home_id' => $tie['home'], 'away_id' => $tie['away'], 'created_at' => $now, 'updated_at' => $now]);

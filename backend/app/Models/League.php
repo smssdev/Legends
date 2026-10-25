@@ -20,6 +20,9 @@ class League extends Model
 
     protected $guarded = [];
 
+    /** The draw's seed stays on the server until the draw [X26]. */
+    protected $hidden = ['draw_seed'];
+
     protected function casts(): array
     {
         return [
@@ -28,6 +31,8 @@ class League extends Model
             'settings_locked_at' => 'datetime',
             'fair_league' => 'boolean',
             'is_dev' => 'boolean',
+            'draw_at' => 'datetime',
+            'drawn_at' => 'datetime',
         ];
     }
 

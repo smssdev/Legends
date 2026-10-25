@@ -596,6 +596,28 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/draw:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: 'The live draw [X26]: the time and the hash before; the seed, the slots, the first league round and cup ties after'
+      description: The screen reveals one slot every `reveal_ms` from `drawn_at` on the server clock, the same for every member.
+      responses:
+        '200': { $ref: '#/components/responses/Draw' }
+        '404': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [leagues]
+      summary: The owner sets or moves the draw's time (after now, before the start)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [draw_at], properties: { draw_at: { type: string, format: date-time } } }
+      responses:
+        '200': { $ref: '#/components/responses/Draw' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/start:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
@@ -2666,6 +2688,33 @@ components:
                       properties:
                         number: { type: integer }
                         cells: { type: array, items: { type: array, items: { oneOf: [{ type: string }, { type: integer }] } } }
+    Draw:
+      description: The live draw
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [draw_at, commit, drawn_at, seed, reveal_ms, server_now, committee, is_owner, can_schedule, starts_at, slots, league_round, cup_round]
+            properties:
+              draw_at: { type: string, format: date-time, nullable: true }
+              commit: { type: string, nullable: true, description: 'sha256 of "legends-draw:{league}:{seed}", shown before the draw' }
+              drawn_at: { type: string, format: date-time, nullable: true }
+              seed: { type: integer, nullable: true, description: Shown once drawn }
+              reveal_ms: { type: integer }
+              server_now: { type: integer }
+              committee: { type: object, required: [owner], properties: { owner: { type: string, nullable: true } } }
+              is_owner: { type: boolean }
+              can_schedule: { type: boolean }
+              starts_at: { type: string, format: date-time }
+              slots:
+                type: array
+                items: { type: object, required: [slot, club], properties: { slot: { type: integer }, club: { type: object, additionalProperties: true } } }
+              league_round:
+                type: array
+                items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
+              cup_round:
+                type: array
+                items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
     League:
       description: The league
       content:
@@ -2944,6 +2993,8 @@ components:
         season_end_mode: { type: string, enum: [renew, end] }
         starts_at: { type: string, format: date-time }
         starting_budget: { type: integer }
+        draw_at: { type: string, format: date-time, nullable: true, description: 'The live draw''s time [X26]' }
+        drawn_at: { type: string, format: date-time, nullable: true }
         fair_league: { type: boolean }
         is_dev: { type: boolean }
         status: { type: string, enum: [waiting, running, finished] }

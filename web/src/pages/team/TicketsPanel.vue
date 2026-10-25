@@ -56,7 +56,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
             :aria-pressed="f.mine === s"
             @click="buy(f.id, s)"
           >
-            <ClubCrest :url="f[s].crest_url" :code="f[s].code" :name="f[s].name" :size="28" />
+            <ClubCrest :url="f[s].crest_url" :code="f[s].code" :size="28" />
             <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ f[s].name }}</span>
             <span class="text-xs text-text-muted" :aria-label="`${f.cheering[s]} تذكرة`">📣 <span class="font-numbers">{{ f.cheering[s] }}</span></span>
           </button>

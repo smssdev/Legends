@@ -9,6 +9,7 @@ use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
 use App\League\Leaving;
+use App\League\LiveDraw;
 use App\League\Presence;
 use App\League\SeasonScheduler;
 use App\League\SeasonStats;
@@ -90,6 +91,47 @@ class LeagueController extends Controller
         });
 
         return response()->json(['league' => $this->leagueData($league->fresh()->load('season', 'owner'), $request->user())]);
+    }
+
+    /**
+     * The live draw [X26]: its time and the hash announced before it; once drawn, the seed, the clubs in their
+     * slots, the first league round and the cup's first ties. The screen reveals one slot every reveal_ms
+     * from drawn_at, so every member sees the same slot at the same moment.
+     */
+    public function draw(Request $request, League $league): JsonResponse
+    {
+        $this->visible($request->user(), $league);
+        $league->load('owner', 'season');
+        $cards = $league->drawn_at ? $this->clubCards($league) : [];
+        $first = fn (string $competition) => DB::table('fixtures')->where('season_id', $league->season->id)->where('competition', $competition)
+            ->where('round', 1)->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('id')->get()
+            ->map(fn ($f) => ['home' => $cards[$f->home_id] ?? null, 'away' => $cards[$f->away_id] ?? null])->values();
+
+        return response()->json([
+            'draw_at' => $league->draw_at?->toIso8601ZuluString(),
+            'commit' => $league->draw_commit,
+            'drawn_at' => $league->drawn_at?->toIso8601ZuluString(),
+            'seed' => $league->drawn_at ? (int) $league->draw_seed : null,
+            'reveal_ms' => (int) config('game.draw.reveal_ms'),
+            'server_now' => GameClock::nowMs(),
+            'committee' => ['owner' => $league->owner?->name],
+            'is_owner' => $league->isOwner($request->user()),
+            'can_schedule' => $league->isOwner($request->user()) && ! $league->settings_locked_at && ! $league->drawn_at,
+            'starts_at' => $league->starts_at->toIso8601ZuluString(),
+            'slots' => $league->drawn_at ? collect(json_decode($league->draw_order, true))->filter(fn ($id) => isset($cards[$id]))
+                ->values()->map(fn ($id, $i) => ['slot' => $i + 1, 'club' => $cards[$id]]) : [],
+            'league_round' => $league->drawn_at ? $first('league') : [],
+            'cup_round' => $league->drawn_at ? $first('cup') : [],
+        ]);
+    }
+
+    public function scheduleDraw(Request $request, League $league): JsonResponse
+    {
+        $this->owner($request->user(), $league);
+        $data = $request->validate(['draw_at' => ['required', 'date']]);
+        LiveDraw::schedule($league, $data['draw_at']);
+
+        return $this->draw($request, $league->fresh());
     }
 
     /** "Start now" for the owner, in development only [PLAN 2.1]. */
@@ -456,6 +498,8 @@ class LeagueController extends Controller
             'team_count' => $l->team_count, 'rounds_per_day' => $l->rounds_per_day, 'round_times' => $l->round_times,
             'prep_days' => $l->prep_days, 'season_end_mode' => $l->season_end_mode,
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
+            // The live draw [X26]: when, and whether it has been drawn.
+            'draw_at' => $l->draw_at?->toIso8601ZuluString(), 'drawn_at' => $l->drawn_at?->toIso8601ZuluString(),
             'fair_league' => $l->fair_league, 'is_dev' => $l->is_dev, 'status' => $l->status, 'locked' => $l->isLocked(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,
             'is_owner' => $l->isOwner($user),

@@ -175,9 +175,9 @@ return [
             'tackling' => ['from' => 0, 'to' => 3, 'expect' => ['yellow_home' => 1, 'red_home_%' => 1]],
             'style' => ['from' => 0, 'to' => 100, 'expect' => ['goals_home' => 1, 'counters_away' => 1]],
             'trap' => ['from' => 0, 'to' => 1, 'against' => ['plan' => 'long'], 'expect' => ['offsides_away' => 1]],
-            // Chemistry [X22] is not a tactic: from 40 to 100 it must win more, by a few points, not by a class.
-            // Morale [X25] likewise: from 40 to 90 a few points more, not a class.
+            // Morale [X25] is not a tactic: from 40 to 90 it must win more, by a few points, not by a class.
             'morale' => ['field' => 'morale', 'from' => 40, 'to' => 90, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
+            // Chemistry [X22] likewise, from 40 to 100.
             'chem' => ['field' => 'chem', 'from' => 40, 'to' => 100, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
         ],
         'max_win_shift' => 3,
@@ -345,6 +345,8 @@ return [
     ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    // The live draw [X26]: one slot revealed this often on every screen.
+    'draw' => ['reveal_ms' => 2500],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
