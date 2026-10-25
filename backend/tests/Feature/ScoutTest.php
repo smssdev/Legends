@@ -71,7 +71,7 @@ class ScoutTest extends TestCase
         $this->ask()->assertOk();
         $r = DB::table('scout_requests')->first();
         // The season's length scales the day.
-        $this->assertSame(intdiv(24 * 3600 * (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale'), 10000), (int) Carbon::parse($r->created_at, 'UTC')->diffInSeconds(Carbon::parse($r->finishes_at, 'UTC')));
+        $this->assertSame(intdiv((int) config('game.scout.hours') * 3600 * (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale'), 10000), (int) Carbon::parse($r->created_at, 'UTC')->diffInSeconds(Carbon::parse($r->finishes_at, 'UTC')));
         Carbon::setTestNow(Carbon::parse($r->finishes_at, 'UTC')->subMinute());
         $this->artisan('scout:due')->assertSuccessful();
         $this->assertSame('searching', DB::table('scout_requests')->value('status'));
@@ -82,18 +82,20 @@ class ScoutTest extends TestCase
         $this->assertSame(1, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'scout_report')->count());
     }
 
-    public function test_3_the_three_players_match_every_criterion_and_come_from_outside_the_league(): void
+    public function test_3_the_five_players_match_every_criterion_and_come_from_outside_the_league(): void
     {
-        $this->ask(['line' => 'mid', 'min_overall' => 70, 'max_overall' => 80, 'max_age' => 30])->assertOk();
+        $this->assertSame(15, config('game.scout.hours'));
+        $this->ask(['line' => 'mid', 'min_overall' => 70, 'max_overall' => 80, 'max_age' => 30, 'max_value' => 20_000_000])->assertOk();
         Scout::report((int) DB::table('scout_requests')->value('id'));
         $ids = json_decode(DB::table('scout_requests')->value('result_player_ids'), true);
-        $this->assertCount(3, $ids);
+        $this->assertCount(5, $ids);
         $found = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->whereIn('players.id', $ids)->get(['master_players.*']);
         $leagueClubs = DB::table('clubs')->where('league_id', $this->league['id'])->pluck('master_club_id')->all();
         foreach ($found as $p) {
             $this->assertSame('mid', $p->line);
             $this->assertTrue($p->overall >= 70 && $p->overall <= 80);
             $this->assertLessThanOrEqual(30, $p->age);
+            $this->assertLessThanOrEqual(20_000_000, $p->value);
             $this->assertNotContains($p->master_club_id, $leagueClubs);
         }
     }
@@ -103,7 +105,7 @@ class ScoutTest extends TestCase
         $this->ask()->assertOk();
         Scout::report((int) DB::table('scout_requests')->value('id'));
         $page = $this->getJson($this->url())->assertOk()->json('requests.0.players');
-        $this->assertCount(3, $page);
+        $this->assertCount(5, $page);
         $this->assertSame('available', $page[0]['state']);
         $this->assertSame($page[0]['value'], $page[0]['price']);
         // Another coach cannot buy them.
@@ -118,7 +120,7 @@ class ScoutTest extends TestCase
         Carbon::setTestNow(Carbon::parse($winter->opens_at, 'UTC')->addMinute());
         Pool::due();
         $states = collect($this->getJson($this->url())->json('requests.0.players'))->pluck('state')->sort()->values()->all();
-        $this->assertSame(['gone', 'gone', 'mine'], $states);
+        $this->assertSame(['gone', 'gone', 'gone', 'gone', 'mine'], $states);
     }
 
     public function test_5_nobody_found_pays_the_money_back(): void

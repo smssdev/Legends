@@ -136,7 +136,10 @@ return [
         'sessions_by_overall' => [55 => 4, 65 => 6, 75 => 14, 80 => 19, 85 => 23, 89 => 25, 92 => 30, 99 => 40],
         'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
         'cost_bp_per_season' => 40,      // one slot busy all season costs this share of the league's money scale
-        'season_gain_target' => [3, 5]],
+        'season_gain_target' => [3, 5],
+        // Open training [X16]: no stop at the potential. Above it each +1 takes this many times the sessions, one more
+        // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
+        'over_potential_factor' => 2, 'ceiling' => 99],
     // The training camp [docs/features/camp.md, Sprint 28]: players away from matches, training at the camp's pace.
     'camp' => ['max_players' => 5, 'days' => [1, 3], 'min_left' => 16,
         // each level: the session's step and its price, against an ordinary training session (basis points)
@@ -322,6 +325,7 @@ return [
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).
     'spy' => ['cost_bp' => 15],
-    // The scout [docs/features/scout.md]: a share of the league's money scale, a day scaled by the season's length.
-    'scout' => ['cost_bp' => 30, 'hours' => 24],
+    // The scout [docs/features/scout.md, X15]: a share of the league's money scale, a 15-hour trip scaled by the
+    // season's length, and five players that match every criterion (the position, the age, the rating, the price).
+    'scout' => ['cost_bp' => 30, 'hours' => 15, 'results' => 5],
 ];

@@ -1163,7 +1163,7 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
     post:
       tags: [market]
-      summary: Ask the scout (one search at a time)
+      summary: Ask the scout (one search at a time; a 15-hour trip, five players) [X15]
       requestBody:
         required: true
         content:
@@ -1177,6 +1177,7 @@ paths:
                 min_overall: { type: integer, minimum: 40, maximum: 99 }
                 max_overall: { type: integer, minimum: 40, maximum: 99 }
                 max_age: { type: integer }
+                max_value: { type: integer, description: 'The highest price (the player value) [X15]' }
                 nationality: { type: string }
                 league: { type: string }
                 idempotency_key: { type: string, maxLength: 64 }
@@ -2965,7 +2966,8 @@ components:
         progress: { type: integer, description: The bar, 0 to 100 }
         sessions: { type: integer, description: About how many sessions a +1 takes at his rating }
         injured: { type: boolean }
-        maxed: { type: boolean, description: At his potential, training adds nothing }
+        maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
+        over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
         in_camp: { type: boolean }
     TrainingView:
       type: object
