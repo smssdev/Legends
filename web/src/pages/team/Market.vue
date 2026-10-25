@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import PlayerTile from '../../components/ui/PlayerTile.vue'
 import Trades from './Trades.vue'
 import { currentLeague } from '../../lib/currentLeague'
 import { money, type Line } from '../../lib/format'
@@ -29,6 +30,12 @@ const line = ref<'' | Line>('')
 const bot = ref<number | ''>('')
 const maxPrice = ref<number | ''>('')
 const q = ref('')
+// The list or the cards, remembered on this device [X29].
+const view = ref<'list' | 'cards'>((() => { try { return localStorage.getItem('legends.marketView') === 'cards' ? 'cards' : 'list' } catch { return 'list' } })())
+function setView(v: 'list' | 'cards') {
+  view.value = v
+  try { localStorage.setItem('legends.marketView', v) } catch {}
+}
 
 const tabs = computed(() => [
   { id: 'pool' as const, label: 'المجموعة', n: m.value?.counts.pool ?? 0 },
@@ -175,11 +182,20 @@ onMounted(load)
           </label>
           <input v-model="q" type="search" placeholder="ابحث بالاسم" aria-label="ابحث بالاسم" class="h-11 min-w-0 flex-[1_1_160px] rounded-lg bg-surface px-3 text-sm" />
           <span class="text-xs text-text-muted md:ms-auto">{{ tab === 'pool' ? 'سعر المجموعة = القيمة' : 'سعر ثابت 125% من القيمة · نفس السعر لكل المدربين' }}</span>
+          <div class="flex gap-1 rounded-lg bg-surface p-1" role="group" aria-label="طريقة العرض">
+            <button v-for="(label, v) in { list: 'قائمة', cards: 'بطاقات' }" :key="v" type="button" class="h-9 rounded-md px-3 text-sm font-bold" :class="view === v ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="setView(v)">{{ label }}</button>
+          </div>
         </div>
 
         <section :aria-label="tab === 'pool' ? 'لاعبو المجموعة' : 'لاعبو أندية الحاسوب'" class="rounded-xl bg-surface p-2">
           <p v-if="!m.players.length" class="p-4 text-sm text-text-muted">لا لاعبين بهذه التصفية.</p>
-          <ul class="flex flex-col">
+          <div v-if="view === 'cards'" class="grid grid-cols-2 gap-3 p-1 sm:grid-cols-3 lg:grid-cols-4">
+            <PlayerTile v-for="p in m.players" :key="p.id" :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :price="p.price"
+              :attributes="p.attributes" :status="p.club ? `${p.club.name} · بوت` : `${p.age} سنة`" status-tone="text-text-muted">
+              <button type="button" class="h-10 rounded-md bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
+            </PlayerTile>
+          </div>
+          <ul v-else class="flex flex-col">
             <li v-for="p in m.players" :key="p.id" class="flex items-center gap-2 border-t sm:gap-3 border-text/5 px-2 py-2 first:border-0">
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">

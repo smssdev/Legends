@@ -104,6 +104,9 @@ onMounted(() => {
   }, 1000)
 })
 onBeforeUnmount(() => clearInterval(tick))
+// The slot cards' tiers [X29], as the squad's cards.
+const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
+const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'border-text/25 from-[#33415a] to-[#10284F]', bronze: 'border-[#B4692A]/40 from-[#3b2414] to-[#10284F]' } as const
 </script>
 
 <template>
@@ -128,7 +131,10 @@ onBeforeUnmount(() => clearInterval(tick))
       <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.</p>
 
       <section aria-label="خانات التدريب" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <article v-for="s in v.slots" :key="s.line" class="flex flex-col gap-3 rounded-xl p-4" :class="s.player ? 'border border-gold/40 bg-surface' : 'border border-dashed border-white/15 bg-surface/50'">
+        <!-- Each slot as a card [X29]: its line's colour on top, and a filled slot in its player's tier (gold, silver, bronze). -->
+        <article v-for="s in v.slots" :key="s.line" class="relative flex flex-col gap-3 overflow-hidden rounded-xl p-4"
+          :class="s.player ? ['border bg-gradient-to-b', TIER[tier(s.player.overall)]] : 'border border-dashed border-white/15 bg-surface/50'">
+          <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${s.line})` }" aria-hidden="true" />
           <div class="flex items-center gap-2">
             <LineBadge :line="s.line as Line" />
             <span class="text-sm text-text-muted">خانة {{ LINE_NAMES[s.line] }}</span>
@@ -138,7 +144,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <div class="flex items-center gap-3">
               <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ s.player.name }}</bdi></b>
                 <span class="text-xs text-text-muted">{{ s.player.position }} · {{ s.player.age }} سنة · الإمكانية {{ s.player.potential }}</span></span>
-              <span class="text-center"><b class="block font-numbers text-2xl">{{ s.player.overall }}</b><span class="font-numbers text-xs text-success" dir="ltr">→ {{ s.player.overall + 1 }}</span></span>
+              <span class="text-center"><b class="block font-numbers text-3xl" :class="tier(s.player.overall) === 'gold' ? 'text-gold' : ''">{{ s.player.overall }}</b><span class="font-numbers text-xs text-success" dir="ltr">→ {{ s.player.overall + 1 }}</span></span>
             </div>
             <div>
               <div class="flex justify-between text-xs text-text-muted"><span>التقدم</span><span class="font-numbers" dir="ltr">{{ s.player.progress }}%</span></div>

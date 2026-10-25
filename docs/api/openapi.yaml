@@ -3099,6 +3099,7 @@ components:
               value: { type: integer }
               price: { type: integer }
               club: { type: object, nullable: true, properties: { id: { type: integer }, name: { type: string } } }
+              attributes: { type: object, additionalProperties: { type: integer, nullable: true }, description: 'The six attributes, or the keeper''s five, for the card [X29]' }
         mine:
           type: array
           items:

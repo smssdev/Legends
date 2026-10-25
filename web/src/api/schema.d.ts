@@ -6785,6 +6785,10 @@ export interface components {
                     id?: number;
                     name?: string;
                 } | null;
+                /** @description The six attributes, or the keeper's five, for the card [X29] */
+                attributes?: {
+                    [key: string]: number | null;
+                };
             }[];
             mine: {
                 id: number;
