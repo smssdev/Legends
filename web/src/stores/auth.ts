@@ -30,6 +30,7 @@ export const useAuth = defineStore('auth', () => {
     await ensureCsrf()
     const { data } = await api.POST('/auth/register', { body: { name, username, email, password, password_confirmation: passwordConfirmation, terms } })
     user.value = data!.user
+    return data!.verification_sent !== false
   }
   async function logout() {
     await ensureCsrf()

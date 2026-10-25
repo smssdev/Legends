@@ -40,8 +40,8 @@ async function submit() {
   }
   busy.value = true
   try {
-    await auth.register(name.value.trim(), username.value.trim(), email.value.trim(), password.value, confirm.value, terms.value)
-    router.replace('/profile?welcome=1')
+    const sent = await auth.register(name.value.trim(), username.value.trim(), email.value.trim(), password.value, confirm.value, terms.value)
+    router.replace(sent ? '/profile?welcome=1' : '/profile?welcome=unsent')
   } catch (e) {
     const err = asApiError(e)
     errors.value = Object.fromEntries(['name', 'username', 'email', 'password', 'terms'].map((k) => [k, err.field(k)]))

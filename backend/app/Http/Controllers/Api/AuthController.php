@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Support\Activity;
 use App\Support\Avatar;
 use App\Support\GameClock;
+use App\Support\Mailer;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,9 +51,10 @@ class AuthController extends Controller
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
         $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => $data['email'], 'password' => $data['password']]);
-        $user->sendEmailVerificationNotification();
+        // The account is made even if the email cannot leave now: the banner in the app sends it again [X8].
+        $sent = Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id);
 
-        return response()->json($this->signIn($request, $user, $data['device_name'] ?? null), 201);
+        return response()->json($this->signIn($request, $user, $data['device_name'] ?? null) + ['verification_sent' => $sent && Mailer::live()], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -208,7 +210,10 @@ class AuthController extends Controller
     {
         $user = $request->user();
         abort_if($user->hasVerifiedEmail(), 409, 'بريدك مؤكد من قبل.');
-        $user->sendEmailVerificationNotification();
+        // In production with no way out (no Brevo, Resend or Gmail settings) say so, rather than pretend it was sent [X8].
+        abort_if(app()->isProduction() && ! Mailer::live(), 503, 'إرسال البريد غير مفعّل على الخادم بعد. تواصل مع الدعم ليفعّله.');
+        abort_unless(Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id), 503,
+            'تعذر إرسال الرسالة الآن. حاول بعد دقائق، أو تواصل مع الدعم.');
 
         return response()->json(['sent' => true], 202);
     }
@@ -217,7 +222,7 @@ class AuthController extends Controller
     public function forgot(Request $request): JsonResponse
     {
         $data = $request->validate(['email' => ['required', 'email']]);
-        Password::broker()->sendResetLink(['email' => Str::lower($data['email'])]);
+        Mailer::attempt(fn () => Password::broker()->sendResetLink(['email' => Str::lower($data['email'])]), 'reset');
 
         return response()->json(['message' => 'إن كان البريد مسجلاً عندنا فستصلك رسالة فيها رابط لاختيار كلمة مرور جديدة.'], 202);
     }
