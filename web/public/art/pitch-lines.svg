@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 680" fill="none" stroke="#F7F4EA" stroke-width="2">
+  <!-- A full pitch's markings, 105 × 68 m at ten to a metre [X29]: behind the screens, faint. -->
+  <rect x="10" y="10" width="1030" height="660" rx="4"/>
+  <line x1="525" y1="10" x2="525" y2="670"/>
+  <circle cx="525" cy="340" r="91.5"/>
+  <circle cx="525" cy="340" r="4" fill="#F7F4EA"/>
+  <rect x="10" y="138.5" width="165" height="403"/>
+  <rect x="10" y="248.5" width="55" height="183"/>
+  <circle cx="120" cy="340" r="4" fill="#F7F4EA"/>
+  <path d="M175 266.9 A91.5 91.5 0 0 1 175 413.1"/>
+  <rect x="875" y="138.5" width="165" height="403"/>
+  <rect x="985" y="248.5" width="55" height="183"/>
+  <circle cx="930" cy="340" r="4" fill="#F7F4EA"/>
+  <path d="M875 266.9 A91.5 91.5 0 0 0 875 413.1"/>
+  <path d="M10 20 A10 10 0 0 0 20 10 M1030 10 A10 10 0 0 0 1040 20 M1040 660 A10 10 0 0 0 1030 670 M20 670 A10 10 0 0 0 10 660"/>
+</svg>

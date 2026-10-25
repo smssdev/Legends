@@ -21,6 +21,20 @@
     min-height: 100dvh;
   }
 
+  /* [X29] A full pitch's markings behind everything, very faint, tilted a little like a camera's view. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -10% -10% auto;
+    height: 120%;
+    z-index: -1;
+    pointer-events: none;
+    background: url("/art/pitch-lines.svg") center 60% / min(1500px, 160vw) auto no-repeat;
+    opacity: 0.045;
+    transform: perspective(1200px) rotateX(38deg);
+    transform-origin: 50% 100%;
+  }
+
   /* One visible focus ring for keyboards, none for taps. */
   :focus-visible {
     outline: 2px solid var(--color-gold);

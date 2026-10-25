@@ -22,6 +22,9 @@ const ranking = ref<{ by: 'trophies' | 'level'; coaches: Ranked[]; me: Ranked | 
 const rankingBusy = ref(false)
 
 const latest = computed(() => home.value?.announcements[announcement.value] ?? null)
+// The hero's greeting by the device's hour, and the soonest match among the slots.
+const greeting = computed(() => (new Date().getHours() < 12 ? 'صباح الخير يا كوتش' : new Date().getHours() < 18 ? 'نهارك سعيد يا كوتش' : 'مساء الخير يا كوتش'))
+const nextUp = computed(() => home.value?.slots.filter((s) => s.next_match).sort((a, b) => (a.next_match!.live ? -1 : 0) - (b.next_match!.live ? -1 : 0) || a.next_match!.scheduled_at.localeCompare(b.next_match!.scheduled_at))[0] ?? null)
 const when = (iso: string) => new Intl.DateTimeFormat('ar-EG-u-nu-latn', { weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(iso))
 
 async function load() {
@@ -66,12 +69,24 @@ async function openRanking(by: 'trophies' | 'level') {
 
   <div v-else class="flex flex-col gap-4">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
-    <div v-if="home" class="flex flex-col gap-5">
+    <div v-if="home" class="relative flex flex-col gap-5">
+      <!-- [X29] The hero: our night stadium, a greeting, and the next match of any slot. -->
+      <section class="relative isolate flex min-h-40 flex-col justify-end overflow-hidden rounded-2xl border border-gold/15 p-5 shadow-2xl shadow-black/30 md:min-h-56 md:p-7" aria-label="الترحيب">
+        <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_70%]" />
+        <div class="absolute inset-0 -z-10 bg-gradient-to-l from-bg/85 via-bg/40 to-transparent" aria-hidden="true" />
+        <span class="text-sm font-bold text-gold">{{ greeting }}</span>
+        <h1 class="font-display text-2xl font-extrabold md:text-4xl">{{ home.coach.name }}</h1>
+        <p class="mt-1 max-w-md text-sm text-text-soft">
+          <template v-if="nextUp">مباراتك القادمة: <b>{{ nextUp.club!.name }}</b> {{ nextUp.next_match!.venue === 'home' ? 'ضد' : 'عند' }} <b>{{ nextUp.next_match!.opponent }}</b> · {{ nextUp.next_match!.live ? 'مباشر الآن' : when(nextUp.next_match!.scheduled_at) }}</template>
+          <template v-else>اختر فتحة فارغة وانضم إلى دوري أو أنشئ دوريك مع أصحابك.</template>
+        </p>
+      </section>
+
       <!-- The coach: the card, the announcements, the trophies and the rankings, in one row on the computer. -->
       <div class="grid gap-3 lg:grid-cols-2">
         <h2 class="text-sm font-bold text-text-muted lg:col-span-2">ملف المدرب</h2>
         <div class="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-3">
-          <section class="relative flex flex-col gap-3 overflow-hidden rounded-xl bg-gradient-to-bl from-gold/25 via-surface to-surface p-4" aria-label="ملف المدرب">
+          <section class="relative flex flex-col gap-3 overflow-hidden rounded-xl bg-gradient-to-bl from-gold/25 via-surface/80 to-surface/80 p-4 backdrop-blur" aria-label="ملف المدرب">
             <div class="absolute end-3 top-3 flex flex-col gap-2">
               <RouterLink to="/profile" class="grid size-touch place-items-center rounded-full bg-surface-raised/80" aria-label="الإعدادات"><svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" /></svg></RouterLink>
               <RouterLink to="/inbox" class="grid size-touch place-items-center rounded-full bg-surface-raised/80" aria-label="الرسائل"><svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" /></svg></RouterLink>
@@ -93,11 +108,11 @@ async function openRanking(by: 'trophies' | 'level') {
             </div>
           </section>
           <div class="flex flex-col gap-3">
-            <div class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-surface p-3 text-center">
+            <div class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-surface/75 p-3 backdrop-blur text-center">
               <b class="font-numbers text-2xl" dir="ltr">{{ home.coach.record.won }}<span class="text-sm text-text-muted">/{{ home.coach.record.played }}</span></b>
               <span class="text-xs text-text-muted">فوز من مبارياتك</span>
             </div>
-            <div class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-surface p-3 text-center">
+            <div class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-surface/75 p-3 backdrop-blur text-center">
               <b class="font-numbers text-2xl">{{ home.colleagues }}</b>
               <span class="text-xs text-text-muted">مدربون لعبت معهم</span>
             </div>
@@ -123,16 +138,16 @@ async function openRanking(by: 'trophies' | 'level') {
         </section>
 
         <div class="grid grid-cols-3 gap-3">
-          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface p-3" @click="openRanking('trophies')">
+          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface/75 p-3 backdrop-blur" @click="openRanking('trophies')">
             <span class="text-xs text-text-muted">الكؤوس</span>
             <b class="font-numbers text-3xl text-gold">{{ home.trophies.total }}</b>
             <span class="text-[11px] text-text-muted">دوري {{ home.trophies.league }} · كأس {{ home.trophies.cup }}</span>
           </button>
-          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface p-3 font-bold" @click="openRanking('trophies')">
+          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface/75 p-3 backdrop-blur font-bold" @click="openRanking('trophies')">
             <svg viewBox="0 0 24 24" class="size-7 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" /></svg>
             <span class="text-sm">لوحة الشرف</span>
           </button>
-          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface p-3 font-bold" @click="openRanking('level')">
+          <button type="button" class="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface/75 p-3 backdrop-blur font-bold" @click="openRanking('level')">
             <svg viewBox="0 0 24 24" class="size-7 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
             <span class="text-sm">ترتيب المستويات</span>
           </button>
@@ -144,12 +159,13 @@ async function openRanking(by: 'trophies' | 'level') {
       <div class="order-first flex flex-col gap-3 lg:order-none">
         <h2 class="text-sm font-bold text-text-muted">فتحات المدرب</h2>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <button v-for="s in home.slots" :key="s.slot" type="button" class="relative flex aspect-[5/4] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-3 text-center transition hover:border-gold/60"
-            :class="s.state === 'club' ? 'border-gold/30 bg-gradient-to-b from-surface-raised to-surface' : 'border-text/10 bg-[repeating-linear-gradient(135deg,var(--color-surface)_0_14px,var(--color-surface-raised)_14px_15px)]'"
+          <button v-for="s in home.slots" :key="s.slot" type="button" class="relative flex aspect-[5/4] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-3 text-center transition hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-xl hover:shadow-black/30"
+            :class="s.state === 'club' ? 'border-gold/30 bg-gradient-to-b from-surface-raised/90 to-surface/90 shadow-lg shadow-black/20' : 'border-text/10 bg-surface/80 bg-[url(/art/tactics-board.svg)] bg-cover bg-center backdrop-blur-sm'"
             :aria-label="s.state === 'free' ? `الفتحة ${s.slot}: دوري جديد` : `الفتحة ${s.slot}: ${s.league?.name}`" @click="openSlot(s)">
             <span class="absolute end-0 top-0 grid h-12 w-10 place-items-center rounded-es-lg bg-bg/80 font-numbers text-2xl font-extrabold" :class="s.slot === 1 ? 'text-gold' : ''">{{ s.slot }}</span>
             <template v-if="s.state === 'club'">
-              <img :src="s.club!.crest_url" alt="" class="size-14 drop-shadow" />
+              <img :src="s.club!.crest_url" alt="" aria-hidden="true" class="pointer-events-none absolute -bottom-6 -start-6 size-32 opacity-[0.07]" />
+              <img :src="s.club!.crest_url" alt="" class="relative size-14 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
               <b class="font-display text-lg leading-tight">{{ s.club!.name }}</b>
               <span class="text-xs text-text-muted">{{ s.league!.name }}<template v-if="s.position"> · المركز <span class="font-numbers">{{ s.position }}</span>/{{ s.teams }}</template></span>
               <span v-if="s.next_match" class="rounded-pill px-2 py-0.5 text-[11px]" :class="s.next_match.live ? 'bg-live/20 text-[#FF8A8A]' : 'bg-surface-sunk text-text-soft'">
