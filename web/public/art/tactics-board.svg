@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240">
+  <!-- An empty slot: a coach's tactics board waiting for a league [X29]. -->
+  <g fill="none" stroke="#F7F4EA" stroke-opacity="0.16" stroke-width="1.5">
+    <rect x="16" y="16" width="268" height="208" rx="10"/>
+    <line x1="150" y1="16" x2="150" y2="224"/>
+    <circle cx="150" cy="120" r="30"/>
+    <rect x="16" y="72" width="46" height="96"/>
+    <rect x="238" y="72" width="46" height="96"/>
+  </g>
+  <g fill="none" stroke="#F5B82E" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 7">
+    <path d="M70 180 C110 150 120 110 170 90"/>
+    <path d="M90 60 C130 70 170 60 215 100"/>
+  </g>
+  <g fill="#F5B82E" fill-opacity="0.35">
+    <path d="M170 90 l-10 -1 6 8 z"/><path d="M215 100 l-3 -10 -5 9 z"/>
+  </g>
+  <g fill="#F7F4EA" fill-opacity="0.18" stroke="#F7F4EA" stroke-opacity="0.25">
+    <circle cx="70" cy="180" r="7"/><circle cx="90" cy="60" r="7"/><circle cx="110" cy="120" r="7"/>
+  </g>
+  <g fill="none" stroke="#2F6FDB" stroke-opacity="0.45" stroke-width="2.5" stroke-linecap="round">
+    <path d="M196 140 l12 12 m0 -12 l-12 12"/><path d="M226 60 l12 12 m0 -12 l-12 12"/><path d="M236 180 l12 12 m0 -12 l-12 12"/>
+  </g>
+</svg>

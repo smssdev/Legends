@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+  <!-- Legends' own night stadium [X29]: floodlights, the bowl's tiers and the pitch's glow. Drawn for the game. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#071733" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#0B2450" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0A1F42"/>
+    </linearGradient>
+    <radialGradient id="beamL" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(250 150) rotate(58) scale(900 260)">
+      <stop offset="0" stop-color="#FFE7A8" stop-opacity="0.55"/>
+      <stop offset="0.4" stop-color="#F5B82E" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#F5B82E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="beamR" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1350 150) rotate(122) scale(900 260)">
+      <stop offset="0" stop-color="#FFE7A8" stop-opacity="0.55"/>
+      <stop offset="0.4" stop-color="#F5B82E" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#F5B82E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="800" cy="820" r="620" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1E9E4A" stop-opacity="0.45"/>
+      <stop offset="0.6" stop-color="#1E9E4A" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#1E9E4A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tier" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#163360"/>
+      <stop offset="1" stop-color="#0A1F42"/>
+    </linearGradient>
+    <pattern id="crowd" width="14" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1.6" fill="#C9D2E1" fill-opacity="0.18"/>
+      <circle cx="10" cy="7" r="1.6" fill="#F5B82E" fill-opacity="0.14"/>
+    </pattern>
+    <g id="mast">
+      <path d="M-3 0 L3 0 L7 420 L-7 420 Z" fill="#0F2A55"/>
+      <rect x="-46" y="-34" width="92" height="40" rx="5" fill="#163360"/>
+      <g fill="#FFF4D2">
+        <circle cx="-30" cy="-22" r="5"/><circle cx="-15" cy="-22" r="5"/><circle cx="0" cy="-22" r="5"/><circle cx="15" cy="-22" r="5"/><circle cx="30" cy="-22" r="5"/>
+        <circle cx="-30" cy="-8" r="5"/><circle cx="-15" cy="-8" r="5"/><circle cx="0" cy="-8" r="5"/><circle cx="15" cy="-8" r="5"/><circle cx="30" cy="-8" r="5"/>
+      </g>
+    </g>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <!-- stars -->
+  <g fill="#F7F4EA" fill-opacity="0.5">
+    <circle cx="520" cy="70" r="1.2"/><circle cx="640" cy="130" r="0.9"/><circle cx="760" cy="60" r="1.4"/><circle cx="900" cy="110" r="1"/>
+    <circle cx="1040" cy="50" r="1.2"/><circle cx="1150" cy="140" r="0.8"/><circle cx="430" cy="160" r="0.8"/><circle cx="820" cy="180" r="0.9"/>
+  </g>
+  <!-- light beams -->
+  <path d="M250 150 L1100 900 L420 900 Z" fill="url(#beamL)"/>
+  <path d="M1350 150 L500 900 L1180 900 Z" fill="url(#beamR)"/>
+  <use href="#mast" x="250" y="150"/>
+  <use href="#mast" x="1350" y="150"/>
+  <!-- the bowl: three tiers -->
+  <path d="M0 560 Q800 430 1600 560 L1600 900 L0 900 Z" fill="url(#tier)" opacity="0.9"/>
+  <path d="M0 560 Q800 430 1600 560 L1600 610 Q800 485 0 610 Z" fill="url(#crowd)"/>
+  <path d="M0 640 Q800 520 1600 640 L1600 900 L0 900 Z" fill="#0D2348"/>
+  <path d="M0 640 Q800 520 1600 640 L1600 700 Q800 585 0 700 Z" fill="url(#crowd)"/>
+  <path d="M0 640 Q800 520 1600 640" fill="none" stroke="#F5B82E" stroke-opacity="0.35" stroke-width="2"/>
+  <!-- the pitch -->
+  <ellipse cx="800" cy="860" rx="760" ry="150" fill="url(#glow)"/>
+  <path d="M260 900 L520 735 L1080 735 L1340 900 Z" fill="#1A8A42" fill-opacity="0.35"/>
+  <g fill="none" stroke="#F7F4EA" stroke-opacity="0.35" stroke-width="2">
+    <path d="M260 900 L520 735 L1080 735 L1340 900"/>
+    <path d="M800 735 L800 900"/>
+    <ellipse cx="800" cy="815" rx="120" ry="38"/>
+  </g>
+</svg>
