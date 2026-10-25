@@ -180,16 +180,16 @@ onMounted(load)
         <section :aria-label="tab === 'pool' ? 'لاعبو المجموعة' : 'لاعبو أندية الحاسوب'" class="rounded-xl bg-surface p-2">
           <p v-if="!m.players.length" class="p-4 text-sm text-text-muted">لا لاعبين بهذه التصفية.</p>
           <ul class="flex flex-col">
-            <li v-for="p in m.players" :key="p.id" class="flex items-center gap-3 border-t border-text/5 px-2 py-2 first:border-0">
+            <li v-for="p in m.players" :key="p.id" class="flex items-center gap-2 border-t sm:gap-3 border-text/5 px-2 py-2 first:border-0">
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">
                 <b class="block truncate" dir="auto">{{ p.name }}</b>
                 <span class="text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة<template v-if="p.club"> · {{ p.club.name }} · بوت</template></span>
               </span>
-              <span class="w-10 text-center font-numbers text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
+              <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
               <span class="hidden w-20 text-end font-numbers text-text-muted sm:block" dir="ltr">{{ money(p.value) }}</span>
-              <span class="w-20 text-end font-numbers text-lg font-bold" dir="ltr">{{ money(p.price) }}</span>
-              <button type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
+              <span class="w-14 text-end font-numbers text-base font-bold sm:w-20 sm:text-lg" dir="ltr">{{ money(p.price) }}</span>
+              <button type="button" class="h-touch min-w-14 rounded-md bg-gold px-2 font-bold sm:min-w-20 sm:px-3 text-on-gold disabled:opacity-40" :disabled="!!m.closed || busy !== null || p.price > m.balance" @click="act('buy', p.id, p.name)">{{ busy === p.id ? '...' : 'شراء' }}</button>
             </li>
           </ul>
         </section>

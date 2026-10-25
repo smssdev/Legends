@@ -37,7 +37,7 @@ function status(p: SquadPlayer) {
     <template v-else-if="team">
       <header class="flex items-start justify-between gap-3">
         <div>
-          <h1 class="font-display text-3xl font-extrabold">{{ team.club.name }}</h1>
+          <h1 class="font-display text-3xl font-extrabold">الفريق</h1>
           <p class="text-text-muted">
             <span class="font-numbers">{{ team.players.length }}</span> لاعباً · القوة <span class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</span> · القيمة
             <span class="font-numbers">{{ money(team.squad_value) }}</span>

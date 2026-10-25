@@ -66,3 +66,101 @@
     }
   }
 }
+
+/*
+ * [X29] The game's look, in one place: every screen's cards, buttons, titles, tables and fields. Outside the layers on
+ * purpose, so it sits over the utilities it refines; each rule matches only the classes it is for.
+ */
+
+/* Cards: glass over the background art, a hairline edge, a soft sheen at the top and depth below. */
+.rounded-xl.bg-surface,
+.rounded-2xl.bg-surface,
+.rounded-xxl.bg-surface,
+.rounded-t-xxl.bg-surface {
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-text) 4%, transparent), transparent 45%);
+  border: 1px solid color-mix(in srgb, var(--color-text) 7%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-text) 6%, transparent) inset, 0 18px 40px -24px rgb(0 0 0 / 0.7);
+  backdrop-filter: blur(10px);
+}
+.rounded-xl.bg-surface-sunk,
+.rounded-lg.bg-surface-sunk {
+  background-color: color-mix(in srgb, var(--color-bg-deep) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 5%, transparent);
+}
+
+/* The gold call to action: lit from above, with a glow that grows under the finger or the mouse. */
+button.bg-gold,
+a.bg-gold {
+  background-image: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 55%, var(--color-gold-dark));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 8px 22px -10px color-mix(in srgb, var(--color-gold) 80%, transparent);
+}
+button.bg-gold:not(:disabled):hover,
+a.bg-gold:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 12px 30px -10px color-mix(in srgb, var(--color-gold) 90%, transparent);
+}
+
+/* Page titles: the cream turning gold, and a short gold bar under them. */
+main h1.font-display {
+  background-image: linear-gradient(90deg, var(--color-gold-light), var(--color-text) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.35rem;
+  position: relative;
+}
+main h1.font-display::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 2.75rem;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+/* A section's title inside a card: a small gold tick before it. */
+main section > h2.font-display,
+main section > div > h2.font-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+main section > h2.font-display::before,
+main section > div > h2.font-display::before {
+  content: "";
+  width: 4px;
+  height: 1.1em;
+  border-radius: 999px;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+/* Tables: quiet headers, a row lit under the pointer. */
+main table thead th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+}
+main table tbody tr {
+  transition: background-color 0.15s ease;
+}
+main table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--color-gold) 6%, transparent);
+}
+
+/* Fields: a gold glow when typing. */
+main input:not([type="range"]):not([type="radio"]):focus,
+main select:focus,
+main textarea:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-gold) 22%, transparent);
+  outline: none;
+}
+/* Sliders and radios in the theme's gold. */
+input[type="range"],
+input[type="radio"] {
+  accent-color: var(--color-gold);
+}
