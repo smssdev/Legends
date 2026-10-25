@@ -4,7 +4,7 @@
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-3">
         <BrandMark />
       </RouterLink>
-      <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">تقرير المباراة</span>
+      <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">تقرير المباراة</span>
       <div v-if="view && !league" role="radiogroup" aria-label="التقرير من وجهة نظر" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
           {{ view.clubs[s].name }}
@@ -16,23 +16,26 @@
     <p v-else-if="!report || !view" class="text-text-muted">جارٍ تحميل التقرير...</p>
 
     <template v-if="report && view">
-      <!-- The scoreboard as a broadcast's [X29]: over the stadium at night, each crest lit in its club's colour. -->
-      <section class="relative flex items-center justify-center gap-4 overflow-hidden rounded-2xl border border-gold/25 bg-surface bg-cover bg-center p-6 shadow-xl shadow-black/40 md:gap-8 md:p-8"
-        style="background-image: linear-gradient(180deg, rgba(10,31,66,.55), rgba(10,31,66,.92)), url('/art/stadium-banner.svg')" aria-label="النتيجة">
-        <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
-        <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
-        <div class="flex flex-1 flex-col items-center gap-2 text-center">
-          <Crest :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="56" />
-          <span class="font-display text-lg font-extrabold">{{ view.clubs.home.name }}</span>
-        </div>
-        <div class="flex flex-col items-center gap-1">
-          <span class="rounded-xl bg-bg/70 px-4 py-1 font-numbers text-5xl shadow-inner md:text-6xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
-          <span v-if="report.shootout" class="text-sm text-text-soft">ركلات الترجيح <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span>
-          <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ resultLabel }}</span>
-        </div>
-        <div class="flex flex-1 flex-col items-center gap-2 text-center">
-          <Crest :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="56" />
-          <span class="font-display text-lg font-extrabold">{{ view.clubs.away.name }}</span>
+      <!-- [X32] The scoreboard as a broadcast's, in Legends' signature: an emerald band, the crests on ivory discs with a
+           glow in each club's colour, and the score that never breaks across lines. -->
+      <section class="score-board relative overflow-hidden rounded-2xl" aria-label="النتيجة">
+        <div class="score-band px-4 py-1.5 text-center text-xs font-extrabold tracking-wide text-white">نهاية المباراة</div>
+        <div class="relative flex items-center justify-center gap-3 p-5 md:gap-8 md:p-8">
+          <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
+          <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
+          <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+            <span class="score-disc"><Crest :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="52" /></span>
+            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ view.clubs.home.name }}</span>
+          </div>
+          <div class="flex shrink-0 flex-col items-center gap-1.5">
+            <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
+            <span v-if="report.shootout" class="text-sm text-text-soft">ركلات الترجيح <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span>
+            <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ resultLabel }}</span>
+          </div>
+          <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+            <span class="score-disc"><Crest :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="52" /></span>
+            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ view.clubs.away.name }}</span>
+          </div>
         </div>
       </section>
 
@@ -212,3 +215,24 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.score-board {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)), url("/art/stadium-blur.jpg") center / cover;
+  border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
+  box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9);
+}
+.score-band {
+  background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
+  background-blend-mode: soft-light, normal;
+}
+.score-disc {
+  display: grid;
+  place-items: center;
+  width: 4.75rem;
+  height: 4.75rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent), 0 12px 24px -10px rgb(0 0 0 / 0.8);
+}
+</style>
