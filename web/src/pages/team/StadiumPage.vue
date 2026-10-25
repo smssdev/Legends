@@ -111,7 +111,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الملعب</h1><HelpTip :text="g.stadium" label="الملعب" /></span>
         <p class="mt-1 text-sm text-text-muted">جزء واحد في كل مرة · كل جزء {{ v ? Math.round(v.part_minutes / 60) : 18 }} ساعة · تبدأ كل جزء بنفسك</p>
       </div>
-      <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">
+      <div v-if="v" class="money-box px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">أموال النادي</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
       </div>
@@ -154,7 +154,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>
           </div>
           <p class="text-sm text-text-muted">{{ s.stage }} من 3 مراحل · {{ s.done }} من 15 جزءاً</p>
-          <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40"
+          <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40"
             :disabled="busy || !!v.building || s.next.cost > v.balance" @click="start(s)">
             ابدأ الجزء التالي · <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
           <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">القسم مكتمل</p>

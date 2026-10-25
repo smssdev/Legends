@@ -100,7 +100,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الطاقم</h1><HelpTip :text="g.specialists" label="الطاقم" /></span>
         <p class="mt-1 text-sm text-text-muted">عقود مؤقتة {{ v?.days ?? 7 }} أيام بنجوم من 1 إلى 5: نجوم أكثر، أثر أكبر وسعر أعلى. يُجدَّد العقد في آخر يوم منه، وإلا يستقيل صاحبه</p>
       </div>
-      <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">
+      <div v-if="v" class="money-box px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">أموال النادي</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
       </div>
@@ -134,7 +134,7 @@ onBeforeUnmount(() => clearInterval(tick))
               <div class="flex items-center gap-1" role="radiogroup" :aria-label="`نجوم ${s.name}`">
                 <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="`${n} نجوم`" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
               </div>
-              <button type="button" class="h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
+              <button type="button" class="h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40" :disabled="busy || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
                 {{ s.ends_at ? 'جدّد العقد' : 'تعاقد' }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></button>
             </template>
           </article>
