@@ -1829,6 +1829,31 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/mail-test:
+    post:
+      tags: [admin]
+      summary: The email settings and a test email, with the exact error and its fix in Arabic [X8]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [to], properties: { to: { type: string, format: email } } }
+      responses:
+        '200':
+          description: The result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [mailer, from, key, problems, sent, error, fix]
+                properties:
+                  mailer: { type: string }
+                  from: { type: string }
+                  key: { type: string, enum: [none, api, smtp, other], description: The kind of key set, never the key }
+                  problems: { type: array, items: { type: string } }
+                  sent: { type: boolean }
+                  error: { type: string, nullable: true }
+                  fix: { type: string, nullable: true }
   /admin/announcements:
     post:
       tags: [admin]

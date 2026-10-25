@@ -4308,6 +4308,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/mail-test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The email settings and a test email, with the exact error and its fix in Arabic [X8] */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        to: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The result */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            mailer: string;
+                            from: string;
+                            /**
+                             * @description The kind of key set
+                             * @enum {string}
+                             */
+                            key: "none" | "api" | "smtp" | "other";
+                            problems: string[];
+                            sent: boolean;
+                            error: string | null;
+                            fix: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/announcements": {
         parameters: {
             query?: never;

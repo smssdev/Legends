@@ -35,6 +35,11 @@ async function run(fn: () => Promise<void>) {
   busy.value = false
 }
 
+const mailTo = ref('')
+const mail = ref<{ mailer: string; from: string; key: 'none' | 'api' | 'smtp' | 'other'; problems: string[]; sent: boolean; error: string | null; fix: string | null } | null>(null)
+const mailTest = () => run(async () => {
+  mail.value = (await api.POST('/admin/mail-test', { body: { to: mailTo.value } })).data ?? null
+})
 const annTitle = ref('')
 const annBody = ref('')
 const annMsg = ref('')
@@ -121,6 +126,22 @@ onMounted(load)
               </tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- The email check [X8]: Render's free plan has no shell, so the test is here. -->
+      <section v-if="tab === 'overview'" aria-label="اختبار البريد" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+        <h2 class="font-display text-lg font-bold">اختبار البريد</h2>
+        <div class="flex flex-wrap gap-2">
+          <input v-model="mailTo" type="email" dir="ltr" placeholder="you@gmail.com" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3" />
+          <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !mailTo" @click="mailTest">أرسل رسالة تجربة</button>
+        </div>
+        <div v-if="mail" class="flex flex-col gap-1 text-sm">
+          <p>الطريقة: <b dir="ltr">{{ mail.mailer }}</b> · المرسل: <b dir="ltr">{{ mail.from || '-' }}</b> · المفتاح: <b>{{ { none: 'لا يوجد', api: 'API (صحيح)', smtp: 'SMTP (خطأ)', other: 'غير معروف' }[mail.key] }}</b></p>
+          <p v-if="mail.sent" class="rounded-lg bg-success/15 px-3 py-2 text-success">أُرسلت. افحص البريد الوارد والرسائل غير المرغوبة.</p>
+          <p v-if="mail.error" class="rounded-lg bg-live/15 px-3 py-2 font-mono text-xs" dir="ltr">{{ mail.error }}</p>
+          <p v-if="mail.fix" class="rounded-lg bg-warning/15 px-3 py-2"><b>الحل:</b> {{ mail.fix }}</p>
+          <p v-for="p in mail.problems" :key="p" class="rounded-lg bg-warning/10 px-3 py-2">{{ p }}</p>
         </div>
       </section>
 

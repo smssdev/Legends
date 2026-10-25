@@ -27,6 +27,7 @@ class MailCheck extends Command
             Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
         } catch (\Throwable $e) {
             $this->error('لم تُرسل: '.$e->getMessage());
+            $this->line('الحل: '.Mailer::explain($e->getMessage()));
 
             return self::FAILURE;
         }

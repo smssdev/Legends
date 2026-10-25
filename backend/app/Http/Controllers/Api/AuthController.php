@@ -227,9 +227,13 @@ class AuthController extends Controller
         $user = $request->user();
         abort_if($user->hasVerifiedEmail(), 409, 'بريدك مؤكد من قبل.');
         // In production with no way out (no Brevo, Resend or Gmail settings) say so, rather than pretend it was sent [X8].
-        abort_if(app()->isProduction() && ! Mailer::live(), 503, 'إرسال البريد غير مفعّل على الخادم بعد. تواصل مع الدعم ليفعّله.');
+        // A developer's own address (OfficialAccounts) is told exactly why and how to fix it: the admin panel's
+        // mail test needs the confirmed account this very email would make.
+        $developer = OfficialAccounts::nameFor($user->email) !== null;
+        $why = fn (string $base) => $developer ? $base.' السبب: '.(Mailer::$lastError ? substr(Mailer::$lastError, 0, 300).' الحل: '.Mailer::explain(Mailer::$lastError) : implode(' ', Mailer::setup()['problems'])) : $base;
+        abort_if(app()->isProduction() && ! Mailer::live(), 503, $why('إرسال البريد غير مفعّل على الخادم بعد. تواصل مع الدعم ليفعّله.'));
         abort_unless(Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id), 503,
-            'تعذر إرسال الرسالة الآن. حاول بعد دقائق، أو تواصل مع الدعم.');
+            $why('تعذر إرسال الرسالة الآن. حاول بعد دقائق، أو تواصل مع الدعم.'));
 
         return response()->json(['sent' => true], 202);
     }
