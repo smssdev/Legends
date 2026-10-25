@@ -181,9 +181,15 @@ onMounted(load)
         <div class="flex flex-wrap gap-2">
           <UiChip :tone="league.status === 'running' ? 'win' : 'neutral'">{{ STATUS[league.status] }}</UiChip>
           <UiChip v-if="league.fair_league" tone="win">دوري نزيه</UiChip>
+          <UiChip v-if="league.integrity" tone="loss">منظومة النزاهة</UiChip>
           <UiChip v-if="league.is_dev" tone="gold">للتطوير</UiChip>
         </div>
       </header>
+
+      <!-- The FA's verdicts of the last day: a breaking headline for everyone in the league [X28]. -->
+      <p v-for="(h, i) in league.headlines ?? []" :key="i" class="flex items-start gap-2 rounded-xl bg-live px-4 py-3 text-sm font-bold text-white" role="alert">
+        <span class="shrink-0 rounded bg-white/20 px-1.5 text-xs">📰 عاجل</span><span>{{ h.text }} <span class="font-normal">(خصم {{ h.points }} نقاط)</span></span>
+      </p>
 
       <section v-if="mine?.objectives" aria-label="هدف الإدارة" class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm">
         <b class="text-gold">هدف الإدارة هذا الموسم</b>

@@ -24,8 +24,11 @@ class LeagueMatch
     public static function state(object $fixture, int $seed): array
     {
         $sheets = DB::table('fixture_sheets')->where('fixture_id', $fixture->id)->get()->keyBy('club_id');
+        // The bribes face the VAR first: a side caught loses morale before it is measured [X28].
+        $bribed = Integrity::kickOff($fixture, $seed);
         $side = fn (int $clubId) => self::side(Club::findOrFail($clubId), $sheets[$clubId])
-            + ['morale' => Morale::forMatch($fixture, $clubId === (int) $fixture->home_id ? 'home' : 'away')];
+            + ['morale' => Morale::forMatch($fixture, $clubId === (int) $fixture->home_id ? 'home' : 'away'),
+                'bribed' => $bribed[$clubId === (int) $fixture->home_id ? 'home' : 'away']];
 
         return self::withFitness(MatchSetup::build($side($fixture->home_id), $side($fixture->away_id), [
             'seed' => $seed,

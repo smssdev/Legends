@@ -178,6 +178,8 @@ return [
             // Morale [X25] is not a tactic: from 40 to 90 it must win more, by a few points, not by a class.
             'morale' => ['field' => 'morale', 'from' => 40, 'to' => 90, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
             // Chemistry [X22] likewise, from 40 to 100.
+            // A bought referee [X28]: more points for the side that paid, but not a class.
+            'bribed' => ['field' => 'bribed', 'from' => 0, 'to' => 1, 'min_shift' => 1, 'max_shift' => 8, 'expect' => ['yellow_home' => -1, 'yellow_away' => 1]],
             'chem' => ['field' => 'chem', 'from' => 40, 'to' => 100, 'min_shift' => 2, 'max_shift' => 10, 'expect' => ['goals_home' => 1, 'goals_away' => -1]],
         ],
         'max_win_shift' => 3,
@@ -190,7 +192,7 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 8,
+        'version' => 9,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -213,6 +215,9 @@ return [
         // Morale [X25]: each point over or under 50 moves the progress and the chance creation by this much, the
         // attack's against the defence's. A side without a reading (the simulator) is neutral.
         'morale_bp' => 6,
+        // A bought referee [X28]: the briber's own cards at this share of the usual, its opponent's at this, and the
+        // penalties it is given at this.
+        'bribe_own_card_bp' => 5000, 'bribe_rival_card_bp' => 16000, 'bribe_penalty_bp' => 30000,
         'chemistry_high' => 85, 'chemistry_high_bp' => [300, 700], 'chemistry_low' => 50, 'chemistry_low_bp' => 600,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
@@ -320,7 +325,8 @@ return [
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
-        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5],
+        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
+            'bribe' => 40, 'security_check' => 10, 'double_agent' => 15],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
@@ -345,6 +351,14 @@ return [
     ],
     // Specialists [docs/features/specialists.md, Sprint 31]: a contract of contract_days (scaled by the season's
     // length), paid when signed as a share of the league's money scale (club money until the premium coins).
+    // The integrity system [X28], where the owner switched it on: a bribe of bribe_cost_bp of the league's money scale
+    // (and the coins of premium.price.bribe), caught by the VAR var_bp of the time (lost, and var_morale off); a
+    // lawyer of lawyer_stars or a security check shows the spies, and a spy is turned for double_agent's price; the
+    // FA confiscates fine_bp of the money, bans from the market for market_ban_hours, takes `points`, and the scandal
+    // takes scandal_morale off and scandal_attendance_bp of the next home crowd; the headline shows headline_hours.
+    'integrity' => ['bribe_cost_bp' => 40, 'var_bp' => 2000, 'var_morale' => 10, 'lawyer_stars' => 4,
+        'security_check_cost_bp' => 8, 'double_agent_cost_bp' => 10, 'fine_bp' => 3000, 'market_ban_hours' => 24, 'points' => 3,
+        'scandal_morale' => 15, 'scandal_attendance_bp' => 2500, 'headline_hours' => 24],
     // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
     // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
     // clash_minutes of another match of its clubs.

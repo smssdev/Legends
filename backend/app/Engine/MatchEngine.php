@@ -418,6 +418,23 @@ final class MatchEngine
         };
     }
 
+    /**
+     * A bought referee [X28] leans to the side that paid: its fouls are carded less, its opponent's more, and a foul
+     * on it at the box is a penalty more often. In basis points of the usual call; 10000 when nobody paid.
+     */
+    private function leaning(string $side, string $call): int
+    {
+        $other = $side === 'home' ? 'away' : 'home';
+        if ($call === 'penalty') {
+            return empty($this->s['teams'][$side]['bribed']) ? 10000 : (int) $this->eng['bribe_penalty_bp'];
+        }
+        if (! empty($this->s['teams'][$side]['bribed'])) {
+            return (int) $this->eng['bribe_own_card_bp'];
+        }
+
+        return empty($this->s['teams'][$other]['bribed']) ? 10000 : (int) $this->eng['bribe_rival_card_bp'];
+    }
+
     /** Morale [X25]: a side up (over 50) pushes on and creates more, one down hesitates. None measured: neutral. */
     private function morale(string $side): int
     {
@@ -487,7 +504,7 @@ final class MatchEngine
 
         $this->stat($def, 'fouls');
         $this->rate($def, $fouler, -5, 'fouls');
-        $penalty = $where === 'create' && $this->rng->chance((int) $this->eng['penalty_share_bp']);
+        $penalty = $where === 'create' && $this->rng->chance(intdiv((int) $this->eng['penalty_share_bp'] * $this->leaning($atk, 'penalty'), 10000));
         // A foul at the box always gives a free kick in shooting range, further out only sometimes;
         // otherwise the attackers take it quickly and the attack goes on, so fouling never stops an attack for free.
         $setPiece = $penalty || $where === 'create' || ($where === 'progress' && $this->rng->chance((int) $this->eng['progress_free_kick_bp']));
@@ -496,7 +513,7 @@ final class MatchEngine
         }
         $this->event('foul', $def, ['player' => $fouler, 'victim' => $victim, 'penalty' => $penalty]);
 
-        $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
+        $ref = intdiv((int) $this->eng['referee_bp'][$this->s['referee']] * $this->leaning($def, 'card'), 10000);
         if ($where === 'create' && $quality === 'big' && $this->rng->chance(intdiv((int) $this->eng['dogso_red_bp'] * $ref, 10000))) {
             $this->card($def, $fouler, 'red');
         } elseif ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref, 10000))) {
@@ -544,7 +561,7 @@ final class MatchEngine
         $this->rate($side, $fouler, -3, 'fouls');
         $this->event('foul', $side, ['player' => $fouler, 'victim' => $victim, 'penalty' => false]);
         $level = $this->s['teams'][$side]['tactics']['tackling'];
-        $ref = (int) $this->eng['referee_bp'][$this->s['referee']];
+        $ref = intdiv((int) $this->eng['referee_bp'][$this->s['referee']] * $this->leaning($side, 'card'), 10000);
         if ($this->rng->chance(intdiv((int) $this->eng['card_bp'][$level] * $ref * (int) $this->eng['midfield_card_pct'], 1000000))) {
             $this->card($side, $fouler, 'yellow');
         }

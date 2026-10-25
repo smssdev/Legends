@@ -536,6 +536,7 @@ paths:
                 starts_at: { type: string, format: date-time, description: From now up to 7 days }
                 starting_budget: { type: integer, minimum: 1000000, maximum: 10000000, default: 3000000 }
                 fair_league: { type: boolean, default: false, description: Locks spending coins inside this league }
+                integrity: { type: boolean, default: false, description: 'Bribes, spies and the FA [X28]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
                 club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
       responses:
@@ -591,6 +592,7 @@ paths:
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
                 fair_league: { type: boolean }
+                integrity: { type: boolean }
       responses:
         '200': { $ref: '#/components/responses/League' }
         '403': { $ref: '#/components/responses/Error' }
@@ -820,6 +822,7 @@ paths:
                             goal_difference: { type: integer }
                             points: { type: integer }
                             rests_next: { type: boolean, description: Rests in the next round (odd team count) }
+                            deducted: { type: integer, description: 'Points the FA took off [X28]' }
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/stats:
@@ -1025,6 +1028,56 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /leagues/{league}/integrity:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: 'The integrity system for my club [X28]: my next match''s bribe, the spies on me, my proofs, a market ban'
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/bribe:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: Pay the referee of my next match (club money and coins), until its lock
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [fixture_id], properties: { fixture_id: { type: integer } } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/security:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: A security check that shows the spies sent on me for this fixture
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [fixture_id], properties: { fixture_id: { type: integer } } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/spies/{spy}/turn:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: spy, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: Turn a spy on me into a double agent (his report becomes a fake board)
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/integrity/spies/{spy}/accuse:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: spy, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [team]
+      summary: 'Take my spy''s proof of a bribe to the FA: a fine, a market ban, points off and a scandal'
+      responses:
+        '200': { $ref: '#/components/responses/Integrity' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/alliance:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2681,6 +2734,35 @@ components:
                       nullable: true
                       required: [default, min, max]
                       properties: { default: { type: integer }, min: { type: integer }, max: { type: integer } }
+    Integrity:
+      description: The integrity system for my club
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [on, fixture, bribe, security, double_agent, spies_on_me, proofs, banned_until, headlines]
+            properties:
+              on: { type: boolean }
+              verdict: { type: object, additionalProperties: true, description: 'After an accusation: the club, the fine, the points, the ban''s hours' }
+              fixture: { type: object, nullable: true, required: [id, opponent], properties: { id: { type: integer }, opponent: { type: string } } }
+              bribe:
+                type: object
+                required: [paid, money, extra, var_percent]
+                properties:
+                  paid: { type: boolean }
+                  money: { type: integer }
+                  extra: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
+                  var_percent: { type: integer }
+              security: { type: object, required: [sees, cost], properties: { sees: { type: boolean }, cost: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } } } }
+              double_agent: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
+              spies_on_me:
+                type: array
+                items: { type: object, required: [id, club, turned], properties: { id: { type: integer }, club: { type: string }, turned: { type: boolean } } }
+              proofs:
+                type: array
+                items: { type: object, required: [spy_report_id, club, filed], properties: { spy_report_id: { type: integer }, club: { type: string }, filed: { type: boolean } } }
+              banned_until: { type: string, format: date-time, nullable: true }
+              headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } } }
     Alliance:
       description: The alliance tournament
       content:
@@ -3135,6 +3217,8 @@ components:
         draw_at: { type: string, format: date-time, nullable: true, description: 'The live draw''s time [X26]' }
         drawn_at: { type: string, format: date-time, nullable: true }
         fair_league: { type: boolean }
+        integrity: { type: boolean, description: 'The integrity system: bribes, spies and the FA [X28]' }
+        headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } }, description: 'The FA verdicts of the last day [X28]' }
         is_dev: { type: boolean }
         status: { type: string, enum: [waiting, running, finished] }
         locked: { type: boolean, description: Settings are locked once the league starts }
