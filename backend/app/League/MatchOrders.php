@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Simulator\CoachWindows;
 use App\Simulator\CpuCoach;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\Cache;
@@ -53,7 +54,10 @@ class MatchOrders
     public static function forMinute(int $matchId, array $state, array $managers): array
     {
         $tick = $state['tick'] + 1;
-        $rows = DB::table('match_actions')->where('match_id', $matchId)->whereNull('applied_tick')->where('target_tick', '<=', $tick)->orderBy('id')->get();
+        // [X42] A coach's order goes in after a window only: one that came as the window closed waits for the next.
+        $rows = CoachWindows::open($state)
+            ? DB::table('match_actions')->where('match_id', $matchId)->whereNull('applied_tick')->where('target_tick', '<=', $tick)->orderBy('id')->get()
+            : collect();
         if ($rows->isNotEmpty()) {
             DB::table('match_actions')->whereIn('id', $rows->pluck('id'))->update(['applied_tick' => $tick]);
         }
@@ -76,6 +80,10 @@ class MatchOrders
         $rows = [];
         $row = fn (string $side, string $source, string $key, array $order) => ['match_id' => $matchId, 'side' => $side, 'source' => $source, 'user_id' => null,
             'idempotency_key' => $key, 'target_tick' => $tick, 'applied_tick' => $tick, 'action' => json_encode(array_diff_key($order, ['team' => 1])), 'created_at' => GameClock::now()];
+        // [X42] The scenarios, the assistant and the computer change in the windows too, as a coach does.
+        if (! CoachWindows::open($state)) {
+            return [[], []];
+        }
         $scenarios = isset($state['out']) ? self::scenarios($matchId) : [];
         foreach ($managers as $side => $who) {
             // The coach's own plans [X23] go in at their moment, watching or not; each once.

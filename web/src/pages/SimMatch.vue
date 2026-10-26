@@ -52,13 +52,14 @@
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" aria-label="المباراة">
           <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @real="(kind) => voice.real(kind as any)" @intro-done="endIntro" />
 
-                    <div v-if="(halftime || finished) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
-            <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : 'الاستراحة' }}</span>
+                    <div v-if="(halftime || finished || windowOn) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
+            <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : windowOn ? `فترة توقف · الدقيقة ${minute[0]}` : 'الاستراحة' }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
             <div class="flex flex-wrap justify-center gap-2">
               <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
-              <a v-if="halftime && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
+              <span v-if="windowOn && !finished" class="text-sm text-text-soft">تُستأنف المباراة بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك أو أجرِ تبديلاتك الآن</span>
+              <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
               <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
@@ -124,12 +125,13 @@
           <p v-if="!mine" class="text-sm text-text-muted">{{ live ? 'أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.' : 'الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.' }}</p>
 
           <template v-else>
+            <p v-if="!canChange && !finished" class="rounded-md bg-surface-sunk px-3 py-2 text-xs leading-5 text-text-muted" role="status">التغيير في فترات التوقف فقط: الدقائق 15 و30 و60 و75 والاستراحة.<span v-if="nextWindow"> القادمة: <b class="font-numbers text-text">{{ nextWindow }}</b>'</span></p>
             <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-sm text-sm font-bold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">{{ t.label }}</button>
             </div>
 
             <div v-if="tab === 'quick'" class="grid grid-cols-2 gap-2">
-              <button v-for="q in quickOrders" :key="q.label" type="button" class="flex min-h-16 flex-col gap-0.5 rounded-md border border-text/10 bg-surface-sunk px-3 py-2 text-start hover:border-gold" :disabled="finished" @click="sendTactics(q.label, q.tactics)">
+              <button v-for="q in quickOrders" :key="q.label" type="button" class="flex min-h-16 flex-col gap-0.5 rounded-md border border-text/10 bg-surface-sunk px-3 py-2 text-start hover:border-gold disabled:opacity-40 disabled:hover:border-text/10" :disabled="finished || !canChange" @click="sendTactics(q.label, q.tactics)">
                 <span class="font-display text-sm font-bold">{{ q.label }}</span>
                 <span class="text-xs leading-5 text-text-muted">{{ q.hint }}</span>
               </button>
@@ -137,7 +139,7 @@
 
             <div v-if="tab === 'subs'" class="flex flex-col gap-2">
               <span class="text-xs text-text-muted">{{ subOut ? 'اختر البديل' : 'اختر من يخرج (الأقل لياقة أولاً)' }}</span>
-              <button v-for="p in subOut ? bench : onPitch" :key="p.id" type="button" class="flex min-h-11 items-center gap-2 rounded-md px-2" :class="subOut?.id === p.id ? 'bg-warning/15' : 'bg-surface-sunk hover:bg-surface-raised'" @click="subOut ? sendSub(p) : (subOut = p)">
+              <button v-for="p in subOut ? bench : onPitch" :key="p.id" type="button" :disabled="!canChange" class="flex min-h-11 items-center gap-2 rounded-md px-2 disabled:opacity-40" :class="subOut?.id === p.id ? 'bg-warning/15' : 'bg-surface-sunk hover:bg-surface-raised'" @click="subOut ? sendSub(p) : (subOut = p)">
                 <span class="w-8 rounded-sm px-1 text-center text-xs font-bold" :class="lineClass(p.line)">{{ p.pos }}</span>
                 <span class="flex-1 truncate text-start text-sm">{{ $nm(p.name) }}</span>
                 <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-[#F5D90A]" aria-label="بطاقة صفراء" />
@@ -164,11 +166,11 @@
                 <UiToggle v-model="draftTrap" class="flex-1" label="مصيدة التسلل" />
                 <UiToggle v-model="draftMan" class="flex-1" label="رقابة رجل لرجل" />
               </div>
-              <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold" :disabled="finished" @click="applyDraft">طبّق في الدقيقة التالية</button>
+              <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="finished || !canChange" @click="applyDraft">طبّق في الدقيقة التالية</button>
             </div>
 
             <div v-if="tab === 'shape'" class="flex flex-wrap gap-2">
-              <button v-for="f in view.formations" :key="f" type="button" class="h-11 rounded-md border px-3 font-numbers text-lg" :class="teams[mine].formation === f ? 'border-gold bg-gold/15 text-gold' : 'border-text/10 bg-surface-sunk'" dir="ltr" :disabled="finished" @click="sendFormation(f)">{{ formationLabel(f) }}</button>
+              <button v-for="f in view.formations" :key="f" type="button" class="h-11 rounded-md border px-3 font-numbers text-lg disabled:opacity-40" :class="teams[mine].formation === f ? 'border-gold bg-gold/15 text-gold' : 'border-text/10 bg-surface-sunk'" dir="ltr" :disabled="finished || !canChange" @click="sendFormation(f)">{{ formationLabel(f) }}</button>
             </div>
 
             <div v-for="o in pending" :key="o.key" class="flex items-center gap-3 rounded-lg border border-gold/45 bg-gold/10 px-3 py-2 text-sm">
@@ -252,6 +254,12 @@ const playing = ref(true)
 const speed = ref(Number(route.query.speed) || 1)
 const halftime = ref(false)
 const halftimeLeft = ref(30)
+// [X42] The coach's window (live): play stops after minutes 15, 30, 60 and 75; its countdown shares halftimeLeft.
+const windowOn = ref(false)
+const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
+/** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not its last 2 s). */
+const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && halftimeLeft.value > 2))
+const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
 const finished = ref(false)
 const skipping = ref(false)
 const dev = ref(false)
@@ -512,6 +520,7 @@ function show(t: Tick, animate = true, startAt?: number) {
   else score.value = t.score
   // Live: the next minute has started, so the half-time break is over.
   if (live.value && halftime.value) { halftime.value = false; clearInterval(htTimer) }
+  windowOn.value = false
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   // Live: the goal again in a small frame while the next minute plays (not on a slow phone).
   // Not after a goal whose long minute already played its replay [X41].
@@ -545,6 +554,13 @@ function tell(t: Tick, animate: boolean) {
     } else if (e.type === 'shootout') {
       shootout.value = e.score
     }
+  }
+  // [X42] The coach's window opens when the minute's scene has played (its goal's replay too).
+  if (live.value && t.window && animate) {
+    const left = t.events.some((g) => g.type === 'goal') ? momentMs(t) - (performance.now() - shownAt) - 200 : 0
+    const open = () => { if (last.value === t) { windowOn.value = true; clockTick() } }
+    if (left > 0) window.setTimeout(open, left)
+    else open()
   }
   for (const p of pending.value.filter((o) => t.tick >= o.target)) {
     applied.value.unshift({ key: p.key, label: p.label, minute: minuteText.value })
@@ -745,7 +761,7 @@ function handleSync(r: LiveSync): number {
     seen = t.tick
     // The second half starts with the first minute after the break.
     if (breakAhead) { resumeAt = t.at ?? resumeAt; breakAhead = false }
-    if (t.events.some((e) => e.type === 'period' && e.name === 'halftime')) breakAhead = true
+    if (t.window || t.events.some((e) => e.type === 'period' && e.name === 'halftime')) breakAhead = true
     const at = t.at ?? serverNow()
     const delay = at - serverNow()
     const next = fresh[i + 1]
@@ -769,7 +785,7 @@ function handleSync(r: LiveSync): number {
 function clockTick() {
   const now = serverNow()
   countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
-  if (halftime.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
+  if (halftime.value || windowOn.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
 }
 
 // ---------------------------------------------------------------- reactions (live)

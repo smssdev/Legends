@@ -154,6 +154,8 @@ class Simulator
         if (in_array($order['key'], $keys, true)) {
             return ['target_tick' => $match->state['tick'] + 1, 'duplicate' => true];
         }
+        // [X42] A live match takes a coach's change in a window only.
+        abort_if($match->live !== null && ! CoachWindows::open($match->state), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و60 و75، وفي الاستراحة.');
         $target = $match->state['tick'] + 1;
         $match->pending = [...($match->pending ?? []), $order + ['target_tick' => $target]];
         $match->save();
@@ -173,11 +175,13 @@ class Simulator
 
         for ($i = 0; $i < $count && ! $state['finished']; $i++) {
             $next = $state['tick'] + 1;
-            $due = array_values(array_filter($pending, fn ($o) => $o['target_tick'] <= $next));
-            $pending = array_values(array_filter($pending, fn ($o) => $o['target_tick'] > $next));
+            // [X42] Live, the orders go in after a window only (one that came as it closed waits for the next).
+            $open = $match->live === null || CoachWindows::open($state);
+            $due = $open ? array_values(array_filter($pending, fn ($o) => $o['target_tick'] <= $next)) : [];
+            $pending = $open ? array_values(array_filter($pending, fn ($o) => $o['target_tick'] > $next)) : $pending;
             $actions = array_map(fn ($o) => array_diff_key($o, ['key' => 1, 'target_tick' => 1]), $due);
             foreach (['home', 'away'] as $side) {
-                if (($match->control[$side] ?? 'cpu') === 'cpu' && isset($state['out'])) {
+                if (($match->control[$side] ?? 'cpu') === 'cpu' && isset($state['out']) && $open) {
                     $actions = [...$actions, ...CpuCoach::orders($state, $side)];
                 }
             }
@@ -188,7 +192,8 @@ class Simulator
             $ball = $choreo['ball'];
             $ticks[] = $state['out'];
             $out[] = Commentary::annotate($state, $state['out']) + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
-                'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
+                'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
+                'window' => $match->live !== null && CoachWindows::window($state['out'], $state['cfg']['match'])];
         }
 
         $match->fill(compact('state', 'ball', 'pending', 'applied', 'ticks'))->save();
@@ -297,19 +302,10 @@ class Simulator
         });
     }
 
-    /** The break after a minute that ends a period. */
+    /** The break after a minute: a period's end or a coach's window [X42]. */
     private static function pauseMs(array $tick, array $timing): int
     {
-        foreach ($tick['events'] as $e) {
-            if ($e['type'] === 'period' && $e['name'] === 'halftime') {
-                return $timing['halftime_seconds'] * 1000;
-            }
-            if ($e['type'] === 'period' && in_array($e['name'], ['extra_time', 'extra_time_half', 'penalties'], true)) {
-                return ($timing['extra_time_break_seconds'] ?? 10) * 1000;
-            }
-        }
-
-        return 0;
+        return CoachWindows::pauseMs($tick, $timing);
     }
 
     public function report(SimMatch $match, string $side = 'home'): array
@@ -342,6 +338,8 @@ class Simulator
                 'tick_ms' => (int) $s['cfg']['match']['tick_ms'],
                 'extra_time_tick_ms' => (int) $s['cfg']['match']['extra_time_tick_ms'],
                 'halftime_seconds' => (int) $s['cfg']['match']['halftime_seconds'],
+                // [X42] The coach's windows: a live match stops after these minutes for window_seconds.
+                'windows' => $live ? ($s['cfg']['match']['windows'] ?? []) : [], 'window_seconds' => (int) ($s['cfg']['match']['window_seconds'] ?? 0),
             ],
             'clubs' => ['home' => $s['teams']['home']['club'], 'away' => $s['teams']['away']['club']],
             'coaches' => (object) ($match->setup['names'] ?? []),

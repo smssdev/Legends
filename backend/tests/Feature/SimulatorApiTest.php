@@ -195,6 +195,32 @@ class SimulatorApiTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_a_live_match_stops_for_the_coachs_window_and_takes_changes_only_then(): void
+    {
+        Carbon::setTestNow('2026-10-19 12:00:00');
+        config(['game.match.kickoff_ms' => 1000]);
+        $made = $this->postJson('/api/v1/sim/matches', ['home_id' => $this->club('Alpha', 82), 'away_id' => $this->club('Beta', 79), 'seed' => 4, 'mode' => 'live'])->json();
+        $id = $made['id'];
+        $h = ['X-Seat' => $made['seats']['home']];
+        $this->assertSame([15, 30, 60, 75], $made['timing']['windows']);
+        $order = fn ($key) => ['type' => 'tactics', 'team' => 'home', 'tactics' => ['tempo' => 80], 'idempotency_key' => $key];
+        $this->postJson("/api/v1/sim/matches/$id/start", [], $h)->assertOk();
+        // Minute by minute up to the window after minute 15 [X42]: refused while the match plays.
+        $window = null;
+        for ($at = 0; ! $window && $at < 600; $at++) {
+            Carbon::setTestNow(Carbon::parse('2026-10-19 12:00:00')->addSeconds($at));
+            $ticks = $this->getJson("/api/v1/sim/matches/$id/live?since=0", $h)->json('ticks');
+            $last = end($ticks);
+            if ($last && $last['minute'] === [5, 0]) {
+                $this->postJson("/api/v1/sim/matches/$id/actions", $order('k5'), $h)->assertStatus(409);
+            }
+            $window = collect($ticks)->firstWhere('window', true);
+        }
+        $this->assertSame([15, 0], $window['minute']);
+        $this->postJson("/api/v1/sim/matches/$id/actions", $order('k15'), $h)->assertStatus(202)->assertJsonPath('target_tick', $window['tick'] + 1);
+        Carbon::setTestNow();
+    }
+
     public function test_a_live_minute_is_made_just_before_it_starts_and_its_result_waits_for_it(): void
     {
         Carbon::setTestNow('2026-10-19 12:00:00');

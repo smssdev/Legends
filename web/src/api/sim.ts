@@ -83,6 +83,8 @@ export interface Tick {
   finished: boolean
   frames: Frame[]
   moment?: { kind: string; ms: number }
+  /** [X42] Play stops after this minute: the coach's window. */
+  window?: boolean
   /** Live matches: when this minute starts, on the server clock (ms). */
   at?: number
   teams?: Record<Side, TeamSnapshot>
@@ -128,7 +130,8 @@ export interface MatchView {
   finished: boolean
   score: Record<Side, number>
   formations: string[]
-  timing: { tick_ms: number; extra_time_tick_ms: number; halftime_seconds: number }
+  /** [X42] windows: the minutes a live match stops after for window_seconds, the coach's only moments to change. */
+  timing: { tick_ms: number; extra_time_tick_ms: number; halftime_seconds: number; windows?: number[]; window_seconds?: number }
   clubs: Record<Side, Club>
   coaches?: Partial<Record<Side, string>>
   teams: Record<Side, TeamSnapshot>
