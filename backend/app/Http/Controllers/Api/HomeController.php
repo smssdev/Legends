@@ -8,6 +8,7 @@ use App\League\Standings;
 use App\Messages\Inbox;
 use App\Models\User;
 use App\Season\Career;
+use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -27,7 +28,8 @@ class HomeController extends Controller
 
         return response()->json([
             'coach' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'avatar_url' => $user->avatarUrl(),
-                'official' => Username::official($user->username), 'level' => Career::level($record, $trophies), 'record' => $record],
+                'official' => Username::official($user->username), 'level' => Career::level($record, $trophies), 'record' => $record,
+                'coins' => Wallet::balance($user->id)],
             'trophies' => $trophies,
             'slots' => $this->slots($user),
             'colleagues' => $this->colleagues($user->id),
@@ -45,7 +47,7 @@ class HomeController extends Controller
             ->leftJoin('clubs', 'clubs.id', '=', 'league_memberships.club_id')
             ->where('league_memberships.user_id', $user->id)->whereNull('league_memberships.left_at')->whereNotNull('league_memberships.club_id')
             ->orderBy('league_memberships.joined_at')->limit($max)
-            ->get(['leagues.id as league_id', 'leagues.name as league', 'leagues.status', 'league_memberships.season_id', 'clubs.id as club_id', 'clubs.name as club', 'clubs.master_club_id']);
+            ->get(['leagues.id as league_id', 'leagues.name as league', 'leagues.status', 'league_memberships.season_id', 'clubs.id as club_id', 'clubs.name as club', 'clubs.master_club_id', 'clubs.balance']);
         foreach ($memberships as $m) {
             $order = Standings::order((int) $m->season_id);
             $next = DB::table('fixtures')->whereIn('status', ['scheduled', 'locked', 'live'])->where('is_bye', false)
@@ -53,7 +55,7 @@ class HomeController extends Controller
                 ->orderBy('scheduled_at')->first();
             $opponent = $next ? DB::table('clubs')->where('id', $next->home_id === $m->club_id ? $next->away_id : $next->home_id)->value('name') : null;
             $out[] = ['state' => 'club', 'league' => ['id' => (int) $m->league_id, 'name' => $m->league, 'status' => $m->status],
-                'club' => ['id' => (int) $m->club_id, 'name' => $m->club, 'crest_url' => url("/api/v1/data/clubs/{$m->master_club_id}/crest.svg")],
+                'club' => ['id' => (int) $m->club_id, 'name' => $m->club, 'crest_url' => url("/api/v1/data/clubs/{$m->master_club_id}/crest.svg"), 'cash' => (int) $m->balance],
                 'position' => ($i = array_search((int) $m->club_id, $order, true)) === false ? null : $i + 1, 'teams' => count($order),
                 'next_match' => $next ? ['opponent' => $opponent, 'venue' => $next->home_id === $m->club_id ? 'home' : 'away', 'live' => $next->status === 'live',
                     'scheduled_at' => Carbon::parse($next->scheduled_at, 'UTC')->toIso8601ZuluString()] : null];

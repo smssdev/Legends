@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Club;
 use App\Models\User;
 use App\Season\Career;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +39,9 @@ class HomeDashboardTest extends TestCase
         $this->assertSame(['club', 'waiting', ...array_fill(0, 8, 'free')], array_column($home['slots'], 'state'));
         $this->assertSame($league['id'], $home['slots'][0]['league']['id']);
         $this->assertNotNull($home['slots'][0]['club']['crest_url']);
+        // [UP7] The card shows the club's cash and the coach's coins.
+        $this->assertSame((int) Club::find($home['slots'][0]['club']['id'])->balance, $home['slots'][0]['club']['cash']);
+        $this->assertSame(Wallet::balance($owner->id), $home['coach']['coins']);
         $this->assertSame('دوري الأصدقاء', $home['slots'][1]['league']['name']);
         $this->assertSame(['total' => 0, 'league' => 0, 'cup' => 0], $home['trophies']);
         $this->assertSame(1, $home['coach']['level']['level']);

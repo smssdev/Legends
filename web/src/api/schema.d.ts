@@ -8225,6 +8225,8 @@ export interface components {
                 username: string;
                 avatar_url: string | null;
                 official: boolean;
+                /** @description The coach's coins balance [UP7] */
+                coins: number;
                 level: components["schemas"]["CoachLevel"];
                 record: {
                     seasons: number;
@@ -8255,6 +8257,8 @@ export interface components {
                     id: number;
                     name: string;
                     crest_url: string;
+                    /** @description The club's money [UP7] */
+                    cash: number;
                 } | null;
                 position: number | null;
                 teams: number | null;

@@ -133,7 +133,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
       </aside>
     </div>
 
-    <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep/95 p-4 backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
+    <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep/95 p-4 md:static md:border-0 md:bg-transparent md:p-0">
       <UiButton block :disabled="!chosen || taking" @click="take">
         {{ chosen ? `استلم تدريب ${chosen.name}` : 'اختر نادياً متاحاً' }}
       </UiButton>

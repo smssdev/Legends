@@ -7,4 +7,13 @@
       <component :is="Component" :key="route.name === 'league-match' || route.name === 'sim-match' ? route.fullPath.split('?')[0] : undefined" />
     </KeepAlive>
   </RouterView>
+  <!-- [UP4] The splash, once per visit, over the game until the server answers. -->
+  <SplashScreen v-if="splash" @done="splash = false" />
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import SplashScreen from './components/SplashScreen.vue'
+
+const splash = ref(true)
+</script>

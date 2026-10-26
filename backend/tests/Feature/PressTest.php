@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\League\Morale;
 use App\League\Predictions;
 use App\Models\User;
+use App\Season\Career;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +88,7 @@ class PressTest extends TestCase
         Predictions::settle($fixture, 2, 0);   // once
         $this->assertSame($balance + Predictions::reward($this->league['id']), (int) DB::table('clubs')->where('id', $this->league['my_club_id'])->value('balance'));
         $this->assertSame([true, false], DB::table('match_predictions')->orderBy('id')->pluck('correct')->map(fn ($c) => (bool) $c)->all());
-        $this->assertSame(1, \App\Season\Career::record($this->owner->id)['predicted']);
+        $this->assertSame(1, Career::record($this->owner->id)['predicted']);
         // Locked: no more picks.
         DB::table('fixtures')->where('id', $f['fixture_id'])->update(['status' => 'locked']);
         $this->actingAs($this->owner)->postJson($this->url('/predictions'), ['fixture_id' => $f['fixture_id'], 'pick' => 'draw'])->assertConflict();

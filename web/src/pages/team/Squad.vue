@@ -97,7 +97,7 @@ function status(p: SquadPlayer) {
 
       <!-- The cards, five or six a row on the computer. -->
       <ul v-if="view === 'cards'" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        <li v-for="p in players" :key="p.id">
+        <li v-for="p in players" :key="p.id" class="v-card">
           <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
             <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
           </button>
@@ -105,7 +105,7 @@ function status(p: SquadPlayer) {
       </ul>
 
       <ul v-else class="flex flex-col gap-2">
-        <li v-for="p in players" :key="p.id">
+        <li v-for="p in players" :key="p.id" class="v-row">
           <button type="button" class="flex min-h-20 w-full items-center gap-3 rounded-xl bg-surface p-3 text-start hover:bg-surface-raised" @click="open = p">
             <LineBadge :line="p.line as Line" />
             <span class="min-w-0 flex-1">

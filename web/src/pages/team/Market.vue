@@ -224,7 +224,7 @@ onBeforeUnmount(() => clearInterval(clock))
       <section v-else-if="tab === 'done'" aria-label="الانتقالات التي تمت" class="rounded-xl bg-surface p-2">
         <p v-if="!done.length" class="p-4 text-sm text-text-muted">لا انتقالات بعد هذا الموسم.</p>
         <ul class="flex flex-col">
-          <li v-for="(t, i) in done" :key="i" class="flex flex-wrap items-center gap-2 border-t border-text/5 px-2 py-2 text-sm first:border-0">
+          <li v-for="(t, i) in done" :key="i" class="v-row flex flex-wrap items-center gap-2 border-t border-text/5 px-2 py-2 text-sm first:border-0">
             <b class="min-w-0 flex-1 truncate"><bdi>{{ $nm(t.player) }}</bdi></b>
             <span class="text-text-muted">{{ t.from ? $nm(t.from) : 'من خارج الدوري' }} ← <b class="text-text">{{ $nm(t.to) }}</b></span>
             <span class="w-20 text-end font-numbers font-bold" dir="ltr">{{ money(t.price) }}</span>
@@ -243,7 +243,7 @@ onBeforeUnmount(() => clearInterval(clock))
           <p v-if="!list" class="p-4 text-sm text-text-muted">جارٍ التحميل...</p>
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">لا لاعبين في هذا المركز الآن.</p>
           <ul v-else class="flex flex-col">
-            <li v-for="p in list.players" :key="p.id">
+            <li v-for="p in list.players" :key="p.id" class="v-row">
               <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">

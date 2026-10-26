@@ -87,7 +87,7 @@
       </div>
     </section>
 
-    <div class="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 bg-bg/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:bg-transparent md:p-0">
+    <div class="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 bg-bg/95 px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0">
       <button type="button" class="flex h-14 items-center gap-2 rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold disabled:opacity-50" :disabled="!ready || busy" @click="start">
         {{ busy ? 'جارٍ التجهيز...' : 'ابدأ المباراة' }}
       </button>

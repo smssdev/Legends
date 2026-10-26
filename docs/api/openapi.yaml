@@ -3998,13 +3998,14 @@ components:
       properties:
         coach:
           type: object
-          required: [id, name, username, avatar_url, official, level, record]
+          required: [id, name, username, avatar_url, official, level, record, coins]
           properties:
             id: { type: integer }
             name: { type: string }
             username: { type: string }
             avatar_url: { type: string, nullable: true }
             official: { type: boolean }
+            coins: { type: integer, description: 'The coach''s coins balance [UP7]' }
             level: { $ref: '#/components/schemas/CoachLevel' }
             record: { type: object, required: [seasons, played, won, drawn, lost], properties: { seasons: { type: integer }, played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer } } }
         trophies: { $ref: '#/components/schemas/Trophies' }
@@ -4020,7 +4021,7 @@ components:
               slot: { type: integer }
               state: { type: string, enum: [club, waiting, free], description: 'A club, a join request waiting for its answer, or free' }
               league: { type: object, nullable: true, required: [id, name, status], properties: { id: { type: integer }, name: { type: string }, status: { type: string } } }
-              club: { type: object, nullable: true, required: [id, name, crest_url], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string } } }
+              club: { type: object, nullable: true, required: [id, name, crest_url, cash], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string }, cash: { type: integer, description: 'The club''s money [UP7]' } } }
               position: { type: integer, nullable: true }
               teams: { type: integer, nullable: true }
               next_match: { type: object, nullable: true, required: [opponent, venue, live, scheduled_at], properties: { opponent: { type: string, nullable: true }, venue: { type: string, enum: [home, away] }, live: { type: boolean }, scheduled_at: { type: string, format: date-time } } }

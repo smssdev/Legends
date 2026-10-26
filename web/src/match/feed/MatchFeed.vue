@@ -441,7 +441,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 @keyframes beams { to { transform: translateX(300px) } }
 
 .sb { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 6 }
-.sb-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; border-radius: 16px; overflow: hidden; background: rgba(16,40,79,.62); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.09); box-shadow: 0 18px 40px rgba(0,0,0,.45) }
+.sb-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; border-radius: 16px; overflow: hidden; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); box-shadow: 0 18px 40px rgba(0,0,0,.45) }
 .side { display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-width: 0; position: relative }
 .side::before { content: ''; position: absolute; inset: 0; opacity: .22; background: linear-gradient(90deg, transparent, var(--c)) }
 .side.away { flex-direction: row-reverse; text-align: left }
@@ -477,7 +477,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .row-enter-active { transition: all .55s cubic-bezier(.2,.9,.25,1.15) }
 .row-enter-from { opacity: 0; transform: translateY(-14px) scale(.97) }
 .node { margin: auto; min-width: 46px; height: 26px; padding: 0 6px; border-radius: 13px; display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; color: #FFD36B; background: #071733; border: 1px solid rgba(245,184,46,.55); box-shadow: 0 0 14px rgba(245,184,46,.18) }
-.card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 11px; border-radius: 14px; background: rgba(16,40,79,.62); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); box-shadow: 0 10px 24px rgba(0,0,0,.35) }
+.card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 11px; border-radius: 14px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); box-shadow: 0 10px 24px rgba(0,0,0,.35) }
 .ico { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09) }
 .ico :deep(svg) { width: 22px; height: 22px }
 .card .tx { min-width: 0; display: grid }
@@ -496,7 +496,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 
 .moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .35s }
 .moment.on { opacity: 1 }
-.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7); backdrop-filter: blur(6px) }
+.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7) }
 .mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(14px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.25,1.15) }
 .moment.on .mbox { transform: none }
 /* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */
@@ -511,7 +511,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .lower .who span { color: #C9D2E1; font-size: 12px }
 .lower .min { margin-inline-start: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; opacity: .9 }
 
-.mic { position: absolute; z-index: 9; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-radius: 16px; background: linear-gradient(90deg, rgba(10,31,66,.94), rgba(7,23,51,.94)); border: 1px solid rgba(245,184,46,.35); box-shadow: 0 14px 30px rgba(0,0,0,.5); backdrop-filter: blur(10px); transform: translateY(140%); transition: transform .45s cubic-bezier(.2,.9,.25,1.1) }
+.mic { position: absolute; z-index: 9; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-radius: 16px; background: linear-gradient(90deg, rgba(10,31,66,.94), rgba(7,23,51,.94)); border: 1px solid rgba(245,184,46,.35); box-shadow: 0 14px 30px rgba(0,0,0,.5); transform: translateY(140%); transition: transform .45s cubic-bezier(.2,.9,.25,1.1) }
 .mic.on { transform: none }
 .mic .m { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #FFD36B, #C08A0C) }
 .mic .m svg { width: 19px; height: 19px }
@@ -534,14 +534,14 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .team b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4.4cqw, 28px) }
 .team small { color: #93A3BF; font-weight: 600 }
 .vs { font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 800; font-size: clamp(32px, 9cqw, 62px); color: #F5B82E; text-shadow: 0 0 24px rgba(245,184,46,.35) }
-.stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09) }
+.stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09) }
 .st { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-align: center }
 .st > * { grid-row: 2 }
 .st .lbl { grid-column: 1 / -1; grid-row: 1; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 12px; color: #93A3BF; margin-bottom: -6px }
 .st .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); display: flex; overflow: hidden }
 .st .bar i { display: block; height: 100% }
 .keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(100%, 560px) }
-.key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
+.key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
 .key .no { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; color: var(--c); width: 32px; text-align: center }
 .key b { font-family: 'Alexandria', sans-serif; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .key span span { color: #93A3BF; font-size: 12px }
@@ -579,7 +579,6 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .mc.scene .atmo::before, .mc.scene .wave i, .mc.scene .live i::after { animation-play-state: paused }
 /* The smooth mode for weak phones [X30]: solid panels instead of blurred glass, no moving beams, lighter shadows. */
 .smooth .atmo::before { display: none }
-.smooth .sb-in, .smooth .card, .smooth .mic, .smooth .moment::before { backdrop-filter: none }
 .smooth .sb-in { background: rgba(16,40,79,.94); box-shadow: 0 8px 18px rgba(0,0,0,.35) }
 .smooth .card { background: #10284F; box-shadow: none }
 .smooth .card.goal { background: linear-gradient(100deg, #4a3a12, #10284F 60%) }
