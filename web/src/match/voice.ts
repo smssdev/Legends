@@ -8,9 +8,9 @@
 
 export type Lang = 'en' | 'ar'
 export type Part = { key: string; club?: string }
-export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang; real?: RealKind; moment?: string; slot?: string }
+export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang; real?: RealKind }
 /** A real phrase's moment [X37]: the commentator's own recorded words (tools/commentary/real_phrases.py). */
-export type RealKind = 'goal' | 'goal_big' | 'magic' | 'slow'
+export type RealKind = 'goal' | 'goal_big'
 type Pack = { buf: AudioBuffer; map: Record<string, [number, number]> }
 type Clip = { pack: Pack; at: [number, number]; rate: number }
 
@@ -36,7 +36,7 @@ export function surname(full: string) {
  * vars: {p, q} player ids, A the side the moment belongs to, n a number.
  */
 export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null; x: boolean; vars: any; m?: string; s?: string }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
-  if (lang === 'ar') return l.ar ? { lang, text: l.ar, parts: [{ key: phraseKey(l.ar) }], excited: l.x, moment: l.m, slot: l.s } : null
+  if (lang === 'ar') return l.ar ? { lang, text: l.ar, parts: [{ key: phraseKey(l.ar) }], excited: l.x } : null
   if (!l.en) return null
   const v = l.vars, other = v.A === 'home' ? 'away' : 'home'
   const parts: Part[] = []
@@ -66,39 +66,15 @@ const BASE = import.meta.env.BASE_URL + 'commentary/'
  * The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the six full voices. The sixth
  * (hafid) is the default [X9]. Shown by their commentators' names, at the owner's decision (2026-10-25, PLAN 11).
  */
-export const AR_VOICES = ['voice-6', 'voice-7', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
+export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
 export type ArVoice = (typeof AR_VOICES)[number]
 export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
 // In the order of tools/commentary/arabic_voice.py's VOICES (voice-1 is ali ... voice-6 is hafid).
 const AR_NAMES: Record<ArVoice, string> = {
-  'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', 'voice-7': 'الشوالي حقيقي', base: 'الأساسي',
+  'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', base: 'الأساسي',
 }
 export const arVoiceName = (v: ArVoice) => AR_NAMES[v] + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : '')
 const GAP = 0.07
-
-/**
- * [X41] The real voice: the kind of real phrase each line of the table becomes (moment, then slot), when the voice is
- * a recorded commentator's own match (voice-7). A kind with no phrases falls back to the next kind, then to the
- * commentator's voice of written lines (voice-2), so he is never silent.
- */
-const REAL_KIND: Record<string, Partial<Record<'pre' | 'key' | 'post', string>> | string> = {
-  goal: { pre: 'attack', key: 'goal', post: 'goal_post' }, header: { pre: 'attack', key: 'goal', post: 'goal_post' },
-  free_kick_goal: { pre: 'freekick', key: 'goal', post: 'goal_post' }, penalty_goal: { pre: 'penalty', key: 'goal', post: 'goal_post' },
-  save: { pre: 'attack', key: 'save', post: 'save' }, free_kick_save: { pre: 'freekick', key: 'save', post: 'save' },
-  penalty_save: { pre: 'penalty', key: 'save', post: 'save' },
-  miss: { pre: 'attack', key: 'miss', post: 'miss' }, free_kick_miss: { pre: 'freekick', key: 'miss', post: 'miss' },
-  blocked: { pre: 'attack', key: 'miss', post: 'miss' }, post: { pre: 'attack', key: 'post', post: 'miss' },
-  offside: 'offside', corner_header: { pre: 'corner', key: 'attack', post: 'calm' }, corner_claim: { pre: 'corner', key: 'save', post: 'calm' },
-  yellow: { pre: 'foul', key: 'card', post: 'card' }, red: { pre: 'foul', key: 'card', post: 'card' }, second_yellow: { pre: 'foul', key: 'card', post: 'card' },
-  sub: 'sub', injury: 'injury', coach: 'calm', kickoff: 'kickoff', halftime: 'half', fulltime: 'full', extra_time: 'half',
-  penalties: 'penalty', stoppage: 'calm', shootout: 'penalty', attack: 'attack',
-}
-const REAL_NEXT: Record<string, string> = { post: 'miss', goal_post: 'goal', freekick: 'attack', penalty: 'attack', corner: 'attack', offside: 'foul', card: 'foul', injury: 'calm', sub: 'calm', kickoff: 'calm', half: 'calm', full: 'calm', foul: 'calm', attack: 'calm', save: 'attack', miss: 'attack' }
-export function realKind(moment?: string, slot?: string): string | null {
-  const k = moment ? REAL_KIND[moment] : null
-  if (!k) return null
-  return typeof k === 'string' ? k : (k[slot as 'pre' | 'key' | 'post'] ?? null)
-}
 
 export class Commentator {
   on = false
@@ -116,6 +92,7 @@ export class Commentator {
   private timer = 0
   private endsAt = 0
   private realUntil = 0
+  private lineGain: GainNode | null = null
   private utter: SpeechSynthesisUtterance | null = null
   private synthVoice: Record<Lang, SpeechSynthesisVoice | null> = { en: null, ar: null }
   private readonly synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
@@ -150,32 +127,13 @@ export class Commentator {
 
   // The voice's real phrases [X37], beside its pack: only the voices the team gave recordings for have one.
   private realPack() { return this.realName || 'ar/none/real' }
-  /** voice-7: every line is a real phrase of its moment's kind, and only his: where none fits, he lets the crowd talk. */
-  private full = false
   private realName = 'ar/voice-6/real'
-  /** The real phrases said lately, so the same one does not come back too soon. */
-  private recent: string[] = []
-
-  private pickReal(pack: Pack, kind: string | null): [number, number] | null {
-    const map = pack.map as unknown as Record<string, [number, number][]>
-    for (let k = kind, n = 0; k && n < 4; k = REAL_NEXT[k] ?? null, n++) {
-      const list = map[k]
-      if (!list?.length) continue
-      const fresh = list.filter((at) => !this.recent.includes(at.join()))
-      const at = (fresh.length ? fresh : list)[Math.floor(Math.random() * (fresh.length || list.length))]
-      this.recent = [at.join(), ...this.recent].slice(0, 24)
-      return at
-    }
-    return null
-  }
 
   /**
    * One of the commentator's real phrases for this moment, at random. A voice without them says nothing more (its
    * written line stays); with them, the excited ones (the goal) take the place of the written call.
    */
   real(kind: RealKind) {
-    // The real voice already says his goal on the goal's line.
-    if (this.full && (kind === 'goal' || kind === 'goal_big')) return
     const pack = this.ready.get(this.realPack())
     const list = (pack?.map as unknown as Record<string, [number, number][]> | undefined)?.[kind]
     if (!this.on || !pack || !list?.length) return
@@ -185,9 +143,8 @@ export class Commentator {
 
   /** Which recorded Arabic voice says the Arabic lines. */
   setArVoice(v: ArVoice) {
-    this.full = v === 'voice-7'
-    this.arPack = v === 'base' ? 'ar/phrases' : this.full ? 'ar/voice-7/real' : `ar/${v}/phrases`
-    this.realName = this.full ? 'ar/voice-7/real' : v === 'base' ? '' : `ar/${v}/real`
+    this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
+    this.realName = v === 'base' ? '' : `ar/${v}/real`
     if (this.ctx && this.on) { this.pack(this.arPack); this.pack(this.realPack()) }
   }
 
@@ -214,10 +171,14 @@ export class Commentator {
     if (!this.busy) this.next()
   }
 
+  // A line cut short fades out in a breath instead of stopping mid-word, as a commentator lets a sentence go.
   private cut() {
     clearTimeout(this.timer)
-    for (const s of this.sources) try { s.stop() } catch {}
+    const now = this.ctx?.currentTime ?? 0
+    this.lineGain?.gain.setTargetAtTime(0, now, 0.05)
+    for (const s of this.sources) try { s.stop(now + 0.25) } catch {}
     this.sources = []
+    this.lineGain = null
     if (this.utter) { this.utter = null; this.synth?.cancel() }
   }
 
@@ -265,14 +226,6 @@ export class Commentator {
       const pack = this.ready.get(this.realPack())
       return pack ? [{ pack, at: fixed, rate: 1 }] : null
     }
-    // [X41] The real voice: the line's moment as one of his own phrases.
-    if (this.full && line.lang === 'ar') {
-      const pack = this.ready.get(this.realPack())
-      if (pack === undefined) { this.pack(this.realPack()); return 'wait' }
-      const at = pack ? this.pickReal(pack, realKind(line.moment, line.slot)) : null
-      // Never another voice in his place: a line he has no phrase for is dropped.
-      return pack && at ? [{ pack, at, rate: 1 }] : 'wait'
-    }
     const phrasePack = line.lang === 'ar' ? this.arPack : 'phrases'
     const out: Clip[] = []
     for (const p of line.parts) {
@@ -289,11 +242,15 @@ export class Commentator {
   private play(clips: Clip[]) {
     const ctx = this.ctx!
     let t = ctx.currentTime + 0.03
+    // Each line has its own gain, so cutting it fades only this line, never the next one.
+    const g = ctx.createGain()
+    g.connect(this.out!)
+    this.lineGain = g
     this.sources = clips.map(({ pack, at, rate }) => {
       const s = ctx.createBufferSource()
       s.buffer = pack.buf
       s.playbackRate.value = rate
-      s.connect(this.out!)
+      s.connect(g)
       s.start(t, at[0], at[1])
       t += at[1] / rate + GAP
       return s

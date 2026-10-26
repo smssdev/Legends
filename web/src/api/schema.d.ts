@@ -4415,6 +4415,8 @@ export interface paths {
          *     not yet made (`target_tick`); one that arrives while a minute is being made goes in the one after. The engine checks
          *     it there, and a rejected order comes back in that minute's `rejected` for its own coach only. The same
          *     `idempotency_key` again changes nothing (200, `duplicate`). While the coach's screen is away, his assistant manages.
+         *     [X42] Only in a window: before kick-off, at half-time, in extra time's breaks, or the break after minutes 15, 30, 60
+         *     and 75 (`timing.windows`, `window_seconds`; the minute that opens one carries `window: true`). Between them, 409.
          */
         post: {
             parameters: {
@@ -6291,7 +6293,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description The match has finished */
+                /** @description The match has finished, or (live) it is playing between two of the coach's windows [X42] */
                 409: {
                     headers: {
                         [name: string]: unknown;

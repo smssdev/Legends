@@ -19,8 +19,7 @@ import tempfile
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PATCHES = os.path.join(ROOT, 'audio', 'raw', 'patches')
 # The folder of each commentator's recordings, and his voice in the game (tools/commentary/arabic_voice.py VOICES).
-VOICE_OF = {'ali': 'voice-1', 'chawali': 'voice-2', 'fahad': 'voice-3', 'faris': 'voice-4', 'medhat': 'voice-5', 'hafid': 'voice-6',
-            'shawalli': 'voice-7'}
+VOICE_OF = {'ali': 'voice-1', 'chawali': 'voice-2', 'fahad': 'voice-3', 'faris': 'voice-4', 'medhat': 'voice-5', 'hafid': 'voice-6'}
 # [X41] A whole match gives far more than a phone should download: the clearest phrases of each kind up to this many
 # (about 450 phrases, some 5 MB at speech quality). The rest stay in the table for later.
 CAP = {'goal': 25, 'goal_post': 30, 'attack': 70, 'save': 30, 'miss': 40, 'post': 12, 'foul': 35, 'card': 15, 'corner': 20,
@@ -71,7 +70,7 @@ def build(name):
 
 
 def main():
-    names = sys.argv[1:] or sorted(n for n in os.listdir(PATCHES) if os.path.exists(os.path.join(PATCHES, n, 'cuts.csv')))
+    names = sys.argv[1:] or sorted(n for n in os.listdir(PATCHES) if n in VOICE_OF and os.path.exists(os.path.join(PATCHES, n, 'cuts.csv')))
     for n in names:
         build(n)
 

@@ -1,8 +1,12 @@
-"""A whole commentator from one recorded match [X41]: «الشوالي حقيقي» (voice-7) from audio/raw/patches/shawalli/.
+"""His voice from one recorded match [X41]: audio/raw/patches/shawalli/.
 
     python3 tools/commentary/real_voice.py transcribe   # the phrases and their words (Whisper, slow: an hour or two)
     python3 tools/commentary/real_voice.py classify     # writes the cuts table: audio/raw/patches/shawalli/cuts.csv
-    python3 tools/commentary/real_phrases.py shawalli   # cuts it into web/public/commentary/ar/voice-7/real.*
+    python3 tools/commentary/real_voice.py reference    # his voice, calm and excited, for cloning: .../reference/*.wav
+
+The phrases of another match never fit ours (the owner, 2026-10-26: «التعليق في وادي والمباراة في وادي آخر»), so
+«الشوالي حقيقي» (voice-7) is gone: «عصام الشوالي» (voice-2) says this match's own lines, and this recording is the
+reference to clone his voice again from, calm and screaming.
 
 transcribe: a voice detector cuts the recording at the commentator's own pauses into phrases of up to 7 seconds,
 and Whisper (the base model, on this machine; nothing is sent anywhere) writes each one's words, beside its loudness.
@@ -131,5 +135,31 @@ def classify():
     print('names left out (the most frequent):', ', '.join(sorted(common, key=lambda w: -count[w])[:25]))
 
 
+def reference():
+    """His voice for cloning: the clearest calm phrases and his loudest screams of the match, joined in one wav
+    per tone (calm.wav, excited.wav: a cloning tool takes 6 to 30 seconds of one voice, or the whole for training)."""
+    with open(PHRASES, encoding='utf-8') as f:
+        phrases = [p for p in (json.loads(line) for line in f if line.strip()) if p['start'] >= MATCH_FROM]
+    loud = sorted(p['peak'] for p in phrases)
+    calm = sorted((p for p in phrases if p['peak'] < loud[int(len(loud) * 0.6)] and p['end'] - p['start'] >= 4.5), key=lambda p: -p['lp'])[:10]
+    excited = sorted((p for p in phrases if p['peak'] >= loud[int(len(loud) * 0.9)] and p['end'] - p['start'] >= 2.5), key=lambda p: -p['lp'])[:8]
+    out = os.path.join(FOLDER, 'reference')
+    os.makedirs(out, exist_ok=True)
+    for tone, chosen in (('calm', calm), ('excited', excited)):
+        files = []
+        for i, p in enumerate(sorted(chosen, key=lambda p: p['start']), 1):
+            files.append(os.path.join(out, f'{tone}-{i}.wav'))
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(p['start']), '-to', str(p['end']), '-i', os.path.join(FOLDER, SOURCE),
+                            '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ac', '1', '-ar', '24000', files[-1]], check=True)
+        listing = os.path.join(out, 'list.txt')
+        with open(listing, 'w') as f:
+            f.writelines(f"file '{x}'\n" for x in files)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', listing, os.path.join(out, f'{tone}.wav')], check=True)
+        os.remove(listing)
+        for x in files:
+            os.remove(x)
+    print(f'{len(calm)} calm and {len(excited)} excited -> {out}')
+
+
 if __name__ == '__main__':
-    {'transcribe': transcribe, 'classify': classify}[sys.argv[1] if len(sys.argv) > 1 else 'classify']()
+    {'transcribe': transcribe, 'classify': classify, 'reference': reference}[sys.argv[1] if len(sys.argv) > 1 else 'classify']()

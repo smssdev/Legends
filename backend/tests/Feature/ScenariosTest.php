@@ -115,14 +115,16 @@ class ScenariosTest extends TestCase
 
         $match = DB::table('matches')->where('fixture_id', $this->fixture->id)->first();
         $side = $this->fixture->home_id === $this->league['my_club_id'] ? 'home' : 'away';
-        // The coach is watching: it still goes in.
-        [$actions, $rows] = MatchOrders::auto($match->id, $this->state($match, 61, 0, 1), [$side => 'coach', ($side === 'home' ? 'away' : 'home') => 'cpu']);
+        // Between the windows it waits [X42]: nothing at minute 59.
+        $this->assertSame([[], []], MatchOrders::auto($match->id, $this->state($match, 59, 0, 1), [$side => 'coach', ($side === 'home' ? 'away' : 'home') => 'cpu']));
+        // The coach is watching: in the window after minute 60 it still goes in.
+        [$actions, $rows] = MatchOrders::auto($match->id, $this->state($match, 60, 0, 1), [$side => 'coach', ($side === 'home' ? 'away' : 'home') => 'cpu']);
         $mine = array_values(array_filter($actions, fn ($a) => $a['team'] === $side));
         $this->assertSame([['type' => 'tactics', 'team' => $side, 'tactics' => ['pressing' => 90]]], $mine);
         // Once only: what went in is kept (as the live runner does).
         DB::table('match_actions')->insert($rows);
         MatchOrders::forget($match->id);
-        [$again] = MatchOrders::auto($match->id, $this->state($match, 62, 0, 1), [$side => 'coach', ($side === 'home' ? 'away' : 'home') => 'cpu']);
+        [$again] = MatchOrders::auto($match->id, $this->state($match, 75, 0, 1), [$side => 'coach', ($side === 'home' ? 'away' : 'home') => 'cpu']);
         $this->assertSame([], array_values(array_filter($again, fn ($a) => $a['team'] === $side)));
     }
 

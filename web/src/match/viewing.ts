@@ -24,12 +24,15 @@ function keep(key: string, value: string) {
 }
 
 // This device's choice: a guest's only one, and a signed-in coach's until their account answers.
-const guestVoice = ref<ArVoice>(local('legends.arVoice', AR_VOICES, DEFAULT_AR_VOICE))
+// [X41] «الشوالي حقيقي» (voice-7, phrases from another match's recording) became «عصام الشوالي» again: his lines of
+// this match, with his real scream on a goal. A coach who chose it hears voice-2.
+const asVoice = (v: string | null | undefined) => (v === 'voice-7' ? 'voice-2' : v) as ArVoice | undefined
+const guestVoice = ref<ArVoice>(local('legends.arVoice', [...AR_VOICES, 'voice-7'], DEFAULT_AR_VOICE).replace('voice-7', 'voice-2') as ArVoice)
 const guestView = ref<MatchView>(local<MatchView>('legends.matchView', ['cartoon', 'unity'], 'cartoon'))
 
 export function useViewing() {
   const auth = useAuth()
-  const commentator = computed<ArVoice>(() => (auth.user?.viewing?.commentator as ArVoice | undefined) ?? guestVoice.value)
+  const commentator = computed<ArVoice>(() => asVoice(auth.user?.viewing?.commentator) ?? guestVoice.value)
   const chosenView = computed<MatchView>(() => auth.user?.viewing?.match_view ?? guestView.value)
   const unityReady = computed(() => !!auth.user?.viewing?.unity_ready)
   /** What plays: Unity only once its web build is deployed (Sprint 8); until then the cartoon one. */

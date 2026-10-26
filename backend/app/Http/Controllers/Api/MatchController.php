@@ -10,6 +10,7 @@ use App\League\MatchSocial;
 use App\League\Members;
 use App\League\TeamSheet;
 use App\Models\Club;
+use App\Simulator\CoachWindows;
 use App\Simulator\Simulator;
 use App\Support\Activity;
 use App\Support\GameClock;
@@ -35,7 +36,8 @@ class MatchController extends Controller
             'mode' => $m->mode, 'status' => $m->status, 'you' => $you, 'started' => true,
             'finished' => $m->status === 'finished', 'score' => ['home' => $m->home_goals, 'away' => $m->away_goals], 'tick' => $m->tick,
             'timing' => ['tick_ms' => (int) $state['cfg']['match']['tick_ms'], 'extra_time_tick_ms' => (int) $state['cfg']['match']['extra_time_tick_ms'],
-                'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds']],
+                'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
+                'windows' => $state['cfg']['match']['windows'] ?? [], 'window_seconds' => (int) ($state['cfg']['match']['window_seconds'] ?? 0)],
             'clubs' => ['home' => $state['teams']['home']['club'], 'away' => $state['teams']['away']['club']],
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
@@ -174,7 +176,10 @@ class MatchController extends Controller
             'tactics' => $data['tactics'] ?? null, 'formation' => $data['formation'] ?? null,
             'slots' => isset($data['formation']) ? $formations[$data['formation']] : null], fn ($v) => $v !== null);
         MatchOrders::watching($m->id, $you);
-        $tick = max((int) $m->tick, (int) (Cache::get("league-match:{$m->id}")['state']['tick'] ?? 0)) + 1;
+        $state = Cache::get("league-match:{$m->id}")['state'] ?? json_decode($m->state, true);
+        // [X42] Only in a window: before kick-off, at half-time, or the break after minutes 15, 30, 60 and 75.
+        abort_unless(CoachWindows::open($state), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و60 و75، وفي الاستراحة.');
+        $tick = max((int) $m->tick, (int) ($state['tick'] ?? 0)) + 1;
         $new = MatchOrders::give($m->id, $you, $request->user()->id, $data['idempotency_key'], $action, $tick);
         $row = DB::table('match_actions')->where('match_id', $m->id)->where('idempotency_key', $data['idempotency_key'])->first();
 

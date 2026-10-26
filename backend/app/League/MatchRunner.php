@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
+use App\Simulator\CoachWindows;
 use App\Simulator\Commentary;
 use App\Simulator\MatchChoreographer;
 use App\Simulator\MomentClock;
@@ -262,23 +263,16 @@ class MatchRunner
         // its own coach only (Simulator::redact), never the broadcast.
         $tick = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
             'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
-            'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
+            'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
+            // [X42] Play stops after this minute: the coach's window.
+            'window' => CoachWindows::window($state['out'], $state['cfg']['match'])];
 
         return [$state, $choreo['ball'], $tick];
     }
 
     private static function pause(array $tick, array $timing): int
     {
-        foreach ($tick['events'] as $e) {
-            if ($e['type'] === 'period' && $e['name'] === 'halftime') {
-                return $timing['halftime_seconds'] * 1000;
-            }
-            if ($e['type'] === 'period' && in_array($e['name'], ['extra_time', 'extra_time_half', 'penalties'], true)) {
-                return ($timing['extra_time_break_seconds'] ?? 10) * 1000;
-            }
-        }
-
-        return 0;
+        return CoachWindows::pauseMs($tick, $timing);
     }
 
     private static function tagged(array $tick): array

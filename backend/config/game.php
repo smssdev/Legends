@@ -25,6 +25,9 @@ return [
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
         'subs' => 3, 'extra_time_subs' => 1,
+        // [X42] The coach's windows, the owner's (2026-10-26): play stops this long after these minutes, and only then
+        // (and before kick-off and at half-time) may a coach change his line-up, tactics or players (CoachWindows).
+        'windows' => [15, 30, 60, 75], 'window_seconds' => 30,
         // كل النسب بنقاط الأساس (10000 = 100%) لأن المحرك يعمل بأرقام صحيحة فقط
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,

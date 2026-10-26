@@ -7,6 +7,7 @@ use App\League\MatchOrders;
 use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\Models\User;
+use App\Simulator\CoachWindows;
 use App\Support\GameClock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -76,6 +77,19 @@ class MatchOrdersTest extends TestCase
         }
     }
 
+    /** Play on to the coach's window after minute $minute [X42]: the minute is made, the break before the next. */
+    private function playToWindow(object $match, int $minute): void
+    {
+        while (true) {
+            $state = Cache::get("league-match:{$match->id}")['state'] ?? null;
+            if ($state && isset($state['out']) && $state['out']['minute'][0] >= $minute && CoachWindows::open($state)) {
+                return;
+            }
+            MatchOrders::watching($match->id, $this->side);
+            $this->step(500);
+        }
+    }
+
     private function order(object $match, array $body, int $status = 202)
     {
         return $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body + ['idempotency_key' => uniqid('k', true)])->assertStatus($status);
@@ -92,12 +106,12 @@ class MatchOrdersTest extends TestCase
     {
         $match = $this->kickOff();
         [$on, $bench] = $this->myPlayers($match);
-        $this->playTo($match, 20);
+        $this->playToWindow($match, 15);
         $this->order($match, ['type' => 'tactics', 'tactics' => ['style' => 85, 'pressing' => 80, 'plan' => 'wings']]);
-        $this->playTo($match, 35);
+        $this->playToWindow($match, 30);
         $this->order($match, ['type' => 'sub', 'out' => $on[3]['id'], 'in' => $bench[0]['id']]);
         $this->order($match, ['type' => 'formation', 'formation' => '4-4-2A']);
-        // An order that arrives while a minute is being made: it was meant for a minute already made, so it goes in the next.
+        // An order that arrives as the window closes: it was meant for a minute already made, so it waits for the next window.
         $late = DB::table('matches')->where('id', $match->id)->value('tick');
         MatchOrders::give($match->id, $this->side, $this->owner->id, 'late-one', ['type' => 'tactics', 'tactics' => ['tempo' => 90]], (int) $late);
         $this->playTo($match, 200);
@@ -129,14 +143,32 @@ class MatchOrdersTest extends TestCase
         $this->assertArrayHasKey('frames', $replay['ticks'][0]);
     }
 
+    public function test_play_stops_after_minute_15_for_the_coachs_window(): void
+    {
+        $match = $this->kickOff();
+        $this->assertSame([15, 30, 60, 75], $this->actingAs($this->owner)->getJson("/api/v1/matches/{$match->id}")->json('timing.windows'));
+        $this->playToWindow($match, 15);
+        $live = Cache::get("league-match:{$match->id}");
+        $window = collect($live['recent'])->last();
+        $this->assertSame([15, 0], $window['minute']);
+        $this->assertTrue($window['window']);
+        // The next minute comes after the scene and the 30 s break.
+        $this->assertSame($window['at'] + $window['moment']['ms'] + 30000, $live['next_at']);
+        $this->order($match, ['type' => 'tactics', 'tactics' => ['tempo' => 85]]);
+        $this->playTo($match, (int) DB::table('matches')->where('id', $match->id)->value('tick') + 2);
+        // It went in with the first minute after the window; now the match plays on without changes.
+        $this->assertSame($window['tick'] + 1, (int) DB::table('match_actions')->where('match_id', $match->id)->where('source', 'coach')->value('applied_tick'));
+        $this->order($match, ['type' => 'tactics', 'tactics' => ['tempo' => 20]], 409);
+    }
+
     public function test_a_restarted_runner_gives_the_orders_again_at_the_same_minutes(): void
     {
         $match = $this->kickOff();
         [$on, $bench] = $this->myPlayers($match);
-        $this->playTo($match, 50);
+        $this->playToWindow($match, 60);
         $this->order($match, ['type' => 'sub', 'out' => $on[1]['id'], 'in' => $bench[1]['id']]);
         $this->order($match, ['type' => 'tactics', 'tactics' => ['style' => 15, 'tempo' => 20]]);
-        $this->playTo($match, 65);
+        $this->playTo($match, (int) DB::table('matches')->where('id', $match->id)->value('tick') + 6);
         // The runner dies with its cache; it comes back three minutes later.
         Cache::forget("league-match:{$match->id}");
         Carbon::setTestNow(GameClock::now()->addMinutes(3));
@@ -179,6 +211,10 @@ class MatchOrdersTest extends TestCase
         $match = $this->kickOff();
         $this->playTo($match, 5);
         $body = ['type' => 'tactics', 'tactics' => ['style' => 70], 'idempotency_key' => 'same-key'];
+        // [X42] Between the windows the match plays on: no change.
+        $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertStatus(409)
+            ->assertJsonPath('message', 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و60 و75، وفي الاستراحة.');
+        $this->playToWindow($match, 15);
         $first = $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertStatus(202)->json();
         $again = $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertOk()->json();
         $this->assertSame($first['target_tick'], $again['target_tick']);
