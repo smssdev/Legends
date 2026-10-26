@@ -38,6 +38,16 @@ if [ -n "${APP_KEY_SEED:-}" ]; then
   export APP_KEY
 fi
 
+# [X43] The game in Supabase (PostgreSQL, free): DATABASE_URL is its connection string (Supabase → Connect → Session
+# pooler). Then the database is no longer on Render's disk, nothing is copied to B2, and nothing is lost on a restart.
+# The first start with it moves the league from B2 into Supabase once (db:to-supabase); after that B2 is only read
+# again if Supabase is ever empty. The cache stays a file here (it rebuilds itself).
+supabase=
+if [ -n "${DATABASE_URL:-}" ]; then
+  export DB_CONNECTION=pgsql DB_URL="$DATABASE_URL" DB_QUEUE_CONNECTION=pgsql DB_SSLMODE="${DB_SSLMODE:-require}"
+  supabase=1
+fi
+
 saved=
 if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}" ] && [ -n "${B2_APPLICATION_KEY:-}" ]; then
   endpoint="${B2_ENDPOINT#https://}"
@@ -56,8 +66,10 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
   fi
 
   # Both databases from B2 into place, or nothing moved (each comes down beside its file first).
+  dbs="legends queue"
+  [ -n "$supabase" ] && dbs="legends"
   restore_all() {
-    for db in legends queue; do
+    for db in $dbs; do
       file="database/$db.sqlite"
       rm -f "$file.restore"
       # shellcheck disable=SC2086
@@ -70,7 +82,7 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
         return 1
       fi
     done
-    for db in legends queue; do
+    for db in $dbs; do
       file="database/$db.sqlite"
       if [ -f "$file.restore" ]; then
         rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
@@ -84,6 +96,11 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
   # (nothing would be copied) or start an empty game over the league. The site shows a maintenance page instead
   # (deploy/render/maintenance.php, so Render keeps it up) and tries B2 again every 10 minutes; once it answers, the
   # page goes and the game starts with the league as it was, without a new deploy.
+  # On Supabase the game is read from B2 only when Supabase holds none yet (the move, X43).
+  if [ -n "$supabase" ] && php artisan db:to-supabase --check; then
+    restore_all() { return 0; }
+    echo "Saved game: in Supabase (B2 not needed)"
+  fi
   if ! restore_all; then
     php -S 0.0.0.0:"${PORT}" /app/maintenance.php > /dev/null 2>&1 &
     page=$!
@@ -101,8 +118,26 @@ mkdir -p storage/logs
 
 # A copy of the game as it is before this deploy's migrations, downloadable from the admin panel (النسخ) until the
 # next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
-if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
-php artisan migrate --force
+if [ -n "$supabase" ]; then
+  if php artisan db:to-supabase --check; then
+    php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"
+    php artisan migrate --force
+  else
+    # [X43] The move: Supabase made ready, then the league from the file B2 brought back, all or nothing. If it
+    # fails Supabase stays empty and the game does not start without its league: the maintenance page stays and
+    # the move is tried again every 10 minutes (the file and B2 are only read).
+    php artisan migrate --force
+    until php artisan db:to-supabase; do
+      [ -z "${page:-}" ] && { php -S 0.0.0.0:"${PORT}" /app/maintenance.php > /dev/null 2>&1 & page=$!; }
+      echo "Supabase: the move failed (above); the maintenance page stays, trying again in 10 minutes"
+      sleep 600
+    done
+    if [ -n "${page:-}" ]; then kill "$page" 2> /dev/null || true; sleep 1; fi
+  fi
+else
+  if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
+  php artisan migrate --force
+fi
 php artisan data:import --add
 php artisan config:cache
 
@@ -119,7 +154,10 @@ esac
 if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on"; else echo "Google sign-in: off"; fi
 
 # تشغيل السيرفر بناءً على حالة اتصال Backblaze B2
-if [ -n "$saved" ]; then
+if [ -n "$supabase" ]; then
+  echo "Saved game: in Supabase, kept across every restart and deploy"
+  exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
+elif [ -n "$saved" ]; then
   echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"
   exec litestream replicate -config /app/litestream.yml -exec "php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"
 else

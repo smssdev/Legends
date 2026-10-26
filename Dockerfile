@@ -25,10 +25,11 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 FROM php:8.4-cli-alpine
 WORKDIR /app/backend
 # GD makes the accounts' pictures small squares (App\Support\Avatar).
-RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype \
- && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
+# pdo_pgsql: the game's database in Supabase (PostgreSQL) [X43].
+RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
+ && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev postgresql-dev \
  && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
- && docker-php-ext-install -j"$(nproc)" gd \
+ && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql \
  && apk del .gd-build
 # Litestream (free, open source): copies every change to the databases to B2 and brings it back on start.
 ARG LITESTREAM_VERSION=0.3.13

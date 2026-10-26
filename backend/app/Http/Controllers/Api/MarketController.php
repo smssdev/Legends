@@ -39,7 +39,7 @@ class MarketController extends Controller
                 'master_players.pac', 'master_players.sho', 'master_players.pas', 'master_players.dri', 'master_players.def', 'master_players.phy',
                 'master_players.gk_diving', 'master_players.gk_handling', 'master_players.gk_kicking', 'master_players.gk_positioning', 'master_players.gk_reflexes')
             ->when($data['line'] ?? null, fn ($q, $line) => $q->where('master_players.line', $line))
-            ->when($data['q'] ?? null, fn ($q, $name) => $q->where('master_players.name', 'like', '%'.str_replace(['%', '_'], '', $name).'%'));
+            ->when($data['q'] ?? null, fn ($q, $name) => $q->whereLike('master_players.name', '%'.str_replace(['%', '_'], '', $name).'%'));
         if ($source === 'pool') {
             $q->whereNull('players.club_id')->where('players.in_pool', true);
             $bp = $cfg['buy_from_pool_bp'];

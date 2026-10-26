@@ -36,6 +36,38 @@ jobs:
       - run: vendor/bin/pint --test
       - run: php artisan test
 
+  postgres:
+    # [X43] The game runs on Supabase (PostgreSQL): every test there too. Supabase is PostgreSQL 15 and up.
+    name: Backend on PostgreSQL (Supabase)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env: { POSTGRES_USER: legends, POSTGRES_PASSWORD: legends, POSTGRES_DB: legends_test }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_CONNECTION: pgsql
+      DB_URL: pgsql://legends:legends@127.0.0.1:5432/legends_test
+      DB_QUEUE_CONNECTION: pgsql
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, sqlite3, pdo_pgsql, mbstring, intl, gd
+          coverage: none
+      - uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-8.4-${{ hashFiles('backend/composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+
   engine:
     name: Engine balance (short run)
     runs-on: ubuntu-latest
@@ -121,6 +153,18 @@ jobs:
           curl -sf -X POST -H 'Content-Type: application/json' -d '{"count":5}' "http://127.0.0.1:8000/api/v1/sim/matches/$id/ticks" | grep -q '"moment"'
       - if: failure()
         run: docker logs legends || true
+      # [X43] The same image on Supabase: an empty PostgreSQL gets the game's tables and the club data at start.
+      - name: Smoke test on PostgreSQL
+        run: |
+          docker rm -f legends
+          docker run -d --name pg --network host -e POSTGRES_PASSWORD=pg postgres:15
+          for i in $(seq 1 30); do docker exec pg pg_isready -U postgres > /dev/null 2>&1 && break; sleep 1; done
+          docker run -d --name legends-pg --network host -e DATABASE_URL=postgresql://postgres:pg@127.0.0.1:5432/postgres -e DB_SSLMODE=disable legends
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8000/api/v1/sim/leagues > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/api/v1/sim/leagues | grep -q 'Premier League'
+          docker exec pg psql -U postgres -tAc 'select count(*) from master_clubs' | grep -qv '^0$'
+      - if: failure()
+        run: docker logs legends-pg || true
 
   scripts:
     name: Server scripts (PowerShell parse)

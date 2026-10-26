@@ -15,6 +15,10 @@ services:
       # One key for every deploy, so sign-ins and encrypted values survive it (start.sh).
       - key: APP_KEY_SEED
         generateValue: true
+      # [X43] The game in Supabase (free PostgreSQL): its connection string (Connect → Session pooler). With it nothing
+      # is lost on a restart; the first start moves the league from B2 into it once.
+      - key: DATABASE_URL
+        sync: false
       # The saved game in Backblaze B2 (free up to 10 GB): without these the data is wiped on every restart.
       - key: B2_BUCKET
         sync: false

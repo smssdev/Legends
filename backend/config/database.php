@@ -103,8 +103,10 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
+            'search_path' => env('DB_SEARCH_PATH', 'public'),
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // [X43] Supabase is across the network: one round trip a query (no server-side prepare and deallocate).
+            'options' => extension_loaded('pdo_pgsql') ? [PDO::PGSQL_ATTR_DISABLE_PREPARES => true] : [],
         ],
 
         'sqlsrv' => [

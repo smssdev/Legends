@@ -60,6 +60,14 @@ class MatchRunner
      */
     public static function claim(string $token): bool
     {
+        // [X43] On Supabase two servers share the database (Render runs the old and the new one for a minute on a
+        // deploy), but not this cache: the database's own lock, held by the runner's connection until it stops.
+        if (DB::getDriverName() === 'pgsql' && ! self::$locked) {
+            if (! DB::selectOne('select pg_try_advisory_lock(?) as ok', [self::RUNNER_LOCK])->ok) {
+                return false;
+            }
+            self::$locked = true;
+        }
         $ttl = (int) config('game.matches.claim_seconds');
         if (Cache::add('matches-runner', $token, $ttl)) {
             return true;
@@ -78,7 +86,16 @@ class MatchRunner
         if (Cache::get('matches-runner') === $token) {
             Cache::forget('matches-runner');
         }
+        if (self::$locked) {
+            DB::select('select pg_advisory_unlock(?)', [self::RUNNER_LOCK]);
+            self::$locked = false;
+        }
     }
+
+    /** The key of the runner's lock on PostgreSQL [X43], and whether this process holds it. */
+    public const RUNNER_LOCK = 4_204_202;
+
+    private static bool $locked = false;
 
     /** One match's trouble (a busy database, a broken state) is logged and never holds up the others. */
     private static function guarded(callable $work): int

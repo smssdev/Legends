@@ -184,7 +184,12 @@ class AdminController extends Controller
      */
     public function downloadBackup(string $name): BinaryFileResponse
     {
-        $file = base_path("database/backups/$name/".basename((string) config('database.connections.sqlite.database')));
+        // [X43] On Supabase a backup is the game's rows in one file (db:backup); on SQLite, its database file.
+        $rows = base_path('database/backups/'.basename($name).'/legends.jsonl.gz');
+        if (is_file($rows)) {
+            return response()->download($rows, "legends-$name.jsonl.gz", ['Content-Type' => 'application/gzip']);
+        }
+        $file = base_path('database/backups/'.basename($name).'/'.basename((string) config('database.connections.sqlite.database')));
         abort_unless(is_file($file), 404, 'هذه النسخة غير موجودة.');
 
         return response()->download($file, "legends-$name.sqlite", ['Content-Type' => 'application/vnd.sqlite3']);

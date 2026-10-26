@@ -10,6 +10,14 @@ class SqliteSetupTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        if (config('database.default') !== 'sqlite') {
+            $this->markTestSkipped('The SQLite files only; on PostgreSQL (X43) CopierTest checks the backups.');
+        }
+    }
+
     private const CONNECTIONS = ['sqlite', 'cache_db', 'queue_db'];
 
     public function test_every_connection_uses_wal_foreign_keys_and_a_busy_timeout(): void

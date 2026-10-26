@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Database\Sql;
 use App\Economy\Economy;
 use App\Staff\Specialists;
 use App\Support\GameClock;
@@ -94,7 +95,7 @@ class Integrity
 
     private static function moraleDown(int $clubId, int $points): void
     {
-        DB::table('clubs')->where('id', $clubId)->update(['morale' => DB::raw('max('.(int) config('game.morale.min').', morale - '.$points.')')]);
+        DB::table('clubs')->where('id', $clubId)->update(['morale' => Sql::greatest('morale - '.$points, (int) config('game.morale.min'))]);
     }
 
     /** Whether this club sees the spies on it for this fixture: a lawyer of enough stars, or a security check paid. */

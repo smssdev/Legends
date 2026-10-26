@@ -1275,3 +1275,18 @@
 - **كيف يُختبر:** مباراة مباشرة مع صديق، ومحاولة تغيير التكتيك في الدقيقة 5 (معطل)، ثم في توقف الدقيقة 15. وفي «حسابي» المعلق عصام الشوالي والاستماع عند الهدف.
 - **الباقي:** إعادة استنساخ صوت الشوالي من المرجع (حمزة أو جهاز سليمان)، وزر «جاهز» لاستئناف الفترة مبكراً لم يُبنَ بعد.
 
+
+### X43 قاعدة البيانات في Supabase (2026-10-26)
+- **ما بُني:**
+  - `DATABASE_URL` في Render يجعل اللعبة على Supabase (PostgreSQL مجاني)، وبدونه تبقى على SQLite وB2 كما كانت (`deploy/render/start.sh`).
+  - **النقل مرة واحدة:** أول تشغيل يسترجع الدوري من B2، ويجهز الجداول (`migrate`)، ثم `php artisan db:to-supabase` ينسخ كل جدول بترتيب مفاتيحه في معاملة واحدة ويعدّ الصفوف في الطرفين (`App\Database\Copier`). وإن فشل يبقى Supabase فارغاً وصفحة الصيانة تعيد المحاولة كل 10 دقائق. وقاعدة فيها لعبة لا يُكتب فوقها.
+  - **الكتابة واحدة في المرة** كـ SQLite: كل معاملة تأخذ `pg_advisory_xact_lock` أولاً (`AppServiceProvider`).
+  - **القراءة كـ SQLite:** المنطقي يعود 1 أو 0، والصورة الثنائية نصاً (`App\Database\PostgresConnection`)، والنصوص بلا حد طول على PostgreSQL كما في SQLite (ترحيل `postgres_text_without_length`).
+  - **SQL واحد للاثنتين:** `App\Database\Sql` بدل `min(a, b)` و`max(a, b)`، و`whereLike` في البحث بالاسم.
+  - **استعلام برحلة واحدة** إلى Supabase (`PGSQL_ATTR_DISABLE_PREPARES`).
+  - **النسخ:** `db:backup` يكتب `legends.jsonl.gz` (يُنزَّل من لوحة الإدارة ← النسخ)، و`db:restore` يعيده إلى قاعدة فارغة.
+  - **الطابور** في Supabase، و**الذاكرة المؤقتة** ملف على Render.
+  - `Dockerfile`: `pdo_pgsql`. و`render.yaml`: `DATABASE_URL`. وCI: الاختبارات على PostgreSQL 15، وتجربة الصورة على PostgreSQL فارغ.
+- **الاختبارات:** `CopierTest` (النسخ كاملاً ومعدوداً، والصورة الثنائية، والمعرّفات الجديدة بعده، ولا كتابة فوق لعبة)، و`ImmediateTransactionTest` (قفل الكتابة على PostgreSQL)، و`LeagueClaimRaceTest` (السباقات بعمليات حقيقية على الاثنتين). واختبارات ملفات SQLite تُتخطى على PostgreSQL.
+- **كيف يُختبر:** الخطوات في `PLAN.md` 8.2، وفي Logs: `The game is in Supabase: ... rows` ثم بعد إعادة التشغيل `Saved game: in Supabase (B2 not needed)`. ومحلياً: `DB_CONNECTION=pgsql DB_URL=... php artisan test`.
+- **الباقي:** الخطوات 4 إلى 8 في `PLAN.md` 8.2 على سليمان.

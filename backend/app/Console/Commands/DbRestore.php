@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Database\Copier;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\File;
  * Puts a backup back [PLAN 2.19, Sprint 37]: a folder of db:backup (here, or downloaded from Google Drive), or a
  * database file Litestream restored ("litestream restore -o file.sqlite <replica>"). The game must be stopped
  * (update.ps1 stops it); the current files are kept beside, as *.before-restore.
+ * On PostgreSQL (Supabase, X43): the rows of a backup (legends.jsonl.gz) into a database that holds no game yet (a
+ * new Supabase project, migrated): a game there is never written over.
  */
 class DbRestore extends Command
 {
@@ -21,6 +24,24 @@ class DbRestore extends Command
     {
         $from = $this->argument('from');
         $dir = is_dir($from) ? $from : base_path('database/backups/'.$from);
+        if (config('database.connections.'.config('database.default').'.driver') === 'pgsql') {
+            $rows = is_file($from) ? $from : $dir.'/legends.jsonl.gz';
+            if (! is_file($rows)) {
+                $this->error('لا نسخة هنا: '.$from);
+
+                return self::FAILURE;
+            }
+            try {
+                $counts = Copier::load($rows, config('database.default'));
+            } catch (\Throwable $e) {
+                $this->error('لم تُسترجع: '.$e->getMessage());
+
+                return self::FAILURE;
+            }
+            $this->info('استُرجعت '.array_sum($counts).' صفاً.');
+
+            return self::SUCCESS;
+        }
         $files = is_file($from) ? [basename(config('database.connections.sqlite.database')) => $from]
             : (is_dir($dir) ? collect(File::files($dir))->mapWithKeys(fn ($f) => [$f->getFilename() => $f->getPathname()])->all() : []);
         if (! $files) {

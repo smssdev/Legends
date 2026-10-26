@@ -59,9 +59,9 @@ class OperationsTest extends TestCase
         $this->actingAs($coach)->deleteJson('/api/v1/auth/me', ['password' => 'secret123', 'phrase' => 'احذف'])->assertOk();
 
         // No table keeps a row that points at the account.
-        foreach (DB::select("select name from sqlite_master where type = 'table'") as $t) {
-            if (Schema::hasColumn($t->name, 'user_id')) {
-                $this->assertSame(0, DB::table($t->name)->where('user_id', $coach->id)->count(), $t->name);
+        foreach (array_column(Schema::getTables(), 'name') as $t) {
+            if (Schema::hasColumn($t, 'user_id')) {
+                $this->assertSame(0, DB::table($t)->where('user_id', $coach->id)->count(), $t);
             }
         }
         $this->assertNull(DB::table('users')->find($coach->id));
@@ -110,7 +110,8 @@ class OperationsTest extends TestCase
         $this->getJson('/api/v1/admin/overview')->assertJsonPath('deploy.busy', 0)->assertJsonPath('deploy.next_kickoff', null);
         $name = $this->postJson('/api/v1/admin/backups')->assertOk()->json('backups.0.name');
         $download = $this->get("/api/v1/admin/backups/$name/download")->assertOk();
-        $this->assertStringStartsWith('SQLite format 3', (string) file_get_contents($download->baseResponse->getFile()->getPathname()));
+        // The game's database file, or on PostgreSQL (Supabase, X43) its rows in one gzipped file.
+        $this->assertStringStartsWith(DB::getDriverName() === 'pgsql' ? "\x1f\x8b" : 'SQLite format 3', (string) file_get_contents($download->baseResponse->getFile()->getPathname()));
         $this->get('/api/v1/admin/backups/2020-01-01_000000/download')->assertNotFound();
         $this->get('/api/v1/admin/backups/..%2F..%2F.env/download')->assertNotFound();
         // Hours later the code is asked again.

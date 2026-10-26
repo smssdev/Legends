@@ -105,9 +105,16 @@ class MarketTest extends TestCase
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
     }
 
+    /** My dearest outfield players (a keeper may not be sold below two; which ties come first differs by database). */
+    private function dearest(): array
+    {
+        return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
+            ->where('master_players.line', '!=', 'gk')->orderByDesc('players.value')->orderBy('players.id')->select('players.*')->limit(2)->get()->all();
+    }
+
     public function test_the_instant_sale_pays_the_full_value_with_the_training_for_a_fee(): void
     {
-        $p = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->first();
+        $p = $this->dearest()[0];
         // Trained since: his value went up, and the sale pays it [X6].
         $value = (int) $p->value * 2;
         DB::table('players')->where('id', $p->id)->update(['value' => $value, 'training_bonus' => 3]);
@@ -119,8 +126,10 @@ class MarketTest extends TestCase
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
         $this->assertBooks();
         // Never below 16 players.
-        $left = DB::table('players')->where('club_id', $this->mine)->pluck('id');
-        foreach ($left->slice(0, $left->count() - 16) as $i => $id) {
+        $left = DB::table('players')->where('club_id', $this->mine)->count();
+        $outfield = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
+            ->where('master_players.line', '!=', 'gk')->orderBy('players.id')->pluck('players.id');
+        foreach ($outfield->slice(0, $left - 16) as $i => $id) {
             $this->postJson($this->url('/sell'), ['player_id' => $id, 'idempotency_key' => "s{$i}x"])->assertOk();
         }
         $this->postJson($this->url('/sell'), ['player_id' => DB::table('players')->where('club_id', $this->mine)->value('id'), 'idempotency_key' => 'last'])
@@ -130,7 +139,7 @@ class MarketTest extends TestCase
     public function test_the_instant_sale_costs_5_coins_outside_a_fair_league(): void
     {
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
-        $p = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->first();
+        $p = $this->dearest()[0];
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         $this->actingAs($this->owner)->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 'c1'])->assertConflict();
         Wallet::post($this->owner->id, 'daily', 7, 'gift');
@@ -142,7 +151,7 @@ class MarketTest extends TestCase
     public function test_a_listed_player_is_sold_to_an_outside_buyer_later_the_dearer_he_is(): void
     {
         $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
-        [$a, $b] = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->limit(2)->get()->all();
+        [$a, $b] = $this->dearest();
         $this->actingAs($this->owner);
         // The cap: 130% of his value for his own player.
         $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 13000, 10000) + 1])->assertUnprocessable();
