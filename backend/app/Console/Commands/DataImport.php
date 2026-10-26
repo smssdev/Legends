@@ -151,7 +151,10 @@ class DataImport extends Command
     private function player(array $r): array
     {
         $int = fn (string $key) => isset($r[$key]) && $r[$key] !== '' ? (int) $r[$key] : null;
-        $name = trim($r['commonName']) !== '' ? $r['commonName'] : trim($r['firstName'].' '.$r['lastName']);
+        // The Arab leagues' file keeps the Latin name apart (its commonName is Arabic): the game stores the Latin one,
+        // and the names switch shows the Arabic one from the dictionary [X40].
+        $name = ($r['nameLatin'] ?? '') !== '' ? $r['nameLatin']
+            : (trim($r['commonName']) !== '' ? $r['commonName'] : trim($r['firstName'].' '.$r['lastName']));
 
         return [
             'external_id' => (int) $r['id'],

@@ -17,7 +17,7 @@ const fill = computed(() => Math.max(6, Math.min(100, 100 - room.value * 6)))
     <span class="absolute inset-y-0 start-0 w-1" :style="{ background: `var(--color-line-${line})` }" aria-hidden="true" />
     <LineBadge :line="line" />
     <div class="min-w-0 flex-1">
-      <div class="truncate font-display text-base font-extrabold">{{ name }}</div>
+      <div class="truncate font-display text-base font-extrabold">{{ $nm(name) }}</div>
       <div class="mt-1 flex items-center gap-2 text-xs text-text-muted">
         <span>{{ LINES[line].name }} · <span dir="ltr">{{ position }}</span> · {{ age }} سنة</span>
         <span class="hidden h-1.5 w-20 overflow-hidden rounded-pill bg-surface-sunk sm:block" :title="`الإمكانية ${potential}`">

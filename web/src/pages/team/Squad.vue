@@ -110,7 +110,7 @@ function status(p: SquadPlayer) {
           <button type="button" class="flex min-h-20 w-full items-center gap-3 rounded-xl bg-surface p-3 text-start hover:bg-surface-raised" @click="open = p">
             <LineBadge :line="p.line as Line" />
             <span class="min-w-0 flex-1">
-              <span class="block truncate font-display text-lg font-extrabold">{{ p.name }}</span>
+              <span class="block truncate font-display text-lg font-extrabold">{{ $nm(p.name) }}</span>
               <span class="flex items-center gap-2 text-sm">
                 <span class="h-1.5 w-16 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 75 ? 'bg-success' : p.fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: `${p.fitness}%` }" /></span>
                 <span :class="status(p).tone">{{ status(p).text }}</span>

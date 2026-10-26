@@ -78,7 +78,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
     <template v-if="view">
       <section v-if="t" class="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 class="font-display text-2xl font-extrabold">{{ t.name }}</h2>
+          <h2 class="font-display text-2xl font-extrabold">{{ $nm(t.name) }}</h2>
           <UiChip :tone="STATUS[t.status][1]">{{ STATUS[t.status][0] }}</UiChip>
         </div>
         <p v-if="t.status === 'finished' && t.winner" class="rounded-lg bg-gold/15 px-3 py-2 text-center font-display text-lg font-extrabold text-gold">🏆 البطل: {{ NAMES[t.winner] }}</p>
@@ -89,7 +89,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
             <h3 class="flex items-center justify-between font-bold"><span>{{ NAMES[side] }}</span><span class="text-xs text-text-muted">القائد: {{ t.alliances[side].captain }}</span></h3>
             <p v-for="c in t.alliances[side].clubs" :key="card(c)!.id" class="flex items-center gap-2 text-sm">
               <ClubCrest :url="card(c)!.crest_url" :code="card(c)!.code" :size="26" />
-              <b class="min-w-0 flex-1 truncate">{{ card(c)!.name }}</b><span class="truncate text-xs text-text-muted">{{ card(c)!.coach }}</span>
+              <b class="min-w-0 flex-1 truncate">{{ $nm(card(c)!.name) }}</b><span class="truncate text-xs text-text-muted">{{ card(c)!.coach }}</span>
             </p>
           </div>
         </div>
@@ -99,15 +99,15 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
         <h2 class="font-display text-xl font-extrabold">الدور {{ round }} <span class="text-sm font-normal text-text-muted">{{ when(ties[0].scheduled_at) }}</span></h2>
         <article v-for="x in ties" :key="x.id" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
           <div class="flex items-center gap-2">
-            <b class="min-w-0 flex-1 truncate" :class="x.winner_id === card(x.home)?.id ? 'text-gold' : ''">{{ card(x.home)?.name }}</b>
+            <b class="min-w-0 flex-1 truncate" :class="x.winner_id === card(x.home)?.id ? 'text-gold' : ''">{{ $nm(card(x.home)?.name) }}</b>
             <span v-if="x.score" class="font-numbers font-bold" dir="ltr">{{ x.score.home }} - {{ x.score.away }}</span>
             <span v-else-if="x.kind === 'match'" class="text-sm text-text-muted">ضد</span>
-            <b v-if="x.away" class="min-w-0 flex-1 truncate text-end" :class="x.winner_id === card(x.away)?.id ? 'text-gold' : ''">{{ card(x.away)?.name }}</b>
+            <b v-if="x.away" class="min-w-0 flex-1 truncate text-end" :class="x.winner_id === card(x.away)?.id ? 'text-gold' : ''">{{ $nm(card(x.away)?.name) }}</b>
           </div>
           <p v-if="KIND[x.kind]" class="text-xs text-text-muted">{{ KIND[x.kind] }}</p>
           <RouterLink v-if="x.match_id" :to="{ name: 'league-match', params: { id: x.match_id } }" class="text-sm font-bold text-gold">{{ x.status === 'finished' ? 'الملخص' : 'تابع المباراة' }}</RouterLink>
           <div v-if="x.kind === 'captain' && !x.winner_id && t?.captain_of === x.alliance" class="grid grid-cols-2 gap-2">
-            <UiButton v-for="c in [card(x.home)!, card(x.away)!]" :key="c.id" variant="outline" :disabled="busy" @click="decide(x.id, c.id)">يتأهل {{ c.name }}</UiButton>
+            <UiButton v-for="c in [card(x.home)!, card(x.away)!]" :key="c.id" variant="outline" :disabled="busy" @click="decide(x.id, c.id)">يتأهل {{ $nm(c.name) }}</UiButton>
           </div>
         </article>
       </section>
@@ -120,7 +120,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
           <label v-for="k in (['captain_a', 'captain_b'] as const)" :key="k" class="flex flex-col gap-1 text-sm">قائد {{ k === 'captain_a' ? NAMES.a : NAMES.b }}
             <select v-model="form[k]" required class="h-touch rounded-lg bg-surface-sunk px-2" dir="ltr">
               <option value="" disabled>اختر</option>
-              <option v-for="c in view.coaches" :key="c.username ?? c.name" :value="c.username">{{ c.username }} · {{ c.name }}</option>
+              <option v-for="c in view.coaches" :key="c.username ?? c.name" :value="c.username">{{ c.username }} · {{ $nm(c.name) }}</option>
             </select>
           </label>
         </div>

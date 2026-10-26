@@ -45,7 +45,7 @@ onMounted(async () => {
         <p v-if="!coach.titles.length" class="text-sm text-text-muted">لا ألقاب بعد.</p>
         <div v-for="(t, i) in coach.titles" :key="i" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
           <b :class="t.position === 1 ? 'text-gold' : ''">{{ TITLES[t.competition]![t.position] }}</b>
-          <span class="flex-1 truncate">{{ t.club }} · {{ t.league }}</span>
+          <span class="flex-1 truncate">{{ $cn(t.club) }} · {{ t.league }}</span>
           <span class="text-text-muted">الموسم {{ t.season }}</span>
         </div>
       </section>
@@ -57,7 +57,7 @@ onMounted(async () => {
           <span class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold" :class="o.achieved ? 'bg-success text-on-gold' : 'bg-live text-white'">{{ o.achieved ? '✓' : '✗' }}</span>
           <span class="min-w-0 flex-1">
             <b class="block truncate">{{ o.competition === 'league' ? leagueGoal({ target: Number(o.target), kind: o.kind }) : cupGoal(o.target) }}</b>
-            <span class="text-xs text-text-muted">{{ o.club }} · {{ o.league }} · الموسم {{ o.season }}</span>
+            <span class="text-xs text-text-muted">{{ $cn(o.club) }} · {{ o.league }} · الموسم {{ o.season }}</span>
           </span>
           <span class="text-text-muted">{{ o.competition === 'league' ? `المركز ${o.result}` : cupStage(o.result) }}</span>
         </div>

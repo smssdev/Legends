@@ -61,7 +61,7 @@ const until = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sh
 
     <template v-if="view.fixture">
       <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <b>الحكم في مباراة {{ view.fixture.opponent }}</b>
+        <b>الحكم في مباراة {{ $nm(view.fixture.opponent) }}</b>
         <p class="text-xs text-text-muted">يميل الحكم لك (بطاقات أقل لك وأكثر لخصمك، وركلات جزاء أسهل). لكن الفار يكشف {{ view.bribe.var_percent }}% من المحاولات: يضيع المبلغ وتهبط المعنويات. وجاسوس الخصم قد يكتشفه ويرفع الأمر للجنة الانضباط.</p>
         <p v-if="view.bribe.paid" class="text-sm font-bold text-gold">دفعت للحكم في هذه المباراة.</p>
         <template v-else>

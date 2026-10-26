@@ -7,7 +7,7 @@
       <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">تقرير المباراة</span>
       <div v-if="view && !league" role="radiogroup" aria-label="التقرير من وجهة نظر" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
-          {{ view.clubs[s].name }}
+          {{ $nm(view.clubs[s].name) }}
         </button>
       </div>
     </header>
@@ -25,7 +25,7 @@
           <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
             <span class="score-disc"><Crest :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="52" /></span>
-            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ view.clubs.home.name }}</span>
+            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.home.name) }}</span>
           </div>
           <div class="flex shrink-0 flex-col items-center gap-1.5">
             <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
@@ -34,7 +34,7 @@
           </div>
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
             <span class="score-disc"><Crest :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="52" /></span>
-            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ view.clubs.away.name }}</span>
+            <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.away.name) }}</span>
           </div>
         </div>
       </section>
@@ -70,7 +70,7 @@
           <span class="absolute inset-x-0 top-0 h-1 bg-gold" aria-hidden="true" />
           <span class="text-2xl" aria-hidden="true">⭐</span>
           <h2 id="motm" class="text-sm font-bold text-gold">رجل المباراة</h2>
-          <span class="font-display text-2xl font-extrabold">{{ report.man_of_the_match.name }}</span>
+          <span class="font-display text-2xl font-extrabold">{{ $nm(report.man_of_the_match.name) }}</span>
           <span class="text-sm text-text-muted">{{ view.clubs[report.man_of_the_match.team as Side].name }}</span>
           <span class="font-numbers text-4xl text-gold">{{ rating(report.man_of_the_match.rating) }}</span>
         </section>
@@ -96,7 +96,7 @@
               <span class="font-numbers text-2xl">{{ v }}%</span>
             </div>
           </div>
-          <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span>ثلث {{ view.clubs.home.name }}</span><span>الوسط</span><span>ثلث {{ view.clubs.away.name }}</span></div>
+          <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span>ثلث {{ $nm(view.clubs.home.name) }}</span><span>الوسط</span><span>ثلث {{ $nm(view.clubs.away.name) }}</span></div>
         </section>
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="momentum">
           <h2 id="momentum" class="font-display text-xl font-extrabold">الزخم</h2>
@@ -119,10 +119,10 @@
 
       <section class="grid gap-4 md:grid-cols-2" aria-label="تقييم اللاعبين">
         <div v-for="s in sides" :key="s" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
-          <h2 class="font-display text-lg font-extrabold">{{ view.clubs[s].name }}</h2>
+          <h2 class="font-display text-lg font-extrabold">{{ $nm(view.clubs[s].name) }}</h2>
           <div v-for="p in report.ratings[s]" :key="p.id" class="flex min-h-9 items-center gap-2 text-sm">
             <span class="w-7 text-center font-numbers text-text-muted">{{ p.no }}</span>
-            <span class="flex-1 truncate">{{ p.name }}</span>
+            <span class="flex-1 truncate">{{ $nm(p.name) }}</span>
             <span v-if="p.goals" class="text-xs" :aria-label="`${p.goals} هدف`">⚽{{ p.goals > 1 ? p.goals : '' }}</span>
             <span v-if="p.assists" class="text-xs text-text-muted">صناعة {{ p.assists }}</span>
             <span class="w-10 rounded-sm text-center font-numbers text-lg" :class="p.rating >= 750 ? 'bg-pitch/30 text-[#7BE0A0]' : p.rating < 600 ? 'bg-live/20 text-[#FF8A8A]' : 'bg-surface-raised'">{{ rating(p.rating) }}</span>

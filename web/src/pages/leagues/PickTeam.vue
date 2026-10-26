@@ -71,7 +71,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
       <p v-if="league && !league.is_owner" class="text-sm font-bold text-success">وافق {{ league.owner?.name }} على طلبك</p>
       <h1 class="font-display text-3xl font-extrabold">اختر فريقك</h1>
       <p class="text-text-muted">
-        <span class="font-numbers">{{ free.length }}</span> نادياً متاحاً · الأقوى أولاً<span v-if="league"> · {{ league.name }}</span>
+        <span class="font-numbers">{{ free.length }}</span> نادياً متاحاً · الأقوى أولاً<span v-if="league"> · {{ $nm(league.name) }}</span>
       </p>
     </header>
 
@@ -93,7 +93,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
           >
             <ClubCrest :url="c.crest_url" :code="c.code" :size="48" />
             <span class="min-w-0 flex-1">
-              <span class="block truncate font-display text-lg font-extrabold">{{ c.name }}</span>
+              <span class="block truncate font-display text-lg font-extrabold">{{ $nm(c.name) }}</span>
               <span v-if="c.bot" class="text-sm text-success">متاح</span>
               <span v-else class="text-sm text-text-muted">مع {{ c.coach?.name }}</span>
             </span>
@@ -109,7 +109,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
       <aside v-if="chosen" class="flex h-fit flex-col gap-3 rounded-xl bg-surface p-4 md:sticky md:top-4" aria-live="polite">
         <div class="flex items-center gap-3">
           <ClubCrest :url="chosen.crest_url" :code="chosen.code" :size="40" />
-          <h2 class="font-display text-xl font-extrabold">{{ chosen.name }}</h2>
+          <h2 class="font-display text-xl font-extrabold">{{ $nm(chosen.name) }}</h2>
         </div>
         <dl class="grid grid-cols-3 gap-2 text-center text-sm">
           <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-text-muted">القوة</dt><dd class="font-numbers text-lg">{{ strength(chosen.strength_cp) }}</dd></div>
@@ -124,7 +124,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
         <ul class="flex max-h-80 flex-col gap-1 overflow-y-auto text-sm" aria-label="اللاعبون">
           <li v-for="p in squad" :key="p.id" class="flex items-center gap-2 rounded-md px-2 py-1.5 odd:bg-surface-sunk">
             <LineBadge :line="p.line as Line" />
-            <span class="min-w-0 flex-1 truncate">{{ p.name }}</span>
+            <span class="min-w-0 flex-1 truncate">{{ $nm(p.name) }}</span>
             <span class="font-numbers text-text-muted">{{ p.age }}</span>
             <span class="w-8 text-center font-numbers text-base font-bold">{{ p.overall }}</span>
           </li>

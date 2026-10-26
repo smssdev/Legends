@@ -96,7 +96,7 @@ const ACTIONS = [
           <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-6">
             <div v-for="(side, i) in [match.club, match.opponent]" :key="i" class="flex flex-col items-center gap-2 text-center" :class="i === 1 ? 'order-last' : ''">
               <span class="vs-disc"><ClubCrest :url="side.crest_url" :code="side.code" :size="64" /></span>
-              <b class="line-clamp-1 font-display text-base md:text-2xl">{{ side.name }}</b>
+              <b class="line-clamp-1 font-display text-base md:text-2xl">{{ $nm(side.name) }}</b>
               <span class="text-xs text-text-muted">{{ i === 0 ? 'فريقك' : match.opponent.coach ?? 'الحاسوب' }}</span>
               <RatingRing :value="Math.round(side.strength_cp / 100)" label="القوة" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="60" />
             </div>
@@ -146,7 +146,7 @@ const ACTIONS = [
           <UiChip v-if="match.opponent.sheet.tactics.trap">مصيدة التسلل</UiChip>
         </div>
         <ol class="grid grid-cols-2 gap-1 text-sm">
-          <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">{{ p.name }}</li>
+          <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">{{ $nm(p.name) }}</li>
         </ol>
         <p class="text-xs text-text-muted">الضغط والأسلوب والإيقاع والتمركز لا تظهر لأحد غير صاحبها.</p>
       </section>
@@ -176,10 +176,10 @@ const ACTIONS = [
           </div>
           <ol class="grid gap-1 text-sm sm:grid-cols-2">
             <li v-for="p in spy.report.starters" :key="p.id" class="flex items-center gap-2 rounded bg-surface-sunk px-2 py-1">
-              <span class="w-9 text-xs text-text-muted" dir="ltr">{{ p.position }}</span><span class="min-w-0 flex-1 truncate"><bdi>{{ p.name }}</bdi></span><b class="font-numbers">{{ p.overall }}</b></li>
+              <span class="w-9 text-xs text-text-muted" dir="ltr">{{ p.position }}</span><span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi></span><b class="font-numbers">{{ p.overall }}</b></li>
           </ol>
           <div class="flex flex-wrap items-center gap-1.5 text-sm"><span class="text-text-muted">البدلاء</span>
-            <span v-for="p in spy.report.bench" :key="p.id" class="rounded-full bg-surface-sunk px-2.5 py-1 text-xs"><bdi>{{ p.name }}</bdi></span></div>
+            <span v-for="p in spy.report.bench" :key="p.id" class="rounded-full bg-surface-sunk px-2.5 py-1 text-xs"><bdi>{{ $nm(p.name) }}</bdi></span></div>
         </template>
       </section>
     </template>

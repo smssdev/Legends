@@ -160,7 +160,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <p v-if="r.status === 'empty'" class="px-1 text-sm text-text-muted">لم يجد أحداً بهذه المعايير، فرُد المبلغ.</p>
         <div v-for="p in r.players" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk px-2 py-2">
           <LineBadge :line="p.line as Line" />
-          <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ p.name }}</b><span class="text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة · {{ p.nationality }} · إمكانية {{ p.potential }}</span></span>
+          <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة · {{ p.nationality }} · إمكانية {{ p.potential }}</span></span>
           <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
           <span class="w-20 text-end font-numbers text-lg" dir="ltr">{{ money(p.value) }}</span>
           <button v-if="p.state === 'available'" type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="busy || (p.price ?? 0) > v.balance" @click="buy(p.id, p.name)">شراء</button>

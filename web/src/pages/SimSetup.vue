@@ -24,7 +24,7 @@
           <label class="sr-only" :for="`league-${side}`">الدوري</label>
           <select :id="`league-${side}`" v-model="pick[side].league" class="h-touch flex-1 rounded-md border border-text/10 bg-surface-sunk px-3" @change="search(side)">
             <option value="">كل الدوريات</option>
-            <option v-for="l in leagues" :key="l.name" :value="l.name">{{ l.name }} ({{ l.clubs }})</option>
+            <option v-for="l in leagues" :key="l.name" :value="l.name">{{ $nm(l.name) }} ({{ l.clubs }})</option>
           </select>
           <label class="sr-only" :for="`q-${side}`">ابحث عن نادٍ</label>
           <input :id="`q-${side}`" v-model="pick[side].q" type="search" placeholder="ابحث عن نادٍ" class="h-touch w-36 rounded-md border border-text/10 bg-surface-sunk px-3" @input="search(side)" />
@@ -39,8 +39,8 @@
             @click="choose(side, c)"
           >
             <Crest :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
-            <span class="flex-1 truncate font-semibold">{{ c.name }}</span>
-            <span class="text-xs text-text-muted">{{ c.league_name }}</span>
+            <span class="flex-1 truncate font-semibold">{{ $nm(c.name) }}</span>
+            <span class="text-xs text-text-muted">{{ $ln(c.league_name) }}</span>
             <span class="w-10 text-start font-numbers text-lg text-gold">{{ ((c.strength_cp ?? 0) / 100).toFixed(1) }}</span>
           </button>
         </div>
@@ -49,13 +49,13 @@
           <div class="flex items-center gap-3">
             <Crest :code="pick[side].club!.code" :primary="clubColors(pick[side].club!).primary" :secondary="clubColors(pick[side].club!).secondary" :size="44" />
             <div class="flex-1">
-              <div class="font-display text-xl font-extrabold">{{ pick[side].club!.name }}</div>
+              <div class="font-display text-xl font-extrabold">{{ $nm(pick[side].club!.name) }}</div>
               <div class="text-sm text-text-soft" dir="ltr">{{ pick[side].squad!.formation }}</div>
             </div>
             <span class="font-numbers text-3xl text-gold">{{ ((pick[side].club!.strength_cp ?? 0) / 100).toFixed(1) }}</span>
           </div>
           <div class="flex flex-wrap gap-1.5 text-xs text-text-soft">
-            <span v-for="p in stars(side)" :key="p.id" class="rounded-sm bg-surface px-2 py-1">{{ p.name }} <b class="font-numbers text-gold">{{ p.ovr }}</b></span>
+            <span v-for="p in stars(side)" :key="p.id" class="rounded-sm bg-surface px-2 py-1">{{ $nm(p.name) }} <b class="font-numbers text-gold">{{ p.ovr }}</b></span>
           </div>
         </div>
 

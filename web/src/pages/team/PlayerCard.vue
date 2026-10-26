@@ -25,7 +25,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       <div class="flex flex-col gap-4 rounded-xl border border-gold/30 bg-surface p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="font-display text-2xl font-extrabold">{{ player.name }}</p>
+            <p class="font-display text-2xl font-extrabold">{{ $nm(player.name) }}</p>
             <p class="text-sm text-text-muted">
               {{ player.position }}<template v-if="player.alt_positions"> ({{ player.alt_positions }})</template><template v-if="player.nationality"> · {{ player.nationality }}</template>
             </p>

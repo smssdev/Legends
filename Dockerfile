@@ -12,6 +12,9 @@ RUN cd web && npm ci
 COPY web ./web
 # The commentator's line table, shared with the server [Sprint 35].
 COPY backend/resources/commentary/voice.json ./backend/resources/commentary/voice.json
+# The Arabic names of the leagues, clubs and players [X40]: the names dictionary the build writes.
+COPY data/names ./data/names
+COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
 RUN cd web && npm run build
 
 FROM composer:2 AS vendor

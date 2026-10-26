@@ -24,7 +24,7 @@
         <div v-for="it in items" :key="it.key" class="row" :class="it.center ? 'home' : it.side">
           <div class="card" :class="{ goal: it.goal }" :style="{ '--c': it.center ? '#F5B82E' : kits[it.side].kit }">
             <span class="ico" v-html="ICON[it.icon]" />
-            <span class="tx"><b dir="auto">{{ it.name }}</b><span>{{ it.label }}</span></span>
+            <span class="tx"><b dir="auto">{{ $nm(it.name) }}</b><span>{{ it.label }}</span></span>
             <span v-if="it.goal && it.score" class="chip" dir="ltr">{{ it.score }}</span>
           </div>
           <div class="node" dir="ltr">{{ it.minute }}</div>
@@ -75,7 +75,7 @@
         <div v-for="r in compare" :key="r.label" class="st"><span>{{ r.h }}</span><span class="bar"><i :style="{ width: r.hp + '%', background: kits.home.kit }" /><i :style="{ width: 100 - r.hp + '%', background: kits.away.kit }" /></span><span>{{ r.a }}</span><span class="lbl">{{ r.label }}</span></div>
       </div>
       <div class="keys">
-        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ star(s)?.name }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
+        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
       </div>
       <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? `البداية بعد ${countdown}` : 'شغّل الصوت وانتظر البداية') : 'ابدأ البث' }}</button>
     </div>

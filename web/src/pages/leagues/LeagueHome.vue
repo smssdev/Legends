@@ -165,16 +165,16 @@ onMounted(load)
 <template>
   <div class="flex flex-col gap-5">
     <p v-if="route.query.welcome && mine" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">
-      أهلاً بك مدرباً لـ{{ mine.name }}. {{ league?.is_owner ? 'شارك الكود مع أصحابك ليختاروا فرقهم.' : 'بالتوفيق في الموسم!' }}
+      أهلاً بك مدرباً لـ{{ $nm(mine.name) }}. {{ league?.is_owner ? 'شارك الكود مع أصحابك ليختاروا فرقهم.' : 'بالتوفيق في الموسم!' }}
     </p>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
 
     <template v-if="league">
       <header class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="font-display text-3xl font-extrabold">{{ league.name }}</h1>
+          <h1 class="font-display text-3xl font-extrabold">{{ $nm(league.name) }}</h1>
           <p class="text-text-muted">
-            {{ league.template }} · <span class="font-numbers">{{ league.season?.rounds }}</span> جولة · منطقة القفل من الجولة
+            {{ $ln(league.template) }} · <span class="font-numbers">{{ league.season?.rounds }}</span> جولة · منطقة القفل من الجولة
             <span class="font-numbers">{{ league.season?.lock_from_round }}</span>
           </p>
         </div>
@@ -273,7 +273,7 @@ onMounted(load)
               <span v-else class="flex size-10 items-center justify-center rounded-full bg-surface-raised font-display font-extrabold">{{ m.user.name.charAt(0) }}</span>
               <span class="min-w-0 flex-1">
                 <span class="block truncate font-bold"><RouterLink :to="{ name: 'coach', params: { id: m.user.id } }">{{ m.user.name }}</RouterLink> <OfficialBadge v-if="m.user.official" /> <UiChip v-if="m.is_owner" tone="gold">المنشئ</UiChip> <UiChip v-if="m.on_holiday" tone="warning">في إجازة</UiChip></span>
-                <span class="block text-sm text-text-muted">{{ m.club?.name }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
+                <span class="block text-sm text-text-muted">{{ $nm(m.club?.name) }}<template v-if="league.is_owner && m.last_active_at"> · آخر دخول {{ since(m.last_active_at) }}</template></span>
               </span>
               <UiButton v-if="league.is_owner && !m.is_owner && kicking !== m.id" variant="quiet" @click="(kicking = m.id), (reason = ''), (reasonError = '')">اطرد</UiButton>
             </div>
@@ -349,7 +349,7 @@ onMounted(load)
             :class="c.id === league.my_club_id ? 'bg-surface-raised' : ''"
           >
             <ClubCrest :url="c.crest_url" :code="c.code" :size="32" />
-            <span class="min-w-0 flex-1 truncate font-bold">{{ c.name }}</span>
+            <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(c.name) }}</span>
             <span class="text-sm text-text-muted">{{ c.id === league.my_club_id ? 'أنت' : c.coach?.name ?? 'الحاسوب' }}</span>
             <span class="hidden w-16 text-end font-numbers sm:block">{{ money(c.balance) }}</span>
             <span class="w-12 text-end font-numbers text-lg font-bold text-gold">{{ strength(c.strength_cp) }}</span>

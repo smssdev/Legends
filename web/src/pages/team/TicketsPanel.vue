@@ -57,7 +57,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
             @click="buy(f.id, s)"
           >
             <ClubCrest :url="f[s].crest_url" :code="f[s].code" :size="28" />
-            <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ f[s].name }}</span>
+            <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ $nm(f[s].name) }}</span>
             <span class="text-xs text-text-muted" :aria-label="`${f.cheering[s]} تذكرة`">📣 <span class="font-numbers">{{ f.cheering[s] }}</span></span>
           </button>
         </div>

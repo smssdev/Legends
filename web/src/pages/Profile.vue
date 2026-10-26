@@ -12,6 +12,7 @@ import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
 import { AR_VOICES, arVoiceName, type ArVoice } from '../match/voice'
 import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
+import { namesLang, setNamesLang } from '../lib/names'
 
 const auth = useAuth()
 const route = useRoute()
@@ -232,7 +233,7 @@ async function remove() {
         <label v-for="v in MATCH_VIEWS" :key="v.id" class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border px-3 py-2" :class="viewing.chosenView.value === v.id ? 'border-gold bg-gold/10' : 'border-text/10'">
           <input type="radio" name="match-view" class="size-5 accent-[var(--color-gold)]" :value="v.id" :checked="viewing.chosenView.value === v.id" @change="saveViewing({ match_view: v.id })" />
           <span class="flex flex-col">
-            <span class="font-bold">{{ v.name }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">قريباً</span></span>
+            <span class="font-bold">{{ $nm(v.name) }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">قريباً</span></span>
             <span class="text-xs text-text-muted">{{ v.hint }}</span>
           </span>
         </label>
@@ -245,6 +246,15 @@ async function remove() {
         </select>
         <span class="text-xs text-text-muted">يُسمع في كل مبارياتك، ويُبدَّل أثناء المباراة أيضاً.</span>
       </label>
+      <!-- [X40] The names switch: the leagues, clubs and players in Arabic or in English, on this device. -->
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 text-sm font-bold">أسماء الدوريات والأندية واللاعبين</legend>
+        <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="لغة الأسماء">
+          <button v-for="[k, l] in ([['ar', 'العربية'], ['en', 'English']] as const)" :key="k" type="button" role="radio" :aria-checked="namesLang === k"
+            class="h-12 rounded-lg font-bold" :class="namesLang === k ? 'bg-brand' : 'bg-surface-sunk text-text-soft'" @click="setNamesLang(k)">{{ l }}</button>
+        </div>
+        <span class="text-xs text-text-muted">ما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.</span>
+      </fieldset>
       <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ viewMsg }}</p>
     </section>
 

@@ -58,9 +58,9 @@ watch(() => route.fullPath, () => (more.value = false))
           <RouterLink v-if="inSlot && slot.current?.club" :to="pathOf(clubSections[0])" class="chrome-tab chrome-start min-w-0 flex-1 md:w-80 md:flex-none" :aria-label="`نادي ${slot.current.club.name}`">
             <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow md:size-11" />
             <span class="min-w-0 flex-1 leading-tight">
-              <b class="block truncate font-display text-base md:text-lg">{{ slot.current.club.name }}</b>
+              <b class="block truncate font-display text-base md:text-lg">{{ $nm(slot.current.club.name) }}</b>
               <span class="flex items-center gap-1.5 truncate text-xs font-semibold opacity-75">
-                <span class="truncate">{{ slot.current.league?.name }}</span>
+                <span class="truncate">{{ $nm(slot.current.league?.name) }}</span>
                 <span v-if="slot.current.position" class="shrink-0 rounded bg-brand px-1.5 font-numbers text-white" dir="ltr">{{ slot.current.position }}/{{ slot.current.teams }}</span>
               </span>
             </span>
@@ -123,7 +123,7 @@ watch(() => route.fullPath, () => (more.value = false))
           </RouterLink>
           <div class="flex-1" />
           <RouterLink v-if="slot.current?.next_match" to="/match" class="my-2 hidden shrink-0 items-center gap-2 self-center rounded-pill px-3 py-1.5 text-xs font-bold lg:flex" :class="slot.current.next_match.live ? 'bg-live text-white' : 'bg-black/25 text-white'">
-            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-white" />{{ slot.current.next_match.live ? 'مباشر الآن' : 'القادمة' }}: {{ slot.current.next_match.opponent }}
+            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-white" />{{ slot.current.next_match.live ? 'مباشر الآن' : 'القادمة' }}: {{ $nm(slot.current.next_match.opponent) }}
           </RouterLink>
         </div>
       </nav>

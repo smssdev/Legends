@@ -77,7 +77,7 @@ async function openRanking(by: 'trophies' | 'level') {
         <span class="text-sm font-bold text-gold">{{ greeting }}</span>
         <h1 class="font-display text-2xl font-extrabold md:text-4xl">{{ home.coach.name }}</h1>
         <p class="mt-1 max-w-md text-sm text-text-soft">
-          <template v-if="nextUp">مباراتك القادمة: <b>{{ nextUp.club!.name }}</b> {{ nextUp.next_match!.venue === 'home' ? 'ضد' : 'عند' }} <b>{{ nextUp.next_match!.opponent }}</b> · {{ nextUp.next_match!.live ? 'مباشر الآن' : when(nextUp.next_match!.scheduled_at) }}</template>
+          <template v-if="nextUp">مباراتك القادمة: <b>{{ $nm(nextUp.club!.name) }}</b> {{ nextUp.next_match!.venue === 'home' ? 'ضد' : 'عند' }} <b>{{ $nm(nextUp.next_match!.opponent) }}</b> · {{ nextUp.next_match!.live ? 'مباشر الآن' : when(nextUp.next_match!.scheduled_at) }}</template>
           <template v-else>اختر فتحة فارغة وانضم إلى دوري أو أنشئ دوريك مع أصحابك.</template>
         </p>
       </section>
@@ -171,7 +171,7 @@ async function openRanking(by: 'trophies' | 'level') {
             <span class="flex flex-1 flex-col items-center justify-center gap-1.5 p-3">
               <template v-if="s.state === 'club'">
                 <span class="slot-disc"><img :src="s.club!.crest_url" alt="" class="size-12" /></span>
-                <b class="line-clamp-1 font-display text-base leading-tight md:text-lg">{{ s.club!.name }}</b>
+                <b class="line-clamp-1 font-display text-base leading-tight md:text-lg">{{ $nm(s.club!.name) }}</b>
               </template>
               <template v-else-if="s.state === 'waiting'">
                 <span class="grid size-14 place-items-center rounded-full bg-warning/20 text-2xl" aria-hidden="true">⏳</span>
@@ -183,7 +183,7 @@ async function openRanking(by: 'trophies' | 'level') {
               </template>
             </span>
             <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
-              <template v-if="s.next_match">{{ s.next_match.live ? '● مباشر الآن' : when(s.next_match.scheduled_at) }} · {{ s.next_match.venue === 'home' ? 'ضد' : 'عند' }} {{ s.next_match.opponent }}</template>
+              <template v-if="s.next_match">{{ s.next_match.live ? '● مباشر الآن' : when(s.next_match.scheduled_at) }} · {{ s.next_match.venue === 'home' ? 'ضد' : 'عند' }} {{ $nm(s.next_match.opponent) }}</template>
               <template v-else>لا مباريات قادمة</template>
             </span>
           </button>
