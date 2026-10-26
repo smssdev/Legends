@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\League\Tactics;
+use App\Messages\Inbox;
+use App\Messages\MessageText;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -57,5 +59,55 @@ class LocaleTest extends TestCase
             $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $text);
         }
         $this->assertSame(array_keys(Tactics::HELP), array_keys(Tactics::HELP_EN));
+    }
+
+    public function test_every_message_type_has_its_english(): void
+    {
+        $p = ['league' => 'L', 'league_id' => 1, 'opponent' => 'X', 'club' => 'C', 'player' => 'P', 'overall' => 80, 'section' => 'seats', 'part' => 1, 'stage' => 1,
+            'season' => 1, 'place' => 1, 'from' => 'A', 'to' => 'B', 'in' => ['P'], 'out' => [], 'money' => 0, 'players' => [], 'type' => 'doctor', 'home' => 'H', 'away' => 'W'];
+        foreach (MessageText::TYPES as $type) {
+            $ar = MessageText::render($type, $p, 'ar');
+            $en = MessageText::render($type, $p, 'en');
+            $this->assertSame(array_keys($ar), array_keys($en), $type);
+            if ($type !== 'announcement') {
+                $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $en['title'].$en['body'], $type);
+            }
+        }
+    }
+
+    public function test_a_message_reaches_its_recipient_in_their_language(): void
+    {
+        $user = User::factory()->create(['locale' => 'en']);
+        Inbox::send($user->id, 'join_rejected', ['league' => 'Friends']);
+        $this->actingAs($user)->withHeader('Accept-Language', 'en')->getJson('/api/v1/messages')->assertOk()
+            ->assertJsonPath('messages.0.title', 'Your request was not approved');
+    }
+
+    public function test_every_tactics_tip_has_its_english(): void
+    {
+        app()->setLocale('en');
+        foreach (['counter', 'long', 'passing', 'wings', 'shots'] as $plan) {
+            foreach ([[90, 2], [90, 3], [50, 3], [10, 0]] as [$pressing, $tackling]) {
+                foreach (['strict', 'medium'] as $referee) {
+                    $t = ['plan' => $plan, 'pressing' => $pressing, 'tackling' => $tackling, 'tempo' => 80, 'style' => $pressing > 50 ? 80 : 10,
+                        'trap' => 1, 'marking' => 'man', 'def' => 'fullbacks'];
+                    foreach (Tactics::tips($t, $referee) as $tip) {
+                        $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $tip);
+                    }
+                }
+            }
+        }
+    }
+
+    public function test_every_english_sentence_keeps_the_numbers_of_its_arabic(): void
+    {
+        $shape = function (string $s): array {
+            preg_match_all('/%%|%[ds]/', $s, $m);
+
+            return $m[0];
+        };
+        foreach (json_decode(file_get_contents(lang_path('en.json')), true) as $ar => $en) {
+            $this->assertSame($shape($ar), $shape($en), $ar);
+        }
     }
 }

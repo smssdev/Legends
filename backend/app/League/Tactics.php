@@ -143,6 +143,7 @@ class Tactics
             $tips[] = 'هجوم الظهيرين يقوي الأجنحة، ويترك الأطراف خلفهما مكشوفة.';
         }
 
-        return $tips;
+        // [UP2] In English for an English request (lang/en.json).
+        return array_map(fn (string $tip) => __($tip), $tips);
     }
 }

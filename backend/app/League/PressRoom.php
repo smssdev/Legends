@@ -41,7 +41,7 @@ class PressRoom
             'chances' => self::chances((int) $home->strength_snapshot, (int) $away->strength_snapshot),
             'reading' => ['home' => self::reading($h, $a), 'away' => self::reading($a, $h)],
             'lines' => ['home' => $h, 'away' => $a],
-            'statements' => array_map(fn ($k, $t) => ['kind' => $k, 'text' => $t], array_keys(self::STATEMENTS), self::STATEMENTS),
+            'statements' => array_map(fn ($k, $t) => ['kind' => $k, 'text' => __($t)], array_keys(self::STATEMENTS), self::STATEMENTS),
             'said' => ['home' => $said[$home->id] ?? null, 'away' => $said[$away->id] ?? null],
             'mine' => $clubId === $home->id ? 'home' : ($clubId === $away->id ? 'away' : null),
             'morale' => (int) config('game.press.morale'),
@@ -108,9 +108,9 @@ class PressRoom
         arsort($gaps);
         $best = array_key_first($gaps);
         $worst = array_key_last($gaps);
-        $strong = $gaps[$best] > 0 ? 'يتفوق في '.self::LINES[$best].' (+'.$gaps[$best].')' : 'لا يتفوق في أي خط';
-        $weak = $gaps[$worst] < 0 ? 'ويعاني في '.self::LINES[$worst].' ('.$gaps[$worst].')' : 'ولا نقطة ضعف واضحة';
+        $strong = $gaps[$best] > 0 ? sprintf(__('يتفوق في %s (+%d)'), __(self::LINES[$best]), $gaps[$best]) : __('لا يتفوق في أي خط');
+        $weak = $gaps[$worst] < 0 ? sprintf(__('ويعاني في %s (%d)'), __(self::LINES[$worst]), $gaps[$worst]) : __('ولا نقطة ضعف واضحة');
 
-        return "{$strong}، {$weak}.";
+        return sprintf(__('%s، %s.'), $strong, $weak);
     }
 }

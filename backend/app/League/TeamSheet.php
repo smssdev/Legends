@@ -213,7 +213,7 @@ class TeamSheet
         MatchPrep::assertOpen($club);
         $formations = self::formations($club);
         if (! isset($formations[$formation])) {
-            throw ValidationException::withMessages(['formation' => 'هذه الطريقة غير موجودة.']);
+            throw ValidationException::withMessages(['formation' => __('هذه الطريقة غير موجودة.')]);
         }
         $slots = $formations[$formation];
         if ($positions !== null) {
@@ -224,28 +224,28 @@ class TeamSheet
             }
         }
         if (count($starters) !== 11 || in_array(null, $starters, true)) {
-            throw ValidationException::withMessages(['starters' => 'التشكيلة 11 لاعباً بالضبط.']);
+            throw ValidationException::withMessages(['starters' => __('التشكيلة 11 لاعباً بالضبط.')]);
         }
         if (count($bench) > self::BENCH) {
-            throw ValidationException::withMessages(['bench' => 'الاحتياط '.self::BENCH.' لاعبين على الأكثر.']);
+            throw ValidationException::withMessages(['bench' => sprintf(__('الاحتياط %d لاعبين على الأكثر.'), self::BENCH)]);
         }
         $all = array_merge($starters, $bench);
         if (count($all) !== count(array_unique($all))) {
-            throw ValidationException::withMessages(['starters' => 'لاعب واحد لا يكون في خانتين.']);
+            throw ValidationException::withMessages(['starters' => __('لاعب واحد لا يكون في خانتين.')]);
         }
         $squad = collect(self::squad($club))->keyBy('id');
         foreach ($all as $id) {
             if (! $squad->has($id)) {
-                throw ValidationException::withMessages(['starters' => 'كل اللاعبين يجب أن يكونوا من فريقك.']);
+                throw ValidationException::withMessages(['starters' => __('كل اللاعبين يجب أن يكونوا من فريقك.')]);
             }
         }
         if ($squad[$starters[0]]['line'] !== 'gk') {
-            throw ValidationException::withMessages(['starters' => 'خانة الحارس لحارس مرمى.']);
+            throw ValidationException::withMessages(['starters' => __('خانة الحارس لحارس مرمى.')]);
         }
         foreach ($starters as $i => $id) {
             if ($i > 0 && ! in_array($slots[$i]['line'], self::linesOf($squad[$id]), true)) {
-                throw ValidationException::withMessages(['starters' => sprintf('%s (%s) لا يلعب في %s: ضع كل لاعب في خطه، ويتبادل المراكز داخله.',
-                    $squad[$id]['name'], $squad[$id]['pos'], self::LINE_NAME[$slots[$i]['line']])]);
+                throw ValidationException::withMessages(['starters' => sprintf(__('%s (%s) لا يلعب في %s: ضع كل لاعب في خطه، ويتبادل المراكز داخله.'),
+                    $squad[$id]['name'], $squad[$id]['pos'], __(self::LINE_NAME[$slots[$i]['line']]))]);
             }
         }
         $moved = $positions === null ? null : json_encode(array_map(fn ($s) => [$s['x'], $s['y']], array_slice($slots, 1)));
@@ -266,11 +266,11 @@ class TeamSheet
     public static function saveCustom(Club $club, int $number, string $name, array $cells): void
     {
         if ($number < 1 || $number > self::CUSTOM_MAX) {
-            throw ValidationException::withMessages(['number' => 'لك '.self::CUSTOM_MAX.' تشكيلات مخصصة فقط.']);
+            throw ValidationException::withMessages(['number' => sprintf(__('لك %d تشكيلات مخصصة فقط.'), self::CUSTOM_MAX)]);
         }
         $keys = array_map(fn ($c) => implode(':', $c), $cells);
         if (count($cells) !== 10 || count($keys) !== count(array_unique($keys))) {
-            throw ValidationException::withMessages(['cells' => 'ضع 10 لاعبين في خانات مختلفة (والحارس ثابت).']);
+            throw ValidationException::withMessages(['cells' => __('ضع 10 لاعبين في خانات مختلفة (والحارس ثابت).')]);
         }
         if ($error = FormationBook::invalid(FormationBook::custom($cells))) {
             throw ValidationException::withMessages(['cells' => $error]);
@@ -307,7 +307,7 @@ class TeamSheet
         $on = array_flip(array_filter(self::current($club)['starters']));
         foreach ($takers as $role => $id) {
             if ($id !== null && ! isset($on[$id])) {
-                throw ValidationException::withMessages([$role => 'المنفذ يجب أن يكون من الأساسيين.']);
+                throw ValidationException::withMessages([$role => __('المنفذ يجب أن يكون من الأساسيين.')]);
             }
         }
         $now = GameClock::now();

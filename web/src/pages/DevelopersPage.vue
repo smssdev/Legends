@@ -17,21 +17,21 @@ import { DEVELOPERS } from '../content/developers'
         <div class="flex items-center gap-4">
           <span class="flex size-20 shrink-0 items-center justify-center rounded-full bg-gold font-display text-4xl font-extrabold text-on-gold ring-4 ring-brand/40">{{ d.avatar }}</span>
           <div class="min-w-0">
-            <h2 class="flex flex-wrap items-center gap-2 font-display text-2xl font-extrabold">{{ d.name }} <OfficialBadge /></h2>
+            <h2 class="flex flex-wrap items-center gap-2 font-display text-2xl font-extrabold">{{ $t(d.name) }} <OfficialBadge /></h2>
             <p dir="ltr" class="text-start text-sm text-text-muted">@{{ d.username }}</p>
-            <p class="font-bold text-brand-light">{{ d.role }}</p>
+            <p class="font-bold text-brand-light">{{ $t(d.role) }}</p>
           </div>
         </div>
-        <p class="text-text-soft">{{ d.bio }}</p>
+        <p class="text-text-soft">{{ $t(d.bio) }}</p>
         <ul class="flex flex-wrap gap-1.5" :aria-label="$t('المهارات')">
-          <li v-for="s in d.skills" :key="s" class="rounded-pill bg-surface-raised px-3 py-1 text-xs font-bold">{{ s }}</li>
+          <li v-for="s in d.skills" :key="s" class="rounded-pill bg-surface-raised px-3 py-1 text-xs font-bold">{{ $t(s) }}</li>
         </ul>
         <section :aria-label="$t('السيرة الذاتية')">
           <h3 class="mb-2 font-bold">{{ $t('السيرة الذاتية') }}</h3>
           <ol class="flex flex-col gap-2 border-s-2 border-gold/40 ps-4">
             <li v-for="c in d.cv" :key="c.title" class="relative">
               <span class="absolute -start-[1.4rem] top-1.5 size-2.5 rounded-full bg-gold" aria-hidden="true" />
-              <span class="font-numbers text-xs text-gold">{{ c.year }}</span>
+              <span class="font-numbers text-xs text-gold">{{ $t(c.year) }}</span>
               <b class="block">{{ $t(c.title) }}</b>
               <span class="text-sm text-text-muted">{{ $t(c.text) }}</span>
             </li>

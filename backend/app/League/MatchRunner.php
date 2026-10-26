@@ -242,11 +242,13 @@ class MatchRunner
             if ($control[$side] !== 'coach') {
                 continue;
             }
-            [$reading, $said[$side]] = Readings::next(MatchFacts::of($state, $side), $tick['events'], $said[$side] ?? []);
+            $club = $side === 'home' ? $f->home_id : $f->away_id;
+            // [UP2] The note in its coach's language.
+            $locale = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->where('clubs.id', $club)->value('users.locale') ?? 'ar';
+            [$reading, $said[$side]] = Readings::next(MatchFacts::of($state, $side), $tick['events'], $said[$side] ?? [], $locale);
             if (! $reading) {
                 continue;
             }
-            $club = $side === 'home' ? $f->home_id : $f->away_id;
             $new = DB::table('match_readings')->insertOrIgnore(['match_id' => $id, 'club_id' => $club, 'tick' => $reading['tick'],
                 'minute' => min(255, $reading['minute']), 'kind' => $reading['kind'], 'text' => $reading['text'], 'created_at' => GameClock::now()]);
             if ($new) {

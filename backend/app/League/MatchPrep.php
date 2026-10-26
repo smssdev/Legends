@@ -95,12 +95,15 @@ class MatchPrep
                 continue;
             }
             $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
-            $slot = (int) $f->slot === 2 ? 'الفترة الثانية (السهرة)' : 'الفترة الأولى';
             $left = max(1, intdiv(Carbon::parse($f->lock_at, 'UTC')->getTimestamp() - $now->getTimestamp() + 59, 60));
             foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
                 if ($coach = Inbox::coachOf($club)) {
-                    Push::send($coach, 'match_slot', "تذكير: ناديك يلعب في {$slot}",
-                        'ضد '.($names[$other] ?? '').". تُقفل خطط الجولة كلها بعد {$left} دقيقة: تفقد خطتك الآن!", '/match');
+                    // [UP2] In the coach's own language.
+                    $en = self::english($coach);
+                    $slot = (int) $f->slot === 2 ? ($en ? 'the second slot (evening)' : 'الفترة الثانية (السهرة)') : ($en ? 'the first slot' : 'الفترة الأولى');
+                    Push::send($coach, 'match_slot', $en ? "Reminder: your club plays in {$slot}" : "تذكير: ناديك يلعب في {$slot}",
+                        $en ? 'Against '.($names[$other] ?? '').". The round's plans all lock in {$left} minutes: check your plan now!"
+                            : 'ضد '.($names[$other] ?? '').". تُقفل خطط الجولة كلها بعد {$left} دقيقة: تفقد خطتك الآن!", '/match');
                 }
             }
         }
@@ -142,8 +145,10 @@ class MatchPrep
             $names = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->pluck('name', 'id');
             foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
                 if ($coach = Inbox::coachOf($club)) {
-                    Push::send($coach, 'match_soon', 'مباراتك بعد '.config('game.notifications.match_soon_minutes').' دقائق',
-                        'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match');
+                    $minutes = config('game.notifications.match_soon_minutes');
+                    Push::send($coach, 'match_soon', self::english($coach) ? "Your match in {$minutes} minutes" : "مباراتك بعد {$minutes} دقائق",
+                        self::english($coach) ? 'Against '.($names[$other] ?? '').'. Get in to follow it and manage your team.'
+                            : 'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match');
                 }
             }
         }
@@ -277,5 +282,11 @@ class MatchPrep
         if ($locked) {
             throw new HttpException(409, 'التشكيلة والتكتيك مقفلان قبل المباراة بخمس دقائق وحتى نهايتها.');
         }
+    }
+
+    /** [UP2] Whether a coach plays in English. */
+    private static function english(int $userId): bool
+    {
+        return DB::table('users')->where('id', $userId)->value('locale') === 'en';
     }
 }

@@ -51,7 +51,7 @@ class Newspaper
         $big = $fixtures->sortByDesc(fn ($f) => abs($f->home_goals - $f->away_goals) * 10 + $f->home_goals + $f->away_goals)->first();
         if ($big && $big->home_goals !== $big->away_goals) {
             [$w, $l] = $big->home_goals > $big->away_goals ? [$big->home_id, $big->away_id] : [$big->away_id, $big->home_id];
-            $out[] = ['kind' => 'big_win', 'title' => "{$name($w)} يكتسح {$name($l)}", 'text' => "أكبر انتصار في الجولة: {$big->home_goals}-{$big->away_goals}."];
+            $out[] = ['kind' => 'big_win', 'title' => sprintf(__('%s يكتسح %s'), $name($w), $name($l)), 'text' => sprintf(__('أكبر انتصار في الجولة: %d-%d.'), $big->home_goals, $big->away_goals)];
         }
         $upset = $fixtures->filter(function ($f) use ($clubs) {
             if ($f->home_goals === $f->away_goals) {
@@ -63,21 +63,23 @@ class Newspaper
         })->sortByDesc(fn ($f) => abs($clubs[$f->home_id]->strength_snapshot - $clubs[$f->away_id]->strength_snapshot))->first();
         if ($upset) {
             [$w, $l] = $upset->home_goals > $upset->away_goals ? [$upset->home_id, $upset->away_id] : [$upset->away_id, $upset->home_id];
-            $out[] = ['kind' => 'upset', 'title' => "مفاجأة الجولة: {$name($w)} يُسقط {$name($l)}", 'text' => "الأضعف على الورق فاز {$upset->home_goals}-{$upset->away_goals}، وكرة القدم لا تعترف بالأرقام."];
+            $out[] = ['kind' => 'upset', 'title' => sprintf(__('مفاجأة الجولة: %s يُسقط %s'), $name($w), $name($l)),
+                'text' => sprintf(__('الأضعف على الورق فاز %d-%d، وكرة القدم لا تعترف بالأرقام.'), $upset->home_goals, $upset->away_goals)];
         }
         $feast = $fixtures->sortByDesc(fn ($f) => $f->home_goals + $f->away_goals)->first();
         if ($feast && $feast->home_goals + $feast->away_goals >= 5) {
-            $out[] = ['kind' => 'goals', 'title' => "مهرجان أهداف بين {$name($feast->home_id)} و{$name($feast->away_id)}", 'text' => ($feast->home_goals + $feast->away_goals).' أهداف في مباراة واحدة.'];
+            $out[] = ['kind' => 'goals', 'title' => sprintf(__('مهرجان أهداف بين %s و%s'), $name($feast->home_id), $name($feast->away_id)),
+                'text' => sprintf(__('%d أهداف في مباراة واحدة.'), $feast->home_goals + $feast->away_goals)];
         }
         $reds = DB::table('match_events')->whereIn('match_id', $matches->values())->where('type', 'card')->where('payload', 'like', '%"red"%')->count();
         if ($reds) {
-            $out[] = ['kind' => 'reds', 'title' => $reds === 1 ? 'بطاقة حمراء تهز الجولة' : "{$reds} بطاقات حمراء في جولة ساخنة", 'text' => 'الحكام لم يرحموا أحداً هذه الجولة.'];
+            $out[] = ['kind' => 'reds', 'title' => $reds === 1 ? __('بطاقة حمراء تهز الجولة') : sprintf(__('%d بطاقات حمراء في جولة ساخنة'), $reds), 'text' => __('الحكام لم يرحموا أحداً هذه الجولة.')];
         }
         foreach (DB::table('match_stats')->whereIn('match_id', $matches->values())->get() as $s) {
             foreach (json_decode($s->players, true) as $p) {
                 if (($p['goals'] ?? 0) >= 3) {
                     $who = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.id', $p['id'])->value('master_players.name');
-                    $out[] = ['kind' => 'hat_trick', 'title' => "هاتريك لـ{$who}", 'text' => "{$p['goals']} أهداف لـ{$who} مع {$name($s->club_id)}."];
+                    $out[] = ['kind' => 'hat_trick', 'title' => sprintf(__('هاتريك لـ%s'), $who), 'text' => sprintf(__('%d أهداف لـ%s مع %s.'), $p['goals'], $who, $name($s->club_id))];
                 }
             }
         }

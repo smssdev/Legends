@@ -54,10 +54,10 @@ class Market
     {
         $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->first();
         if (! $season || $season->status === 'finished') {
-            return 'انتهى الموسم، والسوق مغلق حتى الموسم الجديد.';
+            return __('انتهى الموسم، والسوق مغلق حتى الموسم الجديد.');
         }
         if ($season->rounds_played + 1 >= $season->lock_from_round) {
-            return 'السوق مغلق في آخر ربع من الموسم.';
+            return __('السوق مغلق في آخر ربع من الموسم.');
         }
 
         return null;
@@ -103,8 +103,8 @@ class Market
         $compensate = $short > 0 && $enough && ! $fair ? ['cash' => $cash, 'coins' => intdiv($short + $cfg['money_per_coin'] - 1, $cfg['money_per_coin'])] : null;
         $why = match (true) {
             $short === 0 => null,
-            ! $enough => 'أموال ناديك غير كافية، يلزم توفر 50% على الأقل من قيمة اللاعب نقداً.',
-            $fair => 'الدوري نزيه: لا تكمل الكوينز ما ينقص من المال.',
+            ! $enough => __('أموال ناديك غير كافية، يلزم توفر 50% على الأقل من قيمة اللاعب نقداً.'),
+            $fair => __('الدوري نزيه: لا تكمل الكوينز ما ينقص من المال.'),
             default => null,
         };
 
@@ -128,7 +128,7 @@ class Market
             $club = DB::table('clubs')->where('id', $clubId)->first();
             self::assertOpen($club->league_id);
             $p = DB::table('players')->where('id', $playerId)->where('league_id', $club->league_id)->first();
-            abort_unless($p, 404, 'اللاعب غير موجود في هذا الدوري.');
+            abort_unless($p, 404, __('اللاعب غير موجود في هذا الدوري.'));
             if ($p->club_id === $clubId) {
                 throw new HttpException(409, 'اللاعب في فريقك بالفعل.');
             }
@@ -152,7 +152,7 @@ class Market
             }
             $q = self::quote($clubId, $price);
             if ($q['short'] > 0 && (! $compensate || ! $q['can'] || ! $q['compensate'])) {
-                throw new HttpException(409, $q['why'] ?? 'رصيد النادي لا يكفي: أكمل الباقي بالكوينز.');
+                throw new HttpException(409, $q['why'] ?? __('رصيد النادي لا يكفي: أكمل الباقي بالكوينز.'));
             }
             $paid = $q['short'] > 0 ? $q['cash'] : $price;
             $balance = ClubLedger::post($clubId, $from === null ? 'pool_buy' : 'bot_buy', -$paid, $key, "player:{$playerId}", spend: true);
@@ -191,8 +191,8 @@ class Market
             $club = DB::table('clubs')->where('id', $clubId)->first();
             self::assertOpen($club->league_id);
             $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
-            abort_unless($p, 404, 'اللاعب ليس في فريقك.');
-            self::assertKeeps($clubId, $p, (int) config('game.economy.min_squad'), 'لا يمكن أن ينزل فريقك عن %d لاعباً.');
+            abort_unless($p, 404, __('اللاعب ليس في فريقك.'));
+            self::assertKeeps($clubId, $p, (int) config('game.economy.min_squad'), __('لا يمكن أن ينزل فريقك عن %d لاعباً.'));
             $fee = intdiv((int) $p->value * (int) config('game.economy.quick_sale_fee_bp'), 10000);
             Price::charge($clubId, 'quick_sale', $fee, "{$key}:fee", "player:{$playerId}");
             $sold = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
@@ -208,8 +208,8 @@ class Market
     /** A bot keeps 18 players and 2 keepers [PLAN 2.7]. */
     private static function assertBotCanSell(int $botId, object $player): void
     {
-        abort_unless(DB::table('clubs')->where('id', $botId)->whereNull('user_id')->exists(), 409, 'هذا اللاعب ليس للبيع هنا.');
-        self::assertKeeps($botId, $player, (int) config('game.economy.bot_min_squad'), 'نادي الحاسوب لا يبيع إن نزل عن %d لاعباً.');
+        abort_unless(DB::table('clubs')->where('id', $botId)->whereNull('user_id')->exists(), 409, __('هذا اللاعب ليس للبيع هنا.'));
+        self::assertKeeps($botId, $player, (int) config('game.economy.bot_min_squad'), __('نادي الحاسوب لا يبيع إن نزل عن %d لاعباً.'));
     }
 
     private static function assertKeeps(int $clubId, object $player, int $min, string $message): void

@@ -59,12 +59,12 @@ class SpecialistController extends Controller
         $c = fn (string $table) => (int) config("game.specialists.{$table}.{$stars}");
 
         return match ($type) {
-            'att_coach', 'mid_coach', 'def_coach' => sprintf('تدريب لاعبي الخط أسرع بـ %d%%', intdiv($c('coach_training_bp'), 100)),
-            'keeper_coach' => sprintf('تدريب الحراس أسرع بـ %d%%، والحارس +%d في المباراة', intdiv($c('coach_training_bp'), 100), $c('keeper_coach_boost')),
-            'physio' => sprintf('+%d لياقة لمن يرتاح بين المباراتين', $c('physio_rest_bonus')),
-            'doctor' => sprintf('كل مباراة تُنقص الإصابة %d %s', $c('doctor_countdown'), $c('doctor_countdown') > 1 ? 'مباريات' : 'مباراة'),
-            'lawyer' => sprintf('يلغي %d%% من إيقافات البطاقة الحمراء', intdiv($c('lawyer_cancel_bp'), 100)),
-            'mental_coach' => sprintf('يعيد %d من المعنويات بعد التعادل أو الخسارة', $c('mental_coach_boost')),
+            'att_coach', 'mid_coach', 'def_coach' => sprintf(__('تدريب لاعبي الخط أسرع بـ %d%%'), intdiv($c('coach_training_bp'), 100)),
+            'keeper_coach' => sprintf(__('تدريب الحراس أسرع بـ %d%%، والحارس +%d في المباراة'), intdiv($c('coach_training_bp'), 100), $c('keeper_coach_boost')),
+            'physio' => sprintf(__('+%d لياقة لمن يرتاح بين المباراتين'), $c('physio_rest_bonus')),
+            'doctor' => sprintf(__('كل مباراة تُنقص الإصابة %d %s'), $c('doctor_countdown'), $c('doctor_countdown') > 1 ? __('مباريات') : __('مباراة')),
+            'lawyer' => sprintf(__('يلغي %d%% من إيقافات البطاقة الحمراء'), intdiv($c('lawyer_cancel_bp'), 100)),
+            'mental_coach' => sprintf(__('يعيد %d من المعنويات بعد التعادل أو الخسارة'), $c('mental_coach_boost')),
             default => '',
         };
     }
@@ -72,7 +72,7 @@ class SpecialistController extends Controller
     private function club(Request $request, League $league): Club
     {
         $club = Club::where('league_id', $league->id)->where('user_id', $request->user()->id)->first();
-        abort_unless($club, 403, 'ليس لديك فريق في هذا الدوري.');
+        abort_unless($club, 403, __('ليس لديك فريق في هذا الدوري.'));
 
         return $club;
     }
