@@ -78,22 +78,23 @@ const GAP = 0.07
 
 /**
  * [X41] The real voice: the kind of real phrase each line of the table becomes (moment, then slot), when the voice is
- * a recorded commentator's own match (voice-7). A kind with no phrases falls back to the next kind, then to the
- * commentator's voice of written lines (voice-2), so he is never silent.
+ * a recorded commentator's own match (voice-7). He speaks as a real commentator does, little and on the moment: the
+ * key of each moment (the goal, the save, the miss, the card), the set piece as it is taken, and his joy after a goal.
+ * The build-up and the lines between moments stay with the crowd, so no phrase of his is ever said over a scene it
+ * does not describe.
  */
 const REAL_KIND: Record<string, Partial<Record<'pre' | 'key' | 'post', string>> | string> = {
-  goal: { pre: 'attack', key: 'goal', post: 'goal_post' }, header: { pre: 'attack', key: 'goal', post: 'goal_post' },
+  goal: { key: 'goal', post: 'goal_post' }, header: { key: 'goal', post: 'goal_post' },
   free_kick_goal: { pre: 'freekick', key: 'goal', post: 'goal_post' }, penalty_goal: { pre: 'penalty', key: 'goal', post: 'goal_post' },
-  save: { pre: 'attack', key: 'save', post: 'save' }, free_kick_save: { pre: 'freekick', key: 'save', post: 'save' },
-  penalty_save: { pre: 'penalty', key: 'save', post: 'save' },
-  miss: { pre: 'attack', key: 'miss', post: 'miss' }, free_kick_miss: { pre: 'freekick', key: 'miss', post: 'miss' },
-  blocked: { pre: 'attack', key: 'miss', post: 'miss' }, post: { pre: 'attack', key: 'post', post: 'miss' },
-  offside: 'offside', corner_header: { pre: 'corner', key: 'attack', post: 'calm' }, corner_claim: { pre: 'corner', key: 'save', post: 'calm' },
-  yellow: { pre: 'foul', key: 'card', post: 'card' }, red: { pre: 'foul', key: 'card', post: 'card' }, second_yellow: { pre: 'foul', key: 'card', post: 'card' },
-  sub: 'sub', injury: 'injury', coach: 'calm', kickoff: 'kickoff', halftime: 'half', fulltime: 'full', extra_time: 'half',
-  penalties: 'penalty', stoppage: 'calm', shootout: 'penalty', attack: 'attack',
+  save: { key: 'save' }, free_kick_save: { pre: 'freekick', key: 'save' }, penalty_save: { pre: 'penalty', key: 'save' },
+  miss: { key: 'miss' }, free_kick_miss: { pre: 'freekick', key: 'miss' }, blocked: { key: 'miss' }, post: { key: 'post' },
+  offside: 'offside', corner_header: { pre: 'corner' }, corner_claim: { pre: 'corner', key: 'save' },
+  yellow: { key: 'card' }, red: { key: 'card' }, second_yellow: { key: 'card' },
+  sub: 'sub', injury: 'injury', kickoff: 'kickoff', halftime: 'half', fulltime: 'full', extra_time: 'half',
+  penalties: 'penalty', shootout: 'penalty',
 }
-const REAL_NEXT: Record<string, string> = { post: 'miss', goal_post: 'goal', freekick: 'attack', penalty: 'attack', corner: 'attack', offside: 'foul', card: 'foul', injury: 'calm', sub: 'calm', kickoff: 'calm', half: 'calm', full: 'calm', foul: 'calm', attack: 'calm', save: 'attack', miss: 'attack' }
+// A kind he has no phrase for borrows only one that says the same thing; otherwise he stays silent.
+const REAL_NEXT: Record<string, string> = { post: 'miss', card: 'foul' }
 export function realKind(moment?: string, slot?: string): string | null {
   const k = moment ? REAL_KIND[moment] : null
   if (!k) return null
