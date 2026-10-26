@@ -95,7 +95,7 @@ import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
-const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
+const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; real: [kind: string]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
 // [X35] The live pitch's camera: the broadcast's (the cartoon players, following the ball) or the plan from above.
@@ -234,6 +234,17 @@ function frame(now) {
     for (const [i, [at, name]] of (SOUNDS[s.scene] ?? []).entries()) { const when = at === 'key' ? keyT : at * sceneT; if (t >= when) cue('s' + i, when, () => emit('sound', name)) }
     if (s.scene === 'miss' && s.data.how === 'post' && t >= keyT) cue('post', keyT, () => emit('sound', 'post'))
     if (t >= keyT) fire('key', () => { revealed.value = true; tense.value = false })
+    // [X37] The commentator's own words, where the voice has them (voice.ts real): his scream on a goal (a late goal
+    // that levels or takes the lead, his big phrases), now and then "على مهلك" before a shot and the magic after a save.
+    if (props.lang === 'ar') {
+      const roll = (n) => (props.seed + plan.tick.tick) % n === 0
+      if (s.goal && t >= keyT) fire('real-goal', () => {
+        const [m] = plan.tick.minute ?? [0], gap = Math.abs((plan.tick.score?.home ?? 0) - (plan.tick.score?.away ?? 0))
+        emit('real', m >= 75 && gap <= 1 ? 'goal_big' : 'goal')
+      })
+      if ((s.scene === 'goal' || s.scene === 'miss') && t >= sceneT * 0.3 && t < keyT) fire('real-slow', () => roll(3) && emit('real', 'slow'))
+      if (s.scene === 'save' && t >= keyT + 0.2) fire('real-magic', () => roll(2) && emit('real', 'magic'))
+    }
     if (s.goal && t >= keyT) fire('goal', () => {
       emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
       party.value = { side: s.side, who: s.who }

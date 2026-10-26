@@ -8,7 +8,9 @@
 
 export type Lang = 'en' | 'ar'
 export type Part = { key: string; club?: string }
-export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang }
+export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang; real?: RealKind }
+/** A real phrase's moment [X37]: the commentator's own recorded words (tools/commentary/real_phrases.py). */
+export type RealKind = 'goal' | 'goal_big' | 'magic' | 'slow'
 type Pack = { buf: AudioBuffer; map: Record<string, [number, number]> }
 type Clip = { pack: Pack; at: [number, number]; rate: number }
 
@@ -89,6 +91,7 @@ export class Commentator {
   private sources: AudioBufferSourceNode[] = []
   private timer = 0
   private endsAt = 0
+  private realUntil = 0
   private utter: SpeechSynthesisUtterance | null = null
   private synthVoice: Record<Lang, SpeechSynthesisVoice | null> = { en: null, ar: null }
   private readonly synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
@@ -117,13 +120,29 @@ export class Commentator {
     void this.ctx.resume()
     this.pack('phrases')
     this.pack(this.arPack)
+    this.pack(this.realPack())
     for (const c of this.wanted) this.pack('clubs/' + c)
+  }
+
+  // The voice's real phrases [X37], beside its pack: only the voices the team gave recordings for have one.
+  private realPack() { return this.arPack.replace(/phrases$/, 'real') }
+
+  /**
+   * One of the commentator's real phrases for this moment, at random. A voice without them says nothing more (its
+   * written line stays); with them, the excited ones (the goal) take the place of the written call.
+   */
+  real(kind: RealKind) {
+    const pack = this.ready.get(this.realPack())
+    const list = (pack?.map as Record<string, [number, number][]> | undefined)?.[kind]
+    if (!this.on || !pack || !list?.length) return
+    const at = list[Math.floor(Math.random() * list.length)]
+    this.say({ text: kind, parts: [], excited: kind === 'goal' || kind === 'goal_big', lang: 'ar', real: kind, at } as Line & { at: [number, number] })
   }
 
   /** Which recorded Arabic voice says the Arabic lines. */
   setArVoice(v: ArVoice) {
     this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
-    if (this.ctx && this.on) this.pack(this.arPack)
+    if (this.ctx && this.on) { this.pack(this.arPack); this.pack(this.realPack()) }
   }
 
   /** Fetch the two clubs' names early, before their first line. */
@@ -134,6 +153,10 @@ export class Commentator {
 
   say(line: Line | null) {
     if (!this.on || !line?.text) return
+    // His real scream [X37] stands until it ends: the written call of the same moment does not cut it.
+    const now = this.ctx?.currentTime ?? 0
+    if (line.excited && !line.real && now < this.realUntil) return
+    if (line.real && line.excited) this.realUntil = now + ((line as Line & { at?: [number, number] }).at?.[1] ?? 0) + 0.3
     // The big call (goal, save) comes the instant the ball gets there: it cuts the build-up short.
     if (line.excited) {
       this.queue = [line]
@@ -184,12 +207,18 @@ export class Commentator {
     const clips = this.resolve(line)
     if (clips === 'wait') return this.next()
     if (clips) this.play(clips)
+    else if (line.real) this.next()
     else this.speak(line)
   }
 
   // The clips for a line, null when one is missing for good (use the browser voice),
   // or 'wait' while a pack is still loading (the line is dropped; it would come late anyway).
   private resolve(line: Line): Clip[] | null | 'wait' {
+    const fixed = (line as Line & { at?: [number, number] }).at
+    if (line.real && fixed) {
+      const pack = this.ready.get(this.realPack())
+      return pack ? [{ pack, at: fixed, rate: 1 }] : null
+    }
     const phrasePack = line.lang === 'ar' ? this.arPack : 'phrases'
     const out: Clip[] = []
     for (const p of line.parts) {
