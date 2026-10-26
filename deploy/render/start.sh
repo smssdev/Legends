@@ -47,47 +47,61 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
   export LITESTREAM_REGION="${region:-us-east-1}"
   export LITESTREAM_ACCESS_KEY_ID="$B2_KEY_ID" LITESTREAM_SECRET_ACCESS_KEY="$B2_APPLICATION_KEY"
   
+  # RESTORE_AT (an RFC 3339 time in Render's Environment, e.g. 2026-10-26T18:30:00Z) brings the game back as it was
+  # then, from B2's history (three days); remove it after that deploy, or every restart goes back to it.
   at=
   if [ -n "${RESTORE_AT:-}" ]; then
     at="-timestamp $RESTORE_AT"
-    echo "Saved game: going back to $RESTORE_AT"
+    echo "Saved game: going back to $RESTORE_AT (remove RESTORE_AT from Render's Environment after this deploy)"
   fi
-  
-  # علم (Flag) لمتابعة إذا واجهنا خطأ في الحساب
-  b2_failed=0
-  
-  for db in legends queue; do
-    file="database/$db.sqlite"
-    rm -f "$file.restore"
-    if ! litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file" 2> /tmp/restore.err; then
-      cat /tmp/restore.err
-      if grep -q "cap exceeded" /tmp/restore.err; then
-        echo "Saved game: B2 refused (its daily cap). Bypassing Litestream to allow Demo mode..."
-        b2_failed=1
-        break
+
+  # Both databases from B2 into place, or nothing moved (each comes down beside its file first).
+  restore_all() {
+    for db in legends queue; do
+      file="database/$db.sqlite"
+      rm -f "$file.restore"
+      # shellcheck disable=SC2086
+      if ! litestream restore -config /app/litestream.yml -if-replica-exists $at -o "$file.restore" "/app/backend/$file" 2> /tmp/restore.err; then
+        cat /tmp/restore.err
+        if grep -q "cap exceeded" /tmp/restore.err; then
+          echo "Saved game: B2 refused (its daily cap). Raise the cap of Class B and Class C transactions in Backblaze"
+          echo "  (Caps & Alerts), or it comes back by itself after midnight UTC."
+        fi
+        return 1
       fi
-      exit 1
-    fi
-    if [ -f "$file.restore" ]; then
-      rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
-      mv "$file.restore" "$file"
-      echo "Saved game: $db.sqlite brought back from B2"
-    fi
-  done
-  
-  # إذا نجح الاتصال ولم يستهلك الـ Cap نعتبر اللعبة محفوظة ومربوطة
-  if [ "$b2_failed" -eq 0 ]; then
-    saved=1
+    done
+    for db in legends queue; do
+      file="database/$db.sqlite"
+      if [ -f "$file.restore" ]; then
+        rm -f "$file" "$file-wal" "$file-shm" "$file.restore.tmp"*
+        mv "$file.restore" "$file"
+        echo "Saved game: $db.sqlite brought back from B2"
+      fi
+    done
+  }
+
+  # [X39] When B2 cannot be read, the game never starts without its save: playing on would lose everything done
+  # (nothing would be copied) or start an empty game over the league. The site shows a maintenance page instead
+  # (deploy/render/maintenance.php, so Render keeps it up) and tries B2 again every 10 minutes; once it answers, the
+  # page goes and the game starts with the league as it was, without a new deploy.
+  if ! restore_all; then
+    php -S 0.0.0.0:"${PORT}" /app/maintenance.php > /dev/null 2>&1 &
+    page=$!
+    until restore_all; do
+      echo "Saved game: B2 still refuses; the maintenance page stays, trying again in 10 minutes"
+      sleep 600
+    done
+    kill "$page" 2> /dev/null || true
+    sleep 1
   fi
+  saved=1
 fi
 
 mkdir -p storage/logs
 
-if [ -n "$saved" ]; then 
-  php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"
-fi
-
-# الهجرة والاستيراد ستعمل بكل الأحوال سواء من البيانات المسترجعة أو كبيانات ديمو جديدة
+# A copy of the game as it is before this deploy's migrations, downloadable from the admin panel (النسخ) until the
+# next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
+if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
 php artisan migrate --force
 php artisan data:import --add
 php artisan config:cache
@@ -109,6 +123,6 @@ if [ -n "$saved" ]; then
   echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"
   exec litestream replicate -config /app/litestream.yml -exec "php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"
 else
-  echo "Saved game: OFF (Demo Local Mode). Data will reset on next Render restart."
+  echo "Saved game: off, the data is wiped on every restart (B2_* in Render's Environment)"
   exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
 fi
