@@ -112,8 +112,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 'until' => $this->vacation_until?->toIso8601ZuluString(),
                 // A new holiday once the last one has ended and the rest days after it have passed.
                 'next_from' => $this->vacation_until?->copy()->addDays((int) config('game.account.vacation_rest_days'))->toIso8601ZuluString(),
-                'max_days' => (int) config('game.account.vacation_max_days'),
+                'max_days' => (int) config('game.account.long_vacation_max_days'),
+                // [UP13] Up to this many days start at once; a longer holiday waits for the developers.
+                'auto_days' => (int) config('game.account.auto_vacation_days'),
+                'pending' => DB::table('account_vacations')->where('user_id', $this->id)->where('status', 'pending')->value('days'),
             ],
+            // [UP13] An unused account is deleted after inactive_days (shown plainly in the account page).
+            'inactivity_days' => (int) config('game.inactivity.inactive_days'),
         ];
     }
 

@@ -126,22 +126,6 @@ class Presence
         }
     }
 
-    /** The account's holiday [X4]: up to game.account.vacation_max_days, then a rest before the next one. */
-    public static function startAccountHoliday(User $user, int $days): void
-    {
-        $now = GameClock::now();
-        $rest = (int) config('game.account.vacation_rest_days');
-        $set = DB::table('users')->where('id', $user->id)
-            ->where(fn ($q) => $q->whereNull('vacation_until')->orWhere('vacation_until', '<=', $now->copy()->subDays($rest)))
-            ->update(['vacation_from' => $now, 'vacation_until' => $now->copy()->addDays($days), 'updated_at' => $now]);
-        if ($set !== 1) {
-            throw new HttpException(409, $user->fresh()->onVacation($now) ? 'أنت في إجازة الآن.'
-                : 'تبدأ إجازتك التالية بعد '.$rest.' يوماً من نهاية الإجازة السابقة.');
-        }
-        // Coming back is activity: the warnings of every league go.
-        DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')->update(['absence_warned_at' => null, 'last_active_at' => $now]);
-    }
-
     public static function endAccountHoliday(User $user): void
     {
         $now = GameClock::now();
@@ -149,6 +133,8 @@ class Presence
         if ($ended !== 1) {
             throw new HttpException(409, 'لست في إجازة الآن.');
         }
+        // [UP13] Back early: the holiday's own row ends now too (the rest before the next one counts from here).
+        DB::table('account_vacations')->where('user_id', $user->id)->where('ends_at', '>', $now)->update(['ends_at' => $now, 'updated_at' => $now]);
         DB::table('league_memberships')->where('user_id', $user->id)->whereNull('left_at')->update(['last_active_at' => $now]);
     }
 

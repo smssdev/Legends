@@ -295,7 +295,13 @@ return [
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
     // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.
-    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
+    // [UP13] The owner's spec (7): an account unused inactive_days in a row (no holiday) is deleted, warned at
+    // warn_after_days. A holiday of up to auto_vacation_days is granted at once, auto_vacations_per_season times in
+    // a season of reference_season_days with vacation_cooldown_days between them; a longer one (up to
+    // long_vacation_max_days) waits for the developers.
+    'inactivity' => ['inactive_days' => 14, 'warn_after_days' => 12],
+    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
+        'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
         // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
         'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
@@ -337,7 +343,7 @@ return [
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left'],
-            'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
+            'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         'match_soon_minutes' => 10,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
@@ -396,6 +402,9 @@ return [
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
     'morale' => ['start' => 70, 'min' => 20, 'max' => 100, 'win' => 6, 'draw' => -2, 'loss' => -6, 'winless_extra' => 2,
         'crowd' => 3, 'ticket' => 2, 'tickets_max' => 6, 'ticket_cost_bp' => 5],
+    // [UP13] The assistant takes a team whose coach has not been in its league since its last match (or is on
+    // holiday): the tired under min_fitness rest, and one of these balanced formations with balanced tactics.
+    'assistant' => ['min_fitness' => 75, 'formations' => ['4-3-3A', '4-4-2A', '4-3-3B', '4-4-2B']],
     'specialists' => ['contract_days' => 7,
         // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
         // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect

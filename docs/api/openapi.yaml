@@ -283,19 +283,29 @@ paths:
   /auth/vacation:
     post:
       tags: [auth]
-      summary: Start the account's holiday
-      description: Up to 14 days, in every league at once and without asking; absence is not counted, so no team is lost. The next one 14 days after it ends.
+      summary: Start the account's holiday, or ask for a long one
+      description: '[UP13] The days and the reason. Up to 5 days it starts at once, in every league (absence not counted, the account safe from deletion), twice a season with 3 days between; a longer one (up to 60) waits for the developers (vacation.status pending).'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [days]
+              required: [days, reason]
               properties:
-                days: { type: integer, minimum: 1, maximum: 14 }
+                days: { type: integer, minimum: 1, maximum: 60 }
+                reason: { type: string, minLength: 3, maxLength: 300 }
       responses:
-        '200': { $ref: '#/components/responses/Account' }
+        '200':
+          description: The account, and the holiday started (auto) or asked (pending)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user, vacation]
+                properties:
+                  user: { $ref: '#/components/schemas/Account' }
+                  vacation: { type: object, required: [status, days], properties: { status: { type: string, enum: [auto, pending] }, days: { type: integer } } }
         '401': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
@@ -2064,6 +2074,46 @@ paths:
       responses:
         '200': { description: The SQLite file, content: { application/vnd.sqlite3: { schema: { type: string, format: binary } } } }
         '404': { $ref: '#/components/responses/Error' }
+  /admin/vacations:
+    get:
+      tags: [admin]
+      summary: '[UP13] The long holidays the developers decide, the waiting ones first'
+      responses:
+        '200':
+          description: The holidays
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [vacations]
+                properties:
+                  vacations:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, user, days, reason, status, asked_at]
+                      properties:
+                        id: { type: integer }
+                        user: { type: object, required: [id, name, username], properties: { id: { type: integer }, name: { type: string }, username: { type: string } } }
+                        days: { type: integer }
+                        reason: { type: string }
+                        status: { type: string, enum: [pending, approved, rejected] }
+                        asked_at: { type: string, format: date-time }
+  /admin/vacations/{id}/decide:
+    post:
+      tags: [admin]
+      summary: '[UP13] Approve (it starts now) or refuse a long holiday; the coach is told'
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [approve], properties: { approve: { type: boolean } } }
+      responses:
+        '200': { description: The holiday as decided, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /admin/users/{user}/verification-code:
     post:
       tags: [admin]
@@ -3976,7 +4026,7 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, username, official, avatar_url, email, email_verified, verification, role, has_password, google, vacation, viewing]
+      required: [id, name, username, official, avatar_url, email, email_verified, verification, role, has_password, google, vacation, inactivity_days, viewing]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -3999,13 +4049,16 @@ components:
         created_at: { type: string, format: date-time }
         vacation:
           type: object
-          required: [on, until, next_from, max_days]
+          required: [on, until, next_from, max_days, auto_days, pending]
           description: The account's holiday (every league)
           properties:
             on: { type: boolean }
             until: { type: string, format: date-time, nullable: true }
             next_from: { type: string, format: date-time, nullable: true, description: When a new one may start }
             max_days: { type: integer }
+            auto_days: { type: integer, description: '[UP13] Up to this many days start at once' }
+            pending: { type: integer, nullable: true, description: '[UP13] The days of a long holiday waiting for the developers' }
+        inactivity_days: { type: integer, description: '[UP13] An account unused this many days in a row (no holiday) is deleted' }
         viewing:
           type: object
           required: [commentator, match_view, unity_ready]

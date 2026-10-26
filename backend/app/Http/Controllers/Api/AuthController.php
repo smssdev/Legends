@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\AccountDeletion;
+use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
 use App\Auth\OfficialAccounts;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
-use App\League\Leaving;
 use App\League\Presence;
-use App\Models\LeagueMembership;
 use App\Models\User;
 use App\Support\Activity;
 use App\Support\Avatar;
@@ -157,10 +157,12 @@ class AuthController extends Controller
     /** The account's holiday [X4]: every league stops counting the absence, so no team is lost meanwhile. */
     public function vacation(Request $request): JsonResponse
     {
-        $data = $request->validate(['days' => ['required', 'integer', 'between:1,'.config('game.account.vacation_max_days')]]);
-        Presence::startAccountHoliday($request->user(), (int) $data['days']);
+        // [UP13] The days and the reason: up to 5 days at once, a longer one for the developers to decide.
+        $data = $request->validate(['days' => ['required', 'integer', 'between:1,'.config('game.account.long_vacation_max_days')],
+            'reason' => ['required', 'string', 'min:3', 'max:300']]);
+        $row = AccountHolidays::request($request->user(), (int) $data['days'], trim($data['reason']));
 
-        return response()->json(['user' => $request->user()->fresh()->toAccount()]);
+        return response()->json(['user' => $request->user()->fresh()->toAccount(), 'vacation' => ['status' => $row->status, 'days' => (int) $row->days]]);
     }
 
     public function endVacation(Request $request): JsonResponse
@@ -207,18 +209,7 @@ class AuthController extends Controller
                 throw ValidationException::withMessages(['confirm' => 'اكتب بريدك كما هو لتأكيد الحذف.']);
             }
         }
-        DB::transaction(function () use ($user) {
-            $user->tokens()->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
-            DB::table('password_reset_tokens')->where('email', $user->email)->delete();
-            // Its clubs go back to the bots, as any coach leaving: offers and listings cancelled [PLAN 2.2, Sprint 37].
-            foreach (LeagueMembership::where('user_id', $user->id)->whereNull('left_at')->get() as $m) {
-                Leaving::leave($m, 'deleted');
-            }
-            // What is only its own goes with it (wallet, messages, devices, activity: by the database's cascades);
-            // what the leagues keep (titles, objectives, matches) loses the name.
-            $user->delete();
-        });
+        AccountDeletion::delete($user);
         Auth::guard('web')->logout();
         if ($request->hasSession()) {
             $request->session()->invalidate();

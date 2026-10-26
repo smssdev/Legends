@@ -566,8 +566,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Start the account's holiday
-         * @description Up to 14 days, in every league at once and without asking; absence is not counted, so no team is lost. The next one 14 days after it ends.
+         * Start the account's holiday, or ask for a long one
+         * @description [UP13] The days and the reason. Up to 5 days it starts at once, in every league (absence not counted, the account safe from deletion), twice a season with 3 days between; a longer one (up to 60) waits for the developers (vacation.status pending).
          */
         post: {
             parameters: {
@@ -580,11 +580,27 @@ export interface paths {
                 content: {
                     "application/json": {
                         days: number;
+                        reason: string;
                     };
                 };
             };
             responses: {
-                200: components["responses"]["Account"];
+                /** @description The account, and the holiday started (auto) or asked (pending) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: components["schemas"]["Account"];
+                            vacation: {
+                                /** @enum {string} */
+                                status: "auto" | "pending";
+                                days: number;
+                            };
+                        };
+                    };
+                };
                 401: components["responses"]["Error"];
                 409: components["responses"]["Error"];
                 422: components["responses"]["ValidationError"];
@@ -5004,6 +5020,105 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/vacations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [UP13] The long holidays the developers decide, the waiting ones first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The holidays */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            vacations: {
+                                id: number;
+                                user: {
+                                    id: number;
+                                    name: string;
+                                    username: string;
+                                };
+                                days: number;
+                                reason: string;
+                                /** @enum {string} */
+                                status: "pending" | "approved" | "rejected";
+                                /** Format: date-time */
+                                asked_at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/vacations/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP13] Approve (it starts now) or refuse a long holiday; the coach is told */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        approve: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The holiday as decided */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/users/{user}/verification-code": {
         parameters: {
             query?: never;
@@ -7900,7 +8015,13 @@ export interface components {
                  */
                 next_from: string | null;
                 max_days: number;
+                /** @description [UP13] Up to this many days start at once */
+                auto_days: number;
+                /** @description [UP13] The days of a long holiday waiting for the developers */
+                pending: number | null;
             };
+            /** @description [UP13] An account unused this many days in a row (no holiday) is deleted */
+            inactivity_days: number;
             /** @description How the coach watches his matches, the same on every device [X9, X10] */
             viewing: {
                 /**

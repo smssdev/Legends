@@ -230,6 +230,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('mail-test', 'mailTest')->middleware('throttle:10,1,mail-test');
         Route::post('users/{user}/official', 'official')->whereNumber('user');
         Route::post('users/{user}/verification-code', 'verificationCode')->whereNumber('user');
+        // [UP13] The long holidays waiting for the developers.
+        Route::get('vacations', 'vacations');
+        Route::post('vacations/{id}/decide', 'decideVacation')->whereNumber('id');
         Route::post('announcements', 'announce');
     });
 });

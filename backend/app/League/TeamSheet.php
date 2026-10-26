@@ -120,7 +120,8 @@ class TeamSheet
      * engine's own AutoPick does), then the formation with the best total; a small preference for four at
      * the back breaks near ties. Unavailable players (injured, suspended) are left out.
      */
-    public static function best(Club $club, int $restBelow = 0): array
+    /** @param  list<string>|null  $formations  only these (the assistant's balanced ones [UP13]), else every one */
+    public static function best(Club $club, int $restBelow = 0, ?array $formations = null): array
     {
         $squad = array_values(array_filter(self::squad($club), fn ($p) => ! $p['unavailable']));
         // Rotation (the bots, Sprint 32): the tired rest while two keepers and fourteen others are still there.
@@ -132,7 +133,7 @@ class TeamSheet
             }
         }
         $best = null;
-        foreach (FormationBook::names() as $name) {
+        foreach ($formations ?? FormationBook::names() as $name) {
             $slots = FormationBook::slots($name);
             [$score, $starters] = self::fill($squad, $slots);
             $score += FormationBook::lines($slots)['def'] === 4 ? 300 : 0;

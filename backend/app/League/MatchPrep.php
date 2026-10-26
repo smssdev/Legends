@@ -3,8 +3,10 @@
 namespace App\League;
 
 use App\Engine\AutoPick;
+use App\Engine\MatchSetup;
 use App\Messages\Inbox;
 use App\Models\Club;
+use App\Models\LeagueMembership;
 use App\Notify\Push;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
@@ -175,21 +177,51 @@ class MatchPrep
             foreach ([$fixture->home_id, $fixture->away_id] as $clubId) {
                 $club = Club::find($clubId);
                 // A bot picks its eleven afresh, resting the tired, and its tactics for this opponent [Sprint 32].
-                [$lineup, $fixes] = $club->isBot() ? [TeamSheet::best($club, Bot::restBelow($club)), []] : self::fixed($club);
+                // [UP13] A coach who was not there: his assistant picks, resting the tired, with balanced tactics.
+                $assistant = ! $club->isBot() && self::absent($club, $fixture);
+                [$lineup, $fixes] = $club->isBot() ? [TeamSheet::best($club, Bot::restBelow($club)), []]
+                    : ($assistant ? [TeamSheet::best($club, (int) config('game.assistant.min_fitness'), config('game.assistant.formations')), []] : self::fixed($club));
                 DB::table('fixture_sheets')->insert([
                     'fixture_id' => $fixtureId, 'club_id' => $clubId, 'formation' => $lineup['formation'],
                     'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']), 'bench' => json_encode($lineup['bench']),
-                    'takers' => json_encode(TeamSheet::takers($club, $lineup)), 'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : Tactics::of($club)),
+                    'takers' => json_encode(TeamSheet::takers($club, $lineup)),
+                    'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : ($assistant ? MatchSetup::DEFAULT_TACTICS : Tactics::of($club))),
                     'fixes' => json_encode($fixes), 'locked_at' => $now,
                     // The coach's pre-match scenarios [X23], frozen like the rest.
                     'scenarios' => $club->isBot() ? null : json_encode(Scenarios::of($club)),
                     // The squad as it is now: training or the market until kick-off changes nothing in this match [X31].
                     'squad' => json_encode(LeagueMatch::squadRows($clubId)),
                 ]);
+                if ($assistant) {
+                    $other = DB::table('clubs')->where('id', $clubId === $fixture->home_id ? $fixture->away_id : $fixture->home_id)->value('name');
+                    Inbox::send($club->user_id, 'assistant_led', ['opponent' => $other, 'league_id' => $club->league_id], $club->league_id, $club->id);
+                }
             }
 
             return true;
         });
+    }
+
+    /**
+     * [UP13] The coach has not been in his league since his club's last match (so not to set this one's team), or is
+     * on holiday: the assistant leads his team in it.
+     */
+    public static function absent(Club $club, object $fixture): bool
+    {
+        $m = LeagueMembership::where('league_id', $club->league_id)->where('user_id', $club->user_id)->whereNull('left_at')->with('user')->first();
+        if (! $m) {
+            return false;
+        }
+        $kickoff = Carbon::parse($fixture->scheduled_at, 'UTC');
+        if (Presence::onHoliday($m, $kickoff) || $m->user?->onVacation($kickoff)) {
+            return true;
+        }
+        // Not seen in the league since his club's last match: he never came to set the team for this one.
+        $previous = DB::table('fixtures')->where('id', '!=', $fixture->id)->where('scheduled_at', '<', $fixture->scheduled_at)->where('is_bye', false)
+            ->where(fn ($q) => $q->where('home_id', $club->id)->orWhere('away_id', $club->id))->max('scheduled_at');
+        $seen = $m->last_active_at ?? $m->joined_at;
+
+        return $previous !== null && ($seen === null || $seen->lt(Carbon::parse($previous, 'UTC')));
     }
 
     /**

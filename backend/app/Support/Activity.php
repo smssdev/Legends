@@ -20,6 +20,8 @@ class Activity
         $day = GameClock::now()->timezone('Africa/Cairo')->toDateString();
         DB::table('user_activity')->insertOrIgnore(['user_id' => $userId, 'day' => $day]);
         DB::table('user_activity')->where(['user_id' => $userId, 'day' => $day])->increment($counter);
+        // [UP13] Back in the game: the warning before deletion goes.
+        DB::table('users')->where('id', $userId)->whereNotNull('inactive_warned_at')->update(['inactive_warned_at' => null]);
     }
 
     /**

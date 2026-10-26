@@ -11,7 +11,7 @@ const secret = ref<{ secret: string; uri: string } | null>(null)
 const code = ref('')
 const error = ref('')
 const busy = ref(false)
-const tab = ref<'overview' | 'users' | 'leagues' | 'alliances' | 'backups' | 'commentary'>('overview')
+const tab = ref<'overview' | 'users' | 'vacations' | 'leagues' | 'alliances' | 'backups' | 'commentary'>('overview')
 // The alliance tournaments waiting for the developers [X27].
 const alliances = ref<components['responses']['AdminAlliances']['content']['application/json']['tournaments']>([])
 const allianceNote = ref<Record<number, string>>({})
@@ -20,7 +20,7 @@ const users = ref<any[]>([])
 const leagues = ref<any[]>([])
 const backups = ref<S['AdminBackups']['backups']>([])
 const commentary = ref<{ key: string; count: number; lines: string[] }[]>([])
-const TABS = { overview: 'النشاط', users: 'المستخدمون', leagues: 'الدوريات', alliances: 'بطولات التحالفات', backups: 'النسخ', commentary: 'قوالب التعليق' } as const
+const TABS = { overview: 'النشاط', users: 'المستخدمون', vacations: 'الإجازات', leagues: 'الدوريات', alliances: 'بطولات التحالفات', backups: 'النسخ', commentary: 'قوالب التعليق' } as const
 
 const open = computed(() => state.value?.enabled && state.value.passed)
 const size = (b: number) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.ceil(b / 1024) + ' KB')
@@ -79,11 +79,18 @@ async function show(t: typeof tab.value) {
   tab.value = t
   if (t === 'overview') overview.value = (await api.GET('/admin/overview')).data
   if (t === 'users') users.value = (await api.GET('/admin/users')).data!.users
+  if (t === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
   if (t === 'leagues') leagues.value = (await api.GET('/admin/leagues')).data!.leagues
   if (t === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (t === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
   if (t === 'commentary') commentary.value = (await api.GET('/admin/commentary')).data!.keys
 }
+// [UP13] The long holidays: approve (it starts now) or refuse; the coach is told either way.
+const vacations = ref<any[]>([])
+const decide = (id: number, approve: boolean) => run(async () => {
+  await api.POST('/admin/vacations/{id}/decide', { params: { path: { id } }, body: { approve } })
+  vacations.value = (await api.GET('/admin/vacations')).data!.vacations
+})
 const review = (id: number, approve: boolean) => run(async () => {
   alliances.value = (await api.POST('/admin/alliances/{id}/review', { params: { path: { id } }, body: { approve, note: allianceNote.value[id] || null } })).data!.tournaments
 })
@@ -198,6 +205,19 @@ onMounted(load)
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section v-if="tab === 'vacations'" aria-label="الإجازات الطويلة" class="flex flex-col gap-2">
+        <p v-if="!vacations.length" class="rounded-xl bg-surface p-4 text-sm text-text-muted">لا طلبات إجازة طويلة.</p>
+        <article v-for="v in vacations" :key="v.id" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
+          <span class="min-w-0 flex-1"><b>{{ v.user.name }}</b> <span dir="ltr" class="text-xs text-text-muted">@{{ v.user.username }}</span>
+            <span class="block text-sm">{{ v.days }} يوماً · {{ v.reason }}</span></span>
+          <template v-if="v.status === 'pending'">
+            <button type="button" class="h-touch rounded-md bg-success/20 px-4 font-bold text-success" @click="decide(v.id, true)">موافقة</button>
+            <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="decide(v.id, false)">رفض</button>
+          </template>
+          <span v-else class="text-sm" :class="v.status === 'approved' ? 'text-success' : 'text-text-muted'">{{ v.status === 'approved' ? 'وُوفق عليها' : 'رُفضت' }}</span>
+        </article>
       </section>
 
       <section v-if="tab === 'leagues'" aria-label="الدوريات" class="overflow-x-auto rounded-xl bg-surface p-4">

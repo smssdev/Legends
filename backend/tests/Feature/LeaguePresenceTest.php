@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Auth\AccountHolidays;
 use App\Models\User;
 use App\Support\GameClock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -165,13 +166,14 @@ class LeaguePresenceTest extends TestCase
 
     public function test_the_account_holiday_covers_every_league_without_asking(): void
     {
-        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 15])->assertUnprocessable();
-        $this->postJson('/api/v1/auth/vacation', ['days' => 10])->assertOk()->assertJsonPath('user.vacation.on', true);
-        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertConflict()->assertJsonPath('message', 'أنت في إجازة الآن.');
+        // [UP13] The days and the reason; up to 5 days start at once.
+        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 4])->assertUnprocessable()->assertJsonValidationErrors('reason');
+        $this->postJson('/api/v1/auth/vacation', ['days' => 4, 'reason' => 'سفر'])->assertOk()->assertJsonPath('user.vacation.on', true)->assertJsonPath('vacation.status', 'auto');
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2, 'reason' => 'سفر'])->assertConflict()->assertJsonPath('message', 'أنت في إجازة الآن.');
         $this->assertTrue($this->getJson("/api/v1/leagues/{$this->league['id']}")->json('league.me.on_holiday'));
 
-        // Nine days away: the team stays. It ends on day 10, and the count starts from there.
-        $this->passTime('9 days');
+        // Three days away: the team stays. It ends on day 4, and the count starts from there.
+        $this->passTime('3 days');
         $this->assertNull($this->coachLeft());
         $this->passTime('1 day');
         $this->passTime('71 hours');
@@ -180,15 +182,24 @@ class LeaguePresenceTest extends TestCase
         $this->assertSame('absent', $this->coachLeft());
     }
 
-    public function test_the_next_account_holiday_waits_for_the_rest_days(): void
+    public function test_short_holidays_twice_a_season_with_rest_between_and_a_long_one_waits_for_the_developers(): void
     {
         $this->actingAs($this->coach)->deleteJson('/api/v1/auth/vacation')->assertConflict();
-        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertOk();
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2, 'reason' => 'امتحانات'])->assertOk();
         $this->passTime('1 day');
         $this->actingAs($this->coach)->deleteJson('/api/v1/auth/vacation')->assertOk()->assertJsonPath('user.vacation.on', false);
-        $this->postJson('/api/v1/auth/vacation', ['days' => 2])->assertConflict();
-        $this->passTime('14 days');
-        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 2])->assertOk();
+        $this->postJson('/api/v1/auth/vacation', ['days' => 2, 'reason' => 'امتحانات'])->assertConflict();
+        $this->passTime('3 days');
+        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 2, 'reason' => 'سفر'])->assertOk();
+        $this->passTime('6 days');
+        // A third short one this season: no; a long one goes to the developers.
+        $this->actingAs($this->coach)->postJson('/api/v1/auth/vacation', ['days' => 3, 'reason' => 'سفر'])->assertConflict();
+        $this->postJson('/api/v1/auth/vacation', ['days' => 20, 'reason' => 'عملية جراحية'])->assertOk()
+            ->assertJsonPath('vacation.status', 'pending')->assertJsonPath('user.vacation.on', false)->assertJsonPath('user.vacation.pending', 20);
+        $id = (int) DB::table('account_vacations')->where('status', 'pending')->value('id');
+        AccountHolidays::decide($id, User::factory()->create(['role' => 'admin']), true);
+        $this->assertTrue($this->coach->fresh()->onVacation());
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->coach->id)->where('type', 'account_vacation')->where('payload', 'like', '%approved%')->count());
     }
 
     public function test_the_owner_kicks_a_coach_with_a_reason_everyone_sees(): void

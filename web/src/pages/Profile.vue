@@ -96,17 +96,20 @@ async function removePicture() {
   }
 }
 
-// The account's holiday [X4]: every league at once, so no team is lost while away.
-const holidayDays = ref(7)
+// The account's holiday [X4, UP13]: every league at once, so no team is lost while away. The days and the reason:
+// up to 5 days start at once (twice a season), a longer one waits for the developers.
+const holidayDays = ref(3)
+const holidayReason = ref('')
 const holidayMsg = ref('')
-const canHoliday = computed(() => !user.value.vacation.next_from || new Date(user.value.vacation.next_from) <= new Date())
+const holidayDone = ref('')
 const dateText = (iso: string | null) => (iso ? new Date(iso).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }) : '')
 async function holiday(start: boolean) {
   holidayMsg.value = ''
   try {
     await ensureCsrf()
-    const { data } = start ? await api.POST('/auth/vacation', { body: { days: holidayDays.value } }) : await api.DELETE('/auth/vacation')
+    const { data } = start ? await api.POST('/auth/vacation', { body: { days: holidayDays.value, reason: holidayReason.value.trim() } }) : await api.DELETE('/auth/vacation')
     auth.set(data!.user!)
+    holidayDone.value = start && (data as any)?.vacation?.status === 'pending' ? 'أُرسل طلبك لفريق التطوير، وسيصلك ردهم في صندوق الرسائل.' : ''
   } catch (err) {
     holidayMsg.value = asApiError(err).message
   }
@@ -297,20 +300,29 @@ async function remove() {
 
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-holiday">
       <h2 id="h-holiday" class="font-display text-xl font-extrabold">إجازة الحساب</h2>
-      <p class="text-sm text-text-muted">إجازة لحسابك كله: لا يُحسب غيابك في أي دوري، فلا يعود فريقك للحاسوب ولا تخسر شيئاً، والمساعد يدير فرقك. حتى {{ user.vacation.max_days }} يوماً، والتالية بعد 14 يوماً من نهايتها. ولإجازة في دوري واحد فقط اطلبها من صفحة الدوري بسبب يوافق عليه مسؤوله.</p>
+      <!-- [UP13] The owner's spec (7): said plainly where the coach sees it. -->
+      <p class="rounded-lg border border-warning/50 bg-warning/10 px-4 py-3 text-sm font-bold text-warning" role="note">
+        تنبيه رسمي: إذا لم يتم استخدام حسابك أو تسجيل الدخول لمدة {{ user.inactivity_days }} يوماً متواصلة (دون تفعيل إجازة رسمية)، فسيتم حذف الحساب وبيانات الفرق نهائياً وتلقائياً.
+      </p>
+      <p class="text-sm text-text-muted">إجازة لحسابك كله تحميه من الحذف: لا يُحسب غيابك في أي دوري، والمدرب المساعد يقود فرقك. حتى {{ user.vacation.auto_days }} أيام تبدأ فوراً (مرتين في الموسم)، والأطول يراجعها فريق التطوير. ولإجازة في دوري واحد اطلبها من صفحة الدوري.</p>
       <template v-if="user.vacation.on">
         <p class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">أنت في إجازة حتى {{ dateText(user.vacation.until) }}.</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="holiday(false)">عدت، أنهِ الإجازة</button>
       </template>
-      <form v-else-if="canHoliday" class="flex flex-wrap items-end gap-2" @submit.prevent="holiday(true)">
-        <label class="flex flex-col gap-1.5 text-sm font-bold">عدد الأيام
-          <select v-model.number="holidayDays" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3">
-            <option v-for="d in user.vacation.max_days" :key="d" :value="d">{{ d }}</option>
-          </select>
-        </label>
-        <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold">ابدأ الإجازة</button>
+      <p v-else-if="user.vacation.pending" class="rounded-lg bg-surface-sunk px-4 py-3 text-sm" role="status">طلب إجازتك ({{ user.vacation.pending }} يوماً) ينتظر رد فريق التطوير.</p>
+      <form v-else class="flex flex-col gap-3" @submit.prevent="holiday(true)">
+        <div class="flex flex-wrap items-end gap-2">
+          <label class="flex flex-col gap-1.5 text-sm font-bold">عدد الأيام
+            <input v-model.number="holidayDays" type="number" min="1" :max="user.vacation.max_days" inputmode="numeric" class="h-12 w-28 rounded-lg border border-text/10 bg-surface-sunk px-3 font-numbers" />
+          </label>
+          <label class="flex min-w-60 flex-1 flex-col gap-1.5 text-sm font-bold">السبب
+            <input v-model="holidayReason" type="text" maxlength="300" placeholder="مثلاً: سفر، امتحانات" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" />
+          </label>
+        </div>
+        <p class="text-xs text-text-muted">{{ holidayDays > user.vacation.auto_days ? 'أكثر من ' + user.vacation.auto_days + ' أيام: يُرسل الطلب لفريق التطوير ليراجعه.' : 'تبدأ فوراً.' }}</p>
+        <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold" :disabled="!holidayReason.trim()">{{ holidayDays > user.vacation.auto_days ? 'أرسل الطلب' : 'ابدأ الإجازة' }}</button>
       </form>
-      <p v-else class="text-sm text-text-muted">إجازتك التالية من {{ dateText(user.vacation.next_from) }}.</p>
+      <p v-if="holidayDone" class="text-sm text-success" role="status">{{ holidayDone }}</p>
       <p v-if="holidayMsg" class="text-sm text-[#FF8A8A]" role="alert">{{ holidayMsg }}</p>
     </section>
 

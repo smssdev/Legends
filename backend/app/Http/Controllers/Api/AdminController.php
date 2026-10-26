@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Admin\TwoFactor;
+use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
 use App\Auth\Username;
 use App\Console\Commands\MatchesLive;
@@ -122,6 +123,24 @@ class AdminController extends Controller
         }
 
         return response()->json($setup + ['sent' => Mailer::live(), 'error' => null, 'fix' => Mailer::live() ? null : $setup['problems'][0] ?? null]);
+    }
+
+    /** [UP13] The long holidays the developers decide, the waiting ones first. */
+    public function vacations(): JsonResponse
+    {
+        $rows = DB::table('account_vacations')->join('users', 'users.id', '=', 'account_vacations.user_id')->where('account_vacations.status', '!=', 'auto')
+            ->orderByRaw("case when account_vacations.status = 'pending' then 0 else 1 end")->orderByDesc('account_vacations.id')->limit(100)
+            ->get(['account_vacations.*', 'users.name', 'users.username']);
+
+        return response()->json(['vacations' => $rows->map(fn ($r) => ['id' => $r->id, 'user' => ['id' => $r->user_id, 'name' => $r->name, 'username' => $r->username],
+            'days' => (int) $r->days, 'reason' => $r->reason, 'status' => $r->status, 'asked_at' => Carbon::parse($r->created_at, 'UTC')->toIso8601ZuluString()])]);
+    }
+
+    public function decideVacation(Request $request, int $id): JsonResponse
+    {
+        $approve = (bool) $request->validate(['approve' => ['required', 'boolean']])['approve'];
+
+        return response()->json(['vacation' => AccountHolidays::decide($id, $request->user(), $approve)]);
     }
 
     /** [UP6] A code that verifies this account, for the developer to send to the coach on WhatsApp. */
