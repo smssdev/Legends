@@ -26,6 +26,6 @@ async function choose(l: Locale) {
 <template>
   <div class="inline-flex rounded-lg bg-surface-sunk p-1" role="radiogroup" :aria-label="$t('اللغة')">
     <button v-for="[l, label] in ([['ar', 'العربية'], ['en', 'English']] as const)" :key="l" type="button" role="radio" :aria-checked="locale === l"
-      class="h-touch rounded-md px-4 text-sm font-bold" :class="locale === l ? 'bg-gold text-on-gold' : 'text-text-soft'" :lang="l" @click="choose(l)">{{ label }}</button>
+      class="h-touch rounded-md px-4 text-sm font-bold" :class="locale === l ? 'bg-gold text-on-gold' : 'text-text-soft'" :lang="l" @click="choose(l)">{{ $t(label) }}</button>
   </div>
 </template>

@@ -32,8 +32,8 @@ import { DEVELOPERS } from '../content/developers'
             <li v-for="c in d.cv" :key="c.title" class="relative">
               <span class="absolute -start-[1.4rem] top-1.5 size-2.5 rounded-full bg-gold" aria-hidden="true" />
               <span class="font-numbers text-xs text-gold">{{ c.year }}</span>
-              <b class="block">{{ c.title }}</b>
-              <span class="text-sm text-text-muted">{{ c.text }}</span>
+              <b class="block">{{ $t(c.title) }}</b>
+              <span class="text-sm text-text-muted">{{ $t(c.text) }}</span>
             </li>
           </ol>
         </section>

@@ -96,90 +96,90 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">التدريب</h1><HelpTip :text="g.training" label="التدريب" /></span>
-        <p class="mt-1 text-sm text-text-muted">لاعب من كل خط · جلسة كل {{ v ? Math.round(v.interval_minutes / 60) : 8 }} ساعات حتى لو كنت غائباً · عند 100% القوة +1 · التدريب مفتوح طوال الموسم: بعد الإمكانية أبطأ، حتى 99</p>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><HelpTip :text="g.training" :label="$t('التدريب')" /></span>
+        <p class="mt-1 text-sm text-text-muted">{{ $t('لاعب من كل خط · جلسة كل {v0} ساعات حتى لو كنت غائباً · عند 100% القوة +1 · التدريب مفتوح طوال الموسم: بعد الإمكانية أبطأ، حتى 99', { v0: v ? Math.round(v.interval_minutes / 60) : 8 }) }}</p>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
-        <span class="block text-xs text-text-muted">أموال النادي</span>
+        <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
-        <span class="block text-xs text-text-muted">الجلسة <span class="font-numbers" dir="ltr">{{ count(v.cost) }}</span></span>
+        <span class="block text-xs text-text-muted">{{ $t('الجلسة') }} <span class="font-numbers" dir="ltr">{{ count(v.cost) }}</span></span>
       </div>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ notice }}</p>
-    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل...</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
+    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
-      <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.</p>
+      <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t('رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.') }}</p>
 
-      <section aria-label="خانات التدريب" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section :aria-label="$t('خانات التدريب')" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <!-- Each slot as a card [X29]: its line's colour on top, and a filled slot in its player's tier (gold, silver, bronze). -->
         <article v-for="s in v.slots" :key="s.line" class="relative flex flex-col gap-3 overflow-hidden rounded-xl p-4"
           :class="s.player ? ['border bg-gradient-to-b', TIER[tier(s.player.overall)]] : 'border border-dashed border-white/15 bg-surface/50'">
           <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${s.line})` }" aria-hidden="true" />
           <div class="flex items-center gap-2">
             <LineBadge :line="s.line as Line" />
-            <span class="text-sm text-text-muted">خانة {{ LINE_NAMES[s.line] }}</span>
-            <span v-if="s.player" class="ms-auto font-numbers text-sm text-gold" dir="ltr" aria-label="الجلسة التالية بعد">{{ left(s.next_at) }}</span>
+            <span class="text-sm text-text-muted">{{ $t('خانة {v0}', { v0: LINE_NAMES[s.line] }) }}</span>
+            <span v-if="s.player" class="ms-auto font-numbers text-sm text-gold" dir="ltr" :aria-label="$t('الجلسة التالية بعد')">{{ left(s.next_at) }}</span>
           </div>
           <template v-if="s.player">
             <div class="flex items-center gap-3">
               <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(s.player.name) }}</bdi></b>
-                <span class="text-xs text-text-muted">{{ s.player.position }} · {{ s.player.age }} سنة · الإمكانية {{ s.player.potential }}</span></span>
+                <span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · الإمكانية {v2}', { v0: s.player.position, v1: s.player.age, v2: s.player.potential }) }}</span></span>
               <span class="text-center"><b class="block font-numbers text-3xl" :class="tier(s.player.overall) === 'gold' ? 'text-gold' : ''">{{ s.player.overall }}</b><span class="font-numbers text-xs text-success" dir="ltr">→ {{ s.player.overall + 1 }}</span></span>
             </div>
             <div>
-              <div class="flex justify-between text-xs text-text-muted"><span>التقدم</span><span class="font-numbers" dir="ltr">{{ s.player.progress }}%</span></div>
+              <div class="flex justify-between text-xs text-text-muted"><span>{{ $t('التقدم') }}</span><span class="font-numbers" dir="ltr">{{ s.player.progress }}%</span></div>
               <div class="mt-1 h-2 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="s.player.progress" aria-valuemin="0" aria-valuemax="100">
                 <div class="h-full rounded-full bg-gold transition-all" :style="{ width: s.player.progress + '%' }" />
               </div>
-              <p class="mt-1 text-xs text-text-muted">حوالي {{ s.player.sessions }} جلسة للـ +1 · {{ s.sessions_done }} جلسة حتى الآن</p>
+              <p class="mt-1 text-xs text-text-muted">{{ $t('حوالي {v0} جلسة للـ +1 · {v1} جلسة حتى الآن', { v0: s.player.sessions, v1: s.sessions_done }) }}</p>
             </div>
             <div class="flex gap-2">
-              <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="line = s.line as Line">اختر لاعباً آخر</button>
+              <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="line = s.line as Line">{{ $t('اختر لاعباً آخر') }}</button>
               <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish(s.line)"
-                title="أنهِ الجلسة الآن">الآن · <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
-              <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">إفراغ</button>
+                :title="$t('أنهِ الجلسة الآن')">{{ $t('الآن ·') }} <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
+              <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">{{ $t('إفراغ') }}</button>
             </div>
           </template>
           <template v-else>
             <div class="flex items-center justify-between gap-3">
-              <p class="text-sm text-text-muted">الخانة فارغة.</p>
-              <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="line = s.line as Line">اختر لاعباً</button>
+              <p class="text-sm text-text-muted">{{ $t('الخانة فارغة.') }}</p>
+              <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="line = s.line as Line">{{ $t('اختر لاعباً') }}</button>
             </div>
           </template>
         </article>
       </section>
 
-      <section aria-label="مرشحون للتدريب" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
+      <section :aria-label="$t('مرشحون للتدريب')" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
         <div class="flex flex-wrap items-center gap-2 px-1">
-          <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">مرشحون للتدريب</h2><HelpTip :text="g.potential" label="الإمكانية" /></span>
-          <span class="text-sm text-text-muted">الأصغر سناً يتطور أسرع وسقفه أعلى</span>
-          <div class="ms-auto flex gap-1" role="tablist" aria-label="الخط">
+          <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">{{ $t('مرشحون للتدريب') }}</h2><HelpTip :text="g.potential" :label="$t('الإمكانية')" /></span>
+          <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
+          <div class="ms-auto flex gap-1" role="tablist" :aria-label="$t('الخط')">
             <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" role="tab" :aria-selected="line === k" class="h-touch rounded-md px-3 text-sm font-bold"
               :class="line === k ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="line = k as Line">{{ n }}</button>
           </div>
         </div>
         <div class="hidden grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem] gap-2 px-2 text-xs text-text-muted sm:grid">
-          <span>اللاعب</span><span class="text-center">السن</span><span class="text-center">القوة</span><span class="text-center">السقف</span><span class="text-center">جلسات للـ +1</span><span />
+          <span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('السن') }}</span><span class="text-center">{{ $t('القوة') }}</span><span class="text-center">{{ $t('السقف') }}</span><span class="text-center">{{ $t('جلسات للـ +1') }}</span><span />
         </div>
         <div v-for="p in candidates" :key="p.id" class="grid grid-cols-[1fr_3rem_6rem] items-center gap-2 rounded-lg bg-surface-sunk px-2 py-2 sm:grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem]">
-          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> · التقدم {{ p.progress }}%</template><template v-if="p.injured"> · مصاب</template><span class="sm:hidden"> · {{ p.age }} سنة · الإمكانية {{ p.potential }}</span></span></span>
+          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
           <span class="hidden text-center font-numbers sm:block">{{ p.age }}</span>
           <span class="text-center font-numbers text-lg">{{ p.overall }}</span>
-          <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? 'تجاوز إمكانيته: يتطور أبطأ، حتى 99' : undefined">{{ p.potential }}</span>
+          <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
-          <span v-if="!p.maxed && lineBusy" class="text-center text-xs text-text-muted" title="لاعب واحد من كل خط في التدريب">الخانة مشغولة</span>
-          <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-brand px-3 text-sm font-bold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">درّب</button>
-          <span v-else class="text-center text-xs text-text-muted">بلغ سقفه</span>
+          <span v-if="!p.maxed && lineBusy" class="text-center text-xs text-text-muted" :title="$t('لاعب واحد من كل خط في التدريب')">{{ $t('الخانة مشغولة') }}</span>
+          <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-brand px-3 text-sm font-bold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">{{ $t('درّب') }}</button>
+          <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>
-        <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">لا لاعبين آخرين في هذا الخط.</p>
+        <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">{{ $t('لا لاعبين آخرين في هذا الخط.') }}</p>
       </section>
 
-      <section aria-label="منشأة التدريب" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
-        <div class="flex-1"><b class="block">منشأة التدريب</b><span class="text-sm text-text-muted">كل مرحلة منها تسرّع التقدم في كل الخانات والمعسكر، وتُطوَّر من صفحة الملعب.</span></div>
-        <RouterLink :to="{ name: 'stadium' }" class="grid h-touch place-items-center rounded-md bg-surface-sunk px-4 font-bold text-gold">إلى الملعب</RouterLink>
+      <section :aria-label="$t('منشأة التدريب')" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
+        <div class="flex-1"><b class="block">{{ $t('منشأة التدريب') }}</b><span class="text-sm text-text-muted">{{ $t('كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب.') }}</span></div>
+        <RouterLink :to="{ name: 'stadium' }" class="grid h-touch place-items-center rounded-md bg-surface-sunk px-4 font-bold text-gold">{{ $t('إلى الملعب') }}</RouterLink>
       </section>
     </template>
   </div>

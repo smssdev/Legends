@@ -79,7 +79,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
 
 <template>
   <div class="flex flex-col gap-5">
-    <ol class="grid grid-cols-3 gap-2" aria-label="الخطوات">
+    <ol class="grid grid-cols-3 gap-2" :aria-label="$t('الخطوات')">
       <li
         v-for="(s, i) in [
           { title: 'الكود', note: clean || '8 أحرف' },
@@ -96,23 +96,23 @@ onBeforeUnmount(() => window.clearInterval(timer))
           :class="i + 1 < step ? 'bg-success text-on-gold' : i + 1 === step ? 'bg-gold text-on-gold' : 'bg-surface-raised text-text-soft'"
         >{{ i + 1 < step ? '✓' : i + 1 }}</span>
         <span class="hidden min-w-0 sm:block">
-          <span class="block font-bold">{{ s.title }}</span>
+          <span class="block font-bold">{{ $t(s.title) }}</span>
           <span class="block truncate text-xs text-text-muted" :dir="i === 0 && clean ? 'ltr' : undefined">{{ s.note }}</span>
         </span>
-        <span class="text-sm font-bold sm:hidden">{{ s.title }}</span>
+        <span class="text-sm font-bold sm:hidden">{{ $t(s.title) }}</span>
       </li>
     </ol>
 
     <div class="grid gap-4 md:grid-cols-2">
       <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-6" aria-labelledby="h-code">
         <div>
-          <h1 id="h-code" class="font-display text-3xl font-extrabold">انضم بكود الدوري</h1>
-          <p class="mt-1 text-sm text-text-muted">الكود من 8 أحرف، تجده عند صاحبك أو في رابط الدعوة.</p>
+          <h1 id="h-code" class="font-display text-3xl font-extrabold">{{ $t('انضم بكود الدوري') }}</h1>
+          <p class="mt-1 text-sm text-text-muted">{{ $t('الكود من 8 أحرف، تجده عند صاحبك أو في رابط الدعوة.') }}</p>
         </div>
 
         <form v-if="!status" class="flex flex-col gap-4" @submit.prevent="send">
           <label class="relative block">
-            <span class="sr-only">كود الدوري</span>
+            <span class="sr-only">{{ $t('كود الدوري') }}</span>
             <!-- One real input (paste and the keyboard work as usual) under the eight boxes of the design. -->
             <input
               v-model="code"
@@ -133,8 +133,8 @@ onBeforeUnmount(() => window.clearInterval(timer))
               >{{ c }}</span>
             </span>
           </label>
-          <p v-if="error" id="code-err" class="text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-          <UiButton type="submit" block :disabled="sending || clean.length !== 8">{{ sending ? 'يرسل…' : 'أرسل طلب الانضمام' }}</UiButton>
+          <p v-if="error" id="code-err" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+          <UiButton type="submit" block :disabled="sending || clean.length !== 8">{{ sending ? $t('يرسل…') : $t('أرسل طلب الانضمام') }}</UiButton>
         </form>
 
         <article v-if="league" class="flex flex-col gap-3 rounded-xl bg-surface-sunk p-4">
@@ -142,23 +142,23 @@ onBeforeUnmount(() => window.clearInterval(timer))
             <span class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-gold"><Icon name="league" /></span>
             <div class="min-w-0 flex-1">
               <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(league.name) }}</h2>
-              <p class="text-sm text-text-muted">أنشأه {{ owner }}</p>
+              <p class="text-sm text-text-muted">{{ $t('أنشأه {v0}', { v0: owner }) }}</p>
             </div>
-            <UiChip v-if="league.fair_league" tone="win">دوري نزيه</UiChip>
+            <UiChip v-if="league.fair_league" tone="win">{{ $t('دوري نزيه') }}</UiChip>
           </header>
           <dl class="grid grid-cols-2 gap-2 text-sm">
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">القالب</dt><dd class="font-bold">{{ $ln(league.template) }}</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('القالب') }}</dt><dd class="font-bold">{{ $ln(league.template) }}</dd></div>
             <div class="rounded-lg bg-surface p-3">
-              <dt class="text-text-muted">الفرق</dt>
-              <dd class="font-bold"><span class="font-numbers">{{ league.team_count }}</span> · منها <span class="font-numbers">{{ league.coaches }}</span> مدربين</dd>
+              <dt class="text-text-muted">{{ $t('الفرق') }}</dt>
+              <dd class="font-bold"><span class="font-numbers">{{ league.team_count }}</span> {{ $t('· منها') }} <span class="font-numbers">{{ league.coaches }}</span> {{ $t('مدربين') }}</dd>
             </div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">البداية</dt><dd class="font-bold">{{ when(league.starts_at) }} بتوقيتك</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('البداية') }}</dt><dd class="font-bold">{{ $t('{v0} بتوقيتك', { v0: when(league.starts_at) }) }}</dd></div>
             <div class="rounded-lg bg-surface p-3">
-              <dt class="text-text-muted">الجولات</dt>
-              <dd class="font-bold">{{ league.rounds_per_day === 1 ? 'جولة يومياً' : 'جولتان يومياً' }}</dd>
+              <dt class="text-text-muted">{{ $t('الجولات') }}</dt>
+              <dd class="font-bold">{{ league.rounds_per_day === 1 ? $t('جولة يومياً') : $t('جولتان يومياً') }}</dd>
             </div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">الميزانية</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">نهاية الموسم</dt><dd class="font-bold">{{ END_MODES[league.season_end_mode] }}</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ END_MODES[league.season_end_mode] }}</dd></div>
           </dl>
         </article>
       </section>
@@ -170,29 +170,29 @@ onBeforeUnmount(() => window.clearInterval(timer))
           </svg>
         </span>
         <template v-if="status === 'pending'">
-          <h2 class="font-display text-2xl font-extrabold">طلبك وصل لـ{{ owner }}</h2>
-          <p class="text-text-muted">بانتظار موافقته، وبعدها تختار فريقك. هذه الصفحة تتحدث وحدها.</p>
+          <h2 class="font-display text-2xl font-extrabold">{{ $t('طلبك وصل لـ{v0}', { v0: owner }) }}</h2>
+          <p class="text-text-muted">{{ $t('بانتظار موافقته، وبعدها تختار فريقك. هذه الصفحة تتحدث وحدها.') }}</p>
           <p v-if="league" class="text-sm text-text-muted">
-            الأندية المتاحة الآن: <span class="font-numbers font-bold text-text">{{ league.free_clubs }}</span>
+            {{ $t('الأندية المتاحة الآن:') }} <span class="font-numbers font-bold text-text">{{ league.free_clubs }}</span>
           </p>
-          <UiButton variant="quiet" block @click="cancel">إلغاء الطلب</UiButton>
+          <UiButton variant="quiet" block @click="cancel">{{ $t('إلغاء الطلب') }}</UiButton>
         </template>
         <template v-else-if="status === 'approved'">
-          <h2 class="font-display text-2xl font-extrabold">وافق {{ owner }} على طلبك</h2>
-          <p class="text-text-muted">اختر فريقاً بلا مدرب، قبل أن يسبقك أحد.</p>
+          <h2 class="font-display text-2xl font-extrabold">{{ $t('وافق {v0} على طلبك', { v0: owner }) }}</h2>
+          <p class="text-text-muted">{{ $t('اختر فريقاً بلا مدرب، قبل أن يسبقك أحد.') }}</p>
           <RouterLink
             v-if="league"
             :to="{ name: 'pick-team', params: { id: league.id } }"
             class="flex h-12 w-full items-center justify-center rounded-lg bg-gold font-display font-extrabold text-on-gold hover:bg-gold-light"
           >
-            اختر فريقك
+            {{ $t('اختر فريقك') }}
           </RouterLink>
         </template>
         <template v-else>
-          <h2 class="font-display text-2xl font-extrabold">رفض {{ owner }} طلبك</h2>
-          <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">عودة لدورياتي</RouterLink>
+          <h2 class="font-display text-2xl font-extrabold">{{ $t('رفض {v0} طلبك', { v0: owner }) }}</h2>
+          <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('عودة لدورياتي') }}</RouterLink>
         </template>
-        <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+        <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
       </section>
     </div>
   </div>

@@ -18,6 +18,6 @@ const dash = computed(() => `${(Math.max(0, Math.min(99, props.value)) / 99) * C
       </svg>
       <b class="relative font-numbers text-2xl">{{ value }}</b>
     </div>
-    <span class="text-xs font-bold text-text-soft">{{ label }}</span>
+    <span class="text-xs font-bold text-text-soft">{{ $t(label) }}</span>
   </div>
 </template>

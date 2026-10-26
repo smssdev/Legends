@@ -28,7 +28,7 @@ async function show() {
   <Teleport to="body">
     <div v-if="text && open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" @click.self="open = false" @keydown.esc="open = false">
       <div :id="id" role="dialog" aria-modal="true" :aria-label="label" class="flex w-full max-w-sm flex-col gap-3 rounded-xl bg-surface p-4">
-        <h2 class="font-display text-lg font-extrabold">{{ label }}</h2>
+        <h2 class="font-display text-lg font-extrabold">{{ $t(label) }}</h2>
         <p class="text-sm leading-relaxed text-text-soft">{{ text }}</p>
         <button ref="ok" type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="open = false">{{ $t('لقد فهمت') }}</button>
       </div>

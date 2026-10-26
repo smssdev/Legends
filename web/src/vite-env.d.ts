@@ -15,7 +15,7 @@ declare module 'vue' {
     $ln: (s: string | null | undefined) => string
     $nm: (s: string | null | undefined) => string
     // [UP2] A sentence in the coach's language (lib/i18n.ts).
-    $t: (ar: string, vars?: Record<string, string | number>) => string
+    $t: (ar: string | null | undefined, vars?: Record<string, string | number | null | undefined>) => string
   }
 }
 export {}

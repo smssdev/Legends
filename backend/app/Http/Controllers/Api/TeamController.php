@@ -134,7 +134,7 @@ class TeamController extends Controller
         $next = $this->nextFixture($club);
 
         return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
-            'help' => Tactics::HELP, 'scenarios' => Scenarios::of($club),
+            'help' => app()->getLocale() === 'en' ? Tactics::HELP_EN : Tactics::HELP, 'scenarios' => Scenarios::of($club),
             'scenario_kinds' => collect(Scenarios::KINDS)->map(fn ($m, $kind) => ['kind' => $kind, 'minute' => $m ? ['default' => $m[0], 'min' => $m[1], 'max' => $m[2]] : null])->values()]);
     }
 

@@ -4,51 +4,51 @@
       <RouterLink to="/sim" class="flex items-center gap-2">
         <BrandMark />
       </RouterLink>
-      <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">مباراة مع صديق</span>
+      <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">{{ $t('مباراة مع صديق') }}</span>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
 
     <!-- The host waits: share the link, the match starts when the friend joins. -->
     <section v-if="room && isHost" class="flex flex-col items-center gap-4 rounded-xl bg-surface p-5 text-center">
       <Crest :logo="room.host.club.logo" :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="64" />
       <div>
         <div class="font-display text-2xl font-extrabold">{{ $nm(room.host.name) }} · {{ $nm(room.host.club.name) }}</div>
-        <p class="mt-1 text-sm text-text-muted">أرسل الرابط لصديقك. حين يكتب اسمه ويختار فريقه تبدأ المباراة عندكما معاً.</p>
+        <p class="mt-1 text-sm text-text-muted">{{ $t('أرسل الرابط لصديقك. حين يكتب اسمه ويختار فريقه تبدأ المباراة عندكما معاً.') }}</p>
       </div>
       <div class="flex w-full gap-2">
-        <input :value="link" readonly dir="ltr" aria-label="رابط الغرفة" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
-        <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="share">{{ copied ? 'نُسخ' : 'مشاركة' }}</button>
+        <input :value="link" readonly dir="ltr" :aria-label="$t('رابط الغرفة')" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
+        <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="share">{{ copied ? $t('نُسخ') : $t('مشاركة') }}</button>
       </div>
-      <span class="flex items-center gap-2 text-sm text-text-soft"><span class="size-2 animate-pulse rounded-full bg-gold" />بانتظار صديقك...</span>
+      <span class="flex items-center gap-2 text-sm text-text-soft"><span class="size-2 animate-pulse rounded-full bg-gold" />{{ $t('بانتظار صديقك...') }}</span>
     </section>
 
     <!-- A full room on a device that did not join. -->
     <section v-else-if="room && room.guest" class="rounded-xl bg-surface p-5 text-center">
-      <div class="font-display text-xl font-extrabold">الغرفة ممتلئة</div>
-      <p class="mt-1 text-sm text-text-muted">{{ $nm(room.host.name) }} و{{ $nm(room.guest.name) }} يلعبان الآن. افتح غرفة جديدة لتلعب.</p>
-      <RouterLink :to="{ name: 'sim-room-new' }" class="mt-3 inline-flex h-touch items-center rounded-md bg-gold px-5 font-bold text-on-gold">غرفة جديدة</RouterLink>
+      <div class="font-display text-xl font-extrabold">{{ $t('الغرفة ممتلئة') }}</div>
+      <p class="mt-1 text-sm text-text-muted">{{ $t('{v0} و{v1} يلعبان الآن. افتح غرفة جديدة لتلعب.', { v0: $nm(room.host.name), v1: $nm(room.guest.name) }) }}</p>
+      <RouterLink :to="{ name: 'sim-room-new' }" class="mt-3 inline-flex h-touch items-center rounded-md bg-gold px-5 font-bold text-on-gold">{{ $t('غرفة جديدة') }}</RouterLink>
     </section>
 
     <!-- Open a room (host) or join one (guest): a name and a club. -->
     <template v-else-if="!props.room || room">
       <div v-if="room" class="flex items-center gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
         <Crest :logo="room.host.club.logo" :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="48" />
-        <div><b class="font-display text-lg">{{ $nm(room.host.name) }}</b> يتحداك بفريق <b>{{ $nm(room.host.club.name) }}</b>. اكتب اسمك واختر فريقك.</div>
+        <div><b class="font-display text-lg">{{ $nm(room.host.name) }}</b> {{ $t('يتحداك بفريق') }} <b>{{ $nm(room.host.club.name) }}</b>{{ $t('. اكتب اسمك واختر فريقك.') }}</div>
       </div>
       <div v-else>
-        <h1 class="font-display text-3xl font-extrabold">العب مع صديق</h1>
-        <p class="mt-1 text-text-muted">اكتب اسمك واختر فريقك، ثم أرسل الرابط لصديقك.</p>
+        <h1 class="font-display text-3xl font-extrabold">{{ $t('العب مع صديق') }}</h1>
+        <p class="mt-1 text-text-muted">{{ $t('اكتب اسمك واختر فريقك، ثم أرسل الرابط لصديقك.') }}</p>
       </div>
 
       <label class="flex flex-col gap-1.5">
-        <span class="text-sm font-bold">اسمك</span>
-        <input v-model="name" maxlength="24" autocomplete="nickname" class="h-touch rounded-md border border-text/10 bg-surface px-3 text-lg" placeholder="مثلاً: سليمان" />
+        <span class="text-sm font-bold">{{ $t('اسمك') }}</span>
+        <input v-model="name" maxlength="24" autocomplete="nickname" class="h-touch rounded-md border border-text/10 bg-surface px-3 text-lg" :placeholder="$t('مثلاً: سليمان')" />
       </label>
 
-      <section class="flex flex-col gap-2 rounded-xl bg-surface p-3" aria-label="اختر فريقك">
-        <label class="sr-only" for="q">ابحث عن نادٍ</label>
-        <input id="q" v-model="q" type="search" placeholder="ابحث عن نادٍ: ريال، ليفربول، الهلال..." class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" @input="search" />
+      <section class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('اختر فريقك')">
+        <label class="sr-only" for="q">{{ $t('ابحث عن نادٍ') }}</label>
+        <input id="q" v-model="q" type="search" :placeholder="$t('ابحث عن نادٍ: ريال، ليفربول، الهلال...')" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" @input="search" />
         <div class="flex max-h-72 flex-col gap-1 overflow-y-auto pe-1">
           <button
             v-for="c in results.filter((c) => c.id !== room?.host.club.id)"
@@ -67,9 +67,9 @@
       </section>
 
       <button type="button" class="sticky bottom-3 h-14 rounded-xl bg-gold font-display text-lg font-extrabold text-on-gold shadow-lg disabled:opacity-50" :disabled="!ready || busy" @click="go">
-        {{ busy ? '...' : room ? 'ادخل المباراة' : 'افتح الغرفة' }}
+        {{ busy ? '...' : room ? $t('ادخل المباراة') : $t('افتح الغرفة') }}
       </button>
-      <p v-if="!ready" class="-mt-3 text-center text-xs text-text-muted">{{ name.trim().length < 2 ? 'اكتب اسمك (حرفان على الأقل)' : 'اختر فريقك' }}</p>
+      <p v-if="!ready" class="-mt-3 text-center text-xs text-text-muted">{{ name.trim().length < 2 ? $t('اكتب اسمك (حرفان على الأقل)') : $t('اختر فريقك') }}</p>
     </template>
   </main>
 </template>

@@ -42,39 +42,39 @@ function status(p: SquadPlayer) {
 
 <template>
   <div class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <div v-else-if="loaded && !team" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
-      <h1 class="font-display text-2xl font-extrabold">ليس لديك فريق بعد</h1>
-      <p class="text-text-muted">انضم لدوري أو أنشئ دورياً واختر فريقك.</p>
-      <RouterLink :to="{ name: 'leagues' }" class="flex h-12 items-center rounded-lg bg-gold px-5 font-display font-extrabold text-on-gold">دورياتي</RouterLink>
+      <h1 class="font-display text-2xl font-extrabold">{{ $t('ليس لديك فريق بعد') }}</h1>
+      <p class="text-text-muted">{{ $t('انضم لدوري أو أنشئ دورياً واختر فريقك.') }}</p>
+      <RouterLink :to="{ name: 'leagues' }" class="flex h-12 items-center rounded-lg bg-gold px-5 font-display font-extrabold text-on-gold">{{ $t('دورياتي') }}</RouterLink>
     </div>
     <template v-else-if="team">
       <header class="flex items-start justify-between gap-3">
         <div>
-          <h1 class="font-display text-3xl font-extrabold">الفريق</h1>
+          <h1 class="font-display text-3xl font-extrabold">{{ $t('الفريق') }}</h1>
           <p class="text-text-muted">
-            <span class="font-numbers">{{ team.players.length }}</span> لاعباً · القوة <span class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</span> · القيمة
+            <span class="font-numbers">{{ team.players.length }}</span> {{ $t('لاعباً · القوة') }} <span class="font-numbers text-gold">{{ strength(team.club.strength_cp) }}</span> {{ $t('· القيمة') }}
             <span class="font-numbers">{{ money(team.squad_value) }}</span>
           </p>
         </div>
-        <RouterLink :to="{ name: 'lineup' }" class="flex h-12 shrink-0 items-center rounded-lg bg-surface-raised px-4 font-display font-extrabold text-gold">التشكيلة</RouterLink>
+        <RouterLink :to="{ name: 'lineup' }" class="flex h-12 shrink-0 items-center rounded-lg bg-surface-raised px-4 font-display font-extrabold text-gold">{{ $t('التشكيلة') }}</RouterLink>
       </header>
 
       <!-- [X29] The team's strength by line, four rings as in the classic manager games. -->
-      <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" aria-label="قوة الفريق بالخطوط">
-        <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? 'الحارس' : LINES[l].plural" :color="`var(--color-line-${l})`" />
+      <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" :aria-label="$t('قوة الفريق بالخطوط')">
+        <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? $t('الحارس') : LINES[l].plural" :color="`var(--color-line-${l})`" />
       </section>
-      <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" aria-label="المعنويات">
-        <span class="flex items-center gap-1 font-bold">المعنويات<HelpTip :text="g.morale" label="المعنويات" /></span>
-        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="team.morale.value" aria-valuemin="0" aria-valuemax="100" aria-label="المعنويات">
+      <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" :aria-label="$t('المعنويات')">
+        <span class="flex items-center gap-1 font-bold">{{ $t('المعنويات') }}<HelpTip :text="g.morale" :label="$t('المعنويات')" /></span>
+        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="team.morale.value" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('المعنويات')">
           <span class="block h-full rounded-full" :style="{ width: `${team.morale.value}%`, background: moraleColor(team.morale.value) }" />
         </span>
         <b class="font-numbers text-lg" :style="{ color: moraleColor(team.morale.value) }">{{ team.morale.value }}</b>
-        <span v-if="team.morale.winless_run >= 2" class="text-xs text-[#FF8A8A]">{{ team.morale.winless_run }} بلا فوز</span>
+        <span v-if="team.morale.winless_run >= 2" class="text-xs text-[#FF8A8A]">{{ $t('{v0} بلا فوز', { v0: team.morale.winless_run }) }}</span>
       </section>
 
       <div class="flex items-center gap-2">
-      <div class="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" role="tablist" aria-label="الخطوط">
+      <div class="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" role="tablist" :aria-label="$t('الخطوط')">
         <button
           v-for="l in ['all', 'gk', 'def', 'mid', 'att'] as const"
           :key="l"
@@ -85,10 +85,10 @@ function status(p: SquadPlayer) {
           :aria-selected="line === l"
           @click="line = l"
         >
-          {{ l === 'all' ? 'الكل' : LINES[l].plural }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
+          {{ l === 'all' ? $t('الكل') : LINES[l].plural }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
         </button>
       </div>
-      <div class="flex shrink-0 gap-1 rounded-xl bg-surface p-1" role="group" aria-label="طريقة العرض">
+      <div class="flex shrink-0 gap-1 rounded-xl bg-surface p-1" role="group" :aria-label="$t('طريقة العرض')">
         <button v-for="[k, label, icon] in ([['list', 'قائمة', 'M4 6h16M4 12h16M4 18h16'], ['cards', 'بطاقات', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z']] as const)" :key="k" type="button" class="grid size-10 place-items-center rounded-lg" :class="view === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="view === k" :aria-label="label" @click="setView(k)">
           <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path :d="icon" /></svg>
         </button>
@@ -121,7 +121,7 @@ function status(p: SquadPlayer) {
         </li>
       </ul>
     </template>
-    <p v-else class="text-text-muted">جارٍ التحميل…</p>
+    <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <PlayerCard v-if="open" :player="open" @close="open = null" />
   </div>
 </template>

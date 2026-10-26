@@ -60,40 +60,40 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
 <template>
   <div class="flex flex-col gap-5">
     <div>
-      <h1 class="font-display text-3xl font-extrabold">مكتبة المكونات</h1>
-      <p class="mt-1 text-text-muted">مكونات نظام التصميم على نادٍ حقيقي من البيانات.</p>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('مكتبة المكونات') }}</h1>
+      <p class="mt-1 text-text-muted">{{ $t('مكونات نظام التصميم على نادٍ حقيقي من البيانات.') }}</p>
     </div>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
-    <UiCard title="الأزرار والشارات">
+    <UiCard :title="$t('الأزرار والشارات')">
       <div class="flex flex-wrap gap-2">
-        <UiButton>احفظ التشكيلة</UiButton>
-        <UiButton variant="outline">تحسين تلقائي</UiButton>
-        <UiButton variant="quiet">إلغاء</UiButton>
-        <UiButton variant="danger">حذف</UiButton>
+        <UiButton>{{ $t('احفظ التشكيلة') }}</UiButton>
+        <UiButton variant="outline">{{ $t('تحسين تلقائي') }}</UiButton>
+        <UiButton variant="quiet">{{ $t('إلغاء') }}</UiButton>
+        <UiButton variant="danger">{{ $t('حذف') }}</UiButton>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <UiChip tone="live">مباشر <span class="font-numbers" dir="ltr">67'</span></UiChip>
+        <UiChip tone="live">{{ $t('مباشر') }} <span class="font-numbers" dir="ltr">67'</span></UiChip>
         <UiChip><Coins :amount="1250" /></UiChip>
-        <UiChip tone="win">فوز</UiChip>
-        <UiChip tone="draw">تعادل</UiChip>
-        <UiChip tone="loss">خسارة</UiChip>
-        <UiChip tone="gold">الحكم: صارم</UiChip>
+        <UiChip tone="win">{{ $t('فوز') }}</UiChip>
+        <UiChip tone="draw">{{ $t('تعادل') }}</UiChip>
+        <UiChip tone="loss">{{ $t('خسارة') }}</UiChip>
+        <UiChip tone="gold">{{ $t('الحكم: صارم') }}</UiChip>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <LineBadge v-for="l in lines" :key="l" :line="l" full />
-        <span class="text-sm text-text-muted">ألوان الخطوط تفرّق الخط فقط</span>
+        <span class="text-sm text-text-muted">{{ $t('ألوان الخطوط تفرّق الخط فقط') }}</span>
       </div>
     </UiCard>
 
-    <UiCard title="النادي">
+    <UiCard :title="$t('النادي')">
       <template #action>
         <div class="flex flex-wrap gap-2">
-          <label class="sr-only" for="ui-league">الدوري</label>
+          <label class="sr-only" for="ui-league">{{ $t('الدوري') }}</label>
           <select id="ui-league" v-model="league" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3">
             <option v-for="t in templates" :key="t.name" :value="t.name">{{ t.name }} ({{ t.clubs }})</option>
           </select>
-          <label class="sr-only" for="ui-club">النادي</label>
+          <label class="sr-only" for="ui-club">{{ $t('النادي') }}</label>
           <select id="ui-club" v-model="clubId" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3">
             <option v-for="c in clubs" :key="c.id" :value="c.id">{{ c.name }}</option>
           </select>
@@ -112,18 +112,18 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
         <div class="min-w-0 flex-1">
           <h2 id="h-squad" class="font-display text-2xl font-extrabold">{{ club.name }}</h2>
           <p class="text-text-muted">
-            <span class="font-numbers text-base text-text">{{ club.players.length }}</span> لاعباً · القوة
-            <span class="font-numbers text-base text-gold">{{ strength(club.strength_cp) }}</span> · القيمة
+            <span class="font-numbers text-base text-text">{{ club.players.length }}</span> {{ $t('لاعباً · القوة') }}
+            <span class="font-numbers text-base text-gold">{{ strength(club.strength_cp) }}</span> {{ $t('· القيمة') }}
             <span class="font-numbers text-base text-text">{{ money(club.squad_value) }}</span>
           </p>
         </div>
       </div>
-      <div role="tablist" aria-label="الخطوط" class="flex gap-2 overflow-x-auto pb-1">
+      <div role="tablist" :aria-label="$t('الخطوط')" class="flex gap-2 overflow-x-auto pb-1">
         <button type="button" role="tab" :aria-selected="tab === 'all'" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === 'all' ? 'bg-gold text-on-gold' : 'bg-surface'" @click="tab = 'all'">
-          الكل <span class="font-numbers">{{ club.players.length }}</span>
+          {{ $t('الكل') }} <span class="font-numbers">{{ club.players.length }}</span>
         </button>
         <button v-for="l in lines" :key="l" type="button" role="tab" :aria-selected="tab === l" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === l ? 'bg-gold text-on-gold' : 'bg-surface'" @click="tab = l">
-          {{ LINES[l].plural }} <span class="font-numbers">{{ counts[l] }}</span>
+          {{ $t(LINES[l].plural) }} <span class="font-numbers">{{ counts[l] }}</span>
         </button>
       </div>
       <div class="grid gap-2 lg:grid-cols-2">
@@ -131,11 +131,11 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
       </div>
     </section>
 
-    <UiCard v-if="table.length" :title="`أندية ${league}`">
+    <UiCard v-if="table.length" :title="$t('أندية {v0}', { v0: league })">
       <UiTable
         :rows="table"
-        :caption="`أندية ${league} حسب القوة`"
-        :columns="[{ key: 'rank', label: '#', numeric: true }, { key: 'name', label: 'النادي' }, { key: 'code', label: 'الرمز', hideSm: true }, { key: 'strength_cp', label: 'القوة', numeric: true }]"
+        :caption="$t('أندية {v0} حسب القوة', { v0: league })"
+        :columns="[{ key: 'rank', label: '#', numeric: true }, { key: 'name', label: $t('النادي') }, { key: 'code', label: $t('الرمز'), hideSm: true }, { key: 'strength_cp', label: $t('القوة'), numeric: true }]"
         :highlight="(r) => r.id === clubId"
       >
         <template #name="{ row }">

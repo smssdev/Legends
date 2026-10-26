@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\League\Tactics;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -45,5 +46,16 @@ class LocaleTest extends TestCase
         $this->actingAs($user)->patchJson('/api/v1/auth/me', ['locale' => 'en'])->assertOk()->assertJsonPath('user.locale', 'en');
         $this->assertSame('en', $user->fresh()->locale);
         $this->actingAs($user)->patchJson('/api/v1/auth/me', ['locale' => 'fr'])->assertStatus(422);
+    }
+
+    public function test_the_help_texts_have_the_same_terms_in_english(): void
+    {
+        $ar = $this->getJson('/api/v1/data/glossary')->assertOk()->json('terms');
+        $en = $this->withHeader('Accept-Language', 'en')->getJson('/api/v1/data/glossary')->assertOk()->json('terms');
+        $this->assertSame(array_keys($ar), array_keys($en));
+        foreach ($en as $text) {
+            $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $text);
+        }
+        $this->assertSame(array_keys(Tactics::HELP), array_keys(Tactics::HELP_EN));
     }
 }

@@ -38,8 +38,8 @@ const shortName = computed(() => {
     </dl>
     <div class="mt-auto flex flex-col gap-1.5">
       <b class="truncate text-center font-display text-base leading-tight" :title="name"><bdi>{{ shortName }}</bdi></b>
-      <span v-if="status" class="truncate text-center text-[11px]" :class="statusTone">{{ status }}</span>
-      <div v-if="fitness !== undefined" class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="`اللياقة ${fitness}%`"><span class="block h-full rounded-pill" :class="fitness >= 75 ? 'bg-success' : fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: fitness + '%' }" /></div>
+      <span v-if="status" class="truncate text-center text-[11px]" :class="statusTone">{{ $t(status) }}</span>
+      <div v-if="fitness !== undefined" class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="$t('اللياقة {v0}%', { v0: fitness })"><span class="block h-full rounded-pill" :class="fitness >= 75 ? 'bg-success' : fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: fitness + '%' }" /></div>
       <span class="text-center font-numbers text-xs text-text-muted" dir="ltr">{{ money(value) }}</span>
       <b v-if="price !== undefined" class="text-center font-numbers text-base text-gold" dir="ltr">{{ money(price) }}</b>
       <slot />

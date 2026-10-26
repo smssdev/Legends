@@ -1,5 +1,5 @@
 <template>
-  <div class="replay" role="img" :aria-label="`إعادة الهدف: ${who}`">
+  <div class="replay" role="img" :aria-label="$t('إعادة الهدف: {v0}', { v0: who })">
     <span class="tag">إعادة · {{ who }}</span>
     <div ref="stage" class="stage" />
   </div>

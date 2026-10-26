@@ -152,33 +152,33 @@ const field = (name: string) => error.value?.field(name) ?? ''
         v-if="step === 'club'"
         type="button"
         class="flex size-touch items-center justify-center rounded-lg bg-surface text-xl"
-        aria-label="رجوع للإعدادات"
+        :aria-label="$t('رجوع للإعدادات')"
         @click="step = 'settings'"
       >›</button>
       <div>
-        <h1 class="font-display text-3xl font-extrabold">{{ step === 'settings' ? 'أنشئ دوريك' : 'اختر فريقك' }}</h1>
-        <p class="text-sm text-text-muted">{{ step === 'settings' ? 'كل الإعدادات تُقفل عند بداية الموسم' : 'باقي الفرق يديرها الحاسوب حتى ينضم أصحابك' }}</p>
+        <h1 class="font-display text-3xl font-extrabold">{{ step === 'settings' ? $t('أنشئ دوريك') : $t('اختر فريقك') }}</h1>
+        <p class="text-sm text-text-muted">{{ step === 'settings' ? $t('كل الإعدادات تُقفل عند بداية الموسم') : $t('باقي الفرق يديرها الحاسوب حتى ينضم أصحابك') }}</p>
       </div>
     </header>
 
-    <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ loadError }}</p>
-    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error.message }}</p>
+    <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(loadError) }}</p>
+    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error.message) }}</p>
 
     <form v-if="step === 'settings'" class="grid gap-4 lg:grid-cols-[1fr_22rem]" @submit.prevent="toClubs">
       <div class="flex flex-col gap-4">
         <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-basics">
-          <h2 id="h-basics" class="font-display text-xl font-extrabold">الأساسيات</h2>
-          <TextField v-model="name" label="اسم الدوري" placeholder="فارغ: اسم الدوري والكود" :error="field('name')" />
+          <h2 id="h-basics" class="font-display text-xl font-extrabold">{{ $t('الأساسيات') }}</h2>
+          <TextField v-model="name" :label="$t('اسم الدوري')" :placeholder="$t('فارغ: اسم الدوري والكود')" :error="field('name')" />
           <div class="grid gap-4 md:grid-cols-2">
             <label class="flex flex-col gap-1.5">
-              <span class="text-sm font-bold">الدوري</span>
+              <span class="text-sm font-bold">{{ $t('الدوري') }}</span>
               <select v-model="template" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" :aria-invalid="!!field('template')">
-                <option v-for="t in templates" :key="t.name" :value="t.name">{{ $nm(t.name) }} · {{ t.clubs }} نادياً</option>
+                <option v-for="t in templates" :key="t.name" :value="t.name">{{ $t('{v0} · {v1} نادياً', { v0: $nm(t.name), v1: t.clubs }) }}</option>
               </select>
               <span v-if="field('template')" class="text-sm text-[#FF8A8A]">{{ field('template') }}</span>
             </label>
             <label class="flex flex-col gap-1.5">
-              <span class="text-sm font-bold">بداية الموسم (بتوقيتك)</span>
+              <span class="text-sm font-bold">{{ $t('بداية الموسم (بتوقيتك)') }}</span>
               <input v-model="startsAt" type="datetime-local" :min="minStart" :max="maxStart" required class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" />
               <span v-if="field('starts_at')" class="text-sm text-[#FF8A8A]">{{ field('starts_at') }}</span>
             </label>
@@ -187,63 +187,63 @@ const field = (name: string) => error.value?.field(name) ?? ''
 
         <!-- The free league, as it comes. -->
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-free">
-          <h2 id="h-free" class="font-display text-xl font-extrabold">الدوري القياسي <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">مجاني</span></h2>
+          <h2 id="h-free" class="font-display text-xl font-extrabold">{{ $t('الدوري القياسي') }} <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">{{ $t('مجاني') }}</span></h2>
           <ul class="grid gap-2 text-sm text-text-soft md:grid-cols-2">
-            <li>⚽ كل أندية الدوري الأصلي ({{ fullTeams }})</li>
-            <li>🕘 جولة واحدة يومياً في التاسعة مساءً بتوقيتك</li>
-            <li>📅 يومان للإعداد قبل أول جولة</li>
-            <li>🎙️ المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان</li>
-            <li>🏁 موسم واحد ثم ينتهي الدوري</li>
-            <li>⚖️ لا دوري نزيه ولا جولة على فترتين</li>
+            <li>{{ $t('⚽ كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}</li>
+            <li>{{ $t('🕘 جولة واحدة يومياً في التاسعة مساءً بتوقيتك') }}</li>
+            <li>{{ $t('📅 يومان للإعداد قبل أول جولة') }}</li>
+            <li>{{ $t('🎙️ المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان') }}</li>
+            <li>{{ $t('🏁 موسم واحد ثم ينتهي الدوري') }}</li>
+            <li>{{ $t('⚖️ لا دوري نزيه ولا جولة على فترتين') }}</li>
           </ul>
-          <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" hint="عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد"><b>أريد تخصيص الدوري</b></UiToggle>
+          <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" :hint="$t('عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد')"><b>{{ $t('أريد تخصيص الدوري') }}</b></UiToggle>
         </section>
 
         <template v-if="custom">
           <section class="flex flex-col gap-4 rounded-xl border border-gold/30 bg-surface p-4 md:p-5" aria-labelledby="h-custom">
-            <h2 id="h-custom" class="font-display text-xl font-extrabold">التخصيص</h2>
+            <h2 id="h-custom" class="font-display text-xl font-extrabold">{{ $t('التخصيص') }}</h2>
             <div class="grid gap-4 md:grid-cols-2">
               <div class="flex flex-col gap-1.5">
-                <span id="l-teams" class="text-sm font-bold">عدد الأندية</span>
+                <span id="l-teams" class="text-sm font-bold">{{ $t('عدد الأندية') }}</span>
                 <div class="flex items-center justify-between gap-2" role="group" aria-labelledby="l-teams">
-                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أقل" :disabled="teams <= minTeams" @click="teams--">−</button>
+                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أقل')" :disabled="teams <= minTeams" @click="teams--">−</button>
                   <output class="font-numbers text-4xl font-bold text-gold" aria-live="polite">{{ teams }}</output>
-                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أكثر" :disabled="teams >= fullTeams" @click="teams++">+</button>
+                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أكثر')" :disabled="teams >= fullTeams" @click="teams++">+</button>
                 </div>
-                <span class="text-xs text-text-muted">من {{ minTeams }} (نصف أندية الدوري) إلى {{ fullTeams }}</span>
+                <span class="text-xs text-text-muted">{{ $t('من {v0} (نصف أندية الدوري) إلى {v1}', { v0: minTeams, v1: fullTeams }) }}</span>
                 <span v-if="field('team_count')" class="text-sm text-[#FF8A8A]">{{ field('team_count') }}</span>
               </div>
               <fieldset class="flex flex-col gap-1.5">
-                <legend class="mb-1.5 text-sm font-bold">فترة الإعداد</legend>
+                <legend class="mb-1.5 text-sm font-bold">{{ $t('فترة الإعداد') }}</legend>
                 <div class="grid grid-cols-3 gap-1 rounded-lg bg-surface-sunk p-1">
                   <button v-for="d in [2, 4, 6]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
-                    {{ d === 2 ? 'يومان' : `${d} أيام` }}
+                    {{ d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}
                   </button>
                 </div>
               </fieldset>
               <div class="flex flex-col gap-1.5">
-                <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"><b>ساعة مباريات محددة</b></UiToggle>
-                <input v-if="customTime" v-model="time" type="time" required dir="ltr" aria-label="ساعة المباريات بتوقيت القاهرة" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg" />
-                <span v-if="customTime" class="text-xs text-text-muted">بتوقيت القاهرة، كل مباريات الجولة معاً</span>
+                <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"><b>{{ $t('ساعة مباريات محددة') }}</b></UiToggle>
+                <input v-if="customTime" v-model="time" type="time" required dir="ltr" :aria-label="$t('ساعة المباريات بتوقيت القاهرة')" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg" />
+                <span v-if="customTime" class="text-xs text-text-muted">{{ $t('بتوقيت القاهرة، كل مباريات الجولة معاً') }}</span>
                 <span v-if="field('round_times')" class="text-sm text-[#FF8A8A]">{{ field('round_times') }}</span>
               </div>
               <label class="flex flex-col gap-2">
-                <span class="flex items-center justify-between text-sm font-bold">ميزانية البداية لكل نادٍ <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
+                <span class="flex items-center justify-between text-sm font-bold">{{ $t('ميزانية البداية لكل نادٍ') }} <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
                 <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
-                <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
+                <span class="flex justify-between text-xs text-text-muted"><span>{{ $t('مليون') }}</span><span>{{ $t('10 ملايين') }}</span></span>
               </label>
             </div>
-            <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف الكوينز داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
-            <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" hint="رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح"><b>منظومة النزاهة</b></UiToggle>
-            <UiToggle v-model="press" class="rounded-lg bg-surface-sunk p-3" hint="تصريح قبل كل مباراة يرفع المعنويات"><b>المؤتمرات الصحفية</b></UiToggle>
-            <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" hint="نصف مباريات الجولة في موعدها والنصف الآخر بعدها، بقفل موحد وتدوير عادل"><b>الجولة على فترتين</b></UiToggle>
-            <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">الفترة الثانية بعد موعد الجولة بـ
+            <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" :hint="$t('يقفل صرف الكوينز داخل هذا الدوري')"><b>{{ $t('دوري نزيه') }}</b></UiToggle>
+            <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" :hint="$t('رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح')"><b>{{ $t('منظومة النزاهة') }}</b></UiToggle>
+            <UiToggle v-model="press" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تصريح قبل كل مباراة يرفع المعنويات')"><b>{{ $t('المؤتمرات الصحفية') }}</b></UiToggle>
+            <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" :hint="$t('نصف مباريات الجولة في موعدها والنصف الآخر بعدها، بقفل موحد وتدوير عادل')"><b>{{ $t('الجولة على فترتين') }}</b></UiToggle>
+            <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">{{ $t('الفترة الثانية بعد موعد الجولة بـ') }}
               <select v-model.number="slotGap" class="h-touch rounded-md bg-surface px-2 font-bold">
-                <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? 'ساعة' : m === 120 ? 'ساعتين' : 'ساعات' }}</option>
+                <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? $t('ساعة') : m === 120 ? $t('ساعتين') : $t('ساعات') }}</option>
               </select>
             </label>
             <fieldset class="flex flex-col gap-2">
-              <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>
+              <legend class="mb-1.5 text-sm font-bold">{{ $t('في نهاية الموسم') }}</legend>
               <div class="grid gap-2 md:grid-cols-2">
                 <label
                   v-for="(label, mode) in END_MODES"
@@ -251,7 +251,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
                   class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border p-3"
                   :class="endMode === mode ? 'border-gold bg-surface-raised' : 'border-text/10'"
                 >
-                  <input v-model="endMode" type="radio" name="end" :value="mode" class="size-5 accent-gold" />{{ label }}
+                  <input v-model="endMode" type="radio" name="end" :value="mode" class="size-5 accent-gold" />{{ $t(label) }}
                 </label>
               </div>
             </fieldset>
@@ -260,23 +260,23 @@ const field = (name: string) => error.value?.field(name) ?? ''
       </div>
 
       <aside class="flex h-fit flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 lg:sticky lg:top-4" aria-labelledby="h-summary">
-        <h2 id="h-summary" class="font-display text-xl font-extrabold">ملخص الموسم</h2>
+        <h2 id="h-summary" class="font-display text-xl font-extrabold">{{ $t('ملخص الموسم') }}</h2>
         <dl class="flex flex-col divide-y divide-text/5 text-sm">
-          <div class="flex justify-between py-2"><dt class="text-text-muted">جولات الدوري</dt><dd class="font-bold"><span class="font-numbers">{{ rounds }}</span> جولة</dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">منطقة القفل</dt><dd class="font-bold">من الجولة <span class="font-numbers">{{ lockFrom }}</span></dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">مقاعد المدربين</dt><dd class="font-bold"><span class="font-numbers">{{ count }}</span> · مقعدك و<span class="font-numbers">{{ count - 1 }}</span> لأصحابك</dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">الميزانية</dt><dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('جولات الدوري') }}</dt><dd class="font-bold"><span class="font-numbers">{{ rounds }}</span> {{ $t('جولة') }}</dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('منطقة القفل') }}</dt><dd class="font-bold">{{ $t('من الجولة') }} <span class="font-numbers">{{ lockFrom }}</span></dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('مقاعد المدربين') }}</dt><dd class="font-bold"><span class="font-numbers">{{ count }}</span> {{ $t('· مقعدك و') }}<span class="font-numbers">{{ count - 1 }}</span> {{ $t('لأصحابك') }}</dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd></div>
         </dl>
-        <p class="text-xs text-text-muted">بعد الإنشاء تختار فريقك، وتحصل على كود تشاركه. الفرق الأخرى يديرها الحاسوب حتى ينضم أصحابك.</p>
-        <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">رصيدك {{ wallet.view?.balance ?? 0 }} كوينز، والدوري المخصص يحتاج {{ coins }}.</p>
+        <p class="text-xs text-text-muted">{{ $t('بعد الإنشاء تختار فريقك، وتحصل على كود تشاركه. الفرق الأخرى يديرها الحاسوب حتى ينضم أصحابك.') }}</p>
+        <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ $t('رصيدك {v0} كوينز، والدوري المخصص يحتاج {v1}.', { v0: wallet.view?.balance ?? 0, v1: coins }) }}</p>
         <UiButton type="submit" block :disabled="!template || short">
-          <template v-if="customized">إنشاء الدوري المخصص · <img src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" /> <span class="font-numbers">{{ coins }}</span> كوينز</template>
-          <template v-else>أنشئ الدوري واختر فريقك</template>
+          <template v-if="customized">{{ $t('إنشاء الدوري المخصص ·') }} <img src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" /> <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template>
+          <template v-else>{{ $t('أنشئ الدوري واختر فريقك') }}</template>
         </UiButton>
       </aside>
     </form>
 
-    <section v-else class="flex flex-col gap-3 pb-36 md:pb-0" aria-label="أندية الدوري">
+    <section v-else class="flex flex-col gap-3 pb-36 md:pb-0" :aria-label="$t('أندية الدوري')">
       <ul class="grid gap-2 md:grid-cols-2">
         <li v-for="c in clubs" :key="c.id">
           <button
@@ -293,7 +293,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
         </li>
       </ul>
       <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep p-4 md:static md:border-0 md:bg-transparent md:p-0">
-        <UiButton block :disabled="!club || sending" @click="create">{{ club ? `أنشئ الدوري بـ${club.name}` + (coins ? ` · ${coins} كوينز` : '') : 'اختر فريقك' }}</UiButton>
+        <UiButton block :disabled="!club || sending" @click="create">{{ club ? $t('أنشئ الدوري بـ{v0}', { v0: club.name }) + (coins ? $t(' · {v0} كوينز', { v0: coins }) : '') : $t('اختر فريقك') }}</UiButton>
       </div>
     </section>
   </div>

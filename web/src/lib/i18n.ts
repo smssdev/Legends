@@ -43,9 +43,10 @@ export function adoptLocale(l: string | null | undefined) {
   if ((l === 'ar' || l === 'en') && l !== locale.value) setLocale(l)
 }
 
-export function t(ar: string, vars?: Record<string, string | number>): string {
+export function t(ar: string | null | undefined, vars?: Record<string, string | number | null | undefined>): string {
+  if (ar == null) return ''
   let s = locale.value === 'en' ? (EN[ar] ?? ar) : ar
-  if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(String(v))
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(String(v ?? ''))
   return s
 }
 

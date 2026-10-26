@@ -68,49 +68,49 @@ async function sendPing() {
 <template>
   <div class="flex flex-col gap-5">
     <div>
-      <h1 class="font-display text-3xl font-extrabold">أهلاً في لعبة المدرب الأسطورة</h1>
-      <p class="mt-1 text-text-muted">دورياتك، وحالة الخادم، والبث المباشر، والمحاكي.</p>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('أهلاً في لعبة المدرب الأسطورة') }}</h1>
+      <p class="mt-1 text-text-muted">{{ $t('دورياتك، وحالة الخادم، والبث المباشر، والمحاكي.') }}</p>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-server">
-        <h2 id="h-server" class="font-display text-xl font-extrabold">الخادم</h2>
+        <h2 id="h-server" class="font-display text-xl font-extrabold">{{ $t('الخادم') }}</h2>
         <dl v-if="health" class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-          <dt class="text-text-muted">الحالة</dt>
-          <dd class="font-bold text-success">يعمل</dd>
-          <dt class="text-text-muted">الإصدار</dt>
+          <dt class="text-text-muted">{{ $t('الحالة') }}</dt>
+          <dd class="font-bold text-success">{{ $t('يعمل') }}</dd>
+          <dt class="text-text-muted">{{ $t('الإصدار') }}</dt>
           <dd class="font-numbers text-base" dir="ltr">{{ health.version }}</dd>
-          <dt class="text-text-muted">أقدم تطبيق مدعوم</dt>
+          <dt class="text-text-muted">{{ $t('أقدم تطبيق مدعوم') }}</dt>
           <dd class="font-numbers text-base" dir="ltr">{{ health.min_app_version }}</dd>
-          <dt class="text-text-muted">نسخة المحرك</dt>
+          <dt class="text-text-muted">{{ $t('نسخة المحرك') }}</dt>
           <dd class="font-numbers text-base">{{ health.engine_version }}</dd>
-          <dt class="text-text-muted">وقت اللعبة</dt>
+          <dt class="text-text-muted">{{ $t('وقت اللعبة') }}</dt>
           <dd>
             <span v-if="gameTime">{{ fmt(gameTime) }}</span>
-            <span class="block text-xs text-text-muted">بتوقيت جهازك ({{ zone }})</span>
+            <span class="block text-xs text-text-muted">{{ $t('بتوقيت جهازك ({v0})', { v0: zone }) }}</span>
           </dd>
         </dl>
-        <p v-else-if="!error" class="text-text-muted">جارٍ التحميل…</p>
+        <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
         <p v-if="health && health.clock_offset !== 0" class="rounded-lg bg-warning/15 px-3 py-2 text-sm">
-          ساعة اللعبة مقدَّمة بـ <span class="font-numbers">{{ Math.round(health.clock_offset / 3600) }}</span> ساعة (<code dir="ltr">clock:travel</code>، للتطوير فقط).
+          {{ $t('ساعة اللعبة مقدَّمة بـ') }} <span class="font-numbers">{{ Math.round(health.clock_offset / 3600) }}</span> {{ $t('ساعة (') }}<code dir="ltr">clock:travel</code>{{ $t('، للتطوير فقط).') }}
         </p>
       </section>
 
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-live">
         <div class="flex items-center justify-between">
-          <h2 id="h-live" class="font-display text-xl font-extrabold">البث المباشر</h2>
+          <h2 id="h-live" class="font-display text-xl font-extrabold">{{ $t('البث المباشر') }}</h2>
           <span class="flex items-center gap-2 text-sm" role="status">
-            <span class="size-2.5 rounded-full" :class="liveState === 'connected' ? 'bg-success' : liveState === 'connecting' ? 'bg-warning' : 'bg-live'" />{{ liveLabel }}
+            <span class="size-2.5 rounded-full" :class="liveState === 'connected' ? 'bg-success' : liveState === 'connecting' ? 'bg-warning' : 'bg-live'" />{{ $t(liveLabel) }}
           </span>
         </div>
-        <p class="text-sm text-text-muted">يرسل الخادم حدثاً تجريبياً، ويصل هنا لحظياً كما ستصل أحداث المباريات.</p>
+        <p class="text-sm text-text-muted">{{ $t('يرسل الخادم حدثاً تجريبياً، ويصل هنا لحظياً كما ستصل أحداث المباريات.') }}</p>
         <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-60" :disabled="ping === 'sending' || ping === 'waiting'" @click="sendPing">
-          {{ ping === 'sending' || ping === 'waiting' ? 'ينتظر الحدث…' : 'جرّب البث' }}
+          {{ ping === 'sending' || ping === 'waiting' ? $t('ينتظر الحدث…') : $t('جرّب البث') }}
         </button>
         <p v-if="ping === 'ok'" class="rounded-lg bg-success/15 px-3 py-2 text-sm" role="status">
-          وصل: {{ pingNote }} · خلال <span class="font-numbers">{{ pingMs }}</span> ملّي ثانية
+          {{ $t('وصل: {v0} · خلال', { v0: pingNote }) }} <span class="font-numbers">{{ pingMs }}</span> {{ $t('ملّي ثانية') }}
         </p>
         <p v-else-if="ping === 'failed'" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ pingNote }}</p>
       </section>
@@ -118,16 +118,16 @@ async function sendPing() {
 
     <RouterLink to="/leagues" class="flex min-h-touch items-center justify-between rounded-xl border border-gold/30 bg-surface p-4 hover:bg-surface-raised">
       <span>
-        <span class="block font-display text-lg font-extrabold">دورياتي</span>
-        <span class="text-sm text-text-muted">أنشئ دورياً لأصحابك، أو انضم بكود دوري.</span>
+        <span class="block font-display text-lg font-extrabold">{{ $t('دورياتي') }}</span>
+        <span class="text-sm text-text-muted">{{ $t('أنشئ دورياً لأصحابك، أو انضم بكود دوري.') }}</span>
       </span>
       <span class="text-gold" aria-hidden="true">‹</span>
     </RouterLink>
 
     <RouterLink to="/sim" class="flex min-h-touch items-center justify-between rounded-xl bg-surface p-4 hover:bg-surface-raised">
       <span>
-        <span class="block font-display text-lg font-extrabold">المحاكي</span>
-        <span class="text-sm text-text-muted">مباراة بين أي ناديين حقيقيين، تديرها حية.</span>
+        <span class="block font-display text-lg font-extrabold">{{ $t('المحاكي') }}</span>
+        <span class="text-sm text-text-muted">{{ $t('مباراة بين أي ناديين حقيقيين، تديرها حية.') }}</span>
       </span>
       <span class="text-gold" aria-hidden="true">‹</span>
     </RouterLink>

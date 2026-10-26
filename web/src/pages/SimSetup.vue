@@ -2,32 +2,32 @@
   <div class="flex flex-col gap-5">
 
     <div>
-      <h1 class="font-display text-3xl font-extrabold">مباراة في المحاكي</h1>
-      <p class="mt-1 text-text-muted">اختر ناديين حقيقيين، وحدد من يدير كل فريق، ثم شاهد المباراة وأدرها.</p>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('مباراة في المحاكي') }}</h1>
+      <p class="mt-1 text-text-muted">{{ $t('اختر ناديين حقيقيين، وحدد من يدير كل فريق، ثم شاهد المباراة وأدرها.') }}</p>
     </div>
 
-    <div role="radiogroup" aria-label="نوع المباراة" class="grid grid-cols-2 gap-3">
+    <div role="radiogroup" :aria-label="$t('نوع المباراة')" class="grid grid-cols-2 gap-3">
       <button v-for="m in modes" :key="m.v" type="button" role="radio" :aria-checked="settings.mode === m.v" class="flex min-h-20 flex-col items-start gap-1 rounded-xl border-2 p-4 text-start" :class="settings.mode === m.v ? 'border-gold bg-gold/10' : 'border-transparent bg-surface'" @click="m.v === 'live' ? router.push({ name: 'sim-room-new' }) : (settings.mode = m.v)">
-        <span class="font-display text-lg font-extrabold" :class="settings.mode === m.v ? 'text-gold' : ''">{{ m.label }}</span>
-        <span class="text-xs text-text-muted">{{ m.hint }}</span>
+        <span class="font-display text-lg font-extrabold" :class="settings.mode === m.v ? 'text-gold' : ''">{{ $t(m.label) }}</span>
+        <span class="text-xs text-text-muted">{{ $t(m.hint) }}</span>
       </button>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
-      <section v-for="side in sides" :key="side" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :aria-label="side === 'home' ? 'الفريق الأول' : 'الفريق الثاني'">
+      <section v-for="side in sides" :key="side" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :aria-label="side === 'home' ? $t('الفريق الأول') : $t('الفريق الثاني')">
         <div class="flex items-center justify-between text-sm">
-          <span class="font-bold text-gold">{{ side === 'home' ? 'الفريق 1 · صاحب الأرض' : 'الفريق 2 · الضيف' }}</span>
+          <span class="font-bold text-gold">{{ side === 'home' ? $t('الفريق 1 · صاحب الأرض') : $t('الفريق 2 · الضيف') }}</span>
         </div>
         <div class="flex gap-2">
-          <label class="sr-only" :for="`league-${side}`">الدوري</label>
+          <label class="sr-only" :for="`league-${side}`">{{ $t('الدوري') }}</label>
           <select :id="`league-${side}`" v-model="pick[side].league" class="h-touch flex-1 rounded-md border border-text/10 bg-surface-sunk px-3" @change="search(side)">
-            <option value="">كل الدوريات</option>
+            <option value="">{{ $t('كل الدوريات') }}</option>
             <option v-for="l in leagues" :key="l.name" :value="l.name">{{ $nm(l.name) }} ({{ l.clubs }})</option>
           </select>
-          <label class="sr-only" :for="`q-${side}`">ابحث عن نادٍ</label>
-          <input :id="`q-${side}`" v-model="pick[side].q" type="search" placeholder="ابحث عن نادٍ" class="h-touch w-36 rounded-md border border-text/10 bg-surface-sunk px-3" @input="search(side)" />
+          <label class="sr-only" :for="`q-${side}`">{{ $t('ابحث عن نادٍ') }}</label>
+          <input :id="`q-${side}`" v-model="pick[side].q" type="search" :placeholder="$t('ابحث عن نادٍ')" class="h-touch w-36 rounded-md border border-text/10 bg-surface-sunk px-3" @input="search(side)" />
         </div>
         <div class="flex max-h-44 flex-col gap-1 overflow-y-auto pe-1">
           <button
@@ -60,39 +60,39 @@
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <div v-if="settings.mode === 'solo'" role="radiogroup" :aria-label="`من يدير ${side === 'home' ? 'الفريق الأول' : 'الفريق الثاني'}`" class="grid grid-cols-2 gap-1 rounded-md bg-surface-sunk p-1">
-            <button v-for="c in controls" :key="c.v" type="button" role="radio" :aria-checked="pick[side].control === c.v" class="h-10 rounded-sm text-sm font-bold" :class="pick[side].control === c.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="pick[side].control = c.v">{{ c.label }}</button>
+          <div v-if="settings.mode === 'solo'" role="radiogroup" :aria-label="$t('من يدير {v0}', { v0: side === 'home' ? $t('الفريق الأول') : $t('الفريق الثاني') })" class="grid grid-cols-2 gap-1 rounded-md bg-surface-sunk p-1">
+            <button v-for="c in controls" :key="c.v" type="button" role="radio" :aria-checked="pick[side].control === c.v" class="h-10 rounded-sm text-sm font-bold" :class="pick[side].control === c.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="pick[side].control = c.v">{{ $t(c.label) }}</button>
           </div>
-          <label class="sr-only" :for="`plan-${side}`">خطة اللعب</label>
+          <label class="sr-only" :for="`plan-${side}`">{{ $t('خطة اللعب') }}</label>
           <select :id="`plan-${side}`" v-model="pick[side].plan" class="h-12 rounded-md border border-text/10 bg-surface-sunk px-3 text-sm">
-            <option v-for="p in plans" :key="p.v" :value="p.v">{{ p.label }}</option>
+            <option v-for="p in plans" :key="p.v" :value="p.v">{{ $t(p.label) }}</option>
           </select>
         </div>
       </section>
     </div>
 
-    <section class="grid gap-4 rounded-xl bg-surface p-4 md:grid-cols-3" aria-label="إعدادات المباراة">
+    <section class="grid gap-4 rounded-xl bg-surface p-4 md:grid-cols-3" :aria-label="$t('إعدادات المباراة')">
       <div v-for="g in groups.filter((g) => settings.mode === 'solo' || g.key !== 'speed')" :key="g.key" class="flex flex-col gap-2">
-        <span class="text-sm text-text-soft">{{ g.label }}</span>
+        <span class="text-sm text-text-soft">{{ $t(g.label) }}</span>
         <div role="radiogroup" :aria-label="g.label" class="flex gap-1 rounded-md bg-surface-sunk p-1">
-          <button v-for="o in g.options" :key="String(o.v)" type="button" role="radio" :aria-checked="settings[g.key] === o.v" class="h-touch flex-1 rounded-sm text-sm font-bold" :class="settings[g.key] === o.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="settings[g.key] = o.v">{{ o.label }}</button>
+          <button v-for="o in g.options" :key="String(o.v)" type="button" role="radio" :aria-checked="settings[g.key] === o.v" class="h-touch flex-1 rounded-sm text-sm font-bold" :class="settings[g.key] === o.v ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="settings[g.key] = o.v">{{ $t(o.label) }}</button>
         </div>
       </div>
       <div class="flex flex-col gap-2">
-        <label for="seed" class="text-sm text-text-soft">البذرة (نفس البذرة = نفس المباراة)</label>
+        <label for="seed" class="text-sm text-text-soft">{{ $t('البذرة (نفس البذرة = نفس المباراة)') }}</label>
         <div class="flex gap-1">
           <input id="seed" v-model.number="settings.seed" type="number" min="1" dir="ltr" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 font-numbers text-xl" />
-          <button type="button" class="h-touch rounded-md bg-surface-raised px-3 text-sm" @click="settings.seed = Math.floor(Math.random() * 999999) + 1">عشوائية</button>
+          <button type="button" class="h-touch rounded-md bg-surface-raised px-3 text-sm" @click="settings.seed = Math.floor(Math.random() * 999999) + 1">{{ $t('عشوائية') }}</button>
         </div>
       </div>
     </section>
 
     <div class="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 bg-bg/95 px-4 py-3 md:static md:mx-0 md:bg-transparent md:p-0">
       <button type="button" class="flex h-14 items-center gap-2 rounded-lg bg-gold px-8 font-display text-lg font-extrabold text-on-gold disabled:opacity-50" :disabled="!ready || busy" @click="start">
-        {{ busy ? 'جارٍ التجهيز...' : 'ابدأ المباراة' }}
+        {{ busy ? $t('جارٍ التجهيز...') : $t('ابدأ المباراة') }}
       </button>
       <span v-if="notReady" class="text-sm font-bold text-warning">{{ notReady }}</span>
-      <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 7 دقائق بسرعة ×1' }}</span>
+      <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? $t('كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1') : $t('حوالي 7 دقائق بسرعة ×1') }}</span>
     </div>
   </div>
 </template>

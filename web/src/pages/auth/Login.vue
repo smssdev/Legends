@@ -56,7 +56,7 @@ async function submit() {
     <h1 class="font-display text-3xl font-extrabold">{{ $t('أهلاً بعودتك') }}</h1>
     <p class="mt-1 text-text-muted">{{ $t('ادخل لتكمل موسمك') }}</p>
   </div>
-  <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ notice }}</p>
+  <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ $t(notice) }}</p>
   <GoogleButton :label="$t('المتابعة بحساب Google')" />
   <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" /></div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
@@ -65,7 +65,7 @@ async function submit() {
       <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">{{ $t('نسيت كلمة المرور؟') }}</RouterLink></template>
     </TextField>
     <UiToggle v-model="remember" :label="$t('تذكرني على هذا الجهاز')" />
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الدخول…') : $t('دخول') }}</button>
   </form>
   <p class="text-center text-sm text-text-muted">{{ $t('ليس لديك حساب؟') }} <RouterLink to="/register" class="font-bold text-gold">{{ $t('أنشئ حساباً') }}</RouterLink></p>

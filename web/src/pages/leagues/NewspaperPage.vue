@@ -51,25 +51,25 @@ onMounted(() => load())
 <template>
   <div class="flex flex-col gap-4">
     <header>
-      <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">› الدوري</RouterLink>
-      <h1 class="font-display text-3xl font-extrabold">جريدة الدوري</h1>
+      <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">{{ $t('› الدوري') }}</RouterLink>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('جريدة الدوري') }}</h1>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
     <section v-if="p?.edition" class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-edition">
       <div class="flex flex-wrap items-center gap-2">
-        <h2 id="h-edition" class="font-display text-2xl font-extrabold">عدد الجولة {{ p.edition.round }}</h2>
-        <select v-if="p.edition.rounds.length > 1" class="ms-auto h-touch rounded-md bg-surface-sunk px-2" :value="p.edition.round" aria-label="جولة أخرى" @change="load(Number(($event.target as HTMLSelectElement).value))">
-          <option v-for="n in [...p.edition.rounds].reverse()" :key="n" :value="n">الجولة {{ n }}</option>
+        <h2 id="h-edition" class="font-display text-2xl font-extrabold">{{ $t('عدد الجولة {v0}', { v0: p.edition.round }) }}</h2>
+        <select v-if="p.edition.rounds.length > 1" class="ms-auto h-touch rounded-md bg-surface-sunk px-2" :value="p.edition.round" :aria-label="$t('جولة أخرى')" @change="load(Number(($event.target as HTMLSelectElement).value))">
+          <option v-for="n in [...p.edition.rounds].reverse()" :key="n" :value="n">{{ $t('الجولة {v0}', { v0: n }) }}</option>
         </select>
       </div>
       <article v-for="(s, i) in p.edition.stories" :key="i" class="rounded-lg bg-surface-sunk p-3" :class="i === 0 ? 'border-s-4 border-gold' : ''">
-        <h3 class="font-display font-extrabold" :class="i === 0 ? 'text-xl' : 'text-base'">{{ s.title }}</h3>
-        <p class="text-sm text-text-soft">{{ s.text }}</p>
+        <h3 class="font-display font-extrabold" :class="i === 0 ? 'text-xl' : 'text-base'">{{ $t(s.title) }}</h3>
+        <p class="text-sm text-text-soft">{{ $t(s.text) }}</p>
       </article>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <h3 class="mb-1 font-bold">النتائج</h3>
+          <h3 class="mb-1 font-bold">{{ $t('النتائج') }}</h3>
           <ul class="flex flex-col text-sm">
             <li v-for="(m, i) in p.edition.results" :key="i" class="flex items-center justify-between gap-2 border-t border-text/5 py-1.5 first:border-0">
               <bdi class="flex-1 truncate">{{ $nm(m.home) }}</bdi><b class="font-numbers" dir="ltr">{{ m.home_goals }} - {{ m.away_goals }}</b><bdi class="flex-1 truncate text-end">{{ $nm(m.away) }}</bdi>
@@ -77,7 +77,7 @@ onMounted(() => load())
           </ul>
         </div>
         <div v-if="p.edition.team.length">
-          <h3 class="mb-1 font-bold">تشكيلة الجولة المثالية</h3>
+          <h3 class="mb-1 font-bold">{{ $t('تشكيلة الجولة المثالية') }}</h3>
           <ul class="flex flex-col text-sm">
             <li v-for="t in p.edition.team" :key="t.id" class="flex items-center gap-2 border-t border-text/5 py-1.5 first:border-0">
               <span class="w-10 text-xs text-text-muted">{{ LINE[t.line] }}</span><bdi class="flex-1 truncate font-bold">{{ $nm(t.name) }}</bdi>
@@ -87,36 +87,36 @@ onMounted(() => load())
         </div>
       </div>
     </section>
-    <p v-else-if="p" class="rounded-xl bg-surface p-6 text-text-muted">يصدر أول عدد بعد أول جولة.</p>
+    <p v-else-if="p" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('يصدر أول عدد بعد أول جولة.') }}</p>
 
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-articles">
-      <h2 id="h-articles" class="font-display text-xl font-extrabold">مقالات المدربين</h2>
+      <h2 id="h-articles" class="font-display text-xl font-extrabold">{{ $t('مقالات المدربين') }}</h2>
       <article v-for="a in p?.articles ?? []" :key="a.id" class="rounded-lg bg-surface-sunk p-3">
-        <h3 class="font-bold">{{ a.title }}</h3>
+        <h3 class="font-bold">{{ $t(a.title) }}</h3>
         <p class="whitespace-pre-line text-sm text-text-soft">{{ a.body }}</p>
         <p class="mt-1 text-xs text-text-muted">{{ a.author.name }} · {{ day(a.at) }}</p>
       </article>
-      <p v-if="p && !p.articles.length" class="text-sm text-text-muted">لا مقالات منشورة بعد.</p>
+      <p v-if="p && !p.articles.length" class="text-sm text-text-muted">{{ $t('لا مقالات منشورة بعد.') }}</p>
     </section>
 
     <section v-if="p?.pending.length" class="flex flex-col gap-2 rounded-xl border border-warning/40 bg-surface p-4" aria-labelledby="h-pending">
-      <h2 id="h-pending" class="font-display text-lg font-extrabold">{{ p.is_owner ? 'مقالات تنتظر موافقتك' : 'مقالاتك عند المشرف' }}</h2>
+      <h2 id="h-pending" class="font-display text-lg font-extrabold">{{ p.is_owner ? $t('مقالات تنتظر موافقتك') : $t('مقالاتك عند المشرف') }}</h2>
       <article v-for="a in p.pending" :key="a.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <h3 class="font-bold">{{ a.title }} <span class="text-xs font-normal text-text-muted">· {{ a.author.name }}</span></h3>
+        <h3 class="font-bold">{{ $t(a.title) }} <span class="text-xs font-normal text-text-muted">· {{ a.author.name }}</span></h3>
         <p class="whitespace-pre-line text-sm text-text-soft">{{ a.body }}</p>
         <div v-if="p.is_owner" class="flex gap-2">
-          <button type="button" class="h-touch rounded-md bg-success/20 px-4 font-bold text-success" @click="decide(a.id, true)">انشره</button>
-          <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="decide(a.id, false)">ارفضه</button>
+          <button type="button" class="h-touch rounded-md bg-success/20 px-4 font-bold text-success" @click="decide(a.id, true)">{{ $t('انشره') }}</button>
+          <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="decide(a.id, false)">{{ $t('ارفضه') }}</button>
         </div>
       </article>
     </section>
 
     <form class="flex flex-col gap-2 rounded-xl bg-surface p-4" @submit.prevent="write">
-      <h2 class="font-display text-lg font-extrabold">اكتب للجريدة</h2>
-      <p class="text-sm text-text-muted">خبر، أو بيان، أو صفقة، أو رسالة لمنافسيك. يُنشر بعد موافقة مشرف الدوري.</p>
-      <input v-model="title" maxlength="120" placeholder="العنوان" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" aria-label="العنوان" />
-      <textarea v-model="body" :maxlength="p?.max ?? 2000" rows="5" placeholder="نص المقال" class="rounded-lg border border-text/10 bg-surface-sunk p-3" aria-label="نص المقال" />
-      <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-50" :disabled="title.trim().length < 3 || body.trim().length < 10">أرسل للمشرف</button>
+      <h2 class="font-display text-lg font-extrabold">{{ $t('اكتب للجريدة') }}</h2>
+      <p class="text-sm text-text-muted">{{ $t('خبر، أو بيان، أو صفقة، أو رسالة لمنافسيك. يُنشر بعد موافقة مشرف الدوري.') }}</p>
+      <input v-model="title" maxlength="120" :placeholder="$t('العنوان')" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('العنوان')" />
+      <textarea v-model="body" :maxlength="p?.max ?? 2000" rows="5" :placeholder="$t('نص المقال')" class="rounded-lg border border-text/10 bg-surface-sunk p-3" :aria-label="$t('نص المقال')" />
+      <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-50" :disabled="title.trim().length < 3 || body.trim().length < 10">{{ $t('أرسل للمشرف') }}</button>
       <p v-if="sent" class="text-sm text-success" role="status">{{ sent }}</p>
     </form>
   </div>

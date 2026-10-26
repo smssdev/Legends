@@ -53,7 +53,7 @@ function link(l: League) {
       </div>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
 
     <div v-else-if="leagues.length === 0" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
@@ -71,15 +71,15 @@ function link(l: League) {
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ STATUS[l.status] }}</UiChip>
         </div>
         <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">
-          لم تدخل هذا الدوري منذ يومين. ادخله قبل {{ l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }} وإلا يعود فريقك للحاسوب.
+          {{ $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', { v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }) }}
         </p>
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <UiChip v-if="l.is_owner" tone="gold">{{ $t('أنشأته') }}</UiChip>
           <UiChip v-if="l.my_request === 'pending'" tone="warning">{{ $t('بانتظار الموافقة') }}</UiChip>
           <UiChip v-else-if="!l.my_club_id" tone="gold">{{ $t('اختر فريقك') }}</UiChip>
-          <UiChip v-if="l.is_owner && l.pending_requests" tone="live">{{ l.pending_requests }} طلبات</UiChip>
+          <UiChip v-if="l.is_owner && l.pending_requests" tone="live">{{ $t('{v0} طلبات', { v0: l.pending_requests }) }}</UiChip>
           <UiChip v-if="l.me?.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip>
-          <span class="text-text-muted">البداية: {{ when(l.starts_at) }}</span>
+          <span class="text-text-muted">{{ $t('البداية: {v0}', { v0: when(l.starts_at) }) }}</span>
         </div>
       </RouterLink>
     </div>

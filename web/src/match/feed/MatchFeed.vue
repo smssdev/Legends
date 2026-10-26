@@ -15,10 +15,10 @@
          server's keyframes, never only the key moments. -->
     <div class="pitch">
       <div ref="pitchHost" class="pitch-in" aria-hidden="true" />
-      <button type="button" class="cam" :aria-label="camera === 'tv' ? 'عرض الخطة من أعلى' : 'كاميرا البث'" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? 'الخطة' : 'البث' }}</button>
+      <button type="button" class="cam" :aria-label="camera === 'tv' ? $t('عرض الخطة من أعلى') : $t('كاميرا البث')" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? $t('الخطة') : $t('البث') }}</button>
     </div>
 
-    <div class="tl" aria-label="مجريات المباراة" aria-live="polite">
+    <div class="tl" :aria-label="$t('مجريات المباراة')" aria-live="polite">
       <div class="spine" />
       <TransitionGroup name="row" tag="div" class="list">
         <div v-for="it in items" :key="it.key" class="row" :class="it.center ? 'home' : it.side">
@@ -35,7 +35,7 @@
     <div class="moment" :class="{ on: sceneOn, tense }">
       <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
-        <span v-if="replaying" class="replay">إعادة</span>
+        <span v-if="replaying" class="replay">{{ $t('إعادة') }}</span>
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
           <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
@@ -65,8 +65,8 @@
     </div>
 
     <div v-if="intro" class="preview">
-      <span class="kick">{{ live ? 'مباراة بين صديقين' : 'ما قبل المباراة' }}</span>
-      <span v-if="live && countdown > 0" class="plan">الصافرة بعد <b dir="ltr">{{ countdown }}</b> ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن</span>
+      <span class="kick">{{ live ? $t('مباراة بين صديقين') : $t('ما قبل المباراة') }}</span>
+      <span v-if="live && countdown > 0" class="plan">{{ $t('الصافرة بعد') }} <b dir="ltr">{{ countdown }}</b> {{ $t('ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن') }}</span>
       <div class="teams">
         <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></div>
         <span class="vs">VS</span>
@@ -78,7 +78,7 @@
       <div class="keys">
         <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
       </div>
-      <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? `البداية بعد ${countdown}` : 'شغّل الصوت وانتظر البداية') : 'ابدأ البث' }}</button>
+      <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? $t('البداية بعد {v0}', { v0: countdown }) : $t('شغّل الصوت وانتظر البداية')) : $t('ابدأ البث') }}</button>
     </div>
   </div>
 </template>

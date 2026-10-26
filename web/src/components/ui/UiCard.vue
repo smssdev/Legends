@@ -6,7 +6,7 @@ defineProps<{ title?: string }>()
 <template>
   <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5">
     <header v-if="title || $slots.action" class="flex items-center justify-between gap-3">
-      <h2 class="font-display text-xl font-extrabold">{{ title }}</h2>
+      <h2 class="font-display text-xl font-extrabold">{{ $t(title) }}</h2>
       <slot name="action" />
     </header>
     <slot />

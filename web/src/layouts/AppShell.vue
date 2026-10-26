@@ -159,7 +159,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
     <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-2 md:px-6" role="status">
       <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
         <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ $t(broadcast.live ? $t('على الهواء') : $t('انتهت')) }}</span>
-        <span class="min-w-0 truncate text-sm">{{ broadcast.title }}</span>
+        <span class="min-w-0 truncate text-sm">{{ $t(broadcast.title) }}</span>
         <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
         <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
       </RouterLink>

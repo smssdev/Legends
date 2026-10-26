@@ -3,7 +3,7 @@
     <div v-for="row in rows" :key="row.label" class="flex flex-col gap-1.5">
       <div class="flex justify-between text-sm">
         <span class="font-numbers text-lg">{{ row.h }}</span>
-        <span class="text-text-muted">{{ row.label }}</span>
+        <span class="text-text-muted">{{ $t(row.label) }}</span>
         <span class="font-numbers text-lg">{{ row.a }}</span>
       </div>
       <div class="flex h-1.5 gap-1">

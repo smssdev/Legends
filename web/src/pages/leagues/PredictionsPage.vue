@@ -37,23 +37,23 @@ onMounted(load)
 <template>
   <div class="flex flex-col gap-4">
     <header>
-      <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">› الدوري</RouterLink>
-      <h1 class="font-display text-3xl font-extrabold">توقعات المدربين</h1>
-      <p v-if="r?.round" class="text-sm text-text-muted">الجولة {{ r.round }} · التوقع الصحيح يمنح ناديك <b dir="ltr" class="font-numbers text-gold">{{ money(r.reward ?? 0) }}</b> ونقطة خبرة</p>
+      <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">{{ $t('› الدوري') }}</RouterLink>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('توقعات المدربين') }}</h1>
+      <p v-if="r?.round" class="text-sm text-text-muted">{{ $t('الجولة {v0} · التوقع الصحيح يمنح ناديك', { v0: r.round }) }} <b dir="ltr" class="font-numbers text-gold">{{ money(r.reward ?? 0) }}</b> {{ $t('ونقطة خبرة') }}</p>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-if="r && !r.round" class="rounded-xl bg-surface p-6 text-text-muted">لا جولة قادمة الآن.</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="r && !r.round" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('لا جولة قادمة الآن.') }}</p>
     <ul v-if="r?.round" class="grid gap-3 md:grid-cols-2">
       <li v-for="m in r.matches" :key="m.fixture_id" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
-        <div class="flex items-center justify-between gap-2 font-bold"><bdi>{{ $nm(m.home.name) }}</bdi><span class="text-text-muted">ضد</span><bdi>{{ $nm(m.away.name) }}</bdi></div>
-        <div class="grid grid-cols-3 gap-1" role="radiogroup" :aria-label="`توقعك لمباراة ${m.home.name} و${m.away.name}`">
+        <div class="flex items-center justify-between gap-2 font-bold"><bdi>{{ $nm(m.home.name) }}</bdi><span class="text-text-muted">{{ $t('ضد') }}</span><bdi>{{ $nm(m.away.name) }}</bdi></div>
+        <div class="grid grid-cols-3 gap-1" role="radiogroup" :aria-label="$t('توقعك لمباراة {v0} و{v1}', { v0: m.home.name, v1: m.away.name })">
           <button v-for="p in PICKS" :key="p.id" type="button" role="radio" :aria-checked="m.mine === p.id" :disabled="!m.open"
             class="flex min-h-touch flex-col items-center justify-center rounded-lg px-1 text-xs font-bold disabled:opacity-60"
             :class="m.mine === p.id ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-soft'" @click="pick(m.fixture_id, p.id)">
-            {{ p.label }}<span class="font-numbers text-[0.7rem] opacity-80">{{ pct(m.split, p.id) }}%</span>
+            {{ $t(p.label) }}<span class="font-numbers text-[0.7rem] opacity-80">{{ pct(m.split, p.id) }}%</span>
           </button>
         </div>
-        <span v-if="!m.open" class="text-xs text-text-muted">أُغلق التوقع</span>
+        <span v-if="!m.open" class="text-xs text-text-muted">{{ $t('أُغلق التوقع') }}</span>
       </li>
     </ul>
   </div>

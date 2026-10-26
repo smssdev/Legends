@@ -341,21 +341,21 @@ async function saveCustom() {
 
 <template>
   <div class="flex flex-col gap-4 pb-6">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
-      <p class="mb-3 text-text-muted">ليس لديك فريق بعد.</p>
-      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink>
+      <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
+      <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
     </div>
     <template v-else-if="team && current">
       <header class="flex items-start justify-between gap-3">
         <div>
-          <h1 class="font-display text-3xl font-extrabold">التشكيلة</h1>
-          <p class="text-sm text-text-muted">{{ $nm(team.club.name) }}<template v-if="team.lineup.auto && !dirty"> · تلقائية («تحسين»)</template></p>
+          <h1 class="font-display text-3xl font-extrabold">{{ $t('التشكيلة') }}</h1>
+          <p class="text-sm text-text-muted">{{ $nm(team.club.name) }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></p>
         </div>
-        <UiButton :disabled="!dirty || saving" @click="save">{{ saving ? 'يحفظ…' : 'حفظ' }}</UiButton>
+        <UiButton :disabled="!dirty || saving" @click="save">{{ saving ? $t('يحفظ…') : $t('حفظ') }}</UiButton>
       </header>
 
-      <div class="flex gap-2 overflow-x-auto pb-1" aria-label="الطريقة">
+      <div class="flex gap-2 overflow-x-auto pb-1" :aria-label="$t('الطريقة')">
         <button
           v-for="f in all"
           :key="f.name"
@@ -365,34 +365,34 @@ async function saveCustom() {
           :aria-pressed="f.name === formation"
           :dir="f.name.startsWith('custom:') ? undefined : 'ltr'"
           @click="pick(f.name)"
-        >{{ f.label }}</button>
-        <button type="button" class="h-12 shrink-0 rounded-xl border border-dashed border-gold/50 px-4 font-bold text-gold" @click="openCustom">+ مخصصة</button>
+        >{{ $t(f.label) }}</button>
+        <button type="button" class="h-12 shrink-0 rounded-xl border border-dashed border-gold/50 px-4 font-bold text-gold" @click="openCustom">{{ $t('+ مخصصة') }}</button>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
         <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex h-10 items-center gap-2 rounded-xl bg-surface px-3 text-sm">
-          <span class="size-2.5 rounded-full" :class="{ def: 'bg-[#3B82F6]', mid: 'bg-[#22A35A]', att: 'bg-[#F08A3C]' }[l]" />{{ label }}
+          <span class="size-2.5 rounded-full" :class="{ def: 'bg-[#3B82F6]', mid: 'bg-[#22A35A]', att: 'bg-[#F08A3C]' }[l]" />{{ $t(label) }}
           <span class="font-numbers text-base font-bold">{{ current.lines[l] }}</span>
         </span>
-        <UiButton variant="outline" class="ms-auto" @click="improve">تحسين</UiButton>
+        <UiButton variant="outline" class="ms-auto" @click="improve">{{ $t('تحسين') }}</UiButton>
       </div>
 
       <div v-if="chemistry" class="flex items-center gap-3 rounded-xl bg-surface px-3 py-2">
-        <span class="flex items-center gap-1 text-sm font-bold">الكيمياء<HelpTip :text="g.chemistry" label="الكيمياء" /></span>
-        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" aria-label="الكيمياء">
+        <span class="flex items-center gap-1 text-sm font-bold">{{ $t('الكيمياء') }}<HelpTip :text="g.chemistry" :label="$t('الكيمياء')" /></span>
+        <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
           <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
         </span>
         <span class="font-numbers text-lg font-bold" :style="{ color: chemColor(chemistry.score) }">{{ chemistry.score }}</span>
       </div>
-      <p v-if="chemistry && dirty" class="text-xs text-text-muted">احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.</p>
+      <p v-if="chemistry && dirty" class="text-xs text-text-muted">{{ $t('احفظ التشكيلة لتُحسب الكيمياء وروابطها من جديد.') }}</p>
 
-      <div class="flex gap-1 rounded-xl bg-surface-sunk p-1 text-sm" role="group" aria-label="العرض">
-        <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="h-10 flex-1 rounded-lg font-bold" :class="view === v ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="view = v">{{ label }}</button>
+      <div class="flex gap-1 rounded-xl bg-surface-sunk p-1 text-sm" role="group" :aria-label="$t('العرض')">
+        <button v-for="(label, v) in { overall: 'القوة', fitness: 'اللياقة', age: 'السن', value: 'القيمة' }" :key="v" type="button" class="h-10 flex-1 rounded-lg font-bold" :class="view === v ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="view === v" @click="view = v">{{ $t(label) }}</button>
       </div>
 
-      <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ message }}</p>
-      <p v-if="selected" class="text-sm text-gold">اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.</p>
-      <p class="text-xs text-text-muted">اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.</p>
+      <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
+      <p v-if="selected" class="text-sm text-gold">{{ $t('اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.') }}</p>
+      <p class="text-xs text-text-muted">{{ $t('اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.') }}</p>
 
       <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
       <div ref="pitch" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
@@ -412,7 +412,7 @@ async function saveCustom() {
           :data-spot="`slot:${i}`"
           class="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 touch-none flex-col items-center gap-0.5"
           :style="place(slot)"
-          :aria-label="`${slot.role}: ${starters[i] ? players.get(starters[i]!)?.name : 'فارغة'}`"
+          :aria-label="$t('{v0}: {v1}', { v0: slot.role, v1: starters[i] ? players.get(starters[i]!)?.name : $t('فارغة') })"
           @touchmove.prevent
           @pointerdown="down($event, { zone: 'slot', index: i })"
           @click="click({ zone: 'slot', index: i })"
@@ -436,8 +436,8 @@ async function saveCustom() {
 
       <section aria-labelledby="h-bench" class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
-          <h2 id="h-bench" class="font-display text-xl font-extrabold">الاحتياط <span class="font-numbers text-base text-text-muted">{{ bench.length }}/7</span></h2>
-          <span class="text-sm text-text-muted">اسحب للملعب، أو اضغط لاعباً ثم مكانه</span>
+          <h2 id="h-bench" class="font-display text-xl font-extrabold">{{ $t('الاحتياط') }} <span class="font-numbers text-base text-text-muted">{{ bench.length }}/7</span></h2>
+          <span class="text-sm text-text-muted">{{ $t('اسحب للملعب، أو اضغط لاعباً ثم مكانه') }}</span>
         </div>
         <div class="flex gap-2 overflow-x-auto pb-1">
           <button
@@ -460,12 +460,12 @@ async function saveCustom() {
             :data-spot="`bench:${bench.length}`"
             class="flex h-20 w-32 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-text/20 text-sm text-text-muted"
             @click="click({ zone: 'bench', index: bench.length })"
-          >مكان فارغ</button>
+          >{{ $t('مكان فارغ') }}</button>
         </div>
       </section>
 
       <section aria-labelledby="h-rest" class="flex flex-col gap-2" data-spot="reserve:-1">
-        <h2 id="h-rest" class="font-display text-xl font-extrabold">باقي الفريق</h2>
+        <h2 id="h-rest" class="font-display text-xl font-extrabold">{{ $t('باقي الفريق') }}</h2>
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
           <button
             v-for="(p, i) in reserves"
@@ -487,22 +487,22 @@ async function saveCustom() {
       </section>
 
       <section class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-takers">
-        <h2 id="h-takers" class="font-display text-xl font-extrabold">القائد ومنفذو الكرات الثابتة</h2>
-        <p class="text-xs text-text-muted">من الأساسيين المحفوظين. «تلقائي» يختار الأنسب، ولو خرج المنفذ يختار المحرك بديله.</p>
+        <h2 id="h-takers" class="font-display text-xl font-extrabold">{{ $t('القائد ومنفذو الكرات الثابتة') }}</h2>
+        <p class="text-xs text-text-muted">{{ $t('من الأساسيين المحفوظين. «تلقائي» يختار الأنسب، ولو خرج المنفذ يختار المحرك بديله.') }}</p>
         <label v-for="(label, role) in ROLES" :key="role" class="flex items-center justify-between gap-3">
-          <span class="font-bold">{{ label }}</span>
+          <span class="font-bold">{{ $t(label) }}</span>
           <select
             class="h-11 min-w-44 rounded-lg border border-text/10 bg-surface-sunk px-3"
             :value="team.takers[role]?.auto ? '' : team.takers[role]?.player_id"
             @change="setTaker(role, ($event.target as HTMLSelectElement).value)"
           >
-            <option value="">تلقائي ({{ players.get(team.takers[role]?.player_id ?? 0)?.name ?? '—' }})</option>
+            <option value="">{{ $t('تلقائي ({v0})', { v0: players.get(team.takers[role]?.player_id ?? 0)?.name ?? '—' }) }}</option>
             <option v-for="id in team.lineup.starters.filter((x) => x)" :key="id!" :value="id">{{ $nm(players.get(id!)?.name) }}</option>
           </select>
         </label>
       </section>
     </template>
-    <p v-else class="text-text-muted">جارٍ التحميل…</p>
+    <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
 
     <div
       v-if="drag?.moved && players.get(drag.id)"
@@ -513,17 +513,17 @@ async function saveCustom() {
     <PlayerCard v-if="card" :player="card" @close="card = null" />
 
     <div v-if="customOpen" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-center" @click.self="customOpen = false">
-      <form class="flex w-full max-w-md flex-col gap-3 rounded-t-xxl bg-bg p-4 md:rounded-xxl" role="dialog" aria-modal="true" aria-label="تشكيلة مخصصة" @submit.prevent="saveCustom">
-        <h2 class="font-display text-2xl font-extrabold">تشكيلة مخصصة</h2>
+      <form class="flex w-full max-w-md flex-col gap-3 rounded-t-xxl bg-bg p-4 md:rounded-xxl" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة مخصصة')" @submit.prevent="saveCustom">
+        <h2 class="font-display text-2xl font-extrabold">{{ $t('تشكيلة مخصصة') }}</h2>
         <div class="flex gap-2">
-          <input v-model="customName" maxlength="30" class="h-12 flex-1 rounded-lg border border-text/10 bg-surface-sunk px-3" aria-label="الاسم" />
-          <select v-model.number="customNumber" class="h-12 w-20 rounded-lg border border-text/10 bg-surface-sunk px-3" aria-label="الرقم">
+          <input v-model="customName" maxlength="30" class="h-12 flex-1 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('الاسم')" />
+          <select v-model.number="customNumber" class="h-12 w-20 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('الرقم')">
             <option v-for="n in 3" :key="n" :value="n">{{ n }}</option>
           </select>
         </div>
         <div class="flex gap-2 text-sm">
           <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="rounded-lg px-2 py-1" :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-[#FF8A8A]'">
-            {{ label }} <span class="font-numbers">{{ customLines[l] }}</span> ({{ LIMITS[l][0] }}–{{ LIMITS[l][1] }})
+            {{ $t(label) }} <span class="font-numbers">{{ customLines[l] }}</span> ({{ LIMITS[l][0] }}–{{ LIMITS[l][1] }})
           </span>
           <span class="ms-auto font-numbers">{{ cells.length }}/10</span>
         </div>
@@ -542,12 +542,12 @@ async function saveCustom() {
               <span v-if="cells.includes(`${row}:${col}`)" class="size-3 rounded-full bg-gold" />
             </button>
           </div>
-          <div class="flex h-11 items-center justify-center text-sm font-bold text-white">الحارس</div>
+          <div class="flex h-11 items-center justify-center text-sm font-bold text-white">{{ $t('الحارس') }}</div>
         </div>
-        <p v-if="customError" class="text-sm text-[#FF8A8A]" role="alert">{{ customError }}</p>
+        <p v-if="customError" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(customError) }}</p>
         <div class="flex gap-2">
-          <UiButton type="submit" block>احفظ التشكيلة</UiButton>
-          <UiButton variant="quiet" @click="customOpen = false">إلغاء</UiButton>
+          <UiButton type="submit" block>{{ $t('احفظ التشكيلة') }}</UiButton>
+          <UiButton variant="quiet" @click="customOpen = false">{{ $t('إلغاء') }}</UiButton>
         </div>
       </form>
     </div>

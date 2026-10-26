@@ -212,7 +212,7 @@ async function remove() {
 
     <!-- [UP6] The welcome coins wait for the account to be verified: this stays until it is. -->
     <section v-if="!user.verification?.verified" class="flex flex-col gap-3 rounded-xl border border-warning/50 bg-warning/10 p-4" aria-labelledby="h-verify">
-      <h2 id="h-verify" class="font-display text-lg font-extrabold text-warning">تنبيه: لن يتم تحصيل مكافأة الـ {{ user.verification?.welcome_coins ?? 1000 }} كوينز في رصيدك إلا عند توثيق الحساب.</h2>
+      <h2 id="h-verify" class="font-display text-lg font-extrabold text-warning">{{ $t('تنبيه: لن يتم تحصيل مكافأة الـ {v0} كوينز في رصيدك إلا عند توثيق الحساب.', { v0: user.verification?.welcome_coins ?? 1000 }) }}</h2>
       <a v-if="user.verification?.whatsapp" :href="user.verification.whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center gap-2 self-start rounded-lg bg-[#25D366] px-5 font-bold text-[#0B2E13]">
         {{ $t('وثّق حسابك الآن عبر WhatsApp') }}
       </a>
@@ -222,7 +222,7 @@ async function remove() {
         <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || !verifyCode.trim()">{{ $t('تأكيد وتفعيل') }}</button>
       </form>
     </section>
-    <p v-else-if="verifiedNow" class="rounded-xl bg-success/15 p-4 font-bold text-success" role="status">تم توثيق حسابك، وأُضيفت {{ verifiedNow }} كوينز إلى رصيدك.</p>
+    <p v-else-if="verifiedNow" class="rounded-xl bg-success/15 p-4 font-bold text-success" role="status">{{ $t('تم توثيق حسابك، وأُضيفت {v0} كوينز إلى رصيدك.', { v0: verifiedNow }) }}</p>
 
     <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-account">
       <h2 id="h-account" class="font-display text-xl font-extrabold">{{ $t('الحساب') }}</h2>
@@ -251,14 +251,14 @@ async function remove() {
       <div v-if="user.email && !user.email_verified" class="flex flex-col gap-2 rounded-lg bg-warning/10 p-3 text-sm">
         <p>{{ $t('أكّد بريدك من الرابط الذي أرسلناه، لتستطيع استعادة حسابك إن نسيت كلمة المرور.') }}</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="resend">{{ $t('أرسل الرابط من جديد') }}</button>
-        <p v-if="resendMsg" role="status">{{ resendMsg }}</p>
+        <p v-if="resendMsg" role="status">{{ $t(resendMsg) }}</p>
       </div>
       <form class="flex flex-col gap-3 sm:flex-row sm:items-end" novalidate @submit.prevent="saveName">
         <div class="flex-1"><TextField v-model="name" :label="$t('اسمك في اللعبة')" autocomplete="nickname" :error="nameErr" /></div>
         <div class="flex-1"><UsernameField v-model="username" :error="userErr" :current="user.username" /></div>
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold">{{ $t('احفظ') }}</button>
       </form>
-      <p v-if="nameMsg" class="text-sm text-success" role="status">{{ nameMsg }}</p>
+      <p v-if="nameMsg" class="text-sm text-success" role="status">{{ $t(nameMsg) }}</p>
     </section>
 
     <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-password">
@@ -269,7 +269,7 @@ async function remove() {
         <TextField v-model="next" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="pwErrors.next" :hint="$t('4 أحرف أو أرقام على الأقل')" />
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold sm:col-span-2 sm:justify-self-start">{{ $t('احفظ كلمة المرور') }}</button>
       </form>
-      <p v-if="pwMsg" class="text-sm text-success" role="status">{{ pwMsg }}</p>
+      <p v-if="pwMsg" class="text-sm text-success" role="status">{{ $t(pwMsg) }}</p>
     </section>
 
     <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-viewing">
@@ -280,7 +280,7 @@ async function remove() {
           <input type="radio" name="match-view" class="size-5 accent-[var(--color-gold)]" :value="v.id" :checked="viewing.chosenView.value === v.id" @change="saveViewing({ match_view: v.id })" />
           <span class="flex flex-col">
             <span class="font-bold">{{ $nm(v.name) }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">{{ $t('قريباً') }}</span></span>
-            <span class="text-xs text-text-muted">{{ v.hint }}</span>
+            <span class="text-xs text-text-muted">{{ $t(v.hint) }}</span>
           </span>
         </label>
         <p v-if="viewing.chosenView.value === 'unity' && !viewing.unityReady.value" class="text-xs text-text-muted">{{ $t('حتى يجهز المطوّر تُعرض مبارياتك بالكرتوني، وتنتقل إليه تلقائياً حين يجهز.') }}</p>
@@ -301,7 +301,7 @@ async function remove() {
         </div>
         <span class="text-xs text-text-muted">{{ $t('ما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.') }}</span>
       </fieldset>
-      <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ viewMsg }}</p>
+      <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ $t(viewMsg) }}</p>
     </section>
 
     <RouterLink :to="{ name: 'developers' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">{{ $t('فريق التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('تعرّف على من صنع اللعبة') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
@@ -310,14 +310,14 @@ async function remove() {
       <h2 id="h-holiday" class="font-display text-xl font-extrabold">{{ $t('إجازة الحساب') }}</h2>
       <!-- [UP13] The owner's spec (7): said plainly where the coach sees it. -->
       <p class="rounded-lg border border-warning/50 bg-warning/10 px-4 py-3 text-sm font-bold text-warning" role="note">
-        تنبيه رسمي: إذا لم يتم استخدام حسابك أو تسجيل الدخول لمدة {{ user.inactivity_days }} يوماً متواصلة (دون تفعيل إجازة رسمية)، فسيتم حذف الحساب وبيانات الفرق نهائياً وتلقائياً.
+        {{ $t('تنبيه رسمي: إذا لم يتم استخدام حسابك أو تسجيل الدخول لمدة {v0} يوماً متواصلة (دون تفعيل إجازة رسمية)، فسيتم حذف الحساب وبيانات الفرق نهائياً وتلقائياً.', { v0: user.inactivity_days }) }}
       </p>
-      <p class="text-sm text-text-muted">إجازة لحسابك كله تحميه من الحذف: لا يُحسب غيابك في أي دوري، والمدرب المساعد يقود فرقك. حتى {{ user.vacation.auto_days }} أيام تبدأ فوراً (مرتين في الموسم)، والأطول يراجعها فريق التطوير. ولإجازة في دوري واحد اطلبها من صفحة الدوري.</p>
+      <p class="text-sm text-text-muted">{{ $t('إجازة لحسابك كله تحميه من الحذف: لا يُحسب غيابك في أي دوري، والمدرب المساعد يقود فرقك. حتى {v0} أيام تبدأ فوراً (مرتين في الموسم)، والأطول يراجعها فريق التطوير. ولإجازة في دوري واحد اطلبها من صفحة الدوري.', { v0: user.vacation.auto_days }) }}</p>
       <template v-if="user.vacation.on">
-        <p class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">أنت في إجازة حتى {{ dateText(user.vacation.until) }}.</p>
+        <p class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ $t('أنت في إجازة حتى {v0}.', { v0: dateText(user.vacation.until) }) }}</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="holiday(false)">{{ $t('عدت، أنهِ الإجازة') }}</button>
       </template>
-      <p v-else-if="user.vacation.pending" class="rounded-lg bg-surface-sunk px-4 py-3 text-sm" role="status">طلب إجازتك ({{ user.vacation.pending }} يوماً) ينتظر رد فريق التطوير.</p>
+      <p v-else-if="user.vacation.pending" class="rounded-lg bg-surface-sunk px-4 py-3 text-sm" role="status">{{ $t('طلب إجازتك ({v0} يوماً) ينتظر رد فريق التطوير.', { v0: user.vacation.pending }) }}</p>
       <form v-else class="flex flex-col gap-3" @submit.prevent="holiday(true)">
         <div class="flex flex-wrap items-end gap-2">
           <label class="flex flex-col gap-1.5 text-sm font-bold">{{ $t('عدد الأيام') }}
@@ -330,8 +330,8 @@ async function remove() {
         <p class="text-xs text-text-muted">{{ holidayDays > user.vacation.auto_days ? $t('أكثر من ') + user.vacation.auto_days + $t(' أيام: يُرسل الطلب لفريق التطوير ليراجعه.') : $t('تبدأ فوراً.') }}</p>
         <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold" :disabled="!holidayReason.trim()">{{ holidayDays > user.vacation.auto_days ? $t('أرسل الطلب') : $t('ابدأ الإجازة') }}</button>
       </form>
-      <p v-if="holidayDone" class="text-sm text-success" role="status">{{ holidayDone }}</p>
-      <p v-if="holidayMsg" class="text-sm text-[#FF8A8A]" role="alert">{{ holidayMsg }}</p>
+      <p v-if="holidayDone" class="text-sm text-success" role="status">{{ $t(holidayDone) }}</p>
+      <p v-if="holidayMsg" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(holidayMsg) }}</p>
     </section>
 
     <NotificationsCard />

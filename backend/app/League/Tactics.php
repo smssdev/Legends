@@ -87,6 +87,19 @@ class Tactics
         'tips' => 'هذه نصائح من إعداداتك المحفوظة وحكم مباراتك القادمة: تشرح ما يحدث في المباراة ولا تغيّر أي رقم.',
     ];
 
+    /** [UP2] The same help in English. */
+    public const HELP_EN = [
+        'plan' => 'How your team gets to goal. Counter-attack: wait and break fast when you win the ball back; works against teams that attack a lot. Long balls: skip the midfield; useful against high pressing. Passes: patient build-up that beats teams defending in midfield. Wings: play down the flanks with crosses; opens a deep defence. Long shots: efforts from outside the box against teams packed in front of goal. The opponent sees it after the lock.',
+        'pressing' => 'How hard your players press the ball carrier. High pressing wins the ball back faster and cuts the opponent\'s build-up, but tires your players faster and adds fouls. Low pressing saves fitness and lets the opponent build calmly. The opponent does not see it.',
+        'style' => 'How many players join the attack. Attacking makes more chances for you and leaves space behind your players for counters. Defensive cuts the goals against you and your chances. The opponent does not see it.',
+        'tempo' => 'How fast the ball moves. Fast means more attacks for both sides and less accurate passing; calm keeps the ball and slows the match. A fast tempo is riskier if the opponent\'s midfield is more skilled. The opponent does not see it.',
+        'tackling' => 'How hard you tackle. Legal: few fouls but fewer duels won. Keen and rough: more duels won, with more fouls and cards, and a player may be sent off, especially with a strict referee. The opponent sees it after the lock.',
+        'lines' => 'What each line does when your team attacks or defends. Attack: «Drop back» comes back to help, «Support the midfield» links play, «Attack only» stays up for counters. Midfield: «Support the defence» protects the goal, «Stay» is balanced, «Push up» gets into the opponent\'s box. Defence: «Stay» is safe, «Full-backs attack» strengthens the wings and exposes the flanks, «Support the midfield» steps up to win the ball. The opponent does not see it.',
+        'trap' => 'The defenders step up together to catch the opponent\'s forward offside. It stops long balls and counters, but if it fails the forward is alone in front of your keeper. The opponent sees it after the lock.',
+        'marking' => 'Zonal: each player guards their space, safe against any formation. Man to man: each defender sticks to a player, limiting the opponent\'s most dangerous forward, and weaker against three forwards or more. The opponent sees it after the lock.',
+        'tips' => 'These tips come from your saved settings and your next match\'s referee: they explain what happens in the match and change no number.',
+    ];
+
     /**
      * Tips in plain Arabic from the engine's own mechanisms [ENGINE 5, 6]. Context: the next referee and
      * whether the opponent's midfield is better, when known. A tip explains; it never changes a number.

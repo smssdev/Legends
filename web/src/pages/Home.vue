@@ -73,7 +73,7 @@ async function openRanking(by: 'trophies' | 'level') {
   </div>
 
   <div v-else class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
     <div v-if="home" class="relative flex flex-col gap-4">
       <!-- [UP7] The coach's card on top: the picture, the name, the level, the club's cash and the coins. -->
       <section class="coach-card" :aria-label="$t('ملف المدرب')">
@@ -148,7 +148,7 @@ async function openRanking(by: 'trophies' | 'level') {
           </div>
           <template v-if="latest">
             <RouterLink to="/inbox" class="flex flex-col gap-0.5">
-              <b class="font-display">{{ latest.title }}</b>
+              <b class="font-display">{{ $t(latest.title) }}</b>
               <span class="line-clamp-2 text-sm text-text-soft">{{ latest.body }}</span>
               <span class="text-xs text-text-muted">{{ latest.sender?.name }} <OfficialBadge v-if="latest.sender?.official" /> · {{ when(latest.created_at) }}</span>
             </RouterLink>

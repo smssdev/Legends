@@ -97,22 +97,22 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الطاقم</h1><HelpTip :text="g.specialists" label="الطاقم" /></span>
-        <p class="mt-1 text-sm text-text-muted">عقود مؤقتة {{ v?.days ?? 7 }} أيام بنجوم من 1 إلى 5: نجوم أكثر، أثر أكبر وسعر أعلى. يُجدَّد العقد في آخر يوم منه، وإلا يستقيل صاحبه</p>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الطاقم') }}</h1><HelpTip :text="g.specialists" :label="$t('الطاقم')" /></span>
+        <p class="mt-1 text-sm text-text-muted">{{ $t('عقود مؤقتة {v0} أيام بنجوم من 1 إلى 5: نجوم أكثر، أثر أكبر وسعر أعلى. يُجدَّد العقد في آخر يوم منه، وإلا يستقيل صاحبه', { v0: v?.days ?? 7 }) }}</p>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
-        <span class="block text-xs text-text-muted">أموال النادي</span>
+        <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
       </div>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ notice }}</p>
-    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل...</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
+    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
       <section v-for="grp in GROUPS" :key="grp.title" :aria-label="grp.title" class="flex flex-col gap-3">
-        <div class="flex items-baseline gap-2"><h2 class="font-display text-xl font-extrabold">{{ grp.title }}</h2><span class="text-sm text-text-muted">{{ grp.hint }}</span></div>
+        <div class="flex items-baseline gap-2"><h2 class="font-display text-xl font-extrabold">{{ $t(grp.title) }}</h2><span class="text-sm text-text-muted">{{ $t(grp.hint) }}</span></div>
         <div class="grid gap-3 sm:grid-cols-2">
           <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :key="s.type" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :class="s.ends_at ? 'ring-1 ring-success/50' : ''">
             <div class="flex items-start gap-3">
@@ -121,21 +121,21 @@ onBeforeUnmount(() => clearInterval(tick))
               </span>
               <span class="min-w-0 flex-1">
                 <b class="block font-display text-lg">{{ s.name }}</b>
-                <span v-if="s.stars" class="text-sm text-gold" :aria-label="`${s.stars} نجوم`">{{ '★'.repeat(s.stars) }}<span class="text-text/20">{{ '★'.repeat(5 - s.stars) }}</span></span>
+                <span v-if="s.stars" class="text-sm text-gold" :aria-label="$t('{v0} نجوم', { v0: s.stars })">{{ '★'.repeat(s.stars) }}<span class="text-text/20">{{ '★'.repeat(5 - s.stars) }}</span></span>
                 <span class="block text-sm text-text-muted">{{ offer(s).effect }}</span>
               </span>
             </div>
             <div v-if="s.ends_at" class="flex items-center justify-between rounded-lg bg-success/15 px-3 py-2">
-              <span class="text-sm font-bold text-success">{{ s.renewed ? 'يعمل، والعقد مجدَّد' : 'يعمل الآن' }}</span>
-              <span class="text-sm text-text-muted">ينتهي بعد <b class="font-numbers text-text">{{ left(s.ends_at) }}</b></span>
+              <span class="text-sm font-bold text-success">{{ s.renewed ? $t('يعمل، والعقد مجدَّد') : $t('يعمل الآن') }}</span>
+              <span class="text-sm text-text-muted">{{ $t('ينتهي بعد') }} <b class="font-numbers text-text">{{ left(s.ends_at) }}</b></span>
             </div>
             <template v-if="!s.ends_at || renewable(s)">
               <!-- Five stars to choose: the price and the effect follow. -->
-              <div class="flex items-center gap-1" role="radiogroup" :aria-label="`نجوم ${s.name}`">
-                <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="`${n} نجوم`" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
+              <div class="flex items-center gap-1" role="radiogroup" :aria-label="$t('نجوم {v0}', { v0: s.name })">
+                <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
               </div>
               <button type="button" class="h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40" :disabled="busy || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
-                {{ s.ends_at ? 'جدّد العقد' : 'تعاقد' }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></button>
+                {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></button>
             </template>
           </article>
         </div>

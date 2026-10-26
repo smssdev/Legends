@@ -73,31 +73,31 @@ onMounted(load)
 
 <template>
   <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-app">
-    <h2 id="h-app" class="font-display text-xl font-extrabold">التطبيق والإشعارات</h2>
-    <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
+    <h2 id="h-app" class="font-display text-xl font-extrabold">{{ $t('التطبيق والإشعارات') }}</h2>
+    <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
     <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
-      <b>ثبّت GLM على شاشتك الرئيسية</b>
-      <span class="text-text-muted">يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.</span>
-      <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">ثبّت الآن</button>
+      <b>{{ $t('ثبّت GLM على شاشتك الرئيسية') }}</b>
+      <span class="text-text-muted">{{ $t('يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.') }}</span>
+      <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">{{ $t('ثبّت الآن') }}</button>
       <ol v-else-if="ios" class="list-decimal ps-5 text-text-muted">
-        <li>افتح الموقع في Safari.</li>
-        <li>اضغط زر المشاركة (المربع والسهم).</li>
-        <li>اختر «إضافة إلى الشاشة الرئيسية».</li>
+        <li>{{ $t('افتح الموقع في Safari.') }}</li>
+        <li>{{ $t('اضغط زر المشاركة (المربع والسهم).') }}</li>
+        <li>{{ $t('اختر «إضافة إلى الشاشة الرئيسية».') }}</li>
       </ol>
-      <span v-else class="text-text-muted">من قائمة المتصفح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</span>
+      <span v-else class="text-text-muted">{{ $t('من قائمة المتصفح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».') }}</span>
     </div>
 
     <template v-if="settings">
-      <p v-if="!settings.enabled" class="text-sm text-text-muted">الإشعارات غير مفعلة على الخادم بعد.</p>
+      <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>
       <p v-else-if="!pushSupported()" class="text-sm text-text-muted">
-        {{ ios && !app ? 'على iPhone تعمل الإشعارات بعد تثبيت الموقع على الشاشة الرئيسية.' : 'هذا المتصفح لا يدعم الإشعارات.' }}
+        {{ ios && !app ? $t('على iPhone تعمل الإشعارات بعد تثبيت الموقع على الشاشة الرئيسية.') : $t('هذا المتصفح لا يدعم الإشعارات.') }}
       </p>
       <div v-else class="flex flex-wrap items-center gap-3">
-        <span class="flex-1 text-sm">{{ here ? 'الإشعارات تعمل على هذا الجهاز' : 'الإشعارات متوقفة على هذا الجهاز' }}
-          <span v-if="settings.devices" class="text-text-muted"> · {{ settings.devices }} جهاز</span></span>
-        <button v-if="!here" type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="enable">فعّلها</button>
-        <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">أوقفها هنا</button>
+        <span class="flex-1 text-sm">{{ here ? $t('الإشعارات تعمل على هذا الجهاز') : $t('الإشعارات متوقفة على هذا الجهاز') }}
+          <span v-if="settings.devices" class="text-text-muted"> {{ $t('· {v0} جهاز', { v0: settings.devices }) }}</span></span>
+        <button v-if="!here" type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="enable">{{ $t('فعّلها') }}</button>
+        <button v-else type="button" class="h-touch rounded-md px-4 text-text-muted hover:text-text" :disabled="busy" @click="disable">{{ $t('أوقفها هنا') }}</button>
       </div>
       <div class="flex flex-col gap-1">
         <UiToggle v-for="k in settings.kinds" :key="k.kind" class="rounded-lg px-1" :model-value="k.on" :label="LABELS[k.kind]?.[0]" :hint="LABELS[k.kind]?.[1]" @update:model-value="(on: boolean) => toggle(k.kind, on)" />
