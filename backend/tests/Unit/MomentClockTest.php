@@ -2,8 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\Engine\MatchSetup;
 use App\Simulator\MomentClock;
-use PHPUnit\Framework\TestCase;
+use App\Simulator\Runner;
+use Tests\TestCase;
 
 class MomentClockTest extends TestCase
 {
@@ -62,5 +64,48 @@ class MomentClockTest extends TestCase
         $this->assertSame(150, intdiv(45 * MomentClock::moment([], $match, 1)['ms'] + 999, 1000));
         $this->assertSame(30000, 15 * MomentClock::moment($goal, $match, 3)['ms']);
         $this->assertSame(30000, MomentClock::moment([['type' => 'shootout', 'team' => null]], $match, 5)['ms']);
+    }
+
+    /** [X41] The broadcast as on TV: a small chance is only its card, a big moment its real length. */
+    public function test_the_broadcast_gives_the_big_moments_their_length_and_the_small_ones_a_card(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000, 'broadcast_ms' => config('game.match.broadcast_ms')];
+        $shot = fn (string $result, string $quality) => [['type' => 'attack', 'team' => 'home', 'result' => $result, 'quality' => $quality]];
+        $this->assertSame(['kind' => 'goal', 'ms' => 20000], MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $match));
+        $this->assertSame(['kind' => 'miss', 'ms' => 10000], MomentClock::moment($shot('missed', 'big'), $match));
+        $this->assertSame(['kind' => 'save', 'ms' => 11000], MomentClock::moment($shot('saved', 'header'), $match));
+        foreach ([$shot('blocked', 'big'), $shot('missed', 'long'), $shot('saved', 'normal'), $shot('offside', '')] as $events) {
+            $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false);
+        }
+        $this->assertTrue(MomentClock::moment([['type' => 'free_kick', 'team' => 'home', 'taker' => 1]], $match)['brief'] ?? false);
+        $this->assertArrayNotHasKey('brief', MomentClock::moment([['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]], $match));
+        $this->assertSame(30000, MomentClock::moment([['type' => 'shootout', 'team' => null]], $match, 5)['ms']);
+    }
+
+    /** [X41] The owner's length: a half about three and a half real minutes. */
+    public function test_a_broadcast_half_lasts_about_three_and_a_half_minutes(): void
+    {
+        $positions = ['GK', 'GK', 'RB', 'CB', 'CB', 'LB', 'CB', 'CDM', 'CM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST', 'ST', 'CM'];
+        $lines = ['GK' => 'gk', 'RB' => 'def', 'CB' => 'def', 'LB' => 'def', 'CDM' => 'mid', 'CM' => 'mid', 'CAM' => 'mid',
+            'RM' => 'mid', 'LM' => 'mid', 'RW' => 'att', 'LW' => 'att', 'ST' => 'att'];
+        $squad = fn (int $base, int $ovr) => array_map(fn ($pos, $i) => [
+            'id' => $base + $i, 'name' => "P{$base}x{$i}", 'position' => $pos, 'line' => $lines[$pos], 'age' => 20 + $i,
+            'overall' => $ovr - intdiv($i, 3), 'penalties' => 70, 'free_kick' => 65, 'crossing' => 65, 'heading' => 65,
+        ], $positions, array_keys($positions));
+        $club = fn ($id) => ['id' => $id, 'name' => "C{$id}", 'code' => 'C'.$id, 'primary' => '#000000', 'secondary' => '#FFFFFF', 'strength' => 8000];
+        $ms = 0;
+        $halves = 0;
+        foreach ([3, 11, 42, 77] as $seed) {
+            $state = MatchSetup::build(['club' => $club(1), 'squad' => $squad(100, 80)], ['club' => $club(2), 'squad' => $squad(200, 78)],
+                ['seed' => $seed, 'competition' => 'league'], ['match' => config('game.match'), 'engine' => config('game.engine')]);
+            while (! $state['finished']) {
+                $state = Runner::tick($state);
+                $ms += MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1))['ms'];
+            }
+            $halves += 2;
+        }
+        $half = intdiv($ms, $halves);
+        $this->assertGreaterThan(165000, $half);
+        $this->assertLessThan(255000, $half);
     }
 }

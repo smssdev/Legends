@@ -35,6 +35,7 @@
     <div class="moment" :class="{ on: sceneOn, tense }">
       <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
+        <span v-if="replaying" class="replay">إعادة</span>
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
           <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
@@ -105,7 +106,7 @@ function setCamera(c) { camera.value = c; try { localStorage.setItem('legends.ca
 const clock = ref('')
 const items = ref<any[]>([])
 const cur = ref<any>(null)
-const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false)
+const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false), replaying = ref(false)
 // Until the key moment the lower bar tells only what is happening (a shot, a penalty), never how it ends.
 const revealed = ref(true), tense = ref(false)
 const bar = computed(() => (revealed.value || !cur.value?.pre ? cur.value : cur.value.pre))
@@ -159,7 +160,10 @@ function play(tick, startAt = null) {
   // The scene takes most of the minute; the commentator sums it up after.
   // At the broadcast's fixed pace a minute is 3.3 s [X35]: the scene takes up to nine tenths of it, a little faster.
   const sceneT = s.scene ? Math.min(nominal, total * (tick.moment?.ms <= 3400 ? 0.9 : 0.72)) : 0
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt, tick }
+  // [X41] A goal on the broadcast's long minute: after the celebration, the replay in slow motion, as on TV.
+  const room = total - sceneT - 3.2, slow = s.goal && s.scene ? nominal / room : 1
+  const replay = slow >= 0.4 && slow <= 0.8 ? { at: sceneT + 2.6, rate: slow } : null
+  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   revealed.value = !s.pre
@@ -199,6 +203,7 @@ function showBubble() {
 function finish() {
   if (!plan) return
   sceneOn.value = false
+  replaying.value = false
   tense.value = false
   party.value = null
   addItems(false)
@@ -254,8 +259,16 @@ function step(now) {
       party.value = { side: s.side, who: s.who }
     })
     if (scene && t >= sceneT) fire('end', () => { sceneOn.value = false; party.value = null; addItems(); showBubble() })
+    const rp = plan.replay
+    if (scene && rp && t >= rp.at) {
+      const u = (t - rp.at) * rp.rate
+      if (u < SCENE_TIME[s.scene][0]) {
+        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = true })
+        if (!smooth.value || now - drawn >= 32) { drawn = now; scene.update(u) }
+      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; showBubble() })
+    }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
-    if (t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
+    if (!plan.replay && t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
   }
 }
 
@@ -544,6 +557,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .moment.tense::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 70% at 50% 50%, transparent 55%, rgba(120,10,10,.45)); animation: beat 1.1s ease-in-out infinite }
 @keyframes beat { 0%, 100% { opacity: 1 } 15% { opacity: .65 } 30% { opacity: 1 } 45% { opacity: .8 } }
 
+.replay { position: absolute; top: 10px; inset-inline-start: 10px; padding: 3px 10px; border-radius: 6px; font-weight: 800; font-size: 13px; color: #fff; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.35); letter-spacing: .5px; pointer-events: none }
 .party { position: absolute; inset: 0 0 auto; aspect-ratio: 640 / 340; overflow: hidden; pointer-events: none }
 .party i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards; will-change: transform }
 /* Falling by transform, not by top: no layout on every frame [X30]. */
