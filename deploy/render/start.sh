@@ -122,11 +122,14 @@ if [ -n "$supabase" ]; then
   if php artisan db:to-supabase --check; then
     php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"
     php artisan migrate --force
+    php artisan db:close-api
   else
     # [X43] The move: Supabase made ready, then the league from the file B2 brought back, all or nothing. If it
     # fails Supabase stays empty and the game does not start without its league: the maintenance page stays and
     # the move is tried again every 10 minutes (the file and B2 are only read).
     php artisan migrate --force
+    # Supabase's public API never sees the game's tables (its public key is not a secret), before any row is there.
+    php artisan db:close-api
     until php artisan db:to-supabase; do
       [ -z "${page:-}" ] && { php -S 0.0.0.0:"${PORT}" /app/maintenance.php > /dev/null 2>&1 & page=$!; }
       echo "Supabase: the move failed (above); the maintenance page stays, trying again in 10 minutes"
