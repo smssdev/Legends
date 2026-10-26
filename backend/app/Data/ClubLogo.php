@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 /**
  * A club's real logo [UP3, owner's decision 2026-10-26]: data/names/club_logos.csv (tools/data/club_logos.py)
@@ -17,6 +18,14 @@ class ClubLogo
         $image = $league !== null ? (self::map()[$league."\t".$club] ?? null) : (self::map()["\t".$club] ?? null);
 
         return $image ? '/logos/'.$image : null;
+    }
+
+    /** The logo of a league's club, by its master club. */
+    public static function forMaster(?int $masterClubId): ?string
+    {
+        $m = $masterClubId ? DB::table('master_clubs')->where('id', $masterClubId)->first(['name', 'league_name']) : null;
+
+        return $m ? self::path($m->league_name, $m->name) : null;
     }
 
     /** A match's club (its state's `club`) with its logo added, for the screens only (never the engine). */

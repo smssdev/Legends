@@ -113,7 +113,13 @@ return [
         'pool_size' => 300,
         // The pool renews every pool_hours from the players of every league in the data [X6], as strong as this
         // league: from its pool_level_from_pct percentile of strength to its best, in pool_lines shares per line.
-        'pool_hours' => 4, 'pool_level_from_pct' => 40,
+        // [UP11] The owner's spec (5): the offers renew every 2 to 4 hours, with a countdown on the market.
+        'pool_hours' => 3, 'pool_level_from_pct' => 40,
+        // [UP11] Buying: the club's cash pays the price, and the coach 1 or 2 coins to register the deal (2 from
+        // doc_big_from). With at least compensate_min_bp of the price in cash, the rest may be paid in coins:
+        // one coin for each money_per_coin missing (60M with 40M in cash: 20M, so 100 coins).
+        'transfer_doc_coins' => 1, 'transfer_doc_coins_big' => 2, 'doc_big_from' => 10_000_000,
+        'compensate_min_bp' => 5000, 'money_per_coin' => 200_000,
         'pool_lines' => ['gk' => 10, 'def' => 30, 'mid' => 35, 'att' => 25],
         // Selling [X6]: the instant sale pays the full value for coins (in a fair league, this share of the value);
         // a listing asks up to the sale cap (130% of the value, the value alone for a player the club bought), and a

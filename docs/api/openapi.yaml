@@ -1239,7 +1239,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, required: [player_id, idempotency_key], properties: { player_id: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } }
+            schema: { type: object, required: [player_id, idempotency_key], properties: { player_id: { type: integer }, idempotency_key: { type: string, maxLength: 64 }, compensate: { type: boolean, description: '[UP11] Short of cash (half the price at least): all the cash and coins for the rest' } } }
       responses:
         '200':
           description: Bought
@@ -1267,6 +1267,56 @@ paths:
               schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/buy-quote:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[UP11] The deal before it is made: the price, the coins to register it, and cash + coins when short'
+      parameters:
+        - { name: player_id, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The deal
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [price, cash, doc_coins, short, compensate, can, why]
+                properties:
+                  price: { type: integer }
+                  cash: { type: integer }
+                  doc_coins: { type: integer, description: '1 or 2 coins to register it (0 in a fair league)' }
+                  short: { type: integer, description: The money the club lacks }
+                  compensate: { type: object, nullable: true, required: [cash, coins], properties: { cash: { type: integer }, coins: { type: integer } }, description: 'With half the price in cash at least: all the cash, and coins for the rest' }
+                  can: { type: boolean }
+                  why: { type: string, nullable: true }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/done:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[UP11] The transfers made in the league this season, newest first'
+      responses:
+        '200':
+          description: The transfers
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [transfers]
+                properties:
+                  transfers:
+                    type: array
+                    items:
+                      type: object
+                      required: [player, from, to, price, at]
+                      properties:
+                        player: { type: string }
+                        from: { type: string, nullable: true, description: 'Null: from outside the league' }
+                        to: { type: string }
+                        price: { type: integer }
+                        at: { type: string, format: date-time }
   /leagues/{league}/market/quote:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:

@@ -124,6 +124,9 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('buy', 'buy')->middleware('throttle:30,1,market');
         Route::post('sell', 'sell')->middleware('throttle:30,1,market');
         Route::get('quote', 'quote')->middleware('throttle:120,1,market-quote');
+        // [UP11] The deal before it is made, and the transfers made.
+        Route::get('buy-quote', 'buyQuote')->middleware('throttle:120,1,market-quote');
+        Route::get('done', 'done')->middleware('throttle:60,1,market');
     });
     // The market between coaches: the transfer list and the offers [Sprint 25].
     Route::controller(TransferController::class)->prefix('{league}/transfers')->whereNumber('league')->group(function () {

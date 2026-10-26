@@ -2910,6 +2910,8 @@ export interface paths {
                     "application/json": {
                         player_id: number;
                         idempotency_key: string;
+                        /** @description [UP11] Short of cash (half the price at least): all the cash and coins for the rest */
+                        compensate?: boolean;
                     };
                 };
             };
@@ -2983,6 +2985,114 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/buy-quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP11] The deal before it is made: the price, the coins to register it, and cash + coins when short */
+        get: {
+            parameters: {
+                query: {
+                    player_id: number;
+                };
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The deal */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            price: number;
+                            cash: number;
+                            /** @description 1 or 2 coins to register it (0 in a fair league) */
+                            doc_coins: number;
+                            /** @description The money the club lacks */
+                            short: number;
+                            /** @description With half the price in cash at least: all the cash, and coins for the rest */
+                            compensate: {
+                                cash: number;
+                                coins: number;
+                            } | null;
+                            can: boolean;
+                            why: string | null;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP11] The transfers made in the league this season, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The transfers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            transfers: {
+                                player: string;
+                                /** @description Null: from outside the league */
+                                from: string | null;
+                                to: string;
+                                price: number;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
