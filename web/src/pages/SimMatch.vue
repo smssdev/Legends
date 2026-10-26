@@ -217,7 +217,9 @@
 
 <script setup lang="ts">
 import UiToggle from '../components/ui/UiToggle.vue'
-import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, shallowRef, watch } from 'vue'
+import { useBroadcast } from '../stores/broadcast'
+import { nm } from '../lib/names'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
@@ -671,8 +673,9 @@ async function poll() {
 function onVisible() {
   if (!live.value || finished.value) return
   if (document.visibilityState !== 'visible') {
-    // Away (a locked phone, another app): the commentator stops rather than catching up later.
-    voice.stop()
+    // Away (a locked phone, another app): with the sound on the broadcast plays on, like a TV left running [X41];
+    // without it the commentator stops rather than catching up later.
+    if (!soundOn.value) voice.stop()
     return
   }
   catchUp()
@@ -919,7 +922,28 @@ onMounted(async () => {
   }
 })
 
+// [X41] The broadcast behind the other screens: this page stays alive (KeepAlive in App.vue) and tells the shell's
+// bar the score and the minute; the bar brings the coach back or mutes it. A finished match leaves the bar soon after.
+const broadcast = useBroadcast()
+// This page's own address, taken now: the route object follows the coach to the other screens.
+const ownPath = route.fullPath.split('?')[0]
+watch(() => [view.value, score.value.home, score.value.away, minuteText.value, finished.value] as const, () => {
+  if (!view.value) return
+  broadcast.update({
+    path: ownPath,
+    title: `${nm(view.value.clubs.home.name)} - ${nm(view.value.clubs.away.name)}`,
+    score: `${score.value.home} - ${score.value.away}`,
+    minute: finished.value ? 'نهاية المباراة' : minuteText.value,
+    live: !finished.value,
+  })
+  if (finished.value) window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
+}, { immediate: true })
+onActivated(() => { broadcast.away = false })
+onDeactivated(() => { broadcast.away = !finished.value })
+watch(() => broadcast.muteAsk, () => { if (soundOn.value) toggleSound() })
+
 onBeforeUnmount(() => {
+  broadcast.end()
   document.removeEventListener('visibilitychange', onVisible)
   window.removeEventListener('online', onVisible)
   window.clearInterval(othersTimer)

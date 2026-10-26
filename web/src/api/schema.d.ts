@@ -400,7 +400,7 @@ export interface paths {
                         name?: string;
                         username?: string;
                         /** @enum {string} */
-                        commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                        commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6" | "voice-7";
                         /** @enum {string} */
                         match_view?: "cartoon" | "unity";
                     };
@@ -7879,10 +7879,10 @@ export interface components {
             /** @description How the coach watches his matches, the same on every device [X9, X10] */
             viewing: {
                 /**
-                 * @description The Arabic voice; voice-6 is the default
+                 * @description The Arabic voice; voice-6 is the default, voice-7 the real Chawali (X41)
                  * @enum {string}
                  */
-                commentator: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6";
+                commentator: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6" | "voice-7";
                 /**
                  * @description The simulator: the cartoon one (2D) or the advanced one (Unity)
                  * @enum {string}
