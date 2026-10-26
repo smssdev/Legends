@@ -238,22 +238,18 @@ function step(now) {
     // The scene follows the clock, so drawing it 30 times a second in the smooth mode only skips frames, never time.
     if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; scene.update(t * rate) }
     const keyT = s.keyAt * sceneT
+    // [X37] The commentator's own scream on a goal (a late goal that levels or takes the lead, his big one), from his
+    // real recording: only there, the one moment his recorded words always fit. Before the lines, so it takes the
+    // place of the written goal call instead of cutting it.
+    if (props.lang === 'ar' && s.goal && t >= keyT) fire('real-goal', () => {
+      const [m] = plan.tick.minute ?? [0], gap = Math.abs((plan.tick.score?.home ?? 0) - (plan.tick.score?.away ?? 0))
+      emit('real', m >= 75 && gap <= 1 ? 'goal_big' : 'goal')
+    })
     // Commentary: line times are fractions of the scene (or of the minute when there is none).
     for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs))) }
     for (const [i, [at, name]] of (SOUNDS[s.scene] ?? []).entries()) { const when = at === 'key' ? keyT : at * sceneT; if (t >= when) cue('s' + i, when, () => emit('sound', name)) }
     if (s.scene === 'miss' && s.data.how === 'post' && t >= keyT) cue('post', keyT, () => emit('sound', 'post'))
     if (t >= keyT) fire('key', () => { revealed.value = true; tense.value = false })
-    // [X37] The commentator's own words, where the voice has them (voice.ts real): his scream on a goal (a late goal
-    // that levels or takes the lead, his big phrases), now and then "على مهلك" before a shot and the magic after a save.
-    if (props.lang === 'ar') {
-      const roll = (n) => (props.seed + plan.tick.tick) % n === 0
-      if (s.goal && t >= keyT) fire('real-goal', () => {
-        const [m] = plan.tick.minute ?? [0], gap = Math.abs((plan.tick.score?.home ?? 0) - (plan.tick.score?.away ?? 0))
-        emit('real', m >= 75 && gap <= 1 ? 'goal_big' : 'goal')
-      })
-      if ((s.scene === 'goal' || s.scene === 'miss') && t >= sceneT * 0.3 && t < keyT) fire('real-slow', () => roll(3) && emit('real', 'slow'))
-      if (s.scene === 'save' && t >= keyT + 0.2) fire('real-magic', () => roll(2) && emit('real', 'magic'))
-    }
     if (s.goal && t >= keyT) fire('goal', () => {
       emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
       party.value = { side: s.side, who: s.who }
