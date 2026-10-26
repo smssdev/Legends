@@ -24,7 +24,7 @@ class MailCheck extends Command
             $this->warn('البريد يُكتب في السجل ولا يُرسل. ضع BREVO_API_KEY (أو RESEND_API_KEY، أو GMAIL_ADDRESS وGMAIL_APP_PASSWORD خارج Render) في المتغيرات.');
         }
         try {
-            Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
+            Mail::raw('رسالة تجربة من GLM: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في GLM'));
         } catch (\Throwable $e) {
             $this->error('لم تُرسل: '.$e->getMessage());
             $this->line('الحل: '.Mailer::explain($e->getMessage()));

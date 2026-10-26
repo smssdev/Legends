@@ -115,7 +115,7 @@ class AdminController extends Controller
         $to = (string) $request->validate(['to' => ['required', 'email']])['to'];
         $setup = Mailer::setup();
         try {
-            Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
+            Mail::raw('رسالة تجربة من GLM: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في GLM'));
         } catch (\Throwable $e) {
             return response()->json($setup + ['sent' => false, 'error' => substr($e->getMessage(), 0, 600), 'fix' => Mailer::explain($e->getMessage())]);
         }

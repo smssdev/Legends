@@ -29,7 +29,7 @@ class TwoFactor
         $secret = self::engine()->generateSecretKey(32);
         $user->forceFill(['two_factor_secret' => encrypt($secret)])->save();
 
-        return ['secret' => $secret, 'uri' => self::engine()->getQRCodeUrl(config('game.brand.name_latin', 'Legends'), $user->email, $secret)];
+        return ['secret' => $secret, 'uri' => self::engine()->getQRCodeUrl(config('game.brand.name_latin', 'Game Legend Manager'), $user->email, $secret)];
     }
 
     public static function confirm(User $user, string $code): void

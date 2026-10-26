@@ -77,7 +77,7 @@ onMounted(load)
     <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
 
     <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
-      <b>ثبّت الأساطير على شاشتك الرئيسية</b>
+      <b>ثبّت GLM على شاشتك الرئيسية</b>
       <span class="text-text-muted">يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.</span>
       <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">ثبّت الآن</button>
       <ol v-else-if="ios" class="list-decimal ps-5 text-text-muted">

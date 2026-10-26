@@ -7,7 +7,7 @@
 <template>
   <div class="grid min-h-dvh md:grid-cols-2">
     <aside class="auth-art relative hidden overflow-hidden md:flex md:flex-col md:justify-center md:gap-6 md:p-14">
-      <img src="/brand/emblem.svg" alt="الأساطير" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" />
+      <img src="/brand/emblem.svg" alt="GLM" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" />
       <h2 class="relative font-display text-5xl font-extrabold leading-tight">دوريك. فريقك.<br /><span class="text-gold">أسطورتك.</span></h2>
       <p class="relative text-lg text-text-soft">درّب ناديك المفضل ضد أصحابك، وعِش كل مباراة لحظة بلحظة.</p>
       <ul class="relative flex flex-col gap-3 text-text-soft">

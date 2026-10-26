@@ -26,11 +26,11 @@ class VerifyEmailNotice extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('أكّد بريدك في الأساطير')
+            ->subject('أكّد بريدك في GLM')
             ->greeting('أهلاً '.$notifiable->name)
             ->line('اضغط الزر لتأكيد بريدك وتفعيل حسابك.')
             ->action('تأكيد البريد', self::url($notifiable))
-            ->line('الرابط صالح 24 ساعة. إن لم تنشئ حساباً في الأساطير فتجاهل هذه الرسالة.')
-            ->salutation('فريق الأساطير');
+            ->line('الرابط صالح 24 ساعة. إن لم تنشئ حساباً في GLM فتجاهل هذه الرسالة.')
+            ->salutation('فريق GLM');
     }
 }

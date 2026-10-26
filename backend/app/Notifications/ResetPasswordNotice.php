@@ -28,11 +28,11 @@ class ResetPasswordNotice extends Notification
         $minutes = config('auth.passwords.users.expire');
 
         return (new MailMessage)
-            ->subject('استعادة كلمة المرور في الأساطير')
+            ->subject('استعادة كلمة المرور في GLM')
             ->greeting('أهلاً '.$notifiable->name)
             ->line('وصلنا طلب لتغيير كلمة المرور لحسابك.')
             ->action('اختر كلمة مرور جديدة', $this->url($notifiable))
             ->line("الرابط صالح $minutes دقيقة. إن لم تطلب هذا فتجاهل الرسالة، وكلمة مرورك كما هي.")
-            ->salutation('فريق الأساطير');
+            ->salutation('فريق GLM');
     }
 }
