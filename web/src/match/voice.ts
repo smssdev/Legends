@@ -150,7 +150,7 @@ export class Commentator {
 
   // The voice's real phrases [X37], beside its pack: only the voices the team gave recordings for have one.
   private realPack() { return this.realName || 'ar/none/real' }
-  /** voice-7: every line is a real phrase of its moment's kind, the written voice only where none fits. */
+  /** voice-7: every line is a real phrase of its moment's kind, and only his: where none fits, he lets the crowd talk. */
   private full = false
   private realName = 'ar/voice-6/real'
   /** The real phrases said lately, so the same one does not come back too soon. */
@@ -186,7 +186,7 @@ export class Commentator {
   /** Which recorded Arabic voice says the Arabic lines. */
   setArVoice(v: ArVoice) {
     this.full = v === 'voice-7'
-    this.arPack = v === 'base' ? 'ar/phrases' : this.full ? 'ar/voice-2/phrases' : `ar/${v}/phrases`
+    this.arPack = v === 'base' ? 'ar/phrases' : this.full ? 'ar/voice-7/real' : `ar/${v}/phrases`
     this.realName = this.full ? 'ar/voice-7/real' : v === 'base' ? '' : `ar/${v}/real`
     if (this.ctx && this.on) { this.pack(this.arPack); this.pack(this.realPack()) }
   }
@@ -270,7 +270,8 @@ export class Commentator {
       const pack = this.ready.get(this.realPack())
       if (pack === undefined) { this.pack(this.realPack()); return 'wait' }
       const at = pack ? this.pickReal(pack, realKind(line.moment, line.slot)) : null
-      if (pack && at) return [{ pack, at, rate: 1 }]
+      // Never another voice in his place: a line he has no phrase for is dropped.
+      return pack && at ? [{ pack, at, rate: 1 }] : 'wait'
     }
     const phrasePack = line.lang === 'ar' ? this.arPack : 'phrases'
     const out: Clip[] = []
