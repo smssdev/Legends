@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { api, ensureCsrf, type Account } from '../api/client'
+import { adoptLocale } from '../lib/i18n'
 
 export const useAuth = defineStore('auth', () => {
   const user = ref<Account | null>(null)
@@ -12,6 +13,7 @@ export const useAuth = defineStore('auth', () => {
     try {
       const { data } = await api.GET('/auth/me')
       user.value = data?.user ?? null
+      adoptLocale(user.value?.locale)
     } catch {
       user.value = null
     }
@@ -25,6 +27,7 @@ export const useAuth = defineStore('auth', () => {
     await ensureCsrf()
     const { data } = await api.POST('/auth/login', { body: { email, password, remember } })
     user.value = data!.user!
+    adoptLocale(user.value.locale)
   }
   /** [UP5] The name, the username and the password; the session stays until the coach signs out. */
   async function register(name: string, username: string, password: string) {

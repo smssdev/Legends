@@ -59,12 +59,12 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
       <!-- Row one: the club's tab, the mark, the coach's tab. -->
       <div class="shell-top relative border-b border-black/30">
         <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 md:gap-4 md:px-6 md:py-0">
-          <button v-if="inSlot" type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" aria-label="القائمة" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
+          <button v-if="inSlot" type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="$t('القائمة')" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
             <Icon name="menu" />
           </button>
 
           <!-- The club's tab (inside a slot), the brand's tab outside. -->
-          <RouterLink v-if="inSlot && slot.current?.club" :to="pathOf(clubSections[0])" class="chrome-tab chrome-start min-w-0 flex-1 md:w-80 md:flex-none" :aria-label="`نادي ${slot.current.club.name}`">
+          <RouterLink v-if="inSlot && slot.current?.club" :to="pathOf(clubSections[0])" class="chrome-tab chrome-start min-w-0 flex-1 md:w-80 md:flex-none" :aria-label="$t('نادي {name}', { name: slot.current.club.name })">
             <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow md:size-11" />
             <span class="min-w-0 flex-1 leading-tight">
               <b class="block truncate font-display text-base md:text-lg">{{ $nm(slot.current.club.name) }}</b>
@@ -74,26 +74,26 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
               </span>
             </span>
           </RouterLink>
-          <RouterLink v-else to="/" aria-label="الرئيسية" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
+          <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
 
           <div v-if="inSlot" class="hidden flex-1 justify-center md:flex">
-            <RouterLink to="/" aria-label="الرئيسية" class="py-2"><BrandMark size="sm" /></RouterLink>
+            <RouterLink to="/" :aria-label="$t('الرئيسية')" class="py-2"><BrandMark size="sm" /></RouterLink>
           </div>
           <div v-if="!inSlot" class="flex-1" />
 
           <template v-if="auth.user">
             <div class="flex shrink-0 items-center gap-1.5 md:gap-2">
-              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex">لوحة الإدارة</RouterLink>
-              <RouterLink to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex"><Icon name="leagues" :size="16" />دورياتي</RouterLink>
-              <RouterLink to="/wallet" class="pill-coins" aria-label="المحفظة">
+              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
+              <RouterLink to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
+              <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
                 <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
               </RouterLink>
-              <RouterLink to="/inbox" class="relative flex size-touch items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="unread ? `الرسائل: ${inbox.unread} غير مقروءة` : 'الرسائل'">
+              <RouterLink to="/inbox" class="relative flex size-touch items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
                 <Icon name="inbox" /><span v-if="unread" class="absolute -end-0.5 -top-0.5 min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-xs text-white">{{ unread }}</span>
               </RouterLink>
             </div>
             <!-- The coach's tab. -->
-            <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" aria-label="حسابي">
+            <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" :aria-label="$t('حسابي')">
               <span class="relative grid size-9 place-items-center overflow-hidden rounded-full bg-brand font-display text-lg font-extrabold text-white ring-2 ring-white md:size-11">
                 <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-full object-cover" /><template v-else>{{ initial }}</template>
               </span>
@@ -107,14 +107,14 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
             </RouterLink>
           </template>
           <template v-else-if="auth.loaded">
-            <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">دخول</RouterLink>
-            <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-white/25 px-4 font-bold sm:flex">إنشاء حساب</RouterLink>
+            <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
+            <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-white/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
         </div>
       </div>
 
       <!-- Row two, inside a slot on the computer: the four portals, each opening its list under it [UP7]. -->
-      <nav v-if="inSlot" class="shell-nav relative hidden md:block" aria-label="أقسام النادي">
+      <nav v-if="inSlot" class="shell-nav relative hidden md:block" :aria-label="$t('أقسام النادي')">
         <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-3 md:px-6">
           <button
             v-for="g in groups"
@@ -126,28 +126,47 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
             aria-controls="portal-list"
             @click="togglePortal(g.key)"
           >
-            <Icon :name="g.icon" /><span>{{ g.label }}</span>
+            <Icon :name="g.icon" /><span>{{ $t(g.label) }}</span>
           </button>
           <div class="flex-1" />
           <RouterLink v-if="slot.current?.next_match" to="/match" class="my-2 hidden shrink-0 items-center gap-2 self-center rounded-pill px-3 py-1.5 text-xs font-bold lg:flex" :class="slot.current.next_match.live ? 'bg-live text-white' : 'bg-black/25 text-white'">
-            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-white" />{{ slot.current.next_match.live ? 'مباشر الآن' : 'القادمة' }}: {{ $nm(slot.current.next_match.opponent) }}
+            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-white" />{{ $t(slot.current.next_match.live ? $t('مباشر الآن') : $t('القادمة')) }}: {{ $nm(slot.current.next_match.opponent) }}
           </RouterLink>
         </div>
       </nav>
+
+    <!-- A portal's list: a sheet over the bottom bar on the phone, a panel under the portals on the computer (inside
+       the header, so it hangs from it). -->
+    <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:bg-transparent" @click="portal = null" />
+    <section v-if="inSlot && openGroup" id="portal-list" class="portal-list" :aria-label="$t(openGroup.label)">
+      <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ $t(openGroup.label) }}</h2>
+      <div class="grid grid-cols-3 gap-2 md:grid-cols-4">
+        <RouterLink
+          v-for="s in openGroup.items"
+          :key="s.name"
+          :to="pathOf(s)"
+          class="portal-item"
+          :class="route.path === pathOf(s) ? 'is-active' : ''"
+          :aria-current="route.path === pathOf(s) ? 'page' : undefined"
+        >
+          <Icon :name="s.icon" />{{ $t(s.label) }}
+        </RouterLink>
+      </div>
+    </section>
     </header>
 
     <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
     <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-2 md:px-6" role="status">
-      <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" aria-label="العودة إلى المباراة">
-        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? 'على الهواء' : 'انتهت' }}</span>
+      <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" :aria-label="$t('العودة إلى المباراة')">
+        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ $t(broadcast.live ? $t('على الهواء') : $t('انتهت')) }}</span>
         <span class="min-w-0 truncate text-sm">{{ broadcast.title }}</span>
         <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
         <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
       </RouterLink>
-      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10" aria-label="كتم صوت المباراة" @click="broadcast.muteAsk++">🔇</button>
+      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
     </div>
     <RouterLink v-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
-      مكافأة {{ auth.user.verification?.welcome_coins }} كوينز تنتظرك. <span class="font-bold text-gold">وثّق حسابك من صفحة حسابي</span>
+      {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
     <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="inSlot ? 'pb-28' : 'pb-10'">
       <RouterView />
@@ -155,7 +174,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
 
     <!-- Inside a slot on the phone: the four portals and the menu at the bottom [UP7]. -->
     <template v-if="inSlot">
-      <nav class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" aria-label="أقسام النادي">
+      <nav class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
         <button
           v-for="g in groups"
           :key="g.key"
@@ -166,55 +185,38 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
           aria-controls="portal-list"
           @click="togglePortal(g.key)"
         >
-          <Icon :name="g.icon" /><span class="leading-tight">{{ g.label }}</span>
+          <Icon :name="g.icon" /><span class="leading-tight">{{ $t(g.label) }}</span>
         </button>
         <button type="button" class="tab-item" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
-          <Icon name="menu" />القائمة
+          <Icon name="menu" />{{ $t('القائمة') }}
         </button>
       </nav>
 
-      <!-- A portal's list: a sheet over the bottom bar on the phone, a panel under the portals on the computer. -->
-      <div v-if="openGroup" class="fixed inset-0 z-20 bg-black/50 md:bg-transparent" @click="portal = null" />
-      <section v-if="openGroup" id="portal-list" class="portal-list" :aria-label="openGroup.label">
-        <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ openGroup.label }}</h2>
-        <div class="grid grid-cols-3 gap-2 md:grid-cols-4">
-          <RouterLink
-            v-for="s in openGroup.items"
-            :key="s.name"
-            :to="pathOf(s)"
-            class="portal-item"
-            :class="route.path === pathOf(s) ? 'is-active' : ''"
-            :aria-current="route.path === pathOf(s) ? 'page' : undefined"
-          >
-            <Icon :name="s.icon" />{{ s.label }}
-          </RouterLink>
-        </div>
-      </section>
     </template>
 
     <!-- The side menu: every section in its portal, and the coach's own pages [UP7]. -->
     <template v-if="drawer">
       <div class="fixed inset-0 z-40 bg-black/60" @click="drawer = false" />
-      <aside id="side-menu" class="side-menu" aria-label="القائمة" @keydown.esc="drawer = false">
+      <aside id="side-menu" class="side-menu" :aria-label="$t('القائمة')" @keydown.esc="drawer = false">
         <div class="flex items-center gap-2 border-b border-white/10 pb-2">
           <BrandMark size="sm" />
           <span class="flex-1" />
-          <button type="button" class="flex size-touch items-center justify-center rounded-md hover:bg-white/10" aria-label="إغلاق القائمة" @click="drawer = false"><Icon name="close" /></button>
+          <button type="button" class="flex size-touch items-center justify-center rounded-md hover:bg-white/10" :aria-label="$t('إغلاق القائمة')" @click="drawer = false"><Icon name="close" /></button>
         </div>
-        <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />فتحات المدرب</RouterLink>
+        <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فتحات المدرب') }}</RouterLink>
         <template v-if="inSlot">
           <div v-for="g in groups" :key="g.key" class="flex flex-col">
-            <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ g.label }}</h3>
-            <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="side-item" :class="route.path === pathOf(s) ? 'is-active' : ''"><Icon :name="s.icon" :size="18" />{{ s.label }}</RouterLink>
+            <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t(g.label) }}</h3>
+            <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="side-item" :class="route.path === pathOf(s) ? 'is-active' : ''"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
           </div>
         </template>
-        <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">حسابي</h3>
-        <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />دورياتي</RouterLink>
-        <RouterLink to="/wallet" class="side-item"><img src="/brand/coin.svg" alt="" class="size-[18px]" />المحفظة</RouterLink>
-        <RouterLink to="/inbox" class="side-item"><Icon name="inbox" :size="18" />الرسائل</RouterLink>
-        <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />حسابي</RouterLink>
-        <RouterLink to="/developers" class="side-item"><Icon name="sim" :size="18" />المطورون</RouterLink>
-        <RouterLink v-if="auth.user?.role === 'admin'" to="/admin" class="side-item"><Icon name="staff" :size="18" />لوحة الإدارة</RouterLink>
+        <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t('حسابي') }}</h3>
+        <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />{{ $t('دورياتي') }}</RouterLink>
+        <RouterLink to="/wallet" class="side-item"><img src="/brand/coin.svg" alt="" class="size-[18px]" />{{ $t('المحفظة') }}</RouterLink>
+        <RouterLink to="/inbox" class="side-item"><Icon name="inbox" :size="18" />{{ $t('الرسائل') }}</RouterLink>
+        <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
+        <RouterLink to="/developers" class="side-item"><Icon name="sim" :size="18" />{{ $t('المطورون') }}</RouterLink>
+        <RouterLink v-if="auth.user?.role === 'admin'" to="/admin" class="side-item"><Icon name="staff" :size="18" />{{ $t('لوحة الإدارة') }}</RouterLink>
       </aside>
     </template>
   </div>

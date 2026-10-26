@@ -4,6 +4,7 @@ use App\Http\Errors\ApiErrors;
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\LeagueActivity;
 use App\Http\Middleware\RecordActivity;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SimulatorEnabled;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -25,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['simulator' => SimulatorEnabled::class, 'league.activity' => LeagueActivity::class, 'admin' => AdminOnly::class]);
         // Every signed-in request counts for the activity indicators of the admin panel [Sprint 37].
         $middleware->appendToGroup('api', RecordActivity::class);
+        // [UP2] The server's words in the coach's language.
+        $middleware->appendToGroup('api', SetLocale::class);
         // The public link (Tailscale Funnel) reaches the game through tailscaled on this machine: trust only
         // that local hop's X-Forwarded-* headers, so links and cookies are https on the public address.
         // A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh): there only GitHub's forwarding reaches the game.

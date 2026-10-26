@@ -41,7 +41,7 @@ const inputType = computed(() => {
         v-if="isPassword"
         type="button"
         class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-e-lg text-text-muted hover:text-text focus-visible:text-gold"
-        :aria-label="shown ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+        :aria-label="shown ? $t('إخفاء كلمة المرور') : $t('إظهار كلمة المرور')"
         :aria-pressed="shown"
         :aria-controls="id"
         @click="shown = !shown"

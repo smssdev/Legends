@@ -3,6 +3,7 @@
 // The web signs in with Sanctum's session cookie: every request carries the XSRF token.
 import createClient, { type Middleware } from 'openapi-fetch'
 import type { components, paths } from './schema'
+import { locale, t } from '../lib/i18n'
 
 export type ApiErrorBody = components['schemas']['Error']
 export type Account = components['schemas']['Account']
@@ -12,7 +13,7 @@ export class ApiError extends Error {
   readonly code: string
   readonly errors: Record<string, string[]>
   constructor(status: number, body: { message?: string; code?: string; errors?: Record<string, string[]> }) {
-    super(body.message ?? 'حدث خطأ غير متوقع، حاول مجدداً.')
+    super(body.message ?? t('حدث خطأ غير متوقع، حاول مجدداً.'))
     this.status = status
     this.code = body.code ?? 'server_error'
     this.errors = body.errors ?? {}
@@ -33,6 +34,7 @@ const session: Middleware = {
   onRequest({ request }) {
     const xsrf = cookie('XSRF-TOKEN')
     if (xsrf) request.headers.set('X-XSRF-TOKEN', xsrf)
+    request.headers.set('Accept-Language', locale.value)   // [UP2] the server's words in the coach's language
     return request
   },
   async onResponse({ response }) {
@@ -54,5 +56,5 @@ export function ensureCsrf(): Promise<unknown> {
 
 /** For a network failure (no answer at all), the same Arabic error the screens show. */
 export function asApiError(e: unknown): ApiError {
-  return e instanceof ApiError ? e : new ApiError(0, { message: 'تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.', code: 'offline' })
+  return e instanceof ApiError ? e : new ApiError(0, { message: t('تعذر الاتصال بالخادم. تحقق من الإنترنت وحاول مجدداً.'), code: 'offline' })
 }

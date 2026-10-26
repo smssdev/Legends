@@ -21,16 +21,16 @@ async function show() {
       class="help-q inline-flex size-touch shrink-0 items-center justify-center rounded-full text-text-muted hover:text-gold"
       :aria-expanded="open"
       :aria-controls="id"
-      :aria-label="`ما هو ${label}؟`"
+      :aria-label="$t('ما هو {v0}؟', { v0: label })"
       @click.stop.prevent="show"
-    ><span class="flex size-5 items-center justify-center rounded-full border-2 border-current text-xs font-bold leading-none">؟</span></button>
+    ><span class="flex size-5 items-center justify-center rounded-full border-2 border-current text-xs font-bold leading-none">{{ $t('؟') }}</span></button>
   </span>
   <Teleport to="body">
     <div v-if="text && open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" @click.self="open = false" @keydown.esc="open = false">
       <div :id="id" role="dialog" aria-modal="true" :aria-label="label" class="flex w-full max-w-sm flex-col gap-3 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-extrabold">{{ label }}</h2>
         <p class="text-sm leading-relaxed text-text-soft">{{ text }}</p>
-        <button ref="ok" type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="open = false">لقد فهمت</button>
+        <button ref="ok" type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="open = false">{{ $t('لقد فهمت') }}</button>
       </div>
     </div>
   </Teleport>

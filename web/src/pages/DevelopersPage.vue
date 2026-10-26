@@ -9,8 +9,8 @@ import { DEVELOPERS } from '../content/developers'
   <div class="flex flex-col gap-5">
     <header class="flex flex-col items-center gap-2 text-center">
       <img src="/brand/emblem.svg" alt="" class="size-20" />
-      <h1 class="font-display text-3xl font-extrabold">فريق التطوير</h1>
-      <p class="max-w-xl text-text-soft">من صنع لعبة المدرب الأسطورة، ومن يعتني بها كل يوم.</p>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('فريق التطوير') }}</h1>
+      <p class="max-w-xl text-text-soft">{{ $t('من صنع لعبة المدرب الأسطورة، ومن يعتني بها كل يوم.') }}</p>
     </header>
     <div class="grid gap-4 md:grid-cols-2">
       <article v-for="d in DEVELOPERS" :key="d.username" class="dev-card flex flex-col gap-4 rounded-2xl border border-gold/30 bg-surface p-5">
@@ -23,11 +23,11 @@ import { DEVELOPERS } from '../content/developers'
           </div>
         </div>
         <p class="text-text-soft">{{ d.bio }}</p>
-        <ul class="flex flex-wrap gap-1.5" aria-label="المهارات">
+        <ul class="flex flex-wrap gap-1.5" :aria-label="$t('المهارات')">
           <li v-for="s in d.skills" :key="s" class="rounded-pill bg-surface-raised px-3 py-1 text-xs font-bold">{{ s }}</li>
         </ul>
-        <section aria-label="السيرة الذاتية">
-          <h3 class="mb-2 font-bold">السيرة الذاتية</h3>
+        <section :aria-label="$t('السيرة الذاتية')">
+          <h3 class="mb-2 font-bold">{{ $t('السيرة الذاتية') }}</h3>
           <ol class="flex flex-col gap-2 border-s-2 border-gold/40 ps-4">
             <li v-for="c in d.cv" :key="c.title" class="relative">
               <span class="absolute -start-[1.4rem] top-1.5 size-2.5 rounded-full bg-gold" aria-hidden="true" />

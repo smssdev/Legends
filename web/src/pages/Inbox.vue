@@ -26,21 +26,21 @@ onMounted(() => inbox.load())
   <div class="flex flex-col gap-5">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="font-display text-3xl font-extrabold">الرسائل</h1>
-        <p class="mt-1 text-text-muted">{{ inbox.unread ? `${inbox.unread} غير مقروءة` : 'كلها مقروءة' }}</p>
+        <h1 class="font-display text-3xl font-extrabold">{{ $t('الرسائل') }}</h1>
+        <p class="mt-1 text-text-muted">{{ inbox.unread ? $t('{v0} غير مقروءة', { v0: inbox.unread }) : $t('كلها مقروءة') }}</p>
       </div>
-      <UiButton v-if="inbox.unread" variant="outline" @click="inbox.readAll()">اجعلها كلها مقروءة</UiButton>
+      <UiButton v-if="inbox.unread" variant="outline" @click="inbox.readAll()">{{ $t('اجعلها كلها مقروءة') }}</UiButton>
     </div>
 
     <p v-if="inbox.error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ inbox.error }}</p>
-    <p v-else-if="!inbox.loaded" class="text-text-muted">جارٍ التحميل...</p>
+    <p v-else-if="!inbox.loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <section v-else-if="!inbox.messages.length" class="flex flex-col items-center gap-2 rounded-xl bg-surface p-8 text-center">
       <span class="text-4xl" aria-hidden="true">📭</span>
-      <h2 class="font-display text-xl font-extrabold">لا رسائل بعد</h2>
-      <p class="text-sm text-text-muted">هنا يصلك حكم مباراتك، وتقاريرها، وطلبات الانضمام، وكل ما يخص دورياتك.</p>
+      <h2 class="font-display text-xl font-extrabold">{{ $t('لا رسائل بعد') }}</h2>
+      <p class="text-sm text-text-muted">{{ $t('هنا يصلك حكم مباراتك، وتقاريرها، وطلبات الانضمام، وكل ما يخص دورياتك.') }}</p>
     </section>
 
-    <ul v-else class="flex flex-col gap-2" aria-label="الرسائل">
+    <ul v-else class="flex flex-col gap-2" :aria-label="$t('الرسائل')">
       <li v-for="m in inbox.messages" :key="m.id">
         <button
           type="button"
@@ -57,10 +57,10 @@ onMounted(() => inbox.load())
             </span>
             <span class="mt-1 block text-sm" :class="m.read ? 'text-text-muted' : 'text-text-soft'">{{ m.body }}</span>
           </span>
-          <span v-if="!m.read" class="mt-2 size-2.5 shrink-0 rounded-full bg-gold" aria-label="غير مقروءة" />
+          <span v-if="!m.read" class="mt-2 size-2.5 shrink-0 rounded-full bg-gold" :aria-label="$t('غير مقروءة')" />
         </button>
       </li>
     </ul>
-    <UiButton v-if="inbox.more" variant="quiet" @click="inbox.load(true)">رسائل أقدم</UiButton>
+    <UiButton v-if="inbox.more" variant="quiet" @click="inbox.load(true)">{{ $t('رسائل أقدم') }}</UiButton>
   </div>
 </template>

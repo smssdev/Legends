@@ -197,6 +197,7 @@ paths:
                 username: { type: string, pattern: '^[A-Za-z][A-Za-z0-9]{2,19}$' }
                 commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6, voice-7] }
                 match_view: { type: string, enum: [cartoon, unity] }
+                locale: { type: string, enum: [ar, en], description: 'The language of the game [UP2]' }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
@@ -4170,6 +4171,7 @@ components:
         has_password: { type: boolean, description: False for an account made with Google only }
         google: { type: boolean, description: Linked to a Google account }
         created_at: { type: string, format: date-time }
+        locale: { type: string, enum: [ar, en], nullable: true, description: 'The coach''s language [UP2]; null until chosen' }
         vacation:
           type: object
           required: [on, until, next_from, max_days, auto_days, pending]

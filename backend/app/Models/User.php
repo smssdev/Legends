@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
-    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale'];
 
     /** @var list<string> */
     protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
@@ -101,6 +101,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,
             'created_at' => $this->created_at?->toIso8601ZuluString(),
+            // [UP2] The coach's language; null until chosen.
+            'locale' => $this->locale,
             // How the coach watches [X9, X10]: the same on every device.
             'viewing' => [
                 'commentator' => $this->commentator ?? config('game.viewing.default_commentator'),

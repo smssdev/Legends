@@ -402,6 +402,11 @@ export interface paths {
                         commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6" | "voice-7";
                         /** @enum {string} */
                         match_view?: "cartoon" | "unity";
+                        /**
+                         * @description The language of the game [UP2]
+                         * @enum {string}
+                         */
+                        locale?: "ar" | "en";
                     };
                 };
             };
@@ -8423,6 +8428,11 @@ export interface components {
             google: boolean;
             /** Format: date-time */
             created_at?: string;
+            /**
+             * @description The coach's language [UP2]; null until chosen
+             * @enum {string|null}
+             */
+            locale?: "ar" | "en" | null;
             /** @description The account's holiday (every league) */
             vacation: {
                 on: boolean;

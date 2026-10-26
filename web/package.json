@@ -7,11 +7,12 @@
     "tokens": "node scripts/tokens.mjs",
     "predev": "npm run tokens && npm run names",
     "dev": "vite",
-    "prebuild": "npm run tokens && npm run names",
+    "prebuild": "npm run tokens && npm run names && npm run i18n",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "api": "openapi-typescript ../docs/api/openapi.yaml -o src/api/schema.d.ts",
-    "names": "node scripts/names.mjs"
+    "names": "node scripts/names.mjs",
+    "i18n": "node scripts/i18n.mjs"
   },
   "dependencies": {
     "laravel-echo": "^2.6.1",
