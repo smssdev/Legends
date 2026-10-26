@@ -34,7 +34,7 @@ class MailDeliveryTest extends TestCase
         Http::assertSent(function (Request $r) {
             return $r->url() === 'https://api.brevo.com/v3/smtp/email' && $r->hasHeader('api-key', 'test-key')
                 && $r['sender']['email'] === 'legends@gmail.com' && $r['to'][0]['email'] === 'h@example.com'
-                && $r['subject'] === 'أكّد بريدك في GLM' && str_contains($r['htmlContent'], '/email/verify/');
+                && $r['subject'] === 'أكّد بريدك في لعبة المدرب الأسطورة' && str_contains($r['htmlContent'], '/email/verify/');
         });
     }
 

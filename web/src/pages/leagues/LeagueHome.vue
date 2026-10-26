@@ -60,7 +60,7 @@ async function decide(r: JoinRequest, approve: boolean) {
 }
 
 // The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
-const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في GLM واختر ناديك: ${league.value.invite_url}` : ''))
+const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في لعبة المدرب الأسطورة واختر ناديك: ${league.value.invite_url}` : ''))
 const whatsapp = computed(() => `https://wa.me/?text=${encodeURIComponent(inviteText.value)}`)
 async function share() {
   if (!league.value?.invite_url) return

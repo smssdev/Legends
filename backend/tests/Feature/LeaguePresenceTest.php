@@ -223,7 +223,7 @@ class LeaguePresenceTest extends TestCase
     {
         DB::table('leagues')->update(['name' => 'دوري <الشلة> & "أصحاب"']);
         $html = $this->get('/join/'.strtolower($this->league['code']))->assertOk()->assertHeader('Content-Type', 'text/html; charset=UTF-8')->getContent();
-        $this->assertStringContainsString('<meta property="og:title" content="انضم لـدوري &lt;الشلة&gt; &amp; &quot;أصحاب&quot; في GLM">', $html);
+        $this->assertStringContainsString('<meta property="og:title" content="انضم لـدوري &lt;الشلة&gt; &amp; &quot;أصحاب&quot; في لعبة المدرب الأسطورة">', $html);
         $this->assertStringContainsString(e($this->owner->name).' يدعوك', $html);
         $this->assertStringContainsString('content="'.url('/brand/og-invite.png').'"', $html);
         $this->assertStringContainsString('content="'.url('/join/'.$this->league['code']).'"', $html);
@@ -233,7 +233,7 @@ class LeaguePresenceTest extends TestCase
             ->assertSee('content="https://legends.tail1234.ts.net/brand/og-invite.png"', false);
 
         // An unknown code still opens the app, with a plain invitation.
-        $this->get('/join/NOPE1234')->assertOk()->assertSee('دعوة إلى GLM', false);
+        $this->get('/join/NOPE1234')->assertOk()->assertSee('دعوة إلى لعبة المدرب الأسطورة', false);
         $this->assertSame(url('/join/'.$this->league['code']), $this->me($this->owner)['invite_url']);
     }
 }

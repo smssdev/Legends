@@ -68,7 +68,7 @@ async function sendPing() {
 <template>
   <div class="flex flex-col gap-5">
     <div>
-      <h1 class="font-display text-3xl font-extrabold">أهلاً في GLM</h1>
+      <h1 class="font-display text-3xl font-extrabold">أهلاً في لعبة المدرب الأسطورة</h1>
       <p class="mt-1 text-text-muted">دورياتك، وحالة الخادم، والبث المباشر، والمحاكي.</p>
     </div>
 

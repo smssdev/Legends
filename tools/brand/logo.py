@@ -28,7 +28,7 @@ DEFS = f'''<defs>
   <linearGradient id="rimMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1C2"/><stop offset=".3" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset=".72" stop-color="{GOLD_DARK}"/><stop offset="1" stop-color="#7A5206"/></linearGradient>
   <linearGradient id="metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="110"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".46" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset=".53" stop-color="{GOLD_DARK}"/><stop offset="1" stop-color="{GOLD}"/></linearGradient>
   <linearGradient id="silver" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="110"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".46" stop-color="{IVORY}"/><stop offset=".5" stop-color="#D9D2BC"/><stop offset=".53" stop-color="#B9B19A"/><stop offset="1" stop-color="{IVORY}"/></linearGradient>
-  <radialGradient id="field" cx=".5" cy=".42" r=".7"><stop offset="0" stop-color="{EMERALD}"/><stop offset=".55" stop-color="{EMERALD_DARK}"/><stop offset="1" stop-color="{INK_DEEP}"/></radialGradient>
+  <radialGradient id="field" cx=".5" cy=".36" r=".78"><stop offset="0" stop-color="{EMERALD}"/><stop offset=".38" stop-color="{EMERALD_DARK}"/><stop offset=".78" stop-color="{INK}"/><stop offset="1" stop-color="{INK_DEEP}"/></radialGradient>
   <radialGradient id="glow" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="{EMERALD}" stop-opacity=".55"/><stop offset="1" stop-color="{EMERALD}" stop-opacity="0"/></radialGradient>
   <radialGradient id="ballSkin" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="{IVORY}"/><stop offset="1" stop-color="#A9A28C"/></radialGradient>
   <clipPath id="crestIn"><path d="{{IN}}"/></clipPath>
@@ -105,7 +105,7 @@ def rays(cx=256, cy=236, n=18):
     for k in range(n):
         a, b = math.radians(k * 360 / n - 4), math.radians(k * 360 / n + 4)
         out.append(f'M{cx} {cy} L{cx + 400 * math.sin(a):.0f} {cy - 400 * math.cos(a):.0f} L{cx + 400 * math.sin(b):.0f} {cy - 400 * math.cos(b):.0f} Z')
-    return f'<path d="{" ".join(out)}" fill="{GOLD_LIGHT}" opacity=".07"/>'
+    return f'<path d="{" ".join(out)}" fill="{GOLD_LIGHT}" opacity=".055"/>'
 
 
 def crest(wreath=True):
@@ -182,7 +182,7 @@ FILES = {
         + rule(437, 587, 760) +
         f'<text x="512" y="836" text-anchor="middle" font-family="{SANS}" font-weight="800" font-size="62" letter-spacing="10" fill="{IVORY}">GAME LEGEND</text>'
         f'<text x="512" y="926" text-anchor="middle" font-family="{SANS}" font-weight="800" font-size="62" letter-spacing="26" fill="{GOLD}">MANAGER</text>'
-        f'<text x="512" y="1008" text-anchor="middle" font-family="{SANS}" font-weight="700" font-size="40" fill="{IVORY}" opacity=".75" direction="rtl">لعبة إدارة كرة القدم مع أصحابك</text>',
+        f'<text x="512" y="1008" text-anchor="middle" font-family="{SANS}" font-weight="700" font-size="46" fill="{IVORY}" opacity=".85" direction="rtl">لعبة المدرب الأسطورة</text>',
         w=1024, h=1060),
     # the logo across, for headers, the site's footer and documents: GLM centred over the full name
     'logo-wide.svg': svg(

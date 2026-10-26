@@ -166,7 +166,7 @@ class MessageText
             ],
             // From the game's developers, with the official badge [X11].
             'announcement' => [
-                'title' => (string) ($p['title'] ?? 'إعلان من فريق GLM'),
+                'title' => (string) ($p['title'] ?? 'إعلان من فريق لعبة المدرب الأسطورة'),
                 'body' => (string) ($p['body'] ?? ''),
                 'link' => null,
                 'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],

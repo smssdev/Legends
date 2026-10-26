@@ -43,7 +43,7 @@ class AuthTest extends TestCase
         Notification::assertSentTo($user, VerifyEmailNotice::class, function ($n) use ($user) {
             $mail = $n->toMail($user);
 
-            return $mail->subject === 'أكّد بريدك في GLM' && str_contains($mail->actionUrl, '/email/verify/'.$user->id.'/');
+            return $mail->subject === 'أكّد بريدك في لعبة المدرب الأسطورة' && str_contains($mail->actionUrl, '/email/verify/'.$user->id.'/');
         });
         $this->assertSame(1, DB::table('user_activity')->where('user_id', $user->id)->value('logins'));
     }

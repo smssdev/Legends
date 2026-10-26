@@ -275,15 +275,15 @@ return [
     ],
     'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
-    // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
-    'brand' => ['name' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
+    // The game's names (owner's decision, 2026-10-26, X44): لعبة المدرب الأسطورة (GLM, Game Legend Manager), and its premium currency الكوينز.
+    'brand' => ['name' => 'لعبة المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'level_step' => 20],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
-        'message' => 'مرحباً، أحتاج مساعدة في لعبة GLM: '],
+        'message' => 'مرحباً، أحتاج مساعدة في لعبة المدرب الأسطورة: '],
     // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
     // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
