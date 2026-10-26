@@ -298,6 +298,8 @@ async function remove() {
       <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ viewMsg }}</p>
     </section>
 
+    <RouterLink :to="{ name: 'developers' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">فريق التطوير</b><span class="text-sm text-text-muted">تعرّف على من صنع اللعبة</span></span><span class="font-bold text-gold">←</span></RouterLink>
+
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-holiday">
       <h2 id="h-holiday" class="font-display text-xl font-extrabold">إجازة الحساب</h2>
       <!-- [UP13] The owner's spec (7): said plainly where the coach sees it. -->

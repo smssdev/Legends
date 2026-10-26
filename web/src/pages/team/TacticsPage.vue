@@ -6,6 +6,7 @@ import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
+import TacticIcon from '../../components/tactics/TacticIcon.vue'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import ScenariosPanel from './ScenariosPanel.vue'
@@ -38,6 +39,19 @@ const LINES = [
   { key: 'def', label: 'الدفاع', color: 'bg-[#3B82F6]', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
 ] as const
 const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
+// [UP16] The icons of each choice, and the quick presets of the spec (10): each sets the knobs the engine plays with.
+const PLAN_ICON: Record<string, string> = { counter: 'counter', shots: 'shots', long: 'long_balls', passing: 'tiki_taka', wings: 'wings' }
+const MENTALITY = [
+  { id: 'all_out', label: 'الهجوم الكاسح', style: 95 }, { id: 'attacking', label: 'هجومي', style: 75 }, { id: 'balanced', label: 'متوازن', style: 50 },
+  { id: 'defensive', label: 'دفاعي', style: 25 }, { id: 'park_bus', label: 'ركن الحافلة', style: 5 },
+] as const
+const PASSING = [
+  { id: 'short', label: 'قصيرة وسريعة', plan: 'passing', tempo: 40 }, { id: 'through', label: 'بينية في المساحة', plan: 'counter', tempo: 70 },
+  { id: 'long', label: 'طولية وعالية', plan: 'long', tempo: 55 }, { id: 'direct', label: 'مباشرة', plan: 'long', tempo: 85 },
+] as const
+const PRESSING = [{ id: 'press_low', label: 'منخفض', value: 20 }, { id: 'press_mid', label: 'متوسط', value: 50 }, { id: 'press_high', label: 'خنق الخصم', value: 85 }] as const
+const near = (a: number, b: number) => Math.abs(a - b) <= 10
+const mentality = computed(() => MENTALITY.reduce((best, m) => (Math.abs(m.style - (t.value?.style ?? 50)) < Math.abs(best.style - (t.value?.style ?? 50)) ? m : best)).id)
 const dirty = computed(() => !!t.value && JSON.stringify(t.value) !== saved.value)
 
 async function load() {
@@ -101,9 +115,36 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       </section>
 
       <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 font-bold">العقلية</legend>
+        <div class="grid grid-cols-5 gap-1">
+          <button v-for="m in MENTALITY" :key="m.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+            :class="mentality === m.id ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="mentality === m.id" @click="t.style = m.style">
+            <TacticIcon :name="m.id" :active="mentality === m.id" />{{ m.label }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 font-bold">أسلوب التمرير</legend>
+        <div class="grid grid-cols-4 gap-1">
+          <button v-for="ps in PASSING" :key="ps.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+            :class="t.plan === ps.plan && near(t.tempo, ps.tempo) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="t.plan === ps.plan && near(t.tempo, ps.tempo)"
+            @click="t.plan = ps.plan; t.tempo = ps.tempo"><TacticIcon :name="ps.id" :active="t.plan === ps.plan && near(t.tempo, ps.tempo)" />{{ ps.label }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 font-bold">درجة الضغط</legend>
+        <div class="grid grid-cols-3 gap-1">
+          <button v-for="pr in PRESSING" :key="pr.id" type="button" class="flex min-h-touch flex-col items-center gap-1 rounded-xl border px-1 py-2 text-xs font-bold"
+            :class="near(t.pressing, pr.value) ? 'border-gold bg-surface-raised' : 'border-transparent bg-surface'" :aria-pressed="near(t.pressing, pr.value)" @click="t.pressing = pr.value">
+            <TacticIcon :name="pr.id" :active="near(t.pressing, pr.value)" />{{ pr.label }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="flex flex-col gap-2">
         <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">خطة اللعب <span class="text-xs font-normal text-text-muted">(يراها الخصم بعد القفل)</span><HelpTip :text="help.plan" label="خطة اللعب" /></legend>
         <div class="flex flex-wrap gap-2">
-          <button v-for="(label, k) in PLANS" :key="k" type="button" class="h-12 rounded-xl border px-4 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k">{{ label }}</button>
+          <button v-for="(label, k) in PLANS" :key="k" type="button" class="flex h-12 items-center gap-2 rounded-xl border px-3 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k"><TacticIcon :name="PLAN_ICON[k]" :active="t.plan === k" />{{ label }}</button>
         </div>
       </fieldset>
 
@@ -118,7 +159,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <fieldset>
         <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">قطع الكرة <span class="text-xs font-normal text-text-muted">(يراه الخصم بعد القفل)</span><HelpTip :text="help.tackling" label="قطع الكرة" /></legend>
         <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1">
-          <button v-for="(label, i) in TACKLING" :key="i" type="button" class="h-12 rounded-lg font-bold" :class="t.tackling === i ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.tackling === i" @click="t.tackling = i">{{ label }}</button>
+          <button v-for="(label, i) in TACKLING" :key="i" type="button" class="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-xs font-bold" :class="t.tackling === i ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t.tackling === i" @click="t.tackling = i"><TacticIcon :name="`tackle_${i}`" :active="t.tackling === i" />{{ label }}</button>
         </div>
       </fieldset>
 
@@ -127,7 +168,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         <div v-for="l in LINES" :key="l.key" class="flex items-center gap-2">
           <span class="flex w-20 shrink-0 items-center gap-1.5 text-sm"><span class="size-2.5 rounded-full" :class="l.color" />{{ l.label }}</span>
           <div class="grid flex-1 grid-cols-3 gap-1 rounded-xl bg-surface p-1">
-            <button v-for="(label, k) in l.options" :key="k" type="button" class="min-h-11 rounded-lg px-1 text-sm font-bold" :class="t[l.key] === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t[l.key] === k" @click="(t as Record<string, unknown>)[l.key] = k">{{ label }}</button>
+            <button v-for="(label, k) in l.options" :key="k" type="button" class="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-bold" :class="t[l.key] === k ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t[l.key] === k" @click="(t as Record<string, unknown>)[l.key] = k"><TacticIcon :name="`${l.key}_${k}`" :active="t[l.key] === k" />{{ label }}</button>
           </div>
         </div>
       </fieldset>
@@ -135,12 +176,13 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <div class="grid gap-2 md:grid-cols-2">
         <div class="flex min-h-touch flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
           <span class="flex items-center gap-1"><label for="t-trap"><span class="block font-bold">مصيدة التسلل</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></label><HelpTip :text="help.trap" label="مصيدة التسلل" /></span>
-          <UiToggle id="t-trap" tone="success" label="مصيدة التسلل" class="[&_label]:sr-only" :model-value="t.trap === 1" @update:model-value="(on: boolean) => (t!.trap = on ? 1 : 0)" />
+          <span class="flex items-center gap-2"><TacticIcon :name="t.trap === 1 ? 'trap_on' : 'trap_off'" :active="true" />
+          <UiToggle id="t-trap" tone="success" label="مصيدة التسلل" class="[&_label]:sr-only" :model-value="t.trap === 1" @update:model-value="(on: boolean) => (t!.trap = on ? 1 : 0)" /></span>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
           <span class="flex items-center gap-1"><span><span class="block font-bold">الرقابة</span><span class="text-xs text-text-muted">يراها الخصم بعد القفل</span></span><HelpTip :text="help.marking" label="الرقابة" /></span>
           <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1">
-            <button v-for="(label, k) in { zone: 'منطقة', man: 'رجل لرجل' }" :key="k" type="button" class="h-10 rounded-md px-3 text-sm font-bold" :class="t.marking === k ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="t.marking === k" @click="t.marking = k">{{ label }}</button>
+            <button v-for="(label, k) in { zone: 'منطقة', man: 'رجل لرجل' }" :key="k" type="button" class="flex min-h-12 items-center gap-1 rounded-md px-2 text-sm font-bold" :class="t.marking === k ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t.marking === k" @click="t.marking = k"><TacticIcon :name="k" :active="t.marking === k" />{{ label }}</button>
           </div>
         </div>
       </div>
