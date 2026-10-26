@@ -1267,6 +1267,78 @@ paths:
               schema: { type: object, required: [balance], properties: { balance: { type: integer } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/press/{fixture}:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: fixture, in: path, required: true, schema: { type: integer } }
+    get:
+      tags: [media]
+      summary: '[UP12] The press conference before a match: the chances, a reading of each side, the statements'
+      responses:
+        '200':
+          description: The conference (enabled false when the league switched them off)
+          content: { application/json: { schema: { type: object, required: [press, enabled], properties: { press: { type: object, additionalProperties: true }, enabled: { type: boolean } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [media]
+      summary: '[UP12] The coach''s statement, once, from half an hour before kick-off until the lock: + morale in that match'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [kind], properties: { kind: { type: string, enum: [attack, calm, rally] } } } } }
+      responses:
+        '200': { description: The conference after it, content: { application/json: { schema: { type: object, required: [press], properties: { press: { type: object, additionalProperties: true } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/predictions:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [media]
+      summary: '[UP12] The round''s matches with my pick and the league''s split'
+      responses:
+        '200': { description: The round, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+    post:
+      tags: [media]
+      summary: '[UP12] Pick a match''s winner (or a draw) until its lock; a right pick pays my club and counts on my career'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [fixture_id, pick], properties: { fixture_id: { type: integer }, pick: { type: string, enum: [home, draw, away] } } } } }
+      responses:
+        '200': { description: The round after it, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/newspaper:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [media]
+      summary: '[UP12] The newspaper: a played round''s report (results, stories, team of the week) and the coaches'' articles'
+      parameters:
+        - { name: round, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200': { description: The newspaper, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+  /leagues/{league}/newspaper/articles:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [media]
+      summary: '[UP12] A coach''s article, for the league''s owner to publish'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [title, body], properties: { title: { type: string, minLength: 3, maxLength: 120 }, body: { type: string, minLength: 10, maxLength: 2000 } } } } }
+      responses:
+        '200': { description: The newspaper after it, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/newspaper/articles/{article}/decide:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: article, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [media]
+      summary: '[UP12] The owner publishes or turns down an article'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [publish], properties: { publish: { type: boolean } } } } }
+      responses:
+        '200': { description: The newspaper after it, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market/buy-quote:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:

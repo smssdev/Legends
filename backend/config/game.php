@@ -289,7 +289,7 @@ return [
     'brand' => ['name' => 'لعبة المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
-    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'level_step' => 20],
+    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
@@ -403,6 +403,10 @@ return [
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
+    // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
+    // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
+    // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
+    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.

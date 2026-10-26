@@ -12,6 +12,7 @@ import RatingRing from '../../components/ui/RatingRing.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import TicketsPanel from './TicketsPanel.vue'
+import PressPanel from './PressPanel.vue'
 import IntegrityPanel from './IntegrityPanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
@@ -183,6 +184,7 @@ const ACTIONS = [
         </template>
       </section>
     </template>
+    <PressPanel v-if="leagueId && match" :league-id="leagueId" :fixture-id="match.fixture_id" :home="match.venue === 'home' ? match.club?.name ?? '' : match.opponent.name" :away="match.venue === 'home' ? match.opponent.name : match.club?.name ?? ''" />
     <IntegrityPanel v-if="leagueId" :league-id="leagueId" />
     <TicketsPanel v-if="leagueId" :league-id="leagueId" />
     <p v-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>

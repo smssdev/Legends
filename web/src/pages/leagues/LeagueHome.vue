@@ -332,6 +332,16 @@ onMounted(load)
         <span class="font-bold text-gold">←</span>
       </RouterLink>
 
+      <!-- [UP12] The league's media. -->
+      <div class="grid gap-2 sm:grid-cols-2">
+        <RouterLink :to="{ name: 'league-newspaper', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
+          <span><b class="block">جريدة الدوري</b><span class="text-sm text-text-muted">تقرير كل جولة وتشكيلتها المثالية ومقالات المدربين</span></span><span class="font-bold text-gold">←</span>
+        </RouterLink>
+        <RouterLink :to="{ name: 'league-predictions', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
+          <span><b class="block">توقعات المدربين</b><span class="text-sm text-text-muted">توقع فائزي الجولة واربح مكافأة لناديك</span></span><span class="font-bold text-gold">←</span>
+        </RouterLink>
+      </div>
+
       <RouterLink :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
         <span><b class="block">بطولة التحالفات</b><span class="text-sm text-text-muted">تحالفان من مدربي الدوري بقائد لكل منهما</span></span>
         <span class="font-bold text-gold">←</span>

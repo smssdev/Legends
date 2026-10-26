@@ -28,6 +28,9 @@ export const router = createRouter({
         { path: 'leagues/:id(\\d+)/alliance', name: 'league-alliance', component: () => import('./pages/leagues/AlliancePage.vue'), props: true, meta: { auth: true } },
         // [X26] The live draw
         { path: 'leagues/:id(\\d+)/draw', name: 'league-draw', component: () => import('./pages/leagues/DrawPage.vue'), props: true, meta: { auth: true } },
+        // [UP12] The league's media
+        { path: 'leagues/:id(\\d+)/predictions', name: 'league-predictions', component: () => import('./pages/leagues/PredictionsPage.vue'), props: true, meta: { auth: true } },
+        { path: 'leagues/:id(\\d+)/newspaper', name: 'league-newspaper', component: () => import('./pages/leagues/NewspaperPage.vue'), props: true, meta: { auth: true } },
         { path: 'leagues/:id(\\d+)/pick', name: 'pick-team', component: () => import('./pages/leagues/PickTeam.vue'), props: true, meta: { auth: true } },
         // Sprint 16: my club in the current league
         { path: 'team', name: 'team', component: () => import('./pages/team/Squad.vue'), meta: { auth: true } },

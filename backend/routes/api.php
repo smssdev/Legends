@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PressController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -127,6 +128,16 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         // [UP11] The deal before it is made, and the transfers made.
         Route::get('buy-quote', 'buyQuote')->middleware('throttle:120,1,market-quote');
         Route::get('done', 'done')->middleware('throttle:60,1,market');
+    });
+    // [UP12] The league's media: the press conference, the predictions, the newspaper and its articles.
+    Route::controller(PressController::class)->prefix('{league}')->whereNumber('league')->group(function () {
+        Route::get('press/{fixture}', 'conference')->whereNumber('fixture');
+        Route::post('press/{fixture}', 'say')->whereNumber('fixture')->middleware('throttle:20,1,press');
+        Route::get('predictions', 'predictions');
+        Route::post('predictions', 'predict')->middleware('throttle:60,1,predict');
+        Route::get('newspaper', 'newspaper');
+        Route::post('newspaper/articles', 'write')->middleware('throttle:6,1,articles');
+        Route::post('newspaper/articles/{article}/decide', 'decide')->whereNumber('article');
     });
     // The market between coaches: the transfer list and the offers [Sprint 25].
     Route::controller(TransferController::class)->prefix('{league}/transfers')->whereNumber('league')->group(function () {

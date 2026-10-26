@@ -26,6 +26,8 @@ class Career
             }
         }
 
+        $out['predicted'] = DB::table('match_predictions')->where('user_id', $userId)->where('correct', true)->count();
+
         return $out;
     }
 
@@ -44,7 +46,9 @@ class Career
     public static function level(array $record, array $trophies): array
     {
         $c = config('game.career');
-        $xp = $record['won'] * $c['xp_win'] + $record['drawn'] * $c['xp_draw'] + $trophies['total'] * $c['xp_trophy'];
+        $xp = $record['won'] * $c['xp_win'] + $record['drawn'] * $c['xp_draw'] + $trophies['total'] * $c['xp_trophy']
+            // [UP12] The right predictions of the round's winners.
+            + ($record['predicted'] ?? 0) * (int) ($c['xp_prediction'] ?? 0);
         $level = 1;
         $from = 0;
         while ($xp >= $from + $level * $c['level_step']) {

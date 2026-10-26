@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -181,6 +181,11 @@ class MessageText
                 'title' => 'طلب إجازة طويلة',
                 'body' => sprintf('%s يطلب إجازة %d يوماً: %s', (string) ($p['name'] ?? ''), (int) ($p['days'] ?? 0), (string) ($p['reason'] ?? '')),
                 'link' => '/admin',
+            ],
+            'article_pending' => [
+                'title' => 'مقال ينتظر موافقتك',
+                'body' => sprintf('«%s» من %s لجريدة %s.', (string) ($p['title'] ?? ''), (string) ($p['author'] ?? ''), (string) ($p['league'] ?? '')),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}/newspaper" : '/leagues',
             ],
             'assistant_led' => [
                 'title' => 'المدرب المساعد قاد فريقك',

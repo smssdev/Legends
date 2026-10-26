@@ -44,8 +44,10 @@ class Morale
         $clubId = $side === 'home' ? $fixture->home_id : $fixture->away_id;
         $crowd = (int) $c['crowd'] * ($venue === 'home' && $side === 'home' ? 2 : 1);
         $tickets = min((int) $c['tickets_max'], (int) $c['ticket'] * DB::table('match_tickets')->where('fixture_id', $fixture->id)->where('side', $side)->count());
+        // [UP12] The coach's statement at the press conference.
+        $press = DB::table('press_statements')->where('fixture_id', $fixture->id)->where('club_id', $clubId)->exists() ? (int) config('game.press.morale') : 0;
 
-        return max(0, min(100, (int) DB::table('clubs')->where('id', $clubId)->value('morale') + $crowd + $tickets));
+        return max(0, min(100, (int) DB::table('clubs')->where('id', $clubId)->value('morale') + $crowd + $tickets + $press));
     }
 
     /** A league coach's ticket to cheer one side at a match that is not his, until its lock. */
