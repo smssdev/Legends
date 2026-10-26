@@ -92,7 +92,7 @@
         {{ busy ? 'جارٍ التجهيز...' : 'ابدأ المباراة' }}
       </button>
       <span v-if="notReady" class="text-sm font-bold text-warning">{{ notReady }}</span>
-      <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 5 دقائق بسرعة ×1' }}</span>
+      <span v-else class="text-sm text-text-muted">{{ settings.mode === 'live' ? 'كل مدرب يدير فريقه من جهازه، والمباراة بسرعة ×1' : 'حوالي 7 دقائق بسرعة ×1' }}</span>
     </div>
   </div>
 </template>

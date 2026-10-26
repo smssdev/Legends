@@ -35,6 +35,16 @@ return [
         // half a minute (15 minutes of 2000 ms) and the whole shootout half a minute. A match made with these keys plays
         // every minute at this fixed length (MomentClock); one made before keeps moment_ms below (its config_snapshot).
         'minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+        // [X41] The broadcast as on TV, the owner's (2026-10-26), in place of the fixed pace above for the matches made
+        // from now on: fewer scenes and each one its real length (MomentClock), the commentator finishing what he says.
+        // A half about three and a half minutes: quiet minutes pass quickly, a goal takes 20 s with its replay; a small
+        // chance ('brief') is its card and one line. MomentClockTest checks a match's length.
+        'broadcast_ms' => [
+            'quiet' => 2200, 'attack' => 2800, 'brief' => 4200, 'stoppage' => 5000, 'whistle' => 6500, 'coach' => 5000,
+            'sub' => 6000, 'injury' => 6000, 'offside' => 4200, 'corner' => 8000, 'miss' => 10000, 'save' => 11000,
+            'goal' => 20000, 'yellow' => 8500, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
+            'penalty' => 14000, 'penalty_goal' => 20000,
+        ],
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.

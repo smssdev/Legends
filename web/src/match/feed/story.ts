@@ -204,6 +204,12 @@ export function story(tick, ctx) {
     out.items.unshift({ side: 'home', icon: 'whistle', name: 'انطلاق المباراة', label: `${ctx.clubs.home} - ${ctx.clubs.away}`, minute: "1'", center: true })
     if (!out.bubble) out.bubble = LINES.kickoff.bubble[0]
   }
+  // [X41] A small moment on the broadcast (tick.moment.brief): no scene, only its card and the commentator's one line.
+  if (tick.moment?.brief) {
+    Object.assign(out, { scene: null, pre: null })
+    const key = out.lines.filter((l) => l.s === 'key')
+    out.lines = (key.length ? key : out.lines.slice(0, 1)).map((l) => ({ ...l, at: 0.1 }))
+  }
   out.keyAt = out.scene ? SCENE_TIME[out.scene][1] / SCENE_TIME[out.scene][0] : 0
   return out
 }

@@ -492,6 +492,7 @@ async function step() {
 // What a minute tells (the feed lines, the stats, the half-time card) waits until its
 // scene has played, so a shot's end is never known before the ball gets there.
 let pendingReveal: (() => void) | null = null
+let shownAt = 0
 function reveal() {
   const r = pendingReveal
   pendingReveal = null
@@ -513,13 +514,15 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (live.value && halftime.value) { halftime.value = false; clearInterval(htTimer) }
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   // Live: the goal again in a small frame while the next minute plays (not on a slow phone).
-  if (live.value && animate && lastGoal && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
+  // Not after a goal whose long minute already played its replay [X41].
+  if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
   lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
   // The stands sing: after a goal, and now and then in a quiet spell (every 13 minutes of play) [Sprint 35].
   if (animate && t.events.some((e) => e.type === 'goal')) sound.chant(6)
   else if (animate && t.moment?.kind === 'quiet' && t.minute?.[0] % 13 === 7) sound.chant()
   pendingReveal = () => tell(t, animate)
+  shownAt = performance.now()
   if (animate) pitch.value?.play(t, startAt)
   else reveal()
 }
@@ -533,7 +536,12 @@ function tell(t: Tick, animate: boolean) {
     if (text) feed.value.unshift({ minute: minuteText.value, text, important })
     if (e.type === 'period') {
       sound.whistle(e.name === 'fulltime' ? 3 : 2)
-      if (e.name === 'halftime' && animate) startHalftime()
+      // [X41] A goal in the half's last minute has its replay first: the break waits for the minute to end.
+      if (e.name === 'halftime' && animate) {
+        const left = t.events.some((g) => g.type === 'goal') ? momentMs(t) - (performance.now() - shownAt) - 200 : 0
+        if (left > 0) window.setTimeout(startHalftime, left)
+        else startHalftime()
+      }
     } else if (e.type === 'shootout') {
       shootout.value = e.score
     }
