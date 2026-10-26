@@ -11,7 +11,7 @@
 
     <!-- The host waits: share the link, the match starts when the friend joins. -->
     <section v-if="room && isHost" class="flex flex-col items-center gap-4 rounded-xl bg-surface p-5 text-center">
-      <Crest :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="64" />
+      <Crest :logo="room.host.club.logo" :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="64" />
       <div>
         <div class="font-display text-2xl font-extrabold">{{ $nm(room.host.name) }} · {{ $nm(room.host.club.name) }}</div>
         <p class="mt-1 text-sm text-text-muted">أرسل الرابط لصديقك. حين يكتب اسمه ويختار فريقه تبدأ المباراة عندكما معاً.</p>
@@ -33,7 +33,7 @@
     <!-- Open a room (host) or join one (guest): a name and a club. -->
     <template v-else-if="!props.room || room">
       <div v-if="room" class="flex items-center gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
-        <Crest :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="48" />
+        <Crest :logo="room.host.club.logo" :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="48" />
         <div><b class="font-display text-lg">{{ $nm(room.host.name) }}</b> يتحداك بفريق <b>{{ $nm(room.host.club.name) }}</b>. اكتب اسمك واختر فريقك.</div>
       </div>
       <div v-else>
@@ -58,7 +58,7 @@
             :class="club?.id === c.id ? 'bg-gold/15 ring-1 ring-gold' : 'hover:bg-surface-raised'"
             @click="club = c"
           >
-            <Crest :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
+            <Crest :logo="c.logo" :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
             <span class="flex-1 truncate font-semibold">{{ $nm(c.name) }}</span>
             <span class="text-xs text-text-muted">{{ $ln(c.league_name) }}</span>
             <span class="w-10 text-start font-numbers text-lg text-gold">{{ ((c.strength_cp ?? 0) / 100).toFixed(1) }}</span>

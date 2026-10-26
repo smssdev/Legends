@@ -28,6 +28,7 @@ export interface Club {
   color_secondary?: string
   strength?: number
   strength_cp?: number
+  logo?: string | null
 }
 
 export interface TeamPlayer {

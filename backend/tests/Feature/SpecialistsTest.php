@@ -5,10 +5,10 @@ namespace Tests\Feature;
 use App\League\ClubLedger;
 use App\League\LeagueMatch;
 use App\League\MatchResult;
+use App\League\NextFixture;
 use App\Models\User;
 use App\Staff\Specialists;
 use App\Support\GameClock;
-use App\Training\SecretTraining;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class SpecialistsTest extends TestCase
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'rounds_per_day' => 1, 'round_times' => ['21:00']]);
         $this->mine = $this->league['my_club_id'];
-        $this->fixture = SecretTraining::nextFixture($this->mine);
+        $this->fixture = NextFixture::of($this->mine);
     }
 
     protected function tearDown(): void

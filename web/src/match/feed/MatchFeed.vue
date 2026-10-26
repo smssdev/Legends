@@ -95,7 +95,7 @@ import { noteFrame, smooth } from '../perf'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
-const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
+const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; real: [kind: string]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
@@ -127,7 +127,8 @@ const barKit = computed(() => {
   const k = props.kits[cur.value?.side === 'away' ? 'away' : 'home'].kit, n = parseInt(k.slice(1), 16)
   return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) > 150 ? '#3A5F9E' : k
 })
-const crestOf = (s) => crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || ''])
+// [UP3] The club's real logo where it has one, else its drawn badge.
+const crestOf = (s) => (props.logos?.[s] ? `<img src="${props.logos[s]}" alt="" decoding="async">` : crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || '']))
 const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? 'أنت' : props.live ? '' : props.mine ? 'الحاسوب' : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
 // The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
@@ -449,7 +450,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .nm b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 21px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .nm small { color: #93A3BF; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .crest { width: clamp(32px, 6cqw, 50px); flex: none; position: relative; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)) }
-.crest :deep(svg) { display: block; width: 100%; height: auto }
+.crest :deep(svg), .crest :deep(img) { display: block; width: 100%; height: auto }
 .mid { display: grid; justify-items: center; align-content: center; padding: 4px 14px; background: linear-gradient(180deg, rgba(5,13,31,.75), rgba(5,13,31,.95)); border-inline: 1px solid rgba(255,255,255,.09) }
 .score { font-family: 'Barlow Condensed', 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(30px, 7.5cqw, 50px); line-height: .95; letter-spacing: .04em; color: #fff; font-variant-numeric: tabular-nums }
 .score.pop { animation: pop .7s }

@@ -15,7 +15,7 @@ export interface paths {
         put?: never;
         /**
          * Create an account
-         * @description Sends the confirmation email. The web is signed in by session; with device_name the app gets a token.
+         * @description [UP5] Three fields: the name, the username and the password (typed once, 4 characters or more). The email is optional (to get the password back), and a confirmation is sent to it. The web is signed in by session, kept until signing out; with device_name the app gets a token.
          */
         post: {
             parameters: {
@@ -30,14 +30,13 @@ export interface paths {
                         name: string;
                         /** @description English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username) */
                         username: string;
-                        /** Format: email */
-                        email: string;
-                        /** @description At least 8 characters with letters and numbers */
+                        /**
+                         * Format: email
+                         * @description Optional
+                         */
+                        email?: string | null;
+                        /** @description At least 4 characters, nothing else asked [UP5] */
                         password: string;
-                        /** @description The password again */
-                        password_confirmation: string;
-                        /** @description Must be true */
-                        terms: boolean;
                         /** @description The device name */
                         device_name?: string;
                     };
@@ -502,6 +501,56 @@ export interface paths {
                 401: components["responses"]["Error"];
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/verify-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [UP6] Verify the account with the code the support sent on WhatsApp
+         * @description The welcome coins (1000) reach the wallet once, when the code is right and in time.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Verified, with the coins */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: components["schemas"]["Account"];
+                            coins: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3515,7 +3564,7 @@ export interface paths {
          * The spy on the next opponent, and his report for this match if sent
          * @description Sprint 30 (docs/features/spy.md). Before the lock, a paid report of what the opponent has saved at that moment:
          *     formation, eleven and bench, the four public tactics, the form and the eleven's fitness. Never pressing, style,
-         *     tempo, positions, the defensive shape or secret training. The opponent is not told.
+         *     tempo, positions or the defensive shape. The opponent is not told.
          */
         get: {
             parameters: {
@@ -3716,113 +3765,6 @@ export interface paths {
                 404: components["responses"]["Error"];
                 409: components["responses"]["Error"];
                 422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/leagues/{league}/training/camp": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                league: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Send players to the training camp (docs/features/camp.md)
-         * @description Paid in full when they go. They miss the club's matches until they come back, and train at the level's pace.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    league: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        player_ids: number[];
-                        /** @enum {string} */
-                        level: "basic" | "good" | "elite";
-                        days: number;
-                        idempotency_key: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Training after sending */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["TrainingView"];
-                    };
-                };
-                404: components["responses"]["Error"];
-                409: components["responses"]["Error"];
-                422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/leagues/{league}/training/secret": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                league: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Order secret training of one line for the next match (docs/features/secret-training.md)
-         * @description Until the lock. The line plays that match only with +3 on the rating and every attribute. Never shown to the opponent.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    league: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        line: "gk" | "def" | "mid" | "att";
-                    };
-                };
-            };
-            responses: {
-                /** @description Training after ordering */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["TrainingView"];
-                    };
-                };
-                409: components["responses"]["Error"];
             };
         };
         delete?: never;
@@ -4824,8 +4766,11 @@ export interface paths {
                             users: {
                                 id: number;
                                 name: string;
-                                email: string;
+                                username: string;
+                                email: string | null;
                                 role: string;
+                                /** @description [UP6] Verified by a WhatsApp code */
+                                verified: boolean;
                                 /** Format: date-time */
                                 joined: string;
                                 last_day: string | null;
@@ -4980,6 +4925,51 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/verification-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP6] A six-digit code that verifies this account, for the developer to send on WhatsApp */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The code (it replaces any earlier one) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            code: string;
+                            username: string;
+                            id: number;
+                            days: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -7308,7 +7298,6 @@ export interface components {
             maxed: boolean;
             /** @description At or past his potential: training goes on, much slower [X16] */
             over_potential?: boolean;
-            in_camp: boolean;
         };
         TrainingView: {
             /** @description One session's price */
@@ -7329,59 +7318,6 @@ export interface components {
                 next_at: string | null;
             }[];
             players: components["schemas"]["TrainingPlayer"][];
-            camp: {
-                max_players: number;
-                /** @description [least, most] */
-                days: number[];
-                min_left: number;
-                levels: {
-                    /** @enum {string} */
-                    level: "basic" | "good" | "elite";
-                    /** @description The pace against an ordinary session (10000 = the same) */
-                    gain_bp: number;
-                    /** @description One player for one day */
-                    day_price: number;
-                }[];
-                /** @description The camp under way, or the last one */
-                current: {
-                    id: number;
-                    /** @enum {string} */
-                    level: "basic" | "good" | "elite";
-                    /** @enum {string} */
-                    status: "active" | "done";
-                    cost: number;
-                    sessions: number;
-                    sessions_done: number;
-                    /** Format: date-time */
-                    ends_at: string;
-                    players: {
-                        id: number;
-                        gain: number;
-                    }[];
-                } | null;
-            };
-            secret: {
-                cost: number;
-                /** @enum {string} */
-                currency: "coins" | "money";
-                boost: number;
-                per_season: number;
-                used: number;
-                fixture: {
-                    id: number;
-                    competition: string;
-                    round: number;
-                    status: string;
-                    opponent: string;
-                    /** Format: date-time */
-                    lock_at: string;
-                    /**
-                     * @description The line ordered for this match
-                     * @enum {string|null}
-                     */
-                    line: "gk" | "def" | "mid" | "att" | null;
-                } | null;
-            };
         };
         SquadPlayer: {
             id: number;
@@ -7402,8 +7338,6 @@ export interface components {
             fitness: number;
             injured_matches: number;
             suspended_matches: number;
-            /** @description At the training camp */
-            in_camp?: boolean;
             available: boolean;
             attributes: {
                 [key: string]: number | null;
@@ -7825,6 +7759,8 @@ export interface components {
             strength_cp: number;
             colors: string[];
             crest_url: string;
+            /** @description [UP3] The real logo (/logos/...), null for a club the pack has not; crest_url sends it too */
+            logo?: string | null;
         };
         DataPlayer: {
             id: number;
@@ -7853,11 +7789,21 @@ export interface components {
             username: string;
             /** @description A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11] */
             official: boolean;
-            /** @description The picture (GET /users/{id}/avatar), null without one */
+            /** @description The picture (GET /users/{id}/avatar, or Google's [UP5]), null without one */
             avatar_url: string | null;
-            /** Format: email */
-            email: string;
+            /**
+             * Format: email
+             * @description Null for an account made without one [UP5]
+             */
+            email: string | null;
             email_verified: boolean;
+            /** @description [UP6] Verified by a WhatsApp code; until then the welcome coins wait */
+            verification: {
+                verified: boolean;
+                welcome_coins: number;
+                /** @description The support's WhatsApp with a ready message (the username and the account number) */
+                whatsapp: string | null;
+            };
             /** @enum {string} */
             role: "user" | "admin";
             /** @description False for an account made with Google only */

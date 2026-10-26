@@ -162,13 +162,7 @@ return [
         // Open training [X16]: no stop at the potential. Above it each +1 takes this many times the sessions, one more
         // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
         'over_potential_factor' => 2, 'ceiling' => 99],
-    // The training camp [docs/features/camp.md, Sprint 28]: players away from matches, training at the camp's pace.
-    'camp' => ['max_players' => 5, 'days' => [1, 3], 'min_left' => 16,
-        // each level: the session's step and its price, against an ordinary training session (basis points)
-        'levels' => ['basic' => ['gain_bp' => 10000, 'cost_bp' => 10000], 'good' => ['gain_bp' => 15000, 'cost_bp' => 20000],
-            'elite' => ['gain_bp' => 20000, 'cost_bp' => 35000]]],
-    // Secret training [docs/features/secret-training.md, Sprint 28]: one line, the next match only.
-    'secret_training' => ['boost' => 3, 'cost_bp' => 20, 'per_season' => 5],
+    // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
     // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
     // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
     'balance' => [
@@ -290,7 +284,8 @@ return [
     // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
-    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
+    // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.
+    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
         // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
         'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
@@ -331,7 +326,7 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report', 'staff_left'],
+            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
         ],
         'match_soon_minutes' => 10,
@@ -343,7 +338,7 @@ return [
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
-        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
+        'price' => ['spy' => 20, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
             'bribe' => 40, 'security_check' => 10, 'double_agent' => 15],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],

@@ -39,7 +39,10 @@ class Training
         return max(60, intdiv((int) config('game.training.tick_hours') * 3600 * max(1, $scale ?: 10000), 10000));
     }
 
-    /** Put a player in his line's slot, in place of whoever was there. */
+    /**
+     * Put a player in his line's slot. [UP8] One player per line at a time (the owner's spec, 3): a second keeper,
+     * defender, midfielder or forward waits until the one there has finished his +1 (or it was finished for coins).
+     */
     public static function add(int $clubId, int $playerId): void
     {
         DB::transaction(function () use ($clubId, $playerId) {
@@ -51,15 +54,17 @@ class Training
             if ($p->overall + $p->training_bonus >= Gain::fromConfig()->ceiling()) {
                 throw new HttpException(422, 'وصل هذا اللاعب إلى 99، أعلى تقييم في اللعبة.');
             }
-            if (Camp::away($clubId, $playerId)) {
-                throw new HttpException(409, 'اللاعب في المعسكر حتى يعود.');
-            }
             if (DB::table('training_slots')->where('player_id', $playerId)->exists()) {
                 throw new HttpException(409, 'اللاعب يتدرب الآن.');
             }
+            $busy = DB::table('training_slots')->join('players', 'players.id', '=', 'training_slots.player_id')
+                ->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+                ->where('training_slots.club_id', $clubId)->where('training_slots.line', $p->line)->value('master_players.name');
+            if ($busy !== null) {
+                throw new HttpException(409, "لاعب واحد من كل خط في التدريب: {$busy} يتدرب الآن، ويُتاح غيره حين ينهي تدريبه أو تسرّعه.");
+            }
             $club = DB::table('clubs')->where('id', $clubId)->first();
             $now = GameClock::now();
-            DB::table('training_slots')->where('club_id', $clubId)->where('line', $p->line)->delete();
             DB::table('training_slots')->insert(['club_id' => $clubId, 'line' => $p->line, 'player_id' => $playerId, 'sessions' => 0,
                 'next_at' => $now->copy()->addSeconds(self::interval($club->league_id)), 'created_at' => $now, 'updated_at' => $now]);
         });

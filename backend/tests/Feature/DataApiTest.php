@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\MasterClub;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /** The shared real data: league templates, squads with values, badges, and the summary [Sprint 11]. */
@@ -44,7 +46,10 @@ class DataApiTest extends TestCase
 
     public function test_the_badge_is_svg_the_same_every_time_and_cached(): void
     {
-        $club = $this->getJson('/api/v1/data/clubs?league='.urlencode($this->getJson('/api/v1/data/templates')->json('templates.0.name')))->json('clubs.0');
+        // A club the logos don't have [UP3].
+        $id = DB::table('master_clubs')->insertGetId(['data_version' => '2026', 'name' => 'Nowhere Rovers', 'code' => 'NWR',
+            'league_name' => 'Premier League', 'strength_cp' => 6000, 'color_primary' => '#123456', 'color_secondary' => '#FFFFFF']);
+        $club = ['id' => $id, 'code' => 'NWR'];
         $first = $this->get("/api/v1/data/clubs/{$club['id']}/crest.svg")->assertOk()->assertHeader('Content-Type', 'image/svg+xml');
         $svg = $first->getContent();
         $this->assertStringStartsWith('<svg', $svg);
@@ -52,6 +57,18 @@ class DataApiTest extends TestCase
         $this->assertNotFalse(simplexml_load_string($svg));
         $this->assertSame($svg, $this->get("/api/v1/data/clubs/{$club['id']}/crest.svg")->getContent());
         $this->get("/api/v1/data/clubs/{$club['id']}/crest.svg", ['If-None-Match' => $first->headers->get('ETag')])->assertStatus(304);
+    }
+
+    public function test_a_club_with_a_real_logo_sends_it_and_one_without_keeps_its_badge(): void
+    {
+        $id = DB::table('master_clubs')->insertGetId(['data_version' => '2026', 'name' => 'Arsenal', 'code' => 'ARS',
+            'league_name' => 'Premier League', 'strength_cp' => 8000, 'color_primary' => '#EF0107', 'color_secondary' => '#FFFFFF']);
+        $this->get("/api/v1/data/clubs/{$id}/crest.svg")->assertRedirect('/logos/england/arsenal.webp');
+        $this->assertFileExists(base_path('../web/public/logos/england/arsenal.webp'));
+        $this->assertSame('/logos/england/arsenal.webp', MasterClub::find($id)->toArray()['logo']);
+        $other = DB::table('master_clubs')->insertGetId(['data_version' => '2026', 'name' => 'Nowhere Town', 'code' => 'NWT',
+            'league_name' => 'Premier League', 'strength_cp' => 6000, 'color_primary' => '#000000', 'color_secondary' => '#FFFFFF']);
+        $this->get("/api/v1/data/clubs/{$other}/crest.svg")->assertOk()->assertHeader('Content-Type', 'image/svg+xml');
     }
 
     public function test_the_summary_lists_the_strongest_clubs(): void

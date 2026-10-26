@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\League\MatchPrep;
+use App\League\NextFixture;
 use App\League\Spy;
 use App\Models\Club;
 use App\Models\League;
-use App\Training\SecretTraining;
 use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class SpyController extends Controller
     public function show(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $f = SecretTraining::nextFixture($club->id);
+        $f = NextFixture::of($club->id);
         $saved = $f ? DB::table('spy_reports')->where('club_id', $club->id)->where('fixture_id', $f->id)->value('report') : null;
 
         return response()->json([
@@ -37,7 +37,7 @@ class SpyController extends Controller
     public function send(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $f = SecretTraining::nextFixture($club->id);
+        $f = NextFixture::of($club->id);
         abort_unless($f, 409, 'لا مباراة قادمة لفريقك.');
         Spy::send($club->id, $f);
 

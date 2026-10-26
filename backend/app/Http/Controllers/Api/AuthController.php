@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Auth\AccountVerification;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
 use App\Auth\OfficialAccounts;
@@ -36,25 +37,29 @@ class AuthController extends Controller
 {
     private const WRONG = 'البريد أو كلمة المرور غير صحيحة.';
 
+    /** [UP5] Simple and the coach's own: no symbols, no mixed case, no long minimum (the owner's spec, 1). */
     private function passwordRule(): PasswordRule
     {
-        return PasswordRule::min(8)->letters()->numbers();
+        return PasswordRule::min(4);
     }
 
     public function register(Request $request): JsonResponse
     {
-        $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+        $email = Str::lower(trim((string) $request->input('email')));
+        $request->merge(['email' => $email !== '' ? $email : null]);
+        // [UP5] Three fields on one screen: the name, the username and the password, typed once. The email is optional
+        // (to get the password back by mail); the account is verified later by WhatsApp (UP6).
         $data = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:40'],
             'username' => ['required', 'string', Username::RULE, $this->usernameFree()],
-            'email' => ['required', 'string', 'email', 'max:190', 'unique:users,email'],
-            'password' => ['required', 'string', 'confirmed', $this->passwordRule()],
-            'terms' => ['accepted'],
+            'email' => ['nullable', 'string', 'email', 'max:190', 'unique:users,email'],
+            'password' => ['required', 'string', $this->passwordRule()],
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
-        $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => $data['email'], 'password' => $data['password']]);
+        $request->merge(['remember' => true]);
+        $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => ($data['email'] ?? '') !== '' ? $data['email'] : null, 'password' => $data['password']]);
         // The account is made even if the email cannot leave now: the banner in the app sends it again [X8].
-        $sent = Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id);
+        $sent = $user->email !== null && Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id);
 
         return response()->json($this->signIn($request, $user, $data['device_name'] ?? null) + ['verification_sent' => $sent && Mailer::live()], 201);
     }
@@ -62,9 +67,9 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         abort_unless($request->hasSession(), 400, 'الدخول بالجلسة للويب فقط. التطبيق يستخدم /auth/token.');
-        // The email or the username [X4].
+        // The email or the username [X4]. [UP5] The session lasts unless the coach asks otherwise.
         $data = $request->validate(['email' => ['required', 'string', 'max:190'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']]);
-        if (! Auth::guard('web')->attempt([$this->loginField($data['email']) => Str::lower(trim($data['email'])), 'password' => $data['password']], (bool) ($data['remember'] ?? false))) {
+        if (! Auth::guard('web')->attempt([$this->loginField($data['email']) => Str::lower(trim($data['email'])), 'password' => $data['password']], (bool) ($data['remember'] ?? true))) {
             throw ValidationException::withMessages(['email' => self::WRONG]);
         }
 
@@ -306,6 +311,15 @@ class AuthController extends Controller
         }
 
         return response()->json($this->signIn($request, $linker->resolve($google), $data['device_name']));
+    }
+
+    /** [UP6] The code the support sent on WhatsApp: the account is verified and the welcome coins arrive. */
+    public function verifyAccount(Request $request): JsonResponse
+    {
+        $data = $request->validate(['code' => ['required', 'string', 'max:12']]);
+
+        return response()->json(['user' => AccountVerification::verify($request->user(), $data['code'])->toAccount(),
+            'coins' => (int) config('game.account.welcome_coins')]);
     }
 
     /** Signing in with an email or a username: an @ tells them apart, since a username has letters only. */

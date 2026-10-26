@@ -28,7 +28,7 @@ let tick = 0
 const INFO: Record<string, { title: string; effect: string; icon: string }> = {
   seats: { title: 'التذاكر والمقاعد', effect: 'مقاعد أكثر ودخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16' },
   pitch: { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية لكل مباراة على أرضك', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
-  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب ومعسكر أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
+  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
 }
 const pct = (bp: number) => `+${(bp / 100).toLocaleString('ar-EG-u-nu-latn', { maximumFractionDigits: 1 })}%`
 function effect(s: Section, stage: number) {

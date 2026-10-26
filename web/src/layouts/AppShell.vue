@@ -141,8 +141,8 @@ watch(() => route.fullPath, () => (more.value = false))
       </RouterLink>
       <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10" aria-label="كتم صوت المباراة" @click="broadcast.muteAsk++">🔇</button>
     </div>
-    <RouterLink v-if="auth.user && !auth.user.email_verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
-      بريدك غير مؤكد بعد. <span class="font-bold text-gold">أكّده من صفحة حسابي</span>
+    <RouterLink v-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
+      مكافأة {{ auth.user.verification?.welcome_coins }} كوينز تنتظرك. <span class="font-bold text-gold">وثّق حسابك من صفحة حسابي</span>
     </RouterLink>
     <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="inSlot ? 'pb-28' : 'pb-10'">
       <RouterView />

@@ -56,6 +56,13 @@ const makeOfficial = (id: number, name: string) => name && run(async () => {
   annMsg.value = `صار اسم الحساب ${name}.`
 })
 
+// [UP6] A code for the coach who wrote on WhatsApp: shown here once, to send back to them.
+const codes = ref<Record<number, string>>({})
+const issueCode = (id: number) => run(async () => {
+  const { data } = await api.POST('/admin/users/{user}/verification-code', { params: { path: { user: id } } })
+  codes.value = { ...codes.value, [id]: data!.code }
+})
+
 const load = () => run(async () => {
   state.value = (await api.GET('/admin/2fa')).data!
   if (open.value) await show('overview')
@@ -172,12 +179,17 @@ onMounted(load)
 
       <section v-if="tab === 'users'" aria-label="المستخدمون" class="overflow-x-auto rounded-xl bg-surface p-4">
         <table class="w-full text-sm">
-          <thead class="text-text-muted"><tr><th class="py-2 text-start">الاسم</th><th class="text-start">البريد</th><th>انضم</th><th>آخر يوم</th><th>مباريات حية</th><th>اسم رسمي</th></tr></thead>
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">الاسم</th><th class="text-start">البريد</th><th>انضم</th><th>آخر يوم</th><th>مباريات حية</th><th>التوثيق</th><th>اسم رسمي</th></tr></thead>
           <tbody>
             <tr v-for="u in users" :key="u.id" class="border-t border-text/5">
-              <td class="py-2">{{ u.name }}<span v-if="u.role === 'admin'" class="ms-1 text-xs text-gold">مدير</span></td>
-              <td dir="ltr" class="text-start">{{ u.email }}</td><td class="whitespace-nowrap text-center">{{ day(u.joined) }}</td>
+              <td class="py-2">{{ u.name }} <span dir="ltr" class="text-xs text-text-muted">@{{ u.username }} · #{{ u.id }}</span><span v-if="u.role === 'admin'" class="ms-1 text-xs text-gold">مدير</span></td>
+              <td dir="ltr" class="text-start">{{ u.email ?? '-' }}</td><td class="whitespace-nowrap text-center">{{ day(u.joined) }}</td>
               <td class="whitespace-nowrap text-center font-numbers">{{ u.last_day ?? '-' }}</td><td class="text-center font-numbers">{{ u.matches_watched }}</td>
+              <td class="whitespace-nowrap text-center">
+                <span v-if="u.verified" class="text-xs text-success">موثّق</span>
+                <b v-else-if="codes[u.id]" dir="ltr" class="font-numbers text-lg text-gold" title="أرسله للمدرب على واتساب">{{ codes[u.id] }}</b>
+                <button v-else type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" @click="issueCode(u.id)">كود توثيق</button>
+              </td>
               <td class="text-center">
                 <select class="h-10 rounded-md bg-surface-sunk px-2 text-xs" aria-label="أعطه اسماً رسمياً" @change="makeOfficial(u.id, ($event.target as HTMLSelectElement).value)">
                   <option value="">-</option><option>Owner-Hamza</option><option>Owner-Soliman</option>

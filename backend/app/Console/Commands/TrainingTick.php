@@ -2,11 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Training\Camp;
 use App\Training\Training;
 use Illuminate\Console\Command;
 
-/** Every minute: the training and camp sessions whose time has come, coach online or not [PLAN 2.8, Sprints 27 and 28]. */
+/** Every minute: the training sessions whose time has come, coach online or not [PLAN 2.8, Sprints 27 and 28]. */
 class TrainingTick extends Command
 {
     protected $signature = 'training:tick';
@@ -15,7 +14,7 @@ class TrainingTick extends Command
 
     public function handle(): int
     {
-        $n = Training::due() + Camp::due();
+        $n = Training::due();
         if ($n) {
             $this->line("جلسات التدريب: {$n}");
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\ClubLogo;
 use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
 use App\League\MatchOrders;
@@ -38,7 +39,7 @@ class MatchController extends Controller
             'timing' => ['tick_ms' => (int) $state['cfg']['match']['tick_ms'], 'extra_time_tick_ms' => (int) $state['cfg']['match']['extra_time_tick_ms'],
                 'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
                 'windows' => $state['cfg']['match']['windows'] ?? [], 'window_seconds' => (int) ($state['cfg']['match']['window_seconds'] ?? 0)],
-            'clubs' => ['home' => $state['teams']['home']['club'], 'away' => $state['teams']['away']['club']],
+            'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']), 'away' => ClubLogo::with($state['teams']['away']['club'])],
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
             'teams' => Simulator::redact(['teams' => Simulator::teams($state)], $you)['teams'],

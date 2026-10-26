@@ -6,7 +6,6 @@ use App\Engine\AutoPick;
 use App\Engine\MatchSetup;
 use App\Models\Club;
 use App\Support\GameClock;
-use App\Training\Camp;
 use App\Training\Training;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -51,16 +50,15 @@ class TeamSheet
     /** The squad in the engine's shape (App\Engine\MatchSetup::player), with the league's own numbers. */
     public static function squad(Club $club): array
     {
-        $camp = Camp::awayIds($club->id);
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
             ->where('players.club_id', $club->id)
             ->select('master_players.*', 'players.id', 'players.overall', 'players.training_bonus', 'players.fitness', 'players.injured_matches', 'players.suspended_matches')
             ->orderBy('players.id')->get()
-            ->map(function ($r) use ($camp) {
+            ->map(function ($r) {
                 $p = MatchSetup::player(Training::boosted((array) $r));
                 $p['fitness'] = (int) $r->fitness;
-                $p['unavailable'] = $r->injured_matches > 0 || $r->suspended_matches > 0 || in_array($r->id, $camp, true);
+                $p['unavailable'] = $r->injured_matches > 0 || $r->suspended_matches > 0;
 
                 return $p;
             })->all();

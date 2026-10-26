@@ -38,7 +38,7 @@
             :class="pick[side].club?.id === c.id ? 'bg-gold/15 ring-1 ring-gold' : 'hover:bg-surface-raised'"
             @click="choose(side, c)"
           >
-            <Crest :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
+            <Crest :logo="c.logo" :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
             <span class="flex-1 truncate font-semibold">{{ $nm(c.name) }}</span>
             <span class="text-xs text-text-muted">{{ $ln(c.league_name) }}</span>
             <span class="w-10 text-start font-numbers text-lg text-gold">{{ ((c.strength_cp ?? 0) / 100).toFixed(1) }}</span>
@@ -47,7 +47,7 @@
 
         <div v-if="pick[side].squad" class="flex flex-col gap-3 rounded-lg bg-surface-sunk p-3">
           <div class="flex items-center gap-3">
-            <Crest :code="pick[side].club!.code" :primary="clubColors(pick[side].club!).primary" :secondary="clubColors(pick[side].club!).secondary" :size="44" />
+            <Crest :logo="pick[side].club!.logo" :code="pick[side].club!.code" :primary="clubColors(pick[side].club!).primary" :secondary="clubColors(pick[side].club!).secondary" :size="44" />
             <div class="flex-1">
               <div class="font-display text-xl font-extrabold">{{ $nm(pick[side].club!.name) }}</div>
               <div class="text-sm text-text-soft" dir="ltr">{{ pick[side].squad!.formation }}</div>

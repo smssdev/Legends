@@ -24,7 +24,7 @@
           <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
           <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-            <span class="score-disc"><Crest :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="52" /></span>
+            <span class="score-disc"><Crest :logo="view.clubs.home.logo" :code="view.clubs.home.code" :primary="color('home')" :secondary="clubColors(view.clubs.home).secondary" :size="52" /></span>
             <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.home.name) }}</span>
           </div>
           <div class="flex shrink-0 flex-col items-center gap-1.5">
@@ -33,7 +33,7 @@
             <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ resultLabel }}</span>
           </div>
           <div class="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-            <span class="score-disc"><Crest :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="52" /></span>
+            <span class="score-disc"><Crest :logo="view.clubs.away.logo" :code="view.clubs.away.code" :primary="color('away')" :secondary="clubColors(view.clubs.away).secondary" :size="52" /></span>
             <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.away.name) }}</span>
           </div>
         </div>

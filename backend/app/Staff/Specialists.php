@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * The staff [docs/features/specialists.md, Sprint 31, X20]: a coach for each line (the keeper coach, and the defence,
  * midfield and attack coaches), the doctor, the physio and the lawyer, each on a contract of a week scaled by the
  * season's length and with 1 to 5 stars, paid when signed. More stars, a dearer contract and a bigger effect. Their
- * effects are read where the game does the thing they change: the line coaches in training (Training, Camp) and the
+ * effects are read where the game does the thing they change: the line coaches in training (Training) and the
  * keeper coach in the match's first state (LeagueMatch), the other three when the result is applied (MatchResult).
  */
 class Specialists

@@ -48,26 +48,34 @@ class AuthTest extends TestCase
         $this->assertSame(1, DB::table('user_activity')->where('user_id', $user->id)->value('logins'));
     }
 
-    public function test_register_refuses_in_arabic_a_weak_password_a_taken_email_and_no_terms(): void
+    public function test_register_refuses_in_arabic_a_too_short_password_a_taken_username_and_email(): void
     {
         $this->user();
-        $this->postJson('/api/v1/auth/register', ['name' => 'س', 'username' => 'sliman', 'email' => 'sliman@example.com', 'password' => 'abcdefgh', 'password_confirmation' => 'abcdefgh'])
+        $this->postJson('/api/v1/auth/register', ['name' => 'س', 'username' => 'sliman', 'email' => 'sliman@example.com', 'password' => 'abc'])
             ->assertStatus(422)->assertJsonPath('code', 'validation')
             ->assertJsonPath('errors.username.0', 'اسم المستخدم مأخوذ، اختر غيره.')
             ->assertJsonPath('errors.email.0', 'البريد الإلكتروني مستخدم من قبل.')
             ->assertJsonPath('errors.name.0', 'يجب ألا يقل الاسم عن 2 أحرف.')
-            ->assertJsonPath('errors.password.0', 'يجب أن تحتوي كلمة المرور رقماً واحداً على الأقل.')
-            ->assertJsonPath('errors.terms.0', 'يجب قبول الشروط.');
+            ->assertJsonMissingPath('errors.terms');
+        $this->assertStringContainsString('4', $this->postJson('/api/v1/auth/register', ['name' => 'سس', 'username' => 'other', 'password' => 'abc'])->json('errors.password.0'));
     }
 
-    public function test_the_username_is_english_letters_and_digits_and_the_password_is_confirmed(): void
+    /** [UP5] Three fields, the password typed once and as simple as the coach likes, no email; the session lasts. */
+    public function test_three_fields_make_an_account_without_an_email(): void
+    {
+        $this->postJson('/api/v1/auth/register', ['name' => 'أحمد علي', 'username' => 'ahmedali', 'password' => 'kora'])
+            ->assertCreated()->assertJsonPath('user.username', 'ahmedali')->assertJsonPath('user.email', null)
+            ->assertJsonPath('user.verification.verified', false)->assertJsonPath('user.verification.welcome_coins', 1000);
+        $this->assertNull(User::where('username', 'ahmedali')->value('email'));
+        $this->postJson('/api/v1/auth/token', ['email' => 'ahmedali', 'password' => 'kora', 'device_name' => 'phone'])->assertOk()->assertJsonPath('user.name', 'أحمد علي');
+    }
+
+    public function test_the_username_is_english_letters_and_digits(): void
     {
         foreach (['ab', '1hamza', 'حمزة', 'ham_za', 'ham za', 'Owner-Hamza', str_repeat('a', 21)] as $i => $bad) {
             $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => $bad, 'email' => "h{$i}@example.com", 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])
                 ->assertStatus(422)->assertJsonPath('errors.username.0', 'اسم المستخدم حروف إنجليزية وأرقام، من 3 إلى 20، ويبدأ بحرف.');
         }
-        $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'hamza', 'email' => 'h@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret124', 'terms' => true])
-            ->assertStatus(422)->assertJsonPath('errors.password.0', 'تأكيد كلمة المرور غير مطابق.');
         // A taken one, whatever its case.
         $this->user(['username' => 'sliman']);
         $this->postJson('/api/v1/auth/register', ['name' => 'حمزة', 'username' => 'SLIMAN', 'email' => 'h9@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret123', 'terms' => true])

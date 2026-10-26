@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Auth\AccountVerification;
 use App\Auth\Username;
 use App\Notifications\ResetPasswordNotice;
 use App\Notifications\VerifyEmailNotice;
@@ -27,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
-    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'commentator', 'match_view'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view'];
 
     /** @var list<string> */
     protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
@@ -39,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'vacation_from' => 'datetime',
             'vacation_until' => 'datetime',
+            'account_verified_at' => 'datetime',
         ];
     }
 
@@ -63,7 +65,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $at = DB::table('user_avatars')->where('user_id', $this->id)->value('updated_at');
 
-        return $at ? '/api/v1/users/'.$this->id.'/avatar?v='.strtotime($at) : null;
+        // [UP5] Without a picture of their own, a Google account shows Google's.
+        return $at ? '/api/v1/users/'.$this->id.'/avatar?v='.strtotime($at) : $this->google_picture;
     }
 
     public function isAdmin(): bool
@@ -88,6 +91,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'avatar_url' => $this->avatarUrl(),
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
+            // [UP6] Verified by WhatsApp: until then the welcome coins wait, and the account page says so.
+            'verification' => [
+                'verified' => $this->account_verified_at !== null,
+                'welcome_coins' => (int) config('game.account.welcome_coins'),
+                'whatsapp' => AccountVerification::whatsappLink($this),
+            ],
             'role' => $this->role,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,

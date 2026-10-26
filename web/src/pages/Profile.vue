@@ -10,8 +10,9 @@ import UsernameField from '../components/UsernameField.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
+import { useWallet } from '../stores/wallet'
 import { AR_VOICES, arVoiceName, type ArVoice } from '../match/voice'
-import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
+import { ARABIC_COMMENTARY, MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 import { namesLang, setNamesLang } from '../lib/names'
 
 const auth = useAuth()
@@ -111,6 +112,28 @@ async function holiday(start: boolean) {
   }
 }
 
+// [UP6] The WhatsApp code: verifies the account and the welcome coins arrive.
+const verifyCode = ref('')
+const verifyErr = ref('')
+const verifyBusy = ref(false)
+const verifiedNow = ref(0)
+async function verifyAccount() {
+  verifyErr.value = ''
+  verifyBusy.value = true
+  try {
+    await ensureCsrf()
+    const { data } = await api.POST('/auth/verify-account', { body: { code: verifyCode.value.trim() } })
+    auth.set(data!.user)
+    verifiedNow.value = data!.coins
+    void useWallet().load()
+  } catch (e) {
+    const err = asApiError(e)
+    verifyErr.value = err.field('code') || err.message
+  } finally {
+    verifyBusy.value = false
+  }
+}
+
 const resendMsg = ref('')
 async function resend() {
   try {
@@ -178,6 +201,20 @@ async function remove() {
     <h1 class="font-display text-3xl font-extrabold">حسابي</h1>
     <p v-if="welcome" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ welcome }}</p>
 
+    <!-- [UP6] The welcome coins wait for the account to be verified: this stays until it is. -->
+    <section v-if="!user.verification?.verified" class="flex flex-col gap-3 rounded-xl border border-warning/50 bg-warning/10 p-4" aria-labelledby="h-verify">
+      <h2 id="h-verify" class="font-display text-lg font-extrabold text-warning">تنبيه: لن يتم تحصيل مكافأة الـ {{ user.verification?.welcome_coins ?? 1000 }} كوينز في رصيدك إلا عند توثيق الحساب.</h2>
+      <a v-if="user.verification?.whatsapp" :href="user.verification.whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center gap-2 self-start rounded-lg bg-[#25D366] px-5 font-bold text-[#0B2E13]">
+        وثّق حسابك الآن عبر WhatsApp
+      </a>
+      <p v-else class="text-sm text-text-muted">راسل الدعم ليرسل لك كود التفعيل.</p>
+      <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="verifyAccount">
+        <div class="min-w-40 flex-1"><TextField v-model="verifyCode" label="كود التوثيق" inputmode="numeric" autocomplete="one-time-code" dir="ltr" :error="verifyErr" /></div>
+        <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || !verifyCode.trim()">تأكيد وتفعيل</button>
+      </form>
+    </section>
+    <p v-else-if="verifiedNow" class="rounded-xl bg-success/15 p-4 font-bold text-success" role="status">تم توثيق حسابك، وأُضيفت {{ verifiedNow }} كوينز إلى رصيدك.</p>
+
     <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-account">
       <h2 id="h-account" class="font-display text-xl font-extrabold">الحساب</h2>
       <div class="flex items-center gap-4">
@@ -195,14 +232,14 @@ async function remove() {
           <p v-if="picErr" class="text-sm text-[#FF8A8A]" role="alert">{{ picErr }}</p>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div v-if="user.email" class="flex flex-wrap items-center gap-2">
         <span class="text-sm text-text-muted">البريد</span>
         <span dir="ltr" class="font-bold">{{ user.email }}</span>
         <span v-if="user.email_verified" class="rounded-pill bg-success/15 px-2.5 py-0.5 text-xs text-success">مؤكد</span>
         <span v-else class="rounded-pill bg-warning/15 px-2.5 py-0.5 text-xs text-warning">غير مؤكد</span>
         <span v-if="user.google" class="rounded-pill bg-surface-raised px-2.5 py-0.5 text-xs">مرتبط بجوجل</span>
       </div>
-      <div v-if="!user.email_verified" class="flex flex-col gap-2 rounded-lg bg-warning/10 p-3 text-sm">
+      <div v-if="user.email && !user.email_verified" class="flex flex-col gap-2 rounded-lg bg-warning/10 p-3 text-sm">
         <p>أكّد بريدك من الرابط الذي أرسلناه، لتستطيع استعادة حسابك إن نسيت كلمة المرور.</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="resend">أرسل الرابط من جديد</button>
         <p v-if="resendMsg" role="status">{{ resendMsg }}</p>
@@ -220,7 +257,7 @@ async function remove() {
       <p v-if="!user.has_password" class="text-sm text-text-muted">حسابك بجوجل فقط. أضف كلمة مرور لتدخل بالبريد أيضاً.</p>
       <form class="grid gap-3 sm:grid-cols-2" novalidate @submit.prevent="savePassword">
         <TextField v-if="user.has_password" v-model="current" label="كلمة المرور الحالية" type="password" autocomplete="current-password" :error="pwErrors.current" />
-        <TextField v-model="next" label="كلمة المرور الجديدة" type="password" autocomplete="new-password" :error="pwErrors.next" hint="8 أحرف على الأقل، فيها حروف وأرقام" />
+        <TextField v-model="next" label="كلمة المرور الجديدة" type="password" autocomplete="new-password" :error="pwErrors.next" hint="4 أحرف أو أرقام على الأقل" />
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold sm:col-span-2 sm:justify-self-start">احفظ كلمة المرور</button>
       </form>
       <p v-if="pwMsg" class="text-sm text-success" role="status">{{ pwMsg }}</p>
@@ -239,7 +276,7 @@ async function remove() {
         </label>
         <p v-if="viewing.chosenView.value === 'unity' && !viewing.unityReady.value" class="text-xs text-text-muted">حتى يجهز المطوّر تُعرض مبارياتك بالكرتوني، وتنتقل إليه تلقائياً حين يجهز.</p>
       </fieldset>
-      <label class="flex flex-col gap-1.5">
+      <label v-if="ARABIC_COMMENTARY" class="flex flex-col gap-1.5">
         <span class="text-sm font-bold">المعلق العربي</span>
         <select class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" :value="viewing.commentator.value" @change="saveViewing({ commentator: ($event.target as HTMLSelectElement).value as ArVoice })">
           <option v-for="v in AR_VOICES" :key="v" :value="v">{{ arVoiceName(v) }}</option>

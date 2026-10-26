@@ -60,7 +60,7 @@ class AccountLinkController extends Controller
         $raw = $g->getRaw();
         $verified = ($raw['email_verified'] ?? $raw['verified_email'] ?? false) === true;
         try {
-            $user = $linker->resolve(new GoogleIdentity((string) $g->getId(), strtolower((string) $g->getEmail()), $verified, (string) $g->getName()));
+            $user = $linker->resolve(new GoogleIdentity((string) $g->getId(), strtolower((string) $g->getEmail()), $verified, (string) $g->getName(), $g->getAvatar() ?: null));
         } catch (ValidationException) {
             return $this->to('/login?google=unverified');
         }

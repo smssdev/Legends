@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\ClubLogo;
 use App\Data\Crest;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
@@ -62,9 +63,12 @@ class DataController extends Controller
         ]);
     }
 
-    /** The club's generated badge (no real logos). The same picture for the web and the app. */
+    /** The club's real logo where it has one [UP3], else its generated badge. The same picture for the web and the app. */
     public function crest(Request $request, MasterClub $club): Response
     {
+        if (($logo = ClubLogo::path($club->league_name, $club->name)) !== null) {
+            return response('', 302, ['Location' => $logo, 'Cache-Control' => 'public, max-age=604800']);
+        }
         $svg = Crest::svg($club->name, $club->code, $club->color_primary, $club->color_secondary);
         $etag = '"'.md5($svg).'"';
         if ($request->header('If-None-Match') === $etag) {
@@ -80,6 +84,7 @@ class DataController extends Controller
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'league' => $c->league_name,
             'strength_cp' => (int) $c->strength_cp, 'colors' => [$c->color_primary, $c->color_secondary],
             'crest_url' => url("/api/v1/data/clubs/{$c->id}/crest.svg"),
+            'logo' => ClubLogo::path($c->league_name, $c->name),
         ];
     }
 

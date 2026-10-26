@@ -44,7 +44,7 @@ paths:
     post:
       tags: [auth]
       summary: Create an account
-      description: Sends the confirmation email. The web is signed in by session; with device_name the app gets a token.
+      description: '[UP5] Three fields: the name, the username and the password (typed once, 4 characters or more). The email is optional (to get the password back), and a confirmation is sent to it. The web is signed in by session, kept until signing out; with device_name the app gets a token.'
       security: []
       requestBody:
         required: true
@@ -52,14 +52,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, username, email, password, password_confirmation, terms]
+              required: [name, username, password]
               properties:
                 name: { type: string, minLength: 2, maxLength: 40 }
                 username: { type: string, pattern: '^[A-Za-z][A-Za-z0-9]{2,19}$', description: 'English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username)' }
-                email: { type: string, format: email }
-                password: { type: string, minLength: 8, description: At least 8 characters with letters and numbers }
-                password_confirmation: { type: string, description: The password again }
-                terms: { type: boolean, description: Must be true }
+                email: { type: string, format: email, nullable: true, description: Optional }
+                password: { type: string, minLength: 4, description: 'At least 4 characters, nothing else asked [UP5]' }
                 device_name: { type: string, maxLength: 100, description: The device name }
       responses:
         '201': { $ref: '#/components/responses/AccountToken' }
@@ -264,6 +262,24 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
+  /auth/verify-account:
+    post:
+      tags: [auth]
+      summary: '[UP6] Verify the account with the code the support sent on WhatsApp'
+      description: The welcome coins (1000) reach the wallet once, when the code is right and in time.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [code], properties: { code: { type: string, maxLength: 12 } } }
+      responses:
+        '200':
+          description: Verified, with the coins
+          content:
+            application/json:
+              schema: { type: object, required: [user, coins], properties: { user: { $ref: '#/components/schemas/Account' }, coins: { type: integer } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
   /auth/vacation:
     post:
       tags: [auth]
@@ -1451,7 +1467,7 @@ paths:
       description: |
         Sprint 30 (docs/features/spy.md). Before the lock, a paid report of what the opponent has saved at that moment:
         formation, eleven and bench, the four public tactics, the form and the eleven's fitness. Never pressing, style,
-        tempo, positions, the defensive shape or secret training. The opponent is not told.
+        tempo, positions or the defensive shape. The opponent is not told.
       responses:
         '200':
           description: The spy
@@ -1541,55 +1557,6 @@ paths:
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
-  /leagues/{league}/training/camp:
-    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
-    post:
-      tags: [team]
-      summary: Send players to the training camp (docs/features/camp.md)
-      description: Paid in full when they go. They miss the club's matches until they come back, and train at the level's pace.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [player_ids, level, days, idempotency_key]
-              properties:
-                player_ids: { type: array, items: { type: integer }, minItems: 1, maxItems: 5 }
-                level: { type: string, enum: [basic, good, elite] }
-                days: { type: integer, minimum: 1, maximum: 3 }
-                idempotency_key: { type: string, maxLength: 64 }
-      responses:
-        '200':
-          description: Training after sending
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/TrainingView' }
-        '404': { $ref: '#/components/responses/Error' }
-        '409': { $ref: '#/components/responses/Error' }
-        '422': { $ref: '#/components/responses/Error' }
-  /leagues/{league}/training/secret:
-    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
-    post:
-      tags: [team]
-      summary: Order secret training of one line for the next match (docs/features/secret-training.md)
-      description: Until the lock. The line plays that match only with +3 on the rating and every attribute. Never shown to the opponent.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [line]
-              properties:
-                line: { type: string, enum: [gk, def, mid, att] }
-      responses:
-        '200':
-          description: Training after ordering
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/TrainingView' }
-        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/training/{line}:
     parameters:
       - { name: league, in: path, required: true, schema: { type: integer } }
@@ -2009,12 +1976,14 @@ paths:
                     type: array
                     items:
                       type: object
-                      required: [id, name, email, role, joined, last_day, matches_watched]
+                      required: [id, name, username, email, role, verified, joined, last_day, matches_watched]
                       properties:
                         id: { type: integer }
                         name: { type: string }
-                        email: { type: string }
+                        username: { type: string }
+                        email: { type: string, nullable: true }
                         role: { type: string }
+                        verified: { type: boolean, description: '[UP6] Verified by a WhatsApp code' }
                         joined: { type: string, format: date-time }
                         last_day: { type: string, nullable: true }
                         matches_watched: { type: integer }
@@ -2065,6 +2034,20 @@ paths:
       responses:
         '200': { description: The SQLite file, content: { application/vnd.sqlite3: { schema: { type: string, format: binary } } } }
         '404': { $ref: '#/components/responses/Error' }
+  /admin/users/{user}/verification-code:
+    post:
+      tags: [admin]
+      summary: '[UP6] A six-digit code that verifies this account, for the developer to send on WhatsApp'
+      parameters:
+        - { name: user, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The code (it replaces any earlier one)
+          content:
+            application/json:
+              schema: { type: object, required: [code, username, id, days], properties: { code: { type: string }, username: { type: string }, id: { type: integer }, days: { type: integer } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /admin/users/{user}/official:
     post:
       tags: [admin]
@@ -3500,7 +3483,7 @@ components:
             ends_at: { type: string, format: date-time }
     TrainingPlayer:
       type: object
-      required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed, in_camp]
+      required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -3515,10 +3498,9 @@ components:
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
-        in_camp: { type: boolean }
     TrainingView:
       type: object
-      required: [cost, balance, interval_minutes, now, slots, players, camp, secret]
+      required: [cost, balance, interval_minutes, now, slots, players]
       properties:
         cost: { type: integer, description: One session's price }
         balance: { type: integer }
@@ -3535,64 +3517,6 @@ components:
               sessions_done: { type: integer }
               next_at: { type: string, format: date-time, nullable: true }
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
-        camp:
-          type: object
-          required: [max_players, days, min_left, levels, current]
-          properties:
-            max_players: { type: integer }
-            days: { type: array, items: { type: integer }, description: '[least, most]' }
-            min_left: { type: integer }
-            levels:
-              type: array
-              items:
-                type: object
-                required: [level, gain_bp, day_price]
-                properties:
-                  level: { type: string, enum: [basic, good, elite] }
-                  gain_bp: { type: integer, description: The pace against an ordinary session (10000 = the same) }
-                  day_price: { type: integer, description: One player for one day }
-            current:
-              type: object
-              nullable: true
-              description: The camp under way, or the last one
-              required: [id, level, status, cost, sessions, sessions_done, ends_at, players]
-              properties:
-                id: { type: integer }
-                level: { type: string, enum: [basic, good, elite] }
-                status: { type: string, enum: [active, done] }
-                cost: { type: integer }
-                sessions: { type: integer }
-                sessions_done: { type: integer }
-                ends_at: { type: string, format: date-time }
-                players:
-                  type: array
-                  items:
-                    type: object
-                    required: [id, gain]
-                    properties:
-                      id: { type: integer }
-                      gain: { type: integer }
-        secret:
-          type: object
-          required: [cost, currency, boost, per_season, used, fixture]
-          properties:
-            cost: { type: integer }
-            currency: { type: string, enum: [coins, money] }
-            boost: { type: integer }
-            per_season: { type: integer }
-            used: { type: integer }
-            fixture:
-              type: object
-              nullable: true
-              required: [id, competition, round, status, opponent, lock_at, line]
-              properties:
-                id: { type: integer }
-                competition: { type: string }
-                round: { type: integer }
-                status: { type: string }
-                opponent: { type: string }
-                lock_at: { type: string, format: date-time }
-                line: { type: string, nullable: true, enum: [gk, def, mid, att], description: The line ordered for this match, if any }
     SquadPlayer:
       type: object
       required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
@@ -3612,7 +3536,6 @@ components:
         fitness: { type: integer }
         injured_matches: { type: integer }
         suspended_matches: { type: integer }
-        in_camp: { type: boolean, description: At the training camp, so not in the matches }
         available: { type: boolean }
         attributes: { type: object, additionalProperties: { type: integer, nullable: true } }
         role: { type: string, enum: [starter, bench, reserve] }
@@ -4000,6 +3923,7 @@ components:
         strength_cp: { type: integer, description: The average of the best 18, in hundredths }
         colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
         crest_url: { type: string }
+        logo: { type: string, nullable: true, description: '[UP3] The real logo (/logos/...), null for a club the pack has not; crest_url sends it too' }
     DataPlayer:
       type: object
       required: [id, name, position, line, age, overall, potential, value, attributes]
@@ -4020,15 +3944,23 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, username, official, avatar_url, email, email_verified, role, has_password, google, vacation, viewing]
+      required: [id, name, username, official, avatar_url, email, email_verified, verification, role, has_password, google, vacation, viewing]
       properties:
         id: { type: integer }
         name: { type: string }
         username: { type: string, description: 'English letters only, lower case' }
         official: { type: boolean, description: 'A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11]' }
-        avatar_url: { type: string, nullable: true, description: 'The picture (GET /users/{id}/avatar), null without one' }
-        email: { type: string, format: email }
+        avatar_url: { type: string, nullable: true, description: 'The picture (GET /users/{id}/avatar, or Google''s [UP5]), null without one' }
+        email: { type: string, format: email, nullable: true, description: 'Null for an account made without one [UP5]' }
         email_verified: { type: boolean }
+        verification:
+          type: object
+          required: [verified, welcome_coins, whatsapp]
+          description: '[UP6] Verified by a WhatsApp code; until then the welcome coins wait'
+          properties:
+            verified: { type: boolean }
+            welcome_coins: { type: integer }
+            whatsapp: { type: string, nullable: true, description: The support's WhatsApp with a ready message (the username and the account number) }
         role: { type: string, enum: [user, admin] }
         has_password: { type: boolean, description: False for an account made with Google only }
         google: { type: boolean, description: Linked to a Google account }

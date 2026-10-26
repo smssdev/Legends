@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Admin\TwoFactor;
+use App\Auth\AccountVerification;
 use App\Auth\Username;
 use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
@@ -89,12 +90,12 @@ class AdminController extends Controller
     public function users(): JsonResponse
     {
         $rows = DB::table('users')->leftJoin('user_activity', 'user_activity.user_id', '=', 'users.id')
-            ->groupBy('users.id', 'users.name', 'users.email', 'users.role', 'users.created_at')
+            ->groupBy('users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at')
             ->orderByDesc('users.id')->limit(200)
-            ->get(['users.id', 'users.name', 'users.email', 'users.role', 'users.created_at', DB::raw('max(user_activity.day) as last_day'),
+            ->get(['users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', DB::raw('max(user_activity.day) as last_day'),
                 DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
 
-        return response()->json(['users' => $rows->map(fn ($u) => ['id' => $u->id, 'name' => $u->name, 'email' => $u->email, 'role' => $u->role,
+        return response()->json(['users' => $rows->map(fn ($u) => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role, 'verified' => $u->account_verified_at !== null,
             'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live])]);
     }
 
@@ -121,6 +122,13 @@ class AdminController extends Controller
         }
 
         return response()->json($setup + ['sent' => Mailer::live(), 'error' => null, 'fix' => Mailer::live() ? null : $setup['problems'][0] ?? null]);
+    }
+
+    /** [UP6] A code that verifies this account, for the developer to send to the coach on WhatsApp. */
+    public function verificationCode(Request $request, User $user): JsonResponse
+    {
+        return response()->json(['code' => AccountVerification::issue($user, $request->user()), 'username' => $user->username, 'id' => $user->id,
+            'days' => (int) config('game.account.verify_code_days')]);
     }
 
     /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */

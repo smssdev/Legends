@@ -2,6 +2,7 @@
 
 namespace App\Simulator;
 
+use App\Data\ClubLogo;
 use App\Engine\Actions;
 use App\Engine\AutoPick;
 use App\Engine\Formations;
@@ -341,7 +342,7 @@ class Simulator
                 // [X42] The coach's windows: a live match stops after these minutes for window_seconds.
                 'windows' => $live ? ($s['cfg']['match']['windows'] ?? []) : [], 'window_seconds' => (int) ($s['cfg']['match']['window_seconds'] ?? 0),
             ],
-            'clubs' => ['home' => $s['teams']['home']['club'], 'away' => $s['teams']['away']['club']],
+            'clubs' => ['home' => ClubLogo::with($s['teams']['home']['club']), 'away' => ClubLogo::with($s['teams']['away']['club'])],
             'coaches' => (object) ($match->setup['names'] ?? []),
             'teams' => $live ? self::redact(['teams' => self::teams($s)], $you)['teams'] : self::teams($s),
             'slots' => [

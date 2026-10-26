@@ -55,6 +55,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('avatar', 'avatar')->middleware('throttle:10,1,avatar');
         Route::delete('avatar', 'removeAvatar');
         Route::post('vacation', 'vacation');
+        // [UP6] The WhatsApp code that verifies the account and frees the welcome coins.
+        Route::post('verify-account', 'verifyAccount')->middleware('throttle:10,1,verify-account');
         Route::delete('vacation', 'endVacation');
     });
 });
@@ -179,8 +181,6 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(TrainingController::class)->prefix('{league}/training')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'add')->middleware('throttle:30,1,training');
-        Route::post('camp', 'sendToCamp')->middleware('throttle:20,1,training-camp');
-        Route::post('secret', 'secretSession')->middleware('throttle:20,1,training-secret');
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
         Route::post('{line}/finish', 'finish')->whereIn('line', ['gk', 'def', 'mid', 'att'])->middleware('throttle:30,1,finish');
     });
@@ -228,6 +228,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('commentary', 'commentary');
         Route::post('mail-test', 'mailTest')->middleware('throttle:10,1,mail-test');
         Route::post('users/{user}/official', 'official')->whereNumber('user');
+        Route::post('users/{user}/verification-code', 'verificationCode')->whereNumber('user');
         Route::post('announcements', 'announce');
     });
 });

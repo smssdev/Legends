@@ -37,7 +37,7 @@ class GoogleTokenVerifier
         }
         $verified = ($claims['email_verified'] ?? false) === true || ($claims['email_verified'] ?? '') === 'true';
 
-        return new GoogleIdentity((string) $claims['sub'], strtolower((string) $claims['email']), $verified, (string) ($claims['name'] ?? ''));
+        return new GoogleIdentity((string) $claims['sub'], strtolower((string) $claims['email']), $verified, (string) ($claims['name'] ?? ''), isset($claims['picture']) ? (string) $claims['picture'] : null);
     }
 
     /** Google's current signing keys (JWKS). */

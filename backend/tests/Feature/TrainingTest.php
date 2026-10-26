@@ -61,7 +61,7 @@ class TrainingTest extends TestCase
         return Training::interval($this->league['id']);
     }
 
-    public function test_a_player_goes_in_his_lines_slot_and_a_second_one_takes_his_place(): void
+    public function test_a_player_goes_in_his_lines_slot_and_a_second_one_of_his_line_waits(): void
     {
         $p = $this->trainee('mid');
         $page = $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $p->id])->assertOk();
@@ -71,6 +71,11 @@ class TrainingTest extends TestCase
 
         $other = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
             ->where('master_players.line', 'mid')->whereColumn('master_players.potential', '>', 'players.overall')->where('players.id', '!=', $p->id)->value('players.id');
+        // [UP8] One per line: the second midfielder waits while the first one trains.
+        $this->assertStringContainsString('لاعب واحد من كل خط', $this->postJson($this->url(), ['player_id' => $other])->assertConflict()->json('message'));
+        $this->assertSame($p->id, (int) DB::table('training_slots')->value('player_id'));
+        // Once the slot is free (his +1 done, finished for coins, or stopped), the other one goes in.
+        $this->deleteJson($this->url('/mid'))->assertOk();
         $this->postJson($this->url(), ['player_id' => $other])->assertOk();
         $this->assertSame(1, DB::table('training_slots')->where('club_id', $this->mine)->count());
         $this->assertSame($other, (int) DB::table('training_slots')->value('player_id'));
