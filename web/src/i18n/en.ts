@@ -1498,4 +1498,5 @@ export const EN: Record<string, string> = {
   'تجربة اللاعب': 'Player experience',
   'مراجعة الإصدارات، وأصوات الملعب الـ44، وتسجيلات المعلقين.': 'Release reviews, the 44 stadium sounds, and the commentators\' recordings.',
   'محتوى تجريبي يعدّله حمزة من صفحته.': 'Sample content Hamza edits from his page.',
+  'نجم': 'Star',
 }

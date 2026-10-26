@@ -43,7 +43,7 @@ const LINES: { id: Line; label: string }[] = [{ id: 'gk', label: 'حراس ال�
 
 // [UP11] The transfer list of one line, its renewal countdown, a player's deal and the celebration.
 type Seller = { kind: 'world' | 'bot' | 'coach'; club_id: number | null; club: string | null; coach: string | null; logo: string | null }
-type Row = Market['players'][number] & { seller: Seller }
+type Row = Market['players'][number] & { seller: Seller; star?: boolean }
 type ListView = { closed: string | null; line: Line; balance: number; renews_at: string | null; players: Row[] }
 type Quote = { price: number; cash: number; doc_coins: number; short: number; compensate: { cash: number; coins: number } | null; can: boolean; why: string | null }
 const list = ref<ListView | null>(null)
@@ -247,7 +247,7 @@ onBeforeUnmount(() => clearInterval(clock))
               <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
-                  <b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b>
+                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span></b>
                   <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ p.nationality }}</template></span>
                 </span>
                 <span class="hidden min-w-0 max-w-48 items-center gap-1.5 text-xs sm:flex">

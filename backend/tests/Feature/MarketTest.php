@@ -208,6 +208,30 @@ class MarketTest extends TestCase
         $this->assertGreaterThanOrEqual($levels[intdiv($levels->count() * 40, 100)], $pool->min('overall'));
     }
 
+    public function test_from_mid_season_the_pool_brings_stars_from_the_parallel_leagues(): void
+    {
+        $best = (int) DB::table('players')->where('league_id', $this->league['id'])->whereNotNull('club_id')->max('overall');
+        $abroad = DB::table('master_clubs')->insertGetId(['data_version' => '2026', 'name' => 'Star FC', 'code' => 'STR', 'league_name' => 'Star League',
+            'strength_cp' => 9000, 'color_primary' => '#000000', 'color_secondary' => '#FFFFFF']);
+        foreach ([1, 2, 3] as $i) {
+            DB::table('master_players')->insert(['data_version' => '2026', 'external_id' => 995000 + $i, 'master_club_id' => $abroad, 'name' => "Star {$i}",
+                'position' => 'ST', 'line' => 'att', 'age' => 27, 'overall' => $best + 1, 'potential' => $best + 2, 'value' => 90_000_000,
+                'pac' => 90, 'sho' => 90, 'pas' => 85, 'dri' => 90, 'def' => 40, 'phy' => 80]);
+        }
+        $stars = fn () => DB::table('players')->where('league_id', $this->league['id'])->where('in_pool', true)->where('pool_star', true)->count();
+        Pool::renew($this->league['id']);
+        $this->assertSame(0, $stars(), 'no stars before mid-season');
+
+        $season = DB::table('seasons')->where('league_id', $this->league['id'])->first();
+        DB::table('seasons')->where('id', $season->id)->update(['rounds_played' => intdiv($season->rounds + 1, 2)]);
+        Pool::renew($this->league['id']);
+        $this->assertSame(3, $stars());
+        $this->assertGreaterThanOrEqual($best, (int) DB::table('players')->where('league_id', $this->league['id'])->where('pool_star', true)->min('overall'));
+        // The transfer list shows them first, marked.
+        $list = $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/market?line=att")->assertOk()->json('players');
+        $this->assertTrue($list[0]['star']);
+    }
+
     public function test_a_bot_sells_at_125_percent_and_keeps_18_players_and_2_keepers(): void
     {
         $bot = $this->bot();

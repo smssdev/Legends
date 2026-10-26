@@ -2850,7 +2850,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    source?: "pool" | "bots";
+                    /** @description [UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first) */
+                    source?: "list" | "pool" | "bots";
                     line?: "gk" | "def" | "mid" | "att";
                     /** @description Part of a name */
                     q?: string;
