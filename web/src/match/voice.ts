@@ -93,7 +93,7 @@ const REAL_KIND: Record<string, Partial<Record<'pre' | 'key' | 'post', string>> 
   sub: 'sub', injury: 'injury', coach: 'calm', kickoff: 'kickoff', halftime: 'half', fulltime: 'full', extra_time: 'half',
   penalties: 'penalty', stoppage: 'calm', shootout: 'penalty', attack: 'attack',
 }
-const REAL_NEXT: Record<string, string> = { post: 'miss', goal_post: 'goal', freekick: 'attack', penalty: 'attack', corner: 'attack', offside: 'foul', card: 'foul', injury: 'calm', sub: 'calm', kickoff: 'calm', half: 'calm', full: 'calm', foul: 'calm', attack: 'calm', save: 'calm', miss: 'calm' }
+const REAL_NEXT: Record<string, string> = { post: 'miss', goal_post: 'goal', freekick: 'attack', penalty: 'attack', corner: 'attack', offside: 'foul', card: 'foul', injury: 'calm', sub: 'calm', kickoff: 'calm', half: 'calm', full: 'calm', foul: 'calm', attack: 'calm', save: 'attack', miss: 'attack' }
 export function realKind(moment?: string, slot?: string): string | null {
   const k = moment ? REAL_KIND[moment] : null
   if (!k) return null

@@ -62,6 +62,7 @@ def build(name):
         for p in parts:
             f.write(f"file '{p}'\nfile '{silence}'\n")
     pack = os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', VOICE_OF[name], 'real')
+    os.makedirs(os.path.dirname(pack), exist_ok=True)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', listing, '-ac', '1', '-ar', str(SR),
                     '-c:a', 'libmp3lame', '-b:a', '64k' if len(cuts) < 60 else '40k', pack + '.mp3'], check=True)
     with open(pack + '.json', 'w', encoding='utf-8') as f:

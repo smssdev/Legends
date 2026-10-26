@@ -46,6 +46,11 @@ KINDS = [
     ('attack', r'تسديد|يسدد|سدد|انطلاق|ينطلق|هجم|مرتد|عرضي|يمرر|تمرير|طويل|المنطقة|منطقة|رأس|راس|يراوغ|مراوغ|ينفرد|انفراد'),
 ]
 GOAL = r'غو+ل|قو+ل|جو+ل|هد+ف|الهدف'
+# This match's own names (the two clubs, the coaches, the best known players), in Whisper's spellings of them:
+# a phrase with one is left out even when the name is not repeated enough to be caught by the count below.
+NAMES = (r'برش|بارش|بارث|برث|برس|بارس|كتالون|ريال|مدريد|ملكي|ميسي|مسي|ماسي|رونالد|مورين|غوارديول|كورديول|جوارديول|'
+         r'تشافي|اتشابي|شافي|انييست|إنييست|بويول|بيول|بيكي|كاسياس|كسيس|راموس|بيب|بنزيم|زيما|اوزيل|وزيل|دي ماريا|'
+         r'بيدرو|بوسكيتس|البوسكت|فيا|داني|الفيس|ابيدال|كلاسيك|كلاسك|نوكام|نو كامب|كامبنو|كامب')
 # Common words that repeat in any talk and are never a name.
 STOP = set('هذا هذه هذي هاذا ذلك تلك هناك هنا الذي التي الذين على عن من إلى الى مع كان كانت يكون ليس لكن لقد كل بعد قبل '
            'عند حتى أما اما نحن انت أنت أنا انا هو هي هم يعني شيء شي كيف لماذا ماذا متى أين اين مرة كمان أيضا ايضا جدا '
@@ -92,14 +97,16 @@ def classify():
     # Loudness against the match itself: the studio is recorded louder than the stadium.
     loud = sorted(p['peak'] for p in phrases if p['start'] >= MATCH_FROM) or [1]
     scream, excited = loud[int(len(loud) * 0.93)], loud[int(len(loud) * 0.8)]
+    # His loudest of all (the top 2%), held for a second and a half: the goal, whatever Whisper heard in it.
+    roar = loud[int(len(loud) * 0.98)]
     last_goal = -999
     rows = []
     for p in phrases:
         text, length = p['text'], p['end'] - p['start']
         kind = None
-        if re.search(GOAL, text) and p['peak'] >= scream * 0.9:
+        if p['start'] >= MATCH_FROM and ((re.search(GOAL, text) and p['peak'] >= scream * 0.9) or (p['peak'] >= roar and length >= 1.5)):
             kind, last_goal = 'goal', p['start']
-        elif p['start'] - last_goal < 30 and re.search(PRAISE, text):
+        elif p['start'] - last_goal < 30 and (re.search(PRAISE, text) or p['peak'] >= excited):
             kind = 'goal_post'
         else:
             for k, pattern in KINDS:
@@ -111,7 +118,7 @@ def classify():
             kind = 'attack' if p['peak'] >= excited else 'calm'
         studio = p['start'] < MATCH_FROM and kind != 'kickoff'
         # A name, a number (a score, a minute, a year) or a minute in words would be wrong in another match.
-        named = any(w in common for w in words(text)) or bool(re.search(r'[0-9٠-٩]|دقيق', text))
+        named = any(w in common for w in words(text)) or bool(re.search(r'[0-9٠-٩]|دقيق|' + NAMES, text))
         clear = p['lp'] > -1.1 and len(text) >= 4
         keep = int(not studio and not named and clear and 0.8 <= length <= 7 and (kind != 'calm' or length <= 5))
         rows.append({'file': SOURCE, 'start': p['start'], 'end': p['end'], 'kind': kind, 'keep': keep, 'clarity': p['lp'], 'text': text})
