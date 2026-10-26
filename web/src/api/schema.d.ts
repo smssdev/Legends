@@ -4147,6 +4147,15 @@ export interface paths {
                             readings: components["schemas"]["MatchReading"][];
                             /** @description The latest reactions [X24] */
                             reactions?: components["schemas"]["BroadcastReaction"][];
+                            /** @description [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement */
+                            pause?: {
+                                until?: number;
+                                ready?: ("home" | "away")[];
+                                window?: boolean;
+                                injured?: {
+                                    [key: string]: number;
+                                };
+                            } | null;
                             /** @description The side chat, the latest 50 [X24] */
                             chat?: components["schemas"]["BroadcastChat"][];
                         };
@@ -4240,6 +4249,54 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [UP17] «أنا مستعد»: the coach is done with this break
+         * @description Once every coach of the match is ready (a computer's side always is), the break ends now and the next minute starts within a second. 409 outside a break.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Who is ready and when play goes on (ms) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ready: ("home" | "away")[];
+                            resume_at: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;

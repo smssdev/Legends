@@ -8,6 +8,7 @@ use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\Models\User;
 use App\Simulator\CoachWindows;
+use App\Simulator\Runner;
 use App\Support\GameClock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -213,7 +214,7 @@ class MatchOrdersTest extends TestCase
         $body = ['type' => 'tactics', 'tactics' => ['style' => 70], 'idempotency_key' => 'same-key'];
         // [X42] Between the windows the match plays on: no change.
         $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertStatus(409)
-            ->assertJsonPath('message', 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و60 و75، وفي الاستراحة.');
+            ->assertJsonPath('message', 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و45 و60 و75.');
         $this->playToWindow($match, 15);
         $first = $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertStatus(202)->json();
         $again = $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/actions", $body)->assertOk()->json();
@@ -252,5 +253,66 @@ class MatchOrdersTest extends TestCase
         $this->assertFalse($replay['replayable']);
         $this->assertNull($replay['ticks']);
         $this->assertSame(DB::table('match_events')->where('match_id', $match->id)->count(), count($replay['events']));
+    }
+
+    /** [UP17] «أنا مستعد»: against the computer, the coach's ready ends the window at once. */
+    public function test_the_ready_button_ends_the_window_once_every_coach_is_ready(): void
+    {
+        $match = $this->kickOff();
+        $this->playToWindow($match, 15);
+        $poll = $this->actingAs($this->owner)->getJson("/api/v1/matches/{$match->id}/live")->assertOk()->json('pause');
+        $this->assertTrue($poll['window']);
+        $this->assertSame([], $poll['ready']);
+        $before = (int) DB::table('matches')->where('id', $match->id)->value('next_at');
+        $ready = $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/ready")->assertOk()->json();
+        $this->assertSame([$this->side], $ready['ready']);
+        $this->assertLessThan($before, $ready['resume_at']);
+        $this->assertSame($ready['resume_at'], (int) DB::table('matches')->where('id', $match->id)->value('next_at'));
+        $tick = (int) DB::table('matches')->where('id', $match->id)->value('tick');
+        $this->step($ready['resume_at'] - GameClock::nowMs() + 10);
+        $this->assertGreaterThan($tick, (int) DB::table('matches')->where('id', $match->id)->value('tick'));
+        // Between the windows there is nothing to be ready for.
+        $this->actingAs($this->owner)->postJson("/api/v1/matches/{$match->id}/ready")->assertStatus(409);
+    }
+
+    /** [UP17] The emergency substitution: the coach picks who replaces his injured player, else the bench's best. */
+    public function test_an_injured_player_waits_for_his_coachs_pick_then_the_benchs_best(): void
+    {
+        $match = $this->kickOff();
+        $this->playTo($match, 3);
+        $live = Cache::get("league-match:{$match->id}");
+        $state = $live['state'];
+        $team = &$state['teams'][$this->side];
+        $hurt = collect($team['players'])->first(fn ($p) => $p['on'] && $p['slot_line'] !== 'gk');
+        $bench = collect($team['players'])->filter(fn ($p) => ! $p['on'] && $p['out'] === '' && $p['slot'] === null)->values();
+        foreach ($team['players'] as &$p) {
+            if ($p['id'] === $hurt['id']) {
+                [$p['on'], $p['out']] = [false, 'injury'];
+            }
+        }
+        unset($p);
+        $team['pending_injury'] = $hurt['id'];
+        $team['missing']++;
+        unset($team);
+        $live['state'] = $state;
+        Cache::forever("league-match:{$match->id}", $live);
+
+        // Only a substitution of the injured player, and only by his coach.
+        $this->assertSame($hurt['id'], CoachWindows::emergencyFor($state, $this->side));
+        $this->order($match, ['type' => 'tactics', 'tactics' => ['style' => 70]], 409);
+        $pick = $bench->last();
+        $this->order($match, ['type' => 'sub', 'out' => $hurt['id'], 'in' => $pick['id']]);
+        $next = Runner::tick($state, MatchOrders::forMinute($match->id, $state, ['home' => 'coach', 'away' => 'coach']));
+        $mine = collect($next['teams'][$this->side]['players']);
+        $this->assertTrue($mine->firstWhere('id', $pick['id'])['on']);
+        $this->assertSame('injury', $mine->firstWhere('id', $hurt['id'])['out']);
+        $this->assertArrayNotHasKey('pending_injury', $next['teams'][$this->side]);
+        $this->assertSame(0, $next['teams'][$this->side]['missing']);
+
+        // No pick: the engine brings on the bench's best at the next minute.
+        $auto = Runner::tick($state, []);
+        $this->assertArrayNotHasKey('pending_injury', $auto['teams'][$this->side]);
+        $this->assertSame(0, $auto['teams'][$this->side]['missing']);
+        $this->assertSame(1, collect($auto['out']['events'])->where('type', 'sub')->where('team', $this->side)->count());
     }
 }

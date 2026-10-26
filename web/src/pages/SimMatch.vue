@@ -52,6 +52,15 @@
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" aria-label="المباراة">
           <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @real="(kind) => voice.real(kind as any)" @intro-done="endIntro" />
 
+                    <!-- [UP17] The emergency substitution: my injured player, 15 seconds to pick who comes on. -->
+                    <div v-if="injuredId && live && league && !finished" dir="rtl" class="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-bg-deep/90 p-4 text-center" role="alertdialog" aria-label="تبديل طارئ">
+                      <span class="font-display text-xl font-extrabold text-warning">إصابة: {{ injuredName }}</span>
+                      <span class="text-sm text-text-soft">اختر البديل خلال <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية، وإلا اختاره المدرب المساعد</span>
+                      <div class="flex max-w-xl flex-wrap justify-center gap-2">
+                        <button v-for="p in benchForInjury" :key="p.id" type="button" class="min-h-touch rounded-md bg-surface-raised px-3 text-sm font-bold" @click="emergencySub(p.id)">
+                          {{ p.pos }} · {{ $nm(p.name) }} <span class="font-numbers text-gold">{{ p.ovr }}</span></button>
+                      </div>
+                    </div>
                     <div v-if="(halftime || finished || windowOn) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
             <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : windowOn ? `فترة توقف · الدقيقة ${minute[0]}` : 'الاستراحة' }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
@@ -59,6 +68,9 @@
             <div class="flex flex-wrap justify-center gap-2">
               <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
               <span v-if="windowOn && !finished" class="text-sm text-text-soft">تُستأنف المباراة بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك أو أجرِ تبديلاتك الآن</span>
+              <button v-if="(halftime || windowOn) && live && league && mine" type="button" class="h-12 rounded-md px-6 font-display font-bold disabled:opacity-60"
+                :class="iAmReady ? 'bg-success/20 text-success' : 'bg-brand text-white'" :disabled="iAmReady || readyBusy" @click="sayReady">
+                {{ iAmReady ? 'مستعد ✓ بانتظار الخصم' : 'أنا مستعد' }}</button>
               <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
@@ -259,6 +271,30 @@ const windowOn = ref(false)
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
 /** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not its last 2 s). */
 const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && halftimeLeft.value > 2))
+// [UP17] «أنا مستعد» and the emergency substitution (league, live).
+const pause = ref<LiveSync['pause']>(null)
+const readyBusy = ref(false)
+const iAmReady = computed(() => !!mine.value && !!pause.value?.ready.includes(mine.value as Side))
+async function sayReady() {
+  readyBusy.value = true
+  try {
+    const r = await leagueMatch.ready(props.id)
+    if (pause.value) pause.value = { ...pause.value, ready: r.ready as Side[], until: r.resume_at }
+    resumeAt = r.resume_at
+    clockTick()
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    readyBusy.value = false
+  }
+}
+const injuredId = computed(() => (mine.value && pause.value && !pause.value.window ? pause.value.injured[mine.value as Side] ?? null : null))
+const injuredName = computed(() => teams.value[mine.value as Side]?.players.find((p) => p.id === injuredId.value)?.name ?? '')
+const benchForInjury = computed(() => (teams.value[mine.value as Side]?.players ?? []).filter((p) => !p.on && p.out === '' && p.slot === null))
+async function emergencySub(inId: number) {
+  if (!injuredId.value) return
+  await order('تبديل طارئ', { type: 'sub', out: injuredId.value, in: inId })
+}
 const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
 const finished = ref(false)
 const skipping = ref(false)
@@ -745,6 +781,9 @@ watch(finished, (done) => { if (done) releaseAwake() })
 function handleSync(r: LiveSync): number {
   started.value = r.started
   error.value = ''
+  // [UP17] The break: both coaches ready ends it early (its end moves), and an injured player of mine waits.
+  pause.value = r.pause ?? null
+  if (r.pause) resumeAt = r.pause.until
   // Back after a gap: the minutes missed tell their events in the feed, then the latest minutes play on.
   for (const m of r.missed ?? []) {
     if (m.tick <= seen) continue
@@ -785,7 +824,7 @@ function handleSync(r: LiveSync): number {
 function clockTick() {
   const now = serverNow()
   countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
-  if (halftime.value || windowOn.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
+  if (halftime.value || windowOn.value || injuredId.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
 }
 
 // ---------------------------------------------------------------- reactions (live)

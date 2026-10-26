@@ -63,8 +63,10 @@ final class Actions
             return 'no_subs_left';
         }
         $out = $in = null;
+        // [UP17] The emergency substitution: the injured player waiting off the pitch for his replacement.
+        $injured = ($team['pending_injury'] ?? null) === $outId;
         foreach ($team['players'] as $i => $p) {
-            if ($p['id'] === $outId && $p['on']) {
+            if ($p['id'] === $outId && ($p['on'] || $injured)) {
                 $out = $i;
             }
             if ($p['id'] === $inId && ! $p['on'] && $p['out'] === '' && $p['slot'] === null) {
@@ -79,8 +81,12 @@ final class Actions
         $team['players'][$in]['slot'] = $team['players'][$out]['slot'];
         $team['players'][$in]['slot_line'] = $team['players'][$out]['slot_line'];
         $team['players'][$out]['on'] = false;
-        $team['players'][$out]['out'] = 'sub';
+        $team['players'][$out]['out'] = $injured ? 'injury' : 'sub';
         $team['subs_used']++;
+        if ($injured) {
+            unset($team['pending_injury']);
+            $team['missing']--;
+        }
         $team['takers'] = AutoPick::takers($team['players']);
 
         return null;

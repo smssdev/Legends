@@ -195,6 +195,7 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1,match-show');
     Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:720,1,match-live');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
+    Route::post('{match}/ready', 'ready')->whereNumber('match')->middleware('throttle:60,1,match-ready');
     // The broadcast's reactions and side chat [X24].
     Route::post('{match}/reactions', 'react')->whereNumber('match')->middleware('throttle:90,1,match-react');
     Route::post('{match}/chat', 'chat')->whereNumber('match')->middleware('throttle:60,1,match-chat');

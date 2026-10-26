@@ -21,13 +21,18 @@ return [
         'cheer_gap_ms' => 30000, 'chat_gap_ms' => 2000, 'chat_max' => 140, 'chat_kept' => 50, 'reactions_kept' => 20,
         // A breath after each scene before the next minute: the timeline and the clock on screen (not after quiet minutes).
         'scene_gap_ms' => 1800,
-        'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
+        // [UP17] A window before extra time and between its halves, as long as the others.
+        'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 30,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
         'subs' => 3, 'extra_time_subs' => 1,
         // [X42] The coach's windows, the owner's (2026-10-26): play stops this long after these minutes, and only then
         // (and before kick-off and at half-time) may a coach change his line-up, tactics or players (CoachWindows).
         'windows' => [15, 30, 60, 75], 'window_seconds' => 30,
+        // [UP17] The owner's spec (11): a window ends as soon as both coaches are ready (a computer's side is ready
+        // after ready_bot_ms). An injured player stops play for emergency_sub_seconds: his coach alone picks who comes
+        // on (a substitution of him only); without a pick, the best on the bench (the engine, at the next minute).
+        'ready_bot_ms' => 2000, 'emergency_sub' => true, 'emergency_sub_seconds' => 15,
         // كل النسب بنقاط الأساس (10000 = 100%) لأن المحرك يعمل بأرقام صحيحة فقط
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
@@ -209,7 +214,7 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 9,
+        'version' => 10,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً

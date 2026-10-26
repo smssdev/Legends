@@ -55,9 +55,15 @@ class MatchOrders
     {
         $tick = $state['tick'] + 1;
         // [X42] A coach's order goes in after a window only: one that came as the window closed waits for the next.
-        $rows = CoachWindows::open($state)
-            ? DB::table('match_actions')->where('match_id', $matchId)->whereNull('applied_tick')->where('target_tick', '<=', $tick)->orderBy('id')->get()
-            : collect();
+        $rows = DB::table('match_actions')->where('match_id', $matchId)->whereNull('applied_tick')->where('target_tick', '<=', $tick)->orderBy('id')->get();
+        if (! CoachWindows::open($state)) {
+            // [UP17] Outside a window, only an emergency substitution for the injured player goes in.
+            $rows = $rows->filter(function ($r) use ($state) {
+                $a = json_decode($r->action, true);
+
+                return $r->source === 'coach' && ($a['type'] ?? '') === 'sub' && (int) ($a['out'] ?? 0) === CoachWindows::emergencyFor($state, $r->side);
+            })->values();
+        }
         if ($rows->isNotEmpty()) {
             DB::table('match_actions')->whereIn('id', $rows->pluck('id'))->update(['applied_tick' => $tick]);
         }

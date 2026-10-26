@@ -1738,6 +1738,15 @@ paths:
                   ticks: { type: array, items: { type: object, additionalProperties: true } }
                   readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
                   reactions: { type: array, items: { $ref: '#/components/schemas/BroadcastReaction' }, description: 'The latest reactions [X24]' }
+                  pause:
+                    type: object
+                    nullable: true
+                    description: '[UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side''s injured player waiting for his replacement'
+                    properties:
+                      until: { type: integer }
+                      ready: { type: array, items: { type: string, enum: [home, away] } }
+                      window: { type: boolean }
+                      injured: { type: object, additionalProperties: { type: integer } }
                   chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/report:
@@ -1774,6 +1783,20 @@ paths:
                   readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
         '403': { $ref: '#/components/responses/Error' }
         '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /matches/{match}/ready:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [matches]
+      summary: '[UP17] «أنا مستعد»: the coach is done with this break'
+      description: Once every coach of the match is ready (a computer's side always is), the break ends now and the next minute starts within a second. 409 outside a break.
+      responses:
+        '200':
+          description: Who is ready and when play goes on (ms)
+          content:
+            application/json:
+              schema: { type: object, required: [ready, resume_at], properties: { ready: { type: array, items: { type: string, enum: [home, away] } }, resume_at: { type: integer } } }
+        '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
   /matches/{match}/reactions:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
