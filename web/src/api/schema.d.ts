@@ -1152,6 +1152,9 @@ export interface paths {
          * Make a league
          * @description Copies the strongest team_count clubs of the template with their players, funds each with the starting
          *     budget, and gives the owner the club they chose. Every other club is a bot. 10 a minute.
+         *     [UP9] Every setting may be left out for the free league: all the template's clubs, one round a day at 21:00 in
+         *     the creator's time zone, two days to get ready, integrity and press conferences on, one season. Any setting
+         *     that differs makes a customized league, paid once in coins (team_count × 20; 409 without them).
          */
         post: {
             parameters: {
@@ -1167,13 +1170,23 @@ export interface paths {
                         name?: string | null;
                         /** @description A name from GET /data/templates */
                         template: string;
-                        team_count: number;
-                        rounds_per_day: number;
-                        /** @description One HH:MM per round */
-                        round_times: string[];
-                        prep_days: number;
+                        /** @description From half the template's clubs to all of them [UP9] */
+                        team_count?: number;
+                        /** @description One round a day [UP17] */
+                        rounds_per_day?: number;
+                        /** @description One HH:MM */
+                        round_times?: string[];
+                        /** @enum {integer} */
+                        prep_days?: 2 | 4 | 6;
+                        /** @description The creator's IANA zone: the free league plays at 21:00 there */
+                        timezone?: string | null;
+                        /**
+                         * @description [UP12] The press conference before each match
+                         * @default true
+                         */
+                        press_conferences?: boolean;
                         /** @enum {string} */
-                        season_end_mode: "renew" | "end";
+                        season_end_mode?: "renew" | "end";
                         /**
                          * Format: date-time
                          * @description From now up to 7 days
@@ -1188,7 +1201,7 @@ export interface paths {
                         fair_league?: boolean;
                         /**
                          * @description Bribes, spies and the FA [X28]
-                         * @default false
+                         * @default true
                          */
                         integrity?: boolean;
                         /** @description Each round in two slots: half its matches this long after the round time [X31] */
@@ -1308,13 +1321,16 @@ export interface paths {
                         name?: string | null;
                         rounds_per_day?: number;
                         round_times?: string[];
-                        prep_days?: number;
+                        /** @enum {integer} */
+                        prep_days?: 2 | 4 | 6;
                         /** @enum {string} */
                         season_end_mode?: "renew" | "end";
                         /** Format: date-time */
                         starts_at?: string;
+                        starting_budget?: number;
                         fair_league?: boolean;
                         integrity?: boolean;
+                        press_conferences?: boolean;
                         second_slot_minutes?: number | null;
                     };
                 };
@@ -6976,6 +6992,10 @@ export interface components {
             fair_league: boolean;
             /** @description The integrity system: bribes, spies and the FA [X28] */
             integrity?: boolean;
+            /** @description [UP12] The press conference before each match */
+            press_conferences?: boolean;
+            /** @description [UP9] The coins paid for a customized league (0: free) */
+            custom_coins?: number;
             /** @description Rounds in two slots [X31] */
             second_slot_minutes?: number | null;
             /** @description The FA verdicts of the last day [X28] */

@@ -2,21 +2,27 @@
 
 namespace Tests\Feature\Concerns;
 
+use App\League\LeagueTiers;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /** A small template of real-looking clubs, and a league made from it through the API. */
 trait MakesLeagues
 {
+    /** How many teams a league has unless a test says (at least half its template's clubs [UP9]). */
+    protected int $defaultTeams = 6;
+
     /** @return list<int> master club ids, strongest first */
-    protected function template(int $clubs = 20, string $league = 'Test League', bool $full = false): array
+    protected function template(int $clubs = 8, string $league = 'Test League', bool $full = false): array
     {
         $ids = [];
         for ($c = 0; $c < $clubs; $c++) {
             $ovr = 85 - $c;
             $id = DB::table('master_clubs')->insertGetId([
-                'data_version' => '2026', 'name' => "Club {$c}", 'code' => sprintf('C%02d', $c), 'league_name' => $league,
+                'data_version' => '2026', 'name' => $league === 'Test League' ? "Club {$c}" : "{$league} {$c}", 'code' => sprintf('C%02d', $c), 'league_name' => $league,
                 'strength_cp' => $ovr * 100, 'color_primary' => '#C8102E', 'color_secondary' => '#FFFFFF',
             ]);
             // Four players, or a whole squad of 18 (two keepers) for the lineup tests.
@@ -39,16 +45,21 @@ trait MakesLeagues
     protected function settings(array $over = []): array
     {
         return $over + [
-            'template' => 'Test League', 'team_count' => 6, 'rounds_per_day' => 2, 'round_times' => ['18:00', '21:00'],
-            'prep_days' => 1, 'season_end_mode' => 'renew', 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString(),
-            'starting_budget' => 3_000_000, 'fair_league' => true,
+            // [UP9, UP17] At least half the template's clubs (6 of its 8), one round a day, two days to get ready.
+            'template' => 'Test League', 'team_count' => $this->defaultTeams, 'rounds_per_day' => 1, 'round_times' => ['21:00'],
+            'prep_days' => 2, 'season_end_mode' => 'renew', 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString(),
+            'starting_budget' => 3_000_000, 'fair_league' => true, 'integrity' => false,
             'club_id' => DB::table('master_clubs')->where('league_name', 'Test League')->orderByDesc('strength_cp')->value('id'),
         ];
     }
 
+    /** Made through the API; a customized league is paid in coins [UP9], so the owner is given them first. */
     protected function makeLeague(User $owner, array $over = []): array
     {
-        return $this->actingAs($owner)->postJson('/api/v1/leagues', $this->settings($over))->assertCreated()->json('league');
+        $settings = $this->settings($over);
+        Wallet::post($owner->id, 'daily', LeagueTiers::cost((int) $settings['team_count']), 'test-grant:'.$owner->id.':'.Str::random(8));
+
+        return $this->actingAs($owner)->postJson('/api/v1/leagues', $settings)->assertCreated()->json('league');
     }
 
     /** A coach who asked with the code and was approved by the owner. */

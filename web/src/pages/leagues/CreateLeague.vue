@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// Make a league (Sprint 13 W1), after the drafts WebCreateLeague and MobileCreateLeague: the basics, the
-// times, the money and rules, and the season's summary; then "أنشئ الدوري واختر فريقك" shows the copied
-// clubs to choose the owner's own. The server makes it all in one step [PLAN 2.1, 2.3].
+// Make a league (Sprint 13 W1), after the drafts WebCreateLeague and MobileCreateLeague, then choose the owner's club.
+// [UP9] The owner's spec (4, 2026-10-26): the standard league is free (every club of the real league, two days to get
+// ready, one round a day at the owner's evening, the integrity system and the press conferences on, one season).
+// Changing anything makes it a customized league, paid once: the clubs × 20 coins, shown with the coin, never as a "price".
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -12,27 +13,33 @@ import TextField from '../../components/TextField.vue'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { strength } from '../../lib/format'
+import { useWallet } from '../../stores/wallet'
 
 type Template = { name: string; clubs: number; top_strength_cp: number }
 type Club = components['schemas']['DataClub']
 
+const COINS_PER_CLUB = 20
+const FREE = { prep: 2, budget: 3_000_000, time: '21:00', end: 'end' as const }
+
 const router = useRouter()
+const wallet = useWallet()
 const templates = ref<Template[]>([])
 const name = ref('')
 const template = ref('')
-const teams = ref(16)
 const startsAt = ref(defaultStart())
-const prepDays = ref(2)
-const roundsPerDay = ref(1)
-const times = ref(['21:00', '18:00'])
-const startingBudget = ref(3_000_000)
-const fair = ref(true)
-// The integrity system: bribes, spies and the FA [X28], off unless the owner wants it.
-const integrity = ref(false)
-// Each round in two time slots [X31]: off, or the second slot this many minutes after the round's time.
+// The customized league's settings, from the free ones.
+const custom = ref(false)
+const teams = ref(20)
+const prepDays = ref(FREE.prep)
+const time = ref(FREE.time)
+const customTime = ref(false)
+const startingBudget = ref(FREE.budget)
+const fair = ref(false)
+const integrity = ref(true)
+const press = ref(true)
 const staggered = ref(false)
 const slotGap = ref(240)
-const endMode = ref<'renew' | 'end'>('renew')
+const endMode = ref<'renew' | 'end'>(FREE.end)
 
 const step = ref<'settings' | 'club'>('settings')
 const clubs = ref<Club[]>([])
@@ -41,10 +48,32 @@ const error = ref<ApiError | null>(null)
 const loadError = ref('')
 const sending = ref(false)
 
-const maxTeams = computed(() => Math.min(20, templates.value.find((t) => t.name === template.value)?.clubs ?? 20))
-const rounds = computed(() => roundsFor(teams.value))
+const fullTeams = computed(() => Math.min(20, templates.value.find((t) => t.name === template.value)?.clubs ?? 20))
+/** At least half the real league's clubs [UP9]. */
+const minTeams = computed(() => Math.min(fullTeams.value, Math.max(4, Math.ceil(fullTeams.value / 2))))
+const count = computed(() => (custom.value ? teams.value : fullTeams.value))
+const rounds = computed(() => roundsFor(count.value))
 const lockFrom = computed(() => lockFromRound(rounds.value))
-watch(maxTeams, (m) => (teams.value = Math.min(Math.max(teams.value, 4), m)))
+watch(fullTeams, (m) => (teams.value = m))
+
+/** What differs from the free league: none, and it stays free. */
+const changes = computed(() => {
+  if (!custom.value) return {}
+  const c: Record<string, unknown> = {}
+  if (teams.value !== fullTeams.value) c.team_count = teams.value
+  if (prepDays.value !== FREE.prep) c.prep_days = prepDays.value
+  if (customTime.value) c.round_times = [time.value]
+  if (startingBudget.value !== FREE.budget) c.starting_budget = startingBudget.value
+  if (fair.value) c.fair_league = true
+  if (!integrity.value) c.integrity = false
+  if (!press.value) c.press_conferences = false
+  if (staggered.value) c.second_slot_minutes = slotGap.value
+  if (endMode.value !== FREE.end) c.season_end_mode = endMode.value
+  return c
+})
+const customized = computed(() => Object.keys(changes.value).length > 0)
+const coins = computed(() => (customized.value ? count.value * COINS_PER_CLUB : 0))
+const short = computed(() => customized.value && (wallet.view?.balance ?? 0) < coins.value)
 
 /** Tomorrow at 21:00 on this device: the field shows and sends the device's own time. */
 function defaultStart() {
@@ -61,6 +90,7 @@ const minStart = local(new Date())
 const maxStart = local(new Date(Date.now() + 7 * 86400000))
 
 onMounted(async () => {
+  void wallet.load()
   try {
     const { data } = await api.GET('/data/templates')
     templates.value = (data as { templates: Template[] }).templates.filter((t) => t.clubs >= 4)
@@ -75,7 +105,7 @@ async function toClubs() {
   error.value = null
   try {
     const { data } = await api.GET('/data/clubs', { params: { query: { league: template.value } } })
-    clubs.value = (data as { clubs: Club[] }).clubs.slice(0, teams.value)
+    clubs.value = (data as { clubs: Club[] }).clubs.slice(0, count.value)
     club.value = null
     step.value = 'club'
     window.scrollTo({ top: 0 })
@@ -94,20 +124,15 @@ async function create() {
       body: {
         name: name.value.trim() || null,
         template: template.value,
-        team_count: teams.value,
-        rounds_per_day: roundsPerDay.value,
-        round_times: times.value.slice(0, roundsPerDay.value),
-        prep_days: prepDays.value,
-        season_end_mode: endMode.value,
         starts_at: new Date(startsAt.value).toISOString(),
-        starting_budget: startingBudget.value,
-        fair_league: fair.value,
-        integrity: integrity.value,
-        second_slot_minutes: staggered.value ? slotGap.value : null,
+        // The free league plays at this owner's evening, in their own time zone.
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        ...changes.value,
         is_dev: import.meta.env.DEV,
         club_id: club.value.id,
       },
     })
+    void wallet.load()
     router.push({ name: 'league-home', params: { id: data!.league.id }, query: { welcome: '1' } })
   } catch (e) {
     error.value = asApiError(e)
@@ -143,99 +168,95 @@ const field = (name: string) => error.value?.field(name) ?? ''
       <div class="flex flex-col gap-4">
         <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-basics">
           <h2 id="h-basics" class="font-display text-xl font-extrabold">الأساسيات</h2>
-          <TextField v-model="name" label="اسم الدوري" placeholder="فارغ: اسم القالب والكود" :error="field('name')" />
+          <TextField v-model="name" label="اسم الدوري" placeholder="فارغ: اسم الدوري والكود" :error="field('name')" />
           <div class="grid gap-4 md:grid-cols-2">
             <label class="flex flex-col gap-1.5">
-              <span class="text-sm font-bold">القالب</span>
+              <span class="text-sm font-bold">الدوري</span>
               <select v-model="template" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" :aria-invalid="!!field('template')">
                 <option v-for="t in templates" :key="t.name" :value="t.name">{{ $nm(t.name) }} · {{ t.clubs }} نادياً</option>
               </select>
               <span v-if="field('template')" class="text-sm text-[#FF8A8A]">{{ field('template') }}</span>
             </label>
-            <div class="flex flex-col gap-1.5">
-              <span id="l-teams" class="text-sm font-bold">عدد الفرق</span>
-              <div class="flex items-center justify-between gap-2" role="group" aria-labelledby="l-teams">
-                <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أقل" :disabled="teams <= 4" @click="teams--">−</button>
-                <output class="font-numbers text-4xl font-bold text-gold" aria-live="polite">{{ teams }}</output>
-                <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أكثر" :disabled="teams >= maxTeams" @click="teams++">+</button>
-              </div>
-              <span class="text-xs text-text-muted">من 4 إلى {{ maxTeams }} · أقوى {{ teams }} نادياً في القالب</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-times">
-          <h2 id="h-times" class="font-display text-xl font-extrabold">المواعيد</h2>
-          <div class="grid gap-4 md:grid-cols-2">
             <label class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">بداية الموسم (بتوقيتك)</span>
               <input v-model="startsAt" type="datetime-local" :min="minStart" :max="maxStart" required class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" />
               <span v-if="field('starts_at')" class="text-sm text-[#FF8A8A]">{{ field('starts_at') }}</span>
             </label>
-            <fieldset class="flex flex-col gap-1.5">
-              <legend class="mb-1.5 text-sm font-bold">فترة الإعداد</legend>
-              <div class="grid grid-cols-3 gap-1 rounded-lg bg-surface-sunk p-1">
-                <button v-for="d in [1, 2, 3]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
-                  {{ ['يوم', 'يومان', '3 أيام'][d - 1] }}
-                </button>
-              </div>
-            </fieldset>
-            <fieldset class="flex flex-col gap-1.5">
-              <legend class="mb-1.5 text-sm font-bold">الجولات يومياً</legend>
-              <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1">
-                <button v-for="n in [1, 2]" :key="n" type="button" class="h-11 rounded-md font-bold" :class="roundsPerDay === n ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="roundsPerDay === n" @click="roundsPerDay = n">
-                  {{ n === 1 ? 'جولة' : 'جولتان' }}
-                </button>
-              </div>
-            </fieldset>
-            <div class="flex flex-col gap-1.5">
-              <span class="text-sm font-bold">{{ roundsPerDay === 1 ? 'ساعة الجولة' : 'ساعتا الجولتين' }} (القاهرة)</span>
-              <div class="grid gap-2" :class="roundsPerDay === 2 ? 'grid-cols-2' : ''">
-                <input
-                  v-for="i in roundsPerDay"
-                  :key="i"
-                  v-model="times[i - 1]"
-                  type="time"
-                  required
-                  dir="ltr"
-                  :aria-label="`ساعة الجولة ${i}`"
-                  class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg"
-                />
-              </div>
-              <span v-if="field('round_times') || field('round_times.1')" class="text-sm text-[#FF8A8A]">{{ field('round_times') || field('round_times.1') }}</span>
-            </div>
           </div>
         </section>
 
-        <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-money">
-          <h2 id="h-money" class="font-display text-xl font-extrabold">الاقتصاد والقواعد</h2>
-          <label class="flex flex-col gap-2">
-            <span class="flex items-center justify-between text-sm font-bold">ميزانية البداية لكل نادٍ <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
-            <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
-            <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
-          </label>
-          <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف العملة المميزة داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
-          <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" hint="رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح"><b>منظومة النزاهة والمؤامرات</b></UiToggle>
-          <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" hint="نصف مباريات الجولة في موعدها والنصف الآخر في سهرة بعدها، بقفل موحد وتدوير عادل، والجولة الأخيرة متزامنة"><b>الجولة على فترتين</b></UiToggle>
-          <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">الفترة الثانية بعد موعد الجولة بـ
-            <select v-model.number="slotGap" class="h-touch rounded-md bg-surface px-2 font-bold">
-              <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? 'ساعة' : m === 120 ? 'ساعتين' : 'ساعات' }}</option>
-            </select>
-          </label>
-          <fieldset class="flex flex-col gap-2">
-            <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>
-            <div class="grid gap-2 md:grid-cols-2">
-              <label
-                v-for="(label, mode) in END_MODES"
-                :key="mode"
-                class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border p-3"
-                :class="endMode === mode ? 'border-gold bg-surface-raised' : 'border-text/10'"
-              >
-                <input v-model="endMode" type="radio" name="end" :value="mode" class="size-5 accent-gold" />{{ label }}
+        <!-- The free league, as it comes. -->
+        <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-free">
+          <h2 id="h-free" class="font-display text-xl font-extrabold">الدوري القياسي <span class="rounded-pill bg-success/15 px-2.5 py-0.5 align-middle text-xs text-success">مجاني</span></h2>
+          <ul class="grid gap-2 text-sm text-text-soft md:grid-cols-2">
+            <li>⚽ كل أندية الدوري الأصلي ({{ fullTeams }})</li>
+            <li>🕘 جولة واحدة يومياً في التاسعة مساءً بتوقيتك</li>
+            <li>📅 يومان للإعداد قبل أول جولة</li>
+            <li>🎙️ المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان</li>
+            <li>🏁 موسم واحد ثم ينتهي الدوري</li>
+            <li>⚖️ لا دوري نزيه ولا جولة على فترتين</li>
+          </ul>
+          <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" hint="عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد"><b>أريد تخصيص الدوري</b></UiToggle>
+        </section>
+
+        <template v-if="custom">
+          <section class="flex flex-col gap-4 rounded-xl border border-gold/30 bg-surface p-4 md:p-5" aria-labelledby="h-custom">
+            <h2 id="h-custom" class="font-display text-xl font-extrabold">التخصيص</h2>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="flex flex-col gap-1.5">
+                <span id="l-teams" class="text-sm font-bold">عدد الأندية</span>
+                <div class="flex items-center justify-between gap-2" role="group" aria-labelledby="l-teams">
+                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أقل" :disabled="teams <= minTeams" @click="teams--">−</button>
+                  <output class="font-numbers text-4xl font-bold text-gold" aria-live="polite">{{ teams }}</output>
+                  <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" aria-label="أكثر" :disabled="teams >= fullTeams" @click="teams++">+</button>
+                </div>
+                <span class="text-xs text-text-muted">من {{ minTeams }} (نصف أندية الدوري) إلى {{ fullTeams }}</span>
+                <span v-if="field('team_count')" class="text-sm text-[#FF8A8A]">{{ field('team_count') }}</span>
+              </div>
+              <fieldset class="flex flex-col gap-1.5">
+                <legend class="mb-1.5 text-sm font-bold">فترة الإعداد</legend>
+                <div class="grid grid-cols-3 gap-1 rounded-lg bg-surface-sunk p-1">
+                  <button v-for="d in [2, 4, 6]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
+                    {{ d === 2 ? 'يومان' : `${d} أيام` }}
+                  </button>
+                </div>
+              </fieldset>
+              <div class="flex flex-col gap-1.5">
+                <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"><b>ساعة مباريات محددة</b></UiToggle>
+                <input v-if="customTime" v-model="time" type="time" required dir="ltr" aria-label="ساعة المباريات بتوقيت القاهرة" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg" />
+                <span v-if="customTime" class="text-xs text-text-muted">بتوقيت القاهرة، كل مباريات الجولة معاً</span>
+                <span v-if="field('round_times')" class="text-sm text-[#FF8A8A]">{{ field('round_times') }}</span>
+              </div>
+              <label class="flex flex-col gap-2">
+                <span class="flex items-center justify-between text-sm font-bold">ميزانية البداية لكل نادٍ <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
+                <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
+                <span class="flex justify-between text-xs text-text-muted"><span>مليون</span><span>10 ملايين</span></span>
               </label>
             </div>
-          </fieldset>
-        </section>
+            <UiToggle v-model="fair" tone="success" class="rounded-lg bg-surface-sunk p-3" hint="يقفل صرف الكوينز داخل هذا الدوري"><b>دوري نزيه</b></UiToggle>
+            <UiToggle v-model="integrity" class="rounded-lg bg-surface-sunk p-3" hint="رشوة الحكم والفار والجواسيس المزدوجون ولجنة الانضباط والفضائح"><b>منظومة النزاهة</b></UiToggle>
+            <UiToggle v-model="press" class="rounded-lg bg-surface-sunk p-3" hint="تصريح قبل كل مباراة يرفع المعنويات"><b>المؤتمرات الصحفية</b></UiToggle>
+            <UiToggle v-model="staggered" class="rounded-lg bg-surface-sunk p-3" hint="نصف مباريات الجولة في موعدها والنصف الآخر بعدها، بقفل موحد وتدوير عادل"><b>الجولة على فترتين</b></UiToggle>
+            <label v-if="staggered" class="flex items-center justify-between gap-3 rounded-lg bg-surface-sunk p-3 text-sm">الفترة الثانية بعد موعد الجولة بـ
+              <select v-model.number="slotGap" class="h-touch rounded-md bg-surface px-2 font-bold">
+                <option v-for="m in [60, 120, 180, 240, 300, 360]" :key="m" :value="m">{{ m / 60 }} {{ m === 60 ? 'ساعة' : m === 120 ? 'ساعتين' : 'ساعات' }}</option>
+              </select>
+            </label>
+            <fieldset class="flex flex-col gap-2">
+              <legend class="mb-1.5 text-sm font-bold">في نهاية الموسم</legend>
+              <div class="grid gap-2 md:grid-cols-2">
+                <label
+                  v-for="(label, mode) in END_MODES"
+                  :key="mode"
+                  class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border p-3"
+                  :class="endMode === mode ? 'border-gold bg-surface-raised' : 'border-text/10'"
+                >
+                  <input v-model="endMode" type="radio" name="end" :value="mode" class="size-5 accent-gold" />{{ label }}
+                </label>
+              </div>
+            </fieldset>
+          </section>
+        </template>
       </div>
 
       <aside class="flex h-fit flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4 lg:sticky lg:top-4" aria-labelledby="h-summary">
@@ -243,11 +264,15 @@ const field = (name: string) => error.value?.field(name) ?? ''
         <dl class="flex flex-col divide-y divide-text/5 text-sm">
           <div class="flex justify-between py-2"><dt class="text-text-muted">جولات الدوري</dt><dd class="font-bold"><span class="font-numbers">{{ rounds }}</span> جولة</dd></div>
           <div class="flex justify-between py-2"><dt class="text-text-muted">منطقة القفل</dt><dd class="font-bold">من الجولة <span class="font-numbers">{{ lockFrom }}</span></dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">مقاعد المدربين</dt><dd class="font-bold"><span class="font-numbers">{{ teams }}</span> · مقعدك و<span class="font-numbers">{{ teams - 1 }}</span> لأصحابك</dd></div>
-          <div class="flex justify-between py-2"><dt class="text-text-muted">الميزانية</dt><dd class="font-bold">{{ budget(startingBudget) }}</dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">مقاعد المدربين</dt><dd class="font-bold"><span class="font-numbers">{{ count }}</span> · مقعدك و<span class="font-numbers">{{ count - 1 }}</span> لأصحابك</dd></div>
+          <div class="flex justify-between py-2"><dt class="text-text-muted">الميزانية</dt><dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd></div>
         </dl>
-        <p class="text-xs text-text-muted">بعد الإنشاء تختار فريقك، وتحصل على كود تشاركه. الفرق الأخرى يديرها الحاسوب حتى ينضم أصحابك. ولا ينضم أحد في آخر ربع من الجولات.</p>
-        <UiButton type="submit" block :disabled="!template">أنشئ الدوري واختر فريقك</UiButton>
+        <p class="text-xs text-text-muted">بعد الإنشاء تختار فريقك، وتحصل على كود تشاركه. الفرق الأخرى يديرها الحاسوب حتى ينضم أصحابك.</p>
+        <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">رصيدك {{ wallet.view?.balance ?? 0 }} كوينز، والدوري المخصص يحتاج {{ coins }}.</p>
+        <UiButton type="submit" block :disabled="!template || short">
+          <template v-if="customized">إنشاء الدوري المخصص · <img src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" /> <span class="font-numbers">{{ coins }}</span> كوينز</template>
+          <template v-else>أنشئ الدوري واختر فريقك</template>
+        </UiButton>
       </aside>
     </form>
 
@@ -267,8 +292,8 @@ const field = (name: string) => error.value?.field(name) ?? ''
           </button>
         </li>
       </ul>
-      <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep/95 p-4 backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
-        <UiButton block :disabled="!club || sending" @click="create">{{ club ? `أنشئ الدوري بـ${club.name}` : 'اختر فريقك' }}</UiButton>
+      <div class="fixed inset-x-0 bottom-20 z-10 border-t border-text/10 bg-bg-deep p-4 md:static md:border-0 md:bg-transparent md:p-0">
+        <UiButton block :disabled="!club || sending" @click="create">{{ club ? `أنشئ الدوري بـ${club.name}` + (coins ? ` · ${coins} كوينز` : '') : 'اختر فريقك' }}</UiButton>
       </div>
     </section>
   </div>

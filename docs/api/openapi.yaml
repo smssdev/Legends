@@ -534,25 +534,30 @@ paths:
       description: |
         Copies the strongest team_count clubs of the template with their players, funds each with the starting
         budget, and gives the owner the club they chose. Every other club is a bot. 10 a minute.
+        [UP9] Every setting may be left out for the free league: all the template's clubs, one round a day at 21:00 in
+        the creator's time zone, two days to get ready, integrity and press conferences on, one season. Any setting
+        that differs makes a customized league, paid once in coins (team_count × 20; 409 without them).
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [template, team_count, rounds_per_day, round_times, prep_days, season_end_mode, starts_at, club_id]
+              required: [template, starts_at, club_id]
               properties:
                 name: { type: string, maxLength: 60, nullable: true, description: 'Empty: the template and the code, like "Premier League #K7F2QX9M"' }
                 template: { type: string, description: A name from GET /data/templates }
-                team_count: { type: integer, minimum: 4, maximum: 20 }
-                rounds_per_day: { type: integer, minimum: 1, maximum: 2 }
-                round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM per round, Cairo time }
-                prep_days: { type: integer, minimum: 1, maximum: 3 }
+                team_count: { type: integer, minimum: 4, maximum: 20, description: 'From half the template''s clubs to all of them [UP9]' }
+                rounds_per_day: { type: integer, minimum: 1, maximum: 1, description: 'One round a day [UP17]' }
+                round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM, Cairo time }
+                prep_days: { type: integer, enum: [2, 4, 6] }
+                timezone: { type: string, nullable: true, description: 'The creator''s IANA zone: the free league plays at 21:00 there' }
+                press_conferences: { type: boolean, default: true, description: '[UP12] The press conference before each match' }
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time, description: From now up to 7 days }
                 starting_budget: { type: integer, minimum: 1000000, maximum: 10000000, default: 3000000 }
                 fair_league: { type: boolean, default: false, description: Locks spending coins inside this league }
-                integrity: { type: boolean, default: false, description: 'Bribes, spies and the FA [X28]' }
+                integrity: { type: boolean, default: true, description: 'Bribes, spies and the FA [X28]' }
                 second_slot_minutes: { type: integer, nullable: true, minimum: 60, maximum: 600, description: 'Each round in two slots: half its matches this long after the round time [X31]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
                 club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
@@ -603,13 +608,15 @@ paths:
               type: object
               properties:
                 name: { type: string, maxLength: 60, nullable: true }
-                rounds_per_day: { type: integer, minimum: 1, maximum: 2 }
+                rounds_per_day: { type: integer, minimum: 1, maximum: 1 }
                 round_times: { type: array, items: { type: string } }
-                prep_days: { type: integer, minimum: 1, maximum: 3 }
+                prep_days: { type: integer, enum: [2, 4, 6] }
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
+                starting_budget: { type: integer }
                 fair_league: { type: boolean }
                 integrity: { type: boolean }
+                press_conferences: { type: boolean }
                 second_slot_minutes: { type: integer, nullable: true }
       responses:
         '200': { $ref: '#/components/responses/League' }
@@ -3224,6 +3231,8 @@ components:
         drawn_at: { type: string, format: date-time, nullable: true }
         fair_league: { type: boolean }
         integrity: { type: boolean, description: 'The integrity system: bribes, spies and the FA [X28]' }
+        press_conferences: { type: boolean, description: '[UP12] The press conference before each match' }
+        custom_coins: { type: integer, description: '[UP9] The coins paid for a customized league (0: free)' }
         second_slot_minutes: { type: integer, nullable: true, description: 'Rounds in two slots [X31]' }
         headlines: { type: array, items: { type: object, required: [text, points], properties: { text: { type: string }, points: { type: integer } } }, description: 'The FA verdicts of the last day [X28]' }
         is_dev: { type: boolean }

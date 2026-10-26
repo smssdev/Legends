@@ -30,7 +30,7 @@ class MarketTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-10-22 10:00:00');
-        $this->template(clubs: 20, full: true);
+        $this->template(full: true);
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()]);
         $this->mine = $this->league['my_club_id'];

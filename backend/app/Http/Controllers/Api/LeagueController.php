@@ -9,6 +9,7 @@ use App\League\Integrity;
 use App\League\Joining;
 use App\League\LeagueFactory;
 use App\League\LeagueStarter;
+use App\League\LeagueTiers;
 use App\League\Leaving;
 use App\League\LiveDraw;
 use App\League\Presence;
@@ -21,6 +22,7 @@ use App\Models\LeagueMembership;
 use App\Models\User;
 use App\Season\Objectives;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -78,7 +80,10 @@ class LeagueController extends Controller
             $name = trim((string) $data['name']);
             $data['name'] = $name !== '' ? $name : $league->template.' #'.$league->code;
         }
-        DB::transaction(function () use ($league, $data) {
+        DB::transaction(function () use ($request, $league, $data) {
+            if ($coins = $this->chargeCustomization($request, $league, $data)) {
+                $data['custom_coins'] = $coins;
+            }
             // Conditional on still waiting: a start in the same moment wins and the change is refused.
             $changed = DB::table('leagues')->where('id', $league->id)->whereNull('settings_locked_at')
                 ->update(collect($data)->map(fn ($v) => is_array($v) ? json_encode(array_values($v)) : $v)->all() + ['updated_at' => GameClock::now()]);
@@ -405,33 +410,42 @@ class LeagueController extends Controller
     {
         $c = config('game.league');
         $e = config('game.economy');
-        $sometimes = $creating ? 'required' : 'sometimes';
+        // A development league (never in production) is the developers' tool for a season in minutes: free, and with
+        // the old freedom (a few clubs, one day to get ready, two rounds a day) so the clock can be raced.
+        $dev = ! app()->isProduction() && ($creating ? $request->boolean('is_dev') : (bool) $request->route('league')?->is_dev);
+        $prep = $dev ? ['between:1,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
+        // [UP9] Every setting may be left out: the free league's own value takes its place (LeagueTiers).
         $rules = [
             'name' => ['nullable', 'string', 'max:60'],
-            'rounds_per_day' => [$sometimes, 'integer', 'between:'.$c['rounds_per_day'][0].','.$c['rounds_per_day'][1]],
-            'round_times' => [$sometimes, 'array', 'size:'.(int) $request->input('rounds_per_day', 1)],
+            'rounds_per_day' => ['sometimes', 'integer', 'between:'.$c['rounds_per_day'][0].','.($dev ? 2 : $c['rounds_per_day'][1])],
+            'round_times' => ['sometimes', 'array', 'size:'.(int) $request->input('rounds_per_day', 1)],
             'round_times.*' => ['date_format:H:i', 'distinct'],
-            'prep_days' => [$sometimes, 'integer', 'between:'.$c['prep_days'][0].','.$c['prep_days'][1]],
-            'season_end_mode' => [$sometimes, Rule::in(League::END_MODES)],
-            'starts_at' => [$sometimes, 'date'],
+            'prep_days' => ['sometimes', 'integer', ...$prep],
+            'season_end_mode' => ['sometimes', Rule::in(League::END_MODES)],
+            'starts_at' => [$creating ? 'required' : 'sometimes', 'date'],
             'fair_league' => ['sometimes', 'boolean'],
             // The integrity system: bribes, spies and the FA [X28], the owner's choice before the start.
             'integrity' => ['sometimes', 'boolean'],
+            // [UP12] The press conferences before each match.
+            'press_conferences' => ['sometimes', 'boolean'],
             // A round in two slots [X31]: minutes from the round's time to its second slot, or none.
             'second_slot_minutes' => ['sometimes', 'nullable', 'integer', 'between:'.config('game.staggered.min_minutes').','.config('game.staggered.max_minutes')],
+            'starting_budget' => ['sometimes', 'integer', 'between:'.$e['starting_budget_min'].','.$e['starting_budget_max']],
         ];
         if ($creating) {
             $rules += [
                 'template' => ['required', 'string', 'max:80'],
-                'team_count' => ['required', 'integer', 'between:'.$c['min_teams'].','.$c['max_teams']],
-                'starting_budget' => ['sometimes', 'integer', 'between:'.$e['starting_budget_min'].','.$e['starting_budget_max']],
+                'team_count' => ['sometimes', 'integer', 'between:'.$c['min_teams'].','.$c['max_teams']],
+                // The creator's own time zone: the free league plays at their evening.
+                'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
                 'is_dev' => ['sometimes', 'boolean'],
                 'club_id' => ['required', 'integer'],
             ];
-        } elseif ($request->has('rounds_per_day') xor $request->has('round_times')) {
-            throw ValidationException::withMessages(['round_times' => 'أرسل الجولات يومياً ومواعيدها معاً.']);
         }
         $data = $request->validate($rules);
+        if (isset($data['round_times']) && ! isset($data['rounds_per_day'])) {
+            $data['rounds_per_day'] = count($data['round_times']);
+        }
         if (isset($data['starts_at'])) {
             $at = Carbon::parse($data['starts_at'])->utc()->startOfMinute();
             $now = GameClock::now();
@@ -442,15 +456,45 @@ class LeagueController extends Controller
             $data['starts_at'] = $at->max($now->copy()->startOfMinute());
         }
         if ($creating) {
+            $free = LeagueTiers::free($data['template'], $data['timezone'] ?? null);
+            $full = $free['team_count'];
+            $least = $dev ? (int) $c['min_teams'] : LeagueTiers::minClubs($full);
+            if ($full > 0 && isset($data['team_count']) && ($data['team_count'] < $least || $data['team_count'] > $full)) {
+                throw ValidationException::withMessages(['team_count' => "عدد الأندية من {$least} إلى {$full}: نصف أندية الدوري الأصلي على الأقل."]);
+            }
+            $changed = LeagueTiers::changed($data, $free);
+            $data += $free;
+            $data['custom_coins'] = $changed && ! $dev ? LeagueTiers::cost($data['team_count']) : 0;
             $data['master_club_id'] = (int) $data['club_id'];
-            unset($data['club_id']);
-            $data['starting_budget'] ??= $e['starting_budget'];
-            $data['fair_league'] = (bool) ($data['fair_league'] ?? false);
-            $data['integrity'] = (bool) ($data['integrity'] ?? false);
+            $data['fair_league'] = (bool) $data['fair_league'];
+            $data['integrity'] = (bool) $data['integrity'];
+            $data['press_conferences'] = (bool) $data['press_conferences'];
             $data['is_dev'] = ! app()->isProduction() && ($data['is_dev'] ?? false);
+            unset($data['club_id'], $data['timezone']);
         }
 
         return $data;
+    }
+
+    /**
+     * [UP9] An owner who changes a free league's settings before the start makes it customized: paid once, then.
+     * Returns the coins charged (0 for a league already customized or a change that keeps it free).
+     */
+    private function chargeCustomization(Request $request, League $league, array $data): int
+    {
+        if ($league->custom_coins > 0 || $league->is_dev) {
+            return 0;
+        }
+        $current = ['team_count' => $league->team_count, 'prep_days' => $league->prep_days, 'round_times' => $league->round_times, 'starting_budget' => $league->starting_budget,
+            'fair_league' => (bool) $league->fair_league, 'integrity' => (bool) $league->integrity, 'press_conferences' => (bool) $league->press_conferences,
+            'second_slot_minutes' => $league->second_slot_minutes, 'season_end_mode' => $league->season_end_mode];
+        if (! LeagueTiers::changed($data, $current)) {
+            return 0;
+        }
+        $coins = LeagueTiers::cost((int) $league->team_count);
+        Wallet::post($request->user()->id, 'league_custom', -$coins, 'league_custom:'.$league->id, 'league:'.$league->id);
+
+        return $coins;
     }
 
     /** Leagues made before the calendar existed (Sprint 15) get theirs the first time it is asked for. */
@@ -530,7 +574,7 @@ class LeagueController extends Controller
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
             // The live draw [X26]: when, and whether it has been drawn.
             'draw_at' => $l->draw_at?->toIso8601ZuluString(), 'drawn_at' => $l->drawn_at?->toIso8601ZuluString(),
-            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity,
+            'fair_league' => $l->fair_league, 'integrity' => (bool) $l->integrity, 'press_conferences' => (bool) $l->press_conferences, 'custom_coins' => (int) $l->custom_coins,
             'second_slot_minutes' => $l->second_slot_minutes ? (int) $l->second_slot_minutes : null, 'is_dev' => $l->is_dev,
             // The FA's verdicts of the last day, as a breaking headline [X28].
             'headlines' => $l->integrity ? Integrity::headlines($l->id) : [], 'status' => $l->status, 'locked' => $l->isLocked(),
