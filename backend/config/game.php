@@ -275,7 +275,7 @@ return [
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
     // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
     // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
-    'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6'], 'default_commentator' => 'voice-6',
+    'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
     'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with

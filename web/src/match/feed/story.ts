@@ -79,7 +79,7 @@ export function story(tick, ctx) {
       const chosen = V?.pick?.[name]
       const en = V ? (chosen?.[0] != null ? s.en[chosen[0]] : null) : fill(s.en)
       const ar = V ? (chosen?.[1] != null ? s.ar[chosen[1]] : null) : pick(s.ar)
-      if (en || ar) out.lines.push({ at: t, en, ar, x: !!s.x, vars: { ...vars } })
+      if (en || ar) out.lines.push({ at: t, en, ar, x: !!s.x, vars: { ...vars }, m: key, s: name })
     }
     slot('pre', 0.05)
     slot('key', at.key ?? 0.4)

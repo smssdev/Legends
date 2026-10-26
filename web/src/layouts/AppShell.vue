@@ -13,9 +13,11 @@ import { useAuth } from '../stores/auth'
 import { useInbox } from '../stores/inbox'
 import { useSlot } from '../stores/slot'
 import { useWallet } from '../stores/wallet'
+import { useBroadcast } from '../stores/broadcast'
 import { SECTIONS, TABS, type Section } from './nav'
 
 const route = useRoute()
+const broadcast = useBroadcast()
 const auth = useAuth()
 const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
 const more = ref(false)
@@ -129,6 +131,16 @@ watch(() => route.fullPath, () => (more.value = false))
       </nav>
     </header>
 
+    <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
+    <div v-if="broadcast.away && broadcast.path" class="on-air flex items-center gap-2 px-3 py-2 md:px-6" role="status">
+      <RouterLink :to="broadcast.path" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 font-bold" aria-label="العودة إلى المباراة">
+        <span class="flex shrink-0 items-center gap-1.5 rounded-pill bg-live px-2 py-0.5 text-xs text-white"><span class="size-1.5 animate-pulse rounded-full bg-white" />{{ broadcast.live ? 'على الهواء' : 'انتهت' }}</span>
+        <span class="min-w-0 truncate text-sm">{{ broadcast.title }}</span>
+        <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
+        <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
+      </RouterLink>
+      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10" aria-label="كتم صوت المباراة" @click="broadcast.muteAsk++">🔇</button>
+    </div>
     <RouterLink v-if="auth.user && !auth.user.email_verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
       بريدك غير مؤكد بعد. <span class="font-bold text-gold">أكّده من صفحة حسابي</span>
     </RouterLink>
@@ -282,6 +294,11 @@ watch(() => route.fullPath, () => (more.value = false))
   height: 3px;
   border-radius: 3px 3px 0 0;
   background: var(--color-gold);
+}
+/* [X41] The broadcast's bar: a strip in the emerald of the shell, under the header. */
+.on-air {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-live) 25%, var(--color-panel)), var(--color-panel));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-live) 40%, transparent);
 }
 /* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
 .shell-tabs {

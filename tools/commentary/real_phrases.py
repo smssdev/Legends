@@ -19,7 +19,12 @@ import tempfile
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PATCHES = os.path.join(ROOT, 'audio', 'raw', 'patches')
 # The folder of each commentator's recordings, and his voice in the game (tools/commentary/arabic_voice.py VOICES).
-VOICE_OF = {'ali': 'voice-1', 'chawali': 'voice-2', 'fahad': 'voice-3', 'faris': 'voice-4', 'medhat': 'voice-5', 'hafid': 'voice-6'}
+VOICE_OF = {'ali': 'voice-1', 'chawali': 'voice-2', 'fahad': 'voice-3', 'faris': 'voice-4', 'medhat': 'voice-5', 'hafid': 'voice-6',
+            'shawalli': 'voice-7'}
+# [X41] A whole match gives far more than a phone should download: the clearest phrases of each kind up to this many
+# (about 450 phrases, some 5 MB at speech quality). The rest stay in the table for later.
+CAP = {'goal': 25, 'goal_post': 30, 'attack': 70, 'save': 30, 'miss': 40, 'post': 12, 'foul': 35, 'card': 15, 'corner': 20,
+       'offside': 12, 'penalty': 12, 'freekick': 15, 'sub': 12, 'injury': 8, 'kickoff': 12, 'half': 8, 'full': 12, 'calm': 90}
 SR = 24000
 GAP = 0.12
 
@@ -27,7 +32,13 @@ GAP = 0.12
 def build(name):
     folder = os.path.join(PATCHES, name)
     with open(os.path.join(folder, 'cuts.csv'), encoding='utf-8-sig') as f:
-        cuts = list(csv.DictReader(f))
+        cuts = [c for c in csv.DictReader(f) if c.get('keep', '1') != '0']
+    if 'keep' in (cuts[0] if cuts else {}):
+        # The table of a whole match: each kind's clearest phrases first, within its cap.
+        by_kind = {}
+        for c in cuts:
+            by_kind.setdefault(c['kind'], []).append(c)
+        cuts = [c for k, v in by_kind.items() for c in sorted(v, key=lambda c: -float(c.get('clarity') or 0))[:CAP.get(k, 20)]]
     tmp = tempfile.mkdtemp()
     parts, kinds, at = [], {}, 0.0
     for i, c in enumerate(cuts):
@@ -52,7 +63,7 @@ def build(name):
             f.write(f"file '{p}'\nfile '{silence}'\n")
     pack = os.path.join(ROOT, 'web', 'public', 'commentary', 'ar', VOICE_OF[name], 'real')
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', listing, '-ac', '1', '-ar', str(SR),
-                    '-c:a', 'libmp3lame', '-b:a', '64k', pack + '.mp3'], check=True)
+                    '-c:a', 'libmp3lame', '-b:a', '64k' if len(cuts) < 60 else '40k', pack + '.mp3'], check=True)
     with open(pack + '.json', 'w', encoding='utf-8') as f:
         json.dump(kinds, f, ensure_ascii=False)
     print(f'{name}: {len(cuts)} phrases ({", ".join(f"{k} {len(v)}" for k, v in kinds.items())}) -> {pack}.mp3')

@@ -39,6 +39,24 @@ export class MatchSound {
     this.duckGain = ctx.createGain()
     src.connect(band).connect(this.crowd).connect(this.duckGain).connect(this.master)
     src.start()
+    // [X41] The real crowd of a stadium (public/sfx/crowd-bed.mp3, the pauses of the commentator's recording, made
+    // by tools/commentary/crowd_bed.py) takes the synthesized noise's place once it has loaded; same gains, so it
+    // still rises with danger and steps back under the commentator.
+    void fetch(import.meta.env.BASE_URL + 'sfx/crowd-bed.mp3')
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
+      .then((b) => ctx.decodeAudioData(b))
+      .then((buf) => {
+        if (this.ctx !== ctx || !this.crowd) return
+        const real = ctx.createBufferSource()
+        real.buffer = buf
+        real.loop = true
+        const lift = ctx.createGain()
+        lift.gain.value = 3.2
+        real.connect(lift).connect(this.crowd)
+        real.start(0, Math.random() * buf.duration)
+        src.stop(ctx.currentTime + 0.4)
+      })
+      .catch(() => { /* no file: the synthesized crowd stays */ })
   }
 
   /** The commentator starts or stops talking: the crowd steps back under his voice. */

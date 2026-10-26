@@ -213,7 +213,11 @@ const SOUNDS = {
   penalty: [[0.05, 'whistle-long'], [0.2, 'heart'], [0.3, 'heart'], [0.4, 'heart'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], [0.25, 'heart'], [0.37, 'heart'], ['key', 'kick'], ['key', 'roar']],
   card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
 }
-function frame(now) {
+// [X41] A hidden page gets no animation frames, but the broadcast plays on (the commentator and the crowd): a timer
+// steps the minute instead, so its lines and sounds still come on time. Browsers let a page that plays sound run.
+let bgTimer = 0
+function frame(now) { step(now); raf = requestAnimationFrame(frame) }
+function step(now) {
   // Frames that fall behind while a scene plays turn the smooth mode on (auto) [X30].
   if (scene && sceneOn.value) noteFrame(now - last)
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
@@ -253,7 +257,6 @@ function frame(now) {
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
     if (t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
   }
-  raf = requestAnimationFrame(frame)
 }
 
 // ---------------------------------------------------------------- the live pitch and the clock [X35]
@@ -409,8 +412,11 @@ function tickClock(tick, u) {
 }
 watch(() => props.kits, () => buildPitch(), { deep: true })
 onMounted(buildPitch)
-onMounted(() => { raf = requestAnimationFrame((n) => { last = n; frame(n) }) })
-onBeforeUnmount(() => cancelAnimationFrame(raf))
+onMounted(() => {
+  raf = requestAnimationFrame((n) => { last = n; frame(n) })
+  bgTimer = window.setInterval(() => { if (document.hidden) step(performance.now()) }, 200)
+})
+onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 </script>
 
 <style scoped>
