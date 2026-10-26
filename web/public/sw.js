@@ -38,8 +38,8 @@ self.addEventListener('fetch', (e) => {
 // A notification from the server: { title, body, link, tag } [Sprint 36].
 self.addEventListener('push', (e) => {
   let n = {}
-  try { n = e.data ? e.data.json() : {} } catch { n = { title: 'الأساطير', body: e.data?.text() ?? '' } }
-  e.waitUntil(self.registration.showNotification(n.title || 'الأساطير', {
+  try { n = e.data ? e.data.json() : {} } catch { n = { title: 'GLM', body: e.data?.text() ?? '' } }
+  e.waitUntil(self.registration.showNotification(n.title || 'GLM', {
     body: n.body || '', tag: n.tag, icon: '/icon-192.png', badge: '/icon-192.png', dir: 'rtl', lang: 'ar', data: { link: n.link || '/' },
   }))
 })

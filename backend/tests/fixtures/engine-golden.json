@@ -1,5 +1,5 @@
 {
-    "engine_version": 9,
+    "engine_version": 10,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -28,7 +28,7 @@
             "reactions_kept": 20,
             "scene_gap_ms": 1800,
             "extra_time_tick_ms": 2000,
-            "extra_time_break_seconds": 10,
+            "extra_time_break_seconds": 30,
             "stoppage_first_half": [
                 1,
                 3
@@ -45,6 +45,16 @@
             "referee_minutes_before": 30,
             "subs": 3,
             "extra_time_subs": 1,
+            "windows": [
+                15,
+                30,
+                60,
+                75
+            ],
+            "window_seconds": 30,
+            "ready_bot_ms": 2000,
+            "emergency_sub": true,
+            "emergency_sub_seconds": 15,
             "favourite_win_rate_bp": 6700,
             "captain_bonus_bp": 100,
             "captain_min_fitness": 50,
@@ -55,6 +65,30 @@
                 200,
                 300
             ],
+            "minute_ms": 3333,
+            "extra_minute_ms": 2000,
+            "shootout_ms": 30000,
+            "broadcast_ms": {
+                "quiet": 2200,
+                "attack": 2800,
+                "brief": 4200,
+                "stoppage": 5000,
+                "whistle": 6500,
+                "coach": 5000,
+                "sub": 6000,
+                "injury": 6000,
+                "offside": 4200,
+                "corner": 8000,
+                "miss": 10000,
+                "save": 11000,
+                "goal": 20000,
+                "yellow": 8500,
+                "red": 11000,
+                "free_kick": 11000,
+                "free_kick_goal": 19000,
+                "penalty": 14000,
+                "penalty_goal": 20000
+            },
             "moment_ms": {
                 "quiet": 450,
                 "attack": 1100,
@@ -78,7 +112,7 @@
             }
         },
         "engine": {
-            "version": 9,
+            "version": 10,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -261,7 +295,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "91d2f338014c2fdb0b1f45bd93af0e75e89c6bb0f437eb289925bafa6d245a6d"
+            "sha256": "7ee4ef9d41b8f7947cad480de2758092edd8fb0db2bf6700309f0da9afef0b08"
         },
         {
             "seed": 48213,
@@ -294,7 +328,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "2cceb9a505090b37d4bf04a1e9bd8d6e293d767ad7a1da22343754a1af9dc315"
+            "sha256": "1d1e102a88fbf1089efed2da5bf969efb2428155e659cc78ecafc7180b16b1da"
         }
     ]
 }

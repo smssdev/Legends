@@ -8,6 +8,8 @@ import GoogleButton from '../../components/GoogleButton.vue'
 import TextField from '../../components/TextField.vue'
 import SupportLinks from '../../components/SupportLinks.vue'
 import { useAuth } from '../../stores/auth'
+import { t } from '../../lib/i18n'
+import LanguageSwitch from '../../components/LanguageSwitch.vue'
 
 const auth = useAuth()
 const route = useRoute()
@@ -22,11 +24,11 @@ const error = ref('')
 // Messages from the links that come back to this screen (Google, the email confirmation).
 const notice = computed(() => {
   const q = route.query
-  if (q.google === 'off') return 'الدخول بحساب جوجل غير مفعّل بعد. استخدم البريد وكلمة المرور.'
-  if (q.google === 'unverified') return 'بريدك في جوجل غير مؤكد، أكّده عند جوجل أولاً.'
-  if (q.google === 'failed') return 'لم يكتمل الدخول بجوجل. حاول مجدداً.'
-  if (q.verified === 'invalid') return 'رابط التأكيد غير صحيح أو منتهٍ. سجّل الدخول واطلب رابطاً جديداً.'
-  if (q.reset === '1') return 'تغيّرت كلمة المرور. ادخل بالجديدة.'
+  if (q.google === 'off') return t('الدخول بحساب جوجل غير مفعّل بعد. استخدم البريد وكلمة المرور.')
+  if (q.google === 'unverified') return t('بريدك في جوجل غير مؤكد، أكّده عند جوجل أولاً.')
+  if (q.google === 'failed') return t('لم يكتمل الدخول بجوجل. حاول مجدداً.')
+  if (q.verified === 'invalid') return t('رابط التأكيد غير صحيح أو منتهٍ. سجّل الدخول واطلب رابطاً جديداً.')
+  if (q.reset === '1') return t('تغيّرت كلمة المرور. ادخل بالجديدة.')
   return ''
 })
 
@@ -48,22 +50,24 @@ async function submit() {
 </script>
 
 <template>
+  <!-- [UP2] The language, before signing in. -->
+  <LanguageSwitch class="self-end" />
   <div>
-    <h1 class="font-display text-3xl font-extrabold">أهلاً بعودتك</h1>
-    <p class="mt-1 text-text-muted">ادخل لتكمل موسمك</p>
+    <h1 class="font-display text-3xl font-extrabold">{{ $t('أهلاً بعودتك') }}</h1>
+    <p class="mt-1 text-text-muted">{{ $t('ادخل لتكمل موسمك') }}</p>
   </div>
-  <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ notice }}</p>
-  <GoogleButton label="المتابعة بحساب Google" />
-  <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />أو بالبريد<span class="h-px flex-1 bg-text/10" /></div>
+  <p v-if="notice" class="rounded-lg bg-surface px-4 py-3 text-sm" role="status">{{ $t(notice) }}</p>
+  <GoogleButton :label="$t('المتابعة بحساب Google')" />
+  <div class="flex items-center gap-3 text-sm text-text-muted"><span class="h-px flex-1 bg-text/10" />{{ $t('أو بالبريد') }}<span class="h-px flex-1 bg-text/10" /></div>
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <TextField v-model="email" label="البريد أو اسم المستخدم" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
-    <TextField v-model="password" label="كلمة المرور" type="password" autocomplete="current-password" :error="errors.password">
-      <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">نسيت كلمة المرور؟</RouterLink></template>
+    <TextField v-model="email" :label="$t('البريد أو اسم المستخدم')" type="username" autocomplete="username" placeholder="you@example.com" :error="errors.email" />
+    <TextField v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="current-password" :error="errors.password">
+      <template #aside><RouterLink to="/forgot-password" class="text-sm text-gold">{{ $t('نسيت كلمة المرور؟') }}</RouterLink></template>
     </TextField>
-    <UiToggle v-model="remember" label="تذكرني على هذا الجهاز" />
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? 'جارٍ الدخول…' : 'دخول' }}</button>
+    <UiToggle v-model="remember" :label="$t('تذكرني على هذا الجهاز')" />
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الدخول…') : $t('دخول') }}</button>
   </form>
-  <p class="text-center text-sm text-text-muted">ليس لديك حساب؟ <RouterLink to="/register" class="font-bold text-gold">أنشئ حساباً</RouterLink></p>
+  <p class="text-center text-sm text-text-muted">{{ $t('ليس لديك حساب؟') }} <RouterLink to="/register" class="font-bold text-gold">{{ $t('أنشئ حساباً') }}</RouterLink></p>
   <SupportLinks />
 </template>

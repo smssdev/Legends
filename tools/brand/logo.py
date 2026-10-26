@@ -1,150 +1,209 @@
-"""The Legends emblem (الأساطير): python3 tools/brand/logo.py
+"""The GLM identity (Game Legend Manager, X44): python3 tools/brand/logo.py
 
-Draws the logo as SVG from geometry, so every size comes from one source:
-a shield with a gold rim, a crown on its top edge, a football in the middle held by
-a laurel wreath, on navy. Writes brand/current/*.svg; tools/brand/render.mjs makes the PNGs.
+Draws every brand mark as SVG from geometry, so each size comes from one source and the colours
+from docs/design/tokens.json (night ink, emerald, gold, ivory). No mark that the web shows as an
+<img> carries text, since an SVG image can't load the game's fonts: the GLM monogram is paths.
+
+  the crest (emblem.svg): a shield with a raised centre and swept-up shoulders in a metal gold
+  rim, an emerald field lit by gold rays with the pitch's centre circle, three championship
+  stars, the GLM monogram slanted forward (G and L in silver, M for Manager in gold, each
+  wrapped in ink and gold), a football breaking out of its point and a gold laurel round it.
+
+Writes brand/current/*.svg; tools/brand/render.mjs makes the PNGs and copies the web's files.
 """
-import math, os
+import json, os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 OUT = os.path.join(ROOT, 'brand', 'current')
-NAVY, NAVY_DEEP, GOLD, GOLD_DARK, GOLD_LIGHT, IVORY = '#0A1F42', '#071733', '#F5B82E', '#C08A0C', '#FFD978', '#F7F4EA'
+C = json.load(open(os.path.join(ROOT, 'docs', 'design', 'tokens.json')))['color']
+INK, INK_DEEP, PANEL, RAISED = C['bg'], C['bgDeep'], C['panel'], C['surfaceRaised']
+GOLD, GOLD_DARK, GOLD_LIGHT = C['gold'], C['goldDark'], C['goldLight']
+EMERALD, EMERALD_DARK, MINT, IVORY = C['brand'], C['brandDark'], C['brandLight'], C['text']
+
+SANS = "Alexandria, sans-serif"
+
+DEFS = f'''<defs>
+  <linearGradient id="inkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{RAISED}"/><stop offset=".55" stop-color="{INK}"/><stop offset="1" stop-color="{INK_DEEP}"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset="1" stop-color="{GOLD_DARK}"/></linearGradient>
+  <linearGradient id="rimMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1C2"/><stop offset=".3" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset=".72" stop-color="{GOLD_DARK}"/><stop offset="1" stop-color="#7A5206"/></linearGradient>
+  <linearGradient id="metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="110"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".46" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset=".53" stop-color="{GOLD_DARK}"/><stop offset="1" stop-color="{GOLD}"/></linearGradient>
+  <linearGradient id="silver" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="110"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".46" stop-color="{IVORY}"/><stop offset=".5" stop-color="#D9D2BC"/><stop offset=".53" stop-color="#B9B19A"/><stop offset="1" stop-color="{IVORY}"/></linearGradient>
+  <radialGradient id="field" cx=".5" cy=".36" r=".78"><stop offset="0" stop-color="{EMERALD}"/><stop offset=".38" stop-color="{EMERALD_DARK}"/><stop offset=".78" stop-color="{INK}"/><stop offset="1" stop-color="{INK_DEEP}"/></radialGradient>
+  <radialGradient id="glow" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="{EMERALD}" stop-opacity=".55"/><stop offset="1" stop-color="{EMERALD}" stop-opacity="0"/></radialGradient>
+  <radialGradient id="ballSkin" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="{IVORY}"/><stop offset="1" stop-color="#A9A28C"/></radialGradient>
+  <clipPath id="crestIn"><path d="{{IN}}"/></clipPath>
+  <filter id="sticker" x="-25%" y="-30%" width="150%" height="170%">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="o1"/><feFlood flood-color="{INK_DEEP}"/><feComposite in2="o1" operator="in" result="ink1"/>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="9" result="o2"/><feFlood flood-color="{GOLD}"/><feComposite in2="o2" operator="in" result="gold2"/>
+    <feMorphology in="SourceAlpha" operator="dilate" radius="12" result="o3"/><feFlood flood-color="{INK_DEEP}"/><feComposite in2="o3" operator="in" result="ink3"/>
+    <feOffset in="ink3" dy="8" result="drop"/>
+    <feMerge><feMergeNode in="drop"/><feMergeNode in="ink3"/><feMergeNode in="gold2"/><feMergeNode in="ink1"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>'''
+
+# The crest's outline: a shield with a raised centre and swept-up shoulders, and its inner field.
+CREST = 'M256 44 L318 74 L404 62 L422 96 L408 262 C398 352 336 404 256 452 C176 404 114 352 104 262 L90 96 L108 62 L194 74 Z'
+CREST_IN = 'M256 68 L314 95 L388 86 L399 108 L387 258 C379 338 326 383 256 424 C186 383 133 338 125 258 L113 108 L124 86 L198 95 Z'
+DEFS = DEFS.replace('{IN}', CREST_IN)
 
 
-def f(v):
-    return f'{v:.1f}'.rstrip('0').rstrip('.')
+def monogram(x, y, scale=1.0, letters='url(#silver)', m='url(#metal)', sw=26, slant=-10, outline=True):
+    """GLM in a 272x110 box at (x, y), slanted forward: a chamfered G and an L drawn as heavy strokes, the M
+    one solid shape. outline=True wraps it in the sticker filter (ink, gold, ink, and a drop under it)."""
+    body = (f'<g transform="translate({x} {y}) scale({scale}) translate(136 55) skewX({slant}) translate(-136 -55)">'
+            f'<path d="M80 13 H32 L13 32 V78 L32 97 H67 V58 H42" fill="none" stroke="{letters}" stroke-width="{sw}" stroke-linejoin="miter"/>'
+            f'<path d="M107 0 V97 H156" fill="none" stroke="{letters}" stroke-width="{sw}" stroke-linejoin="miter"/>'
+            f'<path d="M170 110 V0 H198 L221 40 L244 0 H272 V110 H246 V52 L229 82 H213 L196 52 V110 Z" fill="{m}"/>'
+            '</g>')
+    return f'<g filter="url(#sticker)">{body}</g>' if outline else body
 
 
-def poly(points):
-    return 'M' + ' L'.join(f'{f(x)} {f(y)}' for x, y in points) + ' Z'
+def star(cx, cy, r, fill='url(#gold)', line=INK_DEEP):
+    import math
+    pts = [(cx + (r if i % 2 == 0 else r * .45) * math.sin(math.radians(i * 36)), cy - (r if i % 2 == 0 else r * .45) * math.cos(math.radians(i * 36))) for i in range(10)]
+    return f'<path d="M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in pts) + f' Z" fill="{fill}" stroke="{line}" stroke-width="3" stroke-linejoin="round"/>'
 
 
-def shield(cx=256, top=150, w=300, h=318):
-    """A heater shield: flat top with rounded shoulders, sides that curve into a point."""
-    l, r, b = cx - w / 2, cx + w / 2, top + h
-    return (f'M{f(l + 18)} {f(top)} L{f(r - 18)} {f(top)} Q{f(r)} {f(top)} {f(r)} {f(top + 18)} '
-            f'L{f(r)} {f(top + h * 0.42)} C{f(r)} {f(top + h * 0.78)} {f(cx + w * 0.2)} {f(b - 22)} {f(cx)} {f(b)} '
-            f'C{f(cx - w * 0.2)} {f(b - 22)} {f(l)} {f(top + h * 0.78)} {f(l)} {f(top + h * 0.42)} '
-            f'L{f(l)} {f(top + 18)} Q{f(l)} {f(top)} {f(l + 18)} {f(top)} Z')
+def ball(cx, cy, r, uid='b'):
+    """A real-looking football: the middle pentagon, five more cut by the edge, the seams, shading."""
+    import math
+    def pent(px, py, s, rot):
+        return [(px + s * math.sin(rot + k * 2 * math.pi / 5), py - s * math.cos(rot + k * 2 * math.pi / 5)) for k in range(5)]
+    d = lambda p: 'M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in p) + ' Z'
+    mid = pent(cx, cy, r * .36, 0)
+    outer = [pent(cx + r * .96 * math.sin(a), cy - r * .96 * math.cos(a), r * .38, a + math.pi) for a in (k * 2 * math.pi / 5 for k in range(5))]
+    edges = [((mid[k][0] + mid[(k + 1) % 5][0]) / 2, (mid[k][1] + mid[(k + 1) % 5][1]) / 2) for k in range(5)]
+    seams = ' '.join(f'M{cx + (x - cx) * 3.05:.1f} {cy + (y - cy) * 3.05:.1f} L{cx + (x - cx) * 3.6:.1f} {cy + (y - cy) * 3.6:.1f}' for x, y in edges) + ' ' + ' '.join(f'M{x:.1f} {y:.1f} L{cx + (x - cx) * 1.6:.1f} {cy + (y - cy) * 1.6:.1f}' for x, y in mid)
+    return (f'<clipPath id="{uid}"><circle cx="{cx}" cy="{cy}" r="{r}"/></clipPath>'
+            f'<circle cx="{cx}" cy="{cy + 6}" r="{r + 8}" fill="{INK_DEEP}" opacity=".55"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r + 7}" fill="url(#rimMetal)"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#ballSkin)"/>'
+            f'<g clip-path="url(#{uid})" fill="{INK}"><path d="{d(mid)}"/>' + ''.join(f'<path d="{d(p)}"/>' for p in outer)
+            + f'<path d="{seams}" stroke="{INK}" stroke-width="{r * .07:.1f}" stroke-linecap="round"/></g>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{INK_DEEP}" stroke-width="3"/>'
+            '')
 
 
-def crown(cx=256, base=158, w=176, h=92, gold=GOLD, line=NAVY_DEEP, pearl=GOLD_LIGHT, gem=NAVY):
-    """Three points with pearls; the band sits across the shield's top edge."""
-    l, r = cx - w / 2, cx + w / 2
-    pts = [(l, base), (l - 6, base - h * 0.78), (cx - w * 0.24, base - h * 0.42), (cx, base - h), (cx + w * 0.24, base - h * 0.42), (r + 6, base - h * 0.78), (r, base)]
-    pearls = [(l - 6, base - h * 0.78), (cx, base - h), (r + 6, base - h * 0.78)]
-    band = f'<rect x="{f(l)}" y="{f(base - 4)}" width="{f(w)}" height="22" rx="6" fill="{gold}" stroke="{line}" stroke-width="5"/>'
-    gems = ''.join(f'<circle cx="{f(cx + dx)}" cy="{f(base + 7)}" r="5" fill="{gem}"/>' for dx in (-48, 0, 48))
-    return (f'<path d="{poly(pts)}" fill="{gold}" stroke="{line}" stroke-width="5" stroke-linejoin="round"/>'
-            + ''.join(f'<circle cx="{f(x)}" cy="{f(y)}" r="11" fill="{pearl}" stroke="{line}" stroke-width="5"/>' for x, y in pearls)
-            + band + gems)
-
-
-def ball(cx=256, cy=300, r=82, panel=NAVY, fill="url(#ballFill)", edge=NAVY_DEEP):
-    """A football: the middle pentagon, five more at its corners cut by the rim, and the seams between."""
-    def pent(x, y, s, rot):
-        return [(x + s * math.sin(rot + i * 2 * math.pi / 5), y - s * math.cos(rot + i * 2 * math.pi / 5)) for i in range(5)]
-    s = r * 0.34
-    mid = pent(cx, cy, s, 0)
-    outer, seams = [], []
-    for i in range(5):
-        a = i * 2 * math.pi / 5                       # the direction of the middle pentagon's corner
-        ox, oy = cx + r * 1.0 * math.sin(a), cy - r * 1.0 * math.cos(a)
-        p = pent(ox, oy, s, a + math.pi)              # one corner points back at the middle
-        outer.append(p)
-        seams.append(f'M{f(mid[i][0])} {f(mid[i][1])} L{f(p[0][0])} {f(p[0][1])}')
-        # the seam between this outer pentagon and the next one round
-        nb = a + 2 * math.pi / 5
-        q = pent(cx + r * math.sin(nb), cy - r * math.cos(nb), s, nb + math.pi)
-        seams.append(f'M{f(p[4][0])} {f(p[4][1])} L{f(q[1][0])} {f(q[1][1])}')
-    clip = '<clipPath id="ballClip"><circle cx="{0}" cy="{1}" r="{2}"/></clipPath>'.format(f(cx), f(cy), f(r))
-    return (clip
-            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="{fill}"/>'
-            + f'<g clip-path="url(#ballClip)"><g fill="{panel}">' + ''.join(f'<path d="{poly(p)}"/>' for p in outer + [mid]) + '</g>'
-            + f'<path d="{" ".join(seams)}" stroke="{panel}" stroke-width="{f(r * 0.05)}" stroke-linecap="round" fill="none"/></g>'
-            + f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="none" stroke="{edge}" stroke-width="6"/>')
-
-
-def laurel(cx=256, cy=304, r=112, side=1, n=8):
-    """One branch of the wreath, from under the ball up one side; leaves alternate out and in along it."""
-    out = []
-    pts = []
-    for i in range(n + 1):
-        t = math.radians(18 + i * 15)                 # measured from straight below the ball, up its side
-        pts.append((cx + side * r * math.sin(t), cy + r * math.cos(t)))
-    stem = 'M' + ' L'.join(f'{f(x)} {f(y)}' for x, y in pts)
-    out.append(f'<path d="{stem}" fill="none" stroke="{GOLD_DARK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>')
+def laurel(side, cx=256, cy=262, r=208, n=9):
+    """One branch of the wreath round the shield, from beside the ball up to its shoulder."""
+    import math
+    pts = [(cx + side * r * math.sin(math.radians(t)), cy + r * math.cos(math.radians(t))) for t in (34 + i * 11 for i in range(n + 1))]
+    out = [f'<path d="M' + ' L'.join(f'{x:.1f} {y:.1f}' for x, y in pts) + f'" fill="none" stroke="{GOLD_DARK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>']
     for i in range(1, n + 1):
         (x0, y0), (x1, y1) = pts[i - 1], pts[i]
         along = math.degrees(math.atan2(y1 - y0, x1 - x0))
-        size = 22 - i * 1.1
-        for k, turn in enumerate((-38, 38)):
-            ang = along + turn
-            out.append(f'<ellipse cx="{f(x1)}" cy="{f(y1)}" rx="{f(size)}" ry="{f(size * 0.4)}" fill="{GOLD}" stroke="{NAVY_DEEP}" stroke-width="2.5" '
-                       f'transform="rotate({f(ang)} {f(x1)} {f(y1)}) translate({f(-size * 0.75)} 0)"/>')
+        size = 25 - i * 1.2
+        for turn in (-40, 40):
+            out.append(f'<ellipse cx="{x1:.1f}" cy="{y1:.1f}" rx="{size:.1f}" ry="{size * .38:.1f}" fill="url(#gold)" stroke="{INK_DEEP}" stroke-width="2.5" '
+                       f'transform="rotate({along + turn:.1f} {x1:.1f} {y1:.1f}) translate({-size * .8:.1f} 0)"/>')
     return ''.join(out)
 
 
-DEFS = f'''<defs>
-  <linearGradient id="shieldFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16376F"/><stop offset="1" stop-color="{NAVY_DEEP}"/></linearGradient>
-  <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{GOLD_LIGHT}"/><stop offset=".5" stop-color="{GOLD}"/><stop offset="1" stop-color="{GOLD_DARK}"/></linearGradient>
-  <radialGradient id="ballFill" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="{IVORY}"/><stop offset="1" stop-color="#D9D2BC"/></radialGradient>
-</defs>'''
+def rays(cx=256, cy=236, n=18):
+    import math
+    out = []
+    for k in range(n):
+        a, b = math.radians(k * 360 / n - 4), math.radians(k * 360 / n + 4)
+        out.append(f'M{cx} {cy} L{cx + 400 * math.sin(a):.0f} {cy - 400 * math.cos(a):.0f} L{cx + 400 * math.sin(b):.0f} {cy - 400 * math.cos(b):.0f} Z')
+    return f'<path d="{" ".join(out)}" fill="{GOLD_LIGHT}" opacity=".055"/>'
 
 
-def emblem(simple=False):
-    """The emblem alone in a 512 box. simple=True drops the wreath for tiny sizes (favicons)."""
-    parts = [f'<path d="{shield()}" fill="url(#shieldFill)" stroke="url(#rim)" stroke-width="18" stroke-linejoin="round"/>',
-             f'<path d="{shield(top=172, w=262, h=280)}" fill="none" stroke="{GOLD}" stroke-opacity=".35" stroke-width="3"/>']
-    if not simple:
-        parts += [laurel(side=1), laurel(side=-1)]
-    parts += [ball(r=86 if simple else 76, cy=304), crown()]
-    return ''.join(parts)
+def crest(wreath=True):
+    """The emblem alone in a 512 box (clear background)."""
+    return ((laurel(1) + laurel(-1) if wreath else '')
+            # the outer ink line, then the metal rim, lit from the upper left
+            + f'<path d="{CREST}" fill="{INK_DEEP}" stroke="{INK_DEEP}" stroke-width="14" stroke-linejoin="round"/>'
+            + f'<path d="{CREST}" fill="url(#rimMetal)"/>'
+            + f'<path d="{CREST_IN}" fill="url(#field)" stroke="{INK_DEEP}" stroke-width="5" stroke-linejoin="round"/>'
+            + f'<g clip-path="url(#crestIn)">{rays()}'
+            # the pitch's halfway line and centre circle, faint under the letters
+            + f'<path d="M100 300 H412" stroke="{MINT}" stroke-opacity=".22" stroke-width="3"/><circle cx="256" cy="300" r="58" fill="none" stroke="{MINT}" stroke-opacity=".22" stroke-width="3"/>'
+            + f'<path d="M100 330 L256 380 L412 330 V460 H100 Z" fill="{INK_DEEP}" opacity=".45"/></g>'
+            + f'<path d="M124 86 L198 95 L256 68" fill="none" stroke="#FFFFFF" stroke-opacity=".35" stroke-width="2"/>'
+            + star(256, 128, 26) + star(198, 140, 15) + star(314, 140, 15)
+            + monogram(130, 186, scale=.93)
+            + ball(256, 418, 40, uid='crestBall'))
 
 
-def svg(body, w=512, h=512, bg=None, rx=0):
-    back = f'<rect width="{w}" height="{h}" rx="{rx}" fill="{bg}"/>' if bg else ''
-    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">{DEFS}{back}{body}</svg>\n'
+def svg(body, w=512, h=512, extra=''):
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">{DEFS}{extra}{body}</svg>\n'
+
+
+def tile(rx=0):
+    """Night ink with the emerald glow, the ground of every square mark."""
+    return f'<rect width="512" height="512" rx="{rx}" fill="url(#inkFill)"/><rect width="512" height="512" rx="{rx}" fill="url(#glow)"/>'
 
 
 def coin():
-    """الكوينز, the premium currency: a gold coin with the ball and the crown struck in it."""
-    return (f'<circle cx="256" cy="256" r="236" fill="{GOLD_DARK}"/>'
-            f'<circle cx="256" cy="248" r="226" fill="url(#rim)"/>'
-            f'<circle cx="256" cy="248" r="184" fill="{GOLD}" stroke="{GOLD_DARK}" stroke-width="10"/>'
-            + ball(cy=290, r=88, panel=GOLD_DARK, fill=GOLD_LIGHT, edge=GOLD_DARK)
-            + crown(base=196, w=150, h=78, gold=GOLD_LIGHT, line=GOLD_DARK, pearl=GOLD_LIGHT, gem=GOLD_DARK)
-            + '<ellipse cx="170" cy="130" rx="64" ry="22" fill="#FFFFFF" opacity=".28" transform="rotate(-32 170 130)"/>')
+    """الكوينز: a gold coin with the crest's three stars struck in it over GLM."""
+    ticks = ''.join(f'<rect x="253" y="30" width="6" height="18" rx="2" fill="{GOLD_DARK}" opacity=".55" transform="rotate({a} 256 256)"/>' for a in range(0, 360, 15))
+    return (f'<circle cx="256" cy="262" r="234" fill="{GOLD_DARK}"/>'
+            f'<circle cx="256" cy="252" r="226" fill="url(#gold)"/>' + ticks +
+            f'<circle cx="256" cy="252" r="176" fill="{GOLD}" stroke="{GOLD_DARK}" stroke-width="10"/>'
+            + star(256, 150, 48, fill=GOLD_LIGHT, line=GOLD_DARK) + star(170, 182, 28, fill=GOLD_LIGHT, line=GOLD_DARK) + star(342, 182, 28, fill=GOLD_LIGHT, line=GOLD_DARK)
+            + monogram(146, 232, scale=.81, letters=GOLD_DARK, m=GOLD_DARK, sw=26, outline=False)
+            + '<ellipse cx="168" cy="132" rx="64" ry="20" fill="#FFFFFF" opacity=".3" transform="rotate(-32 168 132)"/>')
+
+
+def loader():
+    """The splash mark (spec 1): the crest rises in, then a gold arc orbits it while the game checks the
+    connection. CSS inside the SVG, so it runs as a plain <img>; still for reduced motion."""
+    style = ('<style>'
+             '.inside{transform-origin:256px 260px;opacity:0;transform:scale(.86);animation:rise .9s cubic-bezier(.2,.8,.2,1) forwards}'
+             '.orbit{transform-origin:256px 260px;animation:spin 1.8s linear infinite}'
+             '@keyframes rise{to{opacity:1;transform:scale(1)}}@keyframes spin{to{transform:rotate(360deg)}}'
+             '@media (prefers-reduced-motion:reduce){.inside{animation:none;opacity:1;transform:none}.orbit{animation:none}}'
+             '</style>')
+    return (style
+            + f'<g class="inside"><g transform="translate(256 260) scale(.82) translate(-256 -262)">{crest()}</g></g>'
+            + f'<g class="orbit"><circle cx="256" cy="260" r="246" fill="none" stroke="{GOLD}" stroke-opacity=".15" stroke-width="6"/>'
+            + f'<path d="M256 14 A246 246 0 0 1 469 137" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/></g>')
+
+
+def rule(x1, x2, y):
+    return f'<rect x="{x1}" y="{y}" width="{x2 - x1}" height="4" rx="2" fill="{GOLD}" opacity=".7"/>'
 
 
 FILES = {
+    'emblem.svg': svg(crest()),
+    # the app icon: full bleed for round (maskable) masks, the crest inside the safe circle
+    'icon.svg': svg(tile() + f'<g transform="translate(46 40) scale(.82)">{crest()}</g>'),
+    # browser tab: the monogram big on a rounded tile, so it reads at 16 pixels
+    'favicon.svg': svg(tile(rx=112)
+                       + '<g clip-path="url(#favClip)">' + rays(256, 256) + '<path d="M0 410 L256 460 L512 410 V512 H0 Z" fill="%s"/><path d="M0 410 L256 460 L512 410" fill="none" stroke="%s" stroke-width="12"/></g>' % (EMERALD_DARK, GOLD)
+                       + monogram(52, 150, scale=1.5, sw=30),
+                       extra='<defs><clipPath id="favClip"><rect width="512" height="512" rx="112"/></clipPath></defs>'),
     'coin.svg': svg(coin()),
-    # the emblem on a clear background, for anything already dark
-    'emblem.svg': svg(emblem()),
-    # the app icon: the emblem on navy, with a safe margin for round (maskable) masks
-    'icon.svg': svg(f'<g transform="translate(51 46) scale(.8)">{emblem()}</g>', bg=NAVY),
-    # browser tab: no wreath, so it still reads at 16 pixels
-    'favicon.svg': svg(f'<g transform="translate(-8 -22) scale(1.03)">{emblem(simple=True)}</g>'),
-    # the full logo: emblem, LEGENDS and the Arabic name
+    'emblem-loader.svg': svg(loader(), h=520),
+    # the full logo: the crest, the name under it and the line under that
     'logo.svg': svg(
-        f'<g transform="translate(128 10) scale(1.5)">{emblem()}</g>'
-        f'<text x="512" y="860" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="150" letter-spacing="18" fill="{GOLD}">LEGENDS</text>'
-        f'<text x="512" y="985" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="700" font-size="96" fill="{IVORY}" direction="rtl">الأساطير</text>',
-        w=1024, h=1060, bg=NAVY),
-    # the invite card for WhatsApp and other link previews (1200x630): the emblem on the left, the
-    # invitation in Arabic on the right 45% (with direction=rtl, "start" is the right edge). The league's own name and owner are the preview's text
-    # (og:title, og:description, from InviteController), so one picture serves every league.
+        f'<rect width="1024" height="1060" fill="url(#inkFill)"/><rect width="1024" height="1060" fill="url(#glow)"/>'
+        f'<g transform="translate(160 20) scale(1.375)">{crest()}</g>'
+        + rule(437, 587, 760) +
+        f'<text x="512" y="836" text-anchor="middle" font-family="{SANS}" font-weight="800" font-size="62" letter-spacing="10" fill="{IVORY}">GAME LEGEND</text>'
+        f'<text x="512" y="926" text-anchor="middle" font-family="{SANS}" font-weight="800" font-size="62" letter-spacing="26" fill="{GOLD}">MANAGER</text>'
+        f'<text x="512" y="1008" text-anchor="middle" font-family="{SANS}" font-weight="700" font-size="46" fill="{IVORY}" opacity=".85" direction="rtl">لعبة المدرب الأسطورة</text>',
+        w=1024, h=1060),
+    # the logo across, for headers, the site's footer and documents: GLM centred over the full name
+    'logo-wide.svg': svg(
+        f'<g transform="translate(-40 0)">{crest()}</g>'
+        + monogram(679, 110, scale=1.55, sw=24)
+        + f'<text x="893" y="372" text-anchor="middle" font-family="{SANS}" font-weight="800" font-size="44" letter-spacing="7" fill="{IVORY}">GAME LEGEND <tspan fill="{GOLD}">MANAGER</tspan></text>'
+        + f'<rect x="740" y="400" width="300" height="4" rx="2" fill="{EMERALD}"/>',
+        w=1300, h=512),
+    # the invite card for WhatsApp and other link previews (1200x630): the crest on the left, the
+    # invitation in Arabic on the right (with direction=rtl, "start" is the right edge). The league's
+    # own name and owner are the preview's text (og:title, og:description, from InviteController).
     'og-invite.svg': svg(
-        f'<defs><linearGradient id="ogFill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16376F"/><stop offset="1" stop-color="{NAVY_DEEP}"/></linearGradient></defs>'
-        f'<rect width="1200" height="630" fill="url(#ogFill)"/>'
-        f'<circle cx="330" cy="315" r="250" fill="{GOLD}" opacity=".07"/>'
-        f'<g transform="translate(110 95) scale(.86)">{emblem()}</g>'
+        f'<rect width="1200" height="630" fill="url(#inkFill)"/>'
+        f'<circle cx="330" cy="315" r="300" fill="url(#glow)"/>'
+        f'<g transform="translate(90 70) scale(.94)">{crest()}</g>'
         f'<rect x="660" y="120" width="6" height="390" rx="3" fill="{GOLD}" opacity=".5"/>'
-        f'<text x="1110" y="215" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="72" fill="{IVORY}" direction="rtl">دعوة لدوري</text>'
-        f'<text x="1110" y="305" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="72" fill="{GOLD}" direction="rtl">مع أصحابك</text>'
-        f'<text x="1110" y="385" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="700" font-size="34" fill="{IVORY}" opacity=".8" direction="rtl">اختر ناديك وأدِره ضدهم</text>'
-        f'<text x="1110" y="480" text-anchor="start" font-family="Alexandria, sans-serif" font-weight="800" font-size="44" fill="{GOLD}" direction="rtl">الأساطير</text>'
-        f'<text x="1110" y="525" text-anchor="end" font-family="Alexandria, sans-serif" font-weight="800" font-size="22" letter-spacing="8" fill="{IVORY}" opacity=".6">LEGENDS</text>',
+        f'<text x="1110" y="215" text-anchor="start" font-family="{SANS}" font-weight="800" font-size="72" fill="{IVORY}" direction="rtl">دعوة لدوري</text>'
+        f'<text x="1110" y="305" text-anchor="start" font-family="{SANS}" font-weight="800" font-size="72" fill="{GOLD}" direction="rtl">مع أصحابك</text>'
+        f'<text x="1110" y="385" text-anchor="start" font-family="{SANS}" font-weight="700" font-size="34" fill="{IVORY}" opacity=".8" direction="rtl">اختر ناديك وأدِره ضدهم</text>'
+        + monogram(938, 440, scale=.63, sw=26, outline=False)
+        + f'<text x="1110" y="535" text-anchor="end" font-family="{SANS}" font-weight="800" font-size="20" letter-spacing="5" fill="{IVORY}" opacity=".65">GAME LEGEND MANAGER</text>',
         w=1200, h=630),
 }
 

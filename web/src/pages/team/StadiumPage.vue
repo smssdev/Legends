@@ -28,7 +28,7 @@ let tick = 0
 const INFO: Record<string, { title: string; effect: string; icon: string }> = {
   seats: { title: 'التذاكر والمقاعد', effect: 'مقاعد أكثر ودخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16' },
   pitch: { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية لكل مباراة على أرضك', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
-  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب ومعسكر أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
+  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
 }
 const pct = (bp: number) => `+${(bp / 100).toLocaleString('ar-EG-u-nu-latn', { maximumFractionDigits: 1 })}%`
 function effect(s: Section, stage: number) {
@@ -108,36 +108,36 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">الملعب</h1><HelpTip :text="g.stadium" label="الملعب" /></span>
-        <p class="mt-1 text-sm text-text-muted">جزء واحد في كل مرة · كل جزء {{ v ? Math.round(v.part_minutes / 60) : 18 }} ساعة · تبدأ كل جزء بنفسك</p>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الملعب') }}</h1><HelpTip :text="g.stadium" :label="$t('الملعب')" /></span>
+        <p class="mt-1 text-sm text-text-muted">{{ $t('جزء واحد في كل مرة · كل جزء {v0} ساعة · تبدأ كل جزء بنفسك', { v0: v ? Math.round(v.part_minutes / 60) : 18 }) }}</p>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
-        <span class="block text-xs text-text-muted">أموال النادي</span>
+        <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
         <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
       </div>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ notice }}</p>
-    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل...</p>
-    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
+    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
-      <section aria-label="الملعب الآن" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">السعة</span><b class="font-numbers text-2xl" dir="ltr">{{ count(v.facts.capacity) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">ميزة الأرض</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">دخل التذاكر للمباراة</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">الأجزاء المكتملة</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
+      <section :aria-label="$t('الملعب الآن')" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('السعة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ count(v.facts.capacity) }}</b></div>
+        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('ميزة الأرض') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
+        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('دخل التذاكر للمباراة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
+        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('الأجزاء المكتملة') }}</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
       </section>
 
-      <section v-if="v.building" aria-label="يُبنى الآن" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 bg-surface p-4">
-        <span class="flex-1"><b class="block">يُبنى الآن: {{ INFO[v.building.section]!.title }}</b>
-          <span class="text-sm text-text-muted">الجزء {{ v.building.part }} من 5 في المرحلة {{ v.building.stage }}</span></span>
-        <span class="text-end"><span class="block text-xs text-text-muted">يكتمل بعد</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
+      <section v-if="v.building" :aria-label="$t('يُبنى الآن')" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 bg-surface p-4">
+        <span class="flex-1"><b class="block">{{ $t('يُبنى الآن: {v0}', { v0: INFO[v.building.section]!.title }) }}</b>
+          <span class="text-sm text-text-muted">{{ $t('الجزء {v0} من 5 في المرحلة {v1}', { v0: v.building.part, v1: v.building.stage }) }}</span></span>
+        <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('يكتمل بعد') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
         <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
-          أنهِ الآن · <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
+          {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
       </section>
 
-      <section aria-label="أقسام الملعب" class="grid gap-3 lg:grid-cols-3">
+      <section :aria-label="$t('أقسام الملعب')" class="grid gap-3 lg:grid-cols-3">
         <article v-for="s in v.sections" :key="s.section" class="flex flex-col gap-3 rounded-xl bg-surface p-4"
           :class="v.building?.section === s.section ? 'border border-success/50' : ''">
           <div class="flex items-start gap-3">
@@ -147,21 +147,21 @@ onBeforeUnmount(() => clearInterval(tick))
             <span><b class="block font-display text-lg">{{ INFO[s.section]!.title }}</b><span class="text-sm text-text-muted">{{ INFO[s.section]!.effect }}</span></span>
           </div>
           <div v-for="st in [1, 2, 3]" :key="st" class="flex items-center gap-3">
-            <span class="w-16 text-xs text-text-muted">المرحلة {{ st }}</span>
-            <span class="flex flex-1 gap-1" :aria-label="`المرحلة ${st}: ${Math.max(0, Math.min(5, s.done - (st - 1) * 5))} من 5`">
+            <span class="w-16 text-xs text-text-muted">{{ $t('المرحلة {v0}', { v0: st }) }}</span>
+            <span class="flex flex-1 gap-1" :aria-label="$t('المرحلة {v0}: {v1} من 5', { v0: st, v1: Math.max(0, Math.min(5, s.done - (st - 1) * 5)) })">
               <span v-for="p in 5" :key="p" class="h-2.5 flex-1 rounded-full" :class="part(s, (st - 1) * 5 + p - 1)" />
             </span>
             <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>
           </div>
-          <p class="text-sm text-text-muted">{{ s.stage }} من 3 مراحل · {{ s.done }} من 15 جزءاً</p>
+          <p class="text-sm text-text-muted">{{ $t('{v0} من 3 مراحل · {v1} من 15 جزءاً', { v0: s.stage, v1: s.done }) }}</p>
           <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40"
             :disabled="busy || !!v.building || s.next.cost > v.balance" @click="start(s)">
-            ابدأ الجزء التالي · <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
-          <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">القسم مكتمل</p>
+            {{ $t('ابدأ الجزء التالي ·') }} <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
+          <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">{{ $t('القسم مكتمل') }}</p>
         </article>
       </section>
 
-      <p class="rounded-xl bg-surface p-4 text-sm text-text-muted">الملعب كاملاً {{ v.parts_total }} جزءاً، أي حوالي 91% من الموسم. اختر أولوياتك: الدخل، أو ميزة الأرض، أو سرعة التدريب.</p>
+      <p class="rounded-xl bg-surface p-4 text-sm text-text-muted">{{ $t('الملعب كاملاً {v0} جزءاً، أي حوالي 91% من الموسم. اختر أولوياتك: الدخل، أو ميزة الأرض، أو سرعة التدريب.', { v0: v.parts_total }) }}</p>
     </template>
   </div>
 </template>

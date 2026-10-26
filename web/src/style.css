@@ -47,7 +47,7 @@
   /* Buttons and links answer the touch: a quick press, colours that ease. */
   a,
   button {
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+    transition: transform 0.1s ease, opacity 0.15s ease;   /* [UP15] the compositor's own properties only */
   }
   button:not(:disabled):active,
   a:active {
@@ -84,8 +84,7 @@
   background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 16%, transparent), transparent 70px);
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 18%, transparent);
   border-top-color: color-mix(in srgb, var(--color-brand-light) 45%, transparent);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-brand-light) 20%, transparent) inset, 0 18px 40px -24px rgb(0 0 0 / 0.8);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.8);   /* [UP15] one shadow, and no blur under the cards */
 }
 /* The smooth mode on weak phones [X30]: the same cards, solid instead of blurred (no blur to redo on every scroll). */
 html.smooth .rounded-xl.bg-surface,
@@ -235,4 +234,15 @@ main textarea:focus {
 input[type="range"],
 input[type="radio"] {
   accent-color: var(--color-gold);
+}
+
+/* [UP15] The long lists (the squad, the market) draw only the rows on the screen: the browser skips the layout and the
+   paint of a row out of view and keeps its height as it was. */
+.v-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 5rem;
+}
+.v-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 14rem;
 }

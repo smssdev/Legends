@@ -71,6 +71,18 @@ class Username
         return $out;
     }
 
+    /**
+     * [UP5] A Google account's username from its name, as the owner's spec asks (Ahmed Ali → ahmedali, or ahmedali7...):
+     * the name in English letters (an Arabic one transliterated), and the email's first part when nothing is left.
+     */
+    public static function fromName(string $name, string $email = ''): string
+    {
+        $latin = class_exists(\Transliterator::class) ? (string) transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $name) : $name;
+        $seed = preg_replace('/[^a-z0-9]+/', '', strtolower($latin)) ?: (string) strtok($email, '@');
+
+        return self::free($seed !== '' ? $seed : 'coach');
+    }
+
     /** A free username from any text: its English letters and digits, padded to 3, then a letter suffix until nobody has it. */
     public static function free(string $seed): string
     {

@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\League\ClubLedger;
+use App\League\NextFixture;
 use App\League\Spy;
 use App\Models\User;
-use App\Training\SecretTraining;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +37,7 @@ class SpyTest extends TestCase
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'rounds_per_day' => 1, 'round_times' => ['21:00']]);
         $this->mine = $this->league['my_club_id'];
-        $this->fixture = SecretTraining::nextFixture($this->mine);
+        $this->fixture = NextFixture::of($this->mine);
         $this->theirs = $this->fixture->home_id === $this->mine ? $this->fixture->away_id : $this->fixture->home_id;
         $this->rival = $this->approvedCoach($this->owner, $this->league);
         $this->actingAs($this->rival)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$this->theirs}/claim")->assertCreated();
@@ -97,7 +97,6 @@ class SpyTest extends TestCase
     public function test_3_and_4_nothing_hidden_reaches_the_spy_and_the_rival_is_not_told(): void
     {
         $this->rivalTactics(['pressing' => 95, 'style' => 10, 'tempo' => 90, 'att' => 'only', 'mid' => 'push', 'def' => 'fullbacks']);
-        $this->actingAs($this->rival)->postJson("/api/v1/leagues/{$this->league['id']}/training/secret", ['line' => 'att'])->assertOk();
         $told = DB::table('messages')->where('user_id', $this->rival->id)->count();
         $body = $this->send()->assertOk()->getContent().$this->actingAs($this->owner)->getJson($this->url())->getContent();
         // As keys (the lines' names are values on every player): pressing, style, tempo, the three positions, the shape.

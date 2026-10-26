@@ -19,7 +19,7 @@ const inputType = computed(() => {
 <template>
   <div class="flex flex-col gap-1.5">
     <div class="flex items-center justify-between gap-2">
-      <label :for="id" class="text-sm font-bold">{{ label }}</label>
+      <label :for="id" class="text-sm font-bold">{{ $t(label) }}</label>
       <slot name="aside" />
     </div>
     <div class="relative">
@@ -41,7 +41,7 @@ const inputType = computed(() => {
         v-if="isPassword"
         type="button"
         class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-e-lg text-text-muted hover:text-text focus-visible:text-gold"
-        :aria-label="shown ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+        :aria-label="shown ? $t('إخفاء كلمة المرور') : $t('إظهار كلمة المرور')"
         :aria-pressed="shown"
         :aria-controls="id"
         @click="shown = !shown"
@@ -54,7 +54,7 @@ const inputType = computed(() => {
         </svg>
       </button>
     </div>
-    <p v-if="error" :id="id + '-err'" class="text-sm text-[#FF8A8A]">{{ error }}</p>
-    <p v-else-if="hint" :id="id + '-hint'" class="text-xs text-text-muted">{{ hint }}</p>
+    <p v-if="error" :id="id + '-err'" class="text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-else-if="hint" :id="id + '-hint'" class="text-xs text-text-muted">{{ $t(hint) }}</p>
   </div>
 </template>

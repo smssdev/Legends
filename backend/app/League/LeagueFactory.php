@@ -9,6 +9,7 @@ use App\Models\Season;
 use App\Models\User;
 use App\Season\Objectives;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -51,7 +52,12 @@ class LeagueFactory
                 'starts_at' => $settings['starts_at'], 'season_end_mode' => $settings['season_end_mode'],
                 'starting_budget' => $settings['starting_budget'], 'fair_league' => $settings['fair_league'], 'integrity' => $settings['integrity'] ?? false, 'second_slot_minutes' => $settings['second_slot_minutes'] ?? null,
                 'is_dev' => $settings['is_dev'] ?? false,
+                'press_conferences' => $settings['press_conferences'] ?? true, 'custom_coins' => $settings['custom_coins'] ?? 0,
             ]);
+            // [UP9] A customized league is paid in coins as it is made: not enough, and nothing is made.
+            if (($settings['custom_coins'] ?? 0) > 0) {
+                Wallet::post($owner->id, 'league_custom', -$settings['custom_coins'], 'league_custom:'.$league->id, 'league:'.$league->id);
+            }
             $rounds = self::rounds($settings['team_count']);
             $season = Season::create([
                 'league_id' => $league->id, 'number' => 1, 'starts_at' => $settings['starts_at'],

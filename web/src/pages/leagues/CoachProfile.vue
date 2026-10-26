@@ -23,43 +23,43 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-else-if="!coach" class="text-text-muted">جارٍ التحميل...</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-else-if="!coach" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <template v-else>
       <header class="flex items-center gap-3">
         <span class="grid size-14 place-items-center rounded-full bg-gold font-display text-2xl font-extrabold text-on-gold">{{ coach.coach.name.slice(0, 1) }}</span>
-        <div><h1 class="font-display text-3xl font-extrabold">{{ coach.coach.name }} <OfficialBadge v-if="coach.coach.official" /></h1><p class="text-sm text-text-muted">ملف المدرب</p></div>
+        <div><h1 class="font-display text-3xl font-extrabold">{{ coach.coach.name }} <OfficialBadge v-if="coach.coach.official" /></h1><p class="text-sm text-text-muted">{{ $t('ملف المدرب') }}</p></div>
       </header>
 
-      <section aria-label="السجل" class="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <section :aria-label="$t('السجل')" class="grid grid-cols-3 gap-2 sm:grid-cols-6">
         <div v-for="[k, label] in [['seasons', 'مواسم'], ['played', 'مباريات'], ['won', 'فوز'], ['drawn', 'تعادل'], ['lost', 'خسارة']] as const" :key="k" class="rounded-xl bg-surface p-3 text-center">
-          <b class="block font-numbers text-2xl">{{ coach.record[k] }}</b><span class="text-xs text-text-muted">{{ label }}</span>
+          <b class="block font-numbers text-2xl">{{ coach.record[k] }}</b><span class="text-xs text-text-muted">{{ $t(label) }}</span>
         </div>
         <div class="rounded-xl bg-surface p-3 text-center">
-          <b class="block font-numbers text-2xl text-gold" dir="ltr">{{ coach.objectives.met }}/{{ coach.objectives.total }}</b><span class="text-xs text-text-muted">أهداف تحققت</span>
+          <b class="block font-numbers text-2xl text-gold" dir="ltr">{{ coach.objectives.met }}/{{ coach.objectives.total }}</b><span class="text-xs text-text-muted">{{ $t('أهداف تحققت') }}</span>
         </div>
       </section>
 
-      <section aria-label="الألقاب" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
-        <h2 class="font-display text-xl font-extrabold">الألقاب</h2>
-        <p v-if="!coach.titles.length" class="text-sm text-text-muted">لا ألقاب بعد.</p>
+      <section :aria-label="$t('الألقاب')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+        <h2 class="font-display text-xl font-extrabold">{{ $t('الألقاب') }}</h2>
+        <p v-if="!coach.titles.length" class="text-sm text-text-muted">{{ $t('لا ألقاب بعد.') }}</p>
         <div v-for="(t, i) in coach.titles" :key="i" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
           <b :class="t.position === 1 ? 'text-gold' : ''">{{ TITLES[t.competition]![t.position] }}</b>
           <span class="flex-1 truncate">{{ $cn(t.club) }} · {{ t.league }}</span>
-          <span class="text-text-muted">الموسم {{ t.season }}</span>
+          <span class="text-text-muted">{{ $t('الموسم {v0}', { v0: t.season }) }}</span>
         </div>
       </section>
 
-      <section aria-label="الأهداف" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
-        <h2 class="font-display text-xl font-extrabold">الأهداف</h2>
-        <p v-if="!coach.objectives.list.length" class="text-sm text-text-muted">لم يُقيَّم على هدف بعد.</p>
+      <section :aria-label="$t('الأهداف')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+        <h2 class="font-display text-xl font-extrabold">{{ $t('الأهداف') }}</h2>
+        <p v-if="!coach.objectives.list.length" class="text-sm text-text-muted">{{ $t('لم يُقيَّم على هدف بعد.') }}</p>
         <div v-for="(o, i) in coach.objectives.list" :key="i" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
           <span class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold" :class="o.achieved ? 'bg-success text-on-gold' : 'bg-live text-white'">{{ o.achieved ? '✓' : '✗' }}</span>
           <span class="min-w-0 flex-1">
             <b class="block truncate">{{ o.competition === 'league' ? leagueGoal({ target: Number(o.target), kind: o.kind }) : cupGoal(o.target) }}</b>
-            <span class="text-xs text-text-muted">{{ $cn(o.club) }} · {{ o.league }} · الموسم {{ o.season }}</span>
+            <span class="text-xs text-text-muted">{{ $t('{v0} · {v1} · الموسم {v2}', { v0: $cn(o.club), v1: o.league, v2: o.season }) }}</span>
           </span>
-          <span class="text-text-muted">{{ o.competition === 'league' ? `المركز ${o.result}` : cupStage(o.result) }}</span>
+          <span class="text-text-muted">{{ o.competition === 'league' ? $t('المركز {v0}', { v0: o.result }) : cupStage(o.result) }}</span>
         </div>
       </section>
     </template>

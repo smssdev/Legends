@@ -38,13 +38,13 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
 <template>
   <section v-if="data && data.fixtures.length" class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-tickets">
     <div>
-      <h2 id="h-tickets" class="font-display text-xl font-extrabold">التذاكر</h2>
-      <p class="text-sm text-text-muted">احضر مباريات منافسيك وشجّع أحد الفريقين: كل تذكرة ترفع معنوياته <b class="font-numbers text-gold">+{{ data.boost }}</b> في تلك المباراة. سعر التذكرة {{ money(data.price) }}.</p>
+      <h2 id="h-tickets" class="font-display text-xl font-extrabold">{{ $t('التذاكر') }}</h2>
+      <p class="text-sm text-text-muted">{{ $t('احضر مباريات منافسيك وشجّع أحد الفريقين: كل تذكرة ترفع معنوياته') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> {{ $t('في تلك المباراة. سعر التذكرة {v0}.', { v0: money(data.price) }) }}</p>
     </div>
-    <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ message }}</p>
+    <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
     <ul class="flex flex-col gap-2">
       <li v-for="f in data.fixtures" :key="f.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <span class="text-xs text-text-muted">{{ f.competition === 'cup' ? 'الكأس' : f.competition === 'alliance' ? 'التحالفات' : `الجولة ${f.round}` }} · {{ when(f.scheduled_at) }}</span>
+        <span class="text-xs text-text-muted">{{ f.competition === 'cup' ? $t('الكأس') : f.competition === 'alliance' ? $t('التحالفات') : $t('الجولة {v0}', { v0: f.round }) }} · {{ when(f.scheduled_at) }}</span>
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="s in (['home', 'away'] as const)"
@@ -58,7 +58,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
           >
             <ClubCrest :url="f[s].crest_url" :code="f[s].code" :size="28" />
             <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ $nm(f[s].name) }}</span>
-            <span class="text-xs text-text-muted" :aria-label="`${f.cheering[s]} تذكرة`">📣 <span class="font-numbers">{{ f.cheering[s] }}</span></span>
+            <span class="text-xs text-text-muted" :aria-label="$t('{v0} تذكرة', { v0: f.cheering[s] })">📣 <span class="font-numbers">{{ f.cheering[s] }}</span></span>
           </button>
         </div>
       </li>

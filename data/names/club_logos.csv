@@ -1,0 +1,746 @@
+league,club,file,score,image
+1A Pro League,Cercle Brugge,belgium/Cercle_Brugge_KSV.svg,1.00,belgium/cercle-brugge-ksv.webp
+1A Pro League,Club Brugge,belgium/Club_Brugge.svg,1.00,belgium/club-brugge.webp
+1A Pro League,FCV Dender EH,belgium/FCV_Dender_EH.svg,1.00,belgium/fcv-dender-eh.webp
+1A Pro League,KAA Gent,belgium/KAA_Gent.svg,1.00,belgium/kaa-gent.webp
+1A Pro League,KRC Genk,belgium/KRC_Genk.svg,1.00,belgium/krc-genk.webp
+1A Pro League,KV Mechelen,belgium/KV_Mechelen.svg,1.00,belgium/kv-mechelen.webp
+1A Pro League,KVC Westerlo,belgium/KVC_Westerlo.svg,1.00,belgium/kvc-westerlo.webp
+1A Pro League,OH Leuven,belgium/Oud-Heverlee_Leuven.svg,0.92,belgium/oud-heverlee-leuven.webp
+1A Pro League,R. Union St.-G.,belgium/Union_Saint-Gilloise.svg,1.00,belgium/union-saint-gilloise.webp
+1A Pro League,RAAL La Louvière,belgium/RAAL_La_Louvière.svg,1.00,belgium/raal-la-louviere.webp
+1A Pro League,RSC Anderlecht,belgium/RSC_Anderlecht.svg,1.00,belgium/rsc-anderlecht.webp
+1A Pro League,Royal Antwerp FC,belgium/Royal_Antwerp_FC.svg,1.00,belgium/royal-antwerp-fc.webp
+1A Pro League,STVV,belgium/Sint-Truidense_VV.svg,1.00,belgium/sint-truidense-vv.webp
+1A Pro League,Sp. Charleroi,belgium/Royal_Charleroi_S.C..svg,1.00,belgium/royal-charleroi-s-c.webp
+1A Pro League,Standard Liège,belgium/Standard_Liège.svg,1.00,belgium/standard-liege.webp
+1A Pro League,Zulte Waregem,belgium/Zulte_Waregem.svg,1.00,belgium/zulte-waregem.webp
+3. Liga,1860 München,germany/TSV_1860_München.svg,0.94,germany/tsv-1860-munchen.webp
+3. Liga,Aleman. Aachen,germany/Alemannia_Aachen.svg,0.94,germany/alemannia-aachen.webp
+3. Liga,Energie Cottbus,germany/Energie_Cottbus.svg,1.00,germany/energie-cottbus.webp
+3. Liga,FC Erzgebirge Aue,germany/Erzgebirge.svg,0.95,germany/erzgebirge.webp
+3. Liga,FC Hansa Rostock,germany/Hansa_Rostock.svg,1.00,germany/hansa-rostock.webp
+3. Liga,FC Ingolstadt 04,germany/Ingolstadt.svg,1.00,germany/ingolstadt.webp
+3. Liga,FC Schweinfurt 05,germany/1._FC_Schweinfurt_05.svg,1.00,germany/1-fc-schweinfurt-05.webp
+3. Liga,Jahn Regensburg,germany/Jahn.svg,0.95,germany/jahn.webp
+3. Liga,MSV Duisburg,germany/MSV_Duisburg.svg,1.00,germany/msv-duisburg.webp
+3. Liga,Rot-Weiss Essen,germany/Essen.svg,0.95,germany/essen.webp
+3. Liga,SC Verl,germany/SC_Verl.svg,1.00,germany/sc-verl.webp
+3. Liga,SSV Ulm 1846,germany/SSV_Ulm_1846_Fußball.svg,0.93,germany/ssv-ulm-1846-fuball.webp
+3. Liga,SV Waldhof,germany/SV_Waldhof_Mannheim.svg,0.92,germany/sv-waldhof-mannheim.webp
+3. Liga,Saarbrücken,germany/Saarbrücken.svg,1.00,germany/saarbrucken.webp
+3. Liga,TSG Hoffenheim II,germany/Hoffenheim.svg,0.95,germany/hoffenheim.webp
+3. Liga,TSV Havelse,germany/TSV_Havelse.svg,1.00,germany/tsv-havelse.webp
+3. Liga,VfB Stuttgart II,germany/VfB_Stuttgart.svg,0.95,germany/vfb-stuttgart.webp
+3. Liga,VfL Osnabrück,germany/Osnabrück.svg,1.00,germany/osnabruck.webp
+3. Liga,Viktoria Köln,germany/FC_Viktoria_Köln.svg,1.00,germany/fc-viktoria-koln.webp
+3. Liga,Wehen Wiesbaden,germany/SV_Wehen_Wiesbaden.svg,1.00,germany/sv-wehen-wiesbaden.webp
+3F Superliga,AGF,denmark/AGF.svg,1.00,denmark/agf.webp
+3F Superliga,Brøndby IF,denmark/Brøndby_IF.svg,1.00,denmark/brndby-if.webp
+3F Superliga,F.C. København,denmark/F.C._Copenhagen.svg,1.00,denmark/f-c-copenhagen.webp
+3F Superliga,FC Fredericia,denmark/FC_Fredericia.svg,1.00,denmark/fc-fredericia.webp
+3F Superliga,FC Midtjylland,denmark/FC_Midtjylland.svg,1.00,denmark/fc-midtjylland.webp
+3F Superliga,FC Nordsjælland,denmark/FC_Nordsjælland.svg,1.00,denmark/fc-nordsjlland.webp
+3F Superliga,Odense BK,denmark/OB.svg,1.00,denmark/ob.webp
+3F Superliga,Randers FC,denmark/Randers_FC.svg,1.00,denmark/randers-fc.webp
+3F Superliga,Silkeborg IF,denmark/Silkeborg_IF.svg,1.00,denmark/silkeborg-if.webp
+3F Superliga,Sønderjyske,denmark/Sonderjyske.svg,0.95,denmark/sonderjyske.webp
+3F Superliga,Vejle Boldklub,denmark/VB.svg,1.00,denmark/vb.webp
+3F Superliga,Viborg FF,denmark/Viborg_FF.svg,1.00,denmark/viborg-ff.webp
+A-League,Adelaide United,australia/Adelaide_United_FC.svg,1.00,australia/adelaide-united-fc.webp
+A-League,Auckland FC,new-zealand/Auckland_FC.svg,1.00,new-zealand/auckland-fc.webp
+A-League,Brisbane Roar,australia/Brisbane_Roar_FC.svg,1.00,australia/brisbane-roar-fc.webp
+A-League,Central Coast,australia/Central_Coast_Mariners_FC.svg,0.93,australia/central-coast-mariners-fc.webp
+A-League,Macarthur FC,australia/Macarthur_FC.svg,1.00,australia/macarthur-fc.webp
+A-League,Melb. Victory,australia/Melbourne_Victory_FC.svg,0.94,australia/melbourne-victory-fc.webp
+A-League,Melbourne City,australia/Melbourne_City_FC.svg,1.00,australia/melbourne-city-fc.webp
+A-League,Newcastle Jets,australia/Newcastle_Jets_FC.svg,1.00,australia/newcastle-jets-fc.webp
+A-League,Perth Glory,australia/Perth_Glory_FC.svg,1.00,australia/perth-glory-fc.webp
+A-League,Sydney FC,australia/Sydney_FC.svg,1.00,australia/sydney-fc.webp
+A-League,WS Wanderers,australia/Western_Sydney_Wanderers_FC.svg,0.93,australia/western-sydney-wanderers-fc.webp
+A-League,Well. Phoenix,new-zealand/Wellington_Phoenix_FC.svg,0.93,new-zealand/wellington-phoenix-fc.webp
+Algerian Ligue 1,ASO Chlef,algeria/ASO_Chlef.svg,1.00,algeria/aso-chlef.webp
+Algerian Ligue 1,CR Belouizdad,algeria/CR_Belouizdad.svg,1.00,algeria/cr-belouizdad.webp
+Algerian Ligue 1,CR Témouchent,algeria/CR_Témouchent.svg,1.00,algeria/cr-temouchent.webp
+Algerian Ligue 1,CS Constantine,algeria/CS_Constantine.svg,1.00,algeria/cs-constantine.webp
+Algerian Ligue 1,ES Ben Aknoun,algeria/ES_Ben_Aknoun.svg,1.00,algeria/es-ben-aknoun.webp
+Algerian Ligue 1,ES Sétif,algeria/ES_Sétif.svg,1.00,algeria/es-setif.webp
+Algerian Ligue 1,JS El Biar,algeria/JS_El_Biar.svg,1.00,algeria/js-el-biar.webp
+Algerian Ligue 1,JS Kabylie,algeria/JS_Kabylie.svg,1.00,algeria/js-kabylie.webp
+Algerian Ligue 1,JS Saoura,algeria/JS_Saoura.svg,1.00,algeria/js-saoura.webp
+Algerian Ligue 1,MB Rouissat,algeria/MB_Rouissat.svg,1.00,algeria/mb-rouissat.webp
+Algerian Ligue 1,MC Alger,algeria/MC_Alger.svg,1.00,algeria/mc-alger.webp
+Algerian Ligue 1,MC Oran,algeria/MC_Oran.svg,1.00,algeria/mc-oran.webp
+Algerian Ligue 1,Olympique Akbou,algeria/Olympique_Akbou.svg,1.00,algeria/olympique-akbou.webp
+Algerian Ligue 1,US Biskra,algeria/US_Biskra.svg,1.00,algeria/us-biskra.webp
+Algerian Ligue 1,USM Alger,algeria/USM_Alger.svg,1.00,algeria/usm-alger.webp
+Algerian Ligue 1,USM Khenchela,algeria/USM_Khenchela.svg,1.00,algeria/usm-khenchela.webp
+Allsvenskan,AIK,sweden/AIK.svg,1.00,sweden/aik.webp
+Allsvenskan,BK Häcken,sweden/Häcken.svg,1.00,sweden/hacken.webp
+Allsvenskan,Brommapojkarna,sweden/Brommapojkarna.svg,1.00,sweden/brommapojkarna.webp
+Allsvenskan,Degerfors IF,sweden/Degerfors.svg,1.00,sweden/degerfors.webp
+Allsvenskan,Djurgårdens IF,sweden/Djurgården.svg,0.95,sweden/djurgarden.webp
+Allsvenskan,GAIS,sweden/GAIS.svg,1.00,sweden/gais.webp
+Allsvenskan,Halmstads BK,sweden/Halmstad.svg,0.94,sweden/halmstad.webp
+Allsvenskan,Hammarby IF,sweden/Hammarby.svg,1.00,sweden/hammarby.webp
+Allsvenskan,IF Elfsborg,sweden/Elfsborg.svg,1.00,sweden/elfsborg.webp
+Allsvenskan,IFK Göteborg,sweden/IFK_Göteborg.svg,1.00,sweden/ifk-goteborg.webp
+Allsvenskan,IFK Norrköping,sweden/Norrköping.svg,0.95,sweden/norrkoping.webp
+Allsvenskan,IFK Värnamo,sweden/Värnamo.svg,0.95,sweden/varnamo.webp
+Allsvenskan,IK Sirius,sweden/Sirius.svg,0.95,sweden/sirius.webp
+Allsvenskan,Malmö FF,sweden/Malmö.svg,0.95,sweden/malmo.webp
+Allsvenskan,Mjällby AIF,sweden/Mjällby.svg,0.95,sweden/mjallby.webp
+Allsvenskan,Östers IF,sweden/Östers_IF.svg,1.00,sweden/osters-if.webp
+Botola Pro,AS FAR,morocco/AS_FAR.svg,1.00,morocco/as-far.webp
+Botola Pro,DH El Jadida,morocco/Difaâ_Hassani_El_Jadidi.svg,1.00,morocco/difaa-hassani-el-jadidi.webp
+Botola Pro,FUS Rabat,morocco/Fath_Union_Sports_Rabat.svg,0.92,morocco/fath-union-sports-rabat.webp
+Botola Pro,HUS Agadir,morocco/Hassania_Agadir.svg,1.00,morocco/hassania-agadir.webp
+Botola Pro,IR Tanger,morocco/IR_Tanger.svg,1.00,morocco/ir-tanger.webp
+Botola Pro,KAC Marrakech,morocco/Kawkab_of_Marrakech.svg,1.00,morocco/kawkab-of-marrakech.webp
+Botola Pro,MA Tétouan,morocco/Moghreb_Tetouan.svg,1.00,morocco/moghreb-tetouan.webp
+Botola Pro,MAS Fez,morocco/Maghreb_of_Fez.svg,1.00,morocco/maghreb-of-fez.webp
+Botola Pro,RS Berkane,morocco/RS_Berkane.svg,1.00,morocco/rs-berkane.webp
+Botola Pro,Raja CA,morocco/Raja_Casablanca.svg,0.91,morocco/raja-casablanca.webp
+Botola Pro,UTS Rabat,morocco/Union_Touarga_Sport_Rabat.svg,0.92,morocco/union-touarga-sport-rabat.webp
+Botola Pro,Wydad AC,morocco/Wydad_AC.svg,1.00,morocco/wydad-ac.webp
+Brack Super League,BSC Young Boys,switzerland/Young_Boys.svg,0.95,switzerland/young-boys.webp
+Brack Super League,FC Basel 1893,switzerland/Basel.svg,0.95,switzerland/basel.webp
+Brack Super League,FC Lugano,switzerland/Lugano.svg,1.00,switzerland/lugano.webp
+Brack Super League,FC Luzern,switzerland/Luzern.svg,1.00,switzerland/luzern.webp
+Brack Super League,FC Sion,switzerland/Sion.svg,1.00,switzerland/sion.webp
+Brack Super League,FC St. Gallen,switzerland/St._Gallen.svg,1.00,switzerland/st-gallen.webp
+Brack Super League,FC Thun,switzerland/Thun.svg,1.00,switzerland/thun.webp
+Brack Super League,FC Winterthur,switzerland/Winterthur.svg,1.00,switzerland/winterthur.webp
+Brack Super League,FC Zürich,switzerland/Zürich.svg,1.00,switzerland/zurich.webp
+Brack Super League,GC Zürich,switzerland/Zürich.svg,0.95,switzerland/zurich.webp
+Brack Super League,Lausanne-Sport,switzerland/Lausanne-Sport.svg,1.00,switzerland/lausanne-sport.webp
+Brack Super League,Servette FC,switzerland/Servette.svg,1.00,switzerland/servette.webp
+Bundesliga,1. FC Köln,,0,
+Bundesliga,1. FSV Mainz 05,germany/Mainz_05.svg,1.00,germany/mainz-05.webp
+Bundesliga,Borussia Dortmund,germany/Borussia_Dortmund.svg,1.00,germany/borussia-dortmund.webp
+Bundesliga,FC Augsburg,germany/Augsburg.svg,1.00,germany/augsburg.webp
+Bundesliga,FC Bayern München,germany/Bayern_München.svg,1.00,germany/bayern-munchen.webp
+Bundesliga,FC St. Pauli,germany/St_Pauli.svg,1.00,germany/st-pauli.webp
+Bundesliga,Frankfurt,germany/FSV_Frankfurt.svg,1.00,germany/fsv-frankfurt.webp
+Bundesliga,Hamburger SV,germany/Hamburger_SV.svg,1.00,germany/hamburger-sv.webp
+Bundesliga,Heidenheim,germany/FC_Heidenheim.svg,1.00,germany/fc-heidenheim.webp
+Bundesliga,Leverkusen,germany/Bayer_Leverkusen.svg,0.93,germany/bayer-leverkusen.webp
+Bundesliga,M'gladbach,germany/Borussia_Mönchengladbach.svg,1.00,germany/borussia-monchengladbach.webp
+Bundesliga,RB Leipzig,germany/RB_Leipzig.svg,1.00,germany/rb-leipzig.webp
+Bundesliga,SC Freiburg,germany/Freiburg.svg,1.00,germany/freiburg.webp
+Bundesliga,SV Werder Bremen,germany/Werder_Bremen.svg,1.00,germany/werder-bremen.webp
+Bundesliga,TSG Hoffenheim,germany/Hoffenheim.svg,1.00,germany/hoffenheim.webp
+Bundesliga,Union Berlin,germany/Union_Berlin.svg,1.00,germany/union-berlin.webp
+Bundesliga,VfB Stuttgart,germany/VfB_Stuttgart.svg,1.00,germany/vfb-stuttgart.webp
+Bundesliga,VfL Wolfsburg,germany/Wolfsburg.svg,1.00,germany/wolfsburg.webp
+Bundesliga 2,1. FC Magdeburg,germany/1._FC_Magdeburg.svg,1.00,germany/1-fc-magdeburg.webp
+Bundesliga 2,1. FC Nürnberg,germany/FC_Nürnberg.svg,1.00,germany/fc-nurnberg.webp
+Bundesliga 2,Arminia Bielefeld,germany/Arminia_Bielefeld.svg,1.00,germany/arminia-bielefeld.webp
+Bundesliga 2,Braunschweig,germany/Eintracht_Braunschweig.svg,0.93,germany/eintracht-braunschweig.webp
+Bundesliga 2,Dynamo Dresden,germany/Dynamo_Dresden.svg,1.00,germany/dynamo-dresden.webp
+Bundesliga 2,Düsseldorf,germany/Fortuna_Düsseldorf.svg,1.00,germany/fortuna-dusseldorf.webp
+Bundesliga 2,FC Schalke 04,germany/Schalke_04.svg,1.00,germany/schalke-04.webp
+Bundesliga 2,Fürth,germany/SpVgg_Greuther_Fürth.svg,0.91,germany/spvgg-greuther-furth.webp
+Bundesliga 2,Hannover 96,germany/Hannover_96.svg,1.00,germany/hannover-96.webp
+Bundesliga 2,Hertha BSC,germany/Hertha_BSC.svg,1.00,germany/hertha-bsc.webp
+Bundesliga 2,Holstein Kiel,germany/Holstein_Kiel.svg,1.00,germany/holstein-kiel.webp
+Bundesliga 2,Kaiserslautern,germany/FC_Kaiserslautern.svg,1.00,germany/fc-kaiserslautern.webp
+Bundesliga 2,Karlsruher SC,germany/Karlsruher_SC.svg,1.00,germany/karlsruher-sc.webp
+Bundesliga 2,Preußen Münster,germany/Preußen_Münster.svg,1.00,germany/preuen-munster.webp
+Bundesliga 2,SC Paderborn 07,germany/SC_Paderborn.svg,0.95,germany/sc-paderborn.webp
+Bundesliga 2,SV Darmstadt 98,germany/SV_Darmstadt_98.svg,1.00,germany/sv-darmstadt-98.webp
+Bundesliga 2,SV Elversberg,germany/SV_Elversberg.svg,1.00,germany/sv-elversberg.webp
+Bundesliga 2,VfL Bochum 1848,germany/VfL_Bochum.svg,0.95,germany/vfl-bochum.webp
+CSL,Beijing FC,china/Beijing_Guoan.svg,0.93,china/beijing-guoan.webp
+CSL,Changchun Yatai,china/Changchun_Yatai.svg,1.00,china/changchun-yatai.webp
+CSL,Chengdu FC,china/Chengdu_Rongcheng.svg,0.92,china/chengdu-rongcheng.webp
+CSL,Dalian Yingbo,china/Dalian_Yingbo.svg,1.00,china/dalian-yingbo.webp
+CSL,Henan FC,china/Henan_Songshan_Longmen.svg,0.91,china/henan-songshan-longmen.webp
+CSL,Meizhou Hakka FC,china/Meizhou_Hakka.svg,1.00,china/meizhou-hakka.webp
+CSL,Qingdao Hainiu,china/Qingdao_Hainiu.svg,1.00,china/qingdao-hainiu.webp
+CSL,Qingdao W. Coast,china/Qingdao_West_Coast.svg,0.91,china/qingdao-west-coast.webp
+CSL,SZ Peng City,china/Shenzhen_Xinpengcheng.svg,1.00,china/shenzhen-xinpengcheng.webp
+CSL,Shandong Taishan,china/Shandong_Taishan.svg,1.00,china/shandong-taishan.webp
+CSL,Shanghai Port FC,china/Shanghai_Port.svg,1.00,china/shanghai-port.webp
+CSL,Shanghai Shenhua,china/Shanghai_Shenhua.svg,1.00,china/shanghai-shenhua.webp
+CSL,Tianjin JMT FC,china/Tianjin_Jinmen_Tiger.svg,1.00,china/tianjin-jinmen-tiger.webp
+CSL,Wuhan Three Towns,china/Wuhan_Three_Towns.svg,1.00,china/wuhan-three-towns.webp
+CSL,Yunnan Yukun,china/Yunnan_Yukun.svg,1.00,china/yunnan-yukun.webp
+CSL,Zhejiang Pro,china/Zhejiang_Professional_FC.svg,0.93,china/zhejiang-professional-fc.webp
+EFL Championship,Birmingham City,england/Birmingham_City.svg,1.00,england/birmingham-city.webp
+EFL Championship,Blackburn Rovers,england/Blackburn_Rovers.svg,1.00,england/blackburn-rovers.webp
+EFL Championship,Bristol City,england/Bristol_City.svg,1.00,england/bristol-city.webp
+EFL Championship,Charlton Ath,england/Charlton_Athletic.svg,0.94,england/charlton-athletic.webp
+EFL Championship,Coventry City,england/Coventry_City.svg,1.00,england/coventry-city.webp
+EFL Championship,Derby County,england/Derby_County.svg,1.00,england/derby-county.webp
+EFL Championship,Hull City,england/Hull_City.svg,1.00,england/hull-city.webp
+EFL Championship,Ipswich,england/Ipswich.svg,1.00,england/ipswich.webp
+EFL Championship,Leicester City,england/Leicester.svg,0.95,england/leicester.webp
+EFL Championship,Middlesbrough,england/Middlesbrough.svg,1.00,england/middlesbrough.webp
+EFL Championship,Millwall,england/Millwall.svg,1.00,england/millwall.webp
+EFL Championship,Norwich,england/Norwich_City.svg,0.93,england/norwich-city.webp
+EFL Championship,Oxford United,england/Oxford_United.svg,1.00,england/oxford-united.webp
+EFL Championship,Portsmouth,england/Portsmouth.svg,1.00,england/portsmouth.webp
+EFL Championship,Preston,england/Preston_North_End.svg,0.92,england/preston-north-end.webp
+EFL Championship,QPR,england/Queens_Park_Rangers.svg,0.91,england/queens-park-rangers.webp
+EFL Championship,Sheffield Utd,england/Sheffield_United.svg,0.90,england/sheffield-united.webp
+EFL Championship,Sheffield Wed,england/Sheffield_Wednesday.svg,0.93,england/sheffield-wednesday.webp
+EFL Championship,Southampton,england/Southampton.svg,1.00,england/southampton.webp
+EFL Championship,Stoke City,england/Stoke_City.svg,1.00,england/stoke-city.webp
+EFL Championship,Swansea City,england/Swansea_City.svg,1.00,england/swansea-city.webp
+EFL Championship,Watford,england/Watford.svg,1.00,england/watford.webp
+EFL Championship,West Brom,england/West_Bromwich_Albion.svg,0.92,england/west-bromwich-albion.webp
+EFL Championship,Wrexham,england/Wrexham_AFC.svg,1.00,england/wrexham-afc.webp
+EFL League One,AFC Wimbledon,england/AFC_Wimbledon.svg,1.00,england/afc-wimbledon.webp
+EFL League One,Barnsley,england/Barnsley.svg,1.00,england/barnsley.webp
+EFL League One,Blackpool,england/Blackpool.svg,1.00,england/blackpool.webp
+EFL League One,Bolton,england/Bolton_Wanderers.svg,0.92,england/bolton-wanderers.webp
+EFL League One,Bradford City,england/Bradford_City.svg,1.00,england/bradford-city.webp
+EFL League One,Burton Albion,england/Burton_Albion.svg,1.00,england/burton-albion.webp
+EFL League One,Cardiff City,england/Cardiff_City.svg,1.00,england/cardiff-city.webp
+EFL League One,Doncaster,england/Doncaster_Rovers.svg,0.93,england/doncaster-rovers.webp
+EFL League One,Exeter City,england/Exeter_City.svg,1.00,england/exeter-city.webp
+EFL League One,Huddersfield,england/Huddersfield_Town.svg,0.94,england/huddersfield-town.webp
+EFL League One,Leyton Orient,england/Leyton_Orient.svg,1.00,england/leyton-orient.webp
+EFL League One,Lincoln City,england/Lincoln_City.svg,1.00,england/lincoln-city.webp
+EFL League One,Luton Town,england/Luton_Town.svg,1.00,england/luton-town.webp
+EFL League One,Mansfield Town,england/Mansfield_Town.svg,1.00,england/mansfield-town.webp
+EFL League One,Northampton,england/Northampton_Town.svg,0.93,england/northampton-town.webp
+EFL League One,Peterborough,england/Peterborough_United.svg,1.00,england/peterborough-united.webp
+EFL League One,Plymouth Argyle,england/Plymouth_Argyle.svg,1.00,england/plymouth-argyle.webp
+EFL League One,Port Vale,england/Port_Vale_FC.svg,1.00,england/port-vale-fc.webp
+EFL League One,Reading,england/Reading.svg,1.00,england/reading.webp
+EFL League One,Rotherham Utd,england/Rotherham_United.svg,0.90,england/rotherham-united.webp
+EFL League One,Stevenage,england/Stevenage.svg,1.00,england/stevenage.webp
+EFL League One,Stockport,england/Stockport_County.svg,0.93,england/stockport-county.webp
+EFL League One,Wigan Athletic,england/Wigan_Athletic.svg,1.00,england/wigan-athletic.webp
+EFL League One,Wycombe,england/Wycombe_Wanderers.svg,0.92,england/wycombe-wanderers.webp
+EFL League Two,Accrington,england/Accrington_Stanley.svg,0.93,england/accrington-stanley.webp
+EFL League Two,Barnet,england/Barnet.svg,1.00,england/barnet.webp
+EFL League Two,Barrow,england/Barrow_AFC.svg,1.00,england/barrow-afc.webp
+EFL League Two,Bristol Rovers,england/Bristol_Rovers.svg,1.00,england/bristol-rovers.webp
+EFL League Two,Bromley FC,england/Bromley.svg,1.00,england/bromley.webp
+EFL League Two,Cambridge Utd,england/Cambridge_United.svg,0.90,england/cambridge-united.webp
+EFL League Two,Cheltenham Town,england/Cheltenham_Town.svg,1.00,england/cheltenham-town.webp
+EFL League Two,Chesterfield,england/Chesterfield.svg,1.00,england/chesterfield.webp
+EFL League Two,Colchester,england/Colchester_United.svg,0.93,england/colchester-united.webp
+EFL League Two,Crawley Town,england/Crawley_Town.svg,1.00,england/crawley-town.webp
+EFL League Two,Crewe Alexandra,england/Crewe_Alexandra.svg,1.00,england/crewe-alexandra.webp
+EFL League Two,Fleetwood Town,england/Fleetwood_Town.svg,1.00,england/fleetwood-town.webp
+EFL League Two,Gillingham,england/Gillingham.svg,1.00,england/gillingham.webp
+EFL League Two,Grimsby Town,england/Grimsby_Town.svg,1.00,england/grimsby-town.webp
+EFL League Two,Harrogate Town,england/Harrogate_Town.svg,1.00,england/harrogate-town.webp
+EFL League Two,MK Dons,england/Milton_Keynes_Dons.svg,0.92,england/milton-keynes-dons.webp
+EFL League Two,Newport County,england/Newport_County.svg,1.00,england/newport-county.webp
+EFL League Two,Notts County,england/Notts_County.svg,1.00,england/notts-county.webp
+EFL League Two,Oldham Athletic,england/Oldham_Athletic.svg,1.00,england/oldham-athletic.webp
+EFL League Two,Salford City,england/Salford_City.svg,1.00,england/salford-city.webp
+EFL League Two,Shrewsbury,england/Shrewsbury_Town.svg,0.93,england/shrewsbury-town.webp
+EFL League Two,Swindon Town,england/Swindon_Town.svg,1.00,england/swindon-town.webp
+EFL League Two,Tranmere Rovers,england/Tranmere_Rovers.svg,1.00,england/tranmere-rovers.webp
+EFL League Two,Walsall,england/Walsall.svg,1.00,england/walsall.webp
+Egyptian Premier League,Al Ahly,egypt/Al_Ahly_SC.svg,1.00,egypt/al-ahly-sc.webp
+Egyptian Premier League,Al Ittihad Alexandria,egypt/Al_Ittihad_Alexandria_Club.svg,1.00,egypt/al-ittihad-alexandria-club.webp
+Egyptian Premier League,Al Masry,egypt/Al-Masry_SC.svg,1.00,egypt/al-masry-sc.webp
+Egyptian Premier League,Al Mokawloon Al Arab,egypt/Al_Mokawloon_Al_Arab_SC.svg,1.00,egypt/al-mokawloon-al-arab-sc.webp
+Egyptian Premier League,Asyut Petroleum,egypt/Asyut_Petroleum.svg,1.00,egypt/asyut-petroleum.webp
+Egyptian Premier League,Ceramica Cleopatra,egypt/Ceramica_Cleopatra_FC.svg,1.00,egypt/ceramica-cleopatra-fc.webp
+Egyptian Premier League,ENPPI,egypt/ENPPI_SC.svg,1.00,egypt/enppi-sc.webp
+Egyptian Premier League,El Gouna,egypt/El_Gouna_FC.svg,1.00,egypt/el-gouna-fc.webp
+Egyptian Premier League,El Qanah,egypt/El_Qanah_FC.svg,1.00,egypt/el-qanah-fc.webp
+Egyptian Premier League,Ghazl El Mahalla,egypt/Ghazl_El_Mahalla.svg,1.00,egypt/ghazl-el-mahalla.webp
+Egyptian Premier League,Modern Sport,egypt/Modern_Sport_FC.svg,1.00,egypt/modern-sport-fc.webp
+Egyptian Premier League,National Bank of Egypt,egypt/National_Bank_of_Egypt_SC.svg,1.00,egypt/national-bank-of-egypt-sc.webp
+Egyptian Premier League,Petrojet,egypt/Petrojet_FC.svg,1.00,egypt/petrojet-fc.webp
+Egyptian Premier League,Pyramids,egypt/Pyramids_FC.svg,1.00,egypt/pyramids-fc.webp
+Egyptian Premier League,Tala'ea El Gaish,egypt/Tala'ea_El_Gaish_SC.svg,1.00,egypt/tala-ea-el-gaish-sc.webp
+Egyptian Premier League,Wadi Degla,egypt/Wadi_Degla_SC.svg,1.00,egypt/wadi-degla-sc.webp
+Egyptian Premier League,ZED,egypt/ZED_FC.svg,1.00,egypt/zed-fc.webp
+Egyptian Premier League,Zamalek,egypt/Zamalek_SC.svg,1.00,egypt/zamalek-sc.webp
+Eliteserien,Bryne FK,norway/Bryne.svg,1.00,norway/bryne.webp
+Eliteserien,FK Bodø/Glimt,norway/BodøGlimt.svg,0.94,norway/bodglimt.webp
+Eliteserien,FK Haugesund,norway/Haugesund.svg,1.00,norway/haugesund.webp
+Eliteserien,Fredrikstad FK,norway/Fredrikstad.svg,1.00,norway/fredrikstad.webp
+Eliteserien,HamKam Fotball,norway/Hamarkameratene.svg,1.00,norway/hamarkameratene.webp
+Eliteserien,KFUM-Kameratene,norway/KFUM.svg,0.95,norway/kfum.webp
+Eliteserien,Kristiansund BK,norway/Kristiansund.svg,1.00,norway/kristiansund.webp
+Eliteserien,Molde FK,norway/Molde.svg,1.00,norway/molde.webp
+Eliteserien,Rosenborg BK,norway/Rosenborg.svg,1.00,norway/rosenborg.webp
+Eliteserien,SK Brann,norway/Brann.svg,1.00,norway/brann.webp
+Eliteserien,Sandefjord,norway/Sandefjord.svg,1.00,norway/sandefjord.webp
+Eliteserien,Sarpsborg 08,norway/Sarpsborg_08.svg,1.00,norway/sarpsborg-08.webp
+Eliteserien,Strømsgodset IF,norway/Strømsgodset.svg,1.00,norway/strmsgodset.webp
+Eliteserien,Tromsø IL,norway/Tromsø.svg,0.95,norway/troms.webp
+Eliteserien,Viking FK,norway/Viking_FK.svg,1.00,norway/viking-fk.webp
+Eliteserien,Vålerenga Fotball,norway/Vålerenga.svg,0.95,norway/valerenga.webp
+Eredivisie,AZ,netherlands/AZ_Alkmaar.svg,0.91,netherlands/az-alkmaar.webp
+Eredivisie,Ajax,netherlands/Ajax.svg,1.00,netherlands/ajax.webp
+Eredivisie,Excelsior,netherlands/Excelsior_Rotterdam.svg,1.00,netherlands/excelsior-rotterdam.webp
+Eredivisie,FC Groningen,netherlands/FC_Groningen.svg,1.00,netherlands/fc-groningen.webp
+Eredivisie,FC Twente,netherlands/Twente.svg,1.00,netherlands/twente.webp
+Eredivisie,FC Utrecht,netherlands/FC_Utrecht.svg,1.00,netherlands/fc-utrecht.webp
+Eredivisie,FC Volendam,netherlands/Volendam.svg,1.00,netherlands/volendam.webp
+Eredivisie,Feyenoord,netherlands/Feyenoord.svg,1.00,netherlands/feyenoord.webp
+Eredivisie,Fortuna Sittard,netherlands/Fortuna_Sittard.svg,1.00,netherlands/fortuna-sittard.webp
+Eredivisie,Go Ahead Eagles,netherlands/Go_Ahead_Eagles.svg,1.00,netherlands/go-ahead-eagles.webp
+Eredivisie,Heracles Almelo,netherlands/Heracles_Almelo.svg,1.00,netherlands/heracles-almelo.webp
+Eredivisie,N.E.C. Nijmegen,netherlands/N.E.C._Nijmegen.svg,1.00,netherlands/n-e-c-nijmegen.webp
+Eredivisie,NAC Breda,netherlands/NAC_Breda.svg,1.00,netherlands/nac-breda.webp
+Eredivisie,PEC Zwolle,netherlands/PEC_Zwolle.svg,1.00,netherlands/pec-zwolle.webp
+Eredivisie,PSV,netherlands/PSV_Eindhoven.svg,0.91,netherlands/psv-eindhoven.webp
+Eredivisie,SC Telstar,netherlands/Telstar.svg,1.00,netherlands/telstar.webp
+Eredivisie,Sparta Rotterdam,netherlands/Sparta_Rotterdam.svg,1.00,netherlands/sparta-rotterdam.webp
+Eredivisie,sc Heerenveen,netherlands/sc_Heerenveen.svg,1.00,netherlands/sc-heerenveen.webp
+Finnliiga,HJK Helsinki,finland/HJK_Helsinki.svg,1.00,finland/hjk-helsinki.webp
+Hellas Liga,AEK Athens,greece/AEK_Athens.svg,1.00,greece/aek-athens.webp
+Hellas Liga,Olympiacos FC,greece/Olympiacos.svg,1.00,greece/olympiacos.webp
+Hellas Liga,PAOK FC,greece/PAOK.svg,1.00,greece/paok.webp
+Hellas Liga,Panathinaikos,greece/Panathinaikos.svg,1.00,greece/panathinaikos.webp
+ISL,Bengaluru FC,india/Bengaluru_FC.svg,1.00,india/bengaluru-fc.webp
+ISL,Chennaiyin FC,india/Chennaiyin_FC.svg,1.00,india/chennaiyin-fc.webp
+ISL,East Bengal,india/East_Bengal_FC.svg,1.00,india/east-bengal-fc.webp
+ISL,FC Goa,india/Sporting_Clube_de_Goa.svg,1.00,india/sporting-clube-de-goa.webp
+ISL,Hyderabad FC,india/Hyderabad_FC.svg,1.00,india/hyderabad-fc.webp
+ISL,Jamshedpur FC,india/Jamshedpur_FC.svg,1.00,india/jamshedpur-fc.webp
+ISL,Kerala Blasters,india/Kerala_Blasters_FC.svg,1.00,india/kerala-blasters-fc.webp
+ISL,Mohun Bagan SG,india/Mohun_Bagan_Super_Giant.svg,0.93,india/mohun-bagan-super-giant.webp
+ISL,Mumbai City FC,india/Mumbai_City_FC.svg,1.00,india/mumbai-city-fc.webp
+ISL,NorthEast United,india/NorthEast_United_FC.svg,1.00,india/northeast-united-fc.webp
+ISL,Punjab FC,india/Punjab_FC.svg,1.00,india/punjab-fc.webp
+Iraq Stars League,Al-Gharraf,iraq/Al-Gharraf_SC.svg,1.00,iraq/al-gharraf-sc.webp
+Iraq Stars League,Al-Jolan,iraq/Al-Jolan_SC.svg,1.00,iraq/al-jolan-sc.webp
+Iraq Stars League,Al-Kahrabaa,iraq/Al-Kahrabaa_SC.svg,1.00,iraq/al-kahrabaa-sc.webp
+Iraq Stars League,Al-Karkh,iraq/Al-Karkh_SC.svg,1.00,iraq/al-karkh-sc.webp
+Iraq Stars League,Al-Karma,iraq/Al-Karma_SC.svg,1.00,iraq/al-karma-sc.webp
+Iraq Stars League,Al-Minaa,iraq/Al-Minaa_SC.svg,1.00,iraq/al-minaa-sc.webp
+Iraq Stars League,Al-Naft,iraq/Al-Naft_SC.svg,1.00,iraq/al-naft-sc.webp
+Iraq Stars League,Al-Quwa Al-Jawiya,iraq/Al-Quwa_Al-Jawiya.svg,1.00,iraq/al-quwa-al-jawiya.webp
+Iraq Stars League,Al-Shorta,iraq/Al-Shorta.svg,1.00,iraq/al-shorta.webp
+Iraq Stars League,Al-Talaba,iraq/Al-Talaba_SC.svg,1.00,iraq/al-talaba-sc.webp
+Iraq Stars League,Al-Zawraa,iraq/Al-Zawraa_SC.svg,1.00,iraq/al-zawraa-sc.webp
+Iraq Stars League,Diyala,iraq/Diyala_SC.svg,1.00,iraq/diyala-sc.webp
+Iraq Stars League,Karbala,iraq/Karbala_SC.svg,1.00,iraq/karbala-sc.webp
+Iraq Stars League,Naft Maysan,iraq/Naft_Maysan_SC.svg,1.00,iraq/naft-maysan-sc.webp
+Iraq Stars League,Newroz,iraq/Newroz_SC.svg,1.00,iraq/newroz-sc.webp
+K League 1,Daegu FC,south-korea/Daegu_FC.svg,1.00,south-korea/daegu-fc.webp
+K League 1,Daejeon Hana,south-korea/Daejeon_Hana_Citizen.svg,0.93,south-korea/daejeon-hana-citizen.webp
+K League 1,FC Anyang,south-korea/FC_Anyang.svg,1.00,south-korea/fc-anyang.webp
+K League 1,FC Seoul,south-korea/FC_Seoul.svg,1.00,south-korea/fc-seoul.webp
+K League 1,Gangwon FC,south-korea/Gangwon_FC.svg,1.00,south-korea/gangwon-fc.webp
+K League 1,Gimcheon Sangmu,south-korea/Gimcheon_Sangmu_FC.svg,1.00,south-korea/gimcheon-sangmu-fc.webp
+K League 1,Gwangju FC,south-korea/Gwangju_FC.svg,1.00,south-korea/gwangju-fc.webp
+K League 1,Jeju United,south-korea/Jeju_SK_FC.svg,0.95,south-korea/jeju-sk-fc.webp
+K League 1,Jeonbuk Hyundai,south-korea/Jeonbuk.svg,0.95,south-korea/jeonbuk.webp
+K League 1,Pohang Steelers,south-korea/Pohang_Steelers.svg,1.00,south-korea/pohang-steelers.webp
+K League 1,Suwon FC,south-korea/Suwon_FC.svg,1.00,south-korea/suwon-fc.webp
+K League 1,Ulsan HD FC,south-korea/Ulsan_HD_FC.svg,1.00,south-korea/ulsan-hd-fc.webp
+LALIGA EA SPORTS,Athletic Club,spain/Athletic_Club_Bilbao.svg,1.00,spain/athletic-club-bilbao.webp
+LALIGA EA SPORTS,Atlético de Madrid,spain/Atletico_Madrid.svg,1.00,spain/atletico-madrid.webp
+LALIGA EA SPORTS,CA Osasuna,spain/Osasuna.svg,1.00,spain/osasuna.webp
+LALIGA EA SPORTS,Celta,spain/Celta.svg,1.00,spain/celta.webp
+LALIGA EA SPORTS,D. Alavés,spain/Deportivo_Alavés.svg,1.00,spain/deportivo-alaves.webp
+LALIGA EA SPORTS,Elche CF,spain/Elche.svg,1.00,spain/elche.webp
+LALIGA EA SPORTS,FC Barcelona,spain/Barcelona.svg,1.00,spain/barcelona.webp
+LALIGA EA SPORTS,Getafe CF,spain/Getafe.svg,1.00,spain/getafe.webp
+LALIGA EA SPORTS,Girona FC,spain/Girona.svg,1.00,spain/girona.webp
+LALIGA EA SPORTS,Levante UD,spain/Levante.svg,1.00,spain/levante.webp
+LALIGA EA SPORTS,R. Oviedo,spain/Oviedo.svg,0.95,spain/oviedo.webp
+LALIGA EA SPORTS,RCD Espanyol,spain/Espanyol.svg,1.00,spain/espanyol.webp
+LALIGA EA SPORTS,RCD Mallorca,spain/Mallorca.svg,1.00,spain/mallorca.webp
+LALIGA EA SPORTS,Rayo Vallecano,spain/Rayo_Vallecano.svg,1.00,spain/rayo-vallecano.webp
+LALIGA EA SPORTS,Real Betis,spain/Real_Betis.svg,1.00,spain/real-betis.webp
+LALIGA EA SPORTS,Real Madrid,spain/Real_Madrid.svg,1.00,spain/real-madrid.webp
+LALIGA EA SPORTS,Real Sociedad,spain/Real_Sociedad.svg,1.00,spain/real-sociedad.webp
+LALIGA EA SPORTS,Sevilla FC,spain/Sevilla.svg,1.00,spain/sevilla.webp
+LALIGA EA SPORTS,Valencia CF,spain/Valencia.svg,1.00,spain/valencia.webp
+LALIGA EA SPORTS,Villarreal CF,spain/Villarreal.svg,1.00,spain/villarreal.webp
+LALIGA HYPERMOTION,AD Ceuta FC,spain/Ceuta.svg,0.95,spain/ceuta.webp
+LALIGA HYPERMOTION,Albacete BP,spain/Albacete.svg,0.95,spain/albacete.webp
+LALIGA HYPERMOTION,Burgos CF,spain/Burgos_CF.svg,1.00,spain/burgos-cf.webp
+LALIGA HYPERMOTION,CD Castellón,spain/Castellón.svg,1.00,spain/castellon.webp
+LALIGA HYPERMOTION,CD Leganés,spain/Leganés.svg,1.00,spain/leganes.webp
+LALIGA HYPERMOTION,CD Mirandés,spain/Mirandés.svg,1.00,spain/mirandes.webp
+LALIGA HYPERMOTION,Cultural Leonesa,spain/Cultural_Leonesa.svg,1.00,spain/cultural-leonesa.webp
+LALIGA HYPERMOTION,Cádiz CF,spain/Cádiz_CF.svg,1.00,spain/cadiz-cf.webp
+LALIGA HYPERMOTION,Córdoba CF,spain/Córdoba.svg,1.00,spain/cordoba.webp
+LALIGA HYPERMOTION,FC Andorra,spain/FC_Andorra.svg,1.00,spain/fc-andorra.webp
+LALIGA HYPERMOTION,Granada CF,spain/Granada.svg,1.00,spain/granada.webp
+LALIGA HYPERMOTION,Málaga CF,spain/Málaga.svg,1.00,spain/malaga.webp
+LALIGA HYPERMOTION,R. Racing Club,spain/Racing_Santander.svg,1.00,spain/racing-santander.webp
+LALIGA HYPERMOTION,R. Sporting,spain/Sporting_Gijón.svg,1.00,spain/sporting-gijon.webp
+LALIGA HYPERMOTION,R. Valladolid CF,spain/Real_Valladolid.svg,0.89,spain/real-valladolid.webp
+LALIGA HYPERMOTION,RC Deportivo,spain/Deportivo_La_Coruña.svg,1.00,spain/deportivo-la-coruna.webp
+LALIGA HYPERMOTION,Real Sociedad B,spain/Real_Sociedad.svg,0.96,spain/real-sociedad.webp
+LALIGA HYPERMOTION,Real Zaragoza,spain/Real_Zaragoza.svg,1.00,spain/real-zaragoza.webp
+LALIGA HYPERMOTION,SD Eibar,spain/Eibar.svg,1.00,spain/eibar.webp
+LALIGA HYPERMOTION,SD Huesca,spain/Huesca.svg,1.00,spain/huesca.webp
+LALIGA HYPERMOTION,UD Almería,spain/Almería.svg,1.00,spain/almeria.webp
+LALIGA HYPERMOTION,UD Las Palmas,spain/Las_Palmas.svg,1.00,spain/las-palmas.webp
+LPF,Aldosivi,argentina/Aldosivi.svg,1.00,argentina/aldosivi.webp
+LPF,Argentinos Jrs.,argentina/Argeninos_Juniors.svg,0.84,argentina/argeninos-juniors.webp
+LPF,Atlético Tucumán,argentina/Atlético_Tucumán.svg,1.00,argentina/atletico-tucuman.webp
+LPF,Banfield,argentina/Banfield.svg,1.00,argentina/banfield.webp
+LPF,Barracas Central,argentina/Barracas_Central.svg,1.00,argentina/barracas-central.webp
+LPF,Belgrano,argentina/Belgrano.svg,1.00,argentina/belgrano.webp
+LPF,Boca Juniors,argentina/Boca_Juniors.svg,1.00,argentina/boca-juniors.webp
+LPF,Central Córdoba,argentina/Central_Córdoba.svg,1.00,argentina/central-cordoba.webp
+LPF,Defensa,argentina/Defensa_y_Justicia.svg,0.92,argentina/defensa-y-justicia.webp
+LPF,Dep. Riestra,argentina/Deportivo_Riestra.svg,0.93,argentina/deportivo-riestra.webp
+LPF,Estudiantes,argentina/Estudiantes_de_La_Plata.svg,0.93,argentina/estudiantes-de-la-plata.webp
+LPF,Gimnasia,argentina/Gimnasia_LP.svg,0.94,argentina/gimnasia-lp.webp
+LPF,Godoy Cruz,argentina/Godoy_Cruz.svg,1.00,argentina/godoy-cruz.webp
+LPF,Huracán,argentina/CA_Huracán.svg,1.00,argentina/ca-huracan.webp
+LPF,Ind. Rivadavia,argentina/Independiente_Rivadavia.svg,0.93,argentina/independiente-rivadavia.webp
+LPF,Independiente,argentina/Independiente.svg,1.00,argentina/independiente.webp
+LPF,Instituto,argentina/Instituto_Córdoba.svg,0.93,argentina/instituto-cordoba.webp
+LPF,Lanús,argentina/Lanús.svg,1.00,argentina/lanus.webp
+LPF,Newell's,argentina/Newell's_Old_Boys.svg,0.92,argentina/newell-s-old-boys.webp
+LPF,Platense,argentina/Platense.svg,1.00,argentina/platense.webp
+LPF,Racing Club,argentina/Racing_Club.svg,1.00,argentina/racing-club.webp
+LPF,River Plate,argentina/River_Plate.svg,1.00,argentina/river-plate.webp
+LPF,Rosario Central,argentina/Rosario_Central.svg,1.00,argentina/rosario-central.webp
+LPF,San Lorenzo,argentina/San_Lorenzo_de_Almagro.svg,0.93,argentina/san-lorenzo-de-almagro.webp
+LPF,San Martín,argentina/San_Martín.svg,1.00,argentina/san-martin.webp
+LPF,Sarmiento,argentina/Sarmiento.svg,1.00,argentina/sarmiento.webp
+LPF,Talleres,argentina/Talleres.svg,1.00,argentina/talleres.webp
+LPF,Tigre,argentina/Tigre.svg,1.00,argentina/tigre.webp
+LPF,Unión,argentina/Union.svg,1.00,argentina/union.webp
+LPF,Vélez Sarsfield,argentina/Vélez_Sarsfield.svg,1.00,argentina/velez-sarsfield.webp
+Libertadores,Alianza Lima,peru/Alianza_Lima.svg,1.00,peru/alianza-lima.webp
+Libertadores,Atl. Nacional,colombia/Atlético_Nacional.svg,1.00,colombia/atletico-nacional.webp
+Libertadores,Barcelona SC,ecuador/Barcelona_SC.svg,1.00,ecuador/barcelona-sc.webp
+Libertadores,Bolívar,bolivia/Bolívar.svg,1.00,bolivia/bolivar.webp
+Libertadores,Bucaramanga,colombia/Bucaramanga.svg,1.00,colombia/bucaramanga.webp
+Libertadores,Carabobo FC,venezuela/Carabobo_FC.svg,1.00,venezuela/carabobo-fc.webp
+Libertadores,Cerro Porteño,paraguay/Cerro_Porteño.svg,1.00,paraguay/cerro-porteno.webp
+Libertadores,Colo-Colo,chile/Colo_Colo.svg,1.00,chile/colo-colo.webp
+Libertadores,Dep. Táchira,venezuela/Deportivo_Táchira.svg,0.93,venezuela/deportivo-tachira.webp
+Libertadores,IDV,ecuador/Independiente_del_Valle.svg,0.91,ecuador/independiente-del-valle.webp
+Libertadores,LDU Quito,ecuador/Liga_de_Quito.svg,1.00,ecuador/liga-de-quito.webp
+Libertadores,Libertad,paraguay/Libertad.svg,1.00,paraguay/libertad.webp
+Libertadores,Nacional,brazil/Nacional_Futebol_Clube.svg,1.00,brazil/nacional-futebol-clube.webp
+Libertadores,Olimpia,paraguay/Olimpia.svg,1.00,paraguay/olimpia.webp
+Libertadores,Peñarol,uruguay/Peñarol.svg,1.00,uruguay/penarol.webp
+Libertadores,San Antonio,bolivia/CD_San_Antonio_Bulo_Bulo.svg,1.00,bolivia/cd-san-antonio-bulo-bulo.webp
+Libertadores,Sporting Cristal,peru/Sporting_Cristal.svg,1.00,peru/sporting-cristal.webp
+Libertadores,U. de Chile,chile/Universidad_de_Chile.svg,1.00,chile/universidad-de-chile.webp
+Libertadores,Universitario,peru/Universitario_de_Deportes.svg,1.00,peru/universitario-de-deportes.webp
+Liga Azerbaijan,Qarabağ FK,azerbaijan/Qarabağ.svg,1.00,azerbaijan/qarabag.webp
+Liga Chile,Uni. Católica,chile/Universidad_Católica.svg,0.93,chile/universidad-catolica.webp
+Liga Cyprus,APOEL FC,cyprus/APOEL.svg,1.00,cyprus/apoel.webp
+Liga Hrvatska,Dinamo Zagreb,croatia/GNK_Dinamo_Zagreb.svg,0.94,croatia/gnk-dinamo-zagreb.webp
+Liga Hrvatska,Hajduk Split,croatia/Hajduk_Split.svg,1.00,croatia/hajduk-split.webp
+Liga Portugal,AVS Futebol SAD,portugal/AVS_Futebol_SAD.svg,1.00,portugal/avs-futebol-sad.webp
+Liga Portugal,Arouca,portugal/Arouca.svg,1.00,portugal/arouca.webp
+Liga Portugal,CD Tondela,portugal/Tondela.svg,1.00,portugal/tondela.webp
+Liga Portugal,Casa Pia AC,portugal/Casa_Pia_AC.svg,1.00,portugal/casa-pia-ac.webp
+Liga Portugal,Estoril Praia,portugal/Estoril.svg,0.95,portugal/estoril.webp
+Liga Portugal,Estrela Amadora,portugal/Estrela_da_Amadora.svg,0.94,portugal/estrela-da-amadora.webp
+Liga Portugal,FC Alverca,portugal/Alverca.svg,1.00,portugal/alverca.webp
+Liga Portugal,FC Famalicão,portugal/Famalicao.svg,1.00,portugal/famalicao.webp
+Liga Portugal,FC Porto,portugal/FC_Porto.svg,1.00,portugal/fc-porto.webp
+Liga Portugal,Gil Vicente,portugal/Gil_Vicente.svg,1.00,portugal/gil-vicente.webp
+Liga Portugal,Moreirense FC,portugal/Moreirense.svg,1.00,portugal/moreirense.webp
+Liga Portugal,Nacional,portugal/Nacional_da_Madeira.svg,1.00,portugal/nacional-da-madeira.webp
+Liga Portugal,Rio Ave FC,portugal/Rio_Ave.svg,1.00,portugal/rio-ave.webp
+Liga Portugal,SC Braga,portugal/SC_Braga.svg,1.00,portugal/sc-braga.webp
+Liga Portugal,SL Benfica,portugal/Benfica.svg,0.95,portugal/benfica.webp
+Liga Portugal,Santa Clara,portugal/Santa_Clara.svg,1.00,portugal/santa-clara.webp
+Liga Portugal,Sporting CP,portugal/Sporting_CP.svg,1.00,portugal/sporting-cp.webp
+Liga Portugal,Vitória SC,portugal/Vitória_de_Guimarães.svg,1.00,portugal/vitoria-de-guimaraes.webp
+Ligue 1 McDonald's,AJ Auxerre,france/Auxerre.svg,0.95,france/auxerre.webp
+Ligue 1 McDonald's,AS Monaco,france/AS_Monaco.svg,1.00,france/as-monaco.webp
+Ligue 1 McDonald's,Angers SCO,france/Angers.svg,0.95,france/angers.webp
+Ligue 1 McDonald's,FC Lorient,france/Lorient_FC.svg,1.00,france/lorient-fc.webp
+Ligue 1 McDonald's,FC Metz,france/FC_Metz.svg,1.00,france/fc-metz.webp
+Ligue 1 McDonald's,FC Nantes,france/Nantes.svg,1.00,france/nantes.webp
+Ligue 1 McDonald's,Havre AC,france/Le_Havre_AC.svg,0.93,france/le-havre-ac.webp
+Ligue 1 McDonald's,LOSC Lille,france/Lille.svg,0.95,france/lille.webp
+Ligue 1 McDonald's,OGC Nice,france/Nice.svg,0.95,france/nice.webp
+Ligue 1 McDonald's,OL,france/Olympique_Lyonnais.svg,1.00,france/olympique-lyonnais.webp
+Ligue 1 McDonald's,OM,france/Marseille.svg,1.00,france/marseille.webp
+Ligue 1 McDonald's,Paris FC,france/Paris_FC.svg,1.00,france/paris-fc.webp
+Ligue 1 McDonald's,Paris SG,france/PSG.svg,1.00,france/psg.webp
+Ligue 1 McDonald's,RC Lens,france/RC_Lens.svg,1.00,france/rc-lens.webp
+Ligue 1 McDonald's,Stade Brestois 29,france/Brest.svg,1.00,france/brest.webp
+Ligue 1 McDonald's,Stade Rennais FC,france/Rennes.svg,1.00,france/rennes.webp
+Ligue 1 McDonald's,Strasbourg,france/AS_Strasbourg.svg,1.00,france/as-strasbourg.webp
+Ligue 1 McDonald's,Toulouse FC,france/Toulouse.svg,1.00,france/toulouse.webp
+Ligue 2 BKT,AS Nancy Lorraine,france/Nancy_Lorraine.svg,1.00,france/nancy-lorraine.webp
+Ligue 2 BKT,AS Saint-Étienne,france/AS_Saint-Étienne.svg,1.00,france/as-saint-etienne.webp
+Ligue 2 BKT,Amiens SC,france/AC_Amiens.svg,1.00,france/ac-amiens.webp
+Ligue 2 BKT,Clermont Foot 63,france/Clermont_Foot.svg,0.95,france/clermont-foot.webp
+Ligue 2 BKT,ESTAC Troyes,france/Troyes.svg,0.95,france/troyes.webp
+Ligue 2 BKT,En Avant Guingamp,france/EA_Guingamp.svg,1.00,france/ea-guingamp.webp
+Ligue 2 BKT,FC Annecy,france/Annecy.svg,1.00,france/annecy.webp
+Ligue 2 BKT,Grenoble Foot 38,france/Grenoble_Foot_38.svg,1.00,france/grenoble-foot-38.webp
+Ligue 2 BKT,Laval MFC,france/Stade_Lavallois.svg,1.00,france/stade-lavallois.webp
+Ligue 2 BKT,Le Mans FC,france/Le_Mans_FC.svg,1.00,france/le-mans-fc.webp
+Ligue 2 BKT,Montpellier,france/Montpellier.svg,1.00,france/montpellier.webp
+Ligue 2 BKT,Pau FC,france/Pau_FC.svg,1.00,france/pau-fc.webp
+Ligue 2 BKT,Red Star FC,france/Red_Star_FC.svg,1.00,france/red-star-fc.webp
+Ligue 2 BKT,Rodez AF,france/Rodez_AF.svg,1.00,france/rodez-af.webp
+Ligue 2 BKT,SC Bastia,france/SC_Bastia.svg,1.00,france/sc-bastia.webp
+Ligue 2 BKT,Stade de Reims,france/Stade_de_Reims.svg,1.00,france/stade-de-reims.webp
+Ligue 2 BKT,US Boulogne,france/Boulogne.svg,1.00,france/boulogne.webp
+Ligue 2 BKT,USL Dunkerque,france/Dunkerque.svg,0.95,france/dunkerque.webp
+MLS,Atlanta United,usa/Atlanta_United.svg,1.00,usa/atlanta-united.webp
+MLS,Austin FC,usa/Austin_FC.svg,1.00,usa/austin-fc.webp
+MLS,CF Montréal,usa/CF_Montréal.svg,1.00,usa/cf-montreal.webp
+MLS,Charlotte FC,usa/Charlotte_FC.svg,1.00,usa/charlotte-fc.webp
+MLS,Chicago Fire FC,usa/Chicago_Fire_FC.svg,1.00,usa/chicago-fire-fc.webp
+MLS,Colorado Rapids,usa/Colorado_Rapids.svg,1.00,usa/colorado-rapids.webp
+MLS,Columbus Crew,usa/Columbus_Crew.svg,1.00,usa/columbus-crew.webp
+MLS,D.C. United,usa/DC_United.svg,0.95,usa/dc-united.webp
+MLS,FC Cincinnati,usa/FC_Cincinnati.svg,1.00,usa/fc-cincinnati.webp
+MLS,FC Dallas,usa/FC_Dallas.svg,1.00,usa/fc-dallas.webp
+MLS,Houston Dynamo,usa/Houston_Dynamo_FC.svg,1.00,usa/houston-dynamo-fc.webp
+MLS,Inter Miami CF,usa/Inter_Miami_CF.svg,1.00,usa/inter-miami-cf.webp
+MLS,LA Galaxy,usa/Los_Angeles_Galaxy.svg,0.93,usa/los-angeles-galaxy.webp
+MLS,LAFC,usa/Los_Angeles_Football_Club.svg,1.00,usa/los-angeles-football-club.webp
+MLS,Minnesota United,usa/Minnesota_United_FC.svg,1.00,usa/minnesota-united-fc.webp
+MLS,Nashville SC,usa/Nashville_SC.svg,1.00,usa/nashville-sc.webp
+MLS,New England,usa/New_England_Revolution.svg,0.93,usa/new-england-revolution.webp
+MLS,New York City FC,usa/New_York_City_Football_Club.svg,1.00,usa/new-york-city-football-club.webp
+MLS,Orlando City,usa/Orlando_City.svg,1.00,usa/orlando-city.webp
+MLS,Philadelphia,usa/Philadelphia_Union.svg,0.93,usa/philadelphia-union.webp
+MLS,Portland Timbers,usa/Portland_Timbers.svg,1.00,usa/portland-timbers.webp
+MLS,Real Salt Lake,usa/Real_Salt_Lake.svg,1.00,usa/real-salt-lake.webp
+MLS,Red Bulls,usa/New_York_Red_Bulls.svg,0.93,usa/new-york-red-bulls.webp
+MLS,SJ Earthquakes,usa/San_Jose_Earthquakes.svg,0.94,usa/san-jose-earthquakes.webp
+MLS,San Diego FC,usa/San_Diego_Football_Club.svg,1.00,usa/san-diego-football-club.webp
+MLS,Sounders FC,usa/Seattle_Sounders_FC.svg,0.93,usa/seattle-sounders-fc.webp
+MLS,Sporting KC,usa/Sporting_Kansas_City.svg,0.91,usa/sporting-kansas-city.webp
+MLS,St. Louis CITY SC,usa/St._Louis_CITY_SC.svg,1.00,usa/st-louis-city-sc.webp
+MLS,Toronto FC,usa/Toronto_FC.svg,1.00,usa/toronto-fc.webp
+MLS,Whitecaps FC,usa/Vancouver_Whitecaps_FC.svg,0.92,usa/vancouver-whitecaps-fc.webp
+Magyar Liga,Ferencvárosi TC,hungary/Ferencváros.svg,0.85,hungary/ferencvaros.webp
+PKO BP Ekstraklasa,Arka Gdynia,poland/Arka_Gdynia.svg,1.00,poland/arka-gdynia.webp
+PKO BP Ekstraklasa,Bruk-Bet,poland/Bruk-Bet_Termalica_Nieciecza.svg,0.91,poland/bruk-bet-termalica-nieciecza.webp
+PKO BP Ekstraklasa,Cracovia,poland/Cracovia.svg,1.00,poland/cracovia.webp
+PKO BP Ekstraklasa,GKS Katowice,poland/GKS_Katowice.svg,1.00,poland/gks-katowice.webp
+PKO BP Ekstraklasa,Górnik Zabrze,poland/Górnik_Zabrze.svg,1.00,poland/gornik-zabrze.webp
+PKO BP Ekstraklasa,Jagiellonia,poland/Jagiellonia_Białystok.svg,0.93,poland/jagiellonia-biaystok.webp
+PKO BP Ekstraklasa,Korona Kielce,poland/Korona_Kielce.svg,1.00,poland/korona-kielce.webp
+PKO BP Ekstraklasa,Lech Poznań,poland/Lech_Poznań.svg,1.00,poland/lech-poznan.webp
+PKO BP Ekstraklasa,Lechia Gdańsk,poland/Lechia_Gdańsk.svg,1.00,poland/lechia-gdansk.webp
+PKO BP Ekstraklasa,Legia Warszawa,poland/Legia_Warszawa.svg,1.00,poland/legia-warszawa.webp
+PKO BP Ekstraklasa,Motor Lublin,poland/Motor_Lublin.svg,1.00,poland/motor-lublin.webp
+PKO BP Ekstraklasa,Piast Gliwice,poland/Piast_Gliwice.svg,1.00,poland/piast-gliwice.webp
+PKO BP Ekstraklasa,Pogoń Szczecin,poland/Pogoń_Szczecin.svg,1.00,poland/pogon-szczecin.webp
+PKO BP Ekstraklasa,Radomiak Radom,poland/Radomiak_Radom.svg,1.00,poland/radomiak-radom.webp
+PKO BP Ekstraklasa,Raków,poland/Raków_Częstochowa.svg,0.91,poland/rakow-czestochowa.webp
+PKO BP Ekstraklasa,Widzew Łódź,poland/Widzew_Lodz.svg,0.95,poland/widzew-lodz.webp
+PKO BP Ekstraklasa,Wisła Płock,poland/Wisła_Płock.svg,1.00,poland/wisa-pock.webp
+PKO BP Ekstraklasa,Zagłębie Lubin,poland/Zagłębie_Lubin.svg,1.00,poland/zagebie-lubin.webp
+Premier League,AFC Bournemouth,england/Bournemouth.svg,1.00,england/bournemouth.webp
+Premier League,Arsenal,england/Arsenal.svg,1.00,england/arsenal.webp
+Premier League,Aston Villa,england/Aston_Villa.svg,1.00,england/aston-villa.webp
+Premier League,Brentford,england/Brentford.svg,1.00,england/brentford.webp
+Premier League,Brighton,england/Brighton.svg,1.00,england/brighton.webp
+Premier League,Burnley,england/Burnley.svg,1.00,england/burnley.webp
+Premier League,Chelsea,england/Chelsea.svg,1.00,england/chelsea.webp
+Premier League,Crystal Palace,england/Crystal_Palace.svg,1.00,england/crystal-palace.webp
+Premier League,Everton,england/Everton.svg,1.00,england/everton.webp
+Premier League,Fulham,england/Fulham.svg,1.00,england/fulham.webp
+Premier League,Leeds United,england/Leeds_United.svg,1.00,england/leeds-united.webp
+Premier League,Liverpool,england/Liverpool_FC.svg,1.00,england/liverpool-fc.webp
+Premier League,Man Utd,england/Manchester_United.svg,1.00,england/manchester-united.webp
+Premier League,Manchester City,england/Manchester_City.svg,1.00,england/manchester-city.webp
+Premier League,Newcastle Utd,england/Newcastle.svg,0.95,england/newcastle.webp
+Premier League,Nott'm Forest,england/Nottingham_Forest.svg,1.00,england/nottingham-forest.webp
+Premier League,Spurs,england/Tottenham.svg,1.00,england/tottenham.webp
+Premier League,Sunderland,england/Sunderland.svg,1.00,england/sunderland.webp
+Premier League,West Ham,england/West_Ham.svg,1.00,england/west-ham.webp
+Premier League,Wolves,england/Wolverhampton_Wanderers.svg,1.00,england/wolverhampton-wanderers.webp
+Qatar Stars League,Al Ahli SC Doha,qatar/Al_Ahli.svg,0.95,qatar/al-ahli.webp
+Qatar Stars League,Al Duhail,qatar/Al_Duhail.svg,1.00,qatar/al-duhail.webp
+Qatar Stars League,Al Sadd,qatar/Al_Sadd.svg,1.00,qatar/al-sadd.webp
+Qatar Stars League,Al Shahaniya,qatar/Al_Shahania.svg,0.94,qatar/al-shahania.webp
+Qatar Stars League,Al-Arabi,qatar/Al_Arabi.svg,1.00,qatar/al-arabi.webp
+Qatar Stars League,Al-Gharafa,qatar/Al_Gharafa.svg,1.00,qatar/al-gharafa.webp
+Qatar Stars League,Al-Rayyan,qatar/Al_Rayyan.svg,1.00,qatar/al-rayyan.webp
+Qatar Stars League,Al-Sailiya,qatar/Al_Sailiya.svg,1.00,qatar/al-sailiya.webp
+Qatar Stars League,Al-Shamal,qatar/Al_Shamal.svg,1.00,qatar/al-shamal.webp
+Qatar Stars League,Al-Wakrah,qatar/Al_Wakrah.svg,1.00,qatar/al-wakrah.webp
+Qatar Stars League,Qatar SC,qatar/Qatar_SC.svg,1.00,qatar/qatar-sc.webp
+Qatar Stars League,Umm Salal,qatar/Umm_Salal.svg,1.00,qatar/umm-salal.webp
+ROSHN Saudi League,Al Ahli,saudi-arabia/Al_Ahli.svg,1.00,saudi-arabia/al-ahli.webp
+ROSHN Saudi League,Al Ettifaq,saudi-arabia/Al_Ettifaq.svg,1.00,saudi-arabia/al-ettifaq.webp
+ROSHN Saudi League,Al Fateh,saudi-arabia/Al_Fateh.svg,1.00,saudi-arabia/al-fateh.webp
+ROSHN Saudi League,Al Fayha,saudi-arabia/Al_Fayha.svg,1.00,saudi-arabia/al-fayha.webp
+ROSHN Saudi League,Al Hazem,saudi-arabia/Al_Hazem.svg,1.00,saudi-arabia/al-hazem.webp
+ROSHN Saudi League,Al Hilal,saudi-arabia/Al_Hilal.svg,1.00,saudi-arabia/al-hilal.webp
+ROSHN Saudi League,Al Ittihad,saudi-arabia/Al_Ittihad.svg,1.00,saudi-arabia/al-ittihad.webp
+ROSHN Saudi League,Al Khaleej,saudi-arabia/Al_Khaleej.svg,1.00,saudi-arabia/al-khaleej.webp
+ROSHN Saudi League,Al Kholood,saudi-arabia/Al-Kholood.svg,1.00,saudi-arabia/al-kholood.webp
+ROSHN Saudi League,Al Najmah,saudi-arabia/Al_Najma.svg,0.91,saudi-arabia/al-najma.webp
+ROSHN Saudi League,Al Nassr,saudi-arabia/Al_Nassr.svg,1.00,saudi-arabia/al-nassr.webp
+ROSHN Saudi League,Al Okhdood,saudi-arabia/Al_Okhdood.svg,1.00,saudi-arabia/al-okhdood.webp
+ROSHN Saudi League,Al Qadsiah,saudi-arabia/Al_Qadsiah.svg,1.00,saudi-arabia/al-qadsiah.webp
+ROSHN Saudi League,Al Riyadh,saudi-arabia/Al_Riyadh.svg,1.00,saudi-arabia/al-riyadh.webp
+ROSHN Saudi League,Al Shabab,saudi-arabia/Al_Shabab.svg,1.00,saudi-arabia/al-shabab.webp
+ROSHN Saudi League,Al Taawoun,saudi-arabia/Al_Taawoun.svg,1.00,saudi-arabia/al-taawoun.webp
+ROSHN Saudi League,Damac,saudi-arabia/Damac.svg,1.00,saudi-arabia/damac.webp
+ROSHN Saudi League,Neom,saudi-arabia/Neom_SC.svg,1.00,saudi-arabia/neom-sc.webp
+SSE Airtricity PD,Bohemians,republic-of-ireland/Bohemian.svg,0.94,republic-of-ireland/bohemian.webp
+SSE Airtricity PD,Cork City,republic-of-ireland/Cork_City.svg,1.00,republic-of-ireland/cork-city.webp
+SSE Airtricity PD,Derry City,republic-of-ireland/Derry_City.svg,1.00,republic-of-ireland/derry-city.webp
+SSE Airtricity PD,Drogheda United,republic-of-ireland/Drogheda_United.svg,1.00,republic-of-ireland/drogheda-united.webp
+SSE Airtricity PD,Galway United,republic-of-ireland/Galway_United_FC.svg,1.00,republic-of-ireland/galway-united-fc.webp
+SSE Airtricity PD,Shamrock Rovers,republic-of-ireland/Shamrock_Rovers.svg,1.00,republic-of-ireland/shamrock-rovers.webp
+SSE Airtricity PD,Shelbourne,republic-of-ireland/Shelbourne.svg,1.00,republic-of-ireland/shelbourne.webp
+SSE Airtricity PD,Sligo Rovers,republic-of-ireland/Sligo_Rovers.svg,1.00,republic-of-ireland/sligo-rovers.webp
+SSE Airtricity PD,St. Pats,republic-of-ireland/St_Patrick's_Athletic.svg,1.00,republic-of-ireland/st-patrick-s-athletic.webp
+SSE Airtricity PD,Waterford,republic-of-ireland/Waterford.svg,1.00,republic-of-ireland/waterford.webp
+SUPERLIGA,CFR 1907 Cluj,romania/CFR_Cluj.svg,1.00,romania/cfr-cluj.webp
+SUPERLIGA,FC Argeș,romania/Argeș_Pitești.svg,0.92,romania/arges-pitesti.webp
+SUPERLIGA,FC Botoșani,romania/Botoşani.svg,1.00,romania/botosani.webp
+SUPERLIGA,FC Dinamo 1948,romania/Dinamo_Bucureşti.svg,1.00,romania/dinamo-bucuresti.webp
+SUPERLIGA,FC Hermannstadt,romania/Hermannstadt.svg,1.00,romania/hermannstadt.webp
+SUPERLIGA,FC Metaloglobus,romania/Metaloglobus.svg,1.00,romania/metaloglobus.webp
+SUPERLIGA,FC Petrolul,romania/Petrolul_Ploiești.svg,0.92,romania/petrolul-ploiesti.webp
+SUPERLIGA,FC Rapid 1923,romania/Rapid_Bucureşti.svg,1.00,romania/rapid-bucuresti.webp
+SUPERLIGA,FC Univ. Cluj,romania/Universitatea_Cluj.svg,0.93,romania/universitatea-cluj.webp
+SUPERLIGA,FCSB,romania/FC_Steaua_București.svg,1.00,romania/fc-steaua-bucuresti.webp
+SUPERLIGA,FK Csíkszereda,romania/Csíkszereda.svg,1.00,romania/csikszereda.webp
+SUPERLIGA,Farul Constanța,romania/Farul_Constanța.svg,1.00,romania/farul-constanta.webp
+SUPERLIGA,SC Oțelul Galați,romania/Oțelul_Galați.svg,1.00,romania/otelul-galati.webp
+SUPERLIGA,UTA Arad,romania/UTA_Arad.svg,1.00,romania/uta-arad.webp
+SUPERLIGA,Unirea Slobozia,romania/Unirea_Slobozia.svg,1.00,romania/unirea-slobozia.webp
+SUPERLIGA,Univ. Craiova,romania/Universitatea_Craiova.svg,0.93,romania/universitatea-craiova.webp
+Scottish Prem,Aberdeen,scotland/Aberdeen.svg,1.00,scotland/aberdeen.webp
+Scottish Prem,Celtic,scotland/Celtic.svg,1.00,scotland/celtic.webp
+Scottish Prem,Dundee FC,scotland/Dundee.svg,1.00,scotland/dundee.webp
+Scottish Prem,Dundee United,scotland/Dundee_United.svg,1.00,scotland/dundee-united.webp
+Scottish Prem,Falkirk,scotland/Falkirk.svg,1.00,scotland/falkirk.webp
+Scottish Prem,Hearts,scotland/Hearts.svg,1.00,scotland/hearts.webp
+Scottish Prem,Hibernian,scotland/Hibernian.svg,1.00,scotland/hibernian.webp
+Scottish Prem,Kilmarnock,scotland/Kilmarnock.svg,1.00,scotland/kilmarnock.webp
+Scottish Prem,Livingston,scotland/Livingston.svg,1.00,scotland/livingston.webp
+Scottish Prem,Motherwell,scotland/Motherwell.svg,1.00,scotland/motherwell.webp
+Scottish Prem,Rangers,scotland/Rangers.svg,1.00,scotland/rangers.webp
+Scottish Prem,St. Mirren,scotland/St._Mirren.svg,1.00,scotland/st-mirren.webp
+Serie A Enilive,AS Roma,italy/AS_Roma.svg,1.00,italy/as-roma.webp
+Serie A Enilive,Bergamo Calcio,italy/Atalanta.svg,1.00,italy/atalanta.webp
+Serie A Enilive,Bologna,italy/Bologna.svg,1.00,italy/bologna.webp
+Serie A Enilive,Cagliari,italy/Cagliari.svg,1.00,italy/cagliari.webp
+Serie A Enilive,Como,italy/Como_1907.svg,1.00,italy/como-1907.webp
+Serie A Enilive,Cremonese,italy/Cremonese.svg,1.00,italy/cremonese.webp
+Serie A Enilive,Fiorentina,italy/Fiorentina.svg,1.00,italy/fiorentina.webp
+Serie A Enilive,Genoa,italy/Genoa.svg,1.00,italy/genoa.webp
+Serie A Enilive,Hellas Verona,italy/Hellas_Verona.svg,1.00,italy/hellas-verona.webp
+Serie A Enilive,Juventus,italy/Juventus.svg,1.00,italy/juventus.webp
+Serie A Enilive,Latium,italy/Lazio.svg,1.00,italy/lazio.webp
+Serie A Enilive,Lecce,italy/Lecce.svg,1.00,italy/lecce.webp
+Serie A Enilive,Lombardia FC,italy/Inter.svg,1.00,italy/inter.webp
+Serie A Enilive,Milano FC,italy/Club_Milano.svg,1.00,italy/club-milano.webp
+Serie A Enilive,Parma,italy/Parma.svg,1.00,italy/parma.webp
+Serie A Enilive,Pisa,italy/Pisa.svg,1.00,italy/pisa.webp
+Serie A Enilive,SSC Napoli,italy/Napoli.svg,1.00,italy/napoli.webp
+Serie A Enilive,Sassuolo,italy/Sassuolo.svg,1.00,italy/sassuolo.webp
+Serie A Enilive,Torino,italy/Torino.svg,1.00,italy/torino.webp
+Serie A Enilive,Udinese,italy/Udinese.svg,1.00,italy/udinese.webp
+Serie BKT,Avellino,italy/US_Avellino_1912.svg,0.93,italy/us-avellino-1912.webp
+Serie BKT,Bari,italy/Bari.svg,1.00,italy/bari.webp
+Serie BKT,Carrarese Calcio,italy/Carrarese_Calcio.svg,1.00,italy/carrarese-calcio.webp
+Serie BKT,Catanzaro,italy/Catanzaro.svg,1.00,italy/catanzaro.webp
+Serie BKT,Cesena,italy/Cesena_FC.svg,1.00,italy/cesena-fc.webp
+Serie BKT,Empoli,italy/Empoli.svg,1.00,italy/empoli.webp
+Serie BKT,Entella,italy/Virtus_Entella.svg,0.93,italy/virtus-entella.webp
+Serie BKT,Frosinone,italy/Frosinone_Calcio.svg,1.00,italy/frosinone-calcio.webp
+Serie BKT,Mantova,italy/Mantova_1911.svg,0.93,italy/mantova-1911.webp
+Serie BKT,Modena,italy/Modena.svg,1.00,italy/modena.webp
+Serie BKT,Monza,italy/AC_Monza.svg,1.00,italy/ac-monza.webp
+Serie BKT,Padova,italy/Padova.svg,1.00,italy/padova.webp
+Serie BKT,Palermo,italy/Palermo.svg,1.00,italy/palermo.webp
+Serie BKT,Pescara,italy/Pescara.svg,1.00,italy/pescara.webp
+Serie BKT,Reggiana,italy/Reggiana.svg,1.00,italy/reggiana.webp
+Serie BKT,SS Juve Stabia,italy/Juve_Stabia.svg,1.00,italy/juve-stabia.webp
+Serie BKT,Sampdoria,italy/Sampdoria.svg,1.00,italy/sampdoria.webp
+Serie BKT,Spezia,italy/Spezia.svg,1.00,italy/spezia.webp
+Serie BKT,Südtirol,italy/Suditrol.svg,0.88,italy/suditrol.webp
+Serie BKT,Venezia,italy/Venezia.svg,1.00,italy/venezia.webp
+Sudamericana,América de Cali,colombia/América_de_Cali.svg,1.00,colombia/america-de-cali.webp
+Sudamericana,Atlético Grau,peru/Atlético_Grau.svg,1.00,peru/atletico-grau.webp
+Sudamericana,Boston River,uruguay/Boston_River.svg,1.00,uruguay/boston-river.webp
+Sudamericana,Caracas FC,venezuela/Caracas.svg,1.00,venezuela/caracas.webp
+Sudamericana,Cerro Largo,uruguay/Cerro_Largo.svg,1.00,uruguay/cerro-largo.webp
+Sudamericana,Cienciano,peru/Cienciano_del_Cusco.svg,0.92,peru/cienciano-del-cusco.webp
+Sudamericana,Deportes Iquique,chile/Deportes_Iquique.svg,1.00,chile/deportes-iquique.webp
+Sudamericana,FBC Melgar,peru/FBC_Melgar.svg,1.00,peru/fbc-melgar.webp
+Sudamericana,GV San José,bolivia/Gualberto_Villarroel_Deportivo_San_José.svg,0.91,bolivia/gualberto-villarroel-deportivo-san-jose.webp
+Sudamericana,Guaraní,brazil/Guarani.svg,1.00,brazil/guarani.webp
+Sudamericana,Mushuc Runa,ecuador/Mushuc_Runa_Sporting_Club.svg,1.00,ecuador/mushuc-runa-sporting-club.webp
+Sudamericana,Nacional Potosí,bolivia/Atlético_Nacional_Potosí.svg,1.00,bolivia/atletico-nacional-potosi.webp
+Sudamericana,Once Caldas,colombia/Once_Caldas.svg,1.00,colombia/once-caldas.webp
+Sudamericana,Palestino,chile/Palestino.svg,1.00,chile/palestino.webp
+Sudamericana,Puerto Cabello,venezuela/Academia_Puerto_Cabello.svg,0.93,venezuela/academia-puerto-cabello.webp
+Sudamericana,Racing Club,argentina/Racing_Club.svg,1.00,argentina/racing-club.webp
+Sudamericana,Sportivo Luqueño,paraguay/Sportivo_Luqueño.svg,1.00,paraguay/sportivo-luqueno.webp
+Sudamericana,U. Católica,ecuador/Universidad_Católica.svg,1.00,ecuador/universidad-catolica.webp
+Sudamericana,Unión Española,chile/Unión_Española.svg,1.00,chile/union-espanola.webp
+Trendyol Süper Lig,Alanyaspor,turkey/Alanyaspor.svg,1.00,turkey/alanyaspor.webp
+Trendyol Süper Lig,Antalyaspor,turkey/Antalyaspor.svg,1.00,turkey/antalyaspor.webp
+Trendyol Süper Lig,Başakşehir,turkey/Başakşehir.svg,1.00,turkey/basaksehir.webp
+Trendyol Süper Lig,Beşiktaş,turkey/Beşiktaş.svg,1.00,turkey/besiktas.webp
+Trendyol Süper Lig,Eyüpspor,turkey/Eyüpspor.svg,1.00,turkey/eyupspor.webp
+Trendyol Süper Lig,Fenerbahçe,turkey/Fenerbahçe.svg,1.00,turkey/fenerbahce.webp
+Trendyol Süper Lig,Galatasaray,turkey/Galatasaray.svg,1.00,turkey/galatasaray.webp
+Trendyol Süper Lig,Gaziantep,turkey/Gaziantep.svg,1.00,turkey/gaziantep.webp
+Trendyol Süper Lig,Gençlerbirliği,turkey/Gençlerbirliği.svg,1.00,turkey/genclerbirligi.webp
+Trendyol Süper Lig,Göztepe,turkey/Göztepe_Izmir.svg,0.93,turkey/goztepe-izmir.webp
+Trendyol Süper Lig,Karagümrük SK,turkey/Fatih_Karagümrük.svg,0.93,turkey/fatih-karagumruk.webp
+Trendyol Süper Lig,Kasımpaşa,turkey/Kasımpaşa.svg,1.00,turkey/kasmpasa.webp
+Trendyol Süper Lig,Kayserispor,turkey/Kayserispor.svg,1.00,turkey/kayserispor.webp
+Trendyol Süper Lig,Kocaelispor,turkey/Kocaelispor.svg,1.00,turkey/kocaelispor.webp
+Trendyol Süper Lig,Konyaspor,turkey/Konyaspor.svg,1.00,turkey/konyaspor.webp
+Trendyol Süper Lig,Samsunspor,turkey/Samsunspor.svg,1.00,turkey/samsunspor.webp
+Trendyol Süper Lig,Trabzonspor,turkey/Trabzonspor.svg,1.00,turkey/trabzonspor.webp
+Trendyol Süper Lig,Çaykur Rizespor,turkey/Çaykur_Rizespor.svg,1.00,turkey/caykur-rizespor.webp
+Tunisian Ligue 1,AS Marsa,tunisia/Avenir_Sportif_de_La_Marsa.svg,0.91,tunisia/avenir-sportif-de-la-marsa.webp
+Tunisian Ligue 1,CA Bizertin,tunisia/Club_Athlétique_Bizertin.svg,0.92,tunisia/club-athletique-bizertin.webp
+Tunisian Ligue 1,CS Hammam-Lif,tunisia/CS_Hammam-Lif.svg,1.00,tunisia/cs-hammam-lif.webp
+Tunisian Ligue 1,CS Sfaxien,tunisia/CS_Sfaxien.svg,1.00,tunisia/cs-sfaxien.webp
+Tunisian Ligue 1,Club Africain,tunisia/Club_Africain.svg,1.00,tunisia/club-africain.webp
+Tunisian Ligue 1,ES Métlaoui,tunisia/Étoile_Sportive_de_Métlaoui.svg,0.92,tunisia/etoile-sportive-de-metlaoui.webp
+Tunisian Ligue 1,ES Zarzis,tunisia/ES_Zarzis.svg,1.00,tunisia/es-zarzis.webp
+Tunisian Ligue 1,Espérance Sportive de Tunis,tunisia/Espérance_Sportive_de_Tunis.svg,1.00,tunisia/esperance-sportive-de-tunis.webp
+Tunisian Ligue 1,JS El Omrane,tunisia/Jeunesse_Sportive_d'El_Omrane.svg,0.92,tunisia/jeunesse-sportive-d-el-omrane.webp
+Tunisian Ligue 1,Olympique Béja,tunisia/Olympique_Béja.svg,1.00,tunisia/olympique-beja.webp
+Tunisian Ligue 1,Stade Tunisien,tunisia/Stade_Tunisien.svg,1.00,tunisia/stade-tunisien.webp
+Tunisian Ligue 1,US Ben Guerdane,tunisia/US_Ben_Guerdane.svg,1.00,tunisia/us-ben-guerdane.webp
+Tunisian Ligue 1,US Monastir,tunisia/Union_Sportive_Monastirienne.svg,0.91,tunisia/union-sportive-monastirienne.webp
+Tunisian Ligue 1,Étoile Sportive du Sahel,tunisia/Étoile_Sportive_du_Sahel.svg,1.00,tunisia/etoile-sportive-du-sahel.webp
+UAE Pro League,Ajman,uae/Ajman_Club.svg,1.00,uae/ajman-club.webp
+UAE Pro League,Al Ain,uae/Al_Ain_FC.svg,1.00,uae/al-ain-fc.webp
+UAE Pro League,Al Dhafra,uae/Al_Dhafra_FC.svg,1.00,uae/al-dhafra-fc.webp
+UAE Pro League,Al Jazira,uae/Al_Jazira_Club.svg,1.00,uae/al-jazira-club.webp
+UAE Pro League,Al Wahda,uae/Al_Wahda_FC.svg,1.00,uae/al-wahda-fc.webp
+UAE Pro League,Al Wasl,uae/Al_Wasl_FC.svg,1.00,uae/al-wasl-fc.webp
+UAE Pro League,Al-Nasr SC,uae/Al_Nasr_SC.svg,1.00,uae/al-nasr-sc.webp
+UAE Pro League,Baniyas,uae/Baniyas_Club.svg,1.00,uae/baniyas-club.webp
+UAE Pro League,Hatta,uae/Hatta.svg,1.00,uae/hatta.webp
+UAE Pro League,Kalba,uae/Ittihad_Kalba_FC.svg,0.92,uae/ittihad-kalba-fc.webp
+UAE Pro League,Khor Fakkan,uae/Khor_Fakkan_Club.svg,1.00,uae/khor-fakkan-club.webp
+UAE Pro League,Shabab Al Ahli,uae/Shabab_Al_Ahli_Dubai_FC.svg,0.93,uae/shabab-al-ahli-dubai-fc.webp
+UAE Pro League,Sharjah,uae/Sharjah_FC.svg,1.00,uae/sharjah-fc.webp
+UAE Pro League,United FC,uae/United_FC.svg,1.00,uae/united-fc.webp
+Ukrayina Liha,Dynamo Kyiv,ukraine/Dynamo_Kyiv.svg,1.00,ukraine/dynamo-kyiv.webp
+Ukrayina Liha,Shakhtar Donetsk,ukraine/Shakhtar.svg,0.95,ukraine/shakhtar.webp
+United Emirates League,Al Ain FC,uae/Al_Ain_FC.svg,1.00,uae/al-ain-fc.webp
+Ö. Bundesliga,Blau-Weiss Linz,austria/FC_Blau-Weiß_Linz.svg,0.93,austria/fc-blau-wei-linz.webp
+Ö. Bundesliga,FK Austria Wien,austria/Austria_Wien.svg,1.00,austria/austria-wien.webp
+Ö. Bundesliga,Grazer AK,austria/Grazer_AK.svg,1.00,austria/grazer-ak.webp
+Ö. Bundesliga,LASK,austria/LASK.svg,1.00,austria/lask.webp
+Ö. Bundesliga,RB Salzburg,austria/Salzburg.svg,0.95,austria/salzburg.webp
+Ö. Bundesliga,SCR Altach,austria/Altach.svg,0.95,austria/altach.webp
+Ö. Bundesliga,SK Rapid,austria/Rapid_Vienna.svg,0.92,austria/rapid-vienna.webp
+Ö. Bundesliga,SK Sturm Graz,austria/Sturm_Graz.svg,1.00,austria/sturm-graz.webp
+Ö. Bundesliga,SV Oberbank Ried,austria/Ried.svg,0.95,austria/ried.webp
+Ö. Bundesliga,TSV Hartberg,austria/Hartberg.svg,0.95,austria/hartberg.webp
+Ö. Bundesliga,WSG Tirol,austria/Tirol.svg,0.95,austria/tirol.webp
+Ö. Bundesliga,Wolfsberger AC,austria/Wolfsberg.svg,0.90,austria/wolfsberg.webp
+Česká Liga,Slavia Praha,czech-republic/SK_Slavia_Praha.svg,1.00,czech-republic/sk-slavia-praha.webp
+Česká Liga,Sparta Praha,czech-republic/AC_Sparta_Praha.svg,1.00,czech-republic/ac-sparta-praha.webp
+Česká Liga,Viktoria Plzeň,czech-republic/Viktoria_Plzeň.svg,1.00,czech-republic/viktoria-plzen.webp

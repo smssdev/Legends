@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\MarketController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PressController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -55,6 +56,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('avatar', 'avatar')->middleware('throttle:10,1,avatar');
         Route::delete('avatar', 'removeAvatar');
         Route::post('vacation', 'vacation');
+        // [UP6] The WhatsApp code that verifies the account and frees the welcome coins.
+        Route::post('verify-account', 'verifyAccount')->middleware('throttle:10,1,verify-account');
         Route::delete('vacation', 'endVacation');
     });
 });
@@ -122,6 +125,19 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('buy', 'buy')->middleware('throttle:30,1,market');
         Route::post('sell', 'sell')->middleware('throttle:30,1,market');
         Route::get('quote', 'quote')->middleware('throttle:120,1,market-quote');
+        // [UP11] The deal before it is made, and the transfers made.
+        Route::get('buy-quote', 'buyQuote')->middleware('throttle:120,1,market-quote');
+        Route::get('done', 'done')->middleware('throttle:60,1,market');
+    });
+    // [UP12] The league's media: the press conference, the predictions, the newspaper and its articles.
+    Route::controller(PressController::class)->prefix('{league}')->whereNumber('league')->group(function () {
+        Route::get('press/{fixture}', 'conference')->whereNumber('fixture');
+        Route::post('press/{fixture}', 'say')->whereNumber('fixture')->middleware('throttle:20,1,press');
+        Route::get('predictions', 'predictions');
+        Route::post('predictions', 'predict')->middleware('throttle:60,1,predict');
+        Route::get('newspaper', 'newspaper');
+        Route::post('newspaper/articles', 'write')->middleware('throttle:6,1,articles');
+        Route::post('newspaper/articles/{article}/decide', 'decide')->whereNumber('article');
     });
     // The market between coaches: the transfer list and the offers [Sprint 25].
     Route::controller(TransferController::class)->prefix('{league}/transfers')->whereNumber('league')->group(function () {
@@ -179,8 +195,6 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(TrainingController::class)->prefix('{league}/training')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('/', 'add')->middleware('throttle:30,1,training');
-        Route::post('camp', 'sendToCamp')->middleware('throttle:20,1,training-camp');
-        Route::post('secret', 'secretSession')->middleware('throttle:20,1,training-secret');
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
         Route::post('{line}/finish', 'finish')->whereIn('line', ['gk', 'def', 'mid', 'att'])->middleware('throttle:30,1,finish');
     });
@@ -195,6 +209,7 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1,match-show');
     Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:720,1,match-live');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
+    Route::post('{match}/ready', 'ready')->whereNumber('match')->middleware('throttle:60,1,match-ready');
     // The broadcast's reactions and side chat [X24].
     Route::post('{match}/reactions', 'react')->whereNumber('match')->middleware('throttle:90,1,match-react');
     Route::post('{match}/chat', 'chat')->whereNumber('match')->middleware('throttle:60,1,match-chat');
@@ -228,6 +243,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('commentary', 'commentary');
         Route::post('mail-test', 'mailTest')->middleware('throttle:10,1,mail-test');
         Route::post('users/{user}/official', 'official')->whereNumber('user');
+        Route::post('users/{user}/verification-code', 'verificationCode')->whereNumber('user');
+        // [UP13] The long holidays waiting for the developers.
+        Route::get('vacations', 'vacations');
+        Route::post('vacations/{id}/decide', 'decideVacation')->whereNumber('id');
         Route::post('announcements', 'announce');
     });
 });

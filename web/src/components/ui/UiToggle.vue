@@ -26,11 +26,11 @@ function flip() {
       @click="flip"
     >
       <span class="absolute top-1 size-5 rounded-full bg-white shadow transition-all" :class="model ? 'start-6' : 'start-1'" />
-      <span class="sr-only">{{ label }}</span>
+      <span class="sr-only">{{ $t(label) }}</span>
     </button>
     <label v-if="label || $slots.default" :for="id" class="flex-1 cursor-pointer text-sm" @click.prevent="flip">
-      <slot>{{ label }}</slot>
-      <span v-if="hint" :id="id + '-hint'" class="block text-xs text-text-muted">{{ hint }}</span>
+      <slot>{{ $t(label) }}</slot>
+      <span v-if="hint" :id="id + '-hint'" class="block text-xs text-text-muted">{{ $t(hint) }}</span>
     </label>
   </div>
 </template>

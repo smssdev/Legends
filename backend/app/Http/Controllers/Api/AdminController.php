@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Admin\TwoFactor;
+use App\Auth\AccountHolidays;
+use App\Auth\AccountVerification;
 use App\Auth\Username;
 use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
@@ -89,12 +91,12 @@ class AdminController extends Controller
     public function users(): JsonResponse
     {
         $rows = DB::table('users')->leftJoin('user_activity', 'user_activity.user_id', '=', 'users.id')
-            ->groupBy('users.id', 'users.name', 'users.email', 'users.role', 'users.created_at')
+            ->groupBy('users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at')
             ->orderByDesc('users.id')->limit(200)
-            ->get(['users.id', 'users.name', 'users.email', 'users.role', 'users.created_at', DB::raw('max(user_activity.day) as last_day'),
+            ->get(['users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', DB::raw('max(user_activity.day) as last_day'),
                 DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
 
-        return response()->json(['users' => $rows->map(fn ($u) => ['id' => $u->id, 'name' => $u->name, 'email' => $u->email, 'role' => $u->role,
+        return response()->json(['users' => $rows->map(fn ($u) => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role, 'verified' => $u->account_verified_at !== null,
             'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live])]);
     }
 
@@ -115,12 +117,37 @@ class AdminController extends Controller
         $to = (string) $request->validate(['to' => ['required', 'email']])['to'];
         $setup = Mailer::setup();
         try {
-            Mail::raw('رسالة تجربة من الأساطير: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في الأساطير'));
+            Mail::raw('رسالة تجربة من لعبة المدرب الأسطورة: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في لعبة المدرب الأسطورة'));
         } catch (\Throwable $e) {
             return response()->json($setup + ['sent' => false, 'error' => substr($e->getMessage(), 0, 600), 'fix' => Mailer::explain($e->getMessage())]);
         }
 
         return response()->json($setup + ['sent' => Mailer::live(), 'error' => null, 'fix' => Mailer::live() ? null : $setup['problems'][0] ?? null]);
+    }
+
+    /** [UP13] The long holidays the developers decide, the waiting ones first. */
+    public function vacations(): JsonResponse
+    {
+        $rows = DB::table('account_vacations')->join('users', 'users.id', '=', 'account_vacations.user_id')->where('account_vacations.status', '!=', 'auto')
+            ->orderByRaw("case when account_vacations.status = 'pending' then 0 else 1 end")->orderByDesc('account_vacations.id')->limit(100)
+            ->get(['account_vacations.*', 'users.name', 'users.username']);
+
+        return response()->json(['vacations' => $rows->map(fn ($r) => ['id' => $r->id, 'user' => ['id' => $r->user_id, 'name' => $r->name, 'username' => $r->username],
+            'days' => (int) $r->days, 'reason' => $r->reason, 'status' => $r->status, 'asked_at' => Carbon::parse($r->created_at, 'UTC')->toIso8601ZuluString()])]);
+    }
+
+    public function decideVacation(Request $request, int $id): JsonResponse
+    {
+        $approve = (bool) $request->validate(['approve' => ['required', 'boolean']])['approve'];
+
+        return response()->json(['vacation' => AccountHolidays::decide($id, $request->user(), $approve)]);
+    }
+
+    /** [UP6] A code that verifies this account, for the developer to send to the coach on WhatsApp. */
+    public function verificationCode(Request $request, User $user): JsonResponse
+    {
+        return response()->json(['code' => AccountVerification::issue($user, $request->user()), 'username' => $user->username, 'id' => $user->id,
+            'days' => (int) config('game.account.verify_code_days')]);
     }
 
     /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */

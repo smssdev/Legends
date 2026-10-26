@@ -28,6 +28,8 @@ Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('h
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');
+// [UP13] The accounts unused for 12 days are warned, for 14 deleted.
+Schedule::command('accounts:inactive')->dailyAt('12:07')->timezone('Africa/Cairo')->withoutOverlapping();
 
 // docs/ENGINE.md 9: the full calibration runs every night on the home server (not on CI minutes).
 // The reports land in storage/app/balance/ for the next morning.

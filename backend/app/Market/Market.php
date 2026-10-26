@@ -7,6 +7,8 @@ use App\League\Integrity;
 use App\League\MatchPrep;
 use App\Support\GameClock;
 use App\Wallet\Price;
+use App\Wallet\Wallet;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -20,6 +22,33 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Market
 {
+    /**
+     * [UP11] The transfers made in the league this season, newest first: from the world (the pool), from the
+     * computer's clubs, and between coaches.
+     *
+     * @return list<array{player: string, from: ?string, to: string, price: int, at: string}>
+     */
+    public static function history(int $leagueId, int $limit = 60): array
+    {
+        $clubs = DB::table('clubs')->where('league_id', $leagueId)->pluck('name', 'id');
+        $name = fn (int $playerId) => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.id', $playerId)->value('master_players.name');
+        $market = DB::table('club_transactions')->whereIn('club_id', $clubs->keys())->whereIn('type', ['pool_buy', 'bot_buy'])->orderByDesc('id')->limit($limit)->get()
+            ->map(function ($t) use ($clubs, $name) {
+                $player = (int) substr((string) $t->reference, 7);
+                $seller = $t->type === 'bot_buy' ? DB::table('club_transactions')->where('idempotency_key', $t->idempotency_key.':seller')->value('club_id') : null;
+
+                return ['player' => $name($player), 'from' => $seller ? $clubs[$seller] ?? null : null, 'to' => $clubs[$t->club_id], 'price' => (int) $t->amount * -1 + 0,
+                    'at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()];
+            });
+        $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->value('id');
+        $coaches = DB::table('player_moves')->where('season_id', $season)->orderByDesc('id')->limit($limit)->get()
+            ->map(fn ($m) => ['player' => $name((int) $m->player_id), 'from' => $m->from_club_id ? $clubs[$m->from_club_id] ?? null : null,
+                'to' => $m->to_club_id ? $clubs[$m->to_club_id] ?? '' : '', 'price' => (int) $m->price,
+                'at' => Carbon::parse($m->created_at, 'UTC')->toIso8601ZuluString()]);
+
+        return $market->concat($coaches)->sortByDesc('at')->take($limit)->values()->all();
+    }
+
     /** The market is open from the league's creation until the lock round. Null when open, or why it is closed. */
     public static function closed(int $leagueId): ?string
     {
@@ -55,12 +84,43 @@ class Market
         return $bot ? intdiv((int) $player->value * $cfg['buy_from_bot_bp'], 10000) : null;
     }
 
-    /** Buy a player from the pool or from a bot club. Returns the buyer's balance after. */
-    public static function buy(int $clubId, int $playerId, string $key): int
+    /**
+     * [UP11] What buying this player takes from this club: the price, the coins to register the deal, and when its
+     * cash is short but at least half the price, the cash it has and the coins for the rest. can is false (with
+     * why) when it may not buy him that way.
+     *
+     * @return array{price: int, cash: int, doc_coins: int, short: int, compensate: ?array{cash: int, coins: int}, can: bool, why: ?string}
+     */
+    public static function quote(int $clubId, int $price): array
+    {
+        $cfg = config('game.economy');
+        $club = DB::table('clubs')->where('id', $clubId)->first();
+        $fair = (bool) DB::table('leagues')->where('id', $club->league_id)->value('fair_league');
+        $cash = max(0, (int) $club->balance);
+        $doc = $fair ? 0 : ($price >= $cfg['doc_big_from'] ? (int) $cfg['transfer_doc_coins_big'] : (int) $cfg['transfer_doc_coins']);
+        $short = max(0, $price - $cash);
+        $enough = $cash * 10000 >= $price * (int) $cfg['compensate_min_bp'];
+        $compensate = $short > 0 && $enough && ! $fair ? ['cash' => $cash, 'coins' => intdiv($short + $cfg['money_per_coin'] - 1, $cfg['money_per_coin'])] : null;
+        $why = match (true) {
+            $short === 0 => null,
+            ! $enough => 'أموال ناديك غير كافية، يلزم توفر 50% على الأقل من قيمة اللاعب نقداً.',
+            $fair => 'الدوري نزيه: لا تكمل الكوينز ما ينقص من المال.',
+            default => null,
+        };
+
+        return ['price' => $price, 'cash' => $cash, 'doc_coins' => $doc, 'short' => $short, 'compensate' => $compensate, 'can' => $why === null, 'why' => $why];
+    }
+
+    /**
+     * Buy a player from the pool or from a bot club. Returns the buyer's balance after. [UP11] The coach pays the
+     * deal's registration in coins; with $compensate and a short club (half the price at least in cash), all its
+     * cash goes and the coins pay the rest.
+     */
+    public static function buy(int $clubId, int $playerId, string $key, bool $compensate = false): int
     {
         Integrity::assertMarket($clubId);
 
-        return DB::transaction(function () use ($clubId, $playerId, $key) {
+        return DB::transaction(function () use ($clubId, $playerId, $key, $compensate) {
             $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
             if ($done) {
                 return (int) $done->balance_after;
@@ -90,7 +150,19 @@ class Market
             if ($taken !== 1) {
                 throw new HttpException(409, 'سبقك مدرب آخر إلى هذا اللاعب.');
             }
-            $balance = ClubLedger::post($clubId, $from === null ? 'pool_buy' : 'bot_buy', -$price, $key, "player:{$playerId}", spend: true);
+            $q = self::quote($clubId, $price);
+            if ($q['short'] > 0 && (! $compensate || ! $q['can'] || ! $q['compensate'])) {
+                throw new HttpException(409, $q['why'] ?? 'رصيد النادي لا يكفي: أكمل الباقي بالكوينز.');
+            }
+            $paid = $q['short'] > 0 ? $q['cash'] : $price;
+            $balance = ClubLedger::post($clubId, $from === null ? 'pool_buy' : 'bot_buy', -$paid, $key, "player:{$playerId}", spend: true);
+            $user = (int) $club->user_id;
+            if ($q['doc_coins'] > 0) {
+                Wallet::pay($user, $club->league_id, 'transfer_doc', $q['doc_coins'], "doc:{$key}", "player:{$playerId}");
+            }
+            if ($q['short'] > 0) {
+                Wallet::pay($user, $club->league_id, 'transfer_coins', $q['compensate']['coins'], "comp:{$key}", "player:{$playerId}");
+            }
             if ($from !== null) {
                 ClubLedger::post((int) $from, 'bot_sale', $price, "{$key}:seller", "player:{$playerId}");
                 Transfers::left($playerId, (int) $from);

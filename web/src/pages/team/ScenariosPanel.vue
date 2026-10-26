@@ -78,42 +78,42 @@ async function save() {
   <section class="flex flex-col gap-3" aria-labelledby="h-scenarios">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <h2 id="h-scenarios" class="font-display text-2xl font-extrabold">السيناريوهات</h2>
-        <p class="text-sm text-text-muted">خطط تُنفَّذ وحدها في لحظتها، حتى لو لم تكن تتابع المباراة. لا يراها الخصم.</p>
+        <h2 id="h-scenarios" class="font-display text-2xl font-extrabold">{{ $t('السيناريوهات') }}</h2>
+        <p class="text-sm text-text-muted">{{ $t('خطط تُنفَّذ وحدها في لحظتها، حتى لو لم تكن تتابع المباراة. لا يراها الخصم.') }}</p>
       </div>
-      <UiButton :disabled="!dirty" @click="save">حفظ</UiButton>
+      <UiButton :disabled="!dirty" @click="save">{{ $t('حفظ') }}</UiButton>
     </div>
-    <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ message }}</p>
+    <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 
     <article v-for="k in kinds" :key="k.kind" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :class="rows[k.kind].on ? 'ring-1 ring-gold/40' : ''">
       <div class="flex items-center justify-between gap-3">
-        <span class="flex items-center gap-2 font-bold"><span aria-hidden="true">{{ KIND[k.kind].icon }}</span>{{ KIND[k.kind].title }}</span>
+        <span class="flex items-center gap-2 font-bold"><span aria-hidden="true">{{ KIND[k.kind].icon }}</span>{{ $t(KIND[k.kind].title) }}</span>
         <UiToggle :id="`sc-${k.kind}`" tone="success" :label="KIND[k.kind].title" class="[&_label]:sr-only" :model-value="rows[k.kind].on" @update:model-value="(on: boolean) => (rows[k.kind].on = on)" />
       </div>
       <template v-if="rows[k.kind].on">
         <label v-if="k.minute" class="flex flex-col gap-1">
-          <span class="flex justify-between text-sm"><span>{{ KIND[k.kind].hint }}</span><span class="font-numbers text-xl font-bold text-gold" dir="ltr">{{ rows[k.kind].minute }}'</span></span>
+          <span class="flex justify-between text-sm"><span>{{ $t(KIND[k.kind].hint) }}</span><span class="font-numbers text-xl font-bold text-gold" dir="ltr">{{ rows[k.kind].minute }}'</span></span>
           <input v-model.number="rows[k.kind].minute" type="range" :min="k.minute.min" :max="k.minute.max" step="1" class="accent-gold" />
         </label>
-        <p v-else class="text-sm text-text-muted">{{ KIND[k.kind].hint }}</p>
+        <p v-else class="text-sm text-text-muted">{{ $t(KIND[k.kind].hint) }}</p>
 
         <div v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
           <span class="flex min-h-touch items-center justify-between gap-2">
             <UiToggle :id="`sc-${k.kind}-${s.key}`" :label="s.label" :model-value="rows[k.kind].tactics[s.key] !== undefined" @update:model-value="(on: boolean) => toggleSlider(rows[k.kind], s.key, on)" />
             <span v-if="rows[k.kind].tactics[s.key] !== undefined" class="font-numbers text-xl font-bold text-gold">{{ rows[k.kind].tactics[s.key] }}</span>
-            <span v-else class="text-sm text-text-muted">بلا تغيير</span>
+            <span v-else class="text-sm text-text-muted">{{ $t('بلا تغيير') }}</span>
           </span>
           <input v-if="rows[k.kind].tactics[s.key] !== undefined" v-model.number="rows[k.kind].tactics[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" :aria-label="s.label" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <label class="flex flex-col gap-1 text-sm">يخرج
+          <label class="flex flex-col gap-1 text-sm">{{ $t('يخرج') }}
             <select v-model="rows[k.kind].out" class="h-12 rounded-lg bg-surface-sunk px-2">
-              <option :value="null">بلا تبديل</option>
+              <option :value="null">{{ $t('بلا تبديل') }}</option>
               <option v-for="id in starters" :key="id" :value="id">{{ $nm(players.get(id)?.name) }}</option>
             </select>
           </label>
-          <label class="flex flex-col gap-1 text-sm">يدخل
+          <label class="flex flex-col gap-1 text-sm">{{ $t('يدخل') }}
             <select v-model="rows[k.kind].in" class="h-12 rounded-lg bg-surface-sunk px-2" :disabled="!rows[k.kind].out">
               <option :value="null">—</option>
               <option v-for="id in bench" :key="id" :value="id">{{ $nm(players.get(id)?.name) }}</option>

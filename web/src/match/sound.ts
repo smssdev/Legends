@@ -66,7 +66,7 @@ export class MatchSound {
   }
 
   /**
-   * A chant from the stands: hands clapping a 3-and-2 rhythm over a low hum of voices, a few bars long. Made
+   * A chant from the stands: hands clapping a 3-and-2 rhythm, a few bars long. Made
    * here like the rest of the crowd, so there is nothing to license. Ducked with the crowd under the commentator.
    */
   chant(after = 0, bars = 3) {
@@ -76,25 +76,7 @@ export class MatchSound {
     const start = ctx.currentTime + 0.05 + after
     const length = bars * 8 * beat
     this.chanting = start + length
-    // The voices: three low notes together, swelling in and out.
-    const hum = ctx.createGain()
-    hum.gain.setValueAtTime(0, start)
-    hum.gain.linearRampToValueAtTime(0.05, start + 0.6)
-    hum.gain.setValueAtTime(0.05, start + length - 0.6)
-    hum.gain.linearRampToValueAtTime(0, start + length)
-    const low = ctx.createBiquadFilter()
-    low.type = 'lowpass'
-    low.frequency.value = 900
-    hum.connect(low).connect(this.duckGain)
-    for (const f of [196, 247, 294]) {
-      const o = ctx.createOscillator()
-      o.type = 'sawtooth'
-      o.frequency.value = f
-      o.detune.value = Math.random() * 14 - 7
-      o.connect(hum)
-      o.start(start)
-      o.stop(start + length + 0.1)
-    }
+    // [UP18] No music in a match (the owner's spec, 12): the stands clap, nothing hums a tune under the game.
     // The hands: noise bursts on the 3-and-2 rhythm of every bar.
     const noise = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate)
     const d = noise.getChannelData(0)

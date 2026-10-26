@@ -22,7 +22,8 @@ class LeagueTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-10-22 10:00:00');
-        $this->template();
+        // 12 real clubs: a league of 6 to 12 of them [UP9].
+        $this->template(12);
     }
 
     protected function tearDown(): void
@@ -62,24 +63,24 @@ class LeagueTest extends TestCase
         $owner = User::factory()->create();
         $this->actingAs($owner)->withoutMiddleware(ThrottleRequests::class);
         foreach ([
-            'team_count' => [3, 21], 'starting_budget' => [999_999, 10_000_001], 'prep_days' => [0, 4], 'rounds_per_day' => [3],
+            // [UP9, UP17] Half the real league's 12 clubs at least; 2, 4 or 6 days to get ready; one round a day.
+            'team_count' => [5, 13], 'starting_budget' => [999_999, 10_000_001], 'prep_days' => [1, 3, 7], 'rounds_per_day' => [2],
             'season_end_mode' => ['forever'], 'starts_at' => [GameClock::now()->addDays(8)->toIso8601ZuluString(), GameClock::now()->subHour()->toIso8601ZuluString()],
         ] as $field => $bad) {
             foreach ($bad as $value) {
                 $this->postJson('/api/v1/leagues', $this->settings([$field => $value]))->assertUnprocessable()->assertJsonValidationErrors($field);
             }
         }
-        $this->postJson('/api/v1/leagues', $this->settings(['round_times' => ['18:00']]))->assertJsonValidationErrors('round_times');
-        $this->postJson('/api/v1/leagues', $this->settings(['round_times' => ['18:00', '18:00']]))->assertJsonValidationErrors('round_times.1');
-        $this->postJson('/api/v1/leagues', $this->settings(['team_count' => 20, 'template' => 'Nowhere']))->assertUnprocessable();
+        $this->postJson('/api/v1/leagues', $this->settings(['round_times' => ['18:00', '21:00']]))->assertJsonValidationErrors('round_times');
+        $this->postJson('/api/v1/leagues', $this->settings(['team_count' => 12, 'template' => 'Nowhere']))->assertUnprocessable();
         // The owner's club must be one of the N copied.
         $weak = DB::table('master_clubs')->where('name', 'Club 10')->value('id');
         $this->postJson('/api/v1/leagues', $this->settings(['club_id' => $weak]))->assertUnprocessable()->assertJsonPath('message', 'اختر فريقك من أندية هذا الدوري.');
         $this->assertSame(0, DB::table('leagues')->count());
 
-        // The edges are fine: 4 and 20 teams, 1 and 10 million.
-        $this->makeLeague($owner, ['team_count' => 4, 'starting_budget' => 1_000_000]);
-        $this->makeLeague($owner, ['team_count' => 20, 'starting_budget' => 10_000_000, 'rounds_per_day' => 1, 'round_times' => ['20:00']]);
+        // The edges are fine: 6 and 12 teams, 1 and 10 million.
+        $this->makeLeague($owner, ['team_count' => 6, 'starting_budget' => 1_000_000]);
+        $this->makeLeague($owner, ['team_count' => 12, 'starting_budget' => 10_000_000, 'rounds_per_day' => 1, 'round_times' => ['20:00']]);
     }
 
     public function test_join_by_code_wait_for_the_owner_then_take_a_free_club(): void
@@ -273,7 +274,7 @@ class LeagueTest extends TestCase
         $this->actingAs($coach)->patchJson("/api/v1/leagues/{$league['id']}", ['name' => 'X'])->assertForbidden();
         $this->actingAs($owner)->patchJson("/api/v1/leagues/{$league['id']}", ['name' => 'دوري الشلة', 'fair_league' => false, 'rounds_per_day' => 1, 'round_times' => ['20:30']])
             ->assertOk()->assertJsonPath('league.name', 'دوري الشلة')->assertJsonPath('league.fair_league', false)->assertJsonPath('league.round_times', ['20:30']);
-        $this->patchJson("/api/v1/leagues/{$league['id']}", ['rounds_per_day' => 2])->assertJsonValidationErrors('round_times');
+        $this->patchJson("/api/v1/leagues/{$league['id']}", ['round_times' => ['18:00', '21:00']])->assertJsonValidationErrors('round_times');
 
         // The scheduler starts it on time.
         Carbon::setTestNow(GameClock::now()->addDay()->addMinute());

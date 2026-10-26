@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\League\MatchRunner;
+use App\League\NextFixture;
 use App\Models\User;
 use App\Support\GameClock;
-use App\Training\SecretTraining;
 use App\Training\Training;
 use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -103,10 +103,9 @@ class WalletTest extends TestCase
         $money = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         // An open league: coins, and the club's money untouched.
         $this->actingAs($this->owner)->postJson($this->url('spy'))->assertOk()->assertJsonPath('currency', 'coins');
-        $this->postJson($this->url('training/secret'), ['line' => 'mid'])->assertOk();
         $this->postJson($this->url('specialists'), ['type' => 'doctor', 'idempotency_key' => 'k'])->assertOk();
         $p = config('game.premium.price');
-        $this->assertSame(1000 - $p['spy'] - $p['secret_training'] - $p['specialist'], Wallet::balance($this->owner->id));
+        $this->assertSame(1000 - $p['spy'] - $p['specialist'], Wallet::balance($this->owner->id));
         $this->assertSame($money, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
         // Finish now: a training session.
         $player = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
@@ -116,7 +115,7 @@ class WalletTest extends TestCase
         $this->assertSame(1, (int) DB::table('training_slots')->value('sessions'));
         // The cap: spending past it is refused.
         DB::table('wallet_transactions')->insert(['user_id' => $this->owner->id, 'type' => 'spy', 'amount' => -350, 'balance_after' => 0, 'idempotency_key' => 'big',
-            'league_id' => $this->league['id'], 'season_id' => SecretTraining::nextFixture($this->mine)->season_id, 'created_at' => GameClock::now()]);
+            'league_id' => $this->league['id'], 'season_id' => NextFixture::of($this->mine)->season_id, 'created_at' => GameClock::now()]);
         $this->postJson($this->url('specialists'), ['type' => 'lawyer', 'idempotency_key' => 'k2'])->assertConflict()
             ->assertJsonPath('message', 'بلغت سقف صرف الكوينز في هذا الدوري هذا الموسم (400).');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\ClubLogo;
 use App\Http\Controllers\Controller;
 use App\Market\Buyer;
 use App\Market\Market;
@@ -25,13 +26,17 @@ class MarketController extends Controller
     {
         $club = $this->club($request, $league);
         $data = $request->validate([
-            'source' => ['nullable', Rule::in(['pool', 'bots'])],
+            // [UP11] The transfer list: the world's players, the computer's clubs' and the coaches' listed ones, by line.
+            'source' => ['nullable', Rule::in(['list', 'pool', 'bots'])],
             'line' => ['nullable', Rule::in(['gk', 'def', 'mid', 'att'])],
             'q' => 'nullable|string|max:40',
             'club' => 'nullable|integer',
             'max_price' => 'nullable|integer|min:0',
         ]);
-        $source = $data['source'] ?? 'pool';
+        $source = $data['source'] ?? 'list';
+        if ($source === 'list') {
+            return response()->json($this->transferList($club, $league, $data['line'] ?? 'gk'));
+        }
         $cfg = config('game.economy');
         $q = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
             ->where('players.league_id', $league->id)
@@ -79,6 +84,77 @@ class MarketController extends Controller
         ]);
     }
 
+    /**
+     * [UP11] The owner's spec (5): one list per line (no search), the world's players (their own club outside the
+     * league, the "parallel" transfers), the computer's clubs' (the club alone) and the coaches' listed ones (the club
+     * and its coach), with the time the offers renew.
+     */
+    private function transferList(Club $club, League $league, string $line): array
+    {
+        $cfg = config('game.economy');
+        $base = fn () => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.league_id', $league->id)->where('master_players.line', $line)
+            ->select('players.*', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'master_players.potential',
+                'master_players.nationality', 'master_players.master_club_id',
+                'master_players.pac', 'master_players.sho', 'master_players.pas', 'master_players.dri', 'master_players.def', 'master_players.phy',
+                'master_players.gk_diving', 'master_players.gk_handling', 'master_players.gk_kicking', 'master_players.gk_positioning', 'master_players.gk_reflexes');
+        $bots = DB::table('clubs')->where('league_id', $league->id)->whereNull('user_id')->get(['id', 'name', 'master_club_id'])->keyBy('id');
+        $coaches = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->where('clubs.league_id', $league->id)
+            ->get(['clubs.id', 'clubs.name', 'clubs.master_club_id', 'users.name as coach'])->keyBy('id');
+        $listed = DB::table('transfer_listings')->whereIn('club_id', $coaches->keys())->pluck('price', 'player_id');
+        $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)->orderByDesc('players.overall')->limit(40)->get();
+        $fromBots = $base()->whereIn('players.club_id', $bots->keys())->orderByDesc('players.overall')->limit(30)->get();
+        $fromCoaches = $base()->whereIn('players.id', $listed->keys())->where('players.club_id', '!=', $club->id)->orderByDesc('players.overall')->get();
+        $masters = DB::table('master_clubs')->whereIn('id', $world->pluck('master_club_id')->unique())->get(['id', 'name', 'league_name'])->keyBy('id');
+        $row = fn ($p, int $price, array $seller) => [
+            'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
+            'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
+            'value' => (int) $p->value, 'price' => $price, 'seller' => $seller,
+            'attributes' => $p->line === 'gk'
+                ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
+                : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
+        ];
+        $players = collect()
+            ->concat($fromCoaches->map(fn ($p) => $row($p, (int) $listed[$p->id], ['kind' => 'coach', 'club_id' => $p->club_id, 'club' => $coaches[$p->club_id]->name,
+                'coach' => $coaches[$p->club_id]->coach, 'logo' => ClubLogo::forMaster($coaches[$p->club_id]->master_club_id)])))
+            ->concat($fromBots->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_bot_bp'], 10000), ['kind' => 'bot', 'club_id' => $p->club_id,
+                'club' => $bots[$p->club_id]->name, 'coach' => null, 'logo' => ClubLogo::forMaster($bots[$p->club_id]->master_club_id)])))
+            ->concat($world->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_pool_bp'], 10000), ['kind' => 'world', 'club_id' => null,
+                'club' => $masters[$p->master_club_id]->name ?? null, 'coach' => null,
+                'logo' => isset($masters[$p->master_club_id]) ? ClubLogo::path($masters[$p->master_club_id]->league_name, $masters[$p->master_club_id]->name) : null])))
+            ->sortByDesc('overall')->values();
+        $renewed = $league->pool_renewed_at ? Carbon::parse($league->pool_renewed_at, 'UTC') : null;
+
+        return [
+            'closed' => Market::closed($league->id),
+            'line' => $line,
+            'balance' => (int) $club->fresh()->balance,
+            'renews_at' => $renewed?->copy()->addHours((int) $cfg['pool_hours'])->toIso8601ZuluString(),
+            'players' => $players,
+        ];
+    }
+
+    /** [UP11] The deal before it is made: the price, the registration coins, and the cash + coins way when short. */
+    public function buyQuote(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request, $league);
+        $data = $request->validate(['player_id' => 'required|integer']);
+        $p = DB::table('players')->where('id', $data['player_id'])->where('league_id', $league->id)->first();
+        abort_unless($p, 404, 'اللاعب غير موجود في هذا الدوري.');
+        $price = Market::price($p, $club->id);
+        abort_if($price === null, 409, 'هذا اللاعب ليس للبيع هنا.');
+
+        return response()->json(Market::quote($club->id, $price));
+    }
+
+    /** [UP11] The transfers made in the league, newest first: the player, the seller, the buyer and the money. */
+    public function done(Request $request, League $league): JsonResponse
+    {
+        $this->club($request, $league);
+
+        return response()->json(['transfers' => Market::history($league->id)]);
+    }
+
     private function mine(Club $club, League $league): array
     {
         $cfg = config('game.economy');
@@ -117,8 +193,8 @@ class MarketController extends Controller
     public function buy(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $data = $request->validate(['player_id' => 'required|integer', 'idempotency_key' => 'required|string|max:64']);
-        $balance = Market::buy($club->id, $data['player_id'], "buy:{$club->id}:{$data['idempotency_key']}");
+        $data = $request->validate(['player_id' => 'required|integer', 'idempotency_key' => 'required|string|max:64', 'compensate' => 'sometimes|boolean']);
+        $balance = Market::buy($club->id, $data['player_id'], "buy:{$club->id}:{$data['idempotency_key']}", (bool) ($data['compensate'] ?? false));
 
         return response()->json(['balance' => $balance]);
     }

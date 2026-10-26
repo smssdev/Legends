@@ -23,6 +23,9 @@ export const PATHS = {
   sim: 'M5 4h14v10H5zM9 20h6M12 14v6M10 7.5v3l3-1.5z',
   bell: 'M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4',
   close: 'M6 6l12 12M18 6 6 18',
+  menu: 'M4 6h16M4 12h16M4 18h16',
+  news: 'M4 5h13v14H6a2 2 0 0 1-2-2V5Zm13 4h3v8a2 2 0 0 1-2 2M7 8h7M7 12h7M7 16h4',
+  predict: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM12 7v5l3 2',
 } as const
 </script>
 

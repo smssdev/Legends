@@ -4,83 +4,95 @@
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-2">
         <BrandMark size="sm" />
       </RouterLink>
-      <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">المحاكي · بذرة <span class="font-numbers">{{ view?.seed }}</span></span>
+      <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('المحاكي · بذرة') }} <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />
       <template v-if="live">
-        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />مباشر · {{ mine ? 'تدير ' + view?.clubs[mine].name : 'مشاهدة' }}</span>
-        <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? 'نُسخ الرابط' : 'رابط الصديق' }}</button>
+        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
+        <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? $t('نُسخ الرابط') : $t('رابط الصديق') }}</button>
       </template>
-      <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" aria-label="سرعة المحاكاة">
-        <button type="button" class="size-10 rounded-sm bg-surface-raised" :aria-label="playing ? 'إيقاف مؤقت' : 'تشغيل'" @click="togglePlay">
+      <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" :aria-label="$t('سرعة المحاكاة')">
+        <button type="button" class="size-10 rounded-sm bg-surface-raised" :aria-label="playing ? $t('إيقاف مؤقت') : $t('تشغيل')" @click="togglePlay">
           <svg v-if="playing" viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
           <svg v-else viewBox="0 0 24 24" class="mx-auto size-4" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
         </button>
         <button v-for="s in [1, 2, 4]" :key="s" type="button" class="h-10 min-w-11 rounded-sm font-numbers text-lg" :class="speed === s ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="speed === s" dir="ltr" @click="speed = s">×{{ s }}</button>
-        <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="finished" @click="skipMoment">تخطَّ اللقطة</button>
-        <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : 'تخطٍّ للنهاية' }}</button>
+        <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="finished" @click="skipMoment">{{ $t('تخطَّ اللقطة') }}</button>
+        <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : $t('تخطٍّ للنهاية') }}</button>
       </div>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? 'الصوت: يعمل' : 'تشغيل الصوت' }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">التعليق: {{ ({ ar: 'عربي', en: 'English', off: 'متوقف' })[commentary] }}</button>
-      <button v-if="commentary === 'ar'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">المعلق: {{ arVoiceName(arVoice) }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">العرض: {{ viewing.chosenView.value === 'unity' ? 'المطوّر' : 'الكرتوني' }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">الأداء: {{ PERF_NAMES[perfPref] }}{{ perfPref === 'auto' ? (smooth ? ' (سلس)' : ' (كامل)') : '' }}</button>
-      <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">لوحة المدرب</a>
-      <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">لوحة المطور</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? $t('الصوت: يعمل') : $t('تشغيل الصوت') }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: ({ ar: $t('عربي'), en: 'English', off: $t('متوقف') })[commentary] }) }}</button>
+      <button v-if="commentary === 'ar' && ARABIC_COMMENTARY" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">{{ $t('المعلق: {v0}', { v0: arVoiceName(arVoice) }) }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (smooth ? $t(' (سلس)') : $t(' (كامل)')) : '' }) }}</button>
+      <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
+      <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
     </header>
 
-    <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" aria-label="مبارياتك المباشرة">
-      <span class="text-sm text-text-muted">مبارياتك الآن:</span>
+    <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" :aria-label="$t('مبارياتك المباشرة')">
+      <span class="text-sm text-text-muted">{{ $t('مبارياتك الآن:') }}</span>
       <RouterLink v-for="o in others" :key="o.id" :to="{ name: 'league-match', params: { id: o.id } }" class="flex h-touch items-center rounded-md px-3 font-numbers text-sm" :class="String(o.id) === id ? 'bg-gold text-on-gold' : 'bg-surface'" :aria-current="String(o.id) === id ? 'page' : undefined" dir="ltr">{{ o.home }} - {{ o.away }}</RouterLink>
     </nav>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
-    <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
-        <section v-if="live && !started && mine" aria-label="بدء المباراة المباشرة" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
-          <span class="font-display text-2xl font-extrabold">مباراة مباشرة مع صديق</span>
-          <p class="max-w-md text-sm text-text-soft">أرسل الرابط لصديقك ليدير {{ $nm(view?.clubs[other].name) }} من جهازه، ثم ابدأ حين يكون جاهزاً.</p>
+        <section v-if="live && !started && mine" :aria-label="$t('بدء المباراة المباشرة')" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
+          <span class="font-display text-2xl font-extrabold">{{ $t('مباراة مباشرة مع صديق') }}</span>
+          <p class="max-w-md text-sm text-text-soft">{{ $t('أرسل الرابط لصديقك ليدير {v0} من جهازه، ثم ابدأ حين يكون جاهزاً.', { v0: $nm(view?.clubs[other].name) }) }}</p>
           <div v-if="friendLink" class="flex w-full max-w-md gap-2">
-            <input :value="friendLink" readonly dir="ltr" aria-label="رابط الصديق" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
-            <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? 'نُسخ' : 'نسخ' }}</button>
+            <input :value="friendLink" readonly dir="ltr" :aria-label="$t('رابط الصديق')" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
+            <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? $t('نُسخ') : $t('نسخ') }}</button>
           </div>
-          <button type="button" class="h-12 rounded-md bg-gold px-8 font-display font-bold text-on-gold disabled:opacity-50" :disabled="starting" @click="startLive">{{ starting ? '...' : 'ابدأ المباراة' }}</button>
-          <span class="text-xs text-text-muted">أي من المدربين يستطيع البدء.</span>
+          <button type="button" class="h-12 rounded-md bg-gold px-8 font-display font-bold text-on-gold disabled:opacity-50" :disabled="starting" @click="startLive">{{ starting ? '...' : $t('ابدأ المباراة') }}</button>
+          <span class="text-xs text-text-muted">{{ $t('أي من المدربين يستطيع البدء.') }}</span>
         </section>
 
-        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" aria-label="المباراة">
-          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @real="(kind) => voice.real(kind as any)" @intro-done="endIntro" />
+        <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" :aria-label="$t('المباراة')">
+          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @real="(kind) => voice.real(kind as any)" @intro-done="endIntro" />
 
+                    <!-- [UP17] The emergency substitution: my injured player, 15 seconds to pick who comes on. -->
+                    <div v-if="injuredId && live && league && !finished" dir="rtl" class="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-bg-deep/90 p-4 text-center" role="alertdialog" :aria-label="$t('تبديل طارئ')">
+                      <span class="font-display text-xl font-extrabold text-warning">{{ $t('إصابة: {v0}', { v0: injuredName }) }}</span>
+                      <span class="text-sm text-text-soft">{{ $t('اختر البديل خلال') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية، وإلا اختاره المدرب المساعد') }}</span>
+                      <div class="flex max-w-xl flex-wrap justify-center gap-2">
+                        <button v-for="p in benchForInjury" :key="p.id" type="button" class="min-h-touch rounded-md bg-surface-raised px-3 text-sm font-bold" @click="emergencySub(p.id)">
+                          {{ p.pos }} · {{ $nm(p.name) }} <span class="font-numbers text-gold">{{ p.ovr }}</span></button>
+                      </div>
+                    </div>
                     <div v-if="(halftime || finished || windowOn) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
-            <span class="text-sm font-bold text-gold">{{ finished ? 'نهاية المباراة' : windowOn ? `فترة توقف · الدقيقة ${minute[0]}` : 'الاستراحة' }}</span>
+            <span class="text-sm font-bold text-gold">{{ finished ? $t('نهاية المباراة') : windowOn ? $t('فترة توقف · الدقيقة {v0}', { v0: minute[0] }) : $t('الاستراحة') }}</span>
             <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
-            <span v-if="shootout" class="text-sm text-text-soft">ركلات الترجيح: {{ shootout.home }} - {{ shootout.away }}</span>
+            <span v-if="shootout" class="text-sm text-text-soft">{{ $t('ركلات الترجيح: {v0} - {v1}', { v0: shootout.home, v1: shootout.away }) }}</span>
             <div class="flex flex-wrap justify-center gap-2">
-              <span v-if="halftime && live" class="text-sm text-text-soft">الشوط الثاني بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك الآن</span>
-              <span v-if="windowOn && !finished" class="text-sm text-text-soft">تُستأنف المباراة بعد <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> ثانية · غيّر خطتك أو أجرِ تبديلاتك الآن</span>
-              <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">لوحة المدرب</a>
-              <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">ابدأ الشوط الثاني <span class="font-numbers">({{ halftimeLeft }})</span></button>
-              <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">ملخص المباراة · {{ keyTicks.length }} لقطة</button>
-              <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
-              <RouterLink v-if="finished && league && mine" :to="{ name: 'league-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">تقرير المباراة</RouterLink>
-              <RouterLink v-if="finished && league" to="/match" class="flex h-12 items-center rounded-md bg-surface-raised px-5">المباراة القادمة</RouterLink>
-              <RouterLink v-if="finished && !league" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">مباراة جديدة</RouterLink>
+              <span v-if="halftime && live" class="text-sm text-text-soft">{{ $t('الشوط الثاني بعد') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية · غيّر خطتك الآن') }}</span>
+              <span v-if="windowOn && !finished" class="text-sm text-text-soft">{{ $t('تُستأنف المباراة بعد') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية · غيّر خطتك أو أجرِ تبديلاتك الآن') }}</span>
+              <button v-if="(halftime || windowOn) && live && league && mine" type="button" class="h-12 rounded-md px-6 font-display font-bold disabled:opacity-60"
+                :class="iAmReady ? 'bg-success/20 text-success' : 'bg-brand text-white'" :disabled="iAmReady || readyBusy" @click="sayReady">
+                {{ iAmReady ? $t('مستعد ✓ بانتظار الخصم') : $t('أنا مستعد') }}</button>
+              <a v-if="(halftime || windowOn) && live && mine" href="#coach" class="flex h-12 items-center rounded-md bg-gold px-5 font-display font-bold text-on-gold lg:hidden">{{ $t('لوحة المدرب') }}</a>
+              <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">{{ $t('ابدأ الشوط الثاني') }} <span class="font-numbers">({{ halftimeLeft }})</span></button>
+              <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">{{ $t('ملخص المباراة · {v0} لقطة', { v0: keyTicks.length }) }}</button>
+              <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
+              <RouterLink v-if="finished && league && mine" :to="{ name: 'league-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
+              <RouterLink v-if="finished && league" to="/match" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('المباراة القادمة') }}</RouterLink>
+              <RouterLink v-if="finished && !league" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('مباراة جديدة') }}</RouterLink>
             </div>
             <!-- The league's half-time: room kept for an advert (none in v1). -->
-            <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">مساحة إعلانية</div>
+            <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">{{ $t('مساحة إعلانية') }}</div>
           </div>
 
           <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" @done="replayTick = null" />
-          <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء</p>
+          <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">{{ $t('انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء') }}</p>
         </section>
 
         <!-- Live: the two coaches cheer and tease each other; every screen sees it at once. In a league every member who
              watches may react, and cheer or boo one side once in half a minute [X24]. -->
-        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" aria-label="تفاعل مع المباراة">
+        <section v-if="live && (mine || league) && !finished" class="flex flex-col gap-2 rounded-xl bg-surface p-2" :aria-label="$t('تفاعل مع المباراة')">
           <div class="flex gap-1.5 overflow-x-auto">
             <button v-for="r in REACTIONS" :key="r.key" type="button" class="flex h-touch shrink-0 items-center gap-1 rounded-pill bg-surface-sunk px-3 text-sm font-bold hover:bg-surface-raised disabled:opacity-40" :disabled="reactWait" :aria-label="r.label" @click="react(r.key)">
-              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ r.text }}</span>
+              <span class="text-lg" aria-hidden="true">{{ r.emoji }}</span><span v-if="r.text">{{ $t(r.text) }}</span>
             </button>
           </div>
           <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
@@ -89,21 +101,21 @@
               <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
             </template>
           </div>
-          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">التشجيع والاستهجان بعد <span class="font-numbers">{{ cheerLeft }}</span> ثانية</p>
+          <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">{{ $t('التشجيع والاستهجان بعد') }} <span class="font-numbers">{{ cheerLeft }}</span> {{ $t('ثانية') }}</p>
         </section>
       </div>
 
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-2">
-        <section class="rounded-xl bg-surface px-4 py-3" aria-label="الزخم">
-          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">الزخم</span><span>أعلى: {{ $nm(view.clubs.home.name) }} · أسفل: {{ $nm(view.clubs.away.name) }}</span></div>
+        <section class="rounded-xl bg-surface px-4 py-3" :aria-label="$t('الزخم')">
+          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">{{ $t('الزخم') }}</span><span>{{ $t('أعلى: {v0} · أسفل: {v1}', { v0: $nm(view.clubs.home.name), v1: $nm(view.clubs.away.name) }) }}</span></div>
           <div class="h-20"><Momentum :values="momentum" :home-color="kits.home" /></div>
         </section>
 
-        <section class="rounded-xl bg-surface p-4" aria-label="الإحصائيات">
+        <section class="rounded-xl bg-surface p-4" :aria-label="$t('الإحصائيات')">
           <StatsGrid :home="teams.home.stats" :away="teams.away.stats" :home-color="kits.home" />
         </section>
 
-        <section v-if="dev" class="rounded-xl border border-gold/40 bg-surface-sunk p-4 font-mono text-xs leading-6" dir="ltr" aria-label="لوحة المطور">
+        <section v-if="dev" class="rounded-xl border border-gold/40 bg-surface-sunk p-4 font-mono text-xs leading-6" dir="ltr" :aria-label="$t('لوحة المطور')">
           <div>tick {{ last?.tick }} · period {{ last?.period }} · danger {{ last?.danger }} · rate {{ last?.debug?.initiative?.rate }} · home share {{ last?.debug?.initiative?.home_share }}</div>
           <div v-for="(a, i) in lastAttacks" :key="i">{{ a.team }} {{ a.plan }}{{ a.counter ? ' (counter)' : '' }} → {{ a.result }} · {{ a.phases.map((p: any) => `${p.n}:${p.p ?? '-'}${p.ok ? '✓' : '✗'}`).join(' ') }}</div>
           <div>home tactics {{ JSON.stringify(teams.home.tactics) }}</div>
@@ -112,47 +124,47 @@
       </div>
 
       <aside class="row-start-2 flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
+        <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" :aria-label="$t('لوحة المدرب')">
           <div class="flex items-center gap-2">
-            <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ $nm(view.clubs[mine].name) }}</span></h2>
-            <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">تكتيك {{ $nm(view.clubs[other].name) }} سري</span>
+            <h2 class="flex-1 font-display text-base font-bold">{{ $t('لوحة المدرب') }}<span v-if="mine"> · {{ $nm(view.clubs[mine].name) }}</span></h2>
+            <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">{{ $t('تكتيك {v0} سري', { v0: $nm(view.clubs[other].name) }) }}</span>
             <div v-if="!live && view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="s in (['home', 'away'] as const)" :key="s" type="button" class="h-9 rounded-sm px-2 text-xs font-bold" :class="mine === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="chosen = s">{{ view.clubs[s].code }}</button>
             </div>
-            <span v-if="mine" class="text-xs text-text-muted">التبديلات <b class="font-numbers text-base text-text" dir="ltr">{{ teams[mine].subs_used }}/{{ teams[mine].subs_max }}</b></span>
+            <span v-if="mine" class="text-xs text-text-muted">{{ $t('التبديلات') }} <b class="font-numbers text-base text-text" dir="ltr">{{ teams[mine].subs_used }}/{{ teams[mine].subs_max }}</b></span>
           </div>
 
-          <p v-if="!mine" class="text-sm text-text-muted">{{ live ? 'أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.' : 'الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.' }}</p>
+          <p v-if="!mine" class="text-sm text-text-muted">{{ live ? $t('أنت تشاهد فقط: كل مدرب يدير فريقه من جهازه.') : $t('الحاسوب يدير الفريقين. اختر "أنا" لأحدهما في شاشة الإعداد لتديره.') }}</p>
 
           <template v-else>
-            <p v-if="!canChange && !finished" class="rounded-md bg-surface-sunk px-3 py-2 text-xs leading-5 text-text-muted" role="status">التغيير في فترات التوقف فقط: الدقائق 15 و30 و60 و75 والاستراحة.<span v-if="nextWindow"> القادمة: <b class="font-numbers text-text">{{ nextWindow }}</b>'</span></p>
+            <p v-if="!canChange && !finished" class="rounded-md bg-surface-sunk px-3 py-2 text-xs leading-5 text-text-muted" role="status">{{ $t('التغيير في فترات التوقف فقط: الدقائق 15 و30 و60 و75 والاستراحة.') }}<span v-if="nextWindow"> {{ $t('القادمة:') }} <b class="font-numbers text-text">{{ nextWindow }}</b>'</span></p>
             <div role="tablist" class="grid grid-cols-4 gap-1 rounded-md bg-surface-sunk p-1">
-              <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-sm text-sm font-bold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">{{ t.label }}</button>
+              <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="h-10 rounded-sm text-sm font-bold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">{{ $t(t.label) }}</button>
             </div>
 
             <div v-if="tab === 'quick'" class="grid grid-cols-2 gap-2">
               <button v-for="q in quickOrders" :key="q.label" type="button" class="flex min-h-16 flex-col gap-0.5 rounded-md border border-text/10 bg-surface-sunk px-3 py-2 text-start hover:border-gold disabled:opacity-40 disabled:hover:border-text/10" :disabled="finished || !canChange" @click="sendTactics(q.label, q.tactics)">
-                <span class="font-display text-sm font-bold">{{ q.label }}</span>
-                <span class="text-xs leading-5 text-text-muted">{{ q.hint }}</span>
+                <span class="font-display text-sm font-bold">{{ $t(q.label) }}</span>
+                <span class="text-xs leading-5 text-text-muted">{{ $t(q.hint) }}</span>
               </button>
             </div>
 
             <div v-if="tab === 'subs'" class="flex flex-col gap-2">
-              <span class="text-xs text-text-muted">{{ subOut ? 'اختر البديل' : 'اختر من يخرج (الأقل لياقة أولاً)' }}</span>
+              <span class="text-xs text-text-muted">{{ subOut ? $t('اختر البديل') : $t('اختر من يخرج (الأقل لياقة أولاً)') }}</span>
               <button v-for="p in subOut ? bench : onPitch" :key="p.id" type="button" :disabled="!canChange" class="flex min-h-11 items-center gap-2 rounded-md px-2 disabled:opacity-40" :class="subOut?.id === p.id ? 'bg-warning/15' : 'bg-surface-sunk hover:bg-surface-raised'" @click="subOut ? sendSub(p) : (subOut = p)">
                 <span class="w-8 rounded-sm px-1 text-center text-xs font-bold" :class="lineClass(p.line)">{{ p.pos }}</span>
                 <span class="flex-1 truncate text-start text-sm">{{ $nm(p.name) }}</span>
-                <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-[#F5D90A]" aria-label="بطاقة صفراء" />
+                <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-[#F5D90A]" :aria-label="$t('بطاقة صفراء')" />
                 <span class="w-12 text-start font-numbers" :class="fitClass(p.fit)">{{ subOut ? p.ovr : p.fit + '%' }}</span>
               </button>
-              <button v-if="subOut" type="button" class="h-10 rounded-md bg-surface-raised text-sm" @click="subOut = null">رجوع</button>
+              <button v-if="subOut" type="button" class="h-10 rounded-md bg-surface-raised text-sm" @click="subOut = null">{{ $t('رجوع') }}</button>
             </div>
 
             <div v-if="tab === 'tactics'" class="flex flex-col gap-3 text-sm">
-              <label class="flex items-center justify-between gap-2">خطة اللعب
-                <select v-model="draft.plan" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="p in plans" :key="p.v" :value="p.v">{{ p.label }}</option></select>
+              <label class="flex items-center justify-between gap-2">{{ $t('خطة اللعب') }}
+                <select v-model="draft.plan" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="p in plans" :key="p.v" :value="p.v">{{ $t(p.label) }}</option></select>
               </label>
-              <label class="flex items-center justify-between gap-2">قطع الكرة
+              <label class="flex items-center justify-between gap-2">{{ $t('قطع الكرة') }}
                 <select v-model.number="draft.tackling" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="(t, i) in tackles" :key="t" :value="i">{{ t }}</option></select>
               </label>
               <label v-for="k in (['pressing', 'style', 'tempo'] as const)" :key="k" class="flex flex-col gap-1">
@@ -160,13 +172,13 @@
                 <input v-model.number="draft[k]" type="range" min="0" max="100" class="accent-gold" />
               </label>
               <label v-for="l in (['att', 'mid', 'def'] as const)" :key="l" class="flex items-center justify-between gap-2">{{ lineNames[l] }}
-                <select v-model="draft[l]" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="o in positioning[l]" :key="o.v" :value="o.v">{{ o.label }}</option></select>
+                <select v-model="draft[l]" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="o in positioning[l]" :key="o.v" :value="o.v">{{ $t(o.label) }}</option></select>
               </label>
               <div class="flex gap-2">
-                <UiToggle v-model="draftTrap" class="flex-1" label="مصيدة التسلل" />
-                <UiToggle v-model="draftMan" class="flex-1" label="رقابة رجل لرجل" />
+                <UiToggle v-model="draftTrap" class="flex-1" :label="$t('مصيدة التسلل')" />
+                <UiToggle v-model="draftMan" class="flex-1" :label="$t('رقابة رجل لرجل')" />
               </div>
-              <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="finished || !canChange" @click="applyDraft">طبّق في الدقيقة التالية</button>
+              <button type="button" class="h-11 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="finished || !canChange" @click="applyDraft">{{ $t('طبّق في الدقيقة التالية') }}</button>
             </div>
 
             <div v-if="tab === 'shape'" class="flex flex-wrap gap-2">
@@ -174,42 +186,42 @@
             </div>
 
             <div v-for="o in pending" :key="o.key" class="flex items-center gap-3 rounded-lg border border-gold/45 bg-gold/10 px-3 py-2 text-sm">
-              <span class="flex-1"><b>{{ o.label }}</b></span><span class="text-gold">{{ minute[0] === 0 ? 'يُطبق مع صافرة البداية' : 'يُطبق في الدقيقة القادمة' }}</span>
+              <span class="flex-1"><b>{{ $t(o.label) }}</b></span><span class="text-gold">{{ minute[0] === 0 ? $t('يُطبق مع صافرة البداية') : $t('يُطبق في الدقيقة القادمة') }}</span>
             </div>
-            <div v-for="o in applied" :key="o.key" class="rounded-lg border border-success/50 bg-success/15 px-3 py-2 text-sm"><b>{{ o.label }}</b> طُبّق في الدقيقة {{ o.minute }}</div>
+            <div v-for="o in applied" :key="o.key" class="rounded-lg border border-success/50 bg-success/15 px-3 py-2 text-sm"><b>{{ $t(o.label) }}</b> {{ $t('طُبّق في الدقيقة {v0}', { v0: o.minute }) }}</div>
             <div v-for="r in rejected" :key="r" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]">{{ r }}</div>
           </template>
         </section>
 
-        <section v-if="league && mine" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" aria-label="قراءة المساعد" aria-live="polite">
-          <h2 class="font-display text-base font-bold">قراءة المساعد</h2>
-          <p v-if="!readings.length" class="text-sm text-text-muted">يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.</p>
+        <section v-if="league && mine" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('قراءة المساعد')" aria-live="polite">
+          <h2 class="font-display text-base font-bold">{{ $t('قراءة المساعد') }}</h2>
+          <p v-if="!readings.length" class="text-sm text-text-muted">{{ $t('يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.') }}</p>
           <div v-for="r in readings" :key="r.id" class="flex gap-3 rounded-md bg-surface-sunk px-3 py-2 text-sm" :class="r.kind.startsWith('goal') || r.kind.startsWith('red') ? 'border-s-2 border-gold' : ''">
             <span class="w-8 shrink-0 font-numbers text-base text-gold">{{ r.minute }}'</span>
-            <span>{{ r.text }}</span>
+            <span>{{ $t(r.text) }}</span>
           </div>
         </section>
 
-        <section v-if="league" class="flex flex-col gap-2 rounded-xl bg-surface p-3" aria-label="دردشة المشاهدين">
-          <h2 class="font-display text-base font-bold">دردشة المشاهدين</h2>
+        <section v-if="league" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('دردشة المشاهدين')">
+          <h2 class="font-display text-base font-bold">{{ $t('دردشة المشاهدين') }}</h2>
           <div ref="chatBox" class="flex max-h-[240px] min-h-[64px] flex-col gap-1.5 overflow-y-auto" aria-live="polite">
-            <p v-if="!chat.length" class="text-sm text-text-muted">مدربو الدوري الذين يتابعون يتكلمون هنا.</p>
+            <p v-if="!chat.length" class="text-sm text-text-muted">{{ $t('مدربو الدوري الذين يتابعون يتكلمون هنا.') }}</p>
             <p v-for="c in chat" :key="c.id" class="rounded-md bg-surface-sunk px-3 py-1.5 text-sm">
               <b :class="c.side ? 'text-gold' : 'text-text-soft'" dir="auto">{{ c.who }}</b><span class="text-text-muted">: </span><span dir="auto">{{ c.body }}</span>
             </p>
           </div>
           <form v-if="live && !finished" class="flex gap-2" @submit.prevent="sendChat">
-            <input v-model="chatText" type="text" maxlength="140" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" placeholder="اكتب رسالة…" aria-label="رسالة" />
-            <button type="submit" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="!chatText.trim() || chatWait">إرسال</button>
+            <input v-model="chatText" type="text" maxlength="140" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('رسالة')" />
+            <button type="submit" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="!chatText.trim() || chatWait">{{ $t('إرسال') }}</button>
           </form>
-          <p v-if="chatError" class="text-xs text-[#FF8A8A]" role="status">{{ chatError }}</p>
+          <p v-if="chatError" class="text-xs text-[#FF8A8A]" role="status">{{ $t(chatError) }}</p>
         </section>
 
-        <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" aria-label="مجريات المباراة">
-          <h2 class="mb-1 font-display text-base font-bold">مجريات المباراة</h2>
+        <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('مجريات المباراة')">
+          <h2 class="mb-1 font-display text-base font-bold">{{ $t('مجريات المباراة') }}</h2>
           <div v-for="(f, i) in feed" :key="i" class="flex gap-3 border-b border-text/5 py-2 text-sm">
             <span class="w-10 shrink-0 font-numbers text-base" :class="f.important ? 'text-gold' : 'text-text-muted'">{{ f.minute }}</span>
-            <span :class="f.important ? 'font-bold' : ''">{{ f.text }}</span>
+            <span :class="f.important ? 'font-bold' : ''">{{ $t(f.text) }}</span>
           </div>
         </section>
       </aside>
@@ -231,7 +243,7 @@ import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
-import { useViewing } from '../match/viewing'
+import { ARABIC_COMMENTARY, useViewing } from '../match/viewing'
 import { perfPref, setPerfPref, smooth, type PerfPref } from '../match/perf'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
@@ -259,6 +271,30 @@ const windowOn = ref(false)
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
 /** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not its last 2 s). */
 const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && halftimeLeft.value > 2))
+// [UP17] «أنا مستعد» and the emergency substitution (league, live).
+const pause = ref<LiveSync['pause']>(null)
+const readyBusy = ref(false)
+const iAmReady = computed(() => !!mine.value && !!pause.value?.ready.includes(mine.value as Side))
+async function sayReady() {
+  readyBusy.value = true
+  try {
+    const r = await leagueMatch.ready(props.id)
+    if (pause.value) pause.value = { ...pause.value, ready: r.ready as Side[], until: r.resume_at }
+    resumeAt = r.resume_at
+    clockTick()
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    readyBusy.value = false
+  }
+}
+const injuredId = computed(() => (mine.value && pause.value && !pause.value.window ? pause.value.injured[mine.value as Side] ?? null : null))
+const injuredName = computed(() => teams.value[mine.value as Side]?.players.find((p) => p.id === injuredId.value)?.name ?? '')
+const benchForInjury = computed(() => (teams.value[mine.value as Side]?.players ?? []).filter((p) => !p.on && p.out === '' && p.slot === null))
+async function emergencySub(inId: number) {
+  if (!injuredId.value) return
+  await order('تبديل طارئ', { type: 'sub', out: injuredId.value, in: inId })
+}
 const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
 const finished = ref(false)
 const skipping = ref(false)
@@ -745,6 +781,9 @@ watch(finished, (done) => { if (done) releaseAwake() })
 function handleSync(r: LiveSync): number {
   started.value = r.started
   error.value = ''
+  // [UP17] The break: both coaches ready ends it early (its end moves), and an injured player of mine waits.
+  pause.value = r.pause ?? null
+  if (r.pause) resumeAt = r.pause.until
   // Back after a gap: the minutes missed tell their events in the feed, then the latest minutes play on.
   for (const m of r.missed ?? []) {
     if (m.tick <= seen) continue
@@ -785,7 +824,7 @@ function handleSync(r: LiveSync): number {
 function clockTick() {
   const now = serverNow()
   countdown.value = kickoffAt > now ? Math.ceil((kickoffAt - now) / 1000) : 0
-  if (halftime.value || windowOn.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
+  if (halftime.value || windowOn.value || injuredId.value) halftimeLeft.value = Math.max(0, Math.ceil((resumeAt - now) / 1000))
 }
 
 // ---------------------------------------------------------------- reactions (live)
@@ -876,7 +915,7 @@ function toggleSound() {
 }
 // The commentator speaks when the sound is on: Arabic (the default), English, or not at all.
 function toggleCommentary() {
-  commentary.value = ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value]
+  commentary.value = ARABIC_COMMENTARY ? ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value] : commentary.value === 'off' ? 'en' : 'off'
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
@@ -906,7 +945,9 @@ function switchView() {
 }
 // Arabic by default, now that the default commentator is an Arabic voice [X9].
 function readPref(): Lang | 'off' {
-  try { const v = localStorage.getItem('legends.commentary'); return v === 'en' || v === 'off' ? v : 'ar' } catch { return 'ar' }
+  // [UP18] English unless the coach turned it off; Arabic only while it is switched on (ARABIC_COMMENTARY).
+  const fallback = ARABIC_COMMENTARY ? 'ar' : 'en'
+  try { const v = localStorage.getItem('legends.commentary'); return v === 'off' || v === 'en' || (v === 'ar' && ARABIC_COMMENTARY) ? v : fallback } catch { return fallback }
 }
 
 onMounted(async () => {

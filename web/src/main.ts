@@ -1,4 +1,5 @@
 import { cn, ln, loadNames, nm, pn } from './lib/names'
+import { t } from './lib/i18n'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import './style.css'
@@ -11,7 +12,7 @@ import './match/perf'   // the smooth mode on weak phones, for the whole app [X3
 // The names switch [X40]: $nm, $pn, $cn and $ln in every template, and the dictionary fetched once.
 loadNames()
 const app = createApp(App)
-Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm })
+Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
 app.component('BrandMark', BrandMark).use(createPinia()).use(router).mount('#app')
 
 // Installable as an app (PWA). Only the built site: in development it would cache stale code.

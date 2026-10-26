@@ -16,7 +16,8 @@ use Illuminate\Validation\ValidationException;
  * - An account whose email we confirmed is linked as it is.
  * - An account whose email we never confirmed is wiped of its sign-ins before Google takes it:
  *   its password, its app tokens and its web sessions go, so whoever made it is locked out.
- * - Otherwise a new account, already confirmed.
+ * - Otherwise a new account, already confirmed, named after the Google account: its name, its picture and a
+ *   username made from the name [UP5], so the coach types nothing.
  */
 class GoogleLinker
 {
@@ -33,7 +34,8 @@ class GoogleLinker
         return DB::transaction(function () use ($google) {
             $user = User::where('email', $google->email)->first();
             if (! $user) {
-                $user = new User(['name' => $google->name !== '' ? $google->name : strtok($google->email, '@'), 'email' => $google->email]);
+                $name = $google->name !== '' ? $google->name : (string) strtok($google->email, '@');
+                $user = new User(['name' => mb_substr($name, 0, 40), 'email' => $google->email, 'username' => Username::fromName($name, $google->email)]);
             } elseif (! $user->hasVerifiedEmail()) {
                 $user->password = null;
                 $user->setRememberToken(null);
@@ -41,6 +43,7 @@ class GoogleLinker
                 DB::table('sessions')->where('user_id', $user->id)->delete();
             }
             $user->google_id = $google->sub;
+            $user->google_picture = $google->picture !== null && str_starts_with($google->picture, 'https://') ? substr($google->picture, 0, 500) : $user->google_picture;
             $user->email_verified_at ??= GameClock::now();
             $user->save();
 

@@ -15,10 +15,10 @@
          server's keyframes, never only the key moments. -->
     <div class="pitch">
       <div ref="pitchHost" class="pitch-in" aria-hidden="true" />
-      <button type="button" class="cam" :aria-label="camera === 'tv' ? 'عرض الخطة من أعلى' : 'كاميرا البث'" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? 'الخطة' : 'البث' }}</button>
+      <button type="button" class="cam" :aria-label="camera === 'tv' ? $t('عرض الخطة من أعلى') : $t('كاميرا البث')" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? $t('الخطة') : $t('البث') }}</button>
     </div>
 
-    <div class="tl" aria-label="مجريات المباراة" aria-live="polite">
+    <div class="tl" :aria-label="$t('مجريات المباراة')" aria-live="polite">
       <div class="spine" />
       <TransitionGroup name="row" tag="div" class="list">
         <div v-for="it in items" :key="it.key" class="row" :class="it.center ? 'home' : it.side">
@@ -35,7 +35,7 @@
     <div class="moment" :class="{ on: sceneOn, tense }">
       <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
-        <span v-if="replaying" class="replay">إعادة</span>
+        <span v-if="replaying" class="replay">{{ $t('إعادة') }}</span>
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
           <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
@@ -65,8 +65,8 @@
     </div>
 
     <div v-if="intro" class="preview">
-      <span class="kick">{{ live ? 'مباراة بين صديقين' : 'ما قبل المباراة' }}</span>
-      <span v-if="live && countdown > 0" class="plan">الصافرة بعد <b dir="ltr">{{ countdown }}</b> ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن</span>
+      <span class="kick">{{ live ? $t('مباراة بين صديقين') : $t('ما قبل المباراة') }}</span>
+      <span v-if="live && countdown > 0" class="plan">{{ $t('الصافرة بعد') }} <b dir="ltr">{{ countdown }}</b> {{ $t('ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن') }}</span>
       <div class="teams">
         <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></div>
         <span class="vs">VS</span>
@@ -78,7 +78,7 @@
       <div class="keys">
         <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
       </div>
-      <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? `البداية بعد ${countdown}` : 'شغّل الصوت وانتظر البداية') : 'ابدأ البث' }}</button>
+      <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? $t('البداية بعد {v0}', { v0: countdown }) : $t('شغّل الصوت وانتظر البداية')) : $t('ابدأ البث') }}</button>
     </div>
   </div>
 </template>
@@ -95,7 +95,7 @@ import { noteFrame, smooth } from '../perf'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
-const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
+const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; real: [kind: string]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
@@ -127,7 +127,8 @@ const barKit = computed(() => {
   const k = props.kits[cur.value?.side === 'away' ? 'away' : 'home'].kit, n = parseInt(k.slice(1), 16)
   return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) > 150 ? '#3A5F9E' : k
 })
-const crestOf = (s) => crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || ''])
+// [UP3] The club's real logo where it has one, else its drawn badge.
+const crestOf = (s) => (props.logos?.[s] ? `<img src="${props.logos[s]}" alt="" decoding="async">` : crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || '']))
 const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? 'أنت' : props.live ? '' : props.mine ? 'الحاسوب' : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
 // The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
@@ -440,7 +441,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 @keyframes beams { to { transform: translateX(300px) } }
 
 .sb { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 6 }
-.sb-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; border-radius: 16px; overflow: hidden; background: rgba(16,40,79,.62); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.09); box-shadow: 0 18px 40px rgba(0,0,0,.45) }
+.sb-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; border-radius: 16px; overflow: hidden; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); box-shadow: 0 18px 40px rgba(0,0,0,.45) }
 .side { display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-width: 0; position: relative }
 .side::before { content: ''; position: absolute; inset: 0; opacity: .22; background: linear-gradient(90deg, transparent, var(--c)) }
 .side.away { flex-direction: row-reverse; text-align: left }
@@ -449,7 +450,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .nm b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 21px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .nm small { color: #93A3BF; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .crest { width: clamp(32px, 6cqw, 50px); flex: none; position: relative; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)) }
-.crest :deep(svg) { display: block; width: 100%; height: auto }
+.crest :deep(svg), .crest :deep(img) { display: block; width: 100%; height: auto }
 .mid { display: grid; justify-items: center; align-content: center; padding: 4px 14px; background: linear-gradient(180deg, rgba(5,13,31,.75), rgba(5,13,31,.95)); border-inline: 1px solid rgba(255,255,255,.09) }
 .score { font-family: 'Barlow Condensed', 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(30px, 7.5cqw, 50px); line-height: .95; letter-spacing: .04em; color: #fff; font-variant-numeric: tabular-nums }
 .score.pop { animation: pop .7s }
@@ -476,7 +477,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .row-enter-active { transition: all .55s cubic-bezier(.2,.9,.25,1.15) }
 .row-enter-from { opacity: 0; transform: translateY(-14px) scale(.97) }
 .node { margin: auto; min-width: 46px; height: 26px; padding: 0 6px; border-radius: 13px; display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; color: #FFD36B; background: #071733; border: 1px solid rgba(245,184,46,.55); box-shadow: 0 0 14px rgba(245,184,46,.18) }
-.card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 11px; border-radius: 14px; background: rgba(16,40,79,.62); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); box-shadow: 0 10px 24px rgba(0,0,0,.35) }
+.card { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 11px; border-radius: 14px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); box-shadow: 0 10px 24px rgba(0,0,0,.35) }
 .ico { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09) }
 .ico :deep(svg) { width: 22px; height: 22px }
 .card .tx { min-width: 0; display: grid }
@@ -495,7 +496,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 
 .moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .35s }
 .moment.on { opacity: 1 }
-.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7); backdrop-filter: blur(6px) }
+.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7) }
 .mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(14px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.25,1.15) }
 .moment.on .mbox { transform: none }
 /* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */
@@ -510,7 +511,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .lower .who span { color: #C9D2E1; font-size: 12px }
 .lower .min { margin-inline-start: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; opacity: .9 }
 
-.mic { position: absolute; z-index: 9; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-radius: 16px; background: linear-gradient(90deg, rgba(10,31,66,.94), rgba(7,23,51,.94)); border: 1px solid rgba(245,184,46,.35); box-shadow: 0 14px 30px rgba(0,0,0,.5); backdrop-filter: blur(10px); transform: translateY(140%); transition: transform .45s cubic-bezier(.2,.9,.25,1.1) }
+.mic { position: absolute; z-index: 9; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-radius: 16px; background: linear-gradient(90deg, rgba(10,31,66,.94), rgba(7,23,51,.94)); border: 1px solid rgba(245,184,46,.35); box-shadow: 0 14px 30px rgba(0,0,0,.5); transform: translateY(140%); transition: transform .45s cubic-bezier(.2,.9,.25,1.1) }
 .mic.on { transform: none }
 .mic .m { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #FFD36B, #C08A0C) }
 .mic .m svg { width: 19px; height: 19px }
@@ -533,14 +534,14 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .team b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4.4cqw, 28px) }
 .team small { color: #93A3BF; font-weight: 600 }
 .vs { font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 800; font-size: clamp(32px, 9cqw, 62px); color: #F5B82E; text-shadow: 0 0 24px rgba(245,184,46,.35) }
-.stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09) }
+.stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09) }
 .st { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-align: center }
 .st > * { grid-row: 2 }
 .st .lbl { grid-column: 1 / -1; grid-row: 1; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 12px; color: #93A3BF; margin-bottom: -6px }
 .st .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); display: flex; overflow: hidden }
 .st .bar i { display: block; height: 100% }
 .keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(100%, 560px) }
-.key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.62); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
+.key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
 .key .no { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; color: var(--c); width: 32px; text-align: center }
 .key b { font-family: 'Alexandria', sans-serif; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .key span span { color: #93A3BF; font-size: 12px }
@@ -578,7 +579,6 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .mc.scene .atmo::before, .mc.scene .wave i, .mc.scene .live i::after { animation-play-state: paused }
 /* The smooth mode for weak phones [X30]: solid panels instead of blurred glass, no moving beams, lighter shadows. */
 .smooth .atmo::before { display: none }
-.smooth .sb-in, .smooth .card, .smooth .mic, .smooth .moment::before { backdrop-filter: none }
 .smooth .sb-in { background: rgba(16,40,79,.94); box-shadow: 0 8px 18px rgba(0,0,0,.35) }
 .smooth .card { background: #10284F; box-shadow: none }
 .smooth .card.goal { background: linear-gradient(100deg, #4a3a12, #10284F 60%) }

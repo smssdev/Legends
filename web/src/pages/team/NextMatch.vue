@@ -12,6 +12,7 @@ import RatingRing from '../../components/ui/RatingRing.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import TicketsPanel from './TicketsPanel.vue'
+import PressPanel from './PressPanel.vue'
 import IntegrityPanel from './IntegrityPanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
@@ -78,17 +79,17 @@ const ACTIONS = [
 
 <template>
   <div class="flex flex-col gap-4">
-    <h1 class="font-display text-3xl font-extrabold">المباراة القادمة</h1>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-text-muted">ليس لديك فريق بعد. <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">دورياتي</RouterLink></p>
-    <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">لا مباريات قادمة الآن.</p>
+    <h1 class="font-display text-3xl font-extrabold">{{ $t('المباراة القادمة') }}</h1>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
+    <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('لا مباريات قادمة الآن.') }}</p>
     <template v-else-if="match">
       <!-- [X32] The VS dashboard: a blue band with the competition, both clubs on ivory discs with their strength in a
            ring, the countdown to the lock between them, then the facts and the action cards. -->
       <section class="overflow-hidden rounded-xl bg-surface">
         <div class="vs-band flex items-center justify-center gap-2 px-4 py-2 text-sm font-extrabold text-white">
-          {{ match.competition === 'cup' ? 'الكأس' : match.competition === 'alliance' ? `بطولة التحالفات · الدور ${match.round}` : `الجولة ${match.round}` }}{{ match.slot === 2 ? ' · السهرة' : '' }}
-          <span class="rounded bg-black/25 px-2 py-0.5 text-xs">{{ match.venue === 'home' ? 'على أرضك' : 'خارج أرضك' }}</span>
+          {{ match.competition === 'cup' ? $t('الكأس') : match.competition === 'alliance' ? $t('بطولة التحالفات · الدور {v0}', { v0: match.round }) : $t('الجولة {v0}', { v0: match.round }) }}{{ match.slot === 2 ? $t(' · السهرة') : '' }}
+          <span class="rounded bg-black/25 px-2 py-0.5 text-xs">{{ match.venue === 'home' ? $t('على أرضك') : $t('خارج أرضك') }}</span>
         </div>
         <div class="relative isolate px-3 pb-4 pt-5 md:px-8">
           <img src="/art/stadium-banner.svg" alt="" aria-hidden="true" class="absolute inset-0 -z-10 size-full object-cover object-[50%_75%] opacity-40" />
@@ -97,95 +98,96 @@ const ACTIONS = [
             <div v-for="(side, i) in [match.club, match.opponent]" :key="i" class="flex flex-col items-center gap-2 text-center" :class="i === 1 ? 'order-last' : ''">
               <span class="vs-disc"><ClubCrest :url="side.crest_url" :code="side.code" :size="64" /></span>
               <b class="line-clamp-1 font-display text-base md:text-2xl">{{ $nm(side.name) }}</b>
-              <span class="text-xs text-text-muted">{{ i === 0 ? 'فريقك' : match.opponent.coach ?? 'الحاسوب' }}</span>
-              <RatingRing :value="Math.round(side.strength_cp / 100)" label="القوة" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="60" />
+              <span class="text-xs text-text-muted">{{ i === 0 ? $t('فريقك') : match.opponent.coach ?? $t('الحاسوب') }}</span>
+              <RatingRing :value="Math.round(side.strength_cp / 100)" :label="$t('القوة')" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="60" />
             </div>
             <div class="flex flex-col items-center gap-1">
               <span class="font-display text-4xl font-extrabold italic text-white drop-shadow md:text-6xl">VS</span>
-              <span class="text-[11px] font-bold text-text-muted">{{ locked ? 'مقفلة' : 'يُقفل بعد' }}</span>
+              <span class="text-[11px] font-bold text-text-muted">{{ locked ? $t('مقفلة') : $t('يُقفل بعد') }}</span>
               <span class="rounded-lg bg-black/40 px-3 py-1 font-numbers text-xl font-bold text-ring md:text-2xl" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-3 p-4 pt-0">
           <dl class="grid grid-cols-3 gap-2 text-center text-sm">
-            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">الموعد</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">المعنويات</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-[#FF8A8A]' : 'text-gold'">{{ match.morale }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">الحكم</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : 'قبلها بنصف ساعة' }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('الموعد') }}</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('المعنويات') }}</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-[#FF8A8A]' : 'text-gold'">{{ match.morale }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('الحكم') }}</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : $t('قبلها بنصف ساعة') }}</dd></div>
           </dl>
-          <p v-if="match.match_of_day" class="rounded-lg bg-gold/15 px-3 py-2 text-center text-sm font-bold text-gold">⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة</p>
+          <p v-if="match.match_of_day" class="rounded-lg bg-gold/15 px-3 py-2 text-center text-sm font-bold text-gold">{{ $t('⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}</p>
           <RouterLink
             v-if="match.status === 'live' && match.match_id"
             :to="{ name: 'league-match', params: { id: match.match_id } }"
             class="flex h-12 items-center justify-center gap-2 rounded-lg bg-live font-display font-extrabold text-white"
-          ><span class="size-2 animate-pulse rounded-full bg-white" />تابع المباراة مباشرة</RouterLink>
+          ><span class="size-2 animate-pulse rounded-full bg-white" />{{ $t('تابع المباراة مباشرة') }}</RouterLink>
           <!-- The action cards: what to prepare before the lock. -->
           <div v-if="!locked" class="grid grid-cols-3 gap-2">
             <RouterLink v-for="c in ACTIONS" :key="c.name" :to="{ name: c.name }" class="action-card">
               <span class="grid size-11 place-items-center rounded-full bg-brand text-white shadow-md"><Icon :name="c.icon" /></span>
-              <b class="text-sm">{{ c.label }}</b>
+              <b class="text-sm">{{ $t(c.label) }}</b>
             </RouterLink>
           </div>
           <p class="text-xs text-text-muted">{{ match.slot === 2
-            ? 'جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.'
-            : 'قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.' }}</p>
+            ? $t('جولتك على فترتين ومباراتك في السهرة: تُقفل تشكيلات الجولة وتكتيكاتها كلها معاً قبل الفترة الأولى، ويُجمَّد الفريق كما هو عند القفل حتى صافرتك.')
+            : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.') }}</p>
         </div>
       </section>
 
       <section v-if="match.mine?.fixes?.length" class="rounded-xl bg-warning/15 p-4 text-sm">
-        <h2 class="mb-1 font-bold">تصحيح تلقائي عند القفل</h2>
-        <p v-for="(f, i) in match.mine.fixes" :key="i">دخل {{ f.in_name }} بدل {{ f.out_name ?? 'خانة فارغة' }}.</p>
+        <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>
+        <p v-for="(f, i) in match.mine.fixes" :key="i">{{ $t('دخل {v0} بدل {v1}.', { v0: f.in_name, v1: f.out_name ?? $t('خانة فارغة') }) }}</p>
       </section>
 
       <section v-if="match.opponent.sheet" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
-        <h2 class="font-display text-xl font-extrabold">تشكيلة الخصم <span class="font-numbers text-base text-text-muted" dir="ltr">{{ match.opponent.sheet.formation.replace(/([AB])$/, ' $1') }}</span></h2>
+        <h2 class="font-display text-xl font-extrabold">{{ $t('تشكيلة الخصم') }} <span class="font-numbers text-base text-text-muted" dir="ltr">{{ match.opponent.sheet.formation.replace(/([AB])$/, ' $1') }}</span></h2>
         <div class="flex flex-wrap gap-2 text-sm">
           <UiChip>{{ PLANS[match.opponent.sheet.tactics.plan] }}</UiChip>
-          <UiChip>قطع الكرة: {{ TACKLING[match.opponent.sheet.tactics.tackling] }}</UiChip>
-          <UiChip>{{ match.opponent.sheet.tactics.marking === 'man' ? 'رجل لرجل' : 'دفاع منطقة' }}</UiChip>
-          <UiChip v-if="match.opponent.sheet.tactics.trap">مصيدة التسلل</UiChip>
+          <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[match.opponent.sheet.tactics.tackling] }) }}</UiChip>
+          <UiChip>{{ match.opponent.sheet.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
+          <UiChip v-if="match.opponent.sheet.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
         </div>
         <ol class="grid grid-cols-2 gap-1 text-sm">
           <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">{{ $nm(p.name) }}</li>
         </ol>
-        <p class="text-xs text-text-muted">الضغط والأسلوب والإيقاع والتمركز لا تظهر لأحد غير صاحبها.</p>
+        <p class="text-xs text-text-muted">{{ $t('الضغط والأسلوب والإيقاع والتمركز لا تظهر لأحد غير صاحبها.') }}</p>
       </section>
 
-      <section v-if="spy && !match.opponent.sheet" aria-label="تقرير الجاسوس" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+      <section v-if="spy && !match.opponent.sheet" :aria-label="$t('تقرير الجاسوس')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
         <div class="flex flex-wrap items-center gap-2">
-          <h2 class="flex-1 font-display text-xl font-extrabold">تقرير الجاسوس</h2>
-          <span v-if="spy.report" class="text-xs text-text-muted">كما كانت الساعة <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>، وقد يغيّرها الخصم</span>
+          <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('تقرير الجاسوس') }}</h2>
+          <span v-if="spy.report" class="text-xs text-text-muted">{{ $t('كما كانت الساعة') }} <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>{{ $t('، وقد يغيّرها الخصم') }}</span>
         </div>
         <template v-if="!spy.report">
-          <p class="text-sm text-text-muted">اعرف خطة الخصم وتشكيلته وتكتيكه العلني وفورمته الآن، قبل القفل. لا يعرف أنك تجسست عليه.</p>
+          <p class="text-sm text-text-muted">{{ $t('اعرف خطة الخصم وتشكيلته وتكتيكه العلني وفورمته الآن، قبل القفل. لا يعرف أنك تجسست عليه.') }}</p>
           <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="spying || locked" @click="sendSpy">
-            أرسل جاسوساً · <PriceTag :amount="spy.cost" :currency="spy.currency" /></button>
+            {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency" /></button>
         </template>
         <template v-else>
           <div class="flex flex-wrap items-center gap-2">
             <UiChip><span dir="ltr">{{ spy.report.formation.replace(/([AB])$/, ' $1') }}</span></UiChip>
             <UiChip>{{ PLANS[spy.report.tactics.plan] }}</UiChip>
-            <UiChip>قطع الكرة: {{ TACKLING[spy.report.tactics.tackling] }}</UiChip>
-            <UiChip>{{ spy.report.tactics.marking === 'man' ? 'رجل لرجل' : 'دفاع منطقة' }}</UiChip>
-            <UiChip v-if="spy.report.tactics.trap">مصيدة التسلل</UiChip>
-            <UiChip v-if="spy.report.fitness !== null">لياقة الأحد عشر <span class="font-numbers" dir="ltr">{{ spy.report.fitness }}%</span></UiChip>
+            <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[spy.report.tactics.tackling] }) }}</UiChip>
+            <UiChip>{{ spy.report.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
+            <UiChip v-if="spy.report.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
+            <UiChip v-if="spy.report.fitness !== null">{{ $t('لياقة الأحد عشر') }} <span class="font-numbers" dir="ltr">{{ spy.report.fitness }}%</span></UiChip>
           </div>
-          <div class="flex items-center gap-1.5 text-sm"><span class="text-text-muted">آخر النتائج</span>
+          <div class="flex items-center gap-1.5 text-sm"><span class="text-text-muted">{{ $t('آخر النتائج') }}</span>
             <span v-for="(r, i) in spy.report.form" :key="i" class="grid size-7 place-items-center rounded-full text-xs font-bold" :class="FORM[r]![1]">{{ FORM[r]![0] }}</span>
-            <span v-if="!spy.report.form.length" class="text-text-muted">لم يلعب بعد</span>
+            <span v-if="!spy.report.form.length" class="text-text-muted">{{ $t('لم يلعب بعد') }}</span>
           </div>
           <ol class="grid gap-1 text-sm sm:grid-cols-2">
             <li v-for="p in spy.report.starters" :key="p.id" class="flex items-center gap-2 rounded bg-surface-sunk px-2 py-1">
               <span class="w-9 text-xs text-text-muted" dir="ltr">{{ p.position }}</span><span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi></span><b class="font-numbers">{{ p.overall }}</b></li>
           </ol>
-          <div class="flex flex-wrap items-center gap-1.5 text-sm"><span class="text-text-muted">البدلاء</span>
+          <div class="flex flex-wrap items-center gap-1.5 text-sm"><span class="text-text-muted">{{ $t('البدلاء') }}</span>
             <span v-for="p in spy.report.bench" :key="p.id" class="rounded-full bg-surface-sunk px-2.5 py-1 text-xs"><bdi>{{ $nm(p.name) }}</bdi></span></div>
         </template>
       </section>
     </template>
+    <PressPanel v-if="leagueId && match" :league-id="leagueId" :fixture-id="match.fixture_id" :home="match.venue === 'home' ? match.club?.name ?? '' : match.opponent.name" :away="match.venue === 'home' ? match.opponent.name : match.club?.name ?? ''" />
     <IntegrityPanel v-if="leagueId" :league-id="leagueId" />
     <TicketsPanel v-if="leagueId" :league-id="leagueId" />
-    <p v-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>
+    <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
   </div>
 </template>
 

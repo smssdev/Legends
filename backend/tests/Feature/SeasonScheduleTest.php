@@ -22,7 +22,8 @@ class SeasonScheduleTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-10-22 10:00:00');
-        $this->template();
+        $this->template(20);
+        $this->defaultTeams = 10;
     }
 
     protected function tearDown(): void
@@ -50,12 +51,13 @@ class SeasonScheduleTest extends TestCase
     {
         $owner = User::factory()->create();
         $this->withoutMiddleware(ThrottleRequests::class);
+        // [UP17] One round a day; each count from a real league of exactly that many clubs (a free league is all of them).
         foreach (range(4, 20) as $n) {
-            foreach ([1, 2] as $perDay) {
-                DB::table('leagues')->delete();
-                $league = $this->makeLeague($owner, ['team_count' => $n, 'rounds_per_day' => $perDay, 'round_times' => array_slice(['18:00', '21:00'], 0, $perDay)]);
-                $this->checkSeason($league, $n, $perDay);
-            }
+            DB::table('leagues')->delete();
+            $this->template($n, "League {$n}");
+            $league = $this->makeLeague($owner, ['template' => "League {$n}", 'team_count' => $n,
+                'club_id' => DB::table('master_clubs')->where('league_name', "League {$n}")->orderByDesc('strength_cp')->value('id')]);
+            $this->checkSeason($league, $n, 1);
         }
     }
 
@@ -162,15 +164,15 @@ class SeasonScheduleTest extends TestCase
     public function test_rounds_keep_their_cairo_hour_across_the_clock_change(): void
     {
         // Egypt's summer time ends on the night of 29 to 30 October 2026: 21:00 is 18:00 UTC before, 19:00 after.
-        $league = $this->makeLeague(User::factory()->create(), ['team_count' => 6, 'rounds_per_day' => 1, 'round_times' => ['21:00'], 'prep_days' => 1,
+        $league = $this->makeLeague(User::factory()->create(), ['team_count' => 10, 'rounds_per_day' => 1, 'round_times' => ['21:00'],
             'starts_at' => '2026-10-23T18:00:00Z']);
         $games = $this->fixtures($this->season($league), 'league')->where('is_bye', false);
         $local = $games->map(fn ($f) => Carbon::parse($f->scheduled_at, 'UTC')->timezone('Africa/Cairo')->format('H:i'))->unique()->values()->all();
         $this->assertSame(['21:00'], $local);
         $utc = $games->map(fn ($f) => substr($f->scheduled_at, 11, 5))->unique()->sort()->values()->all();
         $this->assertSame(['18:00', '19:00'], $utc);
-        // The first round comes the day after the start (one preparation day), at its hour.
-        $this->assertSame('2026-10-24 18:00:00', $games->min('scheduled_at'));
+        // The first round comes two days after the start (two preparation days), at its hour.
+        $this->assertSame('2026-10-25 18:00:00', $games->min('scheduled_at'));
     }
 
     public function test_a_development_league_plays_a_round_every_minute(): void
@@ -193,9 +195,9 @@ class SeasonScheduleTest extends TestCase
         $scale = (int) DB::table('leagues')->where('id', $league['id'])->value('timer_scale');
         $this->assertGreaterThanOrEqual(9500, $scale);
         $this->assertLessThanOrEqual(10300, $scale);
-        // Two rounds a day: about 22 days, so the timers run about 0.6 as long.
-        $twice = $this->makeLeague(User::factory()->create(), ['team_count' => 16]);
-        $this->assertLessThan(6600, (int) DB::table('leagues')->where('id', $twice['id'])->value('timer_scale'));
+        // Fewer teams, a shorter season: the timers run shorter too.
+        $short = $this->makeLeague(User::factory()->create(), ['team_count' => 10]);
+        $this->assertLessThan($scale, (int) DB::table('leagues')->where('id', $short['id'])->value('timer_scale'));
     }
 
     public function test_new_times_before_the_start_remake_the_calendar(): void
@@ -204,20 +206,23 @@ class SeasonScheduleTest extends TestCase
         $league = $this->makeLeague($owner, ['rounds_per_day' => 1, 'round_times' => ['21:00']]);
         $season = $this->season($league);
         $count = $this->fixtures($season)->count();
-        $this->actingAs($owner)->patchJson("/api/v1/leagues/{$league['id']}", ['rounds_per_day' => 2, 'round_times' => ['17:00', '20:00']])->assertOk();
+        $this->actingAs($owner)->patchJson("/api/v1/leagues/{$league['id']}", ['round_times' => ['17:00']])->assertOk();
         $hours = $this->fixtures($season, 'league')->map(fn ($f) => Carbon::parse($f->scheduled_at, 'UTC')->timezone('Africa/Cairo')->format('H:i'))->unique()->sort()->values()->all();
-        $this->assertSame(['17:00', '20:00'], $hours);
+        $this->assertSame(['17:00'], $hours);
         $this->assertSame($count, $this->fixtures($season)->count());
         // "Start now" moves the whole calendar with it.
         $this->postJson("/api/v1/leagues/{$league['id']}/start")->assertOk();
         $first = Carbon::parse($this->fixtures($season, 'league')->min('scheduled_at'), 'UTC');
-        $this->assertTrue($first->lt(GameClock::now()->addDays(2)));
+        $this->assertTrue($first->lt(GameClock::now()->addDays(3)));
     }
 
     public function test_the_calendar_table_and_cup_through_the_api(): void
     {
         $owner = User::factory()->create();
-        $league = $this->makeLeague($owner, ['team_count' => 5]);
+        // Five teams: half of a ten-club league [UP9].
+        $this->template(10, 'Small League');
+        $league = $this->makeLeague($owner, ['template' => 'Small League', 'team_count' => 5,
+            'club_id' => DB::table('master_clubs')->where('league_name', 'Small League')->orderByDesc('strength_cp')->value('id')]);
         $url = "/api/v1/leagues/{$league['id']}";
         $this->actingAs(User::factory()->create())->getJson("{$url}/fixtures")->assertNotFound();
 

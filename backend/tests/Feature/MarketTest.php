@@ -30,7 +30,7 @@ class MarketTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-10-22 10:00:00');
-        $this->template(clubs: 20, full: true);
+        $this->template(full: true);
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()]);
         $this->mine = $this->league['my_club_id'];
@@ -100,7 +100,7 @@ class MarketTest extends TestCase
         $p = DB::table('players')->where('league_id', $this->league['id'])->where('in_pool', true)->orderByDesc('value')->first();
         ClubLedger::post($this->mine, 'wages', -((int) DB::table('clubs')->where('id', $this->mine)->value('balance')) + 10, 'drain');
         $this->actingAs($this->owner)->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'k'])->assertConflict()
-            ->assertJsonPath('message', 'رصيد النادي لا يكفي.');
+            ->assertJsonPath('message', 'أموال ناديك غير كافية، يلزم توفر 50% على الأقل من قيمة اللاعب نقداً.');
         $this->assertNull(DB::table('players')->where('id', $p->id)->value('club_id'));
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
     }
@@ -255,7 +255,7 @@ class MarketTest extends TestCase
     public function test_the_market_page_lists_the_pool_the_bots_and_my_players(): void
     {
         $line = DB::table('master_players')->where('id', $this->poolPlayer()->master_player_id)->value('line');
-        $page = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()->json();
+        $page = $this->actingAs($this->owner)->getJson($this->url()."?source=pool&line={$line}")->assertOk()->json();
         $this->assertNull($page['closed']);
         $this->assertNotEmpty($page['players']);
         $this->assertTrue(collect($page['players'])->every(fn ($p) => $p['line'] === $line && $p['price'] === $p['value'] && $p['club'] === null));
@@ -263,5 +263,43 @@ class MarketTest extends TestCase
         $this->assertTrue(collect($bots['players'])->every(fn ($p) => $p['price'] === intdiv($p['value'] * 12500, 10000)));
         $this->assertCount(18, $bots['mine']);
         $this->actingAs(User::factory()->create())->getJson($this->url())->assertForbidden();
+    }
+
+    /** [UP11] The owner's spec (5): one list per line with each seller, and buying with the deal's coins or cash + coins. */
+    public function test_the_transfer_list_and_buying_with_the_registration_coins_or_cash_and_coins(): void
+    {
+        DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => false]);
+        $p = $this->poolPlayer();
+        $line = DB::table('master_players')->where('id', $p->master_player_id)->value('line');
+        $list = $this->actingAs($this->owner)->getJson($this->url()."?line={$line}")->assertOk()->json();
+        $this->assertNotNull($list['renews_at']);
+        $this->assertTrue(collect($list['players'])->every(fn ($x) => $x['line'] === $line));
+        $this->assertContains('world', collect($list['players'])->pluck('seller.kind')->all());
+        $this->assertContains('bot', collect($list['players'])->pluck('seller.kind')->all());
+
+        // Enough cash: the price and one or two coins to register it.
+        Wallet::post($this->owner->id, 'daily', 300, 'seed');
+        $q = $this->getJson($this->url('/buy-quote')."?player_id={$p->id}")->assertOk()->json();
+        $this->assertSame(0, $q['short']);
+        $this->assertContains($q['doc_coins'], [1, 2]);
+        $this->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'a'])->assertOk();
+        $this->assertSame(300 - $q['doc_coins'], Wallet::balance($this->owner->id));
+
+        // Short of cash with more than half: all the cash, and coins for the rest (one per 200,000).
+        $next = DB::table('players')->where('league_id', $this->league['id'])->where('in_pool', true)->orderByDesc('value')->first();
+        $price = (int) $next->value;
+        $cash = intdiv($price * 3, 4);
+        ClubLedger::post($this->mine, 'wages', $cash - (int) DB::table('clubs')->where('id', $this->mine)->value('balance'), 'set-cash');
+        $q = $this->getJson($this->url('/buy-quote')."?player_id={$next->id}")->assertOk()->json();
+        $this->assertSame(['cash' => $cash, 'coins' => intdiv($price - $cash + 199_999, 200_000)], $q['compensate']);
+        $this->postJson($this->url('/buy'), ['player_id' => $next->id, 'idempotency_key' => 'b'])->assertConflict();
+        $coins = Wallet::balance($this->owner->id);
+        $this->postJson($this->url('/buy'), ['player_id' => $next->id, 'idempotency_key' => 'b', 'compensate' => true])->assertOk()->assertJsonPath('balance', 0);
+        $this->assertSame($coins - $q['compensate']['coins'] - $q['doc_coins'], Wallet::balance($this->owner->id));
+        $this->assertSame($this->mine, (int) DB::table('players')->where('id', $next->id)->value('club_id'));
+
+        // The transfers made.
+        $done = $this->getJson($this->url('/done'))->assertOk()->json('transfers');
+        $this->assertCount(2, $done);
     }
 }

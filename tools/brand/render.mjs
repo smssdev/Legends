@@ -1,8 +1,8 @@
-// Renders brand/current/*.svg to every PNG the web and the app use, in Chromium so the
-// logo's Arabic and Latin lettering uses the game's font (Alexandria).
+// Renders brand/current/*.svg (from tools/brand/logo.py) to every PNG the web and the app use, in Chromium so
+// the logo's Arabic and Latin lettering uses the game's font (Alexandria), then copies the web's files to web/public.
 // Needs Playwright with a Chromium: node tools/brand/render.mjs [path-to-chromium]
 import { chromium } from 'playwright'
-import { readFileSync, writeFileSync } from 'fs'
+import { copyFileSync, readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -12,7 +12,8 @@ const svg = (f) => readFileSync(join(brand, f), 'utf8')
 const OUT = [
   ['icon.svg', 512, 'icon-512.png'], ['icon.svg', 192, 'icon-192.png'], ['icon.svg', 180, 'apple-touch-icon.png'],
   ['favicon.svg', 48, 'favicon-48.png'], ['favicon.svg', 32, 'favicon-32.png'], ['favicon.svg', 16, 'favicon-16.png'],
-  ['logo.svg', 1024, 'logo-1024.png'], ['logo.svg', 512, 'logo-512.png'],
+  ['logo.svg', 1024, 'logo-1024.png'], ['logo.svg', 512, 'logo-512.png'], ['logo-wide.svg', 1200, 'logo-wide.png'],
+  ['emblem.svg', 512, 'emblem-512.png'],
   ['og-invite.svg', 1200, 'og-invite.png'],
   ['coin.svg', 512, 'coin-512.png'], ['coin.svg', 128, 'coin-128.png'], ['coin.svg', 48, 'coin-48.png'], ['coin.svg', 24, 'coin-24.png'],
 ]
@@ -30,3 +31,11 @@ for (const [file, w, out] of OUT) {
 }
 await b.close()
 console.log(OUT.map((o) => o[2]).join(', '))
+
+// What the site serves: the marks it shows as <img>, the icons the browser and the installed app take, the invite card.
+const WEB = join(root, 'web', 'public')
+for (const [from, to] of [
+  ['emblem.svg', 'brand/emblem.svg'], ['emblem-loader.svg', 'brand/emblem-loader.svg'], ['coin.svg', 'brand/coin.svg'],
+  ['og-invite.png', 'brand/og-invite.png'], ['favicon.svg', 'favicon.svg'], ['favicon-32.png', 'favicon.png'],
+  ['icon-192.png', 'icon-192.png'], ['icon-512.png', 'icon-512.png'], ['apple-touch-icon.png', 'apple-touch-icon.png'],
+]) copyFileSync(join(brand, from), join(WEB, to))

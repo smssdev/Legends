@@ -36,29 +36,29 @@ function link(l: League) {
   <div class="flex flex-col gap-5">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="font-display text-3xl font-extrabold">دورياتي</h1>
+        <h1 class="font-display text-3xl font-extrabold">{{ $t('دورياتي') }}</h1>
         <p class="mt-1 text-text-muted">
-          <span class="font-numbers">{{ active }}</span> من <span class="font-numbers">{{ max }}</span> فرق نشطة
+          <span class="font-numbers">{{ active }}</span> {{ $t('من') }} <span class="font-numbers">{{ max }}</span> {{ $t('فرق نشطة') }}
         </p>
       </div>
       <div class="flex gap-2">
-        <RouterLink :to="{ name: 'join' }" class="flex h-12 items-center rounded-lg border border-gold/70 px-5 font-display font-extrabold text-gold hover:bg-gold/10">انضم بكود</RouterLink>
+        <RouterLink :to="{ name: 'join' }" class="flex h-12 items-center rounded-lg border border-gold/70 px-5 font-display font-extrabold text-gold hover:bg-gold/10">{{ $t('انضم بكود') }}</RouterLink>
         <RouterLink
           v-if="active < max"
           :to="{ name: 'create-league' }"
           class="flex h-12 items-center rounded-lg bg-gold px-5 font-display font-extrabold text-on-gold hover:bg-gold-light"
         >
-          أنشئ دورياً
+          {{ $t('أنشئ دورياً') }}
         </RouterLink>
       </div>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ error }}</p>
-    <p v-else-if="!loaded" class="text-text-muted">جارٍ التحميل…</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
 
     <div v-else-if="leagues.length === 0" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
-      <h2 class="font-display text-xl font-extrabold">لا دوريات بعد</h2>
-      <p class="max-w-md text-text-muted">أنشئ دورياً وشارك كوده مع أصحابك، أو اطلب من صاحبك كود دوريه وانضم إليه.</p>
+      <h2 class="font-display text-xl font-extrabold">{{ $t('لا دوريات بعد') }}</h2>
+      <p class="max-w-md text-text-muted">{{ $t('أنشئ دورياً وشارك كوده مع أصحابك، أو اطلب من صاحبك كود دوريه وانضم إليه.') }}</p>
     </div>
 
     <div v-else class="grid gap-3 md:grid-cols-2">
@@ -66,20 +66,20 @@ function link(l: League) {
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(l.name) }}</h2>
-            <p class="text-sm text-text-muted">{{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> فريقاً</p>
+            <p class="text-sm text-text-muted">{{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> {{ $t('فريقاً') }}</p>
           </div>
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ STATUS[l.status] }}</UiChip>
         </div>
         <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">
-          لم تدخل هذا الدوري منذ يومين. ادخله قبل {{ l.me.away_deadline ? when(l.me.away_deadline) : 'نهاية اليوم الثالث' }} وإلا يعود فريقك للحاسوب.
+          {{ $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', { v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }) }}
         </p>
         <div class="flex flex-wrap items-center gap-2 text-sm">
-          <UiChip v-if="l.is_owner" tone="gold">أنشأته</UiChip>
-          <UiChip v-if="l.my_request === 'pending'" tone="warning">بانتظار الموافقة</UiChip>
-          <UiChip v-else-if="!l.my_club_id" tone="gold">اختر فريقك</UiChip>
-          <UiChip v-if="l.is_owner && l.pending_requests" tone="live">{{ l.pending_requests }} طلبات</UiChip>
-          <UiChip v-if="l.me?.on_holiday" tone="warning">في إجازة</UiChip>
-          <span class="text-text-muted">البداية: {{ when(l.starts_at) }}</span>
+          <UiChip v-if="l.is_owner" tone="gold">{{ $t('أنشأته') }}</UiChip>
+          <UiChip v-if="l.my_request === 'pending'" tone="warning">{{ $t('بانتظار الموافقة') }}</UiChip>
+          <UiChip v-else-if="!l.my_club_id" tone="gold">{{ $t('اختر فريقك') }}</UiChip>
+          <UiChip v-if="l.is_owner && l.pending_requests" tone="live">{{ $t('{v0} طلبات', { v0: l.pending_requests }) }}</UiChip>
+          <UiChip v-if="l.me?.on_holiday" tone="warning">{{ $t('في إجازة') }}</UiChip>
+          <span class="text-text-muted">{{ $t('البداية: {v0}', { v0: when(l.starts_at) }) }}</span>
         </div>
       </RouterLink>
     </div>

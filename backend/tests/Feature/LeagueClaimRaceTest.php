@@ -169,7 +169,7 @@ class LeagueClaimRaceTest extends TestCase
 
     public function test_twenty_coaches_reach_for_the_same_club_and_exactly_one_gets_it(): void
     {
-        $this->template();
+        $this->template(20);
         $owner = User::factory()->create();
         $league = $this->makeLeague($owner, ['team_count' => 20, 'starting_budget' => 1_000_000]);
         $club = $this->botClub($league['id']);

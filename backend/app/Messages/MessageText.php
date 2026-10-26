@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -164,9 +164,37 @@ class MessageText
                 'body' => sprintf('انتهى عقد %s (%d نجوم) ولم يُجدَّد، فغادر النادي. يمكنك التعاقد مع غيره من صفحة الطاقم.', self::STAFF[$p['type'] ?? ''] ?? 'الأخصائي', (int) ($p['stars'] ?? 0)),
                 'link' => '/specialists',
             ],
+            // [UP13] The last warning before an inactive account is deleted, and the holidays.
+            'inactive_warning' => [
+                'title' => 'تنبيه أخير: سيُحذف حسابك خلال يومين',
+                'body' => 'لم تدخل حسابك منذ '.(int) ($p['days'] ?? 12).' يوماً. إن لم تدخل أو تفعّل إجازة قبل '.(int) ($p['left'] ?? 2).' أيام، يُحذف حسابك وفرقك نهائياً.',
+                'link' => '/profile',
+            ],
+            'account_vacation' => [
+                'title' => ($p['status'] ?? '') === 'rejected' ? 'رُفض طلب إجازتك' : 'بدأت إجازتك',
+                'body' => ($p['status'] ?? '') === 'rejected'
+                    ? 'رفض فريق التطوير طلب إجازتك الطويلة. حسابك يعمل كالمعتاد.'
+                    : sprintf('إجازتك %d أيام بدأت. حسابك محمي من الحذف، والمدرب المساعد يقود فرقك.', (int) ($p['days'] ?? 0)),
+                'link' => '/profile',
+            ],
+            'account_vacation_request' => [
+                'title' => 'طلب إجازة طويلة',
+                'body' => sprintf('%s يطلب إجازة %d يوماً: %s', (string) ($p['name'] ?? ''), (int) ($p['days'] ?? 0), (string) ($p['reason'] ?? '')),
+                'link' => '/admin',
+            ],
+            'article_pending' => [
+                'title' => 'مقال ينتظر موافقتك',
+                'body' => sprintf('«%s» من %s لجريدة %s.', (string) ($p['title'] ?? ''), (string) ($p['author'] ?? ''), (string) ($p['league'] ?? '')),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}/newspaper" : '/leagues',
+            ],
+            'assistant_led' => [
+                'title' => 'المدرب المساعد قاد فريقك',
+                'body' => sprintf('لم تضبط فريقك قبل مباراة %s، فاختار المساعد التشكيلة: أراح المجهدين، واستبعد المصابين والموقوفين، ولعب بخطة متزنة.', (string) ($p['opponent'] ?? '')),
+                'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
+            ],
             // From the game's developers, with the official badge [X11].
             'announcement' => [
-                'title' => (string) ($p['title'] ?? 'إعلان من فريق الأساطير'),
+                'title' => (string) ($p['title'] ?? 'إعلان من فريق لعبة المدرب الأسطورة'),
                 'body' => (string) ($p['body'] ?? ''),
                 'link' => null,
                 'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],

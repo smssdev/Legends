@@ -28,6 +28,7 @@ export interface Club {
   color_secondary?: string
   strength?: number
   strength_cp?: number
+  logo?: string | null
 }
 
 export interface TeamPlayer {
@@ -106,6 +107,8 @@ export interface LiveSync {
   reactions: Reaction[]
   /** League: the side chat between the viewers [X24]. */
   chat?: ChatLine[]
+  /** League [UP17]: the break under way: its end, the coaches ready, and each side's injured player waiting. */
+  pause?: { until: number; ready: Side[]; window: boolean; injured: Partial<Record<Side, number>> } | null
 }
 
 export interface Reading { id: number; tick: number; minute: number; kind: string; text: string }
@@ -230,6 +233,16 @@ export const leagueMatch = {
     try {
       const { data } = await api.POST('/matches/{match}/chat', { params: { path: { match: Number(id) } }, body: { body } })
       return data as ChatLine
+    } catch (e) {
+      throw asApiError(e)
+    }
+  },
+  /** [UP17] «أنا مستعد»: this coach is done with the break. */
+  ready: async (id: string) => {
+    await ensureCsrf()
+    try {
+      const { data } = await api.POST('/matches/{match}/ready', { params: { path: { match: Number(id) } } })
+      return data!
     } catch (e) {
       throw asApiError(e)
     }

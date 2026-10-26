@@ -60,6 +60,7 @@ final class MatchEngine
                 $this->event('action', $action['team'], ['action' => $action]);
             }
         }
+        $this->fillInjured();
 
         if ($this->s['period'] === 5) {
             $this->shootout();
@@ -729,6 +730,23 @@ final class MatchEngine
 
             return;
         }
+        // [UP17] The emergency substitution: play stops, and the coach picks who comes on before the next minute;
+        // his order (or, without one, the best on the bench) goes in at its start (fillInjured). A match made before
+        // has no emergency_sub in its snapshot and replaces him here, as it did.
+        if (! empty($this->cfg['emergency_sub'])) {
+            $team['missing']++;
+            $team['pending_injury'] = $playerId;
+
+            return;
+        }
+        $this->replace($side, $playerId);
+    }
+
+    /** The best bench player for the injured one's line takes his place, if there is one. */
+    private function replace(string $side, int $playerId): void
+    {
+        $team = &$this->s['teams'][$side];
+        $leaving = $team['players'][$this->index($side, $playerId)];
         $best = null;
         foreach ($team['players'] as $j => $p) {
             if (! $p['on'] && $p['out'] === '' && $p['slot'] === null) {
@@ -749,6 +767,20 @@ final class MatchEngine
         $team['players'][$j]['slot_line'] = $leaving['slot_line'];
         $team['subs_used']++;
         $this->event('sub', $side, ['out' => $playerId, 'in' => $team['players'][$j]['id'], 'reason' => 'injury']);
+    }
+
+    /** [UP17] Before the minute: an injured player still waiting for his replacement gets the bench's best. */
+    private function fillInjured(): void
+    {
+        foreach (['home', 'away'] as $side) {
+            $pending = $this->s['teams'][$side]['pending_injury'] ?? null;
+            if ($pending === null) {
+                continue;
+            }
+            unset($this->s['teams'][$side]['pending_injury']);
+            $this->s['teams'][$side]['missing']--;
+            $this->replace($side, (int) $pending);
+        }
     }
 
     private function fatigue(): void

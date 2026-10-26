@@ -21,13 +21,18 @@ return [
         'cheer_gap_ms' => 30000, 'chat_gap_ms' => 2000, 'chat_max' => 140, 'chat_kept' => 50, 'reactions_kept' => 20,
         // A breath after each scene before the next minute: the timeline and the clock on screen (not after quiet minutes).
         'scene_gap_ms' => 1800,
-        'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 10,
+        // [UP17] A window before extra time and between its halves, as long as the others.
+        'extra_time_tick_ms' => 2000, 'extra_time_break_seconds' => 30,
         'stoppage_first_half' => [1, 3], 'stoppage_second_half' => [2, 6], 'stoppage_extra_time' => [0, 2],
         'lock_minutes_before' => 5, 'referee_minutes_before' => 30,
         'subs' => 3, 'extra_time_subs' => 1,
         // [X42] The coach's windows, the owner's (2026-10-26): play stops this long after these minutes, and only then
         // (and before kick-off and at half-time) may a coach change his line-up, tactics or players (CoachWindows).
         'windows' => [15, 30, 60, 75], 'window_seconds' => 30,
+        // [UP17] The owner's spec (11): a window ends as soon as both coaches are ready (a computer's side is ready
+        // after ready_bot_ms). An injured player stops play for emergency_sub_seconds: his coach alone picks who comes
+        // on (a substitution of him only); without a pick, the best on the bench (the engine, at the next minute).
+        'ready_bot_ms' => 2000, 'emergency_sub' => true, 'emergency_sub_seconds' => 15,
         // كل النسب بنقاط الأساس (10000 = 100%) لأن المحرك يعمل بأرقام صحيحة فقط
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
@@ -63,8 +68,13 @@ return [
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
         'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
-        // What the owner may choose [PLAN 2.3]
-        'prep_days' => [1, 3], 'rounds_per_day' => [1, 2], 'starts_within_days' => 7,
+        // What the owner may choose [PLAN 2.3]. [UP9, UP17] The owner's spec (2026-10-26): one round a day; two days
+        // to get ready in a free league, four or six in a customized one; at least half the real league's clubs.
+        'prep_days' => [2, 6], 'prep_days_options' => [2, 4, 6], 'free_prep_days' => 2, 'rounds_per_day' => [1, 1], 'starts_within_days' => 7,
+        'min_teams_share_bp' => 5000,
+        // [UP9] A league with the free settings costs nothing; a customized one this many coins per club, once. Its
+        // rounds start at default_kickoff in the creator's own time zone unless the owner picks the hour (customized).
+        'custom_coins_per_club' => 20, 'default_kickoff' => '21:00',
         // Tries at a league code per account each minute [PLAN 2.1]
         'join_attempts_per_minute' => 10,
     ],
@@ -103,7 +113,13 @@ return [
         'pool_size' => 300,
         // The pool renews every pool_hours from the players of every league in the data [X6], as strong as this
         // league: from its pool_level_from_pct percentile of strength to its best, in pool_lines shares per line.
-        'pool_hours' => 4, 'pool_level_from_pct' => 40,
+        // [UP11] The owner's spec (5): the offers renew every 2 to 4 hours, with a countdown on the market.
+        'pool_hours' => 3, 'pool_level_from_pct' => 40,
+        // [UP11] Buying: the club's cash pays the price, and the coach 1 or 2 coins to register the deal (2 from
+        // doc_big_from). With at least compensate_min_bp of the price in cash, the rest may be paid in coins:
+        // one coin for each money_per_coin missing (60M with 40M in cash: 20M, so 100 coins).
+        'transfer_doc_coins' => 1, 'transfer_doc_coins_big' => 2, 'doc_big_from' => 10_000_000,
+        'compensate_min_bp' => 5000, 'money_per_coin' => 200_000,
         'pool_lines' => ['gk' => 10, 'def' => 30, 'mid' => 35, 'att' => 25],
         // Selling [X6]: the instant sale pays the full value for coins (in a fair league, this share of the value);
         // a listing asks up to the sale cap (130% of the value, the value alone for a player the club bought), and a
@@ -162,13 +178,7 @@ return [
         // Open training [X16]: no stop at the potential. Above it each +1 takes this many times the sessions, one more
         // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
         'over_potential_factor' => 2, 'ceiling' => 99],
-    // The training camp [docs/features/camp.md, Sprint 28]: players away from matches, training at the camp's pace.
-    'camp' => ['max_players' => 5, 'days' => [1, 3], 'min_left' => 16,
-        // each level: the session's step and its price, against an ordinary training session (basis points)
-        'levels' => ['basic' => ['gain_bp' => 10000, 'cost_bp' => 10000], 'good' => ['gain_bp' => 15000, 'cost_bp' => 20000],
-            'elite' => ['gain_bp' => 20000, 'cost_bp' => 35000]]],
-    // Secret training [docs/features/secret-training.md, Sprint 28]: one line, the next match only.
-    'secret_training' => ['boost' => 3, 'cost_bp' => 20, 'per_season' => 5],
+    // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
     // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
     // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
     'balance' => [
@@ -210,7 +220,7 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 9,
+        'version' => 10,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -275,22 +285,29 @@ return [
     ],
     'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
-    // The game's names (owner's decision, 2026-10-20): الأساطير, and its premium currency الكوينز.
-    'brand' => ['name' => 'الأساطير', 'name_latin' => 'Legends', 'premium_currency' => 'الكوينز'],
+    // The game's names (owner's decision, 2026-10-26, X44): لعبة المدرب الأسطورة (GLM, Game Legend Manager), and its premium currency الكوينز.
+    'brand' => ['name' => 'لعبة المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
-    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'level_step' => 20],
+    'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
-        'message' => 'مرحباً، أحتاج مساعدة في لعبة الأساطير: '],
+        'message' => 'مرحباً، أحتاج مساعدة في لعبة المدرب الأسطورة: '],
     // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
     // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
     // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
-    'account' => ['vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
+    // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.
+    // [UP13] The owner's spec (7): an account unused inactive_days in a row (no holiday) is deleted, warned at
+    // warn_after_days. A holiday of up to auto_vacation_days is granted at once, auto_vacations_per_season times in
+    // a season of reference_season_days with vacation_cooldown_days between them; a longer one (up to
+    // long_vacation_max_days) waits for the developers.
+    'inactivity' => ['inactive_days' => 14, 'warn_after_days' => 12],
+    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
+        'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
         // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
         'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
@@ -331,8 +348,8 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'camp_back', 'stadium_part', 'scout_report', 'staff_left'],
-            'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
+            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left'],
+            'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         'match_soon_minutes' => 10,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
@@ -343,7 +360,7 @@ return [
         'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
-        'price' => ['spy' => 20, 'secret_training' => 30, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
+        'price' => ['spy' => 20, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
             'bribe' => 40, 'security_check' => 10, 'double_agent' => 15],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],
@@ -386,11 +403,18 @@ return [
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
+    // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
+    // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
+    // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
+    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
     'morale' => ['start' => 70, 'min' => 20, 'max' => 100, 'win' => 6, 'draw' => -2, 'loss' => -6, 'winless_extra' => 2,
         'crowd' => 3, 'ticket' => 2, 'tickets_max' => 6, 'ticket_cost_bp' => 5],
+    // [UP13] The assistant takes a team whose coach has not been in its league since its last match (or is on
+    // holiday): the tired under min_fitness rest, and one of these balanced formations with balanced tactics.
+    'assistant' => ['min_fitness' => 75, 'formations' => ['4-3-3A', '4-4-2A', '4-3-3B', '4-4-2B']],
     'specialists' => ['contract_days' => 7,
         // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
         // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect

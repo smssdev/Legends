@@ -31,15 +31,15 @@ async function submit() {
 
 <template>
   <div>
-    <h1 class="font-display text-3xl font-extrabold">كلمة مرور جديدة</h1>
-    <p class="mt-1 text-text-muted" dir="auto">للحساب <span dir="ltr" class="font-bold">{{ email }}</span></p>
+    <h1 class="font-display text-3xl font-extrabold">{{ $t('كلمة مرور جديدة') }}</h1>
+    <p class="mt-1 text-text-muted" dir="auto">{{ $t('للحساب') }} <span dir="ltr" class="font-bold">{{ email }}</span></p>
   </div>
-  <p v-if="!token || !email" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">الرابط ناقص. افتحه من رسالة البريد كما هو، أو اطلب رابطاً جديداً.</p>
+  <p v-if="!token || !email" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t('الرابط ناقص. افتحه من رسالة البريد كما هو، أو اطلب رابطاً جديداً.') }}</p>
   <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-    <TextField v-model="password" label="كلمة المرور الجديدة" type="password" autocomplete="new-password" :error="errors.password" hint="8 أحرف على الأقل، فيها حروف وأرقام" />
+    <TextField v-model="password" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('8 أحرف على الأقل، فيها حروف وأرقام')" />
     <p v-if="errors.other" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">
-      {{ errors.other }} <RouterLink to="/forgot-password" class="font-bold text-gold">اطلب رابطاً جديداً</RouterLink>
+      {{ errors.other }} <RouterLink to="/forgot-password" class="font-bold text-gold">{{ $t('اطلب رابطاً جديداً') }}</RouterLink>
     </p>
-    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? 'جارٍ الحفظ…' : 'احفظ كلمة المرور' }}</button>
+    <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الحفظ…') : $t('احفظ كلمة المرور') }}</button>
   </form>
 </template>

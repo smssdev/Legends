@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Jobs\SendPush;
+use App\League\NextFixture;
 use App\Messages\Inbox;
 use App\Messages\MessageText;
 use App\Models\User;
-use App\Training\SecretTraining;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -89,7 +89,7 @@ class NotificationsTest extends TestCase
     {
         $this->template(full: true);
         $league = $this->makeLeague($this->owner, ['team_count' => 4, 'rounds_per_day' => 1, 'round_times' => ['21:00']]);
-        $f = SecretTraining::nextFixture($league['my_club_id']);
+        $f = NextFixture::of($league['my_club_id']);
         $this->subscribe($this->owner);
         Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(11));
         $this->artisan('matches:prepare');

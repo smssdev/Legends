@@ -15,7 +15,7 @@ export interface paths {
         put?: never;
         /**
          * Create an account
-         * @description Sends the confirmation email. The web is signed in by session; with device_name the app gets a token.
+         * @description [UP5] Three fields: the name, the username and the password (typed once, 4 characters or more). The email is optional (to get the password back), and a confirmation is sent to it. The web is signed in by session, kept until signing out; with device_name the app gets a token.
          */
         post: {
             parameters: {
@@ -30,14 +30,13 @@ export interface paths {
                         name: string;
                         /** @description English letters and digits from a letter, unique whatever the case, kept in lower case; the staff words are refused (GET /auth/username) */
                         username: string;
-                        /** Format: email */
-                        email: string;
-                        /** @description At least 8 characters with letters and numbers */
+                        /**
+                         * Format: email
+                         * @description Optional
+                         */
+                        email?: string | null;
+                        /** @description At least 4 characters, nothing else asked [UP5] */
                         password: string;
-                        /** @description The password again */
-                        password_confirmation: string;
-                        /** @description Must be true */
-                        terms: boolean;
                         /** @description The device name */
                         device_name?: string;
                     };
@@ -403,6 +402,11 @@ export interface paths {
                         commentator?: "base" | "voice-1" | "voice-2" | "voice-3" | "voice-4" | "voice-5" | "voice-6" | "voice-7";
                         /** @enum {string} */
                         match_view?: "cartoon" | "unity";
+                        /**
+                         * @description The language of the game [UP2]
+                         * @enum {string}
+                         */
+                        locale?: "ar" | "en";
                     };
                 };
             };
@@ -507,6 +511,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/verify-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [UP6] Verify the account with the code the support sent on WhatsApp
+         * @description The welcome coins (1000) reach the wallet once, when the code is right and in time.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Verified, with the coins */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: components["schemas"]["Account"];
+                            coins: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/vacation": {
         parameters: {
             query?: never;
@@ -517,8 +571,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Start the account's holiday
-         * @description Up to 14 days, in every league at once and without asking; absence is not counted, so no team is lost. The next one 14 days after it ends.
+         * Start the account's holiday, or ask for a long one
+         * @description [UP13] The days and the reason. Up to 5 days it starts at once, in every league (absence not counted, the account safe from deletion), twice a season with 3 days between; a longer one (up to 60) waits for the developers (vacation.status pending).
          */
         post: {
             parameters: {
@@ -531,11 +585,27 @@ export interface paths {
                 content: {
                     "application/json": {
                         days: number;
+                        reason: string;
                     };
                 };
             };
             responses: {
-                200: components["responses"]["Account"];
+                /** @description The account, and the holiday started (auto) or asked (pending) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: components["schemas"]["Account"];
+                            vacation: {
+                                /** @enum {string} */
+                                status: "auto" | "pending";
+                                days: number;
+                            };
+                        };
+                    };
+                };
                 401: components["responses"]["Error"];
                 409: components["responses"]["Error"];
                 422: components["responses"]["ValidationError"];
@@ -1103,6 +1173,9 @@ export interface paths {
          * Make a league
          * @description Copies the strongest team_count clubs of the template with their players, funds each with the starting
          *     budget, and gives the owner the club they chose. Every other club is a bot. 10 a minute.
+         *     [UP9] Every setting may be left out for the free league: all the template's clubs, one round a day at 21:00 in
+         *     the creator's time zone, two days to get ready, integrity and press conferences on, one season. Any setting
+         *     that differs makes a customized league, paid once in coins (team_count × 20; 409 without them).
          */
         post: {
             parameters: {
@@ -1118,13 +1191,23 @@ export interface paths {
                         name?: string | null;
                         /** @description A name from GET /data/templates */
                         template: string;
-                        team_count: number;
-                        rounds_per_day: number;
-                        /** @description One HH:MM per round */
-                        round_times: string[];
-                        prep_days: number;
+                        /** @description From half the template's clubs to all of them [UP9] */
+                        team_count?: number;
+                        /** @description One round a day [UP17] */
+                        rounds_per_day?: number;
+                        /** @description One HH:MM */
+                        round_times?: string[];
+                        /** @enum {integer} */
+                        prep_days?: 2 | 4 | 6;
+                        /** @description The creator's IANA zone: the free league plays at 21:00 there */
+                        timezone?: string | null;
+                        /**
+                         * @description [UP12] The press conference before each match
+                         * @default true
+                         */
+                        press_conferences?: boolean;
                         /** @enum {string} */
-                        season_end_mode: "renew" | "end";
+                        season_end_mode?: "renew" | "end";
                         /**
                          * Format: date-time
                          * @description From now up to 7 days
@@ -1139,7 +1222,7 @@ export interface paths {
                         fair_league?: boolean;
                         /**
                          * @description Bribes, spies and the FA [X28]
-                         * @default false
+                         * @default true
                          */
                         integrity?: boolean;
                         /** @description Each round in two slots: half its matches this long after the round time [X31] */
@@ -1259,13 +1342,16 @@ export interface paths {
                         name?: string | null;
                         rounds_per_day?: number;
                         round_times?: string[];
-                        prep_days?: number;
+                        /** @enum {integer} */
+                        prep_days?: 2 | 4 | 6;
                         /** @enum {string} */
                         season_end_mode?: "renew" | "end";
                         /** Format: date-time */
                         starts_at?: string;
+                        starting_budget?: number;
                         fair_league?: boolean;
                         integrity?: boolean;
+                        press_conferences?: boolean;
                         second_slot_minutes?: number | null;
                     };
                 };
@@ -2829,6 +2915,8 @@ export interface paths {
                     "application/json": {
                         player_id: number;
                         idempotency_key: string;
+                        /** @description [UP11] Short of cash (half the price at least): all the cash and coins for the rest */
+                        compensate?: boolean;
                     };
                 };
             };
@@ -2902,6 +2990,419 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/press/{fixture}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                fixture: number;
+            };
+            cookie?: never;
+        };
+        /** [UP12] The press conference before a match: the chances, a reading of each side, the statements */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    fixture: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The conference (enabled false when the league switched them off) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            press: {
+                                [key: string]: unknown;
+                            };
+                            enabled: boolean;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** [UP12] The coach's statement, once, from half an hour before kick-off until the lock: + morale in that match */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    fixture: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "attack" | "calm" | "rally";
+                    };
+                };
+            };
+            responses: {
+                /** @description The conference after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            press: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP12] The round's matches with my pick and the league's split */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The round */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [UP12] Pick a match's winner (or a draw) until its lock; a right pick pays my club and counts on my career */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                        /** @enum {string} */
+                        pick: "home" | "draw" | "away";
+                    };
+                };
+            };
+            responses: {
+                /** @description The round after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/newspaper": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP12] The newspaper: a played round's report (results, stories, team of the week) and the coaches' articles */
+        get: {
+            parameters: {
+                query?: {
+                    round?: number;
+                };
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The newspaper */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/newspaper/articles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP12] A coach's article, for the league's owner to publish */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The newspaper after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/newspaper/articles/{article}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                article: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP12] The owner publishes or turns down an article */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    article: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        publish: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The newspaper after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/buy-quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP11] The deal before it is made: the price, the coins to register it, and cash + coins when short */
+        get: {
+            parameters: {
+                query: {
+                    player_id: number;
+                };
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The deal */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            price: number;
+                            cash: number;
+                            /** @description 1 or 2 coins to register it (0 in a fair league) */
+                            doc_coins: number;
+                            /** @description The money the club lacks */
+                            short: number;
+                            /** @description With half the price in cash at least: all the cash, and coins for the rest */
+                            compensate: {
+                                cash: number;
+                                coins: number;
+                            } | null;
+                            can: boolean;
+                            why: string | null;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [UP11] The transfers made in the league this season, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The transfers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            transfers: {
+                                player: string;
+                                /** @description Null: from outside the league */
+                                from: string | null;
+                                to: string;
+                                price: number;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3515,7 +4016,7 @@ export interface paths {
          * The spy on the next opponent, and his report for this match if sent
          * @description Sprint 30 (docs/features/spy.md). Before the lock, a paid report of what the opponent has saved at that moment:
          *     formation, eleven and bench, the four public tactics, the form and the eleven's fitness. Never pressing, style,
-         *     tempo, positions, the defensive shape or secret training. The opponent is not told.
+         *     tempo, positions or the defensive shape. The opponent is not told.
          */
         get: {
             parameters: {
@@ -3716,113 +4217,6 @@ export interface paths {
                 404: components["responses"]["Error"];
                 409: components["responses"]["Error"];
                 422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/leagues/{league}/training/camp": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                league: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Send players to the training camp (docs/features/camp.md)
-         * @description Paid in full when they go. They miss the club's matches until they come back, and train at the level's pace.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    league: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        player_ids: number[];
-                        /** @enum {string} */
-                        level: "basic" | "good" | "elite";
-                        days: number;
-                        idempotency_key: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Training after sending */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["TrainingView"];
-                    };
-                };
-                404: components["responses"]["Error"];
-                409: components["responses"]["Error"];
-                422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/leagues/{league}/training/secret": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                league: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Order secret training of one line for the next match (docs/features/secret-training.md)
-         * @description Until the lock. The line plays that match only with +3 on the rating and every attribute. Never shown to the opponent.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    league: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        line: "gk" | "def" | "mid" | "att";
-                    };
-                };
-            };
-            responses: {
-                /** @description Training after ordering */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["TrainingView"];
-                    };
-                };
-                409: components["responses"]["Error"];
             };
         };
         delete?: never;
@@ -4189,6 +4583,15 @@ export interface paths {
                             readings: components["schemas"]["MatchReading"][];
                             /** @description The latest reactions [X24] */
                             reactions?: components["schemas"]["BroadcastReaction"][];
+                            /** @description [UP17] The break under way: its end (ms), the coaches ready, whether it is a window, and each side's injured player waiting for his replacement */
+                            pause?: {
+                                until?: number;
+                                ready?: ("home" | "away")[];
+                                window?: boolean;
+                                injured?: {
+                                    [key: string]: number;
+                                };
+                            } | null;
                             /** @description The side chat, the latest 50 [X24] */
                             chat?: components["schemas"]["BroadcastChat"][];
                         };
@@ -4282,6 +4685,54 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [UP17] «أنا مستعد»: the coach is done with this break
+         * @description Once every coach of the match is ready (a computer's side always is), the break ends now and the next minute starts within a second. 409 outside a break.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Who is ready and when play goes on (ms) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ready: ("home" | "away")[];
+                            resume_at: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -4824,8 +5275,11 @@ export interface paths {
                             users: {
                                 id: number;
                                 name: string;
-                                email: string;
+                                username: string;
+                                email: string | null;
                                 role: string;
+                                /** @description [UP6] Verified by a WhatsApp code */
+                                verified: boolean;
                                 /** Format: date-time */
                                 joined: string;
                                 last_day: string | null;
@@ -4980,6 +5434,150 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/vacations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [UP13] The long holidays the developers decide, the waiting ones first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The holidays */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            vacations: {
+                                id: number;
+                                user: {
+                                    id: number;
+                                    name: string;
+                                    username: string;
+                                };
+                                days: number;
+                                reason: string;
+                                /** @enum {string} */
+                                status: "pending" | "approved" | "rejected";
+                                /** Format: date-time */
+                                asked_at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/vacations/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP13] Approve (it starts now) or refuse a long holiday; the coach is told */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        approve: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The holiday as decided */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/verification-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [UP6] A six-digit code that verifies this account, for the developer to send on WhatsApp */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The code (it replaces any earlier one) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            code: string;
+                            username: string;
+                            id: number;
+                            days: number;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -6986,6 +7584,10 @@ export interface components {
             fair_league: boolean;
             /** @description The integrity system: bribes, spies and the FA [X28] */
             integrity?: boolean;
+            /** @description [UP12] The press conference before each match */
+            press_conferences?: boolean;
+            /** @description [UP9] The coins paid for a customized league (0: free) */
+            custom_coins?: number;
             /** @description Rounds in two slots [X31] */
             second_slot_minutes?: number | null;
             /** @description The FA verdicts of the last day [X28] */
@@ -7308,7 +7910,6 @@ export interface components {
             maxed: boolean;
             /** @description At or past his potential: training goes on, much slower [X16] */
             over_potential?: boolean;
-            in_camp: boolean;
         };
         TrainingView: {
             /** @description One session's price */
@@ -7329,59 +7930,6 @@ export interface components {
                 next_at: string | null;
             }[];
             players: components["schemas"]["TrainingPlayer"][];
-            camp: {
-                max_players: number;
-                /** @description [least, most] */
-                days: number[];
-                min_left: number;
-                levels: {
-                    /** @enum {string} */
-                    level: "basic" | "good" | "elite";
-                    /** @description The pace against an ordinary session (10000 = the same) */
-                    gain_bp: number;
-                    /** @description One player for one day */
-                    day_price: number;
-                }[];
-                /** @description The camp under way, or the last one */
-                current: {
-                    id: number;
-                    /** @enum {string} */
-                    level: "basic" | "good" | "elite";
-                    /** @enum {string} */
-                    status: "active" | "done";
-                    cost: number;
-                    sessions: number;
-                    sessions_done: number;
-                    /** Format: date-time */
-                    ends_at: string;
-                    players: {
-                        id: number;
-                        gain: number;
-                    }[];
-                } | null;
-            };
-            secret: {
-                cost: number;
-                /** @enum {string} */
-                currency: "coins" | "money";
-                boost: number;
-                per_season: number;
-                used: number;
-                fixture: {
-                    id: number;
-                    competition: string;
-                    round: number;
-                    status: string;
-                    opponent: string;
-                    /** Format: date-time */
-                    lock_at: string;
-                    /**
-                     * @description The line ordered for this match
-                     * @enum {string|null}
-                     */
-                    line: "gk" | "def" | "mid" | "att" | null;
-                } | null;
-            };
         };
         SquadPlayer: {
             id: number;
@@ -7402,8 +7950,6 @@ export interface components {
             fitness: number;
             injured_matches: number;
             suspended_matches: number;
-            /** @description At the training camp */
-            in_camp?: boolean;
             available: boolean;
             attributes: {
                 [key: string]: number | null;
@@ -7684,6 +8230,8 @@ export interface components {
                 username: string;
                 avatar_url: string | null;
                 official: boolean;
+                /** @description The coach's coins balance [UP7] */
+                coins: number;
                 level: components["schemas"]["CoachLevel"];
                 record: {
                     seasons: number;
@@ -7714,6 +8262,8 @@ export interface components {
                     id: number;
                     name: string;
                     crest_url: string;
+                    /** @description The club's money [UP7] */
+                    cash: number;
                 } | null;
                 position: number | null;
                 teams: number | null;
@@ -7825,6 +8375,8 @@ export interface components {
             strength_cp: number;
             colors: string[];
             crest_url: string;
+            /** @description [UP3] The real logo (/logos/...), null for a club the pack has not; crest_url sends it too */
+            logo?: string | null;
         };
         DataPlayer: {
             id: number;
@@ -7853,11 +8405,21 @@ export interface components {
             username: string;
             /** @description A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11] */
             official: boolean;
-            /** @description The picture (GET /users/{id}/avatar), null without one */
+            /** @description The picture (GET /users/{id}/avatar, or Google's [UP5]), null without one */
             avatar_url: string | null;
-            /** Format: email */
-            email: string;
+            /**
+             * Format: email
+             * @description Null for an account made without one [UP5]
+             */
+            email: string | null;
             email_verified: boolean;
+            /** @description [UP6] Verified by a WhatsApp code; until then the welcome coins wait */
+            verification: {
+                verified: boolean;
+                welcome_coins: number;
+                /** @description The support's WhatsApp with a ready message (the username and the account number) */
+                whatsapp: string | null;
+            };
             /** @enum {string} */
             role: "user" | "admin";
             /** @description False for an account made with Google only */
@@ -7866,6 +8428,11 @@ export interface components {
             google: boolean;
             /** Format: date-time */
             created_at?: string;
+            /**
+             * @description The coach's language [UP2]; null until chosen
+             * @enum {string|null}
+             */
+            locale?: "ar" | "en" | null;
             /** @description The account's holiday (every league) */
             vacation: {
                 on: boolean;
@@ -7877,7 +8444,13 @@ export interface components {
                  */
                 next_from: string | null;
                 max_days: number;
+                /** @description [UP13] Up to this many days start at once */
+                auto_days: number;
+                /** @description [UP13] The days of a long holiday waiting for the developers */
+                pending: number | null;
             };
+            /** @description [UP13] An account unused this many days in a row (no holiday) is deleted */
+            inactivity_days: number;
             /** @description How the coach watches his matches, the same on every device [X9, X10] */
             viewing: {
                 /**

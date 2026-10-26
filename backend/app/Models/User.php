@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Auth\AccountVerification;
 use App\Auth\Username;
 use App\Notifications\ResetPasswordNotice;
 use App\Notifications\VerifyEmailNotice;
@@ -27,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
-    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'commentator', 'match_view'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale'];
 
     /** @var list<string> */
     protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
@@ -39,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'vacation_from' => 'datetime',
             'vacation_until' => 'datetime',
+            'account_verified_at' => 'datetime',
         ];
     }
 
@@ -63,7 +65,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $at = DB::table('user_avatars')->where('user_id', $this->id)->value('updated_at');
 
-        return $at ? '/api/v1/users/'.$this->id.'/avatar?v='.strtotime($at) : null;
+        // [UP5] Without a picture of their own, a Google account shows Google's.
+        return $at ? '/api/v1/users/'.$this->id.'/avatar?v='.strtotime($at) : $this->google_picture;
     }
 
     public function isAdmin(): bool
@@ -88,10 +91,18 @@ class User extends Authenticatable implements MustVerifyEmail
             'avatar_url' => $this->avatarUrl(),
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
+            // [UP6] Verified by WhatsApp: until then the welcome coins wait, and the account page says so.
+            'verification' => [
+                'verified' => $this->account_verified_at !== null,
+                'welcome_coins' => (int) config('game.account.welcome_coins'),
+                'whatsapp' => AccountVerification::whatsappLink($this),
+            ],
             'role' => $this->role,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,
             'created_at' => $this->created_at?->toIso8601ZuluString(),
+            // [UP2] The coach's language; null until chosen.
+            'locale' => $this->locale,
             // How the coach watches [X9, X10]: the same on every device.
             'viewing' => [
                 'commentator' => $this->commentator ?? config('game.viewing.default_commentator'),
@@ -103,8 +114,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 'until' => $this->vacation_until?->toIso8601ZuluString(),
                 // A new holiday once the last one has ended and the rest days after it have passed.
                 'next_from' => $this->vacation_until?->copy()->addDays((int) config('game.account.vacation_rest_days'))->toIso8601ZuluString(),
-                'max_days' => (int) config('game.account.vacation_max_days'),
+                'max_days' => (int) config('game.account.long_vacation_max_days'),
+                // [UP13] Up to this many days start at once; a longer holiday waits for the developers.
+                'auto_days' => (int) config('game.account.auto_vacation_days'),
+                'pending' => DB::table('account_vacations')->where('user_id', $this->id)->where('status', 'pending')->value('days'),
             ],
+            // [UP13] An unused account is deleted after inactive_days (shown plainly in the account page).
+            'inactivity_days' => (int) config('game.inactivity.inactive_days'),
         ];
     }
 

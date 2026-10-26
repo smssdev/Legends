@@ -10,7 +10,7 @@ defineProps<{ rows: T[]; columns: { key: string; label: string; numeric?: boolea
       <caption v-if="caption" class="sr-only">{{ caption }}</caption>
       <thead>
         <tr>
-          <th v-for="c in columns" :key="c.key" scope="col" class="px-3 py-2 font-semibold" :class="[c.numeric ? 'text-center' : 'text-start', c.hideSm ? 'hidden sm:table-cell' : '']">{{ c.label }}</th>
+          <th v-for="c in columns" :key="c.key" scope="col" class="px-3 py-2 font-semibold" :class="[c.numeric ? 'text-center' : 'text-start', c.hideSm ? 'hidden sm:table-cell' : '']">{{ $t(c.label) }}</th>
         </tr>
       </thead>
       <tbody>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\ClubLogo;
 use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
 use App\League\MatchOrders;
 use App\League\MatchReplay;
+use App\League\MatchRunner;
 use App\League\MatchSocial;
 use App\League\Members;
 use App\League\TeamSheet;
@@ -38,7 +40,7 @@ class MatchController extends Controller
             'timing' => ['tick_ms' => (int) $state['cfg']['match']['tick_ms'], 'extra_time_tick_ms' => (int) $state['cfg']['match']['extra_time_tick_ms'],
                 'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
                 'windows' => $state['cfg']['match']['windows'] ?? [], 'window_seconds' => (int) ($state['cfg']['match']['window_seconds'] ?? 0)],
-            'clubs' => ['home' => $state['teams']['home']['club'], 'away' => $state['teams']['away']['club']],
+            'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']), 'away' => ClubLogo::with($state['teams']['away']['club'])],
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
             'teams' => Simulator::redact(['teams' => Simulator::teams($state)], $you)['teams'],
@@ -86,6 +88,8 @@ class MatchController extends Controller
             'missed' => $missed,
             'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), $shown),
             'readings' => $this->readings($m, $f, $you, $tick),
+            // [UP17] The break under way: its end, the coaches ready, and whose injured player waits.
+            'pause' => $m->status === 'live' ? MatchRunner::pauseOf($m->id) : null,
         ] + MatchSocial::recent($m->id));
     }
 
@@ -177,13 +181,30 @@ class MatchController extends Controller
             'slots' => isset($data['formation']) ? $formations[$data['formation']] : null], fn ($v) => $v !== null);
         MatchOrders::watching($m->id, $you);
         $state = Cache::get("league-match:{$m->id}")['state'] ?? json_decode($m->state, true);
-        // [X42] Only in a window: before kick-off, at half-time, or the break after minutes 15, 30, 60 and 75.
-        abort_unless(CoachWindows::open($state), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و60 و75، وفي الاستراحة.');
+        // [UP17] The emergency stop for an injured player: his coach alone, and only to bring someone on for him.
+        $injured = CoachWindows::emergencyFor($state, $you);
+        if ($injured !== null) {
+            abort_unless($action['type'] === 'sub' && (int) ($action['out'] ?? 0) === $injured, 409, 'في التوقف الطارئ تبدّل اللاعب المصاب فقط.');
+        } else {
+            // [X42] Only in a window: before kick-off, at half-time, or the break after minutes 15, 30, 60 and 75.
+            abort_unless(CoachWindows::open($state), 409, 'التغيير في فترات التوقف فقط: قبل البداية، وفي الدقائق 15 و30 و45 و60 و75.');
+        }
         $tick = max((int) $m->tick, (int) ($state['tick'] ?? 0)) + 1;
         $new = MatchOrders::give($m->id, $you, $request->user()->id, $data['idempotency_key'], $action, $tick);
         $row = DB::table('match_actions')->where('match_id', $m->id)->where('idempotency_key', $data['idempotency_key'])->first();
 
         return response()->json(['target_tick' => $row->target_tick, 'duplicate' => ! $new], $new ? 202 : 200);
+    }
+
+    /** [UP17] «أنا مستعد»: the coach is done with this break; once both coaches are, play goes on at once. */
+    public function ready(Request $request, int $match): JsonResponse
+    {
+        [$m, , $you] = $this->load($request, $match);
+        abort_unless($you, 403, 'لا تدير أياً من الفريقين في هذه المباراة.');
+        abort_unless($m->mode === 'live' && $m->status === 'live', 409, 'انتهت المباراة.');
+        MatchOrders::watching($m->id, $you);
+
+        return response()->json(MatchRunner::ready($m->id, $you));
     }
 
     /**

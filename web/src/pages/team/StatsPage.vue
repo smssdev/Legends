@@ -55,22 +55,22 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
 <template>
   <div class="flex flex-col gap-4">
     <div>
-      <h1 class="font-display text-3xl font-extrabold">الإحصائيات</h1>
-      <p class="mt-1 text-sm text-text-muted">كل ما يراه أعضاء الدوري عن الموسم. اضغط اسم أي نادٍ لترى تشكيلته ولاعبيه.</p>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('الإحصائيات') }}</h1>
+      <p class="mt-1 text-sm text-text-muted">{{ $t('كل ما يراه أعضاء الدوري عن الموسم. اضغط اسم أي نادٍ لترى تشكيلته ولاعبيه.') }}</p>
     </div>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ error }}</p>
-    <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">انضم إلى دوري واستلم فريقاً لترى إحصائياته.</p>
-    <p v-else-if="!loaded" class="text-text-muted">جارٍ التحميل...</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى إحصائياته.') }}</p>
+    <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
     <template v-if="s">
-      <div class="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1" role="tablist" aria-label="أقسام الإحصائيات">
-        <button v-for="(label, key) in TABS" :key="key" type="button" role="tab" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-selected="tab === key" @click="tab = key">{{ label }}</button>
+      <div class="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1" role="tablist" :aria-label="$t('أقسام الإحصائيات')">
+        <button v-for="(label, key) in TABS" :key="key" type="button" role="tab" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-selected="tab === key" @click="tab = key">{{ $t(label) }}</button>
       </div>
-      <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">لم تُلعب مباريات في هذا الموسم بعد.</p>
+      <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لم تُلعب مباريات في هذا الموسم بعد.') }}</p>
 
-      <section v-if="tab === 'table'" class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="الترتيب المفصل">
+      <section v-if="tab === 'table'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('الترتيب المفصل')">
         <table class="w-full min-w-[640px] text-sm">
-          <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">النادي</th><th>لعب</th><th>فاز</th><th>تعادل</th><th>خسر</th><th>له</th><th>عليه</th><th>الفارق</th><th>معدل التسجيل</th><th>معدل الاستقبال</th><th>النقاط</th></tr></thead>
+          <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">{{ $t('النادي') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('فاز') }}</th><th>{{ $t('تعادل') }}</th><th>{{ $t('خسر') }}</th><th>{{ $t('له') }}</th><th>{{ $t('عليه') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('معدل التسجيل') }}</th><th>{{ $t('معدل الاستقبال') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
           <tbody class="font-numbers">
             <tr v-for="r in s.table" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
               <td class="py-2">{{ r.position }}</td>
@@ -88,16 +88,16 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
           <span class="w-6 text-center font-numbers text-text-muted">{{ i + 1 }}</span>
           <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><button type="button" class="text-xs text-text-muted hover:text-gold" @click="openSquad(p.club)">{{ $nm(p.club.name) }}</button></span>
           <b class="font-numbers text-xl text-gold">{{ list === 'scorers' ? p.goals : p.assists }}</b>
-          <span class="w-20 text-xs text-text-muted">{{ list === 'scorers' ? `${p.assists} صناعة` : `${p.goals} هدف` }}</span>
+          <span class="w-20 text-xs text-text-muted">{{ list === 'scorers' ? $t('{v0} صناعة', { v0: p.assists }) : $t('{v0} هدف', { v0: p.goals }) }}</span>
         </div>
-        <p v-if="!s[list].length" class="text-text-muted">لا أحد بعد.</p>
+        <p v-if="!s[list].length" class="text-text-muted">{{ $t('لا أحد بعد.') }}</p>
       </section>
 
       <template v-if="tab === 'cards'">
-        <section class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="بطاقات الأندية">
-          <h2 class="mb-2 font-display text-lg font-bold">الأندية</h2>
+        <section class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('بطاقات الأندية')">
+          <h2 class="mb-2 font-display text-lg font-bold">{{ $t('الأندية') }}</h2>
           <table class="w-full text-sm">
-            <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>صفراء</th><th>حمراء</th></tr></thead>
+            <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('صفراء') }}</th><th>{{ $t('حمراء') }}</th></tr></thead>
             <tbody class="font-numbers"><tr v-for="c in s.discipline.clubs" :key="c.club.id" class="border-t border-text/5 text-center" :class="mine(c.club.id)">
               <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(c.club)">{{ $nm(c.club.name) }}</button></td>
               <td><span class="inline-block h-4 w-3 rounded-sm bg-warning align-middle" aria-hidden="true" /> {{ c.yellow }}</td><td><span class="inline-block h-4 w-3 rounded-sm bg-live align-middle" aria-hidden="true" /> {{ c.red }}</td>
@@ -105,18 +105,18 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
           </table>
         </section>
         <section v-for="[key, title] in ([['players', 'أكثر اللاعبين طرداً'], ['bookings', 'أكثر اللاعبين إنذاراً']] as const)" :key="key" class="flex flex-col gap-1 rounded-xl bg-surface p-3" :aria-label="title">
-          <h2 class="mb-1 font-display text-lg font-bold">{{ title }}</h2>
+          <h2 class="mb-1 font-display text-lg font-bold">{{ $t(title) }}</h2>
           <div v-for="p in s.discipline[key]" :key="p.player.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
             <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(p.player.name) }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(p.club.name) }}</span></span>
             <span class="font-numbers">🟨 {{ p.yellow }} · 🟥 {{ p.red }}</span>
           </div>
-          <p v-if="!s.discipline[key].length" class="text-text-muted">لا أحد بعد.</p>
+          <p v-if="!s.discipline[key].length" class="text-text-muted">{{ $t('لا أحد بعد.') }}</p>
         </section>
       </template>
 
-      <section v-if="tab === 'money'" class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="التقرير المالي">
+      <section v-if="tab === 'money'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('التقرير المالي')">
         <table class="w-full min-w-[520px] text-sm">
-          <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>اشترى</th><th>صفقات</th><th>باع</th><th>صفقات</th><th>الصافي</th></tr></thead>
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('اشترى') }}</th><th>{{ $t('صفقات') }}</th><th>{{ $t('باع') }}</th><th>{{ $t('صفقات') }}</th><th>{{ $t('الصافي') }}</th></tr></thead>
           <tbody class="font-numbers"><tr v-for="f in s.finance" :key="f.club.id" class="border-t border-text/5 text-center" :class="mine(f.club.id)">
             <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(f.club)">{{ $nm(f.club.name) }}</button></td>
             <td dir="ltr">{{ money(f.bought) }}</td><td>{{ f.bought_count }}</td><td dir="ltr">{{ money(f.sold) }}</td><td>{{ f.sold_count }}</td>
@@ -125,22 +125,22 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
         </table>
       </section>
 
-      <section v-if="tab === 'value'" class="flex flex-col gap-1 rounded-xl bg-surface p-3" aria-label="القيمة السوقية">
+      <section v-if="tab === 'value'" class="flex flex-col gap-1 rounded-xl bg-surface p-3" :aria-label="$t('القيمة السوقية')">
         <div v-for="r in s.value" :key="r.club.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 first:border-0">
           <span class="w-6 text-center font-numbers text-text-muted">{{ r.position }}</span>
           <img :src="r.club.crest_url" alt="" class="size-7" />
           <button type="button" class="min-w-0 flex-1 truncate text-start font-bold hover:text-gold" @click="openSquad(r.club)">{{ $nm(r.club.name) }}</button>
-          <span class="text-xs text-text-muted">{{ r.players }} لاعباً</span>
+          <span class="text-xs text-text-muted">{{ $t('{v0} لاعباً', { v0: r.players }) }}</span>
           <b class="font-numbers text-gold" dir="ltr">{{ money(r.value) }}</b>
         </div>
       </section>
 
-      <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" aria-label="سلاسل النتائج">
+      <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('سلاسل النتائج')">
         <table class="w-full min-w-[560px] text-sm">
-          <thead class="text-text-muted"><tr><th class="py-2 text-start">النادي</th><th>آخر 5</th><th>الحالية</th><th>أطول فوز</th><th>أطول تعادل</th><th>أطول خسارة</th></tr></thead>
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th>{{ $t('آخر 5') }}</th><th>{{ $t('الحالية') }}</th><th>{{ $t('أطول فوز') }}</th><th>{{ $t('أطول تعادل') }}</th><th>{{ $t('أطول خسارة') }}</th></tr></thead>
           <tbody class="font-numbers"><tr v-for="r in s.streaks" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
             <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(r.club)">{{ $nm(r.club.name) }}</button></td>
-            <td><span class="inline-flex gap-1" dir="ltr"><span v-for="(k, i) in r.form" :key="i" class="grid size-6 place-items-center rounded-sm text-xs font-bold" :class="RUN_CLASS[k]" :title="RUN[k]">{{ k === 'W' ? 'ف' : k === 'D' ? 'ت' : 'خ' }}</span></span></td>
+            <td><span class="inline-flex gap-1" dir="ltr"><span v-for="(k, i) in r.form" :key="i" class="grid size-6 place-items-center rounded-sm text-xs font-bold" :class="RUN_CLASS[k]" :title="RUN[k]">{{ k === 'W' ? $t('ف') : k === 'D' ? $t('ت') : $t('خ') }}</span></span></td>
             <td class="font-sans">{{ r.current ? `${r.current.length} ${RUN[r.current.kind]}` : '-' }}</td>
             <td>{{ r.best.W }}</td><td>{{ r.best.D }}</td><td>{{ r.best.L }}</td>
           </tr></tbody>
@@ -149,18 +149,18 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
     </template>
 
     <!-- A rival's squad: what anyone in the league may see. -->
-    <div v-if="squad || squadBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" aria-label="تشكيلة النادي" @click.self="squad = null">
+    <div v-if="squad || squadBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة النادي')" @click.self="squad = null">
       <div class="flex max-h-[85dvh] w-full max-w-xl flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
-        <p v-if="squadBusy" class="text-text-muted">جارٍ التحميل...</p>
+        <p v-if="squadBusy" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
         <template v-else-if="squad">
           <div class="flex items-center gap-3">
             <img :src="squad.crest_url" alt="" class="size-10" />
-            <div class="min-w-0 flex-1"><h2 class="truncate font-display text-xl font-extrabold">{{ $nm(squad.name) }}</h2><p class="text-xs text-text-muted">{{ squad.coach?.name ?? 'الحاسوب' }} · {{ count(squad.players.length) }} لاعباً</p></div>
-            <button type="button" class="size-touch rounded-md bg-surface-raised" aria-label="إغلاق" @click="squad = null">✕</button>
+            <div class="min-w-0 flex-1"><h2 class="truncate font-display text-xl font-extrabold">{{ $nm(squad.name) }}</h2><p class="text-xs text-text-muted">{{ $t('{v0} · {v1} لاعباً', { v0: squad.coach?.name ?? $t('الحاسوب'), v1: count(squad.players.length) }) }}</p></div>
+            <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="squad = null">✕</button>
           </div>
           <div v-for="p in squad.players" :key="p.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 text-sm">
             <span class="w-10 font-numbers text-xs text-text-muted" dir="ltr">{{ p.position }}</span>
-            <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted">· {{ p.age }} سنة</span><span v-if="p.injured_matches" class="text-xs text-[#FF8A8A]"> · مصاب</span><span v-if="p.suspended_matches" class="text-xs text-warning"> · موقوف</span></span>
+            <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted">{{ $t('· {v0} سنة', { v0: p.age }) }}</span><span v-if="p.injured_matches" class="text-xs text-[#FF8A8A]"> {{ $t('· مصاب') }}</span><span v-if="p.suspended_matches" class="text-xs text-warning"> {{ $t('· موقوف') }}</span></span>
             <b class="font-numbers">{{ p.overall }}</b>
             <span class="w-16 text-end font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.value) }}</span>
           </div>

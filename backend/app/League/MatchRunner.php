@@ -160,7 +160,7 @@ class MatchRunner
             $orders = [...$orders, ...$rows];
             [$state, $ball, $tick] = self::minute($state, $ball, $actions);
             $events = [...$events, ...self::tagged($tick)];
-            $ms += $tick['moment']['ms'] + self::pause($tick, $state['cfg']['match']);
+            $ms += $tick['moment']['ms'] + self::pause($tick, $state['cfg']['match'], $state, []);
         }
         foreach (array_chunk($orders, 200) as $chunk) {
             DB::table('match_actions')->insert($chunk);
@@ -181,6 +181,11 @@ class MatchRunner
         if ($live['next_at'] < GameClock::nowMs() - (int) config('game.matches.stalled_ms')) {
             $live['next_at'] = GameClock::nowMs();
         }
+        // [UP17] Both coaches said they are ready: the window ends early.
+        $resume = Cache::get("match-resume:{$id}");
+        if ($resume && $resume['tick'] === $live['state']['tick'] && $resume['at'] < $live['next_at']) {
+            $live['next_at'] = $resume['at'];
+        }
         $n = 0;
         $timing = $live['state']['cfg']['match'];
         $fixture = self::fixtureOf($id);
@@ -196,7 +201,12 @@ class MatchRunner
             $live['ball'] = $ball;
             $live['events'] = [...$live['events'], ...self::tagged($tick)];
             $live['recent'] = array_slice([...$live['recent'], $tick], -20);
-            $live['next_at'] += $tick['moment']['ms'] + self::pause($tick, $timing);
+            $coaches = array_keys(array_filter(MatchOrders::managers($id, $live['control']), fn ($who) => $who === 'coach'));
+            $pause = self::pause($tick, $timing, $state, $coaches);
+            // The break from the end of the minute's scene to the next minute, for the ready button [UP17].
+            $live['pause'] = ['tick' => $state['tick'], 'from' => $live['next_at'] + $tick['moment']['ms'], 'coaches' => $coaches];
+            $live['next_at'] += $tick['moment']['ms'] + $pause;
+            $live['pause']['until'] = $live['next_at'];
             $n++;
             MatchMinute::dispatch($fixture, $id, Simulator::redact($tick, null));
             $live['said'] = self::readings($id, $fixture, $state, $tick, $live['control'], $live['said'] ?? null);
@@ -287,9 +297,52 @@ class MatchRunner
         return [$state, $choreo['ball'], $tick];
     }
 
-    private static function pause(array $tick, array $timing): int
+    /** [UP17] With no coach of its own watching, a window lasts as long as the computer takes to be ready. */
+    private static function pause(array $tick, array $timing, array $state, array $coaches): int
     {
-        return CoachWindows::pauseMs($tick, $timing);
+        $ms = CoachWindows::pauseMs($tick, $timing, $state, $coaches);
+        $break = collect($tick['events'] ?? [])->contains(fn ($e) => $e['type'] === 'period');
+
+        return $ms > 0 && ! $coaches && ! $break && isset($timing['ready_bot_ms']) ? min($ms, (int) $timing['ready_bot_ms']) : $ms;
+    }
+
+    /**
+     * [UP17] A coach is ready: once every coach of the match is (a computer's side always is), the break ends now.
+     * Returns the sides ready and when play goes on.
+     */
+    public static function ready(int $id, string $side): array
+    {
+        $live = Cache::get("league-match:{$id}");
+        $pause = $live['pause'] ?? null;
+        abort_unless($pause && $pause['until'] > $pause['from'] && ! $live['state']['finished'] && $pause['tick'] === $live['state']['tick'] && GameClock::nowMs() < $live['next_at'], 409, 'لا توقف الآن.');
+        $key = "match-ready:{$id}:{$pause['tick']}";
+        $ready = array_values(array_unique([...Cache::get($key, []), $side]));
+        Cache::put($key, $ready, 600);
+        $at = $live['next_at'];
+        if (! array_diff($pause['coaches'], $ready)) {
+            $at = max(GameClock::nowMs() + 1000, $pause['from']);
+            Cache::put("match-resume:{$id}", ['tick' => $pause['tick'], 'at' => $at], 600);
+            DB::table('matches')->where('id', $id)->where('next_at', '>', $at)->update(['next_at' => $at]);
+        }
+
+        return ['ready' => $ready, 'resume_at' => $at];
+    }
+
+    /** [UP17] The break under way, for the screens: until when, who is ready, and whose injured player waits. */
+    public static function pauseOf(int $id): ?array
+    {
+        $live = Cache::get("league-match:{$id}");
+        $pause = $live['pause'] ?? null;
+        if (! $pause || $pause['until'] <= $pause['from'] || $live['state']['finished'] || $pause['tick'] !== $live['state']['tick'] || GameClock::nowMs() >= $live['next_at']) {
+            return null;
+        }
+
+        $resume = Cache::get("match-resume:{$id}");
+        $until = $resume && $resume['tick'] === $pause['tick'] ? min($live['next_at'], $resume['at']) : $live['next_at'];
+
+        return ['until' => $until, 'ready' => Cache::get("match-ready:{$id}:{$pause['tick']}", []),
+            'window' => CoachWindows::open($live['state']),
+            'injured' => (object) array_map(fn ($side) => (int) $live['state']['teams'][$side]['pending_injury'], array_combine(CoachWindows::injured($live['state']), CoachWindows::injured($live['state'])))];
     }
 
     private static function tagged(array $tick): array

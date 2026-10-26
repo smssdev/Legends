@@ -53,55 +53,55 @@ const until = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sh
 <template>
   <section v-if="view?.on" class="flex flex-col gap-3 rounded-xl border border-live/30 bg-surface p-4" aria-labelledby="h-integrity">
     <div>
-      <h2 id="h-integrity" class="font-display text-xl font-extrabold">ما وراء الكواليس</h2>
-      <p class="text-sm text-text-muted">منظومة النزاهة مفعّلة في هذا الدوري. كل شيء هنا له ثمن وله مخاطرة.</p>
+      <h2 id="h-integrity" class="font-display text-xl font-extrabold">{{ $t('ما وراء الكواليس') }}</h2>
+      <p class="text-sm text-text-muted">{{ $t('منظومة النزاهة مفعّلة في هذا الدوري. كل شيء هنا له ثمن وله مخاطرة.') }}</p>
     </div>
-    <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ message }}</p>
-    <p v-if="view.banned_until" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">ناديك محظور من السوق حتى {{ until(view.banned_until) }} بقرار لجنة الانضباط.</p>
+    <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
+    <p v-if="view.banned_until" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t('ناديك محظور من السوق حتى {v0} بقرار لجنة الانضباط.', { v0: until(view.banned_until) }) }}</p>
 
     <template v-if="view.fixture">
       <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <b>الحكم في مباراة {{ $nm(view.fixture.opponent) }}</b>
-        <p class="text-xs text-text-muted">يميل الحكم لك (بطاقات أقل لك وأكثر لخصمك، وركلات جزاء أسهل). لكن الفار يكشف {{ view.bribe.var_percent }}% من المحاولات: يضيع المبلغ وتهبط المعنويات. وجاسوس الخصم قد يكتشفه ويرفع الأمر للجنة الانضباط.</p>
-        <p v-if="view.bribe.paid" class="text-sm font-bold text-gold">دفعت للحكم في هذه المباراة.</p>
+        <b>{{ $t('الحكم في مباراة {v0}', { v0: $nm(view.fixture.opponent) }) }}</b>
+        <p class="text-xs text-text-muted">{{ $t('يميل الحكم لك (بطاقات أقل لك وأكثر لخصمك، وركلات جزاء أسهل). لكن الفار يكشف {v0}% من المحاولات: يضيع المبلغ وتهبط المعنويات. وجاسوس الخصم قد يكتشفه ويرفع الأمر للجنة الانضباط.', { v0: view.bribe.var_percent }) }}</p>
+        <p v-if="view.bribe.paid" class="text-sm font-bold text-gold">{{ $t('دفعت للحكم في هذه المباراة.') }}</p>
         <template v-else>
           <button v-if="!confirmBribe" type="button" class="h-touch rounded-md border border-live/50 px-4 text-sm font-bold text-[#FF8A8A]" @click="confirmBribe = true">
-            ادفع للحكم · {{ money(view.bribe.money) }} + <PriceTag :amount="view.bribe.extra.amount" :currency="view.bribe.extra.currency" />
+            {{ $t('ادفع للحكم · {v0} +', { v0: money(view.bribe.money) }) }} <PriceTag :amount="view.bribe.extra.amount" :currency="view.bribe.extra.currency" />
           </button>
           <div v-else class="flex gap-2">
-            <button type="button" class="h-touch flex-1 rounded-md bg-live px-3 text-sm font-bold text-white disabled:opacity-50" :disabled="busy" @click="bribe">متأكد، ادفع</button>
-            <button type="button" class="h-touch flex-1 rounded-md bg-surface px-3 text-sm" @click="confirmBribe = false">تراجع</button>
+            <button type="button" class="h-touch flex-1 rounded-md bg-live px-3 text-sm font-bold text-white disabled:opacity-50" :disabled="busy" @click="bribe">{{ $t('متأكد، ادفع') }}</button>
+            <button type="button" class="h-touch flex-1 rounded-md bg-surface px-3 text-sm" @click="confirmBribe = false">{{ $t('تراجع') }}</button>
           </div>
         </template>
       </div>
 
       <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-        <b>الجواسيس عليك</b>
+        <b>{{ $t('الجواسيس عليك') }}</b>
         <template v-if="view.security.sees">
-          <p v-if="!view.spies_on_me.length" class="text-sm text-text-muted">لا جواسيس على مباراتك القادمة حتى الآن.</p>
+          <p v-if="!view.spies_on_me.length" class="text-sm text-text-muted">{{ $t('لا جواسيس على مباراتك القادمة حتى الآن.') }}</p>
           <div v-for="s in view.spies_on_me" :key="s.id" class="flex items-center justify-between gap-2 text-sm">
-            <span>جاسوس من <b>{{ s.club }}</b></span>
-            <span v-if="s.turned" class="text-gold">مزدوج ✓</span>
+            <span>{{ $t('جاسوس من') }} <b>{{ s.club }}</b></span>
+            <span v-if="s.turned" class="text-gold">{{ $t('مزدوج ✓') }}</span>
             <button v-else type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-50" :disabled="busy" @click="turn(s.id)">
-              اجعله مزدوجاً · <PriceTag :amount="view.double_agent.amount" :currency="view.double_agent.currency" />
+              {{ $t('اجعله مزدوجاً ·') }} <PriceTag :amount="view.double_agent.amount" :currency="view.double_agent.currency" />
             </button>
           </div>
         </template>
         <template v-else>
-          <p class="text-xs text-text-muted">محامٍ بأربع نجوم فأكثر يكشف الجواسيس، أو فحص أمني لهذه المباراة.</p>
+          <p class="text-xs text-text-muted">{{ $t('محامٍ بأربع نجوم فأكثر يكشف الجواسيس، أو فحص أمني لهذه المباراة.') }}</p>
           <button type="button" class="h-touch self-start rounded-md bg-surface px-4 text-sm font-bold disabled:opacity-50" :disabled="busy" @click="security">
-            فحص أمني · <PriceTag :amount="view.security.cost.amount" :currency="view.security.cost.currency" />
+            {{ $t('فحص أمني ·') }} <PriceTag :amount="view.security.cost.amount" :currency="view.security.cost.currency" />
           </button>
         </template>
       </div>
     </template>
 
     <div v-if="view.proofs.length" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
-      <b>أدلة جواسيسك</b>
+      <b>{{ $t('أدلة جواسيسك') }}</b>
       <div v-for="p in view.proofs" :key="p.spy_report_id" class="flex items-center justify-between gap-2 text-sm">
-        <span>رشوة من <b>{{ p.club }}</b></span>
-        <span v-if="p.filed" class="text-text-muted">فُصل فيها</span>
-        <button v-else type="button" class="h-touch rounded-md bg-live px-3 font-bold text-white disabled:opacity-50" :disabled="busy" @click="accuse(p.spy_report_id)">بلّغ لجنة الانضباط</button>
+        <span>{{ $t('رشوة من') }} <b>{{ p.club }}</b></span>
+        <span v-if="p.filed" class="text-text-muted">{{ $t('فُصل فيها') }}</span>
+        <button v-else type="button" class="h-touch rounded-md bg-live px-3 font-bold text-white disabled:opacity-50" :disabled="busy" @click="accuse(p.spy_report_id)">{{ $t('بلّغ لجنة الانضباط') }}</button>
       </div>
     </div>
   </section>

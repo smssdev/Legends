@@ -87,9 +87,10 @@ class StaggeredTest extends TestCase
         Carbon::setTestNow('2026-10-22 10:00:00');
         $this->template(full: true);
         $owner = User::factory()->create();
-        $this->actingAs($owner)->postJson('/api/v1/leagues', $this->settings(['team_count' => 6, 'rounds_per_day' => 2, 'round_times' => ['18:00', '21:00'], 'second_slot_minutes' => 240]))
+        // [UP17] One round a day: past the most minutes the second slot is refused; within them it fits before tomorrow's round.
+        $this->actingAs($owner)->postJson('/api/v1/leagues', $this->settings(['second_slot_minutes' => (int) config('game.staggered.max_minutes') + 1]))
             ->assertStatus(422)->assertJsonValidationErrors('second_slot_minutes');
-        $this->postJson('/api/v1/leagues', $this->settings(['team_count' => 6, 'rounds_per_day' => 2, 'round_times' => ['18:00', '21:00'], 'second_slot_minutes' => 120]))->assertCreated();
+        $this->makeLeague($owner, ['second_slot_minutes' => 240]);
     }
 
     public function test_one_lock_for_the_round_then_the_big_match_and_a_frozen_squad(): void
