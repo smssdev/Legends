@@ -11,6 +11,14 @@ class DbBackupTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        if (config('database.default') !== 'sqlite') {
+            $this->markTestSkipped('The SQLite files only; on PostgreSQL (X43) CopierTest checks the backups.');
+        }
+    }
+
     protected function tearDown(): void
     {
         File::deleteDirectory(base_path('database/backups'));

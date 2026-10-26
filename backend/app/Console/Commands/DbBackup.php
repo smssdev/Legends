@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Database\Copier;
 use App\Support\GameClock;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -12,12 +13,14 @@ use Illuminate\Support\Facades\Process;
  * with VACUUM INTO, which is safe while the game is running (WAL mode), and keeps
  * the newest --keep copies. Runs daily from the scheduler [PLAN 2.19]. With BACKUP_RCLONE_REMOTE set (an rclone
  * remote to Google Drive, e.g. "gdrive:LegendsBackups"), the copy also goes there, off this machine [Sprint 37].
+ * On PostgreSQL (Supabase, X43) the game is written as one file of rows instead (legends.jsonl.gz, App\Database\Copier),
+ * which db:restore brings into an empty database.
  */
 class DbBackup extends Command
 {
     protected $signature = 'db:backup {--keep=14 : How many backups to keep}';
 
-    protected $description = 'Back up the SQLite databases';
+    protected $description = 'Back up the databases';
 
     public function handle(): int
     {
@@ -25,7 +28,13 @@ class DbBackup extends Command
         $dir = $root.'/'.GameClock::now()->format('Y-m-d_His');
         File::ensureDirectoryExists($dir);
 
+        if (config('database.connections.'.config('database.default').'.driver') === 'pgsql') {
+            Copier::dump(config('database.default'), $dir.'/legends.jsonl.gz');
+        }
         foreach (['sqlite', 'cache_db', 'queue_db'] as $connection) {
+            if (config("database.connections.$connection.driver") !== 'sqlite' || ($connection === 'sqlite' && config('database.default') !== 'sqlite')) {
+                continue;
+            }
             $source = config("database.connections.$connection.database");
             if (! is_file($source)) {
                 continue;
@@ -33,6 +42,7 @@ class DbBackup extends Command
             // A connection of its own: VACUUM INTO cannot run inside an open transaction.
             $pdo = new \PDO('sqlite:'.$source);
             $pdo->exec('PRAGMA busy_timeout = 10000');
+            File::delete($dir.'/'.basename($source));
             $pdo->prepare('VACUUM INTO ?')->execute([$dir.'/'.basename($source)]);
         }
 

@@ -19,6 +19,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // [X43] Already there (the game on Supabase keeps its migrations apart from this file's): nothing to make.
+        if (Schema::hasTable('jobs')) {
+            return;
+        }
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();

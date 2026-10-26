@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Providers\AppServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use PDO;
@@ -12,6 +13,22 @@ class ImmediateTransactionTest extends TestCase
 {
     public function test_a_transaction_takes_the_write_lock_as_soon_as_it_begins(): void
     {
+        if (config('database.default') === 'pgsql') {
+            // [X43] PostgreSQL: the game's one lock, taken as the transaction begins; another connection waits for it.
+            $c = DB::connection()->getConfig();
+            $other = new PDO("pgsql:host={$c['host']};port={$c['port']};dbname={$c['database']}", $c['username'], $c['password']);
+            $try = fn () => $other->query('select pg_try_advisory_lock('.AppServiceProvider::WRITE_LOCK.')')->fetchColumn();
+            DB::beginTransaction();
+            try {
+                $this->assertFalse($try());
+            } finally {
+                DB::rollBack();
+            }
+            $this->assertTrue($try());
+            $other->query('select pg_advisory_unlock('.AppServiceProvider::WRITE_LOCK.')');
+
+            return;
+        }
         $file = config('database.connections.sqlite.database');
         $other = new PDO('sqlite:'.$file);
         $other->exec('pragma busy_timeout = 0');

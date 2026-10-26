@@ -12,6 +12,7 @@ use Tests\TestCase;
 /**
  * Sprint 13's definition of done: 20 coaches take the same club at the same moment, each in its
  * own process on the real SQLite file (not in memory, not one connection), and exactly one wins.
+ * On PostgreSQL (Supabase, X43) the same races run in a schema of their own, committed, each process its own connection.
  */
 class LeagueClaimRaceTest extends TestCase
 {
@@ -21,10 +22,24 @@ class LeagueClaimRaceTest extends TestCase
 
     private array $shared = [];
 
+    private function pg(): bool
+    {
+        return config('database.default') === 'pgsql';
+    }
+
     /** Database files of its own: other processes must see committed rows, and the shared test files stay as they were. */
     protected function setUp(): void
     {
         parent::setUp();
+        if ($this->pg()) {
+            DB::statement('drop schema if exists race cascade');
+            DB::statement('create schema race');
+            config(['database.connections.pgsql.search_path' => 'race']);
+            DB::purge('pgsql');
+            $this->artisan('migrate', ['--force' => true])->assertSuccessful();
+
+            return;
+        }
         foreach (self::CONNECTIONS as $name => $file) {
             $this->shared[$name] = config("database.connections.{$name}.database");
             $this->removeFile($file);
@@ -37,6 +52,14 @@ class LeagueClaimRaceTest extends TestCase
 
     protected function tearDown(): void
     {
+        if ($this->pg()) {
+            config(['database.connections.pgsql.search_path' => 'public']);
+            DB::purge('pgsql');
+            DB::statement('drop schema if exists race cascade');
+            parent::tearDown();
+
+            return;
+        }
         foreach (self::CONNECTIONS as $name => $file) {
             DB::purge($name);
             config(["database.connections.{$name}.database" => $this->shared[$name]]);
@@ -54,6 +77,11 @@ class LeagueClaimRaceTest extends TestCase
 
     private function env(): array
     {
+        if ($this->pg()) {
+            return ['APP_ENV' => 'testing', 'DB_CONNECTION' => 'pgsql', 'DB_URL' => (string) env('DB_URL'), 'DB_SEARCH_PATH' => 'race',
+                'DB_QUEUE_CONNECTION' => 'pgsql', 'CACHE_STORE' => 'array', 'SESSION_DRIVER' => 'array', 'BROADCAST_CONNECTION' => 'null'];
+        }
+
         return [
             'APP_ENV' => 'testing', 'DB_CONNECTION' => 'sqlite',
             'DB_DATABASE' => database_path(self::CONNECTIONS['sqlite']),
@@ -150,13 +178,7 @@ class LeagueClaimRaceTest extends TestCase
         $coaches = collect(range(1, 20))->map(fn () => $this->approvedCoach($owner, $league));
         $this->assertSame(20, DB::table('league_join_requests')->where('status', 'approved')->count());
 
-        $env = [
-            'APP_ENV' => 'testing', 'DB_CONNECTION' => 'sqlite',
-            'DB_DATABASE' => database_path(self::CONNECTIONS['sqlite']),
-            'DB_CACHE_DATABASE' => database_path(self::CONNECTIONS['cache_db']),
-            'DB_QUEUE_DATABASE' => database_path(self::CONNECTIONS['queue_db']),
-            'CACHE_STORE' => 'array', 'SESSION_DRIVER' => 'array', 'BROADCAST_CONNECTION' => 'null',
-        ];
+        $env = $this->env();
         $startAt = sprintf('%.4F', microtime(true) + 3);
         $processes = $coaches->map(function (User $coach) use ($league, $club, $startAt, $env) {
             $p = new Process([PHP_BINARY, base_path('tests/Fixtures/league-claim.php'), $coach->id, $league['id'], $club, $startAt], base_path(), $env, null, 60);

@@ -153,7 +153,8 @@ class TransfersTest extends TestCase
 
     public function test_an_offer_dies_when_its_player_leaves_and_when_its_time_runs_out(): void
     {
-        $want = $this->players($this->theirs)->first();
+        // An outfield player: the pool sale below may not leave fewer than two keepers.
+        $want = $this->players($this->theirs)->first(fn ($p) => DB::table('master_players')->where('id', $p->master_player_id)->value('line') !== 'gk');
         $id = $this->offer($this->owner, $this->theirs, [$want->id], [], (int) $want->value)->json('offer.id');
         $this->actingAs($this->coach)->postJson($this->url('/listings'), ['player_id' => $want->id, 'price' => (int) $want->value])->assertOk();
         // The coach sells him to the pool instead: the offer and the listing go.

@@ -142,6 +142,12 @@ class MatchRunnerTest extends TestCase
         $this->assertTrue(MatchRunner::claim('first'));
         $this->assertFalse(MatchRunner::claim('second'));
         $this->artisan('matches:run --once')->assertFailed();
+        if (DB::getDriverName() === 'pgsql') {
+            // [X43] Another server on the same Supabase (a deploy runs two for a minute) cannot take it either.
+            $c = DB::connection()->getConfig();
+            $other = new \PDO("pgsql:host={$c['host']};port={$c['port']};dbname={$c['database']}", $c['username'], $c['password']);
+            $this->assertFalse($other->query('select pg_try_advisory_lock('.MatchRunner::RUNNER_LOCK.')')->fetchColumn());
+        }
         // The first one stops (or dies: its claim runs out in seconds); the next one takes over.
         MatchRunner::release('first');
         $this->artisan('matches:run --once')->assertSuccessful();

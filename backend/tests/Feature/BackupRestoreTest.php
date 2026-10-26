@@ -17,6 +17,9 @@ class BackupRestoreTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        if (config('database.default') !== 'sqlite') {
+            $this->markTestSkipped('The SQLite files only; on PostgreSQL (X43) CopierTest checks the backups.');
+        }
         $this->dir = sys_get_temp_dir().'/legends-restore-'.getmypid();
         File::ensureDirectoryExists($this->dir);
         $db = $this->dir.'/game.sqlite';
@@ -32,7 +35,9 @@ class BackupRestoreTest extends TestCase
     protected function tearDown(): void
     {
         DB::purge('restore_test');
-        File::deleteDirectory($this->dir);
+        if (isset($this->dir)) {
+            File::deleteDirectory($this->dir);
+        }
         parent::tearDown();
     }
 

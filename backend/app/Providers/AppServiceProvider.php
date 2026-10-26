@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Database\PostgresConnection;
 use App\Database\SQLiteConnector;
 use App\Mail\ApiTransport;
 use App\Support\ServerHealth;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Http\Request;
 use Illuminate\Queue\Events\Looping;
 use Illuminate\Support\Facades\Event;
@@ -16,11 +19,16 @@ use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /** The key of the game's one write lock on PostgreSQL [X43]. */
+    public const WRITE_LOCK = 4_204_201;
+
     /**
      * Register any application services.
      */
     public function register(): void
     {
+        // [X43] PostgreSQL answers as SQLite does (booleans as 1 or 0).
+        Connection::resolverFor('pgsql', fn ($pdo, $database, $prefix, $config) => new PostgresConnection($pdo, $database, $prefix, $config));
         if (PHP_VERSION_ID < 80400) {
             $this->app->bind('db.connector.sqlite', SQLiteConnector::class);
         }
@@ -32,6 +40,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureSqliteFiles();
+
+        // [X43] On PostgreSQL (Supabase) every transaction takes one lock first, as SQLite's BEGIN IMMEDIATE did: the
+        // game's writes stay one at a time, so every reservation written for SQLite (a read, a check, then a write in
+        // one transaction) holds there too. Released by the commit or the rollback.
+        Event::listen(TransactionBeginning::class, function (TransactionBeginning $e) {
+            if ($e->connection->getDriverName() === 'pgsql' && $e->connection->transactionLevel() === 1) {
+                $e->connection->select('select pg_advisory_xact_lock(?)', [self::WRITE_LOCK]);
+            }
+        });
 
         // Emails over HTTPS where the host blocks SMTP [X8].
         Mail::extend('api', fn (array $config) => new ApiTransport((string) $config['service'], (string) $config['key']));

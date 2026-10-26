@@ -28,7 +28,7 @@ class SimulatorController extends Controller
         $data = $request->validate(['q' => 'nullable|string|max:60', 'league' => 'nullable|string|max:80']);
 
         return MasterClub::query()
-            ->when($data['q'] ?? null, fn ($q, $term) => $q->where('name', 'like', '%'.$term.'%'))
+            ->when($data['q'] ?? null, fn ($q, $term) => $q->whereLike('name', '%'.$term.'%'))
             ->when($data['league'] ?? null, fn ($q, $league) => $q->where('league_name', $league))
             ->orderByDesc('strength_cp')->limit(60)
             ->get(['id', 'name', 'code', 'league_name', 'strength_cp', 'color_primary', 'color_secondary']);

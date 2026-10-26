@@ -144,6 +144,8 @@ class MatchPrepTest extends TestCase
             $res = $this->getJson($url)->assertOk();
             // In the next match, "mine" is the owner's own tactics: what matters is the opponent part.
             $body = $url === $this->url('/next-match') ? json_encode($res->json('match.opponent')) : $res->getContent();
+            // Without the ids, which may happen to be one of the hidden numbers (PostgreSQL's ids keep counting).
+            $body = preg_replace('/"(\w+_)?id":\d+/', '', $body);
             foreach (['pressing', 'style', 'tempo', 'positioning', 'shape', '"att":', '"mid":', '"def":"', 'fullbacks', '"only"', '"push"', ':93', ':87', ':91'] as $hidden) {
                 $this->assertStringNotContainsString($hidden, $body, "{$url} shows {$hidden}");
             }

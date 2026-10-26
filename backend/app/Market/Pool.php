@@ -45,7 +45,7 @@ class Pool
             foreach ($ids->chunk(200) as $chunk) {
                 DB::table('players')->insertUsing(['league_id', 'club_id', 'master_player_id', 'overall', 'base_value', 'value', 'in_pool', 'created_at', 'updated_at'],
                     DB::table('master_players')->whereIn('id', $chunk->all())
-                        ->selectRaw('?, null, id, overall, value, value, 1, ?, ?', [$leagueId, $now, $now]));
+                        ->selectRaw('?, null, id, overall, value, value, true, ?, ?', [$leagueId, $now, $now]));
             }
 
             return $ids->count();
