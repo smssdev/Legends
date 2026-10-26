@@ -141,13 +141,13 @@ onBeforeUnmount(() => window.clearInterval(timer))
           <header class="flex items-start gap-3">
             <span class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-gold"><Icon name="league" /></span>
             <div class="min-w-0 flex-1">
-              <h2 class="truncate font-display text-xl font-extrabold">{{ league.name }}</h2>
+              <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(league.name) }}</h2>
               <p class="text-sm text-text-muted">أنشأه {{ owner }}</p>
             </div>
             <UiChip v-if="league.fair_league" tone="win">دوري نزيه</UiChip>
           </header>
           <dl class="grid grid-cols-2 gap-2 text-sm">
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">القالب</dt><dd class="font-bold">{{ league.template }}</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">القالب</dt><dd class="font-bold">{{ $ln(league.template) }}</dd></div>
             <div class="rounded-lg bg-surface p-3">
               <dt class="text-text-muted">الفرق</dt>
               <dd class="font-bold"><span class="font-numbers">{{ league.team_count }}</span> · منها <span class="font-numbers">{{ league.coaches }}</span> مدربين</dd>

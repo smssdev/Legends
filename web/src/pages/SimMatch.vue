@@ -40,7 +40,7 @@
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1">
         <section v-if="live && !started && mine" aria-label="بدء المباراة المباشرة" class="flex flex-col items-center gap-3 rounded-xl border border-gold/40 bg-surface p-4 text-center">
           <span class="font-display text-2xl font-extrabold">مباراة مباشرة مع صديق</span>
-          <p class="max-w-md text-sm text-text-soft">أرسل الرابط لصديقك ليدير {{ view?.clubs[other].name }} من جهازه، ثم ابدأ حين يكون جاهزاً.</p>
+          <p class="max-w-md text-sm text-text-soft">أرسل الرابط لصديقك ليدير {{ $nm(view?.clubs[other].name) }} من جهازه، ثم ابدأ حين يكون جاهزاً.</p>
           <div v-if="friendLink" class="flex w-full max-w-md gap-2">
             <input :value="friendLink" readonly dir="ltr" aria-label="رابط الصديق" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3 text-xs" @focus="($event.target as HTMLInputElement).select()" />
             <button type="button" class="h-touch rounded-md bg-surface-raised px-4 text-sm" @click="share">{{ copied ? 'نُسخ' : 'نسخ' }}</button>
@@ -84,8 +84,8 @@
           </div>
           <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             <template v-for="s in (['home', 'away'] as const)" :key="s">
-              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ view.clubs[s].name }}</span></button>
-              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ view.clubs[s].name }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
             </template>
           </div>
           <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">التشجيع والاستهجان بعد <span class="font-numbers">{{ cheerLeft }}</span> ثانية</p>
@@ -94,7 +94,7 @@
 
       <div class="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-2">
         <section class="rounded-xl bg-surface px-4 py-3" aria-label="الزخم">
-          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">الزخم</span><span>أعلى: {{ view.clubs.home.name }} · أسفل: {{ view.clubs.away.name }}</span></div>
+          <div class="mb-1 flex justify-between text-xs text-text-muted"><span class="font-display text-sm font-bold text-text">الزخم</span><span>أعلى: {{ $nm(view.clubs.home.name) }} · أسفل: {{ $nm(view.clubs.away.name) }}</span></div>
           <div class="h-20"><Momentum :values="momentum" :home-color="kits.home" /></div>
         </section>
 
@@ -113,8 +113,8 @@
       <aside class="row-start-2 flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1">
         <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" aria-label="لوحة المدرب">
           <div class="flex items-center gap-2">
-            <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ view.clubs[mine].name }}</span></h2>
-            <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">تكتيك {{ view.clubs[other].name }} سري</span>
+            <h2 class="flex-1 font-display text-base font-bold">لوحة المدرب<span v-if="mine"> · {{ $nm(view.clubs[mine].name) }}</span></h2>
+            <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">تكتيك {{ $nm(view.clubs[other].name) }} سري</span>
             <div v-if="!live && view.control.home === 'me' && view.control.away === 'me'" class="flex gap-1 rounded-md bg-surface-sunk p-1">
               <button v-for="s in (['home', 'away'] as const)" :key="s" type="button" class="h-9 rounded-sm px-2 text-xs font-bold" :class="mine === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="chosen = s">{{ view.clubs[s].code }}</button>
             </div>
@@ -139,7 +139,7 @@
               <span class="text-xs text-text-muted">{{ subOut ? 'اختر البديل' : 'اختر من يخرج (الأقل لياقة أولاً)' }}</span>
               <button v-for="p in subOut ? bench : onPitch" :key="p.id" type="button" class="flex min-h-11 items-center gap-2 rounded-md px-2" :class="subOut?.id === p.id ? 'bg-warning/15' : 'bg-surface-sunk hover:bg-surface-raised'" @click="subOut ? sendSub(p) : (subOut = p)">
                 <span class="w-8 rounded-sm px-1 text-center text-xs font-bold" :class="lineClass(p.line)">{{ p.pos }}</span>
-                <span class="flex-1 truncate text-start text-sm">{{ p.name }}</span>
+                <span class="flex-1 truncate text-start text-sm">{{ $nm(p.name) }}</span>
                 <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-[#F5D90A]" aria-label="بطاقة صفراء" />
                 <span class="w-12 text-start font-numbers" :class="fitClass(p.fit)">{{ subOut ? p.ovr : p.fit + '%' }}</span>
               </button>

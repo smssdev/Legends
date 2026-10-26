@@ -45,7 +45,7 @@ onMounted(() => wallet.load())
       <section v-if="wallet.view.leagues.length" aria-label="الصرف في كل دوري" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-bold">الصرف هذا الموسم</h2>
         <div v-for="l in wallet.view.leagues" :key="l.id" class="flex flex-col gap-1">
-          <div class="flex items-center justify-between text-sm"><span class="font-bold">{{ l.name }}</span>
+          <div class="flex items-center justify-between text-sm"><span class="font-bold">{{ $nm(l.name) }}</span>
             <span v-if="l.fair" class="text-text-muted">دوري نزيه: لا كوينز فيه</span>
             <span v-else class="font-numbers text-text-muted" dir="ltr">{{ l.spent }} / {{ wallet.view.cap }}</span></div>
           <div v-if="!l.fair" class="h-2 overflow-hidden rounded-full bg-surface-sunk"><div class="h-full rounded-full bg-gold" :style="{ width: Math.min(100, (l.spent * 100) / wallet.view.cap) + '%' }" /></div>

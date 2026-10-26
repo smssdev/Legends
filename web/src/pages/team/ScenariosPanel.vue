@@ -110,13 +110,13 @@ async function save() {
           <label class="flex flex-col gap-1 text-sm">يخرج
             <select v-model="rows[k.kind].out" class="h-12 rounded-lg bg-surface-sunk px-2">
               <option :value="null">بلا تبديل</option>
-              <option v-for="id in starters" :key="id" :value="id">{{ players.get(id)?.name }}</option>
+              <option v-for="id in starters" :key="id" :value="id">{{ $nm(players.get(id)?.name) }}</option>
             </select>
           </label>
           <label class="flex flex-col gap-1 text-sm">يدخل
             <select v-model="rows[k.kind].in" class="h-12 rounded-lg bg-surface-sunk px-2" :disabled="!rows[k.kind].out">
               <option :value="null">—</option>
-              <option v-for="id in bench" :key="id" :value="id">{{ players.get(id)?.name }}</option>
+              <option v-for="id in bench" :key="id" :value="id">{{ $nm(players.get(id)?.name) }}</option>
             </select>
           </label>
         </div>

@@ -175,7 +175,7 @@ onMounted(load)
             <select v-model="line" class="h-8 bg-transparent font-semibold text-text"><option value="">الكل</option><option value="gk">حارس</option><option value="def">دفاع</option><option value="mid">وسط</option><option value="att">هجوم</option></select>
           </label>
           <label v-if="tab === 'bots'" class="flex h-11 items-center gap-2 rounded-lg bg-surface px-3 text-sm text-text-muted">النادي
-            <select v-model="bot" class="h-8 max-w-40 bg-transparent font-semibold text-text"><option value="">الكل</option><option v-for="b in m.bots" :key="b.id" :value="b.id">{{ b.name }}</option></select>
+            <select v-model="bot" class="h-8 max-w-40 bg-transparent font-semibold text-text"><option value="">الكل</option><option v-for="b in m.bots" :key="b.id" :value="b.id">{{ $nm(b.name) }}</option></select>
           </label>
           <label class="flex h-11 items-center gap-2 rounded-lg bg-surface px-3 text-sm text-text-muted">حتى
             <select v-model="maxPrice" class="h-8 bg-transparent font-semibold text-text"><option value="">أي سعر</option><option v-for="p in PRICES" :key="p" :value="p">{{ money(p) }}</option></select>
@@ -199,8 +199,8 @@ onMounted(load)
             <li v-for="p in m.players" :key="p.id" class="flex items-center gap-2 border-t sm:gap-3 border-text/5 px-2 py-2 first:border-0">
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">
-                <b class="block truncate"><bdi>{{ p.name }}</bdi></b>
-                <span class="block text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة<template v-if="p.club"> · {{ p.club.name }} · بوت</template></span>
+                <b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b>
+                <span class="block text-xs text-text-muted">{{ p.position }} · {{ p.age }} سنة<template v-if="p.club"> · {{ $nm(p.club.name) }} · بوت</template></span>
               </span>
               <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
               <span class="hidden w-20 text-end font-numbers text-text-muted sm:block" dir="ltr">{{ money(p.value) }}</span>
@@ -219,7 +219,7 @@ onMounted(load)
             <div class="flex items-center gap-3">
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">
-                <b class="block truncate" dir="auto">{{ p.name }}</b>
+                <b class="block truncate" dir="auto">{{ $nm(p.name) }}</b>
                 <span class="text-xs text-text-muted">{{ p.position }} · قيمته {{ money(p.value) }} · سقفه {{ money(p.cap) }}</span>
                 <span v-if="p.listed" class="mt-1 block w-fit rounded-pill bg-gold/15 px-2 text-xs text-gold">معروض بـ <b dir="ltr" class="font-numbers">{{ money(p.listed.price) }}</b></span>
               </span>

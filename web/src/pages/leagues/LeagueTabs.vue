@@ -111,7 +111,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
             <td class="py-2">
               <span class="flex items-center gap-2">
                 <ClubCrest :url="r.crest_url" :code="r.code" :size="28" />
-                <span class="truncate font-bold">{{ r.name }}</span>
+                <span class="truncate font-bold">{{ $nm(r.name) }}</span>
                 <span class="truncate text-xs text-text-muted">{{ r.id === myClubId ? 'أنت' : r.coach }}</span>
                 <UiChip v-if="r.rests_next" tone="neutral">استراحة</UiChip>
               </span>
@@ -134,7 +134,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
             {{ f.competition === 'cup' ? STAGES[f.stage ?? ''] : f.competition === 'alliance' ? `التحالفات ${f.round}` : `الجولة ${f.round}` }}{{ f.slot === 2 ? ' · السهرة' : '' }}
           </UiChip>
           <UiChip v-if="f.match_of_day" tone="gold">⭐ قمة الجولة</UiChip>
-          <span v-if="f.is_bye" class="text-text-muted">استراحة: {{ f.home?.name }}</span>
+          <span v-if="f.is_bye" class="text-text-muted">استراحة: {{ $nm(f.home?.name) }}</span>
           <span v-else class="flex min-w-0 flex-1 items-center justify-center gap-2">
             <span class="flex-1 text-end">{{ f.home?.name ?? 'يتحدد' }}</span>
             <span class="font-numbers text-text-muted">{{ f.status === 'finished' ? `${f.home_goals} - ${f.away_goals}` : '-' }}</span>
@@ -153,7 +153,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         <div v-for="t in s.titles" :key="t.competition + t.position" class="flex min-h-touch items-center gap-2 text-sm">
           <UiChip :tone="t.position === 1 ? 'gold' : 'neutral'">{{ t.competition === 'cup' ? (t.position === 1 ? 'بطل الكأس' : 'وصيف الكأس') : (t.position === 1 ? 'بطل الدوري' : MEDALS[t.position]) }}</UiChip>
           <ClubCrest :url="t.club.crest_url" :code="t.club.name.slice(0, 3)" :size="24" />
-          <span class="flex-1 truncate font-bold">{{ t.club.name }}</span>
+          <span class="flex-1 truncate font-bold">{{ $nm(t.club.name) }}</span>
           <RouterLink v-if="t.coach" :to="{ name: 'coach', params: { id: t.coach.id } }" class="text-gold">{{ t.coach.name }}</RouterLink>
           <span v-else class="text-text-muted">الحاسوب</span>
         </div>

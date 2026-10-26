@@ -114,7 +114,7 @@ const local = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'lo
             <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gold/15 font-numbers font-bold text-gold">{{ s.slot }}</span>
             <template v-if="i < shown">
               <ClubCrest :url="card(s.club).crest_url" :code="card(s.club).code" :size="36" />
-              <span class="min-w-0 flex-1"><b class="block truncate">{{ card(s.club).name }}</b><span class="block truncate text-xs text-text-muted">{{ card(s.club).coach ?? 'الحاسوب' }}</span></span>
+              <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(card(s.club).name) }}</b><span class="block truncate text-xs text-text-muted">{{ card(s.club).coach ?? 'الحاسوب' }}</span></span>
             </template>
             <span v-else class="text-sm text-text-muted">{{ i === shown ? 'يُسحب…' : '؟' }}</span>
           </li>
@@ -125,13 +125,13 @@ const local = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'lo
         <section class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-first">
           <h2 id="h-first" class="font-display text-lg font-extrabold">الجولة الأولى</h2>
           <p v-for="(m, i) in draw.league_round" :key="i" class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-            <b class="truncate">{{ card(m.home)?.name }}</b><span class="text-text-muted">ضد</span><b class="truncate">{{ card(m.away)?.name }}</b>
+            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">ضد</span><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
           </p>
         </section>
         <section v-if="draw.cup_round.length" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-cup">
           <h2 id="h-cup" class="font-display text-lg font-extrabold">الدور الأول من الكأس</h2>
           <p v-for="(m, i) in draw.cup_round" :key="i" class="flex items-center justify-between gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-            <b class="truncate">{{ card(m.home)?.name }}</b><span class="text-text-muted">ضد</span><b class="truncate">{{ card(m.away)?.name }}</b>
+            <b class="truncate">{{ $nm(card(m.home)?.name) }}</b><span class="text-text-muted">ضد</span><b class="truncate">{{ $nm(card(m.away)?.name) }}</b>
           </p>
         </section>
         <p class="rounded-lg bg-surface-sunk px-3 py-2 text-xs text-text-muted">

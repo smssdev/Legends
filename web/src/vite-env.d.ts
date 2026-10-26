@@ -6,3 +6,14 @@ interface ImportMetaEnv {
   readonly VITE_REVERB_PORT?: string
   readonly VITE_REVERB_SCHEME?: string
 }
+
+// The names switch's helpers in every template [X40, lib/names.ts].
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $pn: (s: string | null | undefined) => string
+    $cn: (s: string | null | undefined) => string
+    $ln: (s: string | null | undefined) => string
+    $nm: (s: string | null | undefined) => string
+  }
+}
+export {}

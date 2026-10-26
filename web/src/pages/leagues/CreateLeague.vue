@@ -148,7 +148,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
             <label class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">القالب</span>
               <select v-model="template" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" :aria-invalid="!!field('template')">
-                <option v-for="t in templates" :key="t.name" :value="t.name">{{ t.name }} · {{ t.clubs }} نادياً</option>
+                <option v-for="t in templates" :key="t.name" :value="t.name">{{ $nm(t.name) }} · {{ t.clubs }} نادياً</option>
               </select>
               <span v-if="field('template')" class="text-sm text-[#FF8A8A]">{{ field('template') }}</span>
             </label>
@@ -262,7 +262,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
             @click="club = c"
           >
             <ClubCrest :url="c.crest_url" :code="c.code" :size="48" />
-            <span class="min-w-0 flex-1 truncate font-display text-lg font-extrabold">{{ c.name }}</span>
+            <span class="min-w-0 flex-1 truncate font-display text-lg font-extrabold">{{ $nm(c.name) }}</span>
             <span class="font-numbers text-3xl font-bold text-gold">{{ strength(c.strength_cp) }}</span>
           </button>
         </li>

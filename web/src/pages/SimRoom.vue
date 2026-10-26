@@ -13,7 +13,7 @@
     <section v-if="room && isHost" class="flex flex-col items-center gap-4 rounded-xl bg-surface p-5 text-center">
       <Crest :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="64" />
       <div>
-        <div class="font-display text-2xl font-extrabold">{{ room.host.name }} · {{ room.host.club.name }}</div>
+        <div class="font-display text-2xl font-extrabold">{{ $nm(room.host.name) }} · {{ $nm(room.host.club.name) }}</div>
         <p class="mt-1 text-sm text-text-muted">أرسل الرابط لصديقك. حين يكتب اسمه ويختار فريقه تبدأ المباراة عندكما معاً.</p>
       </div>
       <div class="flex w-full gap-2">
@@ -26,7 +26,7 @@
     <!-- A full room on a device that did not join. -->
     <section v-else-if="room && room.guest" class="rounded-xl bg-surface p-5 text-center">
       <div class="font-display text-xl font-extrabold">الغرفة ممتلئة</div>
-      <p class="mt-1 text-sm text-text-muted">{{ room.host.name }} و{{ room.guest.name }} يلعبان الآن. افتح غرفة جديدة لتلعب.</p>
+      <p class="mt-1 text-sm text-text-muted">{{ $nm(room.host.name) }} و{{ $nm(room.guest.name) }} يلعبان الآن. افتح غرفة جديدة لتلعب.</p>
       <RouterLink :to="{ name: 'sim-room-new' }" class="mt-3 inline-flex h-touch items-center rounded-md bg-gold px-5 font-bold text-on-gold">غرفة جديدة</RouterLink>
     </section>
 
@@ -34,7 +34,7 @@
     <template v-else-if="!props.room || room">
       <div v-if="room" class="flex items-center gap-3 rounded-xl border border-gold/40 bg-gold/10 p-4">
         <Crest :code="room.host.club.code" :primary="clubColors(room.host.club).primary" :secondary="clubColors(room.host.club).secondary" :size="48" />
-        <div><b class="font-display text-lg">{{ room.host.name }}</b> يتحداك بفريق <b>{{ room.host.club.name }}</b>. اكتب اسمك واختر فريقك.</div>
+        <div><b class="font-display text-lg">{{ $nm(room.host.name) }}</b> يتحداك بفريق <b>{{ $nm(room.host.club.name) }}</b>. اكتب اسمك واختر فريقك.</div>
       </div>
       <div v-else>
         <h1 class="font-display text-3xl font-extrabold">العب مع صديق</h1>
@@ -59,8 +59,8 @@
             @click="club = c"
           >
             <Crest :code="c.code" :primary="clubColors(c).primary" :secondary="clubColors(c).secondary" :size="28" />
-            <span class="flex-1 truncate font-semibold">{{ c.name }}</span>
-            <span class="text-xs text-text-muted">{{ c.league_name }}</span>
+            <span class="flex-1 truncate font-semibold">{{ $nm(c.name) }}</span>
+            <span class="text-xs text-text-muted">{{ $ln(c.league_name) }}</span>
             <span class="w-10 text-start font-numbers text-lg text-gold">{{ ((c.strength_cp ?? 0) / 100).toFixed(1) }}</span>
           </button>
         </div>

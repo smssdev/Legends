@@ -5,6 +5,7 @@
 // Dropped on open grass, a starter stays where he is dropped, inside his line's band, like PES [X5].
 // The server checks every rule and answers in Arabic; this screen only arranges.
 import { computed, onMounted, ref } from 'vue'
+import { nm } from '../../lib/names'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
@@ -81,8 +82,9 @@ const reserves = computed(() => {
 const place = (s: { x: number; y: number }) => ({ top: `${100 - (s.x / 720) * 100}%`, left: `${(s.y / 680) * 100}%` })
 const shown = (p: SquadPlayer) => ({ overall: p.overall, fitness: `${p.fitness}%`, age: p.age, value: money(p.value) })[view.value]
 /** The name on the pitch: the last word, or the last two when it is short ("Vinícius Jr." → "Vinícius Jr."). */
-const short = (name: string) => {
-  const w = name.split(' ')
+const short = (latin: string) => {
+  // The name as the coach chose to see it [X40], shortened to its last word (two when the last is a short particle).
+  const w = nm(latin).split(' ')
   return w.length > 1 && w[w.length - 1].length <= 3 ? w.slice(-2).join(' ') : w[w.length - 1]
 }
 // Chemistry [X22]: measured by the server on the saved eleven, so the links show until the lineup changes.
@@ -348,7 +350,7 @@ async function saveCustom() {
       <header class="flex items-start justify-between gap-3">
         <div>
           <h1 class="font-display text-3xl font-extrabold">التشكيلة</h1>
-          <p class="text-sm text-text-muted">{{ team.club.name }}<template v-if="team.lineup.auto && !dirty"> · تلقائية («تحسين»)</template></p>
+          <p class="text-sm text-text-muted">{{ $nm(team.club.name) }}<template v-if="team.lineup.auto && !dirty"> · تلقائية («تحسين»)</template></p>
         </div>
         <UiButton :disabled="!dirty || saving" @click="save">{{ saving ? 'يحفظ…' : 'حفظ' }}</UiButton>
       </header>
@@ -450,7 +452,7 @@ async function saveCustom() {
             @click="click({ zone: 'bench', index: i })"
           >
             <span class="flex items-center justify-between"><span class="font-numbers text-xl font-bold text-gold">{{ shown(players.get(id)!) }}</span><span class="text-xs text-text-muted">{{ players.get(id)!.position }}</span></span>
-            <span class="truncate text-sm font-bold">{{ players.get(id)!.name }}</span>
+            <span class="truncate text-sm font-bold">{{ $nm(players.get(id)!.name) }}</span>
           </button>
           <button
             v-if="bench.length < 7"
@@ -478,7 +480,7 @@ async function saveCustom() {
             @dblclick="card = p"
           >
             <span class="font-numbers text-lg font-bold text-gold">{{ shown(p) }}</span>
-            <span class="min-w-0 flex-1 truncate">{{ p.name }}</span>
+            <span class="min-w-0 flex-1 truncate">{{ $nm(p.name) }}</span>
             <span class="text-xs text-text-muted">{{ p.position }}</span>
           </button>
         </div>
@@ -495,7 +497,7 @@ async function saveCustom() {
             @change="setTaker(role, ($event.target as HTMLSelectElement).value)"
           >
             <option value="">تلقائي ({{ players.get(team.takers[role]?.player_id ?? 0)?.name ?? '—' }})</option>
-            <option v-for="id in team.lineup.starters.filter((x) => x)" :key="id!" :value="id">{{ players.get(id!)?.name }}</option>
+            <option v-for="id in team.lineup.starters.filter((x) => x)" :key="id!" :value="id">{{ $nm(players.get(id!)?.name) }}</option>
           </select>
         </label>
       </section>

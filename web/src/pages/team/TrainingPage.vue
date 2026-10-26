@@ -142,7 +142,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
           </div>
           <template v-if="s.player">
             <div class="flex items-center gap-3">
-              <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ s.player.name }}</bdi></b>
+              <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ $nm(s.player.name) }}</bdi></b>
                 <span class="text-xs text-text-muted">{{ s.player.position }} · {{ s.player.age }} سنة · الإمكانية {{ s.player.potential }}</span></span>
               <span class="text-center"><b class="block font-numbers text-3xl" :class="tier(s.player.overall) === 'gold' ? 'text-gold' : ''">{{ s.player.overall }}</b><span class="font-numbers text-xs text-success" dir="ltr">→ {{ s.player.overall + 1 }}</span></span>
             </div>
@@ -182,7 +182,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
           <span>اللاعب</span><span class="text-center">السن</span><span class="text-center">القوة</span><span class="text-center">السقف</span><span class="text-center">جلسات للـ +1</span><span />
         </div>
         <div v-for="p in candidates" :key="p.id" class="grid grid-cols-[1fr_3rem_6rem] items-center gap-2 rounded-lg bg-surface-sunk px-2 py-2 sm:grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem]">
-          <span class="min-w-0"><b class="block truncate"><bdi>{{ p.name }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> · التقدم {{ p.progress }}%</template><template v-if="p.injured"> · مصاب</template><span class="sm:hidden"> · {{ p.age }} سنة · الإمكانية {{ p.potential }}</span></span></span>
+          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> · التقدم {{ p.progress }}%</template><template v-if="p.injured"> · مصاب</template><span class="sm:hidden"> · {{ p.age }} سنة · الإمكانية {{ p.potential }}</span></span></span>
           <span class="hidden text-center font-numbers sm:block">{{ p.age }}</span>
           <span class="text-center font-numbers text-lg">{{ p.overall }}</span>
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? 'تجاوز إمكانيته: يتطور أبطأ، حتى 99' : undefined">{{ p.potential }}</span>
@@ -222,7 +222,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
             <div class="flex flex-wrap gap-1.5" aria-label="اختر اللاعبين">
               <button v-for="p in v.players.filter((p) => !p.maxed)" :key="p.id" type="button" class="min-h-touch rounded-full px-3 text-xs"
                 :class="pick.includes(p.id) ? 'bg-gold font-bold text-on-gold' : 'bg-surface-sunk text-text-muted'" :aria-pressed="pick.includes(p.id)" @click="toggle(p.id)">
-                <bdi>{{ p.name }}</bdi> {{ p.overall }}</button>
+                <bdi>{{ $nm(p.name) }}</bdi> {{ p.overall }}</button>
             </div>
             <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40"
               :disabled="busy || !pick.length || campPrice > v.balance" @click="sendCamp">
@@ -235,7 +235,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
             <p class="text-sm text-text-muted">خط واحد +{{ v.secret.boost }} في المباراة القادمة وحدها، والخصم لا يعرف. {{ v.secret.used }} من {{ v.secret.per_season }} هذا الموسم.</p></div>
           <p v-if="!v.secret.fixture" class="text-sm text-text-muted">لا مباراة قادمة.</p>
           <template v-else>
-            <p class="text-sm">ضد <b><bdi>{{ v.secret.fixture.opponent }}</bdi></b> · القفل بعد <span class="font-numbers text-gold" dir="ltr">{{ left(v.secret.fixture.lock_at) }}</span></p>
+            <p class="text-sm">ضد <b><bdi>{{ $nm(v.secret.fixture.opponent) }}</bdi></b> · القفل بعد <span class="font-numbers text-gold" dir="ltr">{{ left(v.secret.fixture.lock_at) }}</span></p>
             <p v-if="v.secret.fixture.line" class="rounded-lg bg-success/15 px-3 py-2 text-sm text-success">تم: {{ LINE_NAMES[v.secret.fixture.line] }} +{{ v.secret.boost }} في هذه المباراة.</p>
             <p v-else-if="v.secret.fixture.status !== 'scheduled'" class="text-sm text-text-muted">قُفلت التشكيلة.</p>
             <div v-else class="grid grid-cols-2 gap-2">

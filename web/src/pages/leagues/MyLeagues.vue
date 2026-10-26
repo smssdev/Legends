@@ -65,8 +65,8 @@ function link(l: League) {
       <RouterLink v-for="l in leagues" :key="l.id" :to="link(l)" class="flex flex-col gap-3 rounded-xl border-t-4 !border-t-brand bg-surface p-4 hover:bg-surface-raised">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <h2 class="truncate font-display text-xl font-extrabold">{{ l.name }}</h2>
-            <p class="text-sm text-text-muted">{{ l.template }} · <span class="font-numbers">{{ l.team_count }}</span> فريقاً</p>
+            <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(l.name) }}</h2>
+            <p class="text-sm text-text-muted">{{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> فريقاً</p>
           </div>
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ STATUS[l.status] }}</UiChip>
         </div>

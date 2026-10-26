@@ -25,3 +25,6 @@ dist-ssr
 
 # Generated from docs/design/tokens.json
 src/styles/tokens.css
+
+# The names dictionary, written before dev and build (scripts/names.mjs) [X40].
+public/names/

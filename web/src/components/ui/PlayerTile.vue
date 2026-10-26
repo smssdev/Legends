@@ -3,6 +3,7 @@
 // and position large in the corner, the line's colour along the top, the name, and a fitness bar at the foot.
 import { computed } from 'vue'
 import { LINES, money, type Line } from '../../lib/format'
+import { nm } from '../../lib/names'
 
 const props = defineProps<{ name: string; line: Line; position: string; overall: number; value: number; fitness?: number; price?: number; status?: string; statusTone?: string; selected?: boolean; attributes?: Record<string, number | null> }>()
 // The card's six numbers, as on the real game cards: the outfield attributes, or the keeper's.
@@ -10,9 +11,11 @@ const LABELS: Record<string, string> = { pac: 'سرعة', sho: 'تسديد', pas
 const stats = computed(() => Object.entries(props.attributes ?? {}).filter(([, v]) => v != null).slice(0, 6) as [string, number][])
 const tier = computed(() => (props.overall >= 85 ? 'gold' : props.overall >= 75 ? 'silver' : 'bronze'))
 const FACE = { gold: 'from-[#4a3809] via-surface-raised to-surface ring-gold/70', silver: 'from-[#3a4a52] via-surface-raised to-surface ring-chrome/40', bronze: 'from-[#45291a] via-surface-raised to-surface ring-[#B4692A]/60' }
+// The name as the coach chose to see it [X40]; on the card its last part (the whole of a one-word name).
 const shortName = computed(() => {
-  const parts = props.name.trim().split(/\s+/)
-  return parts.length > 1 ? parts.slice(1).join(' ') : props.name
+  const full = nm(props.name)
+  const parts = full.trim().split(/\s+/)
+  return parts.length > 1 ? parts.slice(1).join(' ') : full
 })
 </script>
 

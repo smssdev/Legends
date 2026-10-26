@@ -102,7 +102,7 @@ onMounted(load)
         <ul>
           <li v-for="l in t.listings.filter((l) => !l.mine)" :key="l.player.id" class="flex items-center gap-3 border-t border-text/5 px-2 py-2 first:border-0">
             <LineBadge :line="l.player.line as Line" />
-            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ l.player.name }}</b><span class="text-xs text-text-muted">{{ l.club.name }} · {{ l.player.position }} · {{ l.player.age }} سنة · قيمته {{ money(l.player.value) }}</span></span>
+            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(l.player.name) }}</b><span class="text-xs text-text-muted">{{ $nm(l.club.name) }} · {{ l.player.position }} · {{ l.player.age }} سنة · قيمته {{ money(l.player.value) }}</span></span>
             <span class="w-10 text-center font-numbers text-xl">{{ l.player.overall }}</span>
             <span class="w-20 text-end font-numbers text-lg font-bold" dir="ltr">{{ money(l.price) }}</span>
             <button type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!t.closed" @click="compose(l.club.id, l.club.name, { in: [l.player.id], money: l.price })">قدّم عرضاً</button>
@@ -115,7 +115,7 @@ onMounted(load)
         <ul>
           <li v-for="p in mine" :key="p.id" class="flex flex-wrap items-center gap-3 border-t border-text/5 px-2 py-2">
             <LineBadge :line="p.line as Line" />
-            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ p.name }}</b><span class="text-xs text-text-muted">قيمته {{ money(p.value) }}</span></span>
+            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">قيمته {{ money(p.value) }}</span></span>
             <template v-if="listed.has(p.id)">
               <span class="rounded-pill bg-gold/15 px-3 py-1 font-numbers text-sm text-gold" dir="ltr">{{ money(listed.get(p.id)!) }}</span>
               <button type="button" class="h-touch rounded-md bg-surface-raised px-3 text-sm" :disabled="busy" @click="unlist(p)">اسحب</button>
@@ -133,7 +133,7 @@ onMounted(load)
       <div class="flex flex-wrap items-center gap-2">
         <label class="flex h-11 items-center gap-2 rounded-lg bg-surface px-3 text-sm text-text-muted">عرض جديد إلى
           <select class="h-8 bg-transparent font-semibold text-text" :disabled="!!t.closed" @change="(e) => { const c = t!.clubs.find((c) => c.id === Number((e.target as HTMLSelectElement).value)); if (c) compose(c.id, c.name); (e.target as HTMLSelectElement).value = '' }">
-            <option value="">اختر مدرباً</option><option v-for="c in t.clubs" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option value="">اختر مدرباً</option><option v-for="c in t.clubs" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
           </select>
         </label>
         <span class="text-xs text-text-muted">ما يُدفع فوق القيمة بين ناديين في الموسم لا يتجاوز {{ count(t.pair_cap) }}</span>
@@ -148,12 +148,12 @@ onMounted(load)
         <div class="grid gap-2 sm:grid-cols-2">
           <div class="rounded-lg bg-surface-sunk p-3 text-sm">
             <span class="text-xs text-text-muted">{{ o.incoming ? 'يريد منك' : 'تطلب' }}</span>
-            <div v-for="p in o.in" :key="p.id" class="mt-1 flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></div>
+            <div v-for="p in o.in" :key="p.id" class="mt-1 flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ $nm(p.name) }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></div>
           </div>
           <div class="rounded-lg bg-surface-sunk p-3 text-sm">
             <span class="text-xs text-text-muted">{{ o.incoming ? 'يعطيك' : 'تعطي' }}</span>
             <div v-if="o.money" class="mt-1 font-numbers text-lg text-gold" dir="ltr">{{ count(o.money) }}</div>
-            <div v-for="p in o.out" :key="p.id" class="mt-1 flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></div>
+            <div v-for="p in o.out" :key="p.id" class="mt-1 flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ $nm(p.name) }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></div>
           </div>
         </div>
         <div v-if="o.status === 'pending'" class="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ onMounted(load)
           <h3 class="mb-1 text-sm font-bold">تريد من فريقه (حتى 5)</h3>
           <div class="flex max-h-56 flex-col overflow-y-auto rounded-lg bg-surface-sunk">
             <UiToggle v-for="p in theirs" :key="p.id" class="border-b border-text/5 px-2" :model-value="draft.in.includes(p.id)" @update:model-value="toggle(draft.in, p.id)">
-              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
+              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ $nm(p.name) }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
             </UiToggle>
           </div>
         </div>
@@ -182,7 +182,7 @@ onMounted(load)
           <h3 class="mb-1 text-sm font-bold">تعطيه من فريقك (اختياري)</h3>
           <div class="flex max-h-40 flex-col overflow-y-auto rounded-lg bg-surface-sunk">
             <UiToggle v-for="p in mine" :key="p.id" class="border-b border-text/5 px-2" :model-value="draft.out.includes(p.id)" @update:model-value="toggle(draft.out, p.id)">
-              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ p.name }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
+              <span class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><span class="flex-1 truncate">{{ $nm(p.name) }}</span><span class="font-numbers" dir="ltr">{{ p.overall }} · {{ money(p.value) }}</span></span>
             </UiToggle>
           </div>
         </div>
