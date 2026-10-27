@@ -5,6 +5,9 @@ services:
     name: legends
     runtime: docker
     plan: free
+    # [X45] Beside the database: Supabase is in eu-west-1 (Ireland), and Frankfurt is Render's nearest region. Every
+    # query crosses this distance, a dozen or more per screen, so an ocean between them makes every screen slow.
+    region: frankfurt
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/v1/sim/leagues
     # Off on purpose [X33]: Render starts the new version while the old one still serves, so whatever is done in

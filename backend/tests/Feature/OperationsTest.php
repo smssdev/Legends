@@ -87,8 +87,20 @@ class OperationsTest extends TestCase
         $this->artisan('matches:live --soon=15')->expectsOutput((string) $soon)->assertSuccessful();
     }
 
+    public function test_without_the_two_step_code_the_panel_opens_for_an_admin_at_once(): void
+    {
+        // [X46] The owner's decision: no code asked (game.admin.two_factor off by default).
+        $user = User::factory()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->withHeader('Referer', config('app.url'));
+        $this->actingAs($user)->getJson('/api/v1/admin/overview')->assertForbidden();
+        $this->actingAs($admin)->getJson('/api/v1/admin/2fa')->assertOk()->assertJsonPath('required', false)->assertJsonPath('passed', true);
+        $this->actingAs($admin)->getJson('/api/v1/admin/overview')->assertOk();
+    }
+
     public function test_the_admin_panel_is_for_the_admin_after_the_two_step_code(): void
     {
+        config(['game.admin.two_factor' => true]);
         $user = User::factory()->create();
         $admin = User::factory()->create(['role' => 'admin']);
         // From the site: Sanctum's session (the second step is kept in it).

@@ -30,6 +30,7 @@ class MatchResult
         $now = GameClock::now();
         $club = ['home' => $f->home_id, 'away' => $f->away_id];
 
+        Standings::forget((int) $f->season_id);
         DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => $state['score']['home'],
             'away_goals' => $state['score']['away'], 'updated_at' => $now]);
 

@@ -103,10 +103,14 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => env('DB_SEARCH_PATH', 'public'),
+            // [X45] Empty on Render: Supabase's own default schema, so no set statement on each connection.
+            'search_path' => env('DB_SEARCH_PATH', 'public') ?: null,
             'sslmode' => env('DB_SSLMODE', 'prefer'),
             // [X43] Supabase is across the network: one round trip a query (no server-side prepare and deallocate).
-            'options' => extension_loaded('pdo_pgsql') ? [PDO::PGSQL_ATTR_DISABLE_PREPARES => true] : [],
+            // [X45] And each worker keeps its connection between requests (DB_PERSISTENT, Render): no new TLS handshake
+            // and sign-in on every request. An unfinished transaction is rolled back by PDO when its request ends.
+            'options' => extension_loaded('pdo_pgsql')
+                ? [PDO::PGSQL_ATTR_DISABLE_PREPARES => true, PDO::ATTR_PERSISTENT => (bool) env('DB_PERSISTENT', false)] : [],
         ],
 
         'sqlsrv' => [

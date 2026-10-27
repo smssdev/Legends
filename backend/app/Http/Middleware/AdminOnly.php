@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** The admin panel: an admin's account, signed in on the site, who proved his two-step code [Sprint 37]. */
+/** The admin panel: an admin's account, signed in on the site, who proved the two-step code when it is asked [Sprint 37, X46]. */
 class AdminOnly
 {
     public function handle(Request $request, Closure $next): Response

@@ -55,6 +55,20 @@ class MatchRunner
     }
 
     /**
+     * [X45] Whether a match is live, about to be published, or starts soon: then the runner steps every
+     * runner_sleep_ms, else it rests runner_idle_ms between steps. Locking a fixture is MatchPrep's, on the minute.
+     */
+    public static function busy(): bool
+    {
+        $now = GameClock::now();
+
+        return DB::table('matches')->whereIn('status', ['live', 'done'])->exists()
+            || DB::table('fixtures')->whereIn('status', ['scheduled', 'locked'])->where('is_bye', false)
+                ->whereBetween('scheduled_at', [$now->copy()->subMinutes((int) config('game.matches.missed_live_minutes')),
+                    $now->copy()->addSeconds((int) config('game.matches.runner_busy_ahead_s'))])->exists();
+    }
+
+    /**
      * Only one runner plays at a time (two would make the same minute twice): the one that holds this claim,
      * renewed every step. A second one waits; it takes over within seconds if the first one stops.
      */

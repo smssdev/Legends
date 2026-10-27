@@ -8,6 +8,7 @@ use App\Auth\AccountVerification;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
 use App\Auth\OfficialAccounts;
+use App\Auth\Sessions;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\SetLocale;
@@ -259,7 +260,7 @@ class AuthController extends Controller
                 $user->setRememberToken(Str::random(60));
                 // Whoever knew the old password is signed out everywhere.
                 $user->tokens()->delete();
-                DB::table('sessions')->where('user_id', $user->id)->delete();
+                Sessions::forget($user->id);
                 // The reset link reached this inbox, so the email is the user's.
                 $user->email_verified_at ??= GameClock::now();
                 $user->save();

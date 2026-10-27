@@ -14,7 +14,7 @@ class AccountDeletion
     {
         DB::transaction(function () use ($user) {
             $user->tokens()->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
+            Sessions::forget($user->id);
             if ($user->email !== null) {
                 DB::table('password_reset_tokens')->where('email', $user->email)->delete();
             }
