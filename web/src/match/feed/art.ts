@@ -221,7 +221,7 @@ function ball(svg, p = svg.world) {
   }
 }
 function trail(svg, p = svg.world, color = '#FFE7A8') { return el('path', { d: '', fill: 'none', stroke: color, 'stroke-width': 2.5, 'stroke-linecap': 'round', opacity: 0, filter: ref(svg, 'glow') }, p) }
-const drawTrail = (tr, path, f, op, from = 0) => { const pts = Array.from({ length: 14 }, (_, i) => bez(path, Math.max(from, f - 0.35) + ((f - Math.max(from, f - 0.35)) * i) / 13)); sa(tr, 'd', 'M' + pts.map((q) => q.join(' ')).join(' L')); sa(tr, 'opacity', op) }
+const drawTrail = (trl, path, f, op, from = 0) => { const pts = Array.from({ length: 14 }, (_, i) => bez(path, Math.max(from, f - 0.35) + ((f - Math.max(from, f - 0.35)) * i) / 13)); sa(trl, 'd', 'M' + pts.map((q) => q.join(' ')).join(' L')); sa(trl, 'opacity', op) }
 // The headline: a dark band with gold rules sliding in, the word over it.
 function title(svg, text, color) {
   const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: 'rgba(4,11,28,.75)', opacity: 0 }, svg)
@@ -268,7 +268,7 @@ function openPlay(e, outcome, KT) {
   const passer = player(w, atk, passNo, 1, { look: Math.floor(R() * 40) })
   const marker = player(w, dfk, e.defNo ?? '', 1, { look: Math.floor(R() * 40) })
   const sh = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) })
-  const b = ball(svg), tr = trail(svg)
+  const b = ball(svg), trl = trail(svg)
 
   // Where the move starts, and the pass that sets the shooter up.
   const pFrom = q === 'header' ? [side > 0 ? 548 : 92, 214] : q === 'big' ? [Math.max(110, Math.min(530, lx - side * 150)), 290] : [Math.max(110, Math.min(530, spot[0] - side * (130 + R() * 40))), Math.min(300, spot[1] + 18)]
@@ -369,12 +369,12 @@ function openPlay(e, outcome, KT) {
     } else if (t < KT) {
       const f = seg(t, tS, KT), from = q === 'header' ? [spot[0], spot[1] - 46] : strike
       const p = bez([from, path[1], target], f); bx = p[0]; by = p[1]; gr = groundOf(f)
-      drawTrail(tr, [from, path[1], target], f, 0.55)
+      drawTrail(trl, [from, path[1], target], f, 0.55)
       turn = t * 2400
     } else {
       // What happens once it gets there.
       const a = t - KT
-      sa(tr, 'opacity', Math.max(0, 0.55 - a * 1.5))
+      sa(trl, 'opacity', Math.max(0, 0.55 - a * 1.5))
       if (after === 'net') { const f = ease(clamp(a / 0.18)), d = clamp((a - 0.18) / 0.5); bx = target[0] + (target[0] - 320) * 0.05 * f; by = lerp(target[1] - 10 * f, 146, d * d) - Math.abs(Math.sin(d * 9)) * 4 * (1 - d); gr = LINE - 8 }
       else if (after === 'hold') { landed ??= glove; bx = (glove ?? landed)[0]; by = (glove ?? landed)[1]; gr = LINE + 2; turn = 0 }
       else if (after === 'parry') { const f = ease(clamp(a / 0.8)), dx = Math.sign(target[0] - 320) || 1; const p = bez([target, [target[0] + dx * 70, target[1] - 26], [target[0] + dx * (e.corner ? 150 : 96), 196]], f); bx = p[0]; by = p[1] - Math.abs(Math.sin(f * 7)) * 8 * (1 - f); gr = lerp(LINE, 196, f) }
@@ -429,7 +429,7 @@ export const SCENES = {
   },
   penalty(e) {
     const R = rnd(e.v ?? (e.no ?? 9) * 31), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
-    const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), tr = trail(svg)
+    const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
     const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'IBM Plex Sans Arabic, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
     const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
     const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1
@@ -450,9 +450,9 @@ export const SCENES = {
       else glove = dive(kp, 320, LINE + 2, kAim[0], kAim[1], seg(t, tS + 0.03, KT), seg(t, KT + 0.2, KT + 0.85))
       let p, gr = LINE + 2
       if (t < tS) { p = spot; gr = spot[1] }
-      else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(tr, path, g, 0.55) }
-      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(tr, 'opacity', 0) }
-      else { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] - dir * 30, target[1] - 30], [target[0] + dir * 110, 200]], a); gr = lerp(LINE, 200, a); sa(tr, 'opacity', 0) }
+      else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(trl, path, g, 0.55) }
+      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(trl, 'opacity', 0) }
+      else { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] - dir * 30, target[1] - 30], [target[0] + dir * 110, 200]], a); gr = lerp(LINE, 200, a); sa(trl, 'opacity', 0) }
       b.set(p[0], p[1], gr, t > tS ? t * 2000 : 0)
       if (e.scored) { G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT) }
       tt(seg(t, KT + 0.2, KT + 0.6))
@@ -462,7 +462,7 @@ export const SCENES = {
     const R = rnd(e.v ?? (e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
     const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
     const wall = [0, 1, 2, 3].map((i) => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
-    const tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), tr = trail(svg)
+    const tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
     const fl = flash(svg), cf = flashes(svg)
     const KT = 2.65, tS = 1.85, side = R() < 0.5 ? -1 : 1, spot = [320 - side * 50, 252]
     const target = e.scored ? [side > 0 ? POSTS[1] - 12 : POSTS[0] + 12, 84 + R() * 8] : e.saved ? [320 + side * (44 + R() * 14), 92 + R() * 14] : [320 + side * 20, 50]
@@ -480,10 +480,10 @@ export const SCENES = {
       else dive(kp, 320 - side * 14, LINE + 2, e.scored ? lerp(320, target[0], 0.75) : e.saved ? target[0] : lerp(320, target[0], 0.4), e.scored ? target[1] + 8 : Math.max(86, target[1]), seg(t, tS + 0.12, KT), seg(t, KT + 0.2, KT + 0.9))
       let p, gr
       if (t < tS) { p = spot; gr = spot[1] }
-      else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(tr, path, g, 0.6) }
-      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(tr, 'opacity', 0) }
-      else if (e.saved) { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] + side * 40, target[1] - 20], [target[0] + side * 120, 190]], a); gr = lerp(LINE, 190, a); sa(tr, 'opacity', 0) }
-      else { const a = clamp((t - KT) / 0.7); p = [target[0] + side * 12 * a, target[1] - 28 * a]; gr = LINE - 20 * a; sa(tr, 'opacity', 0) }
+      else if (t < KT) { const g = seg(t, tS, KT); p = bez(path, g); gr = lerp(spot[1], LINE + 2, g); drawTrail(trl, path, g, 0.6) }
+      else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(trl, 'opacity', 0) }
+      else if (e.saved) { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] + side * 40, target[1] - 20], [target[0] + side * 120, 190]], a); gr = lerp(LINE, 190, a); sa(trl, 'opacity', 0) }
+      else { const a = clamp((t - KT) / 0.7); p = [target[0] + side * 12 * a, target[1] - 28 * a]; gr = LINE - 20 * a; sa(trl, 'opacity', 0) }
       b.set(p[0], p[1], gr, t > tS ? t * 1600 : 0, !e.scored && !e.saved ? 1 - seg(t, KT + 0.3, KT + 0.7) : 1)
       if (e.scored) { G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT) }
       tt(seg(t, KT + 0.2, KT + 0.6))
@@ -494,7 +494,7 @@ export const SCENES = {
     const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
     const pack = [0, 1, 2].map((i) => player(w, i % 2 ? K(e.side).kit : K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
     const df = player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }), hd = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) })
-    const b = ball(svg), tr = trail(svg)
+    const b = ball(svg), trl = trail(svg)
     el('path', { d: 'M598 214 V184', stroke: '#DDE3F0', 'stroke-width': 2 }, w); el('path', { d: 'M599 184 L614 189 L599 194 Z', fill: '#F5B82E' }, w)
     const from = [596, 214], head = [326, 186], path = [from, [470, 20], [head[0], head[1] - 44]]
     const tt = title(svg, e.claim ? tr('الحارس يمسكها') : tr('رأسية!'), e.claim ? '#2BB673' : '#C9D2E1')
@@ -509,9 +509,9 @@ export const SCENES = {
       else ready(kp, 322, LINE + 2, t)
       let p, gr
       if (t < 0.6) { p = from; gr = from[1] }
-      else if (t < 1.7) { const g = ease(f); p = bez(path, g); gr = lerp(from[1], head[1], g); drawTrail(tr, path, g, 0.5) }
-      else if (e.claim) { p = glove ?? [head[0], 100]; gr = LINE + 2; sa(tr, 'opacity', 0) }
-      else { const g = ease(seg(t, 1.7, 2.4)); p = bez([[head[0], head[1] - 44], [head[0] - 6, 60], [head[0] - 10, 40]], g); gr = lerp(head[1], LINE - 10, g); sa(tr, 'opacity', 0) }
+      else if (t < 1.7) { const g = ease(f); p = bez(path, g); gr = lerp(from[1], head[1], g); drawTrail(trl, path, g, 0.5) }
+      else if (e.claim) { p = glove ?? [head[0], 100]; gr = LINE + 2; sa(trl, 'opacity', 0) }
+      else { const g = ease(seg(t, 1.7, 2.4)); p = bez([[head[0], head[1] - 44], [head[0] - 6, 60], [head[0] - 10, 40]], g); gr = lerp(head[1], LINE - 10, g); sa(trl, 'opacity', 0) }
       b.set(p[0], p[1], gr, t * 1200, e.claim ? 1 : 1 - seg(t, 2.2, 2.5))
       tt(seg(t, 2.2, 2.6))
     } }

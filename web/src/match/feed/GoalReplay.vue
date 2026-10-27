@@ -24,14 +24,16 @@ let raf = 0
 
 onMounted(() => {
   if (!s.scene || !SCENES[s.scene]) return emit('done')
-  const scene = SCENES[s.scene]({ ...s.data, side: s.side })
+  let scene
+  // A scene that breaks ends the replay instead of stopping the match.
+  try { scene = SCENES[s.scene]({ ...s.data, side: s.side }) } catch (e) { console.error(e); return emit('done') }
   stage.value.replaceChildren(scene.svg)
   const key = s.keyAt * SCENE_TIME[s.scene][0]
   const from = Math.max(0, key - 1.8)
   const start = performance.now()
   const frame = (now) => {
     const t = from + ((now - start) / 1000) * RATE
-    scene.update(t)
+    try { scene.update(t) } catch (e) { console.error(e); return emit('done') }
     if (t < from + LENGTH) raf = requestAnimationFrame(frame)
     else emit('done')
   }
