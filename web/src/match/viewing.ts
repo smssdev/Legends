@@ -5,11 +5,8 @@ import { api } from '../api/client'
 import { useAuth } from '../stores/auth'
 import { AR_VOICES, DEFAULT_AR_VOICE, type ArVoice } from './voice'
 
-/**
- * [UP18] The Arabic commentary is switched off for now (the owner's spec, 12, 2026-10-26): the English commentator,
- * saying the players' names, is the only one in a match. Its code, lines and recordings all stay; true brings it back.
- */
-export const ARABIC_COMMENTARY = false
+// [UP18] The switch lives beside the voice (it also stops the Arabic recordings from downloading).
+export { ARABIC_COMMENTARY } from './voice'
 
 export type MatchView = 'cartoon' | 'unity'
 export const MATCH_VIEWS: { id: MatchView; name: string; hint: string }[] = [
