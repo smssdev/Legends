@@ -5,6 +5,8 @@
 set -e
 cd /app/backend
 
+# [X48] On our own server (deploy/vps) there is no Render: PUBLIC_URL is the same public address.
+RENDER_EXTERNAL_URL="${RENDER_EXTERNAL_URL:-${PUBLIC_URL:-}}"
 if [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
   host="${RENDER_EXTERNAL_HOSTNAME:-${RENDER_EXTERNAL_URL#https://}}"
   export APP_URL="$RENDER_EXTERNAL_URL"
