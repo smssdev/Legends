@@ -1429,7 +1429,7 @@
   - وعلى عُشر معالج في Render يكون فرق OPcache أكبر من هذا القياس.
 - **الاختبارات:** كل الاختبارات خضراء (329).
 - **على سليمان:**
-  1. **المنطقتان واحدة:** Render ← الخدمة ← Settings ← Region، وSupabase ← Project Settings ← General ← Region. لو اختلفتا (مثلاً Oregon وFrankfurt) فكل استعلام يقطع المحيط، وهذا أكبر سبب باقٍ. والحل خدمة Render جديدة في منطقة Supabase، بنفس المتغيرات.
+  1. **المنطقتان متجاورتان:** Supabase في eu-west-1 (أيرلندا)، فخدمة Render في **Frankfurt** (`region: frankfurt` في `render.yaml` لكل خدمة جديدة). Render ← الخدمة ← Settings ← Region، وSupabase ← Project Settings ← General ← Region. لو اختلفتا (مثلاً Oregon وFrankfurt) فكل استعلام يقطع المحيط، وهذا أكبر سبب باقٍ. والحل خدمة Render جديدة في منطقة Supabase، بنفس المتغيرات.
   2. **منع النوم:** cron-job.org يزور `/up` كل 5 دقائق (`PLAN.md` 8.1 الخطوة 8)، وإلا نامت الخدمة المجانية بعد 15 دقيقة وأخذ أول فتح نحو دقيقة.
   3. **النشر:** Manual Deploy بعد الدمج.
 
