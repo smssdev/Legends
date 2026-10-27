@@ -25,11 +25,11 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 FROM php:8.4-cli-alpine
 WORKDIR /app/backend
 # GD makes the accounts' pictures small squares (App\Support\Avatar).
-# pdo_pgsql: the game's database in Supabase (PostgreSQL) [X43].
+# pdo_pgsql: the game's database in Supabase (PostgreSQL) [X43]. pcntl: Reverb, the live updates on our server [X48].
 RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
  && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev postgresql-dev \
  && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
- && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql opcache \
+ && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql pcntl opcache \
  && apk del .gd-build
 # [X45] OPcache, for the web server too (it runs as php -S, a CLI process): Laravel is compiled once per start instead
 # of on every request. The code never changes inside the container, so files are not checked again.
