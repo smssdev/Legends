@@ -17,7 +17,14 @@ ssh_ 'test -f /opt/legends/.env || { umask 077; {
   echo "PUBLIC_URL=https://srv2100776.hstgr.cloud"
   echo "DB_PASSWORD=$(openssl rand -hex 24)"
   echo "APP_KEY_SEED=$(openssl rand -hex 32)"
-} > /opt/legends/.env; echo "Made /opt/legends/.env"; }'
+} > /opt/legends/.env; echo "Made /opt/legends/.env"; }
+grep -q "^REVERB_APP_SECRET=" /opt/legends/.env || echo "REVERB_APP_SECRET=$(openssl rand -hex 24)" >> /opt/legends/.env'
+
+# The server's tools: legends-set (a secret, typed on the server) and legends-backup (daily at 03:00 Cairo, 01:00 UTC).
+ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-set \
+  && install -m 755 /opt/legends/src/deploy/vps/backup.sh /usr/local/bin/legends-backup \
+  && { command -v rclone > /dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rclone > /dev/null; } \
+  && echo "0 1 * * * root /usr/local/bin/legends-backup >> /var/log/legends-backup.log 2>&1" > /etc/cron.d/legends-backup'
 
 ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build && docker image prune -f > /dev/null'
 ssh_ 'sleep 20; docker logs --tail 30 legends-app-1'

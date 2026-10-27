@@ -28,7 +28,7 @@ if [ -n "${BREVO_API_KEY:-}" ]; then
 elif [ -n "${RESEND_API_KEY:-}" ]; then
   export MAIL_MAILER=resend MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-onboarding@resend.dev}"
 elif [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
-  echo "Emails: Gmail SMTP is blocked on Render's free plan; set BREVO_API_KEY instead (docs/PLAN.md 8.1)"
+  [ -n "${RENDER:-}" ] && echo "Emails: Gmail SMTP is blocked on Render's free plan; set BREVO_API_KEY instead (docs/PLAN.md 8.1)"
   export MAIL_MAILER=smtp MAIL_HOST=smtp.gmail.com MAIL_PORT=587
   export MAIL_USERNAME="$GMAIL_ADDRESS" MAIL_FROM_ADDRESS="$GMAIL_ADDRESS"
   MAIL_PASSWORD=$(printf '%s' "$GMAIL_APP_PASSWORD" | tr -d ' ')
@@ -151,6 +151,11 @@ php artisan view:cache
 php artisan queue:work --tries=1 --sleep=3 >> storage/logs/queue.log 2>&1 &
 php artisan schedule:work >> storage/logs/schedule.log 2>&1 &
 php artisan matches:run >> storage/logs/matches.log 2>&1 &
+# [X48] Live updates on our own server: Reverb beside the game (nginx sends /app and /apps to it). Render stays on log.
+if [ "${BROADCAST_CONNECTION:-}" = reverb ]; then
+  php artisan reverb:start >> storage/logs/reverb.log 2>&1 &
+  echo "Live updates: Reverb on port ${REVERB_SERVER_PORT:-8080}"
+fi
 
 echo "Legends: ${APP_URL:-http://localhost:${PORT}}"
 case "${MAIL_MAILER:-log}" in
