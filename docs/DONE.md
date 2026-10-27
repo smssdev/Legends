@@ -1457,3 +1457,15 @@
   - عنوان قاعدة خاطئ يوقف التشغيل برسالة الخطأ في السجل، بدل صفحة الصيانة.
 - **كيف يُختبر:** خدمة Render على Supabase فارغ ← Logs: `Supabase: empty, a new game starts` ثم `Legends: https://...`، والموقع يفتح على لعبة جديدة.
 
+### X48 سيرفرنا على Hostinger (2026-10-27)
+
+قرار صاحب المشروع: سيرفر Hostinger KVM 1 مدفوع، والقاعدة على السيرفر نفسه، والعنوان `srv2100776.hstgr.cloud` (`PLAN.md` 8.3).
+
+- **ما بُني:**
+  - `deploy/vps/compose.yml`: صورة اللعبة نفسها (`Dockerfile`) بجانب PostgreSQL 17، وبياناتها في volume `pgdata`، والنسخ قبل كل ترحيل في volume `backups`. واللعبة على `127.0.0.1:8000` فقط.
+  - `deploy/vps/deploy.sh`: يرسل من git ما تُبنى منه الصورة فقط (قرابة 95 ميجا بدل 600) عبر SSH، ويصنع الأسرار على السيرفر مرة واحدة (`/opt/legends/.env`)، ثم يبني ويعيد التشغيل.
+  - `deploy/render/start.sh`: `PUBLIC_URL` بديل عن عنوان Render، فالدخول والكوكيز وHTTPS خلف الوكيل كما في Render.
+  - على السيرفر: Docker، وموقع Reverse Proxy في CloudPanel، وشهادة Let's Encrypt.
+- **كيف يُختبر:** https://srv2100776.hstgr.cloud يفتح الصفحة الأولى، ثم حساب جديد ودوري ومباراة. والسجلات: `docker logs --tail 50 legends-app-1` على السيرفر، وفيها `Legends: https://srv2100776.hstgr.cloud`. وأول تشغيل أضاف 688 نادياً و18085 لاعباً.
+- **ما بقي:** البريد (رسائل التأكيد تذهب إلى السجل حتى يُضاف `BREVO_API_KEY` أو `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` في `/opt/legends/.env`)، ونسخة يومية من PostgreSQL إلى B2، والدخول بجوجل، وReverb للبث المباشر.
+
