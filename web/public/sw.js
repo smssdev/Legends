@@ -1,7 +1,7 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
 // Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
-const VERSION = 'legends-v3'
+const VERSION = 'legends-v4'
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -18,13 +18,19 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url)
   if (e.request.method !== 'GET' || url.origin !== location.origin) return
   if (url.pathname.startsWith('/api/')) return
+  // [X51] The server's own pages (signing in with Google, its callback) go straight to the network: the worker must
+  // not stand between the browser and Google's redirect.
+  if (url.pathname.startsWith('/auth/')) return
   // Pages: the network first, the saved page when offline. [X50] Only a good page is saved, and the server's error
   // while it restarts for a deploy (502) shows the saved page instead.
   if (e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
         .then((r) => {
-          if (r.ok) { caches.open(VERSION).then((c) => c.put('/', r.clone())); return r }
+          // [X51] A redirect is the browser's to follow, never replaced by the saved page.
+          if (r.type === 'opaqueredirect' || r.redirected) return r
+          // [X51] The copy is taken now: the page reads the body as soon as the response is returned.
+          if (r.ok) { const copy = r.clone(); caches.open(VERSION).then((c) => c.put('/', copy)); return r }
           return caches.match('/').then((hit) => hit ?? r)
         })
         .catch(() => caches.match('/')),
@@ -34,7 +40,10 @@ self.addEventListener('fetch', (e) => {
   // Built files have their hash in the name, so a saved copy never goes stale.
   if (url.pathname.startsWith('/assets/')) {
     e.respondWith(
-      caches.match(e.request).then((hit) => hit ?? fetch(e.request).then((r) => (r.ok && caches.open(VERSION).then((c) => c.put(e.request, r.clone())), r))),
+      caches.match(e.request).then((hit) => hit ?? fetch(e.request).then((r) => {
+        if (r.ok) { const copy = r.clone(); caches.open(VERSION).then((c) => c.put(e.request, copy)) }
+        return r
+      })),
     )
   }
 })
