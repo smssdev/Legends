@@ -8032,7 +8032,10 @@ export interface components {
             decided_at?: string | null;
         };
         AdminTwoFactor: {
+            /** @description Whether the panel asks for the code at all (off by the owner's decision, X46) */
+            required: boolean;
             enabled: boolean;
+            /** @description Proved in this session, or not asked */
             passed: boolean;
         };
         AdminCode: {

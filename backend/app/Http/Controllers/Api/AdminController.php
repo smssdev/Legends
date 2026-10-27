@@ -41,7 +41,7 @@ class AdminController extends Controller
     {
         $this->adminOnly($request);
 
-        return response()->json(['enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed()]);
+        return response()->json(['required' => TwoFactor::required(), 'enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed()]);
     }
 
     public function setup(Request $request): JsonResponse

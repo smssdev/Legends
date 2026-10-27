@@ -3805,10 +3805,11 @@ components:
         decided_at: { type: string, format: date-time, nullable: true }
     AdminTwoFactor:
       type: object
-      required: [enabled, passed]
+      required: [required, enabled, passed]
       properties:
+        required: { type: boolean, description: 'Whether the panel asks for the code at all (off by the owner''s decision, X46)' }
         enabled: { type: boolean }
-        passed: { type: boolean }
+        passed: { type: boolean, description: 'Proved in this session, or not asked' }
     AdminCode:
       type: object
       required: [code]

@@ -346,7 +346,9 @@ return [
     // Backups off this machine [PLAN 2.19, Sprint 37]: an rclone remote to Google Drive (rclone config, once).
     'backup' => ['rclone_remote' => env('BACKUP_RCLONE_REMOTE')],
     // The admin panel [PLAN 2.17, Sprint 37]: a code from the authenticator is asked again after these hours.
-    'admin' => ['two_factor_hours' => 12],
+    // [X46] The two-step code for the admin panel: off by the owner's decision (2026-10-27). The panel is for the two
+    // official accounts, tied to their Gmail on the server, and the admins the owner makes. ADMIN_TWO_FACTOR=true asks again.
+    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [

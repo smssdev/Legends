@@ -48,9 +48,18 @@ class TwoFactor
         session([self::SESSION => GameClock::now()->timestamp]);
     }
 
-    /** This session proved the code within the last hours. */
+    /** [X46] Whether the panel asks for the code at all (game.admin.two_factor). */
+    public static function required(): bool
+    {
+        return (bool) config('game.admin.two_factor');
+    }
+
+    /** This session proved the code within the last hours, or the panel does not ask for it. */
     public static function passed(): bool
     {
+        if (! self::required()) {
+            return true;
+        }
         $at = (int) session(self::SESSION, 0);
 
         return $at && GameClock::now()->timestamp - $at < (int) config('game.admin.two_factor_hours') * 3600;
