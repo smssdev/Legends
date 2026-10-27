@@ -8,7 +8,8 @@ HOST="${LEGENDS_HOST:-root@2.24.47.100}"
 KEY="${LEGENDS_KEY:-$HOME/.ssh/legends_vps}"
 ssh_() { ssh -i "$KEY" -o BatchMode=yes "$HOST" "$@"; }
 
-git archive --format=tar HEAD | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -x -C /opt/legends/src.new \
+# Only what the image is built from (Dockerfile), not the audio, Unity and logo sources (hundreds of MB).
+git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web docs/design deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
   && rm -rf /opt/legends/src && mv /opt/legends/src.new /opt/legends/src'
 
 # The secrets, made once on the server: the database password and the app key's seed.
