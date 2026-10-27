@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Legends.Tests
 {
     /// <summary>
-    /// Reading the server's messages (docs/PLAN.md appendix A) and placing them on the pitch (Sprint 2, U7).
+    /// Reading the server's messages (README.md appendix A) and placing them on the pitch (Sprint 2, U7).
     /// `build.ps1 test`, or Window → General → Test Runner → EditMode.
     /// </summary>
     public sealed class FeedTests

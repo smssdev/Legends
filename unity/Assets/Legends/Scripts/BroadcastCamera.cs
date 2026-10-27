@@ -4,7 +4,7 @@ namespace Legends
 {
     /// <summary>
     /// The broadcast camera for now: high on the near touchline, following the ball along the pitch. The director
-    /// with its angles, cuts and replays (Cinemachine) comes in its sprint (docs/PLAN.md 7.5).
+    /// with its angles, cuts and replays (Cinemachine) comes in its sprint (README.md 7.5).
     /// </summary>
     public sealed class BroadcastCamera : MonoBehaviour
     {

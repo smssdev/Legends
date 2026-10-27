@@ -87,7 +87,7 @@ jobs:
           key: composer-8.4-${{ hashFiles('backend/composer.lock') }}
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: cp .env.example .env && php artisan key:generate && php artisan migrate --force && php artisan data:import
-      # docs/PLAN.md 4.5: the same targets as the nightly 5000-match run, on fixed seeds and a short sample
+      # README.md 4.5: the same targets as the nightly 5000-match run, on fixed seeds and a short sample
       # (each target allows two standard errors of the sample). The full runs are nightly on the home server.
       - run: php artisan sim:balance --n=760 --favourite=300
       - run: php artisan sim:knobs --n=300
@@ -99,7 +99,7 @@ jobs:
   arm:
     name: Engine on ARM (golden matches)
     # The repository is private, so no hosted ARM runner: the official arm64 PHP image under QEMU.
-    # The same golden matches as x86, minute for minute (docs/DONE.md 1.5). Only the golden test runs: it is quick.
+    # The same golden matches as x86, minute for minute (sprints/01-foundation.md 1.5). Only the golden test runs: it is quick.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -138,7 +138,7 @@ jobs:
       - run: npm run build
 
   docker:
-    name: Docker image (Render)
+    name: Docker image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -153,7 +153,7 @@ jobs:
           curl -sf -X POST -H 'Content-Type: application/json' -d '{"count":5}' "http://127.0.0.1:8000/api/v1/sim/matches/$id/ticks" | grep -q '"moment"'
       - if: failure()
         run: docker logs legends || true
-      # [X43] The same image on Supabase: an empty PostgreSQL gets the game's tables and the club data at start.
+      # [X43, X48] The same image on PostgreSQL, as on our server: an empty database gets the game's tables and the club data at start.
       - name: Smoke test on PostgreSQL
         run: |
           docker rm -f legends
@@ -167,14 +167,14 @@ jobs:
         run: docker logs legends-pg || true
 
   scripts:
-    name: Server scripts (PowerShell parse)
+    name: Unity scripts (PowerShell parse)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - shell: pwsh
         run: |
           $bad = 0
-          foreach ($f in Get-ChildItem deploy/windows/*.ps1, unity/*.ps1) {
+          foreach ($f in Get-ChildItem unity/*.ps1) {
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errors) | Out-Null
             if ($errors) { $bad++; $errors | ForEach-Object { Write-Host "$($f.Name): $($_.Message) (line $($_.Extent.StartLineNumber))" } }

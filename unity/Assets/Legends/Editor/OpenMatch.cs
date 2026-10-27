@@ -3,7 +3,7 @@ using UnityEditor.SceneManagement;
 
 namespace Legends.EditorTools
 {
-    /// <summary>`build.ps1 open`: the editor opens on the match scene, ready for Play (docs/PLAN.md 7.13).</summary>
+    /// <summary>`build.ps1 open`: the editor opens on the match scene, ready for Play (README.md 7.13).</summary>
     public static class OpenMatch
     {
         public const string Scene = "Assets/Legends/Scenes/Match.unity";

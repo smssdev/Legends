@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 namespace Legends.EditorTools
 {
     /// <summary>
-    /// URP and the three quality levels of docs/PLAN.md 7.6 (Sprint 2, U4): Low, Medium, High, each with its own
+    /// URP and the three quality levels of README.md 7.6 (Sprint 2, U4): Low, Medium, High, each with its own
     /// URP asset in Assets/Legends/Quality/. High: soft shadows from the four floodlight banks, 4x MSAA, full
     /// resolution (the computer). Medium: shadows from the main light only, 2x MSAA (a good phone). Low: no
     /// shadows, 80% resolution (a weak phone or a phone's browser). Bridge.OnQuality picks among them by index.

@@ -5,7 +5,7 @@ namespace Legends
 {
     /// <summary>
     /// Draws the match: takes the setup once and every minute after it, and moves the players and the ball between
-    /// the server's six key frames over the minute's length. The first step towards the full scene (docs/PLAN.md 7):
+    /// the server's six key frames over the minute's length. The first step towards the full scene (README.md 7):
     /// the players are still simple shapes in their club's colours.
     /// </summary>
     public sealed class MatchScene : MonoBehaviour

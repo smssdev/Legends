@@ -3,7 +3,7 @@
 namespace App\Engine;
 
 /**
- * Coach orders applied at the start of a minute (docs/PLAN.md 2.12): a
+ * Coach orders applied at the start of a minute (README.md 2.12): a
  * substitution, a tactics change or a new formation. Each is validated by
  * the engine's own rules; an invalid order changes nothing.
  */

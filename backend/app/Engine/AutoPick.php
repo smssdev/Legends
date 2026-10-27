@@ -105,7 +105,7 @@ final class AutoPick
         return $p['line'] === $slot['line'] ? 500 : 1200;
     }
 
-    /** Captain and set-piece takers among the starters (docs/PLAN.md 2.16). */
+    /** Captain and set-piece takers among the starters (README.md 2.16). */
     public static function takers(array $players): array
     {
         $on = array_values(array_filter($players, fn ($p) => $p['on']));

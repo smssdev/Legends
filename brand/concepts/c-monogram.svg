@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Legends monogram">
-<rect x="2" y="2" width="196" height="196" rx="44" fill="#0A1F42" stroke="#C08A0C" stroke-width="3"/>
-<path d="M54 38H90V128H146V162H54Z" fill="#F5B82E"/>
-<path d="M90 104A24 24 0 0 1 114 128" fill="none" stroke="#F5B82E" stroke-width="4" stroke-linecap="round"/>
-<circle cx="138" cy="78" r="30" fill="#F5B82E"/>
-<path d="M138 66V48M149.4 74.3L166.5 68.7M145.1 87.7L155.6 102.3M130.9 87.7L120.4 102.3M126.6 74.3L109.5 68.7" stroke="#0A1F42" stroke-width="4" stroke-linecap="round" fill="none"/>
-<path d="M0,-1L0.235,-0.324L0.951,-0.309L0.38,0.124L0.588,0.809L0,0.4L-0.588,0.809L-0.38,0.124L-0.951,-0.309L-0.235,-0.324Z" transform="translate(138 78) scale(13)" fill="#0A1F42"/>
-</svg>

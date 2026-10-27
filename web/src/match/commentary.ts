@@ -1,4 +1,4 @@
-// Arabic commentary lines for match events (docs/PLAN.md 2.21: plain fusha).
+// Arabic commentary lines for match events (README.md 2.21: plain fusha).
 import type { MatchEvent, Side } from '../api/sim'
 
 type Names = (side: Side, id?: number) => string

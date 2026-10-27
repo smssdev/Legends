@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Legends.EditorTools
 {
     /// <summary>
-    /// Claude's eye (docs/PLAN.md Sprint 2, U5): plays the recorded match in the match scene and saves what the
+    /// Claude's eye (README.md Sprint 2, U5): plays the recorded match in the match scene and saves what the
     /// broadcast camera sees at minutes 5, 20, 45, 70 and 90 to unity/Captures/, then quits. `build.ps1 capture`.
     /// Entering Play reloads the editor's code, so the run's state lives in SessionState, picked up again by the
     /// static constructor once the scene is playing.

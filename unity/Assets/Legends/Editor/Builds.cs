@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Legends.EditorTools
 {
     /// <summary>
-    /// The builds of docs/PLAN.md 7.8, for `build.ps1 webgl | android`. The web build is gzip with the
+    /// The builds of README.md 7.8, for `build.ps1 webgl | android`. The web build is gzip with the
     /// decompression fallback, so it runs from our server without any special headers.
     /// </summary>
     public static class Builds

@@ -11,8 +11,7 @@ import OfficialBadge from '../components/OfficialBadge.vue'
 import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
-import { AR_VOICES, arVoiceName, type ArVoice } from '../match/voice'
-import { ARABIC_COMMENTARY, MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
+import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 import { namesLang, setNamesLang } from '../lib/names'
 import { t } from '../lib/i18n'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
@@ -32,7 +31,7 @@ const welcome = computed(() =>
 const viewing = useViewing()
 const viewMsg = ref('')
 const viewErr = ref(false)
-async function saveViewing(body: { commentator?: ArVoice; match_view?: MatchView }) {
+async function saveViewing(body: { match_view?: MatchView }) {
   viewMsg.value = ''
   try {
     await viewing.save(body)
@@ -285,13 +284,6 @@ async function remove() {
         </label>
         <p v-if="viewing.chosenView.value === 'unity' && !viewing.unityReady.value" class="text-xs text-text-muted">{{ $t('حتى يجهز المطوّر تُعرض مبارياتك بالكرتوني، وتنتقل إليه تلقائياً حين يجهز.') }}</p>
       </fieldset>
-      <label v-if="ARABIC_COMMENTARY" class="flex flex-col gap-1.5">
-        <span class="text-sm font-bold">{{ $t('المعلق العربي') }}</span>
-        <select class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" :value="viewing.commentator.value" @change="saveViewing({ commentator: ($event.target as HTMLSelectElement).value as ArVoice })">
-          <option v-for="v in AR_VOICES" :key="v" :value="v">{{ arVoiceName(v) }}</option>
-        </select>
-        <span class="text-xs text-text-muted">{{ $t('يُسمع في كل مبارياتك، ويُبدَّل أثناء المباراة أيضاً.') }}</span>
-      </label>
       <!-- [X40] The names switch: the leagues, clubs and players in Arabic or in English, on this device. -->
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-1 text-sm font-bold">{{ $t('أسماء الدوريات والأندية واللاعبين') }}</legend>

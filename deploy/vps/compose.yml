@@ -1,4 +1,4 @@
-# [X48] The game on our own server (Hostinger KVM 1, docs/PLAN.md 8.3): the same image as Render, beside its own
+# [X48] The game on our own server (Hostinger KVM 1, README.md): the game's image (Dockerfile), beside its own
 # PostgreSQL. CloudPanel's nginx gives HTTPS and passes the requests to 127.0.0.1:8000.
 # Run by deploy/vps/deploy.sh, with the secrets in /opt/legends/.env on the server (never in the repository).
 name: legends

@@ -1,8 +1,6 @@
-# One image with everything for the simulator demo: the Laravel API, the built
-# Vue app and the imported club data. Used by Render (render.yaml) and runnable
-# anywhere with: docker build -t legends . && docker run -p 8000:8000 legends
-# Free hosts wipe the disk on restart: on Render, Litestream keeps the databases in Backblaze B2 and brings
-# them back on start (deploy/render/start.sh), so the game and its accounts are kept.
+# One image with the whole game: the Laravel API, the built Vue app and the imported club data. Run on our server
+# beside its PostgreSQL (deploy/vps/compose.yml), or anywhere to try it: docker build -t legends . && docker run -p
+# 8000:8000 legends (without DATABASE_URL the game lives in the image's SQLite file and is wiped on restart).
 
 FROM node:22-alpine AS web
 WORKDIR /app
@@ -25,7 +23,7 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-progress --no-
 FROM php:8.4-cli-alpine
 WORKDIR /app/backend
 # GD makes the accounts' pictures small squares (App\Support\Avatar).
-# pdo_pgsql: the game's database in Supabase (PostgreSQL) [X43]. pcntl: Reverb, the live updates on our server [X48].
+# pdo_pgsql: the game's database (PostgreSQL) [X43, X48]. pcntl: Reverb, the live updates on our server [X48].
 RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
  && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev postgresql-dev \
  && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
@@ -37,10 +35,6 @@ RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory
       echo 'opcache.interned_strings_buffer=16'; echo 'opcache.max_accelerated_files=20000'; \
       echo 'opcache.validate_timestamps=0'; echo 'realpath_cache_size=4096K'; echo 'realpath_cache_ttl=600'; } \
       > /usr/local/etc/php/conf.d/zz-legends-speed.ini
-# Litestream (free, open source): copies every change to the databases to B2 and brings it back on start.
-ARG LITESTREAM_VERSION=0.3.13
-ADD https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-amd64.tar.gz /tmp/litestream.tar.gz
-RUN tar -xzf /tmp/litestream.tar.gz -C /usr/local/bin litestream && rm /tmp/litestream.tar.gz
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY backend ./
 COPY data /app/data
@@ -57,12 +51,10 @@ RUN composer dump-autoload --optimize --no-dev \
  && php artisan data:import \
  && chown -R www-data:www-data storage database bootstrap/cache
 
-# The start script: the public address, sign-in, Gmail and Google from the host's run-time variables, the
-# configuration cached then (not here, before they are known), and the queue, scheduler and live matches.
-COPY deploy/render/start.sh /app/start.sh
-COPY deploy/render/maintenance.php /app/maintenance.php
-COPY deploy/render/litestream.yml /app/litestream.yml
-COPY deploy/render/router.php /app/backend/router.php
+# The start script: the public address, sign-in, email and Google from the run-time variables, the configuration
+# cached then (not here, before they are known), and the queue, scheduler, live matches and Reverb.
+COPY deploy/docker/start.sh /app/start.sh
+COPY deploy/docker/router.php /app/backend/router.php
 ENV PORT=8000 PHP_CLI_SERVER_WORKERS=4
 EXPOSE 8000
 USER www-data

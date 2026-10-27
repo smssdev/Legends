@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Legends.EditorTools
 {
     /// <summary>
-    /// Adds the Unity packages the plan uses (docs/PLAN.md 7.2), each at the version this editor recommends.
+    /// Adds the Unity packages the plan uses (README.md 7.2), each at the version this editor recommends.
     /// From the menu Legends → Setup packages, or `build.ps1 setup`, which waits for it and quits.
     /// Adding packages recompiles the scripts and reloads the editor's code, which forgets every static
     /// field: so the command line's "quit when done" is kept in SessionState and checked again after the reload.
