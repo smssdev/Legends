@@ -27,4 +27,6 @@ ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-s
   && echo "0 1 * * * root /usr/local/bin/legends-backup >> /var/log/legends-backup.log 2>&1" > /etc/cron.d/legends-backup'
 
 ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build && docker image prune -f > /dev/null'
+# The backups volume is made by Docker as root: the game (www-data) writes its copies there before each migrate.
+ssh_ 'docker exec -u root legends-app-1 chown www-data:www-data /app/backend/database/backups'
 ssh_ 'sleep 20; docker logs --tail 30 legends-app-1'

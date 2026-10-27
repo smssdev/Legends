@@ -30,15 +30,30 @@ function cookie(name: string): string {
   return m ? decodeURIComponent(m[1]) : ''
 }
 
+// [X50] Each request as it was before it went, so one refused for an expired session (419) is sent once more.
+const unsent = new WeakMap<Request, Request>()
 const session: Middleware = {
   onRequest({ request }) {
     const xsrf = cookie('XSRF-TOKEN')
     if (xsrf) request.headers.set('X-XSRF-TOKEN', xsrf)
     request.headers.set('Accept-Language', locale.value)   // [UP2] the server's words in the coach's language
+    unsent.set(request, request.clone())
     return request
   },
-  async onResponse({ response }) {
+  async onResponse({ request, response }) {
     if (response.ok) return response
+    // [X50] The session ended under the page (a deploy, a restart): a new XSRF token, then the same request again.
+    // The remember-me cookie signs the coach back in on it, so the tap still does what it should.
+    const again = unsent.get(request)
+    if (response.status === 419 && again && !again.headers.has('X-Retried')) {
+      csrf = null
+      await ensureCsrf()
+      again.headers.set('X-XSRF-TOKEN', cookie('XSRF-TOKEN'))
+      again.headers.set('X-Retried', '1')
+      const retried = await fetch(again)
+      if (retried.ok) return retried
+      response = retried
+    }
     const body = await response.clone().json().catch(() => ({}))
     throw new ApiError(response.status, body)
   },

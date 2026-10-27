@@ -1,7 +1,7 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
 // Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
-const VERSION = 'legends-v2'
+const VERSION = 'legends-v3'
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -18,11 +18,15 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url)
   if (e.request.method !== 'GET' || url.origin !== location.origin) return
   if (url.pathname.startsWith('/api/')) return
-  // Pages: the network first, the saved page when offline.
+  // Pages: the network first, the saved page when offline. [X50] Only a good page is saved, and the server's error
+  // while it restarts for a deploy (502) shows the saved page instead.
   if (e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request)
-        .then((r) => (caches.open(VERSION).then((c) => c.put('/', r.clone())), r))
+        .then((r) => {
+          if (r.ok) { caches.open(VERSION).then((c) => c.put('/', r.clone())); return r }
+          return caches.match('/').then((hit) => hit ?? r)
+        })
         .catch(() => caches.match('/')),
     )
     return

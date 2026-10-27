@@ -69,6 +69,13 @@ const BASE = import.meta.env.BASE_URL + 'commentary/'
 export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
 export type ArVoice = (typeof AR_VOICES)[number]
 export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
+
+/**
+ * [UP18] The Arabic commentary is switched off for now (the owner's spec, 12, 2026-10-26, confirmed 2026-10-27): the
+ * English commentator, saying the players' names, is the only one in a match, and the Arabic recordings are not even
+ * downloaded. Its code, lines and recordings all stay; true brings it back.
+ */
+export const ARABIC_COMMENTARY = false
 // In the order of tools/commentary/arabic_voice.py's VOICES (voice-1 is ali ... voice-6 is hafid).
 const AR_NAMES: Record<ArVoice, string> = {
   'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', base: 'الأساسي',
@@ -120,8 +127,7 @@ export class Commentator {
     }
     void this.ctx.resume()
     this.pack('phrases')
-    this.pack(this.arPack)
-    this.pack(this.realPack())
+    if (ARABIC_COMMENTARY) { this.pack(this.arPack); this.pack(this.realPack()) }
     for (const c of this.wanted) this.pack('clubs/' + c)
   }
 
@@ -145,7 +151,7 @@ export class Commentator {
   setArVoice(v: ArVoice) {
     this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
     this.realName = v === 'base' ? '' : `ar/${v}/real`
-    if (this.ctx && this.on) { this.pack(this.arPack); this.pack(this.realPack()) }
+    if (this.ctx && this.on && ARABIC_COMMENTARY) { this.pack(this.arPack); this.pack(this.realPack()) }
   }
 
   /** Fetch the two clubs' names early, before their first line. */
