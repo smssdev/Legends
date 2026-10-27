@@ -173,16 +173,25 @@ function play(tick, startAt = null) {
   tense.value = s.scene === 'penalty' || s.scene === 'freekick'
   party.value = null
   t = startAt === null ? 0 : Math.max(0, (performance.now() - startAt) / 1000)
-  if (s.scene) {
-    scene = SCENES[s.scene]({ ...s.data, side: s.side })
+  let made: any = null
+  // A scene that breaks is skipped with its minute's cards still shown: the match never stops on one drawing.
+  if (s.scene) try {
+    made = SCENES[s.scene]({ ...s.data, side: s.side })
+    made.update(0)
+  } catch (e) { console.error(e); made = null }
+  if (made) {
+    scene = made
     stage.value.replaceChildren(scene.svg)
-    scene.update(0)
     sceneOn.value = true
   } else {
     scene = null
     addItems()
     if (s.bubble && s.items.length) showBubble()
   }
+}
+// One frame of the scene; a frame that throws ends the scene there and the minute goes on without it.
+function draw(u) {
+  try { scene.update(u) } catch (e) { console.error(e); scene = null; sceneOn.value = false; addItems(); showBubble() }
 }
 // The scene is over: its cards join the timeline, and the page may tell the result (cue 'reveal').
 function addItems(tell = true) {
@@ -238,7 +247,7 @@ function step(now) {
     // A line or a sound long past (the screen joined late) is dropped, not played out of time.
     const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
     // The scene follows the clock, so drawing it 30 times a second in the smooth mode only skips frames, never time.
-    if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; scene.update(t * rate) }
+    if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; draw(t * rate) }
     const keyT = s.keyAt * sceneT
     // [X37] The commentator's own scream on a goal (a late goal that levels or takes the lead, his big one), from his
     // real recording: only there, the one moment his recorded words always fit. Before the lines, so it takes the
@@ -262,7 +271,7 @@ function step(now) {
       const u = (t - rp.at) * rp.rate
       if (u < SCENE_TIME[s.scene][0]) {
         fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = true })
-        if (!smooth.value || now - drawn >= 32) { drawn = now; scene.update(u) }
+        if (!smooth.value || now - drawn >= 32) { drawn = now; draw(u) }
       } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; showBubble() })
     }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
