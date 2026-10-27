@@ -491,7 +491,15 @@ unity/
 - **الدخول:** مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان، مضاف في hPanel ← VPS ← Settings ← SSH keys. لا كلمات مرور.
 - **النشر:** من جذر المستودع على جهاز سليمان: `sh deploy/vps/deploy.sh`. يرسل الكود المحفوظ في git (HEAD) عبر SSH، ثم يبني الصورة ويعيد تشغيل اللعبة، والقاعدة باقية. ويُنشر حين تقول لوحة الإدارة «آمن للنشر».
 - **السجلات:** `ssh -i ~/.ssh/legends_vps root@2.24.47.100 docker logs --tail 50 legends-app-1`.
-- **يبقى:** نسخة احتياطية يومية من PostgreSQL خارج السيرفر (B2)، والبريد (`BREVO_API_KEY` أو Gmail في `/opt/legends/.env`، والسيرفر لا يمنع SMTP)، والدخول بجوجل، وتشغيل Reverb للبث المباشر.
+- **البث المباشر:** Reverb داخل حاوية اللعبة، وnginx يمرر `/app` و`/apps` إليه (في ملف الموقع وفي قالب CloudPanel، فيبقى إن عُدّل الموقع من اللوحة).
+- **النسخ اليومي** (`legends-backup`، الساعة 03:00 بتوقيت القاهرة): القاعدة كاملة مضغوطة في `/opt/legends/backups` (آخر 14)، وفي B2 أيضاً (`vps-backups/`، آخر 30 يوماً) حين توجد مفاتيح B2.
+- **المفاتيح** يكتبها سليمان على السيرفر نفسه: hPanel ← VPS ← **Web console**، ثم `legends-set الاسم`، ويلصق القيمة (لا تظهر)، فتُحفظ وتُعاد اللعبة:
+
+| الميزة | المفاتيح | من أين |
+|---|---|---|
+| البريد | `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` | حساب جوجل ← Security ← 2-Step Verification ← **App passwords**. وGmail يعمل هنا (المنفذ 587 مفتوح) |
+| الدخول بجوجل | `GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET` | Google Cloud Console ← APIs & Services ← Credentials ← عميل OAuth (نفس عميل Render)، وتُضاف إليه: Authorized JavaScript origins `https://srv2100776.hstgr.cloud`، وAuthorized redirect URIs `https://srv2100776.hstgr.cloud/auth/google/callback` |
+| نسخة في B2 | `B2_BUCKET` و`B2_KEY_ID` و`B2_APPLICATION_KEY` | نفس قيم Render (8.1) |
 
 ## 9. السبرنتات
 

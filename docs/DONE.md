@@ -1467,5 +1467,9 @@
   - `deploy/render/start.sh`: `PUBLIC_URL` بديل عن عنوان Render، فالدخول والكوكيز وHTTPS خلف الوكيل كما في Render.
   - على السيرفر: Docker، وموقع Reverse Proxy في CloudPanel، وشهادة Let's Encrypt.
 - **كيف يُختبر:** https://srv2100776.hstgr.cloud يفتح الصفحة الأولى، ثم حساب جديد ودوري ومباراة. والسجلات: `docker logs --tail 50 legends-app-1` على السيرفر، وفيها `Legends: https://srv2100776.hstgr.cloud`. وأول تشغيل أضاف 688 نادياً و18085 لاعباً.
-- **ما بقي:** البريد (رسائل التأكيد تذهب إلى السجل حتى يُضاف `BREVO_API_KEY` أو `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` في `/opt/legends/.env`)، ونسخة يومية من PostgreSQL إلى B2، والدخول بجوجل، وReverb للبث المباشر.
+- **ثم النقاط الأربع:**
+  - **البث المباشر:** Reverb يعمل في الحاوية (`start.sh` حين `BROADCAST_CONNECTION=reverb`)، وnginx يمرر `/app` و`/apps` إليه.
+  - **النسخ اليومي:** `deploy/vps/backup.sh` (`legends-backup`) بـ cron كل يوم، محلياً وإلى B2 حين توجد مفاتيحه (rclone).
+  - **البريد والدخول بجوجل ونسخة B2:** جاهزة، وتنتظر مفاتيحها بـ `legends-set` (`deploy/vps/set.sh`، الجدول في `PLAN.md` 8.3).
+- **كيف يُختبر:** البث: شارة الاتصال المباشر في المباراة خضراء، و`/app/legends-dev-key` يرد بـ WebSocket. والنسخ: `legends-backup` على السيرفر يطبع مسار النسخة. والبريد: تسجيل حساب جديد تصله رسالة التأكيد. وجوجل: زر «المتابعة بحساب جوجل» يفتح صفحة جوجل ويعود مسجلاً.
 
