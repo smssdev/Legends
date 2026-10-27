@@ -1,12 +1,26 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
 
+/* [UP7] A tighter type scale (the spec: 20-30% smaller, the big titles most), over Tailwind's own. The spacing stays,
+   so every touch target keeps its 44px. */
+@theme {
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 1.75rem;
+}
+
 @layer base {
   html,
   body {
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
+    font-size: var(--text-base);
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }

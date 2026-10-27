@@ -31,7 +31,7 @@ class WalletController extends Controller
                 return ['id' => $l->id, 'name' => $l->name, 'fair' => (bool) $l->fair_league, 'spent' => Wallet::spentThisSeason($user->id, $l->id, $season)];
             })->values(),
             'transactions' => DB::table('wallet_transactions')->where('user_id', $user->id)->orderByDesc('id')->limit(30)->get()
-                ->map(fn ($t) => ['type' => $t->type, 'label' => Wallet::LABELS[$t->type] ?? $t->type, 'amount' => (int) $t->amount,
+                ->map(fn ($t) => ['type' => $t->type, 'label' => __(Wallet::LABELS[$t->type] ?? $t->type), 'amount' => (int) $t->amount,
                     'balance_after' => (int) $t->balance_after, 'at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()]),
             'shop' => config('game.premium.shop'),
             'prices' => config('game.premium.price'),

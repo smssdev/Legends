@@ -268,20 +268,20 @@ class TeamController extends Controller
             'debt_rounds' => (int) $club->debt_rounds,
             'debt_limit' => (int) $cfg['debt_rounds_before_forced_sale'],
             'wages_per_round' => $money->wages(Economy::squadValue($club->id), $season->rounds),
-            'season_totals' => collect(ClubLedger::LABELS)->map(fn ($label, $type) => ['type' => $type, 'label' => $label, 'total' => (int) ($since[$type] ?? 0)])
+            'season_totals' => collect(ClubLedger::LABELS)->map(fn ($label, $type) => ['type' => $type, 'label' => __($label), 'total' => (int) ($since[$type] ?? 0)])
                 ->filter(fn ($t) => $t['total'] !== 0)->values(),
             // What the season earned and spent: the opening budget and a handover's change are neither.
             'season_income' => (int) collect($since)->except(ClubLedger::START)->filter(fn ($v) => $v > 0)->sum(),
             'season_expenses' => (int) collect($since)->except(ClubLedger::START)->filter(fn ($v) => $v < 0)->sum(),
             'rounds' => array_values($perRound),
-            'transactions' => $rows->map(fn ($t) => ['id' => $t->id, 'type' => $t->type, 'label' => ClubLedger::LABELS[$t->type] ?? $t->type,
+            'transactions' => $rows->map(fn ($t) => ['id' => $t->id, 'type' => $t->type, 'label' => __(ClubLedger::LABELS[$t->type] ?? $t->type),
                 'amount' => (int) $t->amount, 'balance_after' => (int) $t->balance_after, 'created_at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()]
                 + $roundOf($t->reference)),
             'stadium' => ['capacity' => Stadium::capacity($club->id), 'attendance_bp' => $attendance, 'ticket_price' => $money->ticketPrice($scale, $season->rounds),
                 'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance, Stadium::capacity($club->id))],
             'sponsors' => collect($cfg['sectors'])->map(fn ($share, $sector) => [
-                'sector' => $sector, 'name' => self::SECTORS[$sector], 'chosen' => $chosen[$sector] ?? null,
-                'offers' => collect($cfg['sponsor_offers'])->map(fn ($o, $key) => ['offer' => $key, 'name' => self::OFFERS[$key],
+                'sector' => $sector, 'name' => __(self::SECTORS[$sector]), 'chosen' => $chosen[$sector] ?? null,
+                'offers' => collect($cfg['sponsor_offers'])->map(fn ($o, $key) => ['offer' => $key, 'name' => __(self::OFFERS[$key]),
                     'per_match' => $money->sponsor($scale, $season->rounds, $sector, $key, false),
                     'per_win' => $money->sponsor($scale, $season->rounds, $sector, $key, true) - $money->sponsor($scale, $season->rounds, $sector, $key, false)])->values(),
             ])->values(),

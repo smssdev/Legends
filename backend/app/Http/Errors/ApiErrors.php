@@ -84,6 +84,9 @@ class ApiErrors
         if ($own !== '' && preg_match('/\p{Arabic}/u', $own)) {
             // [UP2] The game's own words in English from lang/en.json, when they have been put there.
             $message = $english && ($en = __($own, [], 'en')) !== $own ? $en : $own;
+        } elseif ($english && $own !== '' && self::isGameEnglish($own)) {
+            // Already put in English where it was thrown (a sentence with its numbers, through __()).
+            $message = $own;
         }
         $body = ['message' => $message, 'code' => $code];
         if ($e instanceof ValidationException) {
@@ -95,5 +98,20 @@ class ApiErrors
         $headers = $e instanceof HttpExceptionInterface ? $e->getHeaders() : [];
 
         return response()->json($body, $status, $headers);
+    }
+
+    /** Whether an English message is one of the game's own (lang/en.json), its numbers aside, not a framework's. */
+    private static function isGameEnglish(string $message): bool
+    {
+        static $shapes = null;
+        $shapes ??= array_map(fn (string $en) => '/^'.preg_replace(['/%%/', '/%[ds]/'], ['%', '.+?'], preg_quote($en, '/')).'$/u',
+            array_values(json_decode((string) @file_get_contents(lang_path('en.json')), true) ?: []));
+        foreach ($shapes as $shape) {
+            if (preg_match($shape, $message)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

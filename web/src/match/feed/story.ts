@@ -7,6 +7,7 @@
 // The commentator's line comes from the server (tick.voice, Sprint 35). TODO(Flutter, Sprint 41): move the rest of
 // the director (scene, cards) to the server too [MATCH_VIEW 4.3].
 import VOICE_LINES from '../../../../backend/resources/commentary/voice.json'
+import { locale, t } from '../../lib/i18n'
 
 // Commentary. {p} the main player, {q} the second one (assist, keeper, defender),
 // {A} the club the moment belongs to, {B} the other one, {n} a number.
@@ -86,6 +87,11 @@ export function story(tick, ctx) {
     slot('post', at.post ?? 0.75)
     const b = V ? (V.pick?.bubble != null ? L.bubble[V.pick.bubble] : null) : fill(L.bubble ?? [])
     out.bubble = b ? arabic(b) : ''
+    // [UP2] In English the bubble says the commentator's English line, with the names.
+    if (locale.value === 'en') {
+      const said = out.lines.find((l) => l.s === 'key' && l.en) ?? out.lines.find((l) => l.en)
+      out.bubble = said ? arabic(said.en) : ''
+    }
   }
   const arabic = (t) => t.replace(/\{p\}/g, nm(vars.p)).replace(/\{q\}/g, nm(vars.q)).replace(/\{A\}/g, ctx.clubs[vars.A]).replace(/\{B\}/g, ctx.clubs[other(vars.A)]).replace(/\{n\}/g, vars.n)
   const item = (side, icon, name, label, extra = {}) => out.items.push({ side, icon, name, label, minute, ...extra })
@@ -96,112 +102,112 @@ export function story(tick, ctx) {
   if (kind === 'goal' && goal) {
     const s = goal.team, header = attack?.quality === 'header'
     Object.assign(vars, { p: goal.scorer, q: goal.assist ?? null, A: s })
-    set('goal', s, { no: no(goal.scorer), passNo: goal.assist ? no(goal.assist) : '', defNo: no(attack?.defender), lane: attack?.lane, quality: attack?.quality, v: seed() }, 'هدف', nm(goal.scorer), goal.assist ? `صناعة ${nm(goal.assist)}` : ctx.clubs[s])
-    before(header ? 'عرضية' : 'هجمة خطيرة', nm(goal.scorer), ctx.clubs[s])
+    set('goal', s, { no: no(goal.scorer), passNo: goal.assist ? no(goal.assist) : '', defNo: no(attack?.defender), lane: attack?.lane, quality: attack?.quality, v: seed() }, t('هدف'), nm(goal.scorer), goal.assist ? t('صناعة {v0}', { v0: nm(goal.assist) }) : ctx.clubs[s])
+    before(header ? t('عرضية') : t('هجمة خطيرة'), nm(goal.scorer), ctx.clubs[s])
     speak(header ? 'header' : 'goal', { key: 0.36, post: 0.62 })
-    item(s, 'goal', nm(goal.scorer), goal.assist ? `هدف · صناعة ${nm(goal.assist)}` : header ? 'هدف · رأسية' : 'هدف', { goal: true })
+    item(s, 'goal', nm(goal.scorer), goal.assist ? t('هدف · صناعة {v0}', { v0: nm(goal.assist) }) : header ? t('هدف · رأسية') : t('هدف'), { goal: true })
     out.goal = true
   } else if ((kind === 'penalty' || kind === 'free_kick') && (pen || fk)) {
     const sp = pen ?? fk, s = sp.team, scored = !!goal
     Object.assign(vars, { p: sp.taker, q: sp.keeper ?? null, A: s })
     const isPen = kind === 'penalty'
     const result = scored ? 'goal' : sp.keeper ? 'save' : 'miss'
-    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored, saved: result === 'save', v: seed() }, scored ? 'هدف' : isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), scored ? (isPen ? 'ركلة جزاء' : 'ضربة حرة مباشرة') : result === 'save' ? `تصدى ${nm(sp.keeper)}` : 'خارج المرمى')
-    before(isPen ? 'ركلة جزاء' : 'ضربة حرة', nm(sp.taker), 'المنفذ يستعد... والجميع ينتظر')
+    set(isPen ? 'penalty' : 'freekick', s, { no: no(sp.taker), scored, saved: result === 'save', v: seed() }, scored ? t('هدف') : isPen ? t('ركلة جزاء') : t('ضربة حرة'), nm(sp.taker), scored ? (isPen ? t('ركلة جزاء') : t('ضربة حرة مباشرة')) : result === 'save' ? t('تصدى {v0}', { v0: nm(sp.keeper) }) : t('خارج المرمى'))
+    before(isPen ? t('ركلة جزاء') : t('ضربة حرة'), nm(sp.taker), t('المنفذ يستعد... والجميع ينتظر'))
     speak(isPen ? (scored ? 'penalty_goal' : 'penalty_save') : `free_kick_${result}`, { key: isPen ? 0.49 : 0.51, post: 0.72 })
-    if (foul?.player) item(other(s), 'foul', nm(foul.player), isPen ? 'تسبب في ركلة جزاء' : 'خطأ')
-    item(s, scored ? 'goal' : isPen ? 'penalty' : 'miss', nm(sp.taker), scored ? (isPen ? 'هدف · ركلة جزاء' : 'هدف · ضربة حرة') : result === 'save' ? (isPen ? 'ركلة جزاء ضائعة' : 'ضربة حرة · تصدٍّ') : 'ضربة حرة ضائعة', { goal: scored })
+    if (foul?.player) item(other(s), 'foul', nm(foul.player), isPen ? t('تسبب في ركلة جزاء') : t('خطأ'))
+    item(s, scored ? 'goal' : isPen ? 'penalty' : 'miss', nm(sp.taker), scored ? (isPen ? t('هدف · ركلة جزاء') : t('هدف · ضربة حرة')) : result === 'save' ? (isPen ? t('ركلة جزاء ضائعة') : t('ضربة حرة · تصدٍّ')) : t('ضربة حرة ضائعة'), { goal: scored })
     out.goal = scored
   } else if ((kind === 'red' || kind === 'yellow') && card) {
     const s = card.team, red = kind === 'red'
     Object.assign(vars, { p: card.player, A: s })
-    set('card', s, { no: no(card.player), type: red ? 'red' : 'yellow' }, red ? 'بطاقة حمراء' : 'بطاقة صفراء', nm(card.player), card.second_yellow ? 'الإنذار الثاني' : ctx.clubs[s])
-    before('خطأ', nm(card.player), 'الحكم يقترب...')
+    set('card', s, { no: no(card.player), type: red ? 'red' : 'yellow' }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : ctx.clubs[s])
+    before(t('خطأ'), nm(card.player), t('الحكم يقترب...'))
     speak(card.second_yellow ? 'second_yellow' : red ? 'red' : 'yellow', { key: 0.3, post: 0.65 })
-    item(s, red ? 'red' : 'yellow', nm(card.player), red ? (card.second_yellow ? 'إنذار ثانٍ وطرد' : 'بطاقة حمراء') : 'بطاقة صفراء')
+    item(s, red ? 'red' : 'yellow', nm(card.player), red ? (card.second_yellow ? t('إنذار ثانٍ وطرد') : t('بطاقة حمراء')) : t('بطاقة صفراء'))
   } else if (kind === 'save' && attack) {
     const s = attack.team
     Object.assign(vars, { p: attack.shooter, q: attack.keeper ?? null, A: s })
-    set('save', s, { no: no(attack.shooter), passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', defNo: no(attack.defender), lane: attack.lane, quality: attack.quality, corner: attack.result === 'corner', v: seed() }, 'تصدٍّ رائع', nm(attack.keeper) || 'الحارس', `أمام ${nm(attack.shooter)}`)
-    before('تسديدة', nm(attack.shooter), ctx.clubs[s])
+    set('save', s, { no: no(attack.shooter), passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', defNo: no(attack.defender), lane: attack.lane, quality: attack.quality, corner: attack.result === 'corner', v: seed() }, t('تصدٍّ رائع'), nm(attack.keeper) || t('الحارس'), t('أمام {v0}', { v0: nm(attack.shooter) }))
+    before(t('تسديدة'), nm(attack.shooter), ctx.clubs[s])
     speak('save', { key: 0.35, post: 0.62 })
-    item(other(s), 'save', nm(attack.keeper) || 'الحارس', `تصدٍّ أمام ${nm(attack.shooter)}`)
-    if (attack.result === 'corner') item(s, 'corner', ctx.clubs[s], 'ركنية')
+    item(other(s), 'save', nm(attack.keeper) || t('الحارس'), t('تصدٍّ أمام {v0}', { v0: nm(attack.shooter) }))
+    if (attack.result === 'corner') item(s, 'corner', ctx.clubs[s], t('ركنية'))
   } else if (kind === 'miss' && attack) {
     const s = attack.team, blocked = attack.result === 'blocked'
     Object.assign(vars, { p: attack.shooter, q: attack.defender ?? null, A: s })
     const how = blocked ? null : V?.how ?? pick(['wide', 'wide', 'over', 'post'])
     const look = { passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', lane: attack.lane, quality: attack.quality, v: seed() }
-    if (blocked) set('blocked', s, { no: no(attack.shooter), defNo: no(attack.defender), ...look }, 'صدّها الدفاع', nm(attack.shooter), nm(attack.defender) ? `تدخل ${nm(attack.defender)}` : ctx.clubs[other(s)])
-    else set('miss', s, { no: no(attack.shooter), defNo: no(attack.defender), how, ...look }, how === 'post' ? 'القائم!' : 'فرصة ضائعة', nm(attack.shooter), how === 'over' ? 'فوق العارضة' : how === 'post' ? 'ارتطمت بالقائم' : 'بجانب القائم')
-    before('تسديدة', nm(attack.shooter), ctx.clubs[s])
+    if (blocked) set('blocked', s, { no: no(attack.shooter), defNo: no(attack.defender), ...look }, t('صدّها الدفاع'), nm(attack.shooter), nm(attack.defender) ? t('تدخل {v0}', { v0: nm(attack.defender) }) : ctx.clubs[other(s)])
+    else set('miss', s, { no: no(attack.shooter), defNo: no(attack.defender), how, ...look }, how === 'post' ? t('القائم!') : t('فرصة ضائعة'), nm(attack.shooter), how === 'over' ? t('فوق العارضة') : how === 'post' ? t('ارتطمت بالقائم') : t('بجانب القائم'))
+    before(t('تسديدة'), nm(attack.shooter), ctx.clubs[s])
     speak(blocked ? 'blocked' : how === 'post' ? 'post' : 'miss', { key: 0.4, post: 0.68 })
-    item(s, 'miss', nm(attack.shooter), blocked ? 'تسديدة محجوبة' : how === 'post' ? 'القائم' : 'فرصة ضائعة')
+    item(s, 'miss', nm(attack.shooter), blocked ? t('تسديدة محجوبة') : how === 'post' ? t('القائم') : t('فرصة ضائعة'))
   } else if (kind === 'offside' && attack) {
     const s = attack.team, who = attack.receiver ?? attack.shooter
     Object.assign(vars, { p: who, A: s })
-    set('offside', s, { no: no(who) }, 'تسلل', nm(who), ctx.clubs[s])
-    before('كرة خلف الدفاع', nm(who), ctx.clubs[s])
+    set('offside', s, { no: no(who) }, t('تسلل'), nm(who), ctx.clubs[s])
+    before(t('كرة خلف الدفاع'), nm(who), ctx.clubs[s])
     speak('offside', { key: 0.38, post: 0.66 })
-    item(s, 'flag', nm(who), 'تسلل')
+    item(s, 'flag', nm(who), t('تسلل'))
   } else if (kind === 'corner' && corner) {
     const s = corner.team, won = corner.won !== false, header = attack?.shooter
     Object.assign(vars, { p: header ?? null, q: corner.taker, A: s })
-    set('corner', s, { no: no(header ?? corner.taker), scored: false, claim: !won, v: seed() }, 'ركنية', nm(won && header ? header : corner.taker), won ? 'رأسية فوق العارضة' : 'الحارس يمسك الكرة')
-    before('ركنية', nm(corner.taker), ctx.clubs[s])
+    set('corner', s, { no: no(header ?? corner.taker), scored: false, claim: !won, v: seed() }, t('ركنية'), nm(won && header ? header : corner.taker), won ? t('رأسية فوق العارضة') : t('الحارس يمسك الكرة'))
+    before(t('ركنية'), nm(corner.taker), ctx.clubs[s])
     speak(won ? 'corner_header' : 'corner_claim', { key: 0.4, post: 0.7 })
-    item(s, 'corner', nm(won && header ? header : corner.taker), won ? 'ركنية · رأسية' : 'ركنية')
+    item(s, 'corner', nm(won && header ? header : corner.taker), won ? t('ركنية · رأسية') : t('ركنية'))
   } else if (kind === 'sub' && sub) {
     const s = sub.team
     Object.assign(vars, { p: sub.in, q: sub.out, A: s })
-    set('sub', s, { inNo: no(sub.in), outNo: no(sub.out) }, 'تبديل', `${nm(sub.in)} ⇄ ${nm(sub.out)}`, ctx.clubs[s])
+    set('sub', s, { inNo: no(sub.in), outNo: no(sub.out) }, t('تبديل'), `${nm(sub.in)} ⇄ ${nm(sub.out)}`, ctx.clubs[s])
     speak('sub', { key: 0.2, post: 0.7 })
-    item(s, 'sub', `${nm(sub.in)} ⇄ ${nm(sub.out)}`, sub.reason === 'injury' ? 'تبديل اضطراري' : 'تبديل')
+    item(s, 'sub', `${nm(sub.in)} ⇄ ${nm(sub.out)}`, sub.reason === 'injury' ? t('تبديل اضطراري') : t('تبديل'))
   } else if (kind === 'injury' && injury) {
     const s = injury.team
     Object.assign(vars, { p: injury.player, A: s })
-    set('injury', s, { no: no(injury.player) }, 'إصابة', nm(injury.player), ctx.clubs[s])
+    set('injury', s, { no: no(injury.player) }, t('إصابة'), nm(injury.player), ctx.clubs[s])
     speak('injury', { key: 0.15, post: 0.6 })
-    item(s, 'injury', nm(injury.player), 'إصابة')
+    item(s, 'injury', nm(injury.player), t('إصابة'))
     const sb = ev.find((e) => e.type === 'sub' && e.team === s)
-    if (sb) item(s, 'sub', `${nm(sb.in)} ⇄ ${nm(sb.out)}`, 'تبديل اضطراري')
+    if (sb) item(s, 'sub', `${nm(sb.in)} ⇄ ${nm(sb.out)}`, t('تبديل اضطراري'))
   } else if (kind === 'coach' && action) {
     // The other side's instructions stay private: only "new instructions" (CLAUDE.md, privacy in a match).
     const s = action.team, own = ctx.mine === s || ctx.mine === null
-    const a = action.action, what = a.type === 'formation' ? `الطريقة ${a.formation}` : own ? Object.keys(a.tactics ?? {}).map((k) => TACTIC_NAMES[k] ?? k).slice(0, 2).join(' و') : ''
-    const tactic = own && what ? `تعليمات: ${what}` : 'تعليمات جديدة'
+    const a = action.action, what = a.type === 'formation' ? t('الطريقة {v0}', { v0: a.formation }) : own ? Object.keys(a.tactics ?? {}).map((k) => t(TACTIC_NAMES[k] ?? k)).slice(0, 2).join(t(' و')) : ''
+    const tactic = own && what ? t('تعليمات: {v0}', { v0: what }) : t('تعليمات جديدة')
     Object.assign(vars, { p: null, A: s, n: tactic })
-    set('coach', s, { tactic }, 'تعليمات المدرب', `مدرب ${ctx.clubs[s]}`, tactic)
+    set('coach', s, { tactic }, t('تعليمات المدرب'), t('مدرب {v0}', { v0: ctx.clubs[s] }), tactic)
     speak('coach', { key: 0.25, post: 0.7 })
-    out.bubble = `مدرب ${ctx.clubs[s]} يتحرك: ${tactic}`
-    item(s, 'coach', `مدرب ${ctx.clubs[s]}`, tactic)
+    out.bubble = t('مدرب {v0} يتحرك: {v1}', { v0: ctx.clubs[s], v1: tactic })
+    item(s, 'coach', t('مدرب {v0}', { v0: ctx.clubs[s] }), tactic)
   } else if (kind === 'whistle' && period) {
     const sc = `${ctx.clubs.home} ${tick.score.home} - ${tick.score.away} ${ctx.clubs.away}`
-    const big = { halftime: 'استراحة', fulltime: 'النهاية', extra_time: 'وقت إضافي', extra_time_half: 'استراحة قصيرة', penalties: 'ركلات الترجيح' }[period.name] ?? ''
-    const head = { halftime: 'نهاية الشوط الأول', fulltime: 'نهاية المباراة', extra_time: 'الوقت الإضافي', extra_time_half: 'منتصف الوقت الإضافي', penalties: 'ركلات الترجيح' }[period.name] ?? ''
+    const big = { halftime: t('استراحة'), fulltime: t('النهاية'), extra_time: t('وقت إضافي'), extra_time_half: t('استراحة قصيرة'), penalties: t('ركلات الترجيح') }[period.name] ?? ''
+    const head = { halftime: t('نهاية الشوط الأول'), fulltime: t('نهاية المباراة'), extra_time: t('الوقت الإضافي'), extra_time_half: t('منتصف الوقت الإضافي'), penalties: t('ركلات الترجيح') }[period.name] ?? ''
     Object.assign(vars, { n: sc })
     const st = (side) => tick.teams?.[side]?.stats ?? {}
-    const rows = [['الهجمات', 'attacks'], ['التسديدات', 'shots'], ['على المرمى', 'on_target'], ['الركنيات', 'corners']].map(([l, k]) => [l, st('home')[k] ?? 0, st('away')[k] ?? 0])
+    const rows = [[t('الهجمات'), 'attacks'], [t('التسديدات'), 'shots'], [t('على المرمى'), 'on_target'], [t('الركنيات'), 'corners']].map(([l, k]) => [l, st('home')[k] ?? 0, st('away')[k] ?? 0])
     // The score reads left to right with home on the right, as on the scoreboard.
     set('whistle', 'home', { big: head, score: `${tick.score.away} - ${tick.score.home}`, stats: rows }, big, '', sc)
     speak({ halftime: 'halftime', fulltime: 'fulltime', extra_time: 'extra_time', penalties: 'penalties' }[period.name] ?? 'halftime', { key: 0.25 })
     item('home', 'whistle', head, sc, { center: true })
   } else if (kind === 'stoppage' && stoppage) {
     Object.assign(vars, { n: String(stoppage.added) })
-    set('board', 'home', { plus: stoppage.added }, 'الوقت بدل الضائع', `+${stoppage.added}`, 'دقائق')
+    set('board', 'home', { plus: stoppage.added }, t('الوقت بدل الضائع'), `+${stoppage.added}`, t('دقائق'))
     speak('stoppage', { key: 0.15 })
   } else if (kind === 'shootout' && shootout) {
     const last = shootout.kicks?.[shootout.kicks.length - 1]
     Object.assign(vars, { n: `${shootout.score.home} - ${shootout.score.away}`, A: last?.team ?? 'home' })
     speak('shootout', { key: 0.1 })
-    if (last) item(last.team, last.scored ? 'goal' : 'miss', nm(last.taker), last.scored ? 'ترجيح · سجّل' : 'ترجيح · أضاع')
+    if (last) item(last.team, last.scored ? 'goal' : 'miss', nm(last.taker), last.scored ? t('ترجيح · سجّل') : t('ترجيح · أضاع'))
   } else if (attack && (served ? V?.line === 'attack' : R() < 0.45)) {
     Object.assign(vars, { A: attack.team })
     speak('attack', { key: 0.1 })
   }
   if (tick.tick === 1) {
     out.lines.unshift({ at: 0, en: LINES.kickoff.key.en[0], ar: LINES.kickoff.key.ar[0], x: false, vars: { ...vars } })
-    out.items.unshift({ side: 'home', icon: 'whistle', name: 'انطلاق المباراة', label: `${ctx.clubs.home} - ${ctx.clubs.away}`, minute: "1'", center: true })
+    out.items.unshift({ side: 'home', icon: 'whistle', name: t('انطلاق المباراة'), label: `${ctx.clubs.home} - ${ctx.clubs.away}`, minute: "1'", center: true })
     if (!out.bubble) out.bubble = LINES.kickoff.bubble[0]
   }
   // [X41] A small moment on the broadcast (tick.moment.brief): no scene, only its card and the commentator's one line.

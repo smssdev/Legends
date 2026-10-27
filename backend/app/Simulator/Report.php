@@ -76,35 +76,35 @@ class Report
         $t = $them['stats'];
         $facts = [];
 
-        $facts[] = ['weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => 'بناء مقطوع',
-            'title' => $m['presses_won'] >= $t['presses_won'] ? 'قطعت بناءهم كثيراً' : 'بناؤك قُطع كثيراً',
-            'text' => sprintf('قطعت %d من %d بناءً لهم، وقطعوا %d من %d بناءً لك.', $m['presses_won'], $t['builds'], $t['presses_won'], $m['builds'])];
+        $facts[] = ['weight' => ($m['presses_won'] - $t['presses_won']) * 3, 'big' => (string) $m['presses_won'], 'unit' => __('بناء مقطوع'),
+            'title' => $m['presses_won'] >= $t['presses_won'] ? __('قطعت بناءهم كثيراً') : __('بناؤك قُطع كثيراً'),
+            'text' => sprintf(__('قطعت %d من %d بناءً لهم، وقطعوا %d من %d بناءً لك.'), $m['presses_won'], $t['builds'], $t['presses_won'], $m['builds'])];
 
-        $facts[] = ['weight' => ($m['big_chances'] - $t['big_chances']) * 5, 'big' => $m['big_chances'].' / '.$t['big_chances'], 'unit' => 'فرص محققة',
-            'title' => $m['big_chances'] >= $t['big_chances'] ? 'صنعت الفرص الأخطر' : 'فرصهم كانت أخطر',
-            'text' => sprintf('فرص محققة: %d لك مقابل %d، وتسديدات %d مقابل %d.', $m['big_chances'], $t['big_chances'], $m['shots'], $t['shots'])];
+        $facts[] = ['weight' => ($m['big_chances'] - $t['big_chances']) * 5, 'big' => $m['big_chances'].' / '.$t['big_chances'], 'unit' => __('فرص محققة'),
+            'title' => $m['big_chances'] >= $t['big_chances'] ? __('صنعت الفرص الأخطر') : __('فرصهم كانت أخطر'),
+            'text' => sprintf(__('فرص محققة: %d لك مقابل %d، وتسديدات %d مقابل %d.'), $m['big_chances'], $t['big_chances'], $m['shots'], $t['shots'])];
 
         $expectedFor = intdiv($m['xg'], 100);
         $expectedAgainst = intdiv($t['xg'], 100);
         $luck = ($gf * 100 - $expectedFor) - ($ga * 100 - $expectedAgainst);
-        $facts[] = ['weight' => intdiv($luck, 20), 'big' => sprintf('%d.%d', intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10)), 'unit' => 'أهداف متوقعة',
-            'title' => abs($luck) < 60 ? 'النتيجة تعكس المباراة' : ($luck > 0 ? 'الحظ والفعالية معك' : 'الحظ لم يكن معك'),
-            'text' => sprintf('فرصك كانت تساوي حوالي %d.%d هدف وسجلت %d، وفرصهم حوالي %d.%d وسجلوا %d.',
+        $facts[] = ['weight' => intdiv($luck, 20), 'big' => sprintf('%d.%d', intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10)), 'unit' => __('أهداف متوقعة'),
+            'title' => abs($luck) < 60 ? __('النتيجة تعكس المباراة') : ($luck > 0 ? __('الحظ والفعالية معك') : __('الحظ لم يكن معك')),
+            'text' => sprintf(__('فرصك كانت تساوي حوالي %d.%d هدف وسجلت %d، وفرصهم حوالي %d.%d وسجلوا %d.'),
                 intdiv($expectedFor, 100), intdiv($expectedFor % 100, 10), $gf, intdiv($expectedAgainst, 100), intdiv($expectedAgainst % 100, 10), $ga)];
 
-        $facts[] = ['weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => 'هجمات مرتدة',
-            'title' => $m['counters'] >= $t['counters'] ? 'ارتداداتك فاجأتهم' : 'ارتداداتهم أتعبتك',
-            'text' => sprintf('هجمات مرتدة: %d لك مقابل %d.', $m['counters'], $t['counters'])];
+        $facts[] = ['weight' => ($m['counters'] - $t['counters']) * 3, 'big' => (string) $m['counters'], 'unit' => __('هجمات مرتدة'),
+            'title' => $m['counters'] >= $t['counters'] ? __('ارتداداتك فاجأتهم') : __('ارتداداتهم أتعبتك'),
+            'text' => sprintf(__('هجمات مرتدة: %d لك مقابل %d.'), $m['counters'], $t['counters'])];
 
         $fitMe = self::fitness($me);
         $fitThem = self::fitness($them);
-        $facts[] = ['weight' => intdiv($fitMe - $fitThem, 150), 'big' => intdiv($fitMe, 100).'%', 'unit' => 'لياقة في النهاية',
-            'title' => $fitMe >= $fitThem ? 'أنهيت المباراة أنشط منهم' : 'الإرهاق أثّر عليك',
-            'text' => sprintf('متوسط اللياقة في النهاية: %d%% لك مقابل %d%%.', intdiv($fitMe, 100), intdiv($fitThem, 100))];
+        $facts[] = ['weight' => intdiv($fitMe - $fitThem, 150), 'big' => intdiv($fitMe, 100).'%', 'unit' => __('لياقة في النهاية'),
+            'title' => $fitMe >= $fitThem ? __('أنهيت المباراة أنشط منهم') : __('الإرهاق أثّر عليك'),
+            'text' => sprintf(__('متوسط اللياقة في النهاية: %d%% لك مقابل %d%%.'), intdiv($fitMe, 100), intdiv($fitThem, 100))];
 
-        $facts[] = ['weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => 'بطاقات',
-            'title' => $m['red'] > $t['red'] ? 'الطرد كلّفك' : ($t['red'] > $m['red'] ? 'لعبت بأفضلية عددية' : 'الانضباط'),
-            'text' => sprintf('بطاقات: %d صفراء و%d حمراء لك، مقابل %d و%d.', $m['yellow'], $m['red'], $t['yellow'], $t['red'])];
+        $facts[] = ['weight' => ($t['red'] - $m['red']) * 12 + ($t['yellow'] - $m['yellow']), 'big' => (string) ($m['yellow'] + $m['red']), 'unit' => __('بطاقات'),
+            'title' => $m['red'] > $t['red'] ? __('الطرد كلّفك') : ($t['red'] > $m['red'] ? __('لعبت بأفضلية عددية') : __('الانضباط')),
+            'text' => sprintf(__('بطاقات: %d صفراء و%d حمراء لك، مقابل %d و%d.'), $m['yellow'], $m['red'], $t['yellow'], $t['red'])];
 
         return $facts;
     }
@@ -121,16 +121,16 @@ class Report
         $m = $me['stats'];
         $lines = [];
         if ($m['big_chances'] > $them['stats']['big_chances']) {
-            $lines[] = ['tag' => 'ممتاز', 'text' => 'خلق الفريق فرصاً أخطر من الخصم.'];
+            $lines[] = ['tag' => __('ممتاز'), 'text' => __('خلق الفريق فرصاً أخطر من الخصم.')];
         }
         if ($m['builds'] > 0 && $m['builds'] < $m['builds_lost'] * 4) {
-            $lines[] = ['tag' => 'مطلوب', 'text' => 'نفقد الكرة كثيراً في بداية البناء. جرّب إيقاعاً أهدأ أو كرات طويلة.'];
+            $lines[] = ['tag' => __('مطلوب'), 'text' => __('نفقد الكرة كثيراً في بداية البناء. جرّب إيقاعاً أهدأ أو كرات طويلة.')];
         }
         if ($m['red'] > 0) {
-            $lines[] = ['tag' => 'مطلوب', 'text' => 'الطرد غيّر المباراة. قطع الكرة الأخف يقلل البطاقات.'];
+            $lines[] = ['tag' => __('مطلوب'), 'text' => __('الطرد غيّر المباراة. قطع الكرة الأخف يقلل البطاقات.')];
         }
         if (! $lines) {
-            $lines[] = ['tag' => $result === 'loss' ? 'مطلوب' : 'ممتاز', 'text' => $result === 'loss' ? 'المباراة كانت متقاربة، والتفاصيل حسمتها.' : 'أداء متوازن في كل الخطوط.'];
+            $lines[] = ['tag' => $result === 'loss' ? __('مطلوب') : __('ممتاز'), 'text' => $result === 'loss' ? __('المباراة كانت متقاربة، والتفاصيل حسمتها.') : __('أداء متوازن في كل الخطوط.')];
         }
 
         return $lines;

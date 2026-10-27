@@ -73,10 +73,10 @@
         <div class="team"><span class="crest" v-html="crestOf('away')" /><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></div>
       </div>
       <div class="stats">
-        <div v-for="r in compare" :key="r.label" class="st"><span>{{ r.h }}</span><span class="bar"><i :style="{ width: r.hp + '%', background: kits.home.kit }" /><i :style="{ width: 100 - r.hp + '%', background: kits.away.kit }" /></span><span>{{ r.a }}</span><span class="lbl">{{ r.label }}</span></div>
+        <div v-for="r in compare" :key="r.label" class="st"><span>{{ r.h }}</span><span class="bar"><i :style="{ width: r.hp + '%', background: kits.home.kit }" /><i :style="{ width: 100 - r.hp + '%', background: kits.away.kit }" /></span><span>{{ r.a }}</span><span class="lbl">{{ $t(r.label) }}</span></div>
       </div>
       <div class="keys">
-        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>مفتاح {{ clubs[s] }} · {{ star(s)?.ovr }}</span></span></div>
+        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>{{ $t('مفتاح {v0} · {v1}', { v0: clubs[s], v1: star(s)?.ovr }) }}</span></span></div>
       </div>
       <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? $t('البداية بعد {v0}', { v0: countdown }) : $t('شغّل الصوت وانتظر البداية')) : $t('ابدأ البث') }}</button>
     </div>
@@ -89,6 +89,7 @@
 // then its card joins the timeline and the commentator sums it up on the mic
 // bar. The parent calls play(tick) per minute; the minute's length is the
 // server's (tick.moment.ms).
+import { t as tr } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, player as cartoon, setKits, setSmooth } from './art'
 import { noteFrame, smooth } from '../perf'
@@ -129,7 +130,7 @@ const barKit = computed(() => {
 })
 // [UP3] The club's real logo where it has one, else its drawn badge.
 const crestOf = (s) => (props.logos?.[s] ? `<img src="${props.logos[s]}" alt="" decoding="async">` : crest([props.kits[s].kit, props.kits[s].trim, props.codes[s] || '']))
-const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? 'أنت' : props.live ? '' : props.mine ? 'الحاسوب' : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
+const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? tr('أنت') : props.live ? '' : props.mine ? tr('الحاسوب') : ''), props.teams?.[s]?.formation].filter(Boolean).join(' · ')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
 // The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
 watch(smooth, (v) => setSmooth(v), { immediate: true })

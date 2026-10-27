@@ -102,14 +102,15 @@ class MarketController extends Controller
         $coaches = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->where('clubs.league_id', $league->id)
             ->get(['clubs.id', 'clubs.name', 'clubs.master_club_id', 'users.name as coach'])->keyBy('id');
         $listed = DB::table('transfer_listings')->whereIn('club_id', $coaches->keys())->pluck('price', 'player_id');
-        $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)->orderByDesc('players.overall')->limit(40)->get();
+        // The stars first, then the strongest of the rest [UP11].
+        $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)->orderByDesc('players.pool_star')->orderByDesc('players.overall')->limit(40)->get();
         $fromBots = $base()->whereIn('players.club_id', $bots->keys())->orderByDesc('players.overall')->limit(30)->get();
         $fromCoaches = $base()->whereIn('players.id', $listed->keys())->where('players.club_id', '!=', $club->id)->orderByDesc('players.overall')->get();
         $masters = DB::table('master_clubs')->whereIn('id', $world->pluck('master_club_id')->unique())->get(['id', 'name', 'league_name'])->keyBy('id');
         $row = fn ($p, int $price, array $seller) => [
             'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
-            'value' => (int) $p->value, 'price' => $price, 'seller' => $seller,
+            'value' => (int) $p->value, 'price' => $price, 'seller' => $seller, 'star' => (bool) ($p->pool_star ?? false),
             'attributes' => $p->line === 'gk'
                 ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                 : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
@@ -122,7 +123,7 @@ class MarketController extends Controller
             ->concat($world->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_pool_bp'], 10000), ['kind' => 'world', 'club_id' => null,
                 'club' => $masters[$p->master_club_id]->name ?? null, 'coach' => null,
                 'logo' => isset($masters[$p->master_club_id]) ? ClubLogo::path($masters[$p->master_club_id]->league_name, $masters[$p->master_club_id]->name) : null])))
-            ->sortByDesc('overall')->values();
+            ->sortBy([['star', 'desc'], ['overall', 'desc']])->values();
         $renewed = $league->pool_renewed_at ? Carbon::parse($league->pool_renewed_at, 'UTC') : null;
 
         return [

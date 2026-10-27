@@ -4,7 +4,7 @@ namespace App\Messages;
 
 /**
  * A message's words [Sprint 22 B1]: its title, its text and where it leads, from its type and payload, in
- * Arabic. One place for the web and the app; a new type adds its case here.
+ * Arabic (or English, MessageTextEn [UP2]). One place for the web and the app; a new type adds its case here.
  */
 class MessageText
 {
@@ -38,8 +38,12 @@ class MessageText
     }
 
     /** @return array{title: string, body: string, link: ?string} */
-    public static function render(string $type, array $p): array
+    public static function render(string $type, array $p, ?string $locale = null): array
     {
+        // [UP2] In English for an English request, or for an account that plays in English.
+        if (($locale ?? app()->getLocale()) === 'en') {
+            return MessageTextEn::render($type, $p);
+        }
         $league = $p['league'] ?? '';
 
         return match ($type) {

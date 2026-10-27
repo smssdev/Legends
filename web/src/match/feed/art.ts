@@ -4,6 +4,7 @@
 // perspective, clean player silhouettes with numbers, light trails, flashes and
 // particles; crests and line icons for the timeline. Drawing only: which scene
 // plays, and with whom, comes from story.ts.
+import { t as tr } from '../../lib/i18n'
 
 const NS = 'http://www.w3.org/2000/svg'
 // The two kits of the match: { kit, ink, trim, name } per side, set by the feed.
@@ -394,7 +395,7 @@ function openPlay(e, outcome, KT) {
 export const SCENES = {
   goal(e) {
     const KT = 3.0, { svg, go } = openPlay(e, 'goal', KT)
-    const num = bigNumber(svg, e.no, K(e.side).kit), fl = flash(svg), cf = flashes(svg), tt = title(svg, 'هدف!')
+    const num = bigNumber(svg, e.no, K(e.side).kit), fl = flash(svg), cf = flashes(svg), tt = title(svg, tr('هدف!'))
     return { dur: 6.0, svg, update(t) {
       go(t); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
       fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16)
@@ -404,7 +405,7 @@ export const SCENES = {
   save(e) {
     const KT = 2.9, { svg, go } = openPlay(e, 'save', KT)
     const ring = el('circle', { r: 26, fill: 'none', stroke: '#2BB673', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, svg.world)
-    const tt = title(svg, 'تصدٍّ رائع', '#2BB673')
+    const tt = title(svg, tr('تصدٍّ رائع'), '#2BB673')
     return { dur: 5.4, svg, update(t) {
       const { target } = go(t)
       const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
@@ -413,13 +414,13 @@ export const SCENES = {
   },
   miss(e) {
     const KT = 2.9, { svg, go } = openPlay(e, 'miss', KT)
-    const tt = title(svg, e.how === 'post' ? 'القائم!' : e.how === 'over' ? 'فوق العارضة' : 'بجانب القائم', '#C9D2E1')
+    const tt = title(svg, e.how === 'post' ? tr('القائم!') : e.how === 'over' ? tr('فوق العارضة') : tr('بجانب القائم'), '#C9D2E1')
     return { dur: 5.0, svg, update(t) { go(t); tt(seg(t, KT + 0.35, KT + 0.75)) } }
   },
   blocked(e) {
     const KT = 2.6, { svg, go } = openPlay(e, 'blocked', KT)
     const ring = el('circle', { r: 22, fill: 'none', stroke: '#7FB4FF', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, svg.world)
-    const tt = title(svg, 'صدّها الدفاع', '#7FB4FF')
+    const tt = title(svg, tr('صدّها الدفاع'), '#7FB4FF')
     return { dur: 4.8, svg, update(t) {
       const { target } = go(t)
       const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.5})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
@@ -429,8 +430,8 @@ export const SCENES = {
   penalty(e) {
     const R = rnd(e.v ?? (e.no ?? 9) * 31), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
     const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), tr = trail(svg)
-    const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'IBM Plex Sans Arabic, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = 'صمت في المدرجات...'
-    const tt = title(svg, e.scored ? 'هدف!' : 'تصدٍّ!', e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
+    const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'IBM Plex Sans Arabic, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
+    const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
     const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1
     const target = e.scored ? [320 + dir * (48 + R() * 12), R() < 0.5 ? 140 : 90] : [320 + dir * (30 + R() * 20), 110 + R() * 30]
     const kAim = e.scored ? (R() < 0.6 ? [640 - target[0], target[1]] : [lerp(320, target[0], 0.7), target[1] + 8]) : target
@@ -466,7 +467,7 @@ export const SCENES = {
     const KT = 2.65, tS = 1.85, side = R() < 0.5 ? -1 : 1, spot = [320 - side * 50, 252]
     const target = e.scored ? [side > 0 ? POSTS[1] - 12 : POSTS[0] + 12, 84 + R() * 8] : e.saved ? [320 + side * (44 + R() * 14), 92 + R() * 14] : [320 + side * 20, 50]
     const path = [spot, [lerp(spot[0], target[0], 0.4) - side * 30, 30], target]
-    const tt = title(svg, e.scored ? 'هدف!' : e.saved ? 'تصدٍّ!' : 'فوق العارضة', e.scored ? undefined : e.saved ? '#2BB673' : '#C9D2E1')
+    const tt = title(svg, e.scored ? tr('هدف!') : e.saved ? tr('تصدٍّ!') : tr('فوق العارضة'), e.scored ? undefined : e.saved ? '#2BB673' : '#C9D2E1')
     return { dur: 5.2, svg, update(t) {
       cam(svg, 1.06 + 0.1 * inout(seg(t, 0.2, tS)), 320, 165)
       // The wall, nine metres off, jumps as the kick is taken.
@@ -496,7 +497,7 @@ export const SCENES = {
     const b = ball(svg), tr = trail(svg)
     el('path', { d: 'M598 214 V184', stroke: '#DDE3F0', 'stroke-width': 2 }, w); el('path', { d: 'M599 184 L614 189 L599 194 Z', fill: '#F5B82E' }, w)
     const from = [596, 214], head = [326, 186], path = [from, [470, 20], [head[0], head[1] - 44]]
-    const tt = title(svg, e.claim ? 'الحارس يمسكها' : 'رأسية!', e.claim ? '#2BB673' : '#C9D2E1')
+    const tt = title(svg, e.claim ? tr('الحارس يمسكها') : tr('رأسية!'), e.claim ? '#2BB673' : '#C9D2E1')
     return { dur: 4.6, svg, update(t) {
       cam(svg, 1.12, 360, 170)
       const f = seg(t, 0.6, 1.7), jump = 24 * Math.sin(Math.PI * seg(t, 1.35, 2.05))
@@ -520,7 +521,7 @@ export const SCENES = {
     const pl = player(svg, K(e.side).kit, e.no, 1.6)
     const glow = el('circle', { cx: 430, cy: 150, r: 90, fill: col, opacity: 0, filter: ref(svg, 'soft') }, svg)
     const card = el('g', {}, svg); card.innerHTML = `<rect x="-38" y="-54" width="76" height="108" rx="8" fill="${col}"/><path d="M-30 -46 L30 -46" stroke="rgba(255,255,255,.5)" stroke-width="3"/>`
-    const tt = title(svg, red ? 'طرد!' : 'إنذار', col)
+    const tt = title(svg, red ? tr('طرد!') : tr('إنذار'), col)
     return { dur: 4.4, svg, update(t) {
       pl.at(230, 228, t > 1.4 ? -6 : 0)
       const f = ease(seg(t, 0.4, 1.1))
@@ -535,7 +536,7 @@ export const SCENES = {
     const line = el('line', { x1: 120, y1: 214, x2: 520, y2: 214, stroke: '#EF4444', 'stroke-width': 3, 'stroke-dasharray': '10 7', opacity: 0, filter: ref(svg, 'glow') }, svg)
     const fr = el('rect', { width: 640, height: 340, fill: 'rgba(30,70,160,.18)', opacity: 0 }, svg)
     const flag = el('g', { opacity: 0 }, svg); flag.innerHTML = '<rect x="-1.5" y="0" width="3" height="46" fill="#DDE3F0"/><path d="M1.5 2 H30 L24 12 L30 22 H1.5 Z" fill="#EF4444"/>'
-    const tt = title(svg, 'تسلل', '#EF4444')
+    const tt = title(svg, tr('تسلل'), '#EF4444')
     return { dur: 4.2, svg, update(t) {
       const fz = t > 1.5 && t < 2.6
       defs.forEach((d, i) => d.at(200 + i * 80, 220, 0, 0.9))

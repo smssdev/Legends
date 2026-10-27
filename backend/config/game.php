@@ -121,6 +121,9 @@ return [
         'transfer_doc_coins' => 1, 'transfer_doc_coins_big' => 2, 'doc_big_from' => 10_000_000,
         'compensate_min_bp' => 5000, 'money_per_coin' => 200_000,
         'pool_lines' => ['gk' => 10, 'def' => 30, 'mid' => 35, 'att' => 25],
+        // [UP11] The owner's spec (5): from mid-season (pool_stars_from_bp of the rounds played) every renewal brings
+        // pool_stars stars from the parallel leagues, up to pool_stars_above above the league's best player.
+        'pool_stars' => 6, 'pool_stars_from_bp' => 5000, 'pool_stars_above' => 4,
         // Selling [X6]: the instant sale pays the full value for coins (in a fair league, this share of the value);
         // a listing asks up to the sale cap (130% of the value, the value alone for a player the club bought), and a
         // buyer from outside takes it after a wait from this table (price in bp of value => hours, before the

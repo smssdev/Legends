@@ -5,7 +5,7 @@ namespace App\Notifications;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-/** The password reset, in Arabic [PLAN 2.17]. The link opens the web app's reset screen. */
+/** The password reset, in Arabic or the account's English [PLAN 2.17, UP2]. The link opens the web app's reset screen. */
 class ResetPasswordNotice extends Notification
 {
     public function __construct(#[\SensitiveParameter] public string $token) {}
@@ -26,6 +26,15 @@ class ResetPasswordNotice extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $minutes = config('auth.passwords.users.expire');
+        if (($notifiable->locale ?? app()->getLocale()) === 'en') {
+            return (new MailMessage)
+                ->subject('Recover your Game Legend Manager password')
+                ->greeting('Hello '.$notifiable->name)
+                ->line('We received a request to change your account\'s password.')
+                ->action('Choose a new password', $this->url($notifiable))
+                ->line("The link is valid for $minutes minutes. If you did not ask for this, ignore the message; your password stays as it is.")
+                ->salutation('The Game Legend Manager team');
+        }
 
         return (new MailMessage)
             ->subject('استعادة كلمة المرور في لعبة المدرب الأسطورة')

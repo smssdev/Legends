@@ -23,7 +23,8 @@ class Inbox
         }
         $id = DB::table('messages')->insertGetId(['user_id' => $userId, 'league_id' => $leagueId, 'club_id' => $clubId,
             'type' => $type, 'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE), 'created_at' => GameClock::now()]);
-        $view = self::view(DB::table('messages')->find($id));
+        // [UP2] The live copy and the push in the recipient's own language, whoever's request made the message.
+        $view = self::view(DB::table('messages')->find($id), DB::table('users')->where('id', $userId)->value('locale') ?? 'ar');
         MessageReceived::dispatch($userId, $view, self::unread($userId));
         // And a push to the account's browsers, for the kinds it wants [Sprint 36].
         Push::send($userId, $type, $view['title'], $view['body'], $view['link']);
@@ -58,10 +59,10 @@ class Inbox
         return $changed;
     }
 
-    public static function view(object $m): array
+    public static function view(object $m, ?string $locale = null): array
     {
         return ['id' => $m->id, 'type' => $m->type, 'league_id' => $m->league_id, 'read' => $m->read_at !== null,
             'created_at' => Carbon::parse($m->created_at, 'UTC')->toIso8601ZuluString()]
-            + MessageText::render($m->type, json_decode($m->payload, true) ?? []);
+            + MessageText::render($m->type, json_decode($m->payload, true) ?? [], $locale);
     }
 }

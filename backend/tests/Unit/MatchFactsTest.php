@@ -94,4 +94,22 @@ class MatchFactsTest extends TestCase
             $this->assertDoesNotMatchRegularExpression('/\b[12] (مرة|مرات|تسديدات|فرص)/u', $r['text']);
         }
     }
+
+    public function test_an_english_coach_reads_the_same_notes_in_english(): void
+    {
+        $state = $this->state(5);
+        [$saidAr, $saidEn] = [[], []];
+        $count = 0;
+        while (! $state['finished']) {
+            $state = Runner::tick($state);
+            [$ar, $saidAr] = Readings::next(MatchFacts::of($state, 'home'), $state['out']['events'], $saidAr);
+            [$en, $saidEn] = Readings::next(MatchFacts::of($state, 'home'), $state['out']['events'], $saidEn, 'en');
+            $this->assertSame($ar['kind'] ?? null, $en['kind'] ?? null);
+            if ($en) {
+                $count++;
+                $this->assertDoesNotMatchRegularExpression('/\p{Arabic}/u', $en['text']);
+            }
+        }
+        $this->assertGreaterThan(0, $count);
+    }
 }

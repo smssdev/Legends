@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
  * opens (the first one when the league is made) and every game.economy.pool_hours [X6, 2026-10-24]. They come from
  * every league in the data, whatever the league's own template, in every line (pool_lines), and as strong as this
  * league: from its pool_level_from_pct percentile to its best player. The players of the old pool leave it; the ones
- * a coach sold to it stay until the next renewal like the rest.
+ * a coach sold to it stay until the next renewal like the rest. From mid-season a few stars come too (stars()).
  */
 class Pool
 {
@@ -21,7 +21,7 @@ class Pool
             if ($windowId && DB::table('transfer_windows')->where('id', $windowId)->whereNull('pool_at')->update(['pool_at' => GameClock::now()]) !== 1) {
                 return null;
             }
-            DB::table('players')->where('league_id', $leagueId)->whereNull('club_id')->where('in_pool', true)->update(['in_pool' => false]);
+            DB::table('players')->where('league_id', $leagueId)->whereNull('club_id')->where('in_pool', true)->update(['in_pool' => false, 'pool_star' => false]);
             // The scouts' finds nobody bought go with it.
             DB::table('players')->where('league_id', $leagueId)->whereNull('club_id')->whereNotNull('scouted_by')->update(['scouted_by' => null]);
             DB::table('leagues')->where('id', $leagueId)->update(['pool_renewed_at' => GameClock::now()]);
@@ -48,8 +48,30 @@ class Pool
                         ->selectRaw('?, null, id, overall, value, value, true, ?, ?', [$leagueId, $now, $now]));
             }
 
-            return $ids->count();
+            return $ids->count() + self::stars($leagueId, $high, $version, $now);
         });
+    }
+
+    /**
+     * [UP11] From mid-season, a few stars from the parallel leagues: from the league's best to pool_stars_above over
+     * it, any line, marked so the market shows them. Bought like any player of the pool.
+     */
+    private static function stars(int $leagueId, int $high, int $version, $now): int
+    {
+        $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->first();
+        if (! $season || $season->rounds < 1 || $season->rounds_played * 10000 < $season->rounds * (int) config('game.economy.pool_stars_from_bp')) {
+            return 0;
+        }
+        $ids = DB::table('master_players')->where('data_version', $version)
+            ->whereBetween('overall', [$high, $high + (int) config('game.economy.pool_stars_above')])
+            ->whereNotIn('id', DB::table('players')->where('league_id', $leagueId)->select('master_player_id'))
+            ->inRandomOrder()->limit((int) config('game.economy.pool_stars'))->pluck('id');
+        if ($ids->isNotEmpty()) {
+            DB::table('players')->insertUsing(['league_id', 'club_id', 'master_player_id', 'overall', 'base_value', 'value', 'in_pool', 'pool_star', 'created_at', 'updated_at'],
+                DB::table('master_players')->whereIn('id', $ids->all())->selectRaw('?, null, id, overall, value, value, true, true, ?, ?', [$leagueId, $now, $now]));
+        }
+
+        return $ids->count();
     }
 
     /** Every minute: a window that has opened renews its league's pool, once; and so does pool_hours since the last. */
