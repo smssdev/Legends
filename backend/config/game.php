@@ -86,6 +86,9 @@ return [
         'injury_matches' => [1, 3],       // an injury keeps a player out this many of his club's matches
         'red_card_matches' => 1,
         'runner_sleep_ms' => 200,         // how often matches:run looks at the clock
+        // [X45] And with no match live and none starting within runner_busy_ahead_s: every runner_idle_ms, so a free
+        // server's tenth of a CPU and the trips to Supabase are kept for the players (35 queries a second before).
+        'runner_idle_ms' => 2000, 'runner_busy_ahead_s' => 90,
         // A live match more than this behind (the runner was stopped) goes on from now.
         'stalled_ms' => 5000,
         // A coach whose screen has not asked for his match in this long is away: his assistant manages [ENGINE 7].

@@ -45,6 +45,9 @@ fi
 supabase=
 if [ -n "${DATABASE_URL:-}" ]; then
   export DB_CONNECTION=pgsql DB_URL="$DATABASE_URL" DB_QUEUE_CONNECTION=pgsql DB_SSLMODE="${DB_SSLMODE:-require}"
+  # [X45] Each web worker keeps its connection to Supabase between requests (no new TLS handshake and sign-in each
+  # time), and skips the setup statement Supabase does not need (the public schema is its default).
+  export DB_PERSISTENT=true DB_SEARCH_PATH=
   supabase=1
 fi
 
@@ -142,9 +145,15 @@ else
   php artisan migrate --force
 fi
 php artisan data:import --add
+# [X45] The sessions in this server's own SQLite file beside the cache, not in Supabase: no network trip on every
+# request. A restart signs nobody out for long: the remember-me cookie (on by default) signs them back in.
+export SESSION_DRIVER=database SESSION_CONNECTION=cache_db
 php artisan config:cache
+php artisan route:cache
+php artisan event:cache
+php artisan view:cache
 
-php artisan queue:work --tries=1 --sleep=1 >> storage/logs/queue.log 2>&1 &
+php artisan queue:work --tries=1 --sleep=3 >> storage/logs/queue.log 2>&1 &
 php artisan schedule:work >> storage/logs/schedule.log 2>&1 &
 php artisan matches:run >> storage/logs/matches.log 2>&1 &
 
@@ -156,14 +165,15 @@ case "${MAIL_MAILER:-log}" in
 esac
 if [ -n "${GOOGLE_CLIENT_ID:-}" ]; then echo "Google sign-in: on"; else echo "Google sign-in: off"; fi
 
-# تشغيل السيرفر بناءً على حالة اتصال Backblaze B2
+# The web server [X45]: PHP's own, PHP_CLI_SERVER_WORKERS (Dockerfile) at once, with router.php sending the built
+# files and the app's pages without Laravel. Where the game is saved decides only what wraps it.
 if [ -n "$supabase" ]; then
   echo "Saved game: in Supabase, kept across every restart and deploy"
-  exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
+  exec php -S 0.0.0.0:"${PORT}" -t public router.php
 elif [ -n "$saved" ]; then
   echo "Saved game: every change copied to B2 ($LITESTREAM_BUCKET)"
-  exec litestream replicate -config /app/litestream.yml -exec "php artisan serve --host=0.0.0.0 --port=${PORT} --no-reload"
+  exec litestream replicate -config /app/litestream.yml -exec "php -S 0.0.0.0:${PORT} -t public router.php"
 else
   echo "Saved game: off, the data is wiped on every restart (B2_* in Render's Environment)"
-  exec php artisan serve --host=0.0.0.0 --port="${PORT}" --no-reload
+  exec php -S 0.0.0.0:"${PORT}" -t public router.php
 fi

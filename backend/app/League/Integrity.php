@@ -196,6 +196,7 @@ class Integrity
             if ($added !== 1) {
                 throw new HttpException(409, 'فصلت لجنة الانضباط في هذه القضية.');
             }
+            Standings::forget($season);
             if ($fine > 0) {
                 ClubLedger::post($guilty->id, 'fa_fine', -$fine, "fa:{$bribe->id}", "bribe:{$bribe->id}");
             }

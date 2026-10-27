@@ -2,13 +2,30 @@
 
 namespace App\League;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /** The league's final order [PLAN 2.5]: points, goal difference, goals scored, then strength (as the table shows). */
 class Standings
 {
-    /** @return list<int> club ids, first place first */
+    /**
+     * @return list<int> club ids, first place first
+     *
+     * [X45] Kept in the server's own cache: it changes only when a league match is finished or the FA takes points,
+     * and both clear it (forget()); the home screen and the league's pages ask for it many times a minute.
+     */
     public static function order(int $seasonId): array
+    {
+        return Cache::remember("standings:{$seasonId}", 120, fn () => self::compute($seasonId));
+    }
+
+    /** After the change commits, so no reader caches the table as it was before it. */
+    public static function forget(int $seasonId): void
+    {
+        DB::afterCommit(fn () => Cache::forget("standings:{$seasonId}"));
+    }
+
+    private static function compute(int $seasonId): array
     {
         $leagueId = (int) DB::table('seasons')->where('id', $seasonId)->value('league_id');
         $rows = DB::table('clubs')->where('league_id', $leagueId)->get(['id', 'strength_snapshot'])

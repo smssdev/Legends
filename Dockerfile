@@ -29,8 +29,14 @@ WORKDIR /app/backend
 RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype libpq \
  && apk add --no-cache --virtual .gd-build libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev postgresql-dev \
  && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
- && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql \
+ && docker-php-ext-install -j"$(nproc)" gd pdo_pgsql opcache \
  && apk del .gd-build
+# [X45] OPcache, for the web server too (it runs as php -S, a CLI process): Laravel is compiled once per start instead
+# of on every request. The code never changes inside the container, so files are not checked again.
+RUN { echo 'opcache.enable=1'; echo 'opcache.enable_cli=1'; echo 'opcache.memory_consumption=96'; \
+      echo 'opcache.interned_strings_buffer=16'; echo 'opcache.max_accelerated_files=20000'; \
+      echo 'opcache.validate_timestamps=0'; echo 'realpath_cache_size=4096K'; echo 'realpath_cache_ttl=600'; } \
+      > /usr/local/etc/php/conf.d/zz-legends-speed.ini
 # Litestream (free, open source): copies every change to the databases to B2 and brings it back on start.
 ARG LITESTREAM_VERSION=0.3.13
 ADD https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-amd64.tar.gz /tmp/litestream.tar.gz
@@ -42,6 +48,7 @@ COPY --from=vendor /app/backend/vendor ./vendor
 COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
+ && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec gzip -k -9 {} \; \
  && cp .env.example .env \
  && sed -i 's/^APP_ENV=.*/APP_ENV=demo/; s/^APP_DEBUG=.*/APP_DEBUG=false/; s/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env \
  && echo "SIMULATOR_ENABLED=true" >> .env \
@@ -55,7 +62,8 @@ RUN composer dump-autoload --optimize --no-dev \
 COPY deploy/render/start.sh /app/start.sh
 COPY deploy/render/maintenance.php /app/maintenance.php
 COPY deploy/render/litestream.yml /app/litestream.yml
-ENV PORT=8000 PHP_CLI_SERVER_WORKERS=2
+COPY deploy/render/router.php /app/backend/router.php
+ENV PORT=8000 PHP_CLI_SERVER_WORKERS=4
 EXPOSE 8000
 USER www-data
 CMD ["sh", "/app/start.sh"]

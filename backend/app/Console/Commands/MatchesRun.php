@@ -58,7 +58,8 @@ class MatchesRun extends Command
             if ($this->option('once')) {
                 break;
             }
-            usleep((int) config('game.matches.runner_sleep_ms') * 1000);
+            $busy = $started + $minutes + $published > 0 || MatchRunner::busy();
+            usleep((int) config($busy ? 'game.matches.runner_sleep_ms' : 'game.matches.runner_idle_ms') * 1000);
         } while (! $this->stop);
         MatchRunner::release($token);
 

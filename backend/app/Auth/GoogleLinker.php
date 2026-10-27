@@ -40,7 +40,7 @@ class GoogleLinker
                 $user->password = null;
                 $user->setRememberToken(null);
                 $user->tokens()->delete();
-                DB::table('sessions')->where('user_id', $user->id)->delete();
+                Sessions::forget($user->id);
             }
             $user->google_id = $google->sub;
             $user->google_picture = $google->picture !== null && str_starts_with($google->picture, 'https://') ? substr($google->picture, 0, 500) : $user->google_picture;
