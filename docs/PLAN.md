@@ -501,6 +501,8 @@ unity/
 | الدخول بجوجل | `GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET` | Google Cloud Console ← APIs & Services ← Credentials ← عميل OAuth (نفس عميل Render)، وتُضاف إليه: Authorized JavaScript origins `https://srv2100776.hstgr.cloud`، وAuthorized redirect URIs `https://srv2100776.hstgr.cloud/auth/google/callback` |
 | نسخة في B2 | `B2_BUCKET` و`B2_KEY_ID` و`B2_APPLICATION_KEY` | نفس قيم Render (8.1) |
 
+- **ومضبوط على السيرفر** (2026-10-27): الحسابان الرسميان (`OWNER_SOLIMAN_EMAIL` و`OWNER_HAMZA_EMAIL`، ومن يدخل بأحدهما مؤكَّداً يصير مديراً)، وأرقام الدعم (`SUPPORT_WHATSAPP` و`SUPPORT_TELEGRAM`)، ومفاتيح إشعارات المتصفح (`WEBPUSH_VAPID_*`، صنعها السيرفر بـ `push:keys`، ولا تُغيَّر بعدها لأن تغييرها يلغي اشتراكات المتصفحات).
+
 ## 9. السبرنتات
 
 | السبرنت | العنوان | الأيام | من | إلى | النسخة |
