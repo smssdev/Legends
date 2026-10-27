@@ -99,8 +99,9 @@ if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_ENDPOINT:-}" ] && [ -n "${B2_KEY_ID:-}"
   # (nothing would be copied) or start an empty game over the league. The site shows a maintenance page instead
   # (deploy/render/maintenance.php, so Render keeps it up) and tries B2 again every 10 minutes; once it answers, the
   # page goes and the game starts with the league as it was, without a new deploy.
-  # On Supabase the game is read from B2 only when Supabase holds none yet (the move, X43).
-  if [ -n "$supabase" ] && php artisan db:to-supabase --check; then
+  # On Supabase B2 is never read [X47]: the move from B2 (X43) is done, and a new, empty Supabase starts a new game
+  # (the owner's decision, 2026-10-27) instead of waiting on an old copy.
+  if [ -n "$supabase" ]; then
     restore_all() { return 0; }
     echo "Saved game: in Supabase (B2 not needed)"
   fi
@@ -122,24 +123,16 @@ mkdir -p storage/logs
 # A copy of the game as it is before this deploy's migrations, downloadable from the admin panel (النسخ) until the
 # next restart [X33]. The migrations only add (tests/Feature/MigrationSafetyTest.php), but a copy costs nothing.
 if [ -n "$supabase" ]; then
+  # [X47] A Supabase with a game: a copy first. An empty one: its tables are made here and the clubs and players
+  # imported below, a new game (no copy from B2 or the image's file, nothing to wait for).
   if php artisan db:to-supabase --check; then
     php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"
-    php artisan migrate --force
-    php artisan db:close-api
   else
-    # [X43] The move: Supabase made ready, then the league from the file B2 brought back, all or nothing. If it
-    # fails Supabase stays empty and the game does not start without its league: the maintenance page stays and
-    # the move is tried again every 10 minutes (the file and B2 are only read).
-    php artisan migrate --force
-    # Supabase's public API never sees the game's tables (its public key is not a secret), before any row is there.
-    php artisan db:close-api
-    until php artisan db:to-supabase; do
-      [ -z "${page:-}" ] && { php -S 0.0.0.0:"${PORT}" /app/maintenance.php > /dev/null 2>&1 & page=$!; }
-      echo "Supabase: the move failed (above); the maintenance page stays, trying again in 10 minutes"
-      sleep 600
-    done
-    if [ -n "${page:-}" ]; then kill "$page" 2> /dev/null || true; sleep 1; fi
+    echo "Supabase: empty, a new game starts"
   fi
+  php artisan migrate --force
+  # Supabase's public API never sees the game's tables (its public key is not a secret).
+  php artisan db:close-api
 else
   if [ -n "$saved" ]; then php artisan db:backup --keep=5 || echo "Backup before migrating: failed, continuing"; fi
   php artisan migrate --force
