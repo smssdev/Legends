@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 /**
  * The migrations only add [X33]: the owner's league runs on the live server, and every deploy runs
- * `migrate --force` over its data (deploy/render/start.sh). So no migration's up() may drop, rename, truncate or
+ * `migrate --force` over its data (deploy/docker/start.sh). So no migration's up() may drop, rename, truncate or
  * delete; a column that is no longer used stays, and a change of shape is a new column filled from the old one.
  * The undoing in down() is free (it never runs on the server).
  */

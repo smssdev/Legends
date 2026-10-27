@@ -4,7 +4,7 @@ namespace App\Data;
 
 /**
  * A short code and two colors for each club, used for the generated crest
- * (no real logos, docs/PLAN.md 2.6). Known clubs get their real colors; the
+ * (no real logos, README.md 2.6). Known clubs get their real colors; the
  * rest get a stable pair picked from the club name.
  */
 class ClubIdentity

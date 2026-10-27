@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Read-only source data (docs/PLAN.md 2.6). Every league copies what it needs
+ * Read-only source data (README.md 2.6). Every league copies what it needs
  * into its own clubs/players tables later, so these rows never change in play.
  */
 return new class extends Migration

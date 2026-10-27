@@ -4,7 +4,7 @@ namespace Legends
 {
     /// <summary>
     /// The score and the minute in the corner, for trying the scene alone. On the web and in the app the page draws
-    /// all text over the scene in Arabic (docs/PLAN.md 7.2), so this stays numbers and club codes only.
+    /// all text over the scene in Arabic (README.md 7.2), so this stays numbers and club codes only.
     /// </summary>
     public sealed class Scoreboard : MonoBehaviour
     {

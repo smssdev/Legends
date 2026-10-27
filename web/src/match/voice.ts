@@ -1,16 +1,13 @@
-// The commentator (docs/PLAN.md 2.21), in English or Arabic. Lines are joined at
-// play time from recorded clips (tools/commentary/generate.py): every phrase in
-// the voice it is said in (calm, or excited for the big moments), and for English
-// each club's name and its players' surnames. The Arabic voice says no names.
+// The commentator, in English only (the owner's decision, 2026-10-27: the Arabic commentary is deleted). Lines are
+// joined at play time from recorded clips (tools/commentary/generate.py): every phrase in the voice it is said in
+// (calm, or excited for the big moments), each club's name and its players' surnames.
 // A club without clips falls back to the browser's own voice for that line.
 // Calm lines queue and are never cut; a big moment's line (excited) is said at
 // once, cutting the line before it short, so the voice stays with the scene.
 
-export type Lang = 'en' | 'ar'
+export type Lang = 'en'
 export type Part = { key: string; club?: string }
-export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang; real?: RealKind }
-/** A real phrase's moment [X37]: the commentator's own recorded words (tools/commentary/real_phrases.py). */
-export type RealKind = 'goal' | 'goal_big'
+export type Line = { text: string; parts: Part[]; excited: boolean; lang: Lang }
 type Pack = { buf: AudioBuffer; map: Record<string, [number, number]> }
 type Clip = { pack: Pack; at: [number, number]; rate: number }
 
@@ -31,12 +28,10 @@ export function surname(full: string) {
 }
 
 /**
- * A commentary line from story.ts as the commentator says it. English names
- * become clips of the player's (or club's) pack; Arabic is one phrase.
+ * A commentary line from story.ts as the commentator says it: names become clips of the player's (or club's) pack.
  * vars: {p, q} player ids, A the side the moment belongs to, n a number.
  */
-export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null; x: boolean; vars: any; m?: string; s?: string }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
-  if (lang === 'ar') return l.ar ? { lang, text: l.ar, parts: [{ key: phraseKey(l.ar) }], excited: l.x } : null
+export function voiceLine(lang: Lang, l: { en: string | null; x: boolean; vars: any; m?: string; s?: string }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
   if (!l.en) return null
   const v = l.vars, other = v.A === 'home' ? 'away' : 'home'
   const parts: Part[] = []
@@ -62,25 +57,6 @@ export function voiceLine(lang: Lang, l: { en: string | null; ar: string | null;
 
 const BASE = import.meta.env.BASE_URL + 'commentary/'
 
-/**
- * The Arabic voices (tools/commentary/arabic_voice.py): the first recording, then the six full voices. The sixth
- * (hafid) is the default [X9]. Shown by their commentators' names, at the owner's decision (2026-10-25, PLAN 11).
- */
-export const AR_VOICES = ['voice-6', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'base'] as const
-export type ArVoice = (typeof AR_VOICES)[number]
-export const DEFAULT_AR_VOICE: ArVoice = 'voice-6'
-
-/**
- * [UP18] The Arabic commentary is switched off for now (the owner's spec, 12, 2026-10-26, confirmed 2026-10-27): the
- * English commentator, saying the players' names, is the only one in a match, and the Arabic recordings are not even
- * downloaded. Its code, lines and recordings all stay; true brings it back.
- */
-export const ARABIC_COMMENTARY = false
-// In the order of tools/commentary/arabic_voice.py's VOICES (voice-1 is ali ... voice-6 is hafid).
-const AR_NAMES: Record<ArVoice, string> = {
-  'voice-1': 'علي', 'voice-2': 'عصام الشوالي', 'voice-3': 'فهد', 'voice-4': 'فارس', 'voice-5': 'مدحت شلبي', 'voice-6': 'حفيظ دراجي', base: 'الأساسي',
-}
-export const arVoiceName = (v: ArVoice) => AR_NAMES[v] + (v === DEFAULT_AR_VOICE ? ' (الافتراضي)' : '')
 const GAP = 0.07
 
 export class Commentator {
@@ -90,7 +66,6 @@ export class Commentator {
   private ctx: AudioContext | null = null
   private out: GainNode | null = null
   private wanted: string[] = []
-  private arPack = 'ar/voice-6/phrases'
   private packs = new Map<string, Promise<Pack | null>>()
   private ready = new Map<string, Pack | null>()
   private queue: Line[] = []
@@ -98,18 +73,16 @@ export class Commentator {
   private sources: AudioBufferSourceNode[] = []
   private timer = 0
   private endsAt = 0
-  private realUntil = 0
   private lineGain: GainNode | null = null
   private utter: SpeechSynthesisUtterance | null = null
-  private synthVoice: Record<Lang, SpeechSynthesisVoice | null> = { en: null, ar: null }
+  private synthVoice: SpeechSynthesisVoice | null = null
   private readonly synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
 
   constructor() {
     if (!this.synth) return
     const pick = () => {
       const vs = this.synth!.getVoices()
-      this.synthVoice.en = vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ?? vs.find((v) => /en-GB/i.test(v.lang)) ?? vs.find((v) => /^en/i.test(v.lang)) ?? null
-      this.synthVoice.ar = vs.find((v) => /^ar/i.test(v.lang)) ?? null
+      this.synthVoice = vs.find((v) => /en-GB/i.test(v.lang) && /male|daniel|george|arthur|ryan/i.test(v.name)) ?? vs.find((v) => /en-GB/i.test(v.lang)) ?? vs.find((v) => /^en/i.test(v.lang)) ?? null
     }
     pick()
     this.synth.addEventListener?.('voiceschanged', pick)
@@ -127,31 +100,7 @@ export class Commentator {
     }
     void this.ctx.resume()
     this.pack('phrases')
-    if (ARABIC_COMMENTARY) { this.pack(this.arPack); this.pack(this.realPack()) }
     for (const c of this.wanted) this.pack('clubs/' + c)
-  }
-
-  // The voice's real phrases [X37], beside its pack: only the voices the team gave recordings for have one.
-  private realPack() { return this.realName || 'ar/none/real' }
-  private realName = 'ar/voice-6/real'
-
-  /**
-   * One of the commentator's real phrases for this moment, at random. A voice without them says nothing more (its
-   * written line stays); with them, the excited ones (the goal) take the place of the written call.
-   */
-  real(kind: RealKind) {
-    const pack = this.ready.get(this.realPack())
-    const list = (pack?.map as unknown as Record<string, [number, number][]> | undefined)?.[kind]
-    if (!this.on || !pack || !list?.length) return
-    const at = list[Math.floor(Math.random() * list.length)]
-    this.say({ text: kind, parts: [], excited: kind === 'goal' || kind === 'goal_big', lang: 'ar', real: kind, at } as Line & { at: [number, number] })
-  }
-
-  /** Which recorded Arabic voice says the Arabic lines. */
-  setArVoice(v: ArVoice) {
-    this.arPack = v === 'base' ? 'ar/phrases' : `ar/${v}/phrases`
-    this.realName = v === 'base' ? '' : `ar/${v}/real`
-    if (this.ctx && this.on && ARABIC_COMMENTARY) { this.pack(this.arPack); this.pack(this.realPack()) }
   }
 
   /** Fetch the two clubs' names early, before their first line. */
@@ -162,10 +111,6 @@ export class Commentator {
 
   say(line: Line | null) {
     if (!this.on || !line?.text) return
-    // His real scream [X37] stands until it ends: the written call of the same moment does not cut it.
-    const now = this.ctx?.currentTime ?? 0
-    if (line.excited && !line.real && now < this.realUntil) return
-    if (line.real && line.excited) this.realUntil = now + ((line as Line & { at?: [number, number] }).at?.[1] ?? 0) + 0.3
     // The big call (goal, save) comes the instant the ball gets there: it cuts the build-up short.
     if (line.excited) {
       this.queue = [line]
@@ -220,22 +165,15 @@ export class Commentator {
     const clips = this.resolve(line)
     if (clips === 'wait') return this.next()
     if (clips) this.play(clips)
-    else if (line.real) this.next()
     else this.speak(line)
   }
 
   // The clips for a line, null when one is missing for good (use the browser voice),
   // or 'wait' while a pack is still loading (the line is dropped; it would come late anyway).
   private resolve(line: Line): Clip[] | null | 'wait' {
-    const fixed = (line as Line & { at?: [number, number] }).at
-    if (line.real && fixed) {
-      const pack = this.ready.get(this.realPack())
-      return pack ? [{ pack, at: fixed, rate: 1 }] : null
-    }
-    const phrasePack = line.lang === 'ar' ? this.arPack : 'phrases'
     const out: Clip[] = []
     for (const p of line.parts) {
-      const name = p.club ? 'clubs/' + p.club : phrasePack
+      const name = p.club ? 'clubs/' + p.club : 'phrases'
       const pack = this.ready.get(name)
       if (pack === undefined) { this.pack(name); return 'wait' }
       const at = pack?.map[p.club ? p.key : (line.excited ? '!' : '') + p.key] ?? pack?.map[p.key]
@@ -266,12 +204,12 @@ export class Commentator {
   }
 
   private speak(line: Line): void {
-    const v = this.synthVoice[line.lang]
-    if (!this.synth || (line.lang === 'ar' && !v)) return this.next()
+    const v = this.synthVoice
+    if (!this.synth) return this.next()
     // Kept referenced: Chrome stops speech whose utterance gets garbage collected.
     const u = new SpeechSynthesisUtterance(line.text)
     if (v) u.voice = v
-    u.lang = v?.lang ?? (line.lang === 'ar' ? 'ar' : 'en-GB')
+    u.lang = v?.lang ?? 'en-GB'
     u.rate = line.excited ? 1.12 : 1
     u.pitch = line.excited ? 1.2 : 1
     u.onend = u.onerror = () => { if (this.utter === u) { this.utter = null; this.next() } }

@@ -20,8 +20,7 @@
         <button type="button" class="h-10 rounded-sm px-3 text-sm text-text-soft" :disabled="skipping" @click="skip">{{ skipping ? '...' : $t('تخطٍّ للنهاية') }}</button>
       </div>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="soundOn" @click="toggleSound">{{ soundOn ? $t('الصوت: يعمل') : $t('تشغيل الصوت') }}</button>
-      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: ({ ar: $t('عربي'), en: 'English', off: $t('متوقف') })[commentary] }) }}</button>
-      <button v-if="commentary === 'ar' && ARABIC_COMMENTARY" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="nextArVoice">{{ $t('المعلق: {v0}', { v0: arVoiceName(arVoice) }) }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: commentary === 'off' ? $t('متوقف') : 'English' }) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (smooth ? $t(' (سلس)') : $t(' (كامل)')) : '' }) }}</button>
       <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
@@ -50,7 +49,7 @@
         </section>
 
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" :aria-label="$t('المباراة')">
-          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @real="(kind) => voice.real(kind as any)" @intro-done="endIntro" />
+          <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @intro-done="endIntro" />
 
                     <!-- [UP17] The emergency substitution: my injured player, 15 seconds to pick who comes on. -->
                     <div v-if="injuredId && live && league && !finished" dir="rtl" class="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-bg-deep/90 p-4 text-center" role="alertdialog" :aria-label="$t('تبديل طارئ')">
@@ -242,8 +241,8 @@ import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
-import { AR_VOICES, arVoiceName, Commentator, type ArVoice, type Lang } from '../match/voice'
-import { ARABIC_COMMENTARY, useViewing } from '../match/viewing'
+import { Commentator, type Lang } from '../match/voice'
+import { useViewing } from '../match/viewing'
 import { perfPref, setPerfPref, smooth, type PerfPref } from '../match/perf'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
@@ -913,25 +912,13 @@ function toggleSound() {
   voice.setOn(soundOn.value && commentary.value !== 'off')
   if (soundOn.value) sound.whistle()
 }
-// The commentator speaks when the sound is on: Arabic (the default), English, or not at all.
+// The commentator speaks when the sound is on: English, or not at all.
 function toggleCommentary() {
-  commentary.value = ARABIC_COMMENTARY ? ({ ar: 'en', en: 'off', off: 'ar' } as const)[commentary.value] : commentary.value === 'off' ? 'en' : 'off'
+  commentary.value = commentary.value === 'off' ? 'en' : 'off'
   voice.setOn(soundOn.value && commentary.value !== 'off')
   try { localStorage.setItem('legends.commentary', commentary.value) } catch {}
 }
-// The Arabic voice: the sixth (hafid) by default, or the coach's choice from their account [X9].
 const viewing = useViewing()
-const arVoice = ref<ArVoice>(viewing.commentator.value)
-voice.setArVoice(arVoice.value)
-watch(viewing.commentator, (v) => {
-  arVoice.value = v
-  voice.setArVoice(v)
-})
-function nextArVoice() {
-  arVoice.value = AR_VOICES[(AR_VOICES.indexOf(arVoice.value) + 1) % AR_VOICES.length]
-  voice.setArVoice(arVoice.value)
-  void viewing.save({ commentator: arVoice.value }).catch(() => {})
-}
 // The simulator: cartoon or Unity, switched here or in the account [X10]. Until Unity's web build is deployed
 // (Sprint 8) the cartoon one keeps playing, with a note.
 // The smooth mode for weak phones [X30]: automatic by default, or forced either way by the coach.
@@ -943,11 +930,9 @@ function nextPerf() {
 function switchView() {
   void viewing.save({ match_view: viewing.chosenView.value === 'unity' ? 'cartoon' : 'unity' }).catch(() => {})
 }
-// Arabic by default, now that the default commentator is an Arabic voice [X9].
+// English unless the coach turned it off on this device.
 function readPref(): Lang | 'off' {
-  // [UP18] English unless the coach turned it off; Arabic only while it is switched on (ARABIC_COMMENTARY).
-  const fallback = ARABIC_COMMENTARY ? 'ar' : 'en'
-  try { const v = localStorage.getItem('legends.commentary'); return v === 'off' || v === 'en' || (v === 'ar' && ARABIC_COMMENTARY) ? v : fallback } catch { return fallback }
+  try { return localStorage.getItem('legends.commentary') === 'off' ? 'off' : 'en' } catch { return 'en' }
 }
 
 onMounted(async () => {

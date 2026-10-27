@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 namespace Legends.EditorTools
 {
     /// <summary>
-    /// Builds «the Arena» at night from code (docs/PLAN.md 7.3): a real-size pitch with its lines and goals, LED
+    /// Builds «the Arena» at night from code (README.md 7.3): a real-size pitch with its lines and goals, LED
     /// boards, two tiers of stands on every side dressed in the crowd cut from our own Arena plates
     /// (tools/unity/crowd_textures.py), the LED ribbon between the tiers, the roof and its floodlights. Its look
     /// follows the plates in unity/Reference/stadiums/arena/. Rebuilt whole each time: Legends → Build Arena.

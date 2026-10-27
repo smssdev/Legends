@@ -1863,7 +1863,7 @@ export interface paths {
         };
         /**
          * The season's calendar
-         * @description Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (docs/PLAN.md 2.4).
+         * @description Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (README.md 2.4).
          */
         get: {
             parameters: {
@@ -2013,7 +2013,7 @@ export interface paths {
         };
         /**
          * The cup's bracket
-         * @description Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (docs/PLAN.md 2.5).
+         * @description Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (README.md 2.5).
          */
         get: {
             parameters: {
@@ -4383,7 +4383,7 @@ export interface paths {
          * My next match
          * @description When and where, the referee once drawn (30 minutes before), and the opponent. After the lock (5 minutes
          *     before) the opponent's eleven, formation and only four tactics: tackling, marking, plan and trap.
-         *     Pressing, style, tempo, positions and the defensive shape are never sent (docs/PLAN.md 2.13).
+         *     Pressing, style, tempo, positions and the defensive shape are never sent (README.md 2.13).
          */
         get: {
             parameters: {
@@ -8006,7 +8006,7 @@ export interface components {
              * @description The day with no matches (Cairo date)
              */
             winter_break_on?: string | null;
-            /** @description Season length ÷ 37 days, in basis points (docs/PLAN.md 2.10) */
+            /** @description Season length ÷ 37 days, in basis points (README.md 2.10) */
             timer_scale?: number | null;
             windows: {
                 /** @enum {string} */

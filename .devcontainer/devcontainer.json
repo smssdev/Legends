@@ -22,7 +22,7 @@
     "GOOGLE_CLIENT_SECRET": { "description": "Google sign-in: that client's secret." }
   },
   "customizations": {
-    "codespaces": { "openFiles": ["docs/DONE.md"] },
+    "codespaces": { "openFiles": ["README.md"] },
     "vscode": { "extensions": ["Vue.volar", "bmewburn.vscode-intelephense-client", "bradlc.vscode-tailwindcss"] }
   }
 }

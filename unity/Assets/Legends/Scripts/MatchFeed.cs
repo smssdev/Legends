@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Legends
 {
     /// <summary>
-    /// What the server sends, read into plain classes (docs/PLAN.md, appendix A). The scene draws only this:
+    /// What the server sends, read into plain classes (README.md, appendix A). The scene draws only this:
     /// no result and no movement is decided in Unity.
     /// </summary>
     public sealed class MatchSetup

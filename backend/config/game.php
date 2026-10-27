@@ -1,6 +1,6 @@
 <?php
 
-// Calibratable game values (docs/PLAN.md section 3). Anything the engine reads
+// Calibratable game values (README.md section 3). Anything the engine reads
 // is an integer (basis points for ratios) and is copied into each match's
 // config_snapshot, so editing this file never changes a running match.
 
@@ -302,8 +302,8 @@ return [
         'message' => 'مرحباً، أحتاج مساعدة في لعبة المدرب الأسطورة: '],
     // The account [X4, 2026-10-24]: a holiday for every league at once, of up to vacation_max_days, and the next one
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
-    // How the coach watches [X9, X10]: the Arabic voices (web/public/commentary/ar/<id>/; base is the first recording)
-    // shown as «المعلق 1..6», and the two simulators. Unity opens only once its web build is deployed (Sprint 8).
+    // How the coach watches [X10]: the two simulators. Unity opens only once its web build is deployed. The Arabic
+    // commentators were deleted (2026-10-27); their setting stays accepted in the API (its contract), and is unused.
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
     // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.

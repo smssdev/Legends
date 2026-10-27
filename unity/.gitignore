@@ -24,3 +24,4 @@ Thumbs.db
 # the sample match is copied from docs/api/samples/ by Legends → Build match scene
 /Assets/StreamingAssets/sample-match.json
 /Assets/StreamingAssets/sample-match.json.meta
+/Captures/

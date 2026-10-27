@@ -5,7 +5,7 @@ namespace Legends
     /// <summary>
     /// Where the web page (Vue) and the app (Flutter) talk to the scene. Its object is named "Bridge", so the page
     /// calls unityInstance.SendMessage('Bridge', 'OnSetup', json) once, then 'OnMinute' for every minute it gets
-    /// from the server, in the shape of docs/PLAN.md appendix A.
+    /// from the server, in the shape of README.md appendix A.
     /// </summary>
     public sealed class Bridge : MonoBehaviour
     {
@@ -22,7 +22,7 @@ namespace Legends
             scene.Push(MatchMinute.From(MiniJson.Parse(json), scene.Setup != null ? scene.Setup.TickMs : 3000));
         }
 
-        /// <summary>"high" | "medium" | "low": the quality levels of docs/PLAN.md 7.6.</summary>
+        /// <summary>"high" | "medium" | "low": the quality levels of README.md 7.6.</summary>
         public void OnQuality(string level)
         {
             int index = level == "low" ? 0 : level == "medium" ? 1 : QualitySettings.names.Length - 1;

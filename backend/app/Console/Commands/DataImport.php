@@ -12,12 +12,12 @@ use RuntimeException;
 
 /**
  * Imports the EA FC 26 files into master_clubs and master_players
- * (docs/PLAN.md 2.6, data/ea-fc26/README.md), and the Arab leagues EA does not have (data/arab, X34).
+ * (README.md 2.6, data/ea-fc26/README.md), and the Arab leagues EA does not have (data/arab, X34).
  * Re-running the same version replaces it, so the command is safe to repeat on an empty game.
  *
  * With --add it only adds the clubs this version does not have yet, and touches nothing that is there: a running
  * league's players point at their master rows, so replacing those would cut it from them. That is how new data
- * reaches the live server (deploy/render/start.sh runs it after the migrations).
+ * reaches the live server (deploy/docker/start.sh runs it after the migrations).
  */
 class DataImport extends Command
 {

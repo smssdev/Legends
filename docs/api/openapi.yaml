@@ -20,14 +20,14 @@ tags:
     description: The inbox (Sprint 22)
   - name: auth
     description: |
-      Accounts (docs/PLAN.md 2.17). The web signs in with Sanctum's session cookie: GET /sanctum/csrf-cookie first,
+      Accounts (README.md 2.17). The web signs in with Sanctum's session cookie: GET /sanctum/csrf-cookie first,
       then send the X-XSRF-TOKEN header. The app uses POST /auth/token or /auth/google/token and sends
       "Authorization: Bearer <token>"; tokens expire after 30 days. Sign-in attempts: 5 a minute per email, 20 per address.
   - name: data
-    description: The real clubs and players (docs/PLAN.md 2.6), read-only and public. 120 requests a minute.
+    description: The real clubs and players (README.md 2.6), read-only and public. 120 requests a minute.
   - name: leagues
     description: |
-      Private leagues (docs/PLAN.md 2.1, 2.3). Make one, ask to join with its 8-letter code (10 tries a minute),
+      Private leagues (README.md 2.1, 2.3). Make one, ask to join with its 8-letter code (10 tries a minute),
       the owner approves, then take a club no coach has. Up to 4 active clubs per account, one per league.
       Errors a screen shows as they are (409): the club was taken, the limit of 4, the last quarter of the
       rounds, the settings locked since the start.
@@ -810,7 +810,7 @@ paths:
     get:
       tags: [leagues]
       summary: The season's calendar
-      description: Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (docs/PLAN.md 2.4).
+      description: Every league round (with the rest, is_bye, when the count is odd) and cup tie, by time. Times are UTC; screens show the device's time (README.md 2.4).
       responses:
         '200':
           description: The calendar
@@ -880,7 +880,7 @@ paths:
     get:
       tags: [leagues]
       summary: The cup's bracket
-      description: Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (docs/PLAN.md 2.5).
+      description: Stage by stage (preliminary, r16, qf, sf, final), each on its own day. Sides fill in as winners move on (README.md 2.5).
       responses:
         '200':
           description: The bracket
@@ -1760,7 +1760,7 @@ paths:
       description: |
         When and where, the referee once drawn (30 minutes before), and the opponent. After the lock (5 minutes
         before) the opponent's eleven, formation and only four tactics: tackling, marking, plan and trap.
-        Pressing, style, tempo, positions and the defensive shape are never sent (docs/PLAN.md 2.13).
+        Pressing, style, tempo, positions and the defensive shape are never sent (README.md 2.13).
       responses:
         '200':
           description: The next match, or null
@@ -3783,7 +3783,7 @@ components:
         starts_at: { type: string, format: date-time }
         ends_at: { type: string, format: date-time, nullable: true }
         winter_break_on: { type: string, format: date, nullable: true, description: The day with no matches (Cairo date) }
-        timer_scale: { type: integer, nullable: true, description: 'Season length ÷ 37 days, in basis points (docs/PLAN.md 2.10)' }
+        timer_scale: { type: integer, nullable: true, description: 'Season length ÷ 37 days, in basis points (README.md 2.10)' }
         windows:
           type: array
           items:

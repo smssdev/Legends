@@ -1,4 +1,4 @@
-# The Unity project from the command line, on Sliman's Windows PC (docs/PLAN.md 7.9). Claude runs these.
+# The Unity project from the command line, on Sliman's Windows PC (README.md 7.9). Claude runs these.
 #
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 install   Unity Hub (winget), then the editor by hand
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 where     shows which Unity.exe the other steps will use

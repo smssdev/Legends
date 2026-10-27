@@ -1,21 +1,17 @@
-"""Records the commentator (docs/PLAN.md 2.21) with free open-source voices:
-English with Kokoro (George), Arabic with Piper (Kareem).
+"""Records the English commentator (the only one: the Arabic commentary was deleted, 2026-10-27) with a free
+open-source voice: Kokoro (George).
 
 Output in web/public/commentary/:
   phrases.mp3 + .json          every English phrase in backend/resources/commentary/voice.json, in the voice it is said (calm or excited)
-  ar/phrases.mp3 + .json       the same for Arabic (the Arabic voice says no names); once lines are
-                               recorded by a person (audio/raw/ar/story/), arabic_voice.py builds this pack instead
   clubs/<slug>.mp3 + .json     each covered club's name and its players' surnames (English)
 
 The browser joins the pieces into lines at play time (web/src/match/voice.ts).
 Run it again after changing a line in backend/resources/commentary/voice.json or the player data:
 
-  python -m venv .venv && .venv/bin/pip install kokoro-onnx piper-tts soundfile
+  python -m venv .venv && .venv/bin/pip install kokoro-onnx soundfile
   curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.int8.onnx
   curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
-  curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx
-  curl -LO https://huggingface.co/rhasspy/piper-voices/resolve/main/ar/ar_JO/kareem/medium/ar_JO-kareem-medium.onnx.json
-  .venv/bin/python tools/commentary/generate.py --model kokoro-v1.0.int8.onnx --voices voices-v1.0.bin --arabic ar_JO-kareem-medium.onnx
+  .venv/bin/python tools/commentary/generate.py --model kokoro-v1.0.int8.onnx --voices voices-v1.0.bin
 
 ffmpeg and node (with the web app's dependencies installed) must be available.
 Only what changed is recorded again (a cache sits next to the model).
@@ -110,29 +106,6 @@ class Recorder:
         return a
 
 
-class ArabicRecorder:
-    def __init__(self, model, cache):
-        from piper import PiperVoice, SynthesisConfig
-        self.v, self.cfg, self.cache = PiperVoice.load(model), SynthesisConfig, cache
-
-    def clip(self, text, excited=False):
-        key = hashlib.sha1(f'kareem|{excited}|{text}'.encode()).hexdigest()
-        path = os.path.join(self.cache, key + '.npy')
-        if os.path.exists(path):
-            return np.load(path)
-        chunks = [c.audio_float_array for c in self.v.synthesize(text, syn_config=self.cfg(length_scale=0.88 if excited else 1.0))]
-        a = np.concatenate(chunks).astype('float32')
-        rate = self.v.config.sample_rate
-        if rate != SR:
-            n = int(len(a) * SR / rate)
-            a = np.interp(np.linspace(0, len(a) - 1, n), np.arange(len(a)), a).astype('float32')
-        a = trim(a)
-        if excited:
-            a = lift(a)
-        np.save(path, a)
-        return a
-
-
 def trim(a, floor=0.012):
     loud = np.where(np.abs(a) > floor)[0]
     if not len(loud):
@@ -170,24 +143,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--model', required=True)
     ap.add_argument('--voices', required=True)
-    ap.add_argument('--arabic', help='the Piper Arabic voice (.onnx)')
-    ap.add_argument('--only', choices=['phrases', 'arabic', 'clubs'])
+    ap.add_argument('--only', choices=['phrases', 'clubs'])
     a = ap.parse_args()
     cache = os.path.join(os.path.dirname(os.path.abspath(a.model)), 'commentary-cache')
     rec = Recorder(a.model, a.voices, cache)
     os.makedirs(os.path.join(OUT, 'clubs'), exist_ok=True)
-    os.makedirs(os.path.join(OUT, 'ar'), exist_ok=True)
     if a.only in (None, 'phrases'):
         ps = phrases('en')
         print(len(ps), 'English phrases', file=sys.stderr)
         sprite([(('!' if ex else '') + p, rec.clip(p, ex)) for p, ex in ps], os.path.join(OUT, 'phrases'))
-    if a.only in (None, 'arabic') and a.arabic and any(f.endswith(('.wav', '.mp3', '.m4a', '.ogg', '.flac', '.aac')) for f in os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'audio', 'raw', 'ar', 'story'))):
-        print('Arabic: recorded voice in audio/raw/ar/story/, use arabic_voice.py build instead', file=sys.stderr)
-    elif a.only in (None, 'arabic') and a.arabic:
-        ar = ArabicRecorder(a.arabic, cache)
-        ps = phrases('ar')
-        print(len(ps), 'Arabic phrases', file=sys.stderr)
-        sprite([(('!' if ex else '') + p, ar.clip(p, ex)) for p, ex in ps], os.path.join(OUT, 'ar', 'phrases'))
     if a.only in (None, 'clubs'):
         clubs = squads()
         for n, (club, names) in enumerate(sorted(clubs.items()), 1):

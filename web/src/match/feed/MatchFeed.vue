@@ -97,7 +97,7 @@ import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
-const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; real: [kind: string]; introDone: [] }>()
+const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
 // [X35] The live pitch's camera: the broadcast's (the cartoon players, following the ball) or the plan from above.
@@ -249,13 +249,6 @@ function step(now) {
     // The scene follows the clock, so drawing it 30 times a second in the smooth mode only skips frames, never time.
     if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; draw(t * rate) }
     const keyT = s.keyAt * sceneT
-    // [X37] The commentator's own scream on a goal (a late goal that levels or takes the lead, his big one), from his
-    // real recording: only there, the one moment his recorded words always fit. Before the lines, so it takes the
-    // place of the written goal call instead of cutting it.
-    if (props.lang === 'ar' && s.goal && t >= keyT) fire('real-goal', () => {
-      const [m] = plan.tick.minute ?? [0], gap = Math.abs((plan.tick.score?.home ?? 0) - (plan.tick.score?.away ?? 0))
-      emit('real', m >= 75 && gap <= 1 ? 'goal_big' : 'goal')
-    })
     // Commentary: line times are fractions of the scene (or of the minute when there is none).
     for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs))) }
     for (const [i, [at, name]] of (SOUNDS[s.scene] ?? []).entries()) { const when = at === 'key' ? keyT : at * sceneT; if (t >= when) cue('s' + i, when, () => emit('sound', name)) }
