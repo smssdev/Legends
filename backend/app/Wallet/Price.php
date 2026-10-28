@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\DB;
 class Price
 {
     /**
-     * $coinsBp scales the coins with the money, for a feature with grades (the staff's stars, X20).
+     * $coinsBp scales the coins with the money, for a feature with grades (the staff's stars, X20). $fair saves
+     * the league's read when the caller already has it (a squad's prices in one go, E1.3).
      *
      * @return array{currency: string, amount: int}
      */
-    public static function quote(int $leagueId, string $feature, int $money, int $coinsBp = 10000): array
+    public static function quote(int $leagueId, string $feature, int $money, int $coinsBp = 10000, ?bool $fair = null): array
     {
-        $fair = (bool) DB::table('leagues')->where('id', $leagueId)->value('fair_league');
+        $fair ??= (bool) DB::table('leagues')->where('id', $leagueId)->value('fair_league');
 
         return $fair ? ['currency' => 'money', 'amount' => $money]
             : ['currency' => 'coins', 'amount' => max(1, intdiv((int) config("game.premium.price.{$feature}") * $coinsBp, 10000))];

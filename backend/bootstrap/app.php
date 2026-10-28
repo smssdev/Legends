@@ -2,8 +2,10 @@
 
 use App\Http\Errors\ApiErrors;
 use App\Http\Middleware\AdminOnly;
+use App\Http\Middleware\CompressJson;
 use App\Http\Middleware\LeagueActivity;
 use App\Http\Middleware\RecordActivity;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SimulatorEnabled;
 use Illuminate\Foundation\Application;
@@ -28,6 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('api', RecordActivity::class);
         // [UP2] The server's words in the coach's language.
         $middleware->appendToGroup('api', SetLocale::class);
+        // Security headers on every answer, and big JSON gzipped [E1].
+        $middleware->append(SecurityHeaders::class);
+        $middleware->appendToGroup('api', CompressJson::class);
         // The public link (Tailscale Funnel) reaches the game through tailscaled on this machine: trust only
         // that local hop's X-Forwarded-* headers, so links and cookies are https on the public address.
         // A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh): there only GitHub's forwarding reaches the game.

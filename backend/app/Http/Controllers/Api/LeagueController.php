@@ -26,6 +26,7 @@ use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -279,7 +280,10 @@ class LeagueController extends Controller
         $clubs = $league->clubs()->with('user')->withSum('players as squad_value', 'value')->withCount('players')
             ->orderByDesc('strength_snapshot')->orderBy('id')->get();
 
-        return response()->json(['clubs' => $clubs->map(fn (Club $c) => $this->clubData($c))]);
+        // Every club's objectives in one query, not three per club.
+        $objectives = $this->objectivesOf($league->id);
+
+        return response()->json(['clubs' => $clubs->map(fn (Club $c) => $this->clubData($c, $objectives))]);
     }
 
     public function club(Request $request, League $league, Club $club): JsonResponse
@@ -649,7 +653,7 @@ class LeagueController extends Controller
             ])->all();
     }
 
-    private function clubData(Club $c): array
+    private function clubData(Club $c, ?Collection $objectives = null): array
     {
         return [
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'colors' => [$c->color_primary, $c->color_secondary],
@@ -661,20 +665,31 @@ class LeagueController extends Controller
             'squad_value' => (int) $c->squad_value,
             'players_count' => (int) $c->players_count,
             // This season's objectives, shown when a coach picks a team [PLAN 2.20, Sprint 33].
-            'objectives' => $this->objectives($c),
+            'objectives' => $this->objectives($c, $objectives),
         ];
     }
 
-    private function objectives(Club $c): ?array
+    /** This season's objectives of every club in the league, by club then competition; null before the first season. */
+    private function objectivesOf(int $leagueId): ?Collection
     {
-        $season = DB::table('seasons')->where('league_id', $c->league_id)->orderByDesc('number')->value('id');
+        $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->value('id');
         if (! $season) {
             return null;
         }
         if (! DB::table('club_objectives')->where('season_id', $season)->exists()) {
             Objectives::set($season);   // a league made before Sprint 33
         }
-        $o = DB::table('club_objectives')->where('club_id', $c->id)->where('season_id', $season)->get()->keyBy('competition');
+
+        return DB::table('club_objectives')->where('season_id', $season)->get()->groupBy('club_id')->map(fn ($rows) => $rows->keyBy('competition'));
+    }
+
+    private function objectives(Club $c, ?Collection $all = null): ?array
+    {
+        $all ??= $this->objectivesOf($c->league_id);
+        if (! $all) {
+            return null;
+        }
+        $o = $all[$c->id] ?? collect();
 
         return isset($o['league'], $o['cup']) ? [
             'league' => ['target' => (int) $o['league']->target, 'kind' => $o['league']->kind],

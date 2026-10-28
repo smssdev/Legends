@@ -34,6 +34,8 @@ jobs:
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: cp .env.example .env && php artisan key:generate
       - run: vendor/bin/pint --test
+      # No package with a known security hole [E1.5].
+      - run: composer audit --no-interaction
       - run: php artisan test
 
   postgres:
@@ -131,6 +133,8 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
+      # No package with a known high or critical security hole [E1.5].
+      - run: npm audit --audit-level=high --omit=dev
       # The TypeScript client comes from docs/api/openapi.yaml: this fails on an invalid contract,
       # or when a route changed without `npm run api` in the same PR (CLAUDE.md: the API contract).
       - name: API client matches the contract

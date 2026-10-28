@@ -279,11 +279,11 @@ Route::prefix('sim')->middleware('simulator')->controller(SimulatorController::c
     Route::get('leagues', 'leagues');
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'club');
-    Route::post('matches', 'store');
+    Route::post('matches', 'store')->middleware('throttle:20,1,sim-store');
     Route::get('matches/{match}', 'show');
     Route::post('matches/{match}/actions', 'order')->middleware('throttle:120,1,sim-orders');
-    Route::post('matches/{match}/ticks', 'ticks');
-    Route::post('matches/{match}/start', 'start');
+    Route::post('matches/{match}/ticks', 'ticks')->middleware('throttle:60,1,sim-ticks');
+    Route::post('matches/{match}/start', 'start')->middleware('throttle:20,1,sim-start');
     Route::get('matches/{match}/live', 'live')->middleware('throttle:360,1,sim-live');
     Route::post('matches/{match}/reactions', 'react')->middleware('throttle:90,1,sim-react');
     Route::get('matches/{match}/report', 'report');

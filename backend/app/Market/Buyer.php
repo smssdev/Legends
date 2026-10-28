@@ -19,13 +19,22 @@ use Illuminate\Support\Facades\DB;
 class Buyer
 {
     /** The most a player listed by this club may ask. */
-    public static function cap(object $player, int $clubId): int
+    public static function cap(object $player, int $clubId, ?bool $bought = null): int
     {
-        $bought = DB::table('club_transactions')->where('club_id', $clubId)->where('reference', "player:{$player->id}")
+        $bought ??= DB::table('club_transactions')->where('club_id', $clubId)->where('reference', "player:{$player->id}")
             ->whereIn('type', ['pool_buy', 'bot_buy'])->exists()
             || DB::table('player_moves')->where('player_id', $player->id)->where('to_club_id', $clubId)->exists();
 
         return intdiv((int) $player->value * ($bought ? 10000 : (int) config('game.economy.sale_cap_bp')), 10000);
+    }
+
+    /** The players of this club it bought (from the pool, a bot or another coach), for cap() over a whole squad in two queries. */
+    public static function boughtIds(int $clubId): array
+    {
+        $refs = DB::table('club_transactions')->where('club_id', $clubId)->whereIn('type', ['pool_buy', 'bot_buy'])->whereLike('reference', 'player:%')->pluck('reference')
+            ->map(fn ($r) => (int) substr($r, 7));
+
+        return array_flip($refs->merge(DB::table('player_moves')->where('to_club_id', $clubId)->pluck('player_id'))->map(fn ($id) => (int) $id)->all());
     }
 
     /** The least a listing may ask: the floor of a fair price between coaches. */
@@ -35,7 +44,7 @@ class Buyer
     }
 
     /** The wait (seconds) for this price, before the random part: longer the nearer the price is to the cap. */
-    public static function wait(int $price, int $value, int $leagueId): int
+    public static function wait(int $price, int $value, int $leagueId, ?int $scale = null): int
     {
         $points = config('game.economy.virtual_buyer.hours_at_bp');
         ksort($points);
@@ -53,7 +62,7 @@ class Buyer
                 }
             }
         }
-        $scale = max(1, (int) DB::table('leagues')->where('id', $leagueId)->value('timer_scale') ?: 10000);
+        $scale = max(1, $scale ?? ((int) DB::table('leagues')->where('id', $leagueId)->value('timer_scale') ?: 10000));
 
         return max(60, intdiv($hours100 * 36 * $scale, 10000));
     }

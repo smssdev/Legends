@@ -1,5 +1,5 @@
 import { cn, ln, loadNames, nm, pn } from './lib/names'
-import { t } from './lib/i18n'
+import { i18nReady, t } from './lib/i18n'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import './style.css'
@@ -13,7 +13,9 @@ import './match/perf'   // the smooth mode on weak phones, for the whole app [X3
 loadNames()
 const app = createApp(App)
 Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
-app.component('BrandMark', BrandMark).use(createPinia()).use(router).mount('#app')
+app.component('BrandMark', BrandMark).use(createPinia()).use(router)
+// [E1.4] In English, once the dictionary is here (it loads on its own, only for English).
+void i18nReady.then(() => app.mount('#app'))
 
 // [X50] After a deploy, a page opened before it asks for the old build's files, which are gone: it loads the new
 // build once instead of leaving the screen (the market, the club...) empty. Once a minute at most, never a loop.
