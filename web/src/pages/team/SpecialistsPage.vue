@@ -37,7 +37,7 @@ const ICON: Record<string, string> = {
 }
 const GROUPS = [
   { title: 'مدربو الخطوط', hint: 'كل مدرب يسرّع تدريب لاعبي خطه', types: ['att_coach', 'mid_coach', 'def_coach', 'keeper_coach'] },
-  { title: 'الطاقم الطبي والإداري', hint: 'اللياقة والإصابات والإيقافات والمعنويات', types: ['physio', 'doctor', 'mental_coach', 'lawyer'] },
+  { title: 'الجهاز الطبي والإداري', hint: 'اللياقة والإصابات والإيقافات والمعنويات', types: ['physio', 'doctor', 'mental_coach', 'lawyer'] },
 ]
 // The stars chosen on each card before signing (3 by default).
 const pick = ref<Record<string, number>>({})
@@ -97,7 +97,7 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الطاقم') }}</h1><HelpTip :text="g.specialists" :label="$t('الطاقم')" /></span>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الجهاز الفني') }}</h1><HelpTip :text="g.specialists" :label="$t('الجهاز الفني')" /></span>
         <p class="mt-1 text-sm text-text-muted">{{ $t('عقود مؤقتة {v0} أيام بنجوم من 1 إلى 5: نجوم أكثر، أثر أكبر وسعر أعلى. يُجدَّد العقد في آخر يوم منه، وإلا يستقيل صاحبه', { v0: v?.days ?? 7 }) }}</p>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">

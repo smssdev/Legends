@@ -3734,12 +3734,13 @@ components:
           type: array
           items:
             type: object
-            required: [line, player, sessions_done, next_at]
+            required: [line, player, sessions_done, next_at, coach]
             properties:
               line: { type: string, enum: [gk, def, mid, att] }
               player: { allOf: [{ $ref: '#/components/schemas/TrainingPlayer' }], nullable: true }
               sessions_done: { type: integer }
               next_at: { type: string, format: date-time, nullable: true }
+              coach: { type: object, required: [type, name, hired], description: '[Sprint 21 E6] The line''s coach: no training without him', properties: { type: { type: string }, name: { type: string }, hired: { type: boolean } } }
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
       type: object

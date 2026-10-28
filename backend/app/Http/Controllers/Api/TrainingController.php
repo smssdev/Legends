@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Messages\MessageText;
 use App\Models\Club;
 use App\Models\League;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Training\Gain;
 use App\Training\Training;
@@ -46,11 +48,14 @@ class TrainingController extends Controller
             'balance' => (int) DB::table('clubs')->where('id', $club->id)->value('balance'),
             'interval_minutes' => intdiv(Training::interval($league->id), 60),
             'now' => GameClock::now()->toIso8601ZuluString(),
-            'slots' => array_map(function ($line) use ($slots, $players) {
+            'slots' => array_map(function ($line) use ($slots, $players, $club) {
                 $s = $slots[$line] ?? null;
+                $coach = Specialists::LINE_COACH[$line];
 
                 return ['line' => $line, 'player' => $s ? $players[$s->player_id] ?? null : null, 'sessions_done' => $s ? (int) $s->sessions : 0,
-                    'next_at' => $s ? Carbon::parse($s->next_at, 'UTC')->toIso8601ZuluString() : null];
+                    'next_at' => $s ? Carbon::parse($s->next_at, 'UTC')->toIso8601ZuluString() : null,
+                    // [Sprint 21 E6] The line trains only with its coach.
+                    'coach' => ['type' => $coach, 'name' => __(MessageText::STAFF[$coach]), 'hired' => Specialists::has($club->id, $coach)]];
             }, Training::LINES),
             'players' => $players->values(),
         ]);

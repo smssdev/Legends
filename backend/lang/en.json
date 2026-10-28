@@ -318,5 +318,6 @@
   "المعالج البدني": "Physio",
   "طبيب النادي": "Club doctor",
   "محامي النادي": "Club lawyer",
-  "المعد النفسي": "Sports psychologist"
+  "المعد النفسي": "Sports psychologist",
+  "لا تدريب بلا مدرب: تعاقد مع %s من الجهاز الفني أولاً.": "No training without a coach: hire the %s from the technical staff first."
 }

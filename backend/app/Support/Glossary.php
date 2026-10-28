@@ -19,14 +19,14 @@ class Glossary
         $e = config('game.economy');
 
         return [
-            'training' => sprintf('لاعب واحد من كل خط يتدرب، وجلسة كل %d ساعات ولو كنت غائباً. حين يمتلئ شريطه إلى 100%% ترتفع قوته وخصائصه نقطة، وكلما كان أقوى احتاج جلسات أكثر.', $t['tick_hours']),
+            'training' => sprintf('لاعب واحد من كل خط يتدرب، بشرط مدرب ذلك الخط في الجهاز الفني، وجلسة كل %d ساعات ولو كنت غائباً. حين يمتلئ شريطه إلى 100%% ترتفع قوته وخصائصه نقطة، وكلما كان أقوى احتاج جلسات أكثر.', $t['tick_hours']),
             'potential' => 'الإمكانية: القوة التي يصلها اللاعب بالتدريب العادي. التدريب مفتوح، فيتجاوزها، لكن كل نقطة بعدها تأخذ جلسات أكثر بكثير، حتى 99.',
             'progress' => 'التقدم: شريط التدريب الحالي. كل جلسة تضيف إليه، وعند 100% نقطة قوة جديدة ويبدأ الشريط من جديد.',
             'stadium' => 'الملعب ثلاثة أقسام: المقاعد (دخل التذاكر)، وأرضية الملعب (أفضلية الأرض وتقليل الإصابات)، ومنشأة التدريب (تسرّع التدريب). كل قسم ثلاث مراحل، وكل مرحلة خمسة أجزاء تُبنى جزءاً جزءاً.',
             'seats' => 'المقاعد: سعة أكبر تبيع تذاكر أكثر في كل مباراة على أرضك بنفس السعر.',
             'pitch' => 'أرضية الملعب: كل مرحلة تزيد أفضلية فريقك في مباريات الأرض.',
             'training_ground' => 'منشأة التدريب: كل مرحلة تسرّع جلسات التدريب لكل لاعبيك.',
-            'specialists' => sprintf('الطاقم بعقود مؤقتة (%d أيام) ونجوم من 1 إلى 5: مدرب لكل خط يسرّع تدريب لاعبيه (ومدرب الحراس يرفع الحارس في المباراة أيضاً)، والمعالج البدني يسرّع استرجاع اللياقة، والطبيب يقصّر الإصابات، والمحامي يلغي جزءاً من إيقافات الطرد. نجوم أكثر، أثر أكبر وسعر أعلى، ويُجدَّد العقد في آخر يوم منه وإلا يستقيل صاحبه.', config('game.specialists.contract_days')),
+            'specialists' => sprintf('الجهاز الفني بعقود مؤقتة (%d أيام) ونجوم من 1 إلى 5: مدرب لكل خط يسرّع تدريب لاعبيه (ومدرب الحراس يرفع الحارس في المباراة أيضاً)، والمعالج البدني يسرّع استرجاع اللياقة، والطبيب يقصّر الإصابات، والمحامي يلغي جزءاً من إيقافات الطرد. نجوم أكثر، أثر أكبر وسعر أعلى، ويُجدَّد العقد في آخر يوم منه وإلا يستقيل صاحبه.', config('game.specialists.contract_days')),
             'scout' => sprintf('الكشاف: رحلة %d ساعة يبحث فيها عن لاعبين من خارج الدوري بمواصفاتك، ثم يعود بـ %d خيارات لا يشتريها غيرك حتى يتجدد السوق. وإن لم يجد أحداً يُرد لك المبلغ.', $s['hours'], $s['results']),
             'pool' => sprintf('مجموعة السوق: لاعبون من كل الدوريات بقوة دوريك، تتجدد كل %d ساعات. تشتري منها بقيمة اللاعب.', $e['pool_hours']),
             'quick_sale' => sprintf('البيع الفوري: يُباع اللاعب الآن بقيمته كاملة مقابل %d كوينز. وفي الدوري النزيه بخصم من قيمته بدل الكوينز.', config('game.premium.price.quick_sale')),
@@ -46,14 +46,14 @@ class Glossary
         $e = config('game.economy');
 
         return [
-            'training' => sprintf('One player from each line trains, with a session every %d hours even while you are away. When their bar fills to 100%% their strength and attributes rise by a point, and the stronger they are the more sessions they need.', $t['tick_hours']),
+            'training' => sprintf('One player from each line trains, as long as that line\'s coach is in the technical staff, with a session every %d hours even while you are away. When their bar fills to 100%% their strength and attributes rise by a point, and the stronger they are the more sessions they need.', $t['tick_hours']),
             'potential' => 'Potential: the strength a player reaches with normal training. Training stays open, so they can pass it, but every point after it takes many more sessions, up to 99.',
             'progress' => 'Progress: the current training bar. Every session adds to it, and at 100% comes a new strength point and the bar starts again.',
             'stadium' => 'The stadium has three sections: the seats (ticket income), the pitch (home advantage and fewer injuries), and the training facility (faster training). Each section has three stages, and each stage five parts built one by one.',
             'seats' => 'Seats: a bigger capacity sells more tickets at every home match at the same price.',
             'pitch' => 'The pitch: every stage raises your team\'s advantage in home matches.',
             'training_ground' => 'The training facility: every stage speeds up the training sessions of all your players.',
-            'specialists' => sprintf('Staff on temporary contracts (%d days) with 1 to 5 stars: a coach for each line speeds up its players\' training (and the goalkeeping coach also lifts the keeper in matches), the physio speeds up fitness recovery, the doctor shortens injuries, and the lawyer cancels part of red-card bans. More stars, a bigger effect and a higher price; the contract renews on its last day, or its holder resigns.', config('game.specialists.contract_days')),
+            'specialists' => sprintf('The technical staff on temporary contracts (%d days) with 1 to 5 stars: a coach for each line speeds up its players\' training (and the goalkeeping coach also lifts the keeper in matches), the physio speeds up fitness recovery, the doctor shortens injuries, and the lawyer cancels part of red-card bans. More stars, a bigger effect and a higher price; the contract renews on its last day, or its holder resigns.', config('game.specialists.contract_days')),
             'scout' => sprintf('The scout: a %d-hour trip searching for players from outside the league to your specification, coming back with %d options no one else can buy until the market renews. If none are found, the amount is refunded.', $s['hours'], $s['results']),
             'pool' => sprintf('The market pool: players from every league at your league\'s strength, renewed every %d hours. You buy from it at the player\'s value.', $e['pool_hours']),
             'quick_sale' => sprintf('The instant sale: the player is sold now at their full value for %d coins. In a fair-play league, for a cut of the value instead of coins.', config('game.premium.price.quick_sale')),

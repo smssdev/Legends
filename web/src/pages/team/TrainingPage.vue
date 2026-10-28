@@ -34,6 +34,8 @@ const candidates = computed(() => {
 })
 // [UP8] One player per line in training: while the line's slot is taken, the others of that line wait.
 const lineBusy = computed(() => !!v.value?.slots.find((s) => s.line === line.value)?.player)
+// [Sprint 21 E6] The chosen line's coach, without whom it does not train.
+const lineCoach = computed(() => !!v.value?.slots.find((s) => s.line === line.value)?.coach.hired)
 function left(at: string | null | undefined) {
   if (!at) return ''
   const s = Math.max(0, Math.floor((new Date(at).getTime() - now.value) / 1000))
@@ -143,6 +145,11 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">{{ $t('إفراغ') }}</button>
             </div>
           </template>
+          <!-- [Sprint 21 E6] No coach for the line, no training: the way to hire him. -->
+          <template v-else-if="!s.coach.hired">
+            <p class="text-sm text-warning">{{ $t('لا تدريب بلا {v0}.', { v0: s.coach.name }) }}</p>
+            <RouterLink :to="{ name: 'specialists' }" class="flex h-touch items-center justify-center rounded-md bg-gold px-4 font-bold text-on-gold">{{ $t('تعاقد معه من الجهاز الفني') }}</RouterLink>
+          </template>
           <template v-else>
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm text-text-muted">{{ $t('الخانة فارغة.') }}</p>
@@ -171,6 +178,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
           <span v-if="!p.maxed && lineBusy" class="text-center text-xs text-text-muted" :title="$t('لاعب واحد من كل خط في التدريب')">{{ $t('الخانة مشغولة') }}</span>
+          <RouterLink v-else-if="!p.maxed && !lineCoach" :to="{ name: 'specialists' }" class="text-center text-xs font-bold text-warning">{{ $t('يلزم مدرب') }}</RouterLink>
           <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-brand px-3 text-sm font-bold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">{{ $t('درّب') }}</button>
           <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>

@@ -72,6 +72,15 @@ trait MakesLeagues
         return $coach;
     }
 
+    /** [Sprint 21 E6] A line trains only with its coach: the club gets all four, for a year. */
+    protected function lineCoaches(int $clubId, int $stars = 1): void
+    {
+        foreach (['keeper_coach', 'def_coach', 'mid_coach', 'att_coach'] as $type) {
+            DB::table('staff_specialists')->insert(['club_id' => $clubId, 'type' => $type, 'cost' => 0, 'stars' => $stars,
+                'starts_at' => GameClock::now(), 'ends_at' => GameClock::now()->addYear(), 'idempotency_key' => "test-coach:{$clubId}:{$type}"]);
+        }
+    }
+
     protected function botClub(int $leagueId): int
     {
         return (int) DB::table('clubs')->where('league_id', $leagueId)->whereNull('user_id')->orderBy('id')->value('id');

@@ -34,6 +34,7 @@ class TrainingTest extends TestCase
         $this->owner = User::factory()->create();
         $this->league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => GameClock::now()->addDays(2)->toIso8601ZuluString()]);
         $this->mine = $this->league['my_club_id'];
+        $this->lineCoaches($this->mine);
     }
 
     protected function tearDown(): void
@@ -59,6 +60,17 @@ class TrainingTest extends TestCase
     private function interval(): int
     {
         return Training::interval($this->league['id']);
+    }
+
+    public function test_no_training_without_the_lines_coach_and_a_session_is_six_hours_everywhere(): void
+    {
+        DB::table('staff_specialists')->where('club_id', $this->mine)->where('type', 'mid_coach')->delete();
+        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $this->trainee('mid')->id])->assertStatus(422)
+            ->assertJsonPath('message', 'لا تدريب بلا مدرب: تعاقد مع مدرب الوسط من الجهاز الفني أولاً.');
+        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $this->trainee('def')->id])->assertOk();
+        $this->assertSame(6 * 3600, Training::interval($this->league['id']));
+        DB::table('leagues')->where('id', $this->league['id'])->update(['timer_scale' => 5000]);
+        $this->assertSame(6 * 3600, Training::interval($this->league['id']));
     }
 
     public function test_a_player_goes_in_his_lines_slot_and_a_second_one_of_his_line_waits(): void
