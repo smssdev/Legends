@@ -3,8 +3,9 @@
 // translation, and a sentence not yet there stays Arabic rather than break. {name} in a sentence takes vars.name.
 // The choice is kept on this device and on the account (PATCH /auth/me), and every request carries it in
 // Accept-Language, so the server's messages come in the same language.
-import { ref } from 'vue'
-import { EN } from '../i18n/en'
+// The English dictionary (100 KB) loads only for a coach who plays in English [E1.4]: the Arabic majority never
+// downloads it, and the app mounts once it is here (i18nReady), so English never flashes Arabic.
+import { ref, shallowRef } from 'vue'
 
 export type Locale = 'ar' | 'en'
 const KEY = 'glm.locale'
@@ -27,6 +28,14 @@ function apply(l: Locale) {
 }
 apply(locale.value)
 
+const EN = shallowRef<Record<string, string>>({})
+let loading: Promise<void> | null = null
+function loadEnglish(): Promise<void> {
+  return (loading ??= import('../i18n/en').then((m) => { EN.value = m.EN }))
+}
+/** Resolves when the device's language can be shown: at once in Arabic, after the dictionary in English. */
+export const i18nReady: Promise<void> = locale.value === 'en' ? loadEnglish().catch(() => {}) : Promise.resolve()
+
 /** Sets the language on this device (and the page's direction). The account is saved by the caller. */
 export function setLocale(l: Locale) {
   locale.value = l
@@ -36,6 +45,7 @@ export function setLocale(l: Locale) {
     // a private window: the choice lasts this visit
   }
   apply(l)
+  if (l === 'en') void loadEnglish()
 }
 
 /** The account's language, once known: it wins over this device's, unless the device chose since. */
@@ -45,7 +55,7 @@ export function adoptLocale(l: string | null | undefined) {
 
 export function t(ar: string | null | undefined, vars?: Record<string, string | number | null | undefined>): string {
   if (ar == null) return ''
-  let s = locale.value === 'en' ? (EN[ar] ?? ar) : ar
+  let s = locale.value === 'en' ? (EN.value[ar] ?? ar) : ar
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(String(v ?? ''))
   return s
 }

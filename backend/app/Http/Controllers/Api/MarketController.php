@@ -57,6 +57,7 @@ class MarketController extends Controller
             $q->whereRaw('players.value * ? / 10000 <= ?', [$bp, $data['max_price']]);
         }
         $clubs = DB::table('clubs')->where('league_id', $league->id)->pluck('name', 'id');
+        $squads = DB::table('players')->whereIn('club_id', $clubs->keys())->groupBy('club_id')->selectRaw('club_id, count(*) as n')->pluck('n', 'club_id');
         $rows = $q->orderByDesc('players.overall')->orderBy('players.id')->limit(80)->get();
 
         return response()->json([
@@ -68,7 +69,7 @@ class MarketController extends Controller
             ],
             'balance' => (int) $club->fresh()->balance,
             'bots' => DB::table('clubs')->where('league_id', $league->id)->whereNull('user_id')->orderBy('name')->get(['id', 'name', 'code'])
-                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'players' => DB::table('players')->where('club_id', $c->id)->count()]),
+                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'players' => (int) ($squads[$c->id] ?? 0)]),
             'players' => $rows->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
                 'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
@@ -106,7 +107,10 @@ class MarketController extends Controller
         $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)->orderByDesc('players.pool_star')->orderByDesc('players.overall')->limit(40)->get();
         $fromBots = $base()->whereIn('players.club_id', $bots->keys())->orderByDesc('players.overall')->limit(30)->get();
         $fromCoaches = $base()->whereIn('players.id', $listed->keys())->where('players.club_id', '!=', $club->id)->orderByDesc('players.overall')->get();
-        $masters = DB::table('master_clubs')->whereIn('id', $world->pluck('master_club_id')->unique())->get(['id', 'name', 'league_name'])->keyBy('id');
+        // Every master club named below in one query: the world players' clubs and the league's clubs (their logos) [E1.3].
+        $masters = DB::table('master_clubs')->whereIn('id', $world->pluck('master_club_id')->merge($bots->pluck('master_club_id'))->merge($coaches->pluck('master_club_id'))->filter()->unique())
+            ->get(['id', 'name', 'league_name'])->keyBy('id');
+        $logo = fn ($id) => isset($masters[$id]) ? ClubLogo::path($masters[$id]->league_name, $masters[$id]->name) : null;
         $row = fn ($p, int $price, array $seller) => [
             'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
@@ -117,12 +121,12 @@ class MarketController extends Controller
         ];
         $players = collect()
             ->concat($fromCoaches->map(fn ($p) => $row($p, (int) $listed[$p->id], ['kind' => 'coach', 'club_id' => $p->club_id, 'club' => $coaches[$p->club_id]->name,
-                'coach' => $coaches[$p->club_id]->coach, 'logo' => ClubLogo::forMaster($coaches[$p->club_id]->master_club_id)])))
+                'coach' => $coaches[$p->club_id]->coach, 'logo' => $logo($coaches[$p->club_id]->master_club_id)])))
             ->concat($fromBots->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_bot_bp'], 10000), ['kind' => 'bot', 'club_id' => $p->club_id,
-                'club' => $bots[$p->club_id]->name, 'coach' => null, 'logo' => ClubLogo::forMaster($bots[$p->club_id]->master_club_id)])))
+                'club' => $bots[$p->club_id]->name, 'coach' => null, 'logo' => $logo($bots[$p->club_id]->master_club_id)])))
             ->concat($world->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_pool_bp'], 10000), ['kind' => 'world', 'club_id' => null,
                 'club' => $masters[$p->master_club_id]->name ?? null, 'coach' => null,
-                'logo' => isset($masters[$p->master_club_id]) ? ClubLogo::path($masters[$p->master_club_id]->league_name, $masters[$p->master_club_id]->name) : null])))
+                'logo' => $logo($p->master_club_id)])))
             ->sortBy([['star', 'desc'], ['overall', 'desc']])->values();
         $renewed = $league->pool_renewed_at ? Carbon::parse($league->pool_renewed_at, 'UTC') : null;
 
@@ -160,19 +164,23 @@ class MarketController extends Controller
     {
         $cfg = config('game.economy');
         $listed = DB::table('transfer_listings')->where('club_id', $club->id)->get()->keyBy('player_id');
+        // Read once for the whole squad, not per player.
+        $bought = Buyer::boughtIds($club->id);
+        $scale = (int) $league->timer_scale ?: 10000;
+        $fair = (bool) $league->fair_league;
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
             ->orderByDesc('players.value')->get(['players.id', 'master_players.name', 'master_players.position', 'master_players.line', 'players.overall', 'players.training_bonus', 'players.value'])
-            ->map(function ($p) use ($club, $league, $cfg, $listed) {
-                $cap = Buyer::cap($p, $club->id);
+            ->map(function ($p) use ($club, $league, $cfg, $listed, $bought, $scale, $fair) {
+                $cap = Buyer::cap($p, $club->id, isset($bought[$p->id]));
                 $l = $listed[$p->id] ?? null;
 
                 return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'overall' => (int) $p->overall + (int) $p->training_bonus,
                     'value' => (int) $p->value, 'floor' => Buyer::floor($p), 'cap' => $cap,
-                    'quick' => ['pays' => (int) $p->value, 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000))],
+                    'quick' => ['pays' => (int) $p->value, 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000), fair: $fair)],
                     // About how long the outside buyer takes, at his value and at his cap.
-                    'wait_hours' => ['value' => intdiv(Buyer::wait((int) $p->value, (int) $p->value, $league->id) + 1800, 3600),
-                        'cap' => intdiv(Buyer::wait($cap, (int) $p->value, $league->id) + 1800, 3600)],
+                    'wait_hours' => ['value' => intdiv(Buyer::wait((int) $p->value, (int) $p->value, $league->id, $scale) + 1800, 3600),
+                        'cap' => intdiv(Buyer::wait($cap, (int) $p->value, $league->id, $scale) + 1800, 3600)],
                     'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Carbon::parse($l->sells_at, 'UTC')->toIso8601ZuluString() : null] : null,
                 ];
             })->all();
