@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * The stadium [PLAN 2.9, Sprint 29]: seats, pitch and training, three stages of five parts each. The coach starts
- * each part by hand and pays for it; it is done in 18 hours scaled by the season's length, coach online or not.
+ * each part by hand and pays for it; it is done in 20 hours in every league [Sprint 21 E6], coach online or not.
  * One part at a time across the whole stadium. A finished stage changes the game: more seats (and tickets), more
  * home advantage, faster training. A club left to the computer keeps what it built and finishes the part under way.
  */
@@ -49,9 +49,8 @@ class Stadium
     /** Seconds one part takes in this league. */
     public static function partSeconds(int $leagueId): int
     {
-        $scale = (int) DB::table('leagues')->where('id', $leagueId)->value('timer_scale');
-
-        return max(60, intdiv((int) config('game.stadium.part_hours') * 3600 * ($scale ?: 10000), 10000));
+        // [Sprint 21 E6] The same in every league (no longer scaled by the season's length).
+        return max(60, (int) config('game.stadium.part_hours') * 3600);
     }
 
     /** The next part of a section: [stage, part], or null when the section is finished. */

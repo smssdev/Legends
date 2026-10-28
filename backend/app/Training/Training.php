@@ -6,6 +6,7 @@ use App\Data\PlayerValuation;
 use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
+use App\Messages\MessageText;
 use App\Stadium\Stadium;
 use App\Staff\Specialists;
 use App\Support\GameClock;
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * Training [PLAN 2.8, Sprint 27]: four slots, one player of each line. Every session (8 hours scaled by the
- * season's length) moves the player's bar by a random step and costs club money, the coach online or not. At
+ * Training [PLAN 2.8, Sprint 27]: four slots, one player of each line, each only with its line's coach in the technical
+ * staff [Sprint 21 E6]. Every session (6 hours, game.training.tick_hours) moves the player's bar by a random step and costs club money, the coach online or not. At
  * the full bar his rating and his six attributes (a keeper's four) go up by one, his value with them, and the
  * slot empties for the coach to fill again. Past his potential he still grows, slower, up to 99 [X16].
  */
@@ -31,12 +32,10 @@ class Training
         return intdiv(Economy::scale($leagueId) * (int) $cfg['cost_bp_per_season'], 10000 * (int) $cfg['season_sessions']);
     }
 
-    /** Seconds between two sessions in this league. */
+    /** Seconds a session lasts: tick_hours in every league [Sprint 21 E6] (the league is kept for the callers). */
     public static function interval(int $leagueId): int
     {
-        $scale = (int) DB::table('leagues')->where('id', $leagueId)->value('timer_scale');
-
-        return max(60, intdiv((int) config('game.training.tick_hours') * 3600 * max(1, $scale ?: 10000), 10000));
+        return max(60, (int) config('game.training.tick_hours') * 3600);
     }
 
     /**
@@ -62,6 +61,10 @@ class Training
                 ->where('training_slots.club_id', $clubId)->where('training_slots.line', $p->line)->value('master_players.name');
             if ($busy !== null) {
                 throw new HttpException(409, "لاعب واحد من كل خط في التدريب: {$busy} يتدرب الآن، ويُتاح غيره حين ينهي تدريبه أو تسرّعه.");
+            }
+            // [Sprint 21 E6] No training without the line's coach in the technical staff.
+            if (! Specialists::has($clubId, Specialists::LINE_COACH[$p->line])) {
+                throw new HttpException(422, sprintf(__('لا تدريب بلا مدرب: تعاقد مع %s من الجهاز الفني أولاً.'), __(MessageText::STAFF[Specialists::LINE_COACH[$p->line]])));
             }
             $club = DB::table('clubs')->where('id', $clubId)->first();
             $now = GameClock::now();

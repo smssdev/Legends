@@ -175,7 +175,9 @@ return [
     ],
     // Training [PLAN 2.8, Sprint 27]: a session every tick_hours (scaled by the season's length), about
     // season_sessions of them in a season. Calibrated by sim:training (docs/sprints/sprint-27.md).
-    'training' => ['slots' => 4, 'tick_hours' => 8, 'progress_scale' => 10000, 'season_sessions' => 111,
+    // [Sprint 21 E6, the owner's decision 2026-10-28] Every session lasts tick_hours, the same in every league (no
+    // longer scaled by the season's length), and a line trains only with its coach in the technical staff.
+    'training' => ['slots' => 4, 'tick_hours' => 6, 'progress_scale' => 10000, 'season_sessions' => 111,
         // rating => about how many sessions a +1 takes; between two points in a straight line
         'sessions_by_overall' => [55 => 4, 65 => 6, 75 => 14, 80 => 19, 85 => 23, 89 => 25, 92 => 30, 99 => 40],
         'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
@@ -343,7 +345,8 @@ return [
     // The stadium [PLAN 2.9, Sprint 29]: three sections of three stages of five parts, one part at a time, each
     // started by the coach and done in part_hours (scaled by the season's length). The pitch's effect is in
     // match.home_pitch_bp (the engine reads it from the match's snapshot).
-    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18,
+    // [Sprint 21 E6] Every part is built in part_hours, the same in every league.
+    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 20,
         'sections' => ['seats', 'pitch', 'training'],
         'part_cost_bp' => [1 => 5, 2 => 8, 3 => 12],          // one part of a stage, as a share of the league's money scale
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats

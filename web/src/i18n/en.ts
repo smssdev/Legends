@@ -224,6 +224,7 @@ export const EN: Record<string, string> = {
   'التكتيك': 'Tactics',
   'التدريب': 'Training',
   'الطاقم': 'Staff',
+  'الجهاز الفني': 'Technical staff',
   'السوق': 'Market',
   'الكشاف': 'Scout',
   'الملعب': 'Stadium',
@@ -1252,6 +1253,7 @@ export const EN: Record<string, string> = {
   'مدربو الخطوط': 'Line coaches',
   'كل مدرب يسرّع تدريب لاعبي خطه': 'Each coach speeds up the training of their line\'s players',
   'الطاقم الطبي والإداري': 'Medical and admin staff',
+  'الجهاز الطبي والإداري': 'Medical and admin staff',
   'اللياقة والإصابات والإيقافات والمعنويات': 'Fitness, injuries, suspensions and morale',
   'مرهق: خطر إصابة': 'Exhausted: injury risk',
   'متعب': 'Tired',
@@ -1542,4 +1544,7 @@ export const EN: Record<string, string> = {
   '{n} سنة': '{n} yrs',
   'نغمة الإشعارات': 'Notification tone',
   'نغمة GLM حين تصلك رسالة واللعبة مفتوحة': 'GLM\'s tone when a message arrives while the game is open',
+  'لا تدريب بلا {v0}.': 'No training without the {v0}.',
+  'تعاقد معه من الجهاز الفني': 'Hire one from the technical staff',
+  'يلزم مدرب': 'Needs a coach',
 }

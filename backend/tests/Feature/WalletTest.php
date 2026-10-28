@@ -110,6 +110,7 @@ class WalletTest extends TestCase
         // Finish now: a training session.
         $player = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
             ->whereColumn('master_players.potential', '>', 'players.overall')->where('master_players.line', 'att')->value('players.id');
+        $this->lineCoaches($this->mine);
         Training::add($this->mine, $player);
         $this->postJson($this->url('training/att/finish'))->assertOk();
         $this->assertSame(1, (int) DB::table('training_slots')->value('sessions'));
@@ -129,6 +130,7 @@ class WalletTest extends TestCase
         $this->assertSame(1000, Wallet::balance($this->owner->id));
         $player = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
             ->whereColumn('master_players.potential', '>', 'players.overall')->value('players.id');
+        $this->lineCoaches($this->mine);
         Training::add($this->mine, $player);
         $line = DB::table('training_slots')->value('line');
         $this->postJson($this->url("training/{$line}/finish"))->assertConflict()->assertJsonPath('message', 'الدوري نزيه: لا تُصرف الكوينز فيه.');

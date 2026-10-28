@@ -9,6 +9,7 @@ use App\League\ClubLedger;
 use App\League\LeagueMatch;
 use App\Models\User;
 use App\Stadium\Stadium;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Training\Training;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -76,10 +77,11 @@ class StadiumTest extends TestCase
         $this->start('pitch', 'k4')->assertConflict()->assertJsonPath('message', 'رصيد النادي لا يكفي.');
     }
 
-    public function test_the_timer_finishes_with_the_coach_away_follows_the_season_and_five_parts_make_a_stage(): void
+    public function test_the_timer_finishes_with_the_coach_away_in_20_hours_and_five_parts_make_a_stage(): void
     {
+        // [Sprint 21 E6] 20 hours a part, in every league.
         $seconds = Stadium::partSeconds($this->league['id']);
-        $this->assertSame(intdiv(18 * 3600 * (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale'), 10000), $seconds);
+        $this->assertSame(20 * 3600, $seconds);
         foreach (range(1, 5) as $part) {
             $this->start('pitch', "p{$part}")->assertOk()->assertJsonPath('building.part', $part);
             Carbon::setTestNow(GameClock::now()->addSeconds($seconds - 60));
@@ -151,6 +153,10 @@ class StadiumTest extends TestCase
         // And it reaches the sessions themselves.
         $p = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
             ->whereColumn('master_players.potential', '>', 'players.overall')->value('players.id');
+        // [Sprint 21 E6] With the line's coach.
+        $line = (string) DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.id', $p)->value('master_players.line');
+        DB::table('staff_specialists')->insert(['club_id' => $this->mine, 'type' => Specialists::LINE_COACH[$line], 'cost' => 0, 'stars' => 1,
+            'starts_at' => GameClock::now(), 'ends_at' => GameClock::now()->addYear(), 'idempotency_key' => 'test-coach']);
         Training::add($this->mine, $p);
         Carbon::setTestNow(GameClock::now()->addSeconds(Training::interval($this->league['id'])));
         Training::due();

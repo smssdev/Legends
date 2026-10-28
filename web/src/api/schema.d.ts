@@ -7987,6 +7987,12 @@ export interface components {
                 sessions_done: number;
                 /** Format: date-time */
                 next_at: string | null;
+                /** @description [Sprint 21 E6] The line's coach: no training without him */
+                coach: {
+                    type: string;
+                    name: string;
+                    hired: boolean;
+                };
             }[];
             players: components["schemas"]["TrainingPlayer"][];
         };

@@ -164,7 +164,7 @@ class MessageText
                 'link' => '/match',
             ],
             'staff_left' => [
-                'title' => 'استقال '.(self::STAFF[$p['type'] ?? ''] ?? 'أحد الطاقم'),
+                'title' => 'استقال '.(self::STAFF[$p['type'] ?? ''] ?? 'أحد الجهاز الفني'),
                 'body' => sprintf('انتهى عقد %s (%d نجوم) ولم يُجدَّد، فغادر النادي. يمكنك التعاقد مع غيره من صفحة الطاقم.', self::STAFF[$p['type'] ?? ''] ?? 'الأخصائي', (int) ($p['stars'] ?? 0)),
                 'link' => '/specialists',
             ],
