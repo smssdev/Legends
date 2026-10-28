@@ -77,7 +77,7 @@ function inspect() {
   return { overflow, overlaps: overlaps.slice(0, 6), arabic }
 }
 
-;(async () => {
+;if (require.main !== module) { module.exports = { setup, api } } else (async () => {
   fs.mkdirSync(OUT, { recursive: true })
   const browser = await chromium.launch()
   const ctx = await browser.newContext()
@@ -95,7 +95,7 @@ function inspect() {
     })).observe({ type: 'layout-shift', buffered: true })
   })
   const screens = ['/', '/leagues', `/leagues/${league}`, '/team', '/lineup', '/tactics', '/training', '/specialists', '/market', '/scout', '/stadium', '/finance',
-    '/match', '/stats', `/leagues/${league}/predictions`, `/leagues/${league}/newspaper`, '/inbox', '/profile', '/wallet', '/leagues/new']
+    '/match', '/stats', '/fixtures', `/leagues/${league}/predictions`, `/leagues/${league}/newspaper`, '/inbox', '/profile', '/wallet', '/leagues/new']
   let failed = 0
   for (const lang of (process.env.LANGS || 'ar,en').split(',')) {
     await page.evaluate((l) => localStorage.setItem('glm.locale', l), lang)

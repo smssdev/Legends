@@ -65,6 +65,9 @@ class PressController extends Controller
             'pending' => $owner ? Newspaper::articles($league->id, 'pending') : array_values(array_filter(Newspaper::articles($league->id, 'pending'), fn ($a) => $a['author']['id'] === $request->user()->id)),
             'is_owner' => $owner,
             'max' => (int) config('game.press.article_max'),
+            // [Sprint 21 E4.5] One article a round: whether this coach has written this one's.
+            'wrote_this_round' => Newspaper::wroteThisRound($league->id, $request->user()->id),
+            'round' => Newspaper::writingRound($league->id)[1],
         ]);
     }
 

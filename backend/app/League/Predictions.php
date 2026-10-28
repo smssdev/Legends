@@ -32,13 +32,16 @@ class Predictions
         $clubs = DB::table('clubs')->where('league_id', $leagueId)->get(['id', 'name', 'code'])->keyBy('id');
         $picks = DB::table('match_predictions')->whereIn('fixture_id', $fixtures->pluck('id'))->get()->groupBy('fixture_id');
 
-        return ['round' => (int) $next->round, 'reward' => self::reward($leagueId), 'matches' => $fixtures->map(fn ($f) => [
-            'fixture_id' => $f->id, 'status' => $f->status, 'open' => $f->status === 'scheduled',
-            'home' => ['id' => $f->home_id, 'name' => $clubs[$f->home_id]->name ?? '', 'code' => $clubs[$f->home_id]->code ?? ''],
-            'away' => ['id' => $f->away_id, 'name' => $clubs[$f->away_id]->name ?? '', 'code' => $clubs[$f->away_id]->code ?? ''],
-            'mine' => optional(($picks[$f->id] ?? collect())->firstWhere('user_id', $userId))->pick,
-            'split' => array_map(fn ($p) => ($picks[$f->id] ?? collect())->where('pick', $p)->count(), array_combine(self::PICKS, self::PICKS)),
-        ])->values()->all()];
+        return ['round' => (int) $next->round, 'reward' => self::reward($leagueId),
+            // [Sprint 21 E4.4] How many coaches have predicted this round.
+            'predictors' => DB::table('match_predictions')->whereIn('fixture_id', $fixtures->pluck('id'))->distinct()->count('user_id'),
+            'matches' => $fixtures->map(fn ($f) => [
+                'fixture_id' => $f->id, 'status' => $f->status, 'open' => $f->status === 'scheduled',
+                'home' => ['id' => $f->home_id, 'name' => $clubs[$f->home_id]->name ?? '', 'code' => $clubs[$f->home_id]->code ?? ''],
+                'away' => ['id' => $f->away_id, 'name' => $clubs[$f->away_id]->name ?? '', 'code' => $clubs[$f->away_id]->code ?? ''],
+                'mine' => optional(($picks[$f->id] ?? collect())->firstWhere('user_id', $userId))->pick,
+                'split' => array_map(fn ($p) => ($picks[$f->id] ?? collect())->where('pick', $p)->count(), array_combine(self::PICKS, self::PICKS)),
+            ])->values()->all()];
     }
 
     public static function pick(int $leagueId, int $userId, int $fixtureId, string $pick): void

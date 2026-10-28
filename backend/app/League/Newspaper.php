@@ -13,7 +13,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * The league's newspaper [UP12, the owner's spec 6]. After each round it writes its own report, made on the server
  * from the round itself (no paid service): the results, the round's big stories (the biggest win, the surprise, the
  * goal feast, the red cards, a hat-trick) and the team of the week from the players' ratings. And the coaches write
- * their own articles, which the league's owner publishes or turns down.
+ * their own articles, which the league's owner publishes or turns down: one a round each [Sprint 21 E4.5].
+ * [Sprint 21 E4.6] «أخبار الدوري»: the round's best matches, its player and its coach (game.press.news, until the
+ * owner's own formulas), and the bribes an opponent exposed (the FA's cases of the season).
  */
 class Newspaper
 {
@@ -39,8 +41,67 @@ class Newspaper
         $results = $fixtures->map(fn ($f) => ['home' => $clubs[$f->home_id]->name, 'away' => $clubs[$f->away_id]->name,
             'home_goals' => (int) $f->home_goals, 'away_goals' => (int) $f->away_goals, 'match_id' => $matches[$f->id] ?? null])->values();
 
+        $team = self::teamOfTheWeek($matches->values()->all());
+
         return ['round' => $round, 'rounds' => $played->sort()->values()->all(), 'results' => $results,
-            'stories' => self::stories($fixtures, $clubs, $matches), 'team' => self::teamOfTheWeek($matches->values()->all())];
+            'stories' => self::stories($fixtures, $clubs, $matches), 'team' => $team,
+            'best_matches' => self::bestMatches($fixtures, $clubs, $matches), 'player' => $team ? collect($team)->sortByDesc('rating')->first() : null,
+            'coach' => self::coachOfTheRound($fixtures, $clubs), 'scandals' => self::scandals($season->id)];
+    }
+
+    /** The round's matches most worth watching again: goals, a close score and a surprise. */
+    private static function bestMatches($fixtures, $clubs, $matches): array
+    {
+        $w = config('game.press.news');
+
+        return $fixtures->map(function ($f) use ($w, $clubs, $matches) {
+            $diff = abs($f->home_goals - $f->away_goals);
+            $upset = false;
+            if ($diff > 0) {
+                [$win, $lose] = $f->home_goals > $f->away_goals ? [$f->home_id, $f->away_id] : [$f->away_id, $f->home_id];
+                $upset = $clubs[$lose]->strength_snapshot - $clubs[$win]->strength_snapshot >= $w['upset_gap'];
+            }
+            $score = ($f->home_goals + $f->away_goals) * $w['goals'] + ($diff === 0 ? $w['close'] : ($diff === 1 ? intdiv($w['close'], 2) : 0)) + ($upset ? $w['upset'] : 0);
+
+            return ['score' => $score, 'home' => $clubs[$f->home_id]->name, 'away' => $clubs[$f->away_id]->name, 'home_goals' => (int) $f->home_goals,
+                'away_goals' => (int) $f->away_goals, 'upset' => $upset, 'match_id' => $matches[$f->id] ?? null];
+        })->sortByDesc('score')->take((int) $w['best_matches'])->values()->all();
+    }
+
+    /** The coach whose win said most: its margin, what his side lacked in strength, and away from home. */
+    private static function coachOfTheRound($fixtures, $clubs): ?array
+    {
+        $w = config('game.press.news.coach');
+        $coaches = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', $clubs->keys())->get(['clubs.id', 'users.id as user_id', 'users.name'])->keyBy('id');
+        $best = null;
+        foreach ($fixtures as $f) {
+            if ($f->home_goals === $f->away_goals) {
+                continue;
+            }
+            [$win, $lose, $away] = $f->home_goals > $f->away_goals ? [$f->home_id, $f->away_id, false] : [$f->away_id, $f->home_id, true];
+            if (! isset($coaches[$win])) {
+                continue;
+            }
+            $gap = max(0, intdiv($clubs[$lose]->strength_snapshot - $clubs[$win]->strength_snapshot, $w['gap_per_point']));
+            $score = abs($f->home_goals - $f->away_goals) * $w['margin'] + $gap + ($away ? $w['away'] : 0);
+            if (! $best || $score > $best['score']) {
+                $best = ['score' => $score, 'coach' => ['id' => (int) $coaches[$win]->user_id, 'name' => $coaches[$win]->name], 'club' => $clubs[$win]->name,
+                    'opponent' => $clubs[$lose]->name, 'goals' => [max($f->home_goals, $f->away_goals), min($f->home_goals, $f->away_goals)], 'away' => $away];
+            }
+        }
+
+        return $best;
+    }
+
+    /** The bribes an opponent exposed this season: the FA's verdicts, newest first. */
+    private static function scandals(int $seasonId): array
+    {
+        return DB::table('fa_cases')->join('clubs', 'clubs.id', '=', 'fa_cases.accused_club_id')->leftJoin('users', 'users.id', '=', 'clubs.user_id')
+            ->join('clubs as accuser', 'accuser.id', '=', 'fa_cases.accuser_club_id')->where('fa_cases.season_id', $seasonId)
+            ->orderByDesc('fa_cases.id')->limit((int) config('game.press.news.scandals'))
+            ->get(['clubs.name as club', 'users.name as coach', 'accuser.name as accuser', 'fa_cases.points', 'fa_cases.fine', 'fa_cases.created_at'])
+            ->map(fn ($c) => ['club' => $c->club, 'coach' => $c->coach, 'accuser' => $c->accuser, 'points' => (int) $c->points, 'fine' => (int) $c->fine,
+                'at' => Carbon::parse($c->created_at, 'UTC')->toIso8601ZuluString()])->all();
     }
 
     /** The round's big stories, as headlines. */
@@ -134,16 +195,40 @@ class Newspaper
     /** A coach's article goes to the league's owner, who publishes or turns it down. */
     public static function write(League $league, int $userId, string $title, string $body): int
     {
-        abort_if(DB::table('league_articles')->where('league_id', $league->id)->where('user_id', $userId)->where('status', 'pending')->count() >= 3, 409, 'لديك 3 مقالات تنتظر المشرف.');
+        [$seasonId, $round] = self::writingRound($league->id);
+        // [Sprint 21 E4.5] One article a round for each coach, whatever became of it.
+        abort_if(DB::table('league_articles')->where('league_id', $league->id)->where('user_id', $userId)->where('season_id', $seasonId)->where('round', $round)->exists(),
+            409, sprintf(__('لك مقال واحد في كل جولة، وكتبت مقال الجولة %d.'), $round));
         $now = GameClock::now();
         $id = DB::table('league_articles')->insertGetId(['league_id' => $league->id, 'user_id' => $userId, 'title' => $title, 'body' => $body,
-            'status' => 'pending', 'created_at' => $now, 'updated_at' => $now]);
+            'status' => 'pending', 'season_id' => $seasonId, 'round' => $round, 'created_at' => $now, 'updated_at' => $now]);
         if ($league->owner_id !== $userId) {
             $author = DB::table('users')->where('id', $userId)->value('name');
             Inbox::send($league->owner_id, 'article_pending', ['title' => $title, 'author' => $author, 'league' => $league->name, 'league_id' => $league->id], $league->id);
         }
 
         return $id;
+    }
+
+    /** The round an article now belongs to: the next one to be played, or the last of a finished season. [season, round] */
+    public static function writingRound(int $leagueId): array
+    {
+        $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->value('id');
+        if (! $season) {
+            return [null, 0];
+        }
+        $league = DB::table('fixtures')->where('season_id', $season)->where('competition', 'league')->where('is_bye', false);
+        $round = (clone $league)->whereIn('status', ['scheduled', 'locked', 'live'])->min('round') ?? (clone $league)->max('round');
+
+        return [(int) $season, (int) $round];
+    }
+
+    /** Whether this coach has written this round's article. */
+    public static function wroteThisRound(int $leagueId, int $userId): bool
+    {
+        [$season, $round] = self::writingRound($leagueId);
+
+        return DB::table('league_articles')->where('league_id', $leagueId)->where('user_id', $userId)->where('season_id', $season)->where('round', $round)->exists();
     }
 
     public static function decide(League $league, int $articleId, bool $publish): void

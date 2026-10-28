@@ -132,7 +132,7 @@ class MatchPrep
         }
     }
 
-    /** "Your match is in 10 minutes", once per fixture, to both coaches' devices [PLAN 2.13, Sprint 36]. */
+    /** "Your match is in 30 minutes" (game.notifications.match_soon_minutes), once per fixture, to both coaches' devices [PLAN 2.13, Sprint 36]. */
     private static function soon($now): void
     {
         $due = DB::table('fixtures')->whereIn('status', ['scheduled', 'locked'])->where('is_bye', false)->whereNull('soon_at')
@@ -146,7 +146,7 @@ class MatchPrep
             foreach ([[$f->home_id, $f->away_id], [$f->away_id, $f->home_id]] as [$club, $other]) {
                 if ($coach = Inbox::coachOf($club)) {
                     $minutes = config('game.notifications.match_soon_minutes');
-                    Push::send($coach, 'match_soon', self::english($coach) ? "Your match in {$minutes} minutes" : "مباراتك بعد {$minutes} دقائق",
+                    Push::send($coach, 'match_soon', self::english($coach) ? "Your match in {$minutes} minutes" : "مباراتك بعد {$minutes} ".($minutes > 10 ? 'دقيقة' : 'دقائق'),
                         self::english($coach) ? 'Against '.($names[$other] ?? '').'. Get in to follow it and manage your team.'
                             : 'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match');
                 }

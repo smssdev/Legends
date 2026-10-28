@@ -85,19 +85,20 @@ class NotificationsTest extends TestCase
         }
     }
 
-    public function test_your_match_is_in_ten_minutes_once_to_both_coaches(): void
+    public function test_your_match_is_in_half_an_hour_once_to_both_coaches(): void
     {
         $this->template(full: true);
         $league = $this->makeLeague($this->owner, ['team_count' => 4, 'rounds_per_day' => 1, 'round_times' => ['21:00']]);
         $f = NextFixture::of($league['my_club_id']);
         $this->subscribe($this->owner);
-        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(11));
+        // [Sprint 21 E4.7] Half an hour before kick-off.
+        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(31));
         $this->artisan('matches:prepare');
         Queue::assertNotPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon');
-        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(10));
+        Carbon::setTestNow(Carbon::parse($f->scheduled_at, 'UTC')->subMinutes(30));
         $this->artisan('matches:prepare');
         $this->artisan('matches:prepare');
-        Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon' && $j->payload['link'] === '/match');
+        Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon' && $j->payload['link'] === '/match' && $j->payload['title'] === 'مباراتك بعد 30 دقيقة');
         Queue::assertPushed(SendPush::class, fn ($j) => $j->payload['tag'] === 'match_soon', 1);
         $this->assertNotNull(DB::table('fixtures')->where('id', $f->id)->value('soon_at'));
     }
