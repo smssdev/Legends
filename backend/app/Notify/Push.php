@@ -6,7 +6,7 @@ use App\Jobs\SendPush;
 use Illuminate\Support\Facades\DB;
 
 /**
- * The one notifications channel [PLAN 2.13, Sprint 36]: an inbox message (or "your match is in 10 minutes") goes
+ * The one notifications channel [PLAN 2.13, Sprint 36]: an inbox message (or "your match is in 30 minutes") goes
  * to every browser the account subscribed, unless its kind is turned off. Web Push now; FCM joins the same channel
  * in Sprint 45. Sent from the queue after the transaction commits, so a slow push service never holds the game.
  */

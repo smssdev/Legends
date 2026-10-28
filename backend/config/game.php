@@ -365,10 +365,11 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left'],
+            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
-        'match_soon_minutes' => 10,
+        // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).
+        'match_soon_minutes' => 30,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
     ],
     // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
@@ -423,7 +424,13 @@ return [
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
-    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000],
+    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000,
+        // [Sprint 21 E4.6] The league's news, until the owner sends his own formulas. A match's interest: its goals
+        // (goals each), a close score (close for a draw, half of it for one goal), and a surprise (upset, when the
+        // winner was at least upset_gap strength points weaker). The coach of the round: his win's margin (margin
+        // each goal), what his side lacked in strength (one point per gap_per_point), and an away win (away).
+        'news' => ['best_matches' => 3, 'goals' => 3, 'close' => 4, 'upset' => 6, 'upset_gap' => 300,
+            'coach' => ['margin' => 2, 'gap_per_point' => 100, 'away' => 2], 'scandals' => 5]],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.

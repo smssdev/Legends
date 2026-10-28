@@ -3146,7 +3146,10 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** [UP12] The round's matches with my pick and the league's split */
+        /**
+         * [UP12] The round's matches with my pick and the league's split
+         * @description [Sprint 21 E4.4] predictors: how many coaches have predicted this round.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -3221,7 +3224,10 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** [UP12] The newspaper: a played round's report (results, stories, team of the week) and the coaches' articles */
+        /**
+         * [UP12] The newspaper: a played round's report (results, stories, team of the week) and the coaches' articles
+         * @description [Sprint 21 E4.5, E4.6] «أخبار الدوري»: the edition also has best_matches (score, home, away, goals, upset, match_id), player (the round's best rated), coach (the coach of the round: coach, club, opponent, goals, away) and scandals (the bribes an opponent exposed: club, coach, accuser, points, fine, at). wrote_this_round and round: one article a round for each coach.
+         */
         get: {
             parameters: {
                 query?: {
@@ -8054,6 +8060,8 @@ export interface components {
             slot?: 1 | 2;
             /** @description The night's big match of the round [X31] */
             match_of_day?: boolean;
+            /** @description [Sprint 21 E4.3] The match, once made (live or played) */
+            match_id?: number | null;
         };
         SeasonCalendar: {
             number: number;

@@ -313,6 +313,8 @@ class LeagueController extends Controller
         $clubs = $this->clubCards($league);
         $stages = CupBracket::stages($league->team_count);
         $rows = DB::table('fixtures')->where('season_id', $season->id)->orderBy('scheduled_at')->orderBy('competition')->orderBy('id')->get();
+        // [Sprint 21 E4.3] A played or live match opens its report or the match itself.
+        $matches = DB::table('matches')->whereIn('fixture_id', $rows->pluck('id'))->pluck('id', 'fixture_id');
 
         return response()->json([
             'season' => $this->seasonData($league),
@@ -323,7 +325,7 @@ class LeagueController extends Controller
                 'home' => $f->home_id ? $clubs[$f->home_id] : null, 'away' => $f->away_id ? $clubs[$f->away_id] : null,
                 'is_bye' => (bool) $f->is_bye, 'status' => $f->status, 'home_goals' => $f->home_goals, 'away_goals' => $f->away_goals,
                 // A round in two slots [X31].
-                'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
+                'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day, 'match_id' => $matches[$f->id] ?? null,
             ])->values(),
         ]);
     }

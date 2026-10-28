@@ -1,13 +1,16 @@
 <script setup lang="ts">
-// The statistics centre [X17]: the season's table in detail, the scorers and the assists, the cards, each club's
+// The league table and its statistics [X17; «جدول الدوري» since Sprint 21 E4.2, with the leaders on top]: the season's table in detail, the scorers and the assists, the cards, each club's
 // buying and selling, the squads' value and the runs of results. A club's name opens its squad (what anyone in the
 // league may see: no tactic). No draft of its own: the design system's cards and the league table's look.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
+import { nm } from '../../lib/names'
+import { t } from '../../lib/i18n'
 import { useSlot } from '../../stores/slot'
-import { count, money } from '../../lib/format'
+import { money } from '../../lib/format'
+import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 
 type Stats = components['schemas']['LeagueStats']
 type Club = components['schemas']['StatsClub']
@@ -19,13 +22,24 @@ const s = ref<Stats | null>(null)
 const tab = ref<Tab>('table')
 const error = ref('')
 const loaded = ref(false)
-const squad = ref<any | null>(null)
-const squadBusy = ref(false)
+const squadOf = ref<number | null>(null)
 
 const avg = (x100: number) => (x100 / 100).toFixed(2)
 const RUN: Record<string, string> = { W: 'فوز', D: 'تعادل', L: 'خسارة' }
 const RUN_CLASS: Record<string, string> = { W: 'bg-success text-on-gold', D: 'bg-surface-raised', L: 'bg-live text-white' }
 const empty = computed(() => !s.value || s.value.matches === 0)
+const leaders = computed(() => {
+  const v = s.value
+  if (!v) return []
+  const attack = [...v.table].sort((a, b) => b.goals_for - a.goals_for)[0]
+  const defence = [...v.table].sort((a, b) => a.goals_against - b.goals_against)[0]
+  return [
+    { label: 'المتصدر', name: v.table[0] ? nm(v.table[0].club.name) : '-', value: v.table[0] ? t('{n} نقطة', { n: v.table[0].points }) : '' },
+    { label: 'الهداف', name: v.scorers[0] ? nm(v.scorers[0].player.name) : '-', value: v.scorers[0] ? t('{n} هدف', { n: v.scorers[0].goals }) : '' },
+    { label: 'أقوى هجوم', name: attack ? nm(attack.club.name) : '-', value: attack ? t('{n} هدف', { n: attack.goals_for }) : '' },
+    { label: 'أقوى دفاع', name: defence ? nm(defence.club.name) : '-', value: defence ? t('{n} استقبل', { n: defence.goals_against }) : '' },
+  ]
+})
 
 onMounted(async () => {
   try {
@@ -37,16 +51,7 @@ onMounted(async () => {
   loaded.value = true
 })
 
-async function openSquad(c: Club) {
-  if (!leagueId.value) return
-  squadBusy.value = true
-  try {
-    squad.value = (await api.GET('/leagues/{league}/clubs/{club}', { params: { path: { league: leagueId.value, club: c.id } } })).data
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  squadBusy.value = false
-}
+const openSquad = (c: Club) => (squadOf.value = c.id)
 // The coach's own club in gold in every table [X32].
 const slot = useSlot()
 const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
@@ -55,7 +60,7 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
 <template>
   <div class="flex flex-col gap-4">
     <div>
-      <h1 class="font-display text-3xl font-extrabold">{{ $t('الإحصائيات') }}</h1>
+      <h1 class="font-display text-3xl font-extrabold">{{ $t('جدول الدوري') }}</h1>
       <p class="mt-1 text-sm text-text-muted">{{ $t('كل ما يراه أعضاء الدوري عن الموسم. اضغط اسم أي نادٍ لترى تشكيلته ولاعبيه.') }}</p>
     </div>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
@@ -67,6 +72,14 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
         <button v-for="(label, key) in TABS" :key="key" type="button" role="tab" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-selected="tab === key" @click="tab = key">{{ $t(label) }}</button>
       </div>
       <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لم تُلعب مباريات في هذا الموسم بعد.') }}</p>
+      <!-- [Sprint 21 E4.2] The season's leaders at a glance. -->
+      <section v-else-if="tab === 'table'" class="grid grid-cols-2 gap-2 lg:grid-cols-4" :aria-label="$t('المتصدرون')">
+        <div v-for="card in leaders" :key="card.label" class="flex flex-col gap-0.5 rounded-xl bg-surface p-3">
+          <span class="text-xs text-text-muted">{{ $t(card.label) }}</span>
+          <b class="truncate font-display text-base"><bdi>{{ card.name }}</bdi></b>
+          <span class="font-numbers text-sm text-gold">{{ card.value }}</span>
+        </div>
+      </section>
 
       <section v-if="tab === 'table'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('الترتيب المفصل')">
         <table class="w-full min-w-[640px] text-sm">
@@ -149,23 +162,6 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
     </template>
 
     <!-- A rival's squad: what anyone in the league may see. -->
-    <div v-if="squad || squadBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة النادي')" @click.self="squad = null">
-      <div class="flex max-h-[85dvh] w-full max-w-xl flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
-        <p v-if="squadBusy" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-        <template v-else-if="squad">
-          <div class="flex items-center gap-3">
-            <img :src="squad.crest_url" alt="" class="size-10" />
-            <div class="min-w-0 flex-1"><h2 class="truncate font-display text-xl font-extrabold">{{ $nm(squad.name) }}</h2><p class="text-xs text-text-muted">{{ $t('{v0} · {v1} لاعباً', { v0: squad.coach?.name ?? $t('الحاسوب'), v1: count(squad.players.length) }) }}</p></div>
-            <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="squad = null">✕</button>
-          </div>
-          <div v-for="p in squad.players" :key="p.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 text-sm">
-            <span class="w-10 font-numbers text-xs text-text-muted" dir="ltr">{{ p.position }}</span>
-            <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted">{{ $t('· {v0} سنة', { v0: p.age }) }}</span><span v-if="p.injured_matches" class="text-xs text-[#FF8A8A]"> {{ $t('· مصاب') }}</span><span v-if="p.suspended_matches" class="text-xs text-warning"> {{ $t('· موقوف') }}</span></span>
-            <b class="font-numbers">{{ p.overall }}</b>
-            <span class="w-16 text-end font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.value) }}</span>
-          </div>
-        </template>
-      </div>
-    </div>
+    <ClubSquadDialog v-if="squadOf && leagueId" :league-id="leagueId" :club-id="squadOf" @close="squadOf = null" />
   </div>
 </template>

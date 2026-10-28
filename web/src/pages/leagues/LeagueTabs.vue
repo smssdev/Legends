@@ -3,6 +3,7 @@
 // "rests" when the count is odd), the calendar in the device's own time, and the cup's bracket.
 import { intlLocale } from '../../lib/i18n'
 import { computed, onMounted, ref } from 'vue'
+import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
@@ -34,6 +35,7 @@ const fixtures = ref<Fixture[]>([])
 const stages = ref<Stage[]>([])
 const season = ref<Season | null>(null)
 const error = ref('')
+const squadOf = ref<number | null>(null)
 
 const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
 
@@ -115,12 +117,13 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
             <!-- [X29] The podium: gold, silver and bronze places, as the sports tables mark them. -->
             <td class="py-2"><span class="grid size-7 place-items-center rounded-md font-numbers text-base font-bold" :class="PODIUM[r.position] ?? 'text-text-soft'">{{ r.position }}</span></td>
             <td class="py-2">
-              <span class="flex items-center gap-2">
+              <!-- [Sprint 21 E4.1] Any club in the table opens its squad (never its tactics). -->
+              <button type="button" class="flex min-h-touch w-full items-center gap-2 text-start hover:text-gold" :aria-label="$t('لاعبو {v0}', { v0: $nm(r.name) })" @click="squadOf = r.id">
                 <ClubCrest :url="r.crest_url" :code="r.code" :size="28" />
                 <span class="truncate font-bold">{{ $nm(r.name) }}</span>
                 <span class="truncate text-xs text-text-muted">{{ r.id === myClubId ? $t('أنت') : r.coach }}</span>
                 <UiChip v-if="r.rests_next" tone="neutral">{{ $t('استراحة') }}</UiChip>
-              </span>
+              </button>
             </td>
             <td class="text-center font-numbers text-base">{{ r.played }}</td>
             <td class="text-center font-numbers text-base" dir="ltr">{{ r.goal_difference > 0 ? '+' : '' }}{{ r.goal_difference }}</td>
@@ -183,5 +186,6 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
         </div>
       </div>
     </template>
+    <ClubSquadDialog v-if="squadOf" :league-id="leagueId" :club-id="squadOf" @close="squadOf = null" />
   </section>
 </template>

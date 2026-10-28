@@ -6,7 +6,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import { money } from '../../lib/format'
 
 const props = defineProps<{ id: string }>()
-type Round = { round: number | null; reward?: number; matches: { fixture_id: number; status: string; open: boolean; home: { name: string }; away: { name: string }; mine: string | null; split: Record<string, number> }[] }
+type Round = { round: number | null; reward?: number; predictors?: number; matches: { fixture_id: number; status: string; open: boolean; home: { name: string }; away: { name: string }; mine: string | null; split: Record<string, number> }[] }
 const r = ref<Round | null>(null)
 const error = ref('')
 const PICKS = [{ id: 'home', label: 'فوز صاحب الأرض' }, { id: 'draw', label: 'تعادل' }, { id: 'away', label: 'فوز الضيف' }]
@@ -40,6 +40,10 @@ onMounted(load)
       <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">{{ $t('› الدوري') }}</RouterLink>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('توقعات المدربين') }}</h1>
       <p v-if="r?.round" class="text-sm text-text-muted">{{ $t('الجولة {v0} · التوقع الصحيح يمنح ناديك', { v0: r.round }) }} <b dir="ltr" class="font-numbers text-gold">{{ money(r.reward ?? 0) }}</b> {{ $t('ونقطة خبرة') }}</p>
+      <!-- [Sprint 21 E4.4] How many coaches have predicted this round. -->
+      <p v-if="r?.round" class="mt-2 inline-flex items-center gap-2 rounded-pill bg-surface px-3 py-1.5 text-sm">
+        <span aria-hidden="true">👥</span>{{ $t('توقّع {v0} من المدربين هذه الجولة', { v0: r.predictors ?? 0 }) }}
+      </p>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <p v-if="r && !r.round" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('لا جولة قادمة الآن.') }}</p>
@@ -48,7 +52,7 @@ onMounted(load)
         <div class="flex items-center justify-between gap-2 font-bold"><bdi>{{ $nm(m.home.name) }}</bdi><span class="text-text-muted">{{ $t('ضد') }}</span><bdi>{{ $nm(m.away.name) }}</bdi></div>
         <div class="grid grid-cols-3 gap-1" role="radiogroup" :aria-label="$t('توقعك لمباراة {v0} و{v1}', { v0: m.home.name, v1: m.away.name })">
           <button v-for="p in PICKS" :key="p.id" type="button" role="radio" :aria-checked="m.mine === p.id" :disabled="!m.open"
-            class="flex min-h-touch flex-col items-center justify-center rounded-lg px-1 text-xs font-bold disabled:opacity-60"
+            class="flex min-h-14 touch-manipulation flex-col items-center justify-center rounded-lg px-1 text-xs font-bold disabled:opacity-60"
             :class="m.mine === p.id ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-soft'" @click="pick(m.fixture_id, p.id)">
             {{ $t(p.label) }}<span class="font-numbers text-[0.7rem] opacity-80">{{ pct(m.split, p.id) }}%</span>
           </button>
