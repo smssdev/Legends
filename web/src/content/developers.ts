@@ -4,7 +4,7 @@ export type Developer = { name: string; username: string; role: string; bio: str
 
 export const DEVELOPERS: Developer[] = [
   {
-    name: 'سليمان', username: 'Owner-Soliman', role: 'صاحب الفكرة وقائد التطوير', avatar: 'س',
+    name: 'سليمان', username: 'Owner-Sliman', role: 'صاحب الفكرة وقائد التطوير', avatar: 'س',
     bio: 'يقود بناء لعبة المدرب الأسطورة من الفكرة إلى الملعب: القواعد، والخادم، والتجربة كلها.',
     skills: ['إدارة المنتج', 'تصميم قواعد اللعبة', 'Laravel', 'Vue', 'Unity'],
     cv: [
@@ -13,7 +13,7 @@ export const DEVELOPERS: Developer[] = [
     ],
   },
   {
-    name: 'حمزة', username: 'Owner-Hamza', role: 'المراجعة والجودة والصوت', avatar: 'ح',
+    name: 'حمزة', username: 'Owner-Sizar', role: 'المراجعة والجودة والصوت', avatar: 'ح',
     bio: 'يراجع كل تحديث ويختبره قبل أن يصل إليكم، ويختار أصوات الملعب ويجهز التعليق.',
     skills: ['اختبار الجودة', 'تصميم الصوت', 'مراجعة الكود', 'تجربة اللاعب'],
     cv: [

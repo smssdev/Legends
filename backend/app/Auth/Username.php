@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * The account's username [X4, X11]: 3 to 20 English letters and digits, starting with a letter, kept in lower case
  * and unique. Words that pass for the game's staff (owner, admin, support, mod...) are refused, and the developers'
- * names (Owner-Hamza, Owner-Soliman) are given by the admin only, with the official badge.
+ * names (Owner-Sizar, Owner-Sliman) are given by the admin only, with the official badge.
  * An account made without one (Google, or before usernames) gets a free one from its email or name.
  */
 class Username

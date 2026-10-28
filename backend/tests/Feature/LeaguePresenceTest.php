@@ -245,6 +245,6 @@ class LeaguePresenceTest extends TestCase
 
         // An unknown code still opens the app, with a plain invitation.
         $this->get('/join/NOPE1234')->assertOk()->assertSee('دعوة إلى لعبة المدرب الأسطورة', false);
-        $this->assertSame(url('/join/'.$this->league['code']), $this->me($this->owner)['invite_url']);
+        $this->assertSame(url('/join/'.$this->league['code']).'?ref='.$this->owner->account_no, $this->me($this->owner)['invite_url']);
     }
 }

@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 /**
- * The developers' two fixed accounts [X11]: each reserved name (Owner-Hamza, Owner-Soliman) belongs to one Gmail,
- * set on the server only (OWNER_HAMZA_EMAIL, OWNER_SOLIMAN_EMAIL), never in the code. Whoever signs in with that
+ * The developers' two fixed accounts [X11]: each reserved name (Owner-Sizar, Owner-Sliman) belongs to one Gmail,
+ * set on the server only (OWNER_SIZAR_EMAIL, OWNER_SLIMAN_EMAIL, or the older OWNER_HAMZA_EMAIL, OWNER_SOLIMAN_EMAIL), never in the code. Whoever signs in with that
  * address, once it is confirmed (the email's link, or Google), gets the name, the official badge and the admin
  * panel. An unconfirmed address gets nothing: anyone may type an email.
  */

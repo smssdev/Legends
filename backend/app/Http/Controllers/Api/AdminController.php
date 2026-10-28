@@ -150,7 +150,7 @@ class AdminController extends Controller
             'days' => (int) config('game.account.verify_code_days')]);
     }
 
-    /** Gives a developer's account one of the reserved names (Owner-Hamza, Owner-Soliman) and its badge [X11]. */
+    /** Gives a developer's account one of the reserved names (Owner-Sizar, Owner-Sliman) and its badge [X11]. */
     public function official(Request $request, User $user): JsonResponse
     {
         $name = (string) $request->validate(['name' => ['required', 'string', Rule::in(config('game.account.official_usernames'))]])['name'];
@@ -164,7 +164,7 @@ class AdminController extends Controller
     public function announce(Request $request): JsonResponse
     {
         $from = $request->user();
-        abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Hamza أو Owner-Soliman).');
+        abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Sizar أو Owner-Sliman).');
         $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000']]);
         $payload = ['title' => $data['title'], 'body' => $data['body'], 'from' => $from->name, 'username' => $this->officialName($from->username)];
         $sent = 0;
@@ -176,7 +176,7 @@ class AdminController extends Controller
         return response()->json(['sent' => $sent], 201);
     }
 
-    /** owner-hamza → Owner-Hamza, as written in the settings. */
+    /** owner-sizar → Owner-Sizar, as written in the settings. */
     private function officialName(string $username): string
     {
         foreach (config('game.account.official_usernames') as $name) {

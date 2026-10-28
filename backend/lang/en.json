@@ -305,5 +305,10 @@
   "%d بطاقات حمراء في جولة ساخنة": "%d red cards in a heated round",
   "الحكام لم يرحموا أحداً هذه الجولة.": "The referees spared no one this round.",
   "هاتريك لـ%s": "Hat-trick for %s",
-  "%d أهداف لـ%s مع %s.": "%d goals for %s with %s."
+  "%d أهداف لـ%s مع %s.": "%d goals for %s with %s.",
+  "هدية دعوة صديق": "Friend invite gift",
+  "اسم حساب المطور ثابت ولا يتغير.": "A developer account's username is fixed.",
+  "انتهت مدة الكود. اضغط «أرسل الكود» لكود جديد.": "The code has expired. Press “Send the code” for a new one.",
+  "الكود غير صحيح، وانتهى بعد المحاولات المسموحة. اطلب كوداً جديداً.": "Wrong code, and no tries are left. Ask for a new code.",
+  "الكود غير صحيح.": "Wrong code."
 }

@@ -17,7 +17,7 @@ class OfficialAccountsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['game.account.official_emails' => ['Owner-Hamza' => 'hamza.dev@gmail.com', 'Owner-Soliman' => 'Soliman.Dev@gmail.com']]);
+        config(['game.account.official_emails' => ['Owner-Sizar' => 'hamza.dev@gmail.com', 'Owner-Sliman' => 'Soliman.Dev@gmail.com']]);
     }
 
     private function register(string $email, string $username): TestResponse
@@ -37,7 +37,7 @@ class OfficialAccountsTest extends TestCase
         // The link in the email confirms it: the reserved name, the badge and the admin panel.
         $this->get(VerifyEmailNotice::url($user))->assertRedirect();
         $user->refresh();
-        $this->assertSame(['owner-soliman', 'admin'], [$user->username, $user->role]);
+        $this->assertSame(['owner-sliman', 'admin'], [$user->username, $user->role]);
         $this->assertTrue($user->toAccount()['official']);
     }
 
@@ -45,18 +45,18 @@ class OfficialAccountsTest extends TestCase
     {
         $hamza = User::factory()->create(['email' => 'hamza.dev@gmail.com', 'username' => 'hamza', 'password' => 'secret123']);
         $this->postJson('/api/v1/auth/token', ['email' => 'hamza.dev@gmail.com', 'password' => 'secret123', 'device_name' => 'Pixel'])->assertOk()
-            ->assertJsonPath('user.username', 'owner-hamza')->assertJsonPath('user.official', true)->assertJsonPath('user.role', 'admin');
+            ->assertJsonPath('user.username', 'owner-sizar')->assertJsonPath('user.official', true)->assertJsonPath('user.role', 'admin');
 
         // Someone else, confirmed, stays as they are.
         $other = User::factory()->create(['email' => 'fan@gmail.com', 'username' => 'fan', 'password' => 'secret123']);
         $this->postJson('/api/v1/auth/token', ['email' => 'fan@gmail.com', 'password' => 'secret123', 'device_name' => 'Pixel'])->assertOk()
             ->assertJsonPath('user.username', 'fan')->assertJsonPath('user.role', 'user');
-        $this->assertSame('owner-hamza', $hamza->fresh()->username);
+        $this->assertSame('owner-sizar', $hamza->fresh()->username);
     }
 
     public function test_no_address_on_the_server_gives_nobody_the_names(): void
     {
-        config(['game.account.official_emails' => ['Owner-Hamza' => null, 'Owner-Soliman' => '']]);
+        config(['game.account.official_emails' => ['Owner-Sizar' => null, 'Owner-Sliman' => '']]);
         User::factory()->create(['email' => 'x@gmail.com', 'username' => 'xuser', 'password' => 'secret123']);
         $this->postJson('/api/v1/auth/token', ['email' => 'x@gmail.com', 'password' => 'secret123', 'device_name' => 'P'])->assertOk()
             ->assertJsonPath('user.username', 'xuser');

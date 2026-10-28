@@ -8,6 +8,7 @@ use App\Auth\AccountVerification;
 use App\Auth\GoogleLinker;
 use App\Auth\GoogleTokenVerifier;
 use App\Auth\OfficialAccounts;
+use App\Auth\Referral;
 use App\Auth\Sessions;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
@@ -57,9 +58,12 @@ class AuthController extends Controller
             'email' => ['nullable', 'string', 'email', 'max:190', 'unique:users,email'],
             'password' => ['required', 'string', $this->passwordRule()],
             'device_name' => ['sometimes', 'string', 'max:100'],
+            // [Sprint 21 E2.3] The inviter's account number, from their invite link (?ref=12345).
+            'ref' => ['sometimes', 'nullable', 'integer', 'between:10000,99999'],
         ]);
         $request->merge(['remember' => true]);
         $user = User::create(['name' => trim($data['name']), 'username' => $data['username'], 'email' => ($data['email'] ?? '') !== '' ? $data['email'] : null, 'password' => $data['password']]);
+        Referral::link($user, $data['ref'] ?? null);
         // The account is made even if the email cannot leave now: the banner in the app sends it again [X8].
         $sent = $user->email !== null && Mailer::attempt(fn () => $user->sendEmailVerificationNotification(), 'verify '.$user->id);
 
@@ -105,6 +109,10 @@ class AuthController extends Controller
             'match_view' => ['sometimes', 'string', Rule::in(config('game.viewing.match_views'))],
             'locale' => ['sometimes', 'string', Rule::in(SetLocale::LOCALES)],
         ]);
+        // [Sprint 21 E2.6] A developer's name (Owner-Sizar, Owner-Sliman) stays as it is.
+        if (isset($data['username']) && Username::official($user->username) && strtolower($data['username']) !== $user->username) {
+            throw ValidationException::withMessages(['username' => 'اسم حساب المطور ثابت ولا يتغير.']);
+        }
         $user->update(array_filter(['name' => isset($data['name']) ? trim($data['name']) : null,
             'username' => isset($data['username']) ? strtolower($data['username']) : null,
             'commentator' => $data['commentator'] ?? null, 'match_view' => $data['match_view'] ?? null, 'locale' => $data['locale'] ?? null]));
@@ -307,7 +315,18 @@ class AuthController extends Controller
         return response()->json($this->signIn($request, $linker->resolve($google), $data['device_name']));
     }
 
-    /** [UP6] The code the support sent on WhatsApp: the account is verified and the welcome coins arrive. */
+    /** [Sprint 21 E2.4] Sends a one-time code to the account's email (or the one typed here, kept once verified). */
+    public function sendVerificationCode(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->validate(['email' => [$user->email ? 'nullable' : 'required', 'string', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)]]);
+        $email = Str::lower(trim((string) ($data['email'] ?? $user->email)));
+        $sent = AccountVerification::send($user, $email);
+
+        return response()->json(['sent' => $sent, 'email' => AccountVerification::masked($email), 'minutes' => (int) config('game.account.verify_code_minutes')]);
+    }
+
+    /** The code from the email: the account is verified, the welcome coins arrive, and the inviter's gift. */
     public function verifyAccount(Request $request): JsonResponse
     {
         $data = $request->validate(['code' => ['required', 'string', 'max:12']]);

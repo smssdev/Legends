@@ -8,6 +8,7 @@ import { api, asApiError } from '../api/client'
 import type { components } from '../api/schema'
 import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
+import VerifiedBadge from '../components/VerifiedBadge.vue'
 import HelpTip from '../components/ui/HelpTip.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
@@ -83,7 +84,7 @@ async function openRanking(by: 'trophies' | 'level') {
         </RouterLink>
         <div class="flex min-w-0 flex-1 flex-col gap-1">
           <span class="text-xs font-bold text-gold">{{ greeting }}</span>
-          <b class="truncate font-display text-lg leading-tight md:text-xl">{{ home.coach.name }} <OfficialBadge v-if="home.coach.official" /></b>
+          <b class="truncate font-display text-lg leading-tight md:text-xl">{{ home.coach.name }} <OfficialBadge v-if="home.coach.official" /><VerifiedBadge v-else-if="home.coach.verified" /></b>
           <div class="flex items-center gap-2">
             <span class="grid size-7 shrink-0 place-items-center rounded-md bg-[#B4692A] font-numbers text-sm font-extrabold text-white" :title="$t('المستوى {n}', { n: home.coach.level.level })">{{ home.coach.level.level }}</span>
             <div class="h-1.5 max-w-40 flex-1 overflow-hidden rounded-pill bg-surface-sunk" role="progressbar" :aria-valuenow="home.coach.level.progress_bp / 100" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم إلى المستوى التالي')">
@@ -192,7 +193,7 @@ async function openRanking(by: 'trophies' | 'level') {
           </div>
           <div v-for="r in ranking.coaches" :key="r.coach.id" class="flex min-h-touch items-center gap-3 border-t border-text/5" :class="r.coach.id === auth.user?.id ? 'text-gold' : ''">
             <span class="w-7 text-center font-numbers text-text-muted">{{ r.position }}</span>
-            <RouterLink :to="{ name: 'coach', params: { id: r.coach.id } }" class="min-w-0 flex-1 truncate font-bold">{{ r.coach.name }} <OfficialBadge v-if="r.coach.official" /></RouterLink>
+            <RouterLink :to="{ name: 'coach', params: { id: r.coach.id } }" class="min-w-0 flex-1 truncate font-bold">{{ r.coach.name }} <OfficialBadge v-if="r.coach.official" /><VerifiedBadge v-else-if="r.coach.verified" /></RouterLink>
             <span class="text-xs text-text-muted">{{ $t('م{n}', { n: r.level }) }}</span>
             <b class="font-numbers">🏆 {{ r.trophies.total }}</b>
           </div>

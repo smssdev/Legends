@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// The account (Sprint 10 W1). No approved design yet: built with the cards of WebHome.
+// The account (Sprint 10 W1; modern in Sprint 21 E2.7): a header with the picture, the name, the badge and the
+// account's number, then the verification by email (E2.4) and the invite gift (E2.3), and the settings in cards.
 import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -8,12 +9,13 @@ import NotificationsCard from '../components/NotificationsCard.vue'
 import TextField from '../components/TextField.vue'
 import UsernameField from '../components/UsernameField.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
+import VerifiedBadge from '../components/VerifiedBadge.vue'
 import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
 import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 import { namesLang, setNamesLang } from '../lib/names'
-import { t } from '../lib/i18n'
+import { intlLocale, t } from '../lib/i18n'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
 
 const auth = useAuth()
@@ -24,7 +26,7 @@ const user = computed(() => auth.user ?? last)
 let last = auth.user!
 
 const welcome = computed(() =>
-  route.query.verified === '1' ? 'تم تأكيد بريدك. حسابك جاهز.' : route.query.welcome === '1' ? 'أهلاً بك! أرسلنا رسالة إلى بريدك، اضغط الرابط فيها لتأكيده.' : route.query.welcome === 'unsent' ? 'أهلاً بك! تعذر إرسال رسالة التأكيد الآن، اضغط «أرسل الرابط من جديد» بعد قليل.' : '',
+  route.query.verified === '1' ? 'تم تأكيد بريدك. حسابك جاهز.' : route.query.welcome === '1' ? 'أهلاً بك! وثّق حسابك بكود يصلك على بريدك لتحصل على مكافأة الترحيب.' : route.query.welcome === 'unsent' ? 'أهلاً بك! تعذر إرسال رسالة التأكيد الآن، اضغط «أرسل الرابط من جديد» بعد قليل.' : '',
 )
 
 // The simulator and the commentator [X9, X10].
@@ -116,7 +118,27 @@ async function holiday(start: boolean) {
   }
 }
 
-// [UP6] The WhatsApp code: verifies the account and the welcome coins arrive.
+// [UP6, Sprint 21 E2.4] The code by email: "send" mails it (to the account's email, or one typed here), and
+// typing it verifies the account and the welcome coins arrive.
+const verifyEmail = ref(user.value.email ?? '')
+const sentTo = ref('')
+const sendErr = ref('')
+const sendBusy = ref(false)
+async function sendCode() {
+  sendErr.value = ''
+  sendBusy.value = true
+  try {
+    await ensureCsrf()
+    const { data } = await api.POST('/auth/verify-account/send', { body: user.value.email ? {} : { email: verifyEmail.value.trim() } })
+    sentTo.value = data!.sent ? data!.email : ''
+    if (!data!.sent) sendErr.value = t('تعذر إرسال الرسالة الآن. حاول بعد قليل.')
+  } catch (e) {
+    const err = asApiError(e)
+    sendErr.value = err.field('email') || err.message
+  } finally {
+    sendBusy.value = false
+  }
+}
 const verifyCode = ref('')
 const verifyErr = ref('')
 const verifyBusy = ref(false)
@@ -137,6 +159,32 @@ async function verifyAccount() {
     verifyBusy.value = false
   }
 }
+
+// [Sprint 21 E2.1, E2.3] The account's number and the invite link, copied or shared in one tap.
+const copied = ref('')
+async function copy(text: string, what: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    copied.value = what
+    setTimeout(() => (copied.value = ''), 2000)
+  } catch {
+    copied.value = ''
+  }
+}
+async function shareInvite() {
+  const link = user.value.referral.link
+  const text = t('انضم إليّ في لعبة المدرب الأسطورة: درّب ناديك المفضل ضد أصحابك.')
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: t('لعبة المدرب الأسطورة'), text, url: link })
+      return
+    } catch {
+      // closed: copy instead
+    }
+  }
+  await copy(link, 'link')
+}
+const joined = computed(() => (user.value.created_at ? new Date(user.value.created_at).toLocaleDateString(intlLocale(), { year: 'numeric', month: 'long' }) : ''))
 
 const resendMsg = ref('')
 async function resend() {
@@ -201,45 +249,82 @@ async function remove() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="font-display text-3xl font-extrabold">{{ $t('حسابي') }}</h1>
-      <!-- [UP2] The game's language, kept on the account. -->
-      <LanguageSwitch />
-    </div>
-    <p v-if="welcome" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ welcome }}</p>
+  <div class="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <!-- [Sprint 21 E2.7] The header: picture, name, badge, the account's number, and the language. -->
+    <header class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-raised to-surface p-5 sm:p-6">
+      <div class="pointer-events-none absolute -end-16 -top-16 size-56 rounded-full bg-gold/10" aria-hidden="true" />
+      <div class="relative flex flex-wrap items-center gap-4 sm:gap-6">
+        <label class="group relative size-24 shrink-0 cursor-pointer sm:size-28" :title="$t('غيّر الصورة')">
+          <img v-if="user.avatar_url" :src="user.avatar_url" :alt="$t('صورتك')" class="size-full rounded-full object-cover ring-4 ring-gold/40" />
+          <span v-else class="flex size-full items-center justify-center rounded-full bg-gold font-display text-4xl font-extrabold text-on-gold ring-4 ring-gold/40">{{ user.name.trim().charAt(0) }}</span>
+          <span class="absolute inset-x-0 bottom-0 rounded-b-full bg-black/55 py-1 text-center text-xs font-bold opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">{{ picBusy ? $t('جارٍ الرفع…') : $t('غيّر') }}</span>
+          <input ref="picture" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" :disabled="picBusy" @change="upload" />
+        </label>
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+          <h1 class="flex flex-wrap items-center gap-2 font-display text-2xl font-extrabold sm:text-3xl">
+            <span class="truncate">{{ user.name }}</span>
+            <OfficialBadge v-if="user.official" /><VerifiedBadge v-else-if="user.verification?.verified" />
+          </h1>
+          <span class="text-sm text-text-muted" dir="ltr">@{{ user.username }}</span>
+          <div class="mt-1 flex flex-wrap items-center gap-2">
+            <button type="button" class="flex h-9 items-center gap-2 rounded-pill bg-surface-sunk px-3 text-sm" :aria-label="$t('انسخ رقم حسابك')" @click="copy(String(user.account_no), 'no')">
+              <span class="whitespace-nowrap text-text-muted">{{ $t('رقم الحساب') }}</span><b class="font-numbers tracking-widest" dir="ltr">{{ user.account_no }}</b>
+              <span class="text-xs text-gold">{{ copied === 'no' ? $t('نُسخ') : $t('نسخ') }}</span>
+            </button>
+            <span v-if="joined" class="rounded-pill bg-surface-sunk px-3 py-1.5 text-xs text-text-muted">{{ $t('منذ {v0}', { v0: joined }) }}</span>
+          </div>
+        </div>
+        <div class="order-first flex w-full justify-end sm:order-none sm:w-auto sm:self-start"><LanguageSwitch /></div>
+      </div>
+      <div v-if="user.avatar_url || picErr" class="relative mt-3 flex flex-wrap items-center gap-3">
+        <button v-if="user.avatar_url" type="button" class="h-touch rounded-md px-3 text-sm text-text-muted" @click="removePicture">{{ $t('احذف الصورة') }}</button>
+        <p v-if="picErr" class="text-sm text-[#FF8A8A]" role="alert">{{ picErr }}</p>
+      </div>
+    </header>
+    <p v-if="welcome" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ $t(welcome) }}</p>
 
-    <!-- [UP6] The welcome coins wait for the account to be verified: this stays until it is. -->
-    <section v-if="!user.verification?.verified" class="flex flex-col gap-3 rounded-xl border border-warning/50 bg-warning/10 p-4" aria-labelledby="h-verify">
-      <h2 id="h-verify" class="font-display text-lg font-extrabold text-warning">{{ $t('تنبيه: لن يتم تحصيل مكافأة الـ {v0} كوينز في رصيدك إلا عند توثيق الحساب.', { v0: user.verification?.welcome_coins ?? 1000 }) }}</h2>
-      <a v-if="user.verification?.whatsapp" :href="user.verification.whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center gap-2 self-start rounded-lg bg-[#25D366] px-5 font-bold text-[#0B2E13]">
-        {{ $t('وثّق حسابك الآن عبر WhatsApp') }}
-      </a>
-      <p v-else class="text-sm text-text-muted">{{ $t('راسل الدعم ليرسل لك كود التفعيل.') }}</p>
+    <!-- [UP6, Sprint 21 E2.4] The welcome coins wait for the account to be verified: a code by email. -->
+    <section v-if="!user.verification?.verified" class="flex flex-col gap-3 rounded-2xl border border-warning/50 bg-warning/10 p-4 sm:p-5" aria-labelledby="h-verify">
+      <h2 id="h-verify" class="font-display text-lg font-extrabold text-warning">{{ $t('وثّق حسابك واحصل على {v0} كوينز', { v0: user.verification?.welcome_coins ?? 1000 }) }}</h2>
+      <p class="text-sm text-text-soft">{{ $t('نرسل لك كوداً من 6 أرقام على بريدك، صالحاً {v0} دقيقة ولمرة واحدة.', { v0: user.verification?.code_minutes ?? 15 }) }}</p>
+      <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="sendCode">
+        <div class="min-w-60 flex-1">
+          <TextField v-model="verifyEmail" :label="$t('بريدك')" type="email" autocomplete="email" dir="ltr" :readonly="!!user.email" :error="sendErr" />
+        </div>
+        <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold disabled:opacity-60" :disabled="sendBusy || !verifyEmail.trim()">{{ sentTo ? $t('أرسل كوداً جديداً') : $t('أرسل الكود') }}</button>
+      </form>
+      <p v-if="sentTo" class="text-sm text-success" role="status">{{ $t('أرسلنا الكود إلى {v0}. تحقق من بريدك (والرسائل غير المرغوبة).', { v0: sentTo }) }}</p>
       <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="verifyAccount">
-        <div class="min-w-40 flex-1"><TextField v-model="verifyCode" :label="$t('كود التوثيق')" inputmode="numeric" autocomplete="one-time-code" dir="ltr" :error="verifyErr" /></div>
-        <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || !verifyCode.trim()">{{ $t('تأكيد وتفعيل') }}</button>
+        <div class="min-w-40 flex-1"><TextField v-model="verifyCode" :label="$t('كود التوثيق')" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr" :error="verifyErr" /></div>
+        <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || verifyCode.trim().length < 6">{{ $t('تأكيد وتفعيل') }}</button>
       </form>
     </section>
     <p v-else-if="verifiedNow" class="rounded-xl bg-success/15 p-4 font-bold text-success" role="status">{{ $t('تم توثيق حسابك، وأُضيفت {v0} كوينز إلى رصيدك.', { v0: verifiedNow }) }}</p>
 
-    <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-account">
-      <h2 id="h-account" class="font-display text-xl font-extrabold">{{ $t('الحساب') }}</h2>
-      <div class="flex items-center gap-4">
-        <img v-if="user.avatar_url" :src="user.avatar_url" :alt="$t('صورتك')" class="size-20 rounded-full object-cover" />
-        <span v-else class="flex size-20 items-center justify-center rounded-full bg-gold font-display text-3xl font-extrabold text-on-gold">{{ user.name.trim().charAt(0) }}</span>
-        <div class="flex flex-col gap-2">
-          <span class="font-bold" dir="ltr">@{{ user.username }}</span> <OfficialBadge v-if="user.official" />
-          <div class="flex flex-wrap gap-2">
-            <label class="flex h-touch cursor-pointer items-center rounded-md bg-surface-raised px-4 font-bold" :class="picBusy ? 'opacity-60' : ''">
-              {{ picBusy ? $t('جارٍ الرفع…') : user.avatar_url ? $t('غيّر الصورة') : $t('أضف صورة') }}
-              <input ref="picture" type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="sr-only" :disabled="picBusy" @change="upload" />
-            </label>
-            <button v-if="user.avatar_url" type="button" class="h-touch rounded-md px-3 text-sm text-text-muted" @click="removePicture">{{ $t('احذف الصورة') }}</button>
-          </div>
-          <p v-if="picErr" class="text-sm text-[#FF8A8A]" role="alert">{{ picErr }}</p>
-        </div>
+    <!-- [Sprint 21 E2.3] The invite gift: the link, the coins each, and how many are left. -->
+    <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-invite">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="h-invite" class="font-display text-xl font-extrabold">{{ $t('ادعُ أصدقاءك') }}</h2>
+        <span class="text-sm text-gold">{{ $t('{v0} كوينز لكل صديق', { v0: user.referral.coins }) }}</span>
       </div>
+      <p class="text-sm text-text-muted">{{ $t('كل مدرب يسجّل من رابطك ويوثّق حسابه يمنحك {v0} كوينز، حتى {v1} دعوات.', { v0: user.referral.coins, v1: user.referral.max }) }}</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="min-w-0 flex-1 truncate rounded-lg bg-surface-sunk px-3 py-3 text-sm" dir="ltr">{{ user.referral.link }}</span>
+        <button type="button" class="h-12 rounded-lg bg-surface-raised px-4 font-bold" @click="copy(user.referral.link, 'link')">{{ copied === 'link' ? $t('نُسخ') : $t('انسخ') }}</button>
+        <button type="button" class="h-12 rounded-lg bg-gold px-4 font-bold text-on-gold" @click="shareInvite">{{ $t('شارك') }}</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="progressbar" :aria-valuenow="user.referral.paid" aria-valuemin="0" :aria-valuemax="user.referral.max">
+          <div class="h-full rounded-full bg-gold" :style="{ width: `${(100 * user.referral.paid) / Math.max(1, user.referral.max)}%` }" />
+        </div>
+        <span class="font-numbers text-sm" dir="ltr">{{ user.referral.paid }} / {{ user.referral.max }}</span>
+      </div>
+      <p v-if="user.referral.waiting" class="text-xs text-text-muted">{{ $t('{v0} أصدقاء سجّلوا وينتظرون توثيق حساباتهم.', { v0: user.referral.waiting }) }}</p>
+    </section>
+
+    <div class="grid gap-5 lg:grid-cols-2">
+    <section class="flex flex-col gap-4 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-account">
+      <h2 id="h-account" class="font-display text-xl font-extrabold">{{ $t('الحساب') }}</h2>
       <div v-if="user.email" class="flex flex-wrap items-center gap-2">
         <span class="text-sm text-text-muted">{{ $t('البريد') }}</span>
         <span dir="ltr" class="font-bold">{{ user.email }}</span>
@@ -260,7 +345,7 @@ async function remove() {
       <p v-if="nameMsg" class="text-sm text-success" role="status">{{ $t(nameMsg) }}</p>
     </section>
 
-    <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-password">
+    <section class="flex flex-col gap-4 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-password">
       <h2 id="h-password" class="font-display text-xl font-extrabold">{{ user.has_password ? $t('تغيير كلمة المرور') : $t('أضف كلمة مرور') }}</h2>
       <p v-if="!user.has_password" class="text-sm text-text-muted">{{ $t('حسابك بجوجل فقط. أضف كلمة مرور لتدخل بالبريد أيضاً.') }}</p>
       <form class="grid gap-3 sm:grid-cols-2" novalidate @submit.prevent="savePassword">
@@ -271,7 +356,7 @@ async function remove() {
       <p v-if="pwMsg" class="text-sm text-success" role="status">{{ $t(pwMsg) }}</p>
     </section>
 
-    <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-viewing">
+    <section class="flex flex-col gap-4 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-viewing">
       <h2 id="h-viewing" class="font-display text-xl font-extrabold">{{ $t('مشاهدة المباريات') }}</h2>
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-1 text-sm font-bold">{{ $t('المحاكي') }}</legend>
@@ -298,7 +383,7 @@ async function remove() {
 
     <RouterLink :to="{ name: 'developers' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">{{ $t('فريق التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('تعرّف على من صنع اللعبة') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
 
-    <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-holiday">
+    <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-holiday">
       <h2 id="h-holiday" class="font-display text-xl font-extrabold">{{ $t('إجازة الحساب') }}</h2>
       <!-- [UP13] The owner's spec (7): said plainly where the coach sees it. -->
       <p class="rounded-lg border border-warning/50 bg-warning/10 px-4 py-3 text-sm font-bold text-warning" role="note">
@@ -328,17 +413,19 @@ async function remove() {
 
     <NotificationsCard />
 
-    <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-support">
+    <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-support">
       <h2 id="h-support" class="font-display text-xl font-extrabold">{{ $t('الدعم الفني') }}</h2>
       <SupportLinks />
       <p class="text-xs text-text-muted">{{ $t('إن لم تظهر الأزرار فالدعم لم يُفعَّل على الخادم بعد.') }}</p>
     </section>
 
-    <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-signout">
+    <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-signout">
       <h2 id="h-signout" class="font-display text-xl font-extrabold">{{ $t('تسجيل الخروج') }}</h2>
       <p class="text-sm text-text-muted">{{ $t('تخرج من هذا الجهاز فقط، وحسابك وفرقك باقية كما هي.') }}</p>
       <button type="button" class="h-touch self-start rounded-md border border-text/15 px-4 font-bold" @click="logout">{{ $t('تسجيل الخروج') }}</button>
     </section>
+
+    </div>
 
     <!-- Deleting is apart from signing out, and asks twice [X12]: what is lost, then the word and the password. -->
     <section class="flex flex-col gap-3 rounded-xl border border-live/40 p-4" aria-labelledby="h-delete">

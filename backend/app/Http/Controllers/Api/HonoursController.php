@@ -53,7 +53,7 @@ class HonoursController extends Controller
                 'club_objectives.target', 'club_objectives.kind', 'club_objectives.result', 'club_objectives.achieved']);
 
         return response()->json([
-            'coach' => ['id' => $user->id, 'name' => $user->name, 'official' => Username::official($user->username)],
+            'coach' => ['id' => $user->id, 'account_no' => $user->account_no, 'name' => $user->name, 'official' => Username::official($user->username), 'verified' => $user->account_verified_at !== null],
             'record' => Career::record($user->id),
             'titles' => $titles->map(fn ($t) => ['league' => $t->league, 'season' => (int) $t->number, 'competition' => $t->competition,
                 'position' => (int) $t->position, 'club' => $t->club])->all(),

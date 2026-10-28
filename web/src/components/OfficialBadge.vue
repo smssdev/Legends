@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The developers' accounts (Owner-Hamza, Owner-Soliman) wear this next to their name everywhere [X11].
+// The developers' accounts (Owner-Sizar, Owner-Sliman) wear this next to their name everywhere [X11].
 </script>
 
 <template>

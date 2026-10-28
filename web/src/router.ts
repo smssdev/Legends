@@ -88,6 +88,12 @@ export const router = createRouter({
 // Screens for the signed-in only send guests to the login (and back after); the login and
 // sign-up screens send the signed-in home.
 router.beforeEach(async (to) => {
+  // [Sprint 21 E2.3] An invite link's ?ref=12345 is kept for the sign-up, wherever the link lands.
+  if (typeof to.query.ref === 'string' && /^\d{5}$/.test(to.query.ref)) {
+    try {
+      localStorage.setItem('glm.ref', to.query.ref)
+    } catch {}
+  }
   const auth = useAuth()
   await auth.ready()
   if (to.meta.auth && !auth.signedIn) return { name: 'login', query: { next: to.fullPath } }
