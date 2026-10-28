@@ -9,6 +9,7 @@ import type { components } from '../api/schema'
 import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
+import ChalkBackdrop from '../components/ChalkBackdrop.vue'
 import HelpTip from '../components/ui/HelpTip.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
@@ -74,13 +75,18 @@ async function openRanking(by: 'trophies' | 'level') {
   </div>
 
   <div v-else class="flex flex-col gap-4">
+    <!-- [Sprint 21 E3.4] The coach's chalkboard behind the home screen. -->
+    <ChalkBackdrop />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
-    <div v-if="home" class="relative flex flex-col gap-4">
+    <!-- [Sprint 21 E3.4] On a computer two columns fill the screen: the card and the slots, and beside them the
+         announcements, the record and quick ways in. On a phone the same in one column. -->
+    <div v-if="home" class="relative grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-6">
+      <div class="flex min-w-0 flex-col gap-4">
       <!-- [UP7] The coach's card on top: the picture, the name, the level, the club's cash and the coins. -->
       <section class="coach-card" :aria-label="$t('ملف المدرب')">
         <RouterLink to="/profile" class="shrink-0" :aria-label="$t('حسابي')">
-          <img v-if="home.coach.avatar_url" :src="home.coach.avatar_url" alt="" class="size-14 rounded-full border-2 border-gold object-cover md:size-16" />
-          <span v-else class="grid size-14 place-items-center rounded-full border-2 border-gold bg-surface-raised font-display text-2xl font-extrabold md:size-16">{{ home.coach.name.charAt(0) }}</span>
+          <img v-if="home.coach.avatar_url" :src="home.coach.avatar_url" alt="" class="size-14 rounded-full border-2 border-gold object-cover md:size-20" />
+          <span v-else class="grid size-14 place-items-center rounded-full border-2 border-gold bg-surface-raised font-display text-2xl font-extrabold md:size-20 md:text-3xl">{{ home.coach.name.charAt(0) }}</span>
         </RouterLink>
         <div class="flex min-w-0 flex-1 flex-col gap-1">
           <span class="text-xs font-bold text-gold">{{ greeting }}</span>
@@ -106,7 +112,7 @@ async function openRanking(by: 'trophies' | 'level') {
       <!-- The slots, the screen's heart, right under the card: all ten without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">
         <h2 class="flex items-center text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }} <HelpTip :label="$t('الفتحات')" :text="$t('لك عشر فتحات: في كل واحدة نادٍ في دوري. اضغط فتحة ناديك لتدخلها، أو فتحة فارغة لتنضم إلى دوري أو تنشئ دوريك.')" /></h2>
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
           <button v-for="s in home.slots" :key="s.slot" type="button" class="slot-card group" :class="`is-${s.state}`"
@@ -137,9 +143,10 @@ async function openRanking(by: 'trophies' | 'level') {
           </button>
         </div>
       </section>
+      </div>
 
-      <!-- Below the slots: the announcements, the record, the trophies and the rankings. -->
-      <div class="grid gap-3 lg:grid-cols-2">
+      <aside class="flex flex-col gap-3" :aria-label="$t('آخر الأخبار')">
+
         <!-- The developers' announcements: updates and news [X11, X18]. -->
         <section class="flex flex-col gap-1 rounded-xl bg-gradient-to-l from-[#B4692A]/60 via-surface-raised to-surface p-3" :aria-label="$t('الإعلانات')">
           <div class="flex items-center gap-2 text-sm font-bold"><svg viewBox="0 0 24 24" class="size-5 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1ZM16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14" /></svg>{{ $t('الإعلانات') }}
@@ -157,7 +164,7 @@ async function openRanking(by: 'trophies' | 'level') {
           <p v-else class="text-sm text-text-muted">{{ $t('لا إعلانات بعد. هنا تصلك تحديثات اللعبة وأخبارها من فريق التطوير.') }}</p>
         </section>
 
-        <div class="grid grid-cols-4 gap-2">
+        <div class="grid grid-cols-4 gap-2 xl:grid-cols-2">
           <div class="home-tile">
             <b class="font-numbers text-xl" dir="ltr">{{ home.coach.record.won }}<span class="text-xs text-text-muted">/{{ home.coach.record.played }}</span></b>
             <span class="text-[11px] text-text-muted">{{ $t('فوز') }}</span>
@@ -175,7 +182,14 @@ async function openRanking(by: 'trophies' | 'level') {
             <span class="text-[11px] font-bold">{{ $t('المستويات') }}</span>
           </button>
         </div>
-      </div>
+        <!-- Quick ways in. -->
+        <nav class="grid grid-cols-2 gap-2" :aria-label="$t('اختصارات')">
+          <RouterLink to="/leagues/new" class="home-tile"><span class="text-xl" aria-hidden="true">🏟️</span><span class="text-xs font-bold">{{ $t('أنشئ دورياً') }}</span></RouterLink>
+          <RouterLink :to="{ name: 'join' }" class="home-tile"><span class="text-xl" aria-hidden="true">🔑</span><span class="text-xs font-bold">{{ $t('انضم بكود') }}</span></RouterLink>
+          <RouterLink to="/wallet" class="home-tile"><img src="/brand/coin.svg" alt="" class="size-6" /><span class="text-xs font-bold">{{ $t('المحفظة') }}</span></RouterLink>
+          <RouterLink to="/profile" class="home-tile"><span class="text-xl" aria-hidden="true">🎁</span><span class="text-xs font-bold">{{ $t('ادعُ أصدقاءك') }}</span></RouterLink>
+        </nav>
+      </aside>
     </div>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
@@ -220,6 +234,8 @@ async function openRanking(by: 'trophies' | 'level') {
   transition: transform 0.15s ease;
 }
 .slot-card:hover { transform: scale(1.03); border-color: var(--color-brand-light); }
+@media (min-width: 1024px) { .slot-card { min-height: 8.5rem; } }
+@media (min-width: 1536px) { .slot-card { min-height: 10.5rem; } .slot-disc { width: 3.5rem; height: 3.5rem; } }
 .slot-card.is-free { border-style: dashed; background: color-mix(in srgb, var(--color-panel) 60%, transparent); }
 .slot-band {
   display: flex;
@@ -253,13 +269,27 @@ async function openRanking(by: 'trophies' | 'level') {
 }
 .slot-foot.is-live { color: #fff; background: var(--color-live); }
 .coach-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 0.85rem;
+  border-radius: 1rem;
   background: linear-gradient(120deg, color-mix(in srgb, var(--color-gold) 22%, var(--color-panel)), var(--color-panel) 60%);
   border: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+}
+@media (min-width: 768px) { .coach-card { gap: 1.25rem; padding: 1.25rem 1.5rem; } }
+.coach-card::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -3rem;
+  top: -3rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-gold) 10%, transparent);
+  pointer-events: none;
 }
 .home-tile {
   display: flex;

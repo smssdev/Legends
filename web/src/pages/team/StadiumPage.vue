@@ -2,6 +2,7 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import { intlLocale } from '../../lib/i18n'
 import { useGlossary } from '../../lib/glossary'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -30,7 +31,7 @@ const INFO: Record<string, { title: string; effect: string; icon: string }> = {
   pitch: { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية لكل مباراة على أرضك', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
   training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
 }
-const pct = (bp: number) => `+${(bp / 100).toLocaleString('ar-EG-u-nu-latn', { maximumFractionDigits: 1 })}%`
+const pct = (bp: number) => `+${(bp / 100).toLocaleString(intlLocale(), { maximumFractionDigits: 1 })}%`
 function effect(s: Section, stage: number) {
   // Seats: the extra tickets of a home match; pitch: the extra home advantage; training: the most a session speeds up.
   if (s.section === 'seats') return `+${count(s.effects[stage]! - s.effects[0]!)}`
@@ -144,7 +145,7 @@ onBeforeUnmount(() => clearInterval(tick))
             <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
               <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="INFO[s.section]!.icon" /></svg>
             </span>
-            <span><b class="block font-display text-lg">{{ INFO[s.section]!.title }}</b><span class="text-sm text-text-muted">{{ INFO[s.section]!.effect }}</span></span>
+            <span><b class="block font-display text-lg">{{ $t(INFO[s.section]!.title) }}</b><span class="text-sm text-text-muted">{{ $t(INFO[s.section]!.effect) }}</span></span>
           </div>
           <div v-for="st in [1, 2, 3]" :key="st" class="flex items-center gap-3">
             <span class="w-16 text-xs text-text-muted">{{ $t('المرحلة {v0}', { v0: st }) }}</span>

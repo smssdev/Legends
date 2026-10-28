@@ -3,6 +3,7 @@
 // After the lock: my frozen sheet (and who came in for an injured starter), and the opponent's eleven,
 // formation and the four tactics he may be seen with. The live match comes in Sprints 18 to 20.
 // Before the lock: the spy (Sprint 30, docs/features/spy.md), a paid look at what the opponent has saved now.
+import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
@@ -27,7 +28,7 @@ const leagueId = ref<number | null>(null)
 const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
 const PLANS: Record<string, string> = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' }
 const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
-const when = (iso: string) => new Intl.DateTimeFormat('ar-EG-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 
 function left(iso: string) {
   const s = Math.max(0, Math.floor((Date.parse(iso) - now.value) / 1000))
@@ -39,7 +40,7 @@ const locked = computed(() => match.value?.status !== 'scheduled')
 const spy = ref<components['schemas']['SpyView'] | null>(null)
 const spying = ref(false)
 const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-white/20'], L: ['خ', 'bg-live text-white'] }
-const spiedAt = (iso: string) => new Intl.DateTimeFormat('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const spiedAt = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 async function sendSpy() {
   spying.value = true
   error.value = ''
@@ -141,7 +142,7 @@ const ACTIONS = [
       <section v-if="match.opponent.sheet" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
         <h2 class="font-display text-xl font-extrabold">{{ $t('تشكيلة الخصم') }} <span class="font-numbers text-base text-text-muted" dir="ltr">{{ match.opponent.sheet.formation.replace(/([AB])$/, ' $1') }}</span></h2>
         <div class="flex flex-wrap gap-2 text-sm">
-          <UiChip>{{ PLANS[match.opponent.sheet.tactics.plan] }}</UiChip>
+          <UiChip>{{ $t(PLANS[match.opponent.sheet.tactics.plan]) }}</UiChip>
           <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[match.opponent.sheet.tactics.tackling] }) }}</UiChip>
           <UiChip>{{ match.opponent.sheet.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
           <UiChip v-if="match.opponent.sheet.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
@@ -165,14 +166,14 @@ const ACTIONS = [
         <template v-else>
           <div class="flex flex-wrap items-center gap-2">
             <UiChip><span dir="ltr">{{ spy.report.formation.replace(/([AB])$/, ' $1') }}</span></UiChip>
-            <UiChip>{{ PLANS[spy.report.tactics.plan] }}</UiChip>
+            <UiChip>{{ $t(PLANS[spy.report.tactics.plan]) }}</UiChip>
             <UiChip>{{ $t('قطع الكرة: {v0}', { v0: TACKLING[spy.report.tactics.tackling] }) }}</UiChip>
             <UiChip>{{ spy.report.tactics.marking === 'man' ? $t('رجل لرجل') : $t('دفاع منطقة') }}</UiChip>
             <UiChip v-if="spy.report.tactics.trap">{{ $t('مصيدة التسلل') }}</UiChip>
             <UiChip v-if="spy.report.fitness !== null">{{ $t('لياقة الأحد عشر') }} <span class="font-numbers" dir="ltr">{{ spy.report.fitness }}%</span></UiChip>
           </div>
           <div class="flex items-center gap-1.5 text-sm"><span class="text-text-muted">{{ $t('آخر النتائج') }}</span>
-            <span v-for="(r, i) in spy.report.form" :key="i" class="grid size-7 place-items-center rounded-full text-xs font-bold" :class="FORM[r]![1]">{{ FORM[r]![0] }}</span>
+            <span v-for="(r, i) in spy.report.form" :key="i" class="grid size-7 place-items-center rounded-full text-xs font-bold" :class="FORM[r]![1]">{{ $t(FORM[r]![0]) }}</span>
             <span v-if="!spy.report.form.length" class="text-text-muted">{{ $t('لم يلعب بعد') }}</span>
           </div>
           <ol class="grid gap-1 text-sm sm:grid-cols-2">

@@ -152,7 +152,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         <div v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
           <span class="flex flex-wrap items-center justify-between font-bold"><span class="flex items-center gap-1"><label :for="`t-${s.key}`">{{ $t(s.label) }}</label><HelpTip :text="help[s.key]" :label="s.label" /></span><span class="font-numbers text-2xl text-gold">{{ t[s.key] }}</span></span>
           <input :id="`t-${s.key}`" v-model.number="t[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" />
-          <span class="flex justify-between text-xs text-text-muted"><span>{{ s.low }}</span><span>{{ s.high }}</span></span>
+          <span class="flex justify-between text-xs text-text-muted"><span>{{ $t(s.low) }}</span><span>{{ $t(s.high) }}</span></span>
         </div>
       </section>
 

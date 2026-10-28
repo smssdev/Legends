@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The wallet and the shop (Sprint 34 W1, docs/features/premium.md): the coins, today's reward, what was spent this
 // season in each league against the cap, the movements, and the shop whose buying comes after v1 ("قريباً").
+import { intlLocale } from '../lib/i18n'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import { useWallet } from '../stores/wallet'
@@ -8,7 +9,7 @@ import { useWallet } from '../stores/wallet'
 const wallet = useWallet()
 const error = ref('')
 const busy = ref(false)
-const when = (iso: string) => new Intl.DateTimeFormat('ar-EG-u-nu-latn', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 
 async function daily() {
   busy.value = true

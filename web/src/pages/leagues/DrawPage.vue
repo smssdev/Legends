@@ -2,6 +2,7 @@
 // The live draw [X26]: before it, the time and the announced hash; at its time the slots are revealed one by
 // one on the server clock (every member sees the same slot at the same moment), then the first round and the
 // cup's ties, and the seed with how to check it. The committee is the league's owner.
+import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -67,7 +68,7 @@ async function schedule() {
     message.value = asApiError(e).message
   }
 }
-const local = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })
+const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })
 </script>
 
 <template>

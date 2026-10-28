@@ -28,11 +28,11 @@ const shortName = computed(() => {
         <b class="font-numbers text-4xl" :class="tier === 'gold' ? 'text-gold' : 'text-text'">{{ overall }}</b>
         <span class="mt-1 font-numbers text-sm text-text-soft" dir="ltr">{{ position }}</span>
       </div>
-      <span class="grid size-7 place-items-center rounded-md text-xs font-extrabold" :style="{ background: `var(--color-line-${line})`, color: `var(--color-line-${line}-fg)` }" :title="LINES[line].name">{{ LINES[line].letter }}</span>
+      <span class="grid size-7 place-items-center rounded-md text-xs font-extrabold" :style="{ background: `var(--color-line-${line})`, color: `var(--color-line-${line}-fg)` }" :title="LINES[line].name">{{ $t(LINES[line].letter) }}</span>
     </div>
     <dl v-if="stats.length" class="my-2 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px]">
       <div v-for="[k, v] in stats" :key="k" class="flex items-center justify-between gap-1">
-        <dt class="truncate text-text-muted">{{ LABELS[k] ?? k }}</dt>
+        <dt class="truncate text-text-muted">{{ $t(LABELS[k] ?? k) }}</dt>
         <dd class="font-numbers font-bold" :class="v >= 85 ? 'text-gold' : v >= 70 ? 'text-text' : 'text-text-soft'">{{ v }}</dd>
       </div>
     </dl>

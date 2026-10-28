@@ -89,6 +89,8 @@ onMounted(() => load())
     </section>
     <p v-else-if="p" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('يصدر أول عدد بعد أول جولة.') }}</p>
 
+    <!-- [Sprint 21 E3.3] The articles and the form come with the paper, not before it: nothing jumps down. -->
+    <template v-if="p">
     <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-articles">
       <h2 id="h-articles" class="font-display text-xl font-extrabold">{{ $t('مقالات المدربين') }}</h2>
       <article v-for="a in p?.articles ?? []" :key="a.id" class="rounded-lg bg-surface-sunk p-3">
@@ -119,5 +121,6 @@ onMounted(() => load())
       <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-50" :disabled="title.trim().length < 3 || body.trim().length < 10">{{ $t('أرسل للمشرف') }}</button>
       <p v-if="sent" class="text-sm text-success" role="status">{{ sent }}</p>
     </form>
+    </template>
   </div>
 </template>

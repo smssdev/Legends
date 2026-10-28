@@ -86,7 +86,7 @@ onMounted(load)
         <div v-for="k in kpis" :key="k.label" class="flex flex-col gap-1.5 rounded-xl border border-text/10 bg-surface p-4">
           <span class="text-sm text-text-muted">{{ $t(k.label) }}</span>
           <span class="font-numbers text-3xl leading-none" :class="k.tone" dir="ltr">{{ k.v }}</span>
-          <span class="text-xs text-text-muted">{{ k.sub }}</span>
+          <span class="text-xs text-text-muted">{{ $t(k.sub) }}</span>
         </div>
       </section>
 
@@ -129,7 +129,7 @@ onMounted(load)
             <div class="flex items-center justify-between"><h2 class="font-display text-lg font-bold">{{ $t('رعاة القطاعات') }}</h2><span class="text-xs text-text-muted">{{ $t('لكل مباراة على أرضك') }}</span></div>
             <div v-for="s in f.sponsors" :key="s.sector" class="flex flex-col gap-2 rounded-lg border p-3" :class="s.chosen ? 'border-text/10 bg-surface-sunk' : 'border-dashed border-gold/50 bg-surface-sunk'">
               <div class="flex items-center gap-3">
-                <span class="flex size-10 items-center justify-center rounded-md font-display text-base font-extrabold" :class="s.chosen ? 'bg-gold text-on-gold' : 'bg-text/10'">{{ MARK[s.sector] }}</span>
+                <span class="flex size-10 items-center justify-center rounded-md font-display text-base font-extrabold" :class="s.chosen ? 'bg-gold text-on-gold' : 'bg-text/10'">{{ $t(MARK[s.sector]) }}</span>
                 <span class="min-w-0 flex-1">
                   <b class="block text-sm">{{ s.name }}</b>
                   <span v-if="s.chosen" class="text-xs text-text-muted">{{ s.offers.find((o) => o.offer === s.chosen)?.name }}</span>

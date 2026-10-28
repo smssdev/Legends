@@ -158,7 +158,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
               <dd class="font-bold">{{ league.rounds_per_day === 1 ? $t('جولة يومياً') : $t('جولتان يومياً') }}</dd>
             </div>
             <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
-            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ END_MODES[league.season_end_mode] }}</dd></div>
+            <div class="rounded-lg bg-surface p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
           </dl>
         </article>
       </section>

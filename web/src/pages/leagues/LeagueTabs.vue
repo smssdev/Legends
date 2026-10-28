@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The league's three tabs (Sprint 15 W1), after the draft MobileLeague: the table (with "played" and
 // "rests" when the count is odd), the calendar in the device's own time, and the cup's bracket.
+import { intlLocale } from '../../lib/i18n'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -53,7 +54,7 @@ onMounted(async () => {
   }
 })
 
-const day = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long' })
+const day = { format: (d: Date) => new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long' }).format(d) }
 const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' })
 const dayKey = (iso: string) => new Date(iso).toDateString()
 
@@ -89,7 +90,12 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
     </div>
     <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
-    <template v-if="tab === 'table'">
+    <!-- [Sprint 21 E3.5] Until the table comes, a row per club holds its place, so the page does not jump. -->
+    <div v-if="!season && !error && tab === 'table'" class="flex flex-col gap-1.5" aria-hidden="true">
+      <div class="h-5 w-2/3 animate-pulse rounded bg-surface-sunk" />
+      <div v-for="i in teamCount + 1" :key="i" class="h-9 animate-pulse rounded-md bg-surface-sunk" />
+    </div>
+    <template v-else-if="tab === 'table'">
       <p v-if="season" class="text-sm text-text-muted">
         {{ $t('الجولة') }} <span class="font-numbers">{{ season.rounds_played }}</span> {{ $t('من') }} <span class="font-numbers">{{ season.rounds }}</span> {{ $t('· منطقة القفل من الجولة') }}
         <span class="font-numbers">{{ season.lock_from_round }}</span>
@@ -164,7 +170,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
       <p class="text-xs text-text-muted">{{ $t('خروج المغلوب من مباراة واحدة. الأقوى معفون من الدور التمهيدي، والقرعة عشوائية.') }}</p>
       <div class="flex gap-3 overflow-x-auto pb-2">
         <div v-for="s in stages" :key="s.stage" class="flex min-w-48 flex-col gap-2">
-          <h3 class="font-display font-extrabold text-gold">{{ STAGES[s.stage] }}</h3>
+          <h3 class="font-display font-extrabold text-gold">{{ $t(STAGES[s.stage]) }}</h3>
           <p class="text-xs text-text-muted">{{ day.format(new Date(s.scheduled_at)) }} · <span dir="ltr">{{ time.format(new Date(s.scheduled_at)) }}</span></p>
           <div class="flex flex-1 flex-col justify-around gap-2">
             <div v-for="t in s.ties" :key="t.id" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-2 text-sm">

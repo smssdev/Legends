@@ -19,7 +19,7 @@ const fill = computed(() => Math.max(6, Math.min(100, 100 - room.value * 6)))
     <div class="min-w-0 flex-1">
       <div class="truncate font-display text-base font-extrabold">{{ $nm(name) }}</div>
       <div class="mt-1 flex items-center gap-2 text-xs text-text-muted">
-        <span>{{ LINES[line].name }} · <span dir="ltr">{{ position }}</span> {{ $t('· {v0} سنة', { v0: age }) }}</span>
+        <span>{{ $t(LINES[line].name) }} · <span dir="ltr">{{ position }}</span> {{ $t('· {v0} سنة', { v0: age }) }}</span>
         <span class="hidden h-1.5 w-20 overflow-hidden rounded-pill bg-surface-sunk sm:block" :title="$t('الإمكانية {v0}', { v0: potential })">
           <span class="block h-full rounded-pill" :class="room >= 6 ? 'bg-success' : room >= 2 ? 'bg-gold' : 'bg-warning'" :style="{ width: fill + '%' }" />
         </span>

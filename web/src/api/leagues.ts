@@ -1,4 +1,5 @@
 // Private leagues (Sprint 13): the types from docs/api/openapi.yaml, and small helpers the screens share.
+import { intlLocale, t } from '../lib/i18n'
 import type { components } from './schema'
 
 export type League = components['schemas']['League']
@@ -14,7 +15,7 @@ export const lockFromRound = (rounds: number) => rounds - Math.ceil(rounds / 4) 
 /** A date as the design shows it, in the device's own time zone with Latin digits: «السبت 17 أكتوبر · 21:00». */
 export function when(iso: string): string {
   const d = new Date(iso)
-  const day = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+  const day = new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
   const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(d)
   return `${day} · ${time}`
 }
@@ -28,17 +29,17 @@ export function budget(v: number): string {
   if (v >= 1_000_000) {
     const m = v / 1_000_000
     const n = Number.isInteger(m) ? String(m) : m.toFixed(1)
-    return m >= 3 && m <= 10 && Number.isInteger(m) ? `${n} ملايين` : `${n} مليون`
+    return m >= 3 && m <= 10 && Number.isInteger(m) ? t('{n} ملايين', { n }) : t('{n} مليون', { n })
   }
-  return `${Math.round(v / 1000)} ألف`
+  return t('{n} ألف', { n: Math.round(v / 1000) })
 }
 
 /** A club's objectives in words (Sprint 33): the place in the league and the stage in the cup. */
 const CUP_STAGES: Record<string, string> = { r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي', winner: 'البطولة' }
 export function leagueGoal(o: { target: number; kind: string }): string {
-  if (o.kind === 'title') return 'الفوز باللقب'
-  if (o.kind === 'survive') return `البقاء: المركز ${o.target} أو أفضل`
-  return `المركز ${o.target} أو أفضل`
+  if (o.kind === 'title') return t('الفوز باللقب')
+  if (o.kind === 'survive') return t('البقاء: المركز {n} أو أفضل', { n: o.target })
+  return t('المركز {n} أو أفضل', { n: o.target })
 }
-export const cupGoal = (stage: string) => `الوصول إلى ${CUP_STAGES[stage] ?? stage}`
-export const cupStage = (stage: string | null | undefined) => (stage === 'out' ? 'خرج مبكراً' : CUP_STAGES[stage ?? ''] ?? stage ?? '')
+export const cupGoal = (stage: string) => t('الوصول إلى {v0}', { v0: t(CUP_STAGES[stage] ?? stage) })
+export const cupStage = (stage: string | null | undefined) => (stage === 'out' ? t('خرج مبكراً') : t(CUP_STAGES[stage ?? ''] ?? stage ?? ''))

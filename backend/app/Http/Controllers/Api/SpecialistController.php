@@ -37,7 +37,7 @@ class SpecialistController extends Controller
                 }, [1, 2, 3, 4, 5]);
                 $three = $offers[2];
 
-                return ['type' => $type, 'name' => MessageText::STAFF[$type], 'cost' => $three['cost'], 'currency' => $three['currency'], 'offers' => $offers,
+                return ['type' => $type, 'name' => __(MessageText::STAFF[$type]), 'cost' => $three['cost'], 'currency' => $three['currency'], 'offers' => $offers,
                     'stars' => $c ? (int) $c->stars : 0, 'renewed' => $next !== null,
                     'ends_at' => $c ? Carbon::parse($c->ends_at, 'UTC')->toIso8601ZuluString() : null];
             }, Specialists::TYPES),

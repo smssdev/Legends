@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // [UP12] The press conference before my match (the owner's spec 6): the chances of each side, a reading of where each
 // is strong and weak, and my one statement (it lifts my team's morale in this match). It opens half an hour before.
+import { intlLocale } from '../../lib/i18n'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 
@@ -30,7 +31,7 @@ async function say(kind: string) {
     error.value = asApiError(e).message
   }
 }
-const time = (iso: string) => new Date(iso).toLocaleTimeString('ar-EG', { hour: 'numeric', minute: '2-digit' })
+const time = (iso: string) => new Date(iso).toLocaleTimeString(intlLocale(), { hour: 'numeric', minute: '2-digit' })
 onMounted(load)
 </script>
 

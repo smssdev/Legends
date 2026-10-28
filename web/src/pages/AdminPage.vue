@@ -26,7 +26,7 @@ const TABS = { overview: 'النشاط', users: 'المستخدمون', vacation
 // [X46] The panel opens at once when the code is not asked.
 const open = computed(() => state.value?.passed && (!state.value.required || state.value.enabled))
 const size = (b: number) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.ceil(b / 1024) + ' KB')
-const day = (iso: string) => new Intl.DateTimeFormat('ar-EG-u-nu-latn', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso))
+const day = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso))
 
 async function run(fn: () => Promise<void>) {
   busy.value = true

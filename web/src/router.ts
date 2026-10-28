@@ -10,7 +10,7 @@ export const router = createRouter({
       path: '/',
       component: () => import('./layouts/AppShell.vue'),
       children: [
-        { path: '', name: 'home', component: () => import('./pages/Home.vue') },
+        { path: '', name: 'home', component: () => import('./pages/Home.vue'), meta: { wide: true } },  // [Sprint 21 E3.4] wider on a computer
         ...SECTIONS.filter((s) => s.sprint).map((s) => ({ path: s.path.slice(1), name: s.name, component: () => import('./pages/ComingSoon.vue') })),
         { path: 'sim', name: 'sim-setup', component: () => import('./pages/SimSetup.vue') },
         { path: 'profile', name: 'profile', component: () => import('./pages/Profile.vue'), meta: { auth: true } },

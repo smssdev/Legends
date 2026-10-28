@@ -120,7 +120,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
           <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${s.line})` }" aria-hidden="true" />
           <div class="flex items-center gap-2">
             <LineBadge :line="s.line as Line" />
-            <span class="text-sm text-text-muted">{{ $t('خانة {v0}', { v0: LINE_NAMES[s.line] }) }}</span>
+            <span class="text-sm text-text-muted">{{ $t('خانة {v0}', { v0: $t(LINE_NAMES[s.line] ?? '') }) }}</span>
             <span v-if="s.player" class="ms-auto font-numbers text-sm text-gold" dir="ltr" :aria-label="$t('الجلسة التالية بعد')">{{ left(s.next_at) }}</span>
           </div>
           <template v-if="s.player">
@@ -158,7 +158,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
           <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
           <div class="ms-auto flex gap-1" role="tablist" :aria-label="$t('الخط')">
             <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" role="tab" :aria-selected="line === k" class="h-touch rounded-md px-3 text-sm font-bold"
-              :class="line === k ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="line = k as Line">{{ n }}</button>
+              :class="line === k ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="line = k as Line">{{ $t(n) }}</button>
           </div>
         </div>
         <div class="hidden grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem] gap-2 px-2 text-xs text-text-muted sm:grid">

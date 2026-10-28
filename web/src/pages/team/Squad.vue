@@ -10,6 +10,7 @@ import { useGlossary } from '../../lib/glossary'
 import { LINES, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
+import { t } from '../../lib/i18n'
 
 const { team, error, loaded, load } = useTeam()
 const g = useGlossary()
@@ -28,10 +29,12 @@ onMounted(load)
 const players = computed(() => (team.value?.players ?? []).filter((p) => line.value === 'all' || p.line === line.value))
 const count = (l: Line) => (team.value?.players ?? []).filter((p) => p.line === l).length
 const captain = computed(() => team.value?.takers.captain?.player_id)
+// [Sprint 21 E3.5] The list by line, each under its own heading: keepers, defenders, midfield, attack.
+const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
 
 function status(p: SquadPlayer) {
-  if (p.injured_matches) return { text: `مصاب · ${p.injured_matches} مباريات`, tone: 'text-[#FF8A8A]' }
-  if (p.suspended_matches) return { text: `موقوف · ${p.suspended_matches}`, tone: 'text-[#FF8A8A]' }
+  if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-[#FF8A8A]' }
+  if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-[#FF8A8A]' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
   // The fatigue lines [X21]: from 75% full, from 55% slower, under 55% a sharp drop and three times the injuries.
   if (p.fitness < 55) return { text: 'مرهق: خطر إصابة', tone: 'text-[#FF8A8A]' }
@@ -62,7 +65,7 @@ function status(p: SquadPlayer) {
 
       <!-- [X29] The team's strength by line, four rings as in the classic manager games. -->
       <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" :aria-label="$t('قوة الفريق بالخطوط')">
-        <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? $t('الحارس') : LINES[l].plural" :color="`var(--color-line-${l})`" />
+        <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? $t('الحارس') : $t(LINES[l].plural)" :color="`var(--color-line-${l})`" />
       </section>
       <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" :aria-label="$t('المعنويات')">
         <span class="flex items-center gap-1 font-bold">{{ $t('المعنويات') }}<HelpTip :text="g.morale" :label="$t('المعنويات')" /></span>
@@ -85,7 +88,7 @@ function status(p: SquadPlayer) {
           :aria-selected="line === l"
           @click="line = l"
         >
-          {{ l === 'all' ? $t('الكل') : LINES[l].plural }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
+          {{ l === 'all' ? $t('الكل') : $t(LINES[l].plural) }} <span class="font-numbers">{{ l === 'all' ? team.players.length : count(l) }}</span>
         </button>
       </div>
       <div class="flex shrink-0 gap-1 rounded-xl bg-surface p-1" role="group" :aria-label="$t('طريقة العرض')">
@@ -104,22 +107,42 @@ function status(p: SquadPlayer) {
         </li>
       </ul>
 
-      <ul v-else class="flex flex-col gap-2">
-        <li v-for="p in players" :key="p.id" class="v-row">
-          <button type="button" class="flex min-h-20 w-full items-center gap-3 rounded-xl bg-surface p-3 text-start hover:bg-surface-raised" @click="open = p">
-            <LineBadge :line="p.line as Line" />
-            <span class="min-w-0 flex-1">
-              <span class="block truncate font-display text-lg font-extrabold">{{ $nm(p.name) }}</span>
-              <span class="flex items-center gap-2 text-sm">
-                <span class="h-1.5 w-16 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 75 ? 'bg-success' : p.fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: `${p.fitness}%` }" /></span>
-                <span :class="status(p).tone">{{ status(p).text }}</span>
-              </span>
-            </span>
-            <span class="font-numbers text-text-soft">{{ money(p.value) }}</span>
-            <span class="flex size-12 items-center justify-center rounded-lg bg-surface-sunk font-numbers text-2xl font-bold" :class="p.overall >= 85 ? 'text-gold' : ''">{{ p.overall }}</span>
-          </button>
-        </li>
-      </ul>
+      <!-- [Sprint 21 E3.5] The list: by line, compact rows that read across, and on a computer columns with their
+           headings (position, age, fitness, status, value, rating). -->
+      <div v-else class="flex flex-col gap-4">
+        <div class="hidden grid-cols-[2.5rem_minmax(0,1fr)_3.5rem_8rem_9rem_5.5rem_3.5rem] items-center gap-3 px-3 text-xs font-bold text-text-muted md:grid">
+          <span /><span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('العمر') }}</span><span>{{ $t('اللياقة') }}</span><span>{{ $t('الحالة') }}</span><span class="text-end">{{ $t('القيمة') }}</span><span class="text-center">{{ $t('القوة') }}</span>
+        </div>
+        <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-1.5" :aria-label="$t(LINES[grp.line].plural)">
+          <h2 class="flex items-center gap-2 px-1 text-sm font-bold">
+            <span class="h-4 w-1 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINES[grp.line].plural) }}
+            <span class="font-numbers text-text-muted">{{ grp.players.length }}</span>
+          </h2>
+          <ul class="flex flex-col overflow-hidden rounded-xl bg-surface">
+            <li v-for="p in grp.players" :key="p.id" class="v-row border-b border-text/5 last:border-0">
+              <button type="button" class="grid min-h-16 w-full grid-cols-[2.5rem_minmax(0,1fr)_3rem] items-center gap-3 px-3 py-2 text-start transition-colors hover:bg-surface-raised md:grid-cols-[2.5rem_minmax(0,1fr)_3.5rem_8rem_9rem_5.5rem_3.5rem]" @click="open = p">
+                <LineBadge :line="p.line as Line" />
+                <span class="min-w-0">
+                  <span class="block truncate font-display text-base font-extrabold md:text-lg">{{ $nm(p.name) }}</span>
+                  <span class="flex items-center gap-2 text-xs text-text-muted">
+                    <span dir="ltr">{{ p.position }}</span>
+                    <span class="md:hidden">· {{ $t('{n} سنة', { n: p.age }) }}</span>
+                    <span class="md:hidden" :class="status(p).tone">· {{ $t(status(p).text) }}</span>
+                  </span>
+                </span>
+                <span class="hidden text-center font-numbers text-text-soft md:block">{{ p.age }}</span>
+                <span class="hidden items-center gap-2 md:flex">
+                  <span class="h-1.5 flex-1 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 75 ? 'bg-success' : p.fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: `${p.fitness}%` }" /></span>
+                  <span class="w-8 text-end font-numbers text-xs text-text-soft">{{ p.fitness }}</span>
+                </span>
+                <span class="hidden truncate text-sm md:block" :class="status(p).tone">{{ $t(status(p).text) }}</span>
+                <span class="hidden text-end font-numbers text-sm text-text-soft md:block">{{ money(p.value) }}</span>
+                <span class="flex size-11 items-center justify-center justify-self-center rounded-lg bg-surface-sunk font-numbers text-xl font-bold" :class="p.overall >= 85 ? 'text-gold' : ''">{{ p.overall }}</span>
+              </button>
+            </li>
+          </ul>
+        </section>
+      </div>
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <PlayerCard v-if="open" :player="open" @close="open = null" />

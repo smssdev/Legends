@@ -2,6 +2,7 @@
 // The alliance tournament [X27]: the owner's request (it waits for the developers), the two alliances with their
 // captains, and the rounds. Team-mates are not played: their captain picks who goes on, and a title left to one
 // alliance is its own without another match.
+import { intlLocale } from '../../lib/i18n'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -63,7 +64,7 @@ async function decide(tie: number, winner: number) {
   }
   busy.value = false
 }
-const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
+const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 </script>
 
 <template>
@@ -79,14 +80,14 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
       <section v-if="t" class="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="font-display text-2xl font-extrabold">{{ $nm(t.name) }}</h2>
-          <UiChip :tone="STATUS[t.status][1]">{{ STATUS[t.status][0] }}</UiChip>
+          <UiChip :tone="STATUS[t.status][1]">{{ $t(STATUS[t.status][0]) }}</UiChip>
         </div>
         <p v-if="t.status === 'finished' && t.winner" class="rounded-lg bg-gold/15 px-3 py-2 text-center font-display text-lg font-extrabold text-gold">{{ $t('🏆 البطل: {v0}', { v0: NAMES[t.winner] }) }}</p>
         <p v-if="t.review_note" class="text-sm text-text-muted">{{ $t('ملاحظة المطورين: {v0}', { v0: t.review_note }) }}</p>
         <p class="text-sm text-text-muted">{{ $t('الدور الأول {v0} · {v1} ضد {v2}', { v0: when(t.first_round_at), v1: t.size, v2: t.size }) }}</p>
         <div class="grid gap-3 md:grid-cols-2">
           <div v-for="side in (['a', 'b'] as const)" :key="side" class="flex flex-col gap-2 rounded-xl bg-surface-sunk p-3" :class="t.winner === side ? 'ring-2 ring-gold' : ''">
-            <h3 class="flex items-center justify-between font-bold"><span>{{ NAMES[side] }}</span><span class="text-xs text-text-muted">{{ $t('القائد: {v0}', { v0: t.alliances[side].captain }) }}</span></h3>
+            <h3 class="flex items-center justify-between font-bold"><span>{{ $t(NAMES[side]) }}</span><span class="text-xs text-text-muted">{{ $t('القائد: {v0}', { v0: t.alliances[side].captain }) }}</span></h3>
             <p v-for="c in t.alliances[side].clubs" :key="card(c)!.id" class="flex items-center gap-2 text-sm">
               <ClubCrest :url="card(c)!.crest_url" :code="card(c)!.code" :size="26" />
               <b class="min-w-0 flex-1 truncate">{{ $nm(card(c)!.name) }}</b><span class="truncate text-xs text-text-muted">{{ card(c)!.coach }}</span>
@@ -104,7 +105,7 @@ const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'sho
             <span v-else-if="x.kind === 'match'" class="text-sm text-text-muted">{{ $t('ضد') }}</span>
             <b v-if="x.away" class="min-w-0 flex-1 truncate text-end" :class="x.winner_id === card(x.away)?.id ? 'text-gold' : ''">{{ $nm(card(x.away)?.name) }}</b>
           </div>
-          <p v-if="KIND[x.kind]" class="text-xs text-text-muted">{{ KIND[x.kind] }}</p>
+          <p v-if="KIND[x.kind]" class="text-xs text-text-muted">{{ $t(KIND[x.kind]) }}</p>
           <RouterLink v-if="x.match_id" :to="{ name: 'league-match', params: { id: x.match_id } }" class="text-sm font-bold text-gold">{{ x.status === 'finished' ? $t('الملخص') : $t('تابع المباراة') }}</RouterLink>
           <div v-if="x.kind === 'captain' && !x.winner_id && t?.captain_of === x.alliance" class="grid grid-cols-2 gap-2">
             <UiButton v-for="c in [card(x.home)!, card(x.away)!]" :key="c.id" variant="outline" :disabled="busy" @click="decide(x.id, c.id)">{{ $t('يتأهل {v0}', { v0: $nm(c.name) }) }}</UiButton>
