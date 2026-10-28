@@ -10,18 +10,17 @@ use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/** [UP5, UP6] The owner's spec (1): Google names the coach, and the welcome coins wait for the WhatsApp code. */
+/** [UP5, UP6] The owner's spec (1): Google names the coach, and the welcome coins wait for the code (a developer's here; by email in AccountCodeTest). */
 class AccountVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
     public function test_the_welcome_coins_arrive_once_with_the_code_the_developer_issued(): void
     {
-        config(['game.support.whatsapp' => '+20 100 000 0000']);
         $coach = User::factory()->create(['username' => 'karim']);
+        // [Sprint 21 E2.4] No WhatsApp any more: the code comes by email (AccountCodeTest), or from a developer.
         $me = $this->actingAs($coach)->getJson('/api/v1/auth/me')->assertOk()->assertJsonPath('user.verification.verified', false)->json('user.verification');
-        $this->assertStringStartsWith('https://wa.me/201000000000?text=', $me['whatsapp']);
-        $this->assertStringContainsString(rawurlencode('karim'), $me['whatsapp']);
+        $this->assertArrayNotHasKey('whatsapp', $me);
         $this->assertSame(0, Wallet::balance($coach->id));
 
         // A developer issues the code from the admin panel, after the second step.

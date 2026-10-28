@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Auth\AccountVerification;
+use App\Auth\Referral;
 use App\Auth\Username;
 use App\Notifications\ResetPasswordNotice;
 use App\Notifications\VerifyEmailNotice;
@@ -41,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'vacation_from' => 'datetime',
             'vacation_until' => 'datetime',
             'account_verified_at' => 'datetime',
+            'referral_paid_at' => 'datetime',
         ];
     }
 
@@ -49,7 +50,19 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         static::creating(function (User $user) {
             $user->username = $user->username ? strtolower($user->username) : Username::free(strtok((string) $user->email, '@') ?: (string) $user->name);
+            // [Sprint 21 E2.1] The account's own five-digit number, shown and searched instead of its id.
+            $user->account_no ??= self::freeAccountNo();
         });
+    }
+
+    /** A five-digit number no account has. */
+    public static function freeAccountNo(): int
+    {
+        do {
+            $no = random_int(10000, 99999);
+        } while (DB::table('users')->where('account_no', $no)->exists());
+
+        return $no;
     }
 
     /** The account's holiday [X4]: every league it coaches in stops counting its absence meanwhile. */
@@ -84,6 +97,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'id' => $this->id,
+            'account_no' => $this->account_no,
             'name' => $this->name,
             'username' => $this->username,
             // The developers' accounts carry the official badge everywhere [X11].
@@ -91,12 +105,14 @@ class User extends Authenticatable implements MustVerifyEmail
             'avatar_url' => $this->avatarUrl(),
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
-            // [UP6] Verified by WhatsApp: until then the welcome coins wait, and the account page says so.
+            // [UP6, Sprint 21 E2.4] Verified by a code sent to the email: until then the welcome coins wait.
             'verification' => [
                 'verified' => $this->account_verified_at !== null,
                 'welcome_coins' => (int) config('game.account.welcome_coins'),
-                'whatsapp' => AccountVerification::whatsappLink($this),
+                'code_minutes' => (int) config('game.account.verify_code_minutes'),
             ],
+            // [Sprint 21 E2.3] The invite link and its gifts.
+            'referral' => Referral::summary($this),
             'role' => $this->role,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,

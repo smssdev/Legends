@@ -54,7 +54,7 @@ const announce = () => run(async () => {
   annTitle.value = annBody.value = ''
 })
 const makeOfficial = (id: number, name: string) => name && run(async () => {
-  await api.POST('/admin/users/{user}/official', { params: { path: { user: id } }, body: { name: name as 'Owner-Hamza' | 'Owner-Soliman' } })
+  await api.POST('/admin/users/{user}/official', { params: { path: { user: id } }, body: { name: name as 'Owner-Sizar' | 'Owner-Sliman' } })
   annMsg.value = `صار اسم الحساب ${name}.`
 })
 
@@ -179,7 +179,7 @@ onMounted(load)
       <!-- The developers' official names and their announcements [X11]. -->
       <section v-if="tab === 'users'" :aria-label="$t('إعلان للجميع')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('إعلان لكل اللاعبين') }}</h2>
-        <p class="text-xs text-text-muted">{{ $t('يُرسل من حسابك بالشارة الرسمية، فيلزم أن يكون اسمه Owner-Hamza أو Owner-Soliman (من الجدول تحت).') }}</p>
+        <p class="text-xs text-text-muted">{{ $t('يُرسل من حسابك بالشارة الرسمية، فيلزم أن يكون اسمه Owner-Sizar أو Owner-Sliman (من الجدول تحت).') }}</p>
         <input v-model="annTitle" maxlength="120" :placeholder="$t('العنوان')" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" />
         <textarea v-model="annBody" maxlength="2000" rows="3" :placeholder="$t('النص')" class="rounded-md border border-text/10 bg-surface-sunk p-3" />
         <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !annTitle || !annBody" @click="announce">{{ $t('أرسل للجميع') }}</button>
@@ -201,7 +201,7 @@ onMounted(load)
               </td>
               <td class="text-center">
                 <select class="h-10 rounded-md bg-surface-sunk px-2 text-xs" :aria-label="$t('أعطه اسماً رسمياً')" @change="makeOfficial(u.id, ($event.target as HTMLSelectElement).value)">
-                  <option value="">-</option><option>Owner-Hamza</option><option>Owner-Soliman</option>
+                  <option value="">-</option><option>Owner-Sizar</option><option>Owner-Sliman</option>
                 </select>
               </td>
             </tr>

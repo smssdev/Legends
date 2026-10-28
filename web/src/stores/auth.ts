@@ -32,7 +32,12 @@ export const useAuth = defineStore('auth', () => {
   /** [UP5] The name, the username and the password; the session stays until the coach signs out. */
   async function register(name: string, username: string, password: string) {
     await ensureCsrf()
-    const { data } = await api.POST('/auth/register', { body: { name, username, password } })
+    // [Sprint 21 E2.3] The inviter's number from an invite link opened on this device.
+    let ref: number | undefined
+    try {
+      ref = Number(localStorage.getItem('glm.ref')) || undefined
+    } catch {}
+    const { data } = await api.POST('/auth/register', { body: { name, username, password, ref } })
     user.value = data!.user
     return data!.verification_sent !== false
   }

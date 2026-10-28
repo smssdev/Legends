@@ -59,6 +59,7 @@ paths:
                 email: { type: string, format: email, nullable: true, description: Optional }
                 password: { type: string, minLength: 4, description: 'At least 4 characters, nothing else asked [UP5]' }
                 device_name: { type: string, maxLength: 100, description: The device name }
+                ref: { type: integer, nullable: true, minimum: 10000, maximum: 99999, description: '[Sprint 21 E2.3] The inviter''s account number, from the invite link' }
       responses:
         '201': { $ref: '#/components/responses/AccountToken' }
         '422': { $ref: '#/components/responses/ValidationError' }
@@ -263,11 +264,29 @@ paths:
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
+  /auth/verify-account/send:
+    post:
+      tags: [auth]
+      summary: '[Sprint 21 E2.4] Mail a one-time verification code'
+      description: Six digits to the account's email (or the one sent here, required when the account has none; kept once verified). Valid 15 minutes, once, and 5 wrong tries end it. Three sends a quarter-hour.
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { email: { type: string, format: email, maxLength: 190 } } }
+      responses:
+        '200':
+          description: Sent (or tried; sent false when the server's mail failed)
+          content:
+            application/json:
+              schema: { type: object, required: [sent, email, minutes], properties: { sent: { type: boolean }, email: { type: string, description: 'The address, masked (k••••@gmail.com)' }, minutes: { type: integer } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
   /auth/verify-account:
     post:
       tags: [auth]
-      summary: '[UP6] Verify the account with the code the support sent on WhatsApp'
-      description: The welcome coins (1000) reach the wallet once, when the code is right and in time.
+      summary: '[UP6, Sprint 21 E2.4] Verify the account with the code from the email (or a developer''s)'
+      description: The welcome coins (1000) reach the wallet once, when the code is right and in time; the email is kept and confirmed, and the inviter gets their gift.
       requestBody:
         required: true
         content:
@@ -2254,7 +2273,7 @@ paths:
   /admin/users/{user}/official:
     post:
       tags: [admin]
-      summary: Give a developer's account a reserved name (Owner-Hamza, Owner-Soliman) and its badge [X11]
+      summary: Give a developer's account a reserved name (Owner-Sizar, Owner-Sliman) and its badge [X11]
       parameters:
         - { name: user, in: path, required: true, schema: { type: integer } }
       requestBody:
@@ -2265,7 +2284,7 @@ paths:
               type: object
               required: [name]
               properties:
-                name: { type: string, enum: [Owner-Hamza, Owner-Soliman] }
+                name: { type: string, enum: [Owner-Sizar, Owner-Sliman] }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '403': { $ref: '#/components/responses/Error' }
@@ -3463,7 +3482,7 @@ components:
             required: [id, user, is_owner, on_holiday, joined_at]
             properties:
               id: { type: integer, description: Membership id (for the kick) }
-              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, avatar_url: { type: string, nullable: true }, official: { type: boolean, description: 'A developer account (Owner-Hamza, Owner-Soliman) [X11]' } } }
+              user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, avatar_url: { type: string, nullable: true }, official: { type: boolean, description: 'A developer account (Owner-Sizar, Owner-Sliman) [X11]' }, verified: { type: boolean, description: '[Sprint 21 E2.5] A verified account' } } }
               club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
               is_owner: { type: boolean }
               on_holiday: { type: boolean }
@@ -3989,7 +4008,7 @@ components:
       required: [position, coach, trophies, won, played, level]
       properties:
         position: { type: integer }
-        coach: { type: object, required: [id, name, username, avatar_url, official], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, avatar_url: { type: string, nullable: true }, official: { type: boolean } } }
+        coach: { type: object, required: [id, name, username, avatar_url, official], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, avatar_url: { type: string, nullable: true }, official: { type: boolean }, verified: { type: boolean } } }
         trophies: { $ref: '#/components/schemas/Trophies' }
         won: { type: integer }
         played: { type: integer }
@@ -4006,7 +4025,9 @@ components:
             name: { type: string }
             username: { type: string }
             avatar_url: { type: string, nullable: true }
+            account_no: { type: integer }
             official: { type: boolean }
+            verified: { type: boolean, description: '[Sprint 21 E2.5] A verified account (the lighter badge)' }
             coins: { type: integer, description: 'The coach''s coins balance [UP7]' }
             level: { $ref: '#/components/schemas/CoachLevel' }
             record: { type: object, required: [seasons, played, won, drawn, lost], properties: { seasons: { type: integer }, played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer } } }
@@ -4031,7 +4052,7 @@ components:
       type: object
       required: [coach, record, titles, objectives]
       properties:
-        coach: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string }, official: { type: boolean, description: 'A developer account [X11]' } } }
+        coach: { type: object, required: [id, name], properties: { id: { type: integer }, account_no: { type: integer }, name: { type: string }, official: { type: boolean, description: 'A developer account [X11]' }, verified: { type: boolean, description: '[Sprint 21 E2.5] A verified account' } } }
         record:
           type: object
           required: [seasons, played, won, drawn, lost]
@@ -4082,7 +4103,7 @@ components:
         colors: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }
         crest_url: { type: string }
         strength_cp: { type: integer, description: At the league's making, in hundredths }
-        coach: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        coach: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string }, official: { type: boolean }, verified: { type: boolean } } }
         bot: { type: boolean, description: No coach; a bot runs it and it can be taken }
         balance: { type: integer, description: Club money }
         squad_value: { type: integer }
@@ -4151,23 +4172,34 @@ components:
           additionalProperties: { type: integer, nullable: true }
     Account:
       type: object
-      required: [id, name, username, official, avatar_url, email, email_verified, verification, role, has_password, google, vacation, inactivity_days, viewing]
+      required: [id, account_no, name, username, official, avatar_url, email, email_verified, verification, referral, role, has_password, google, vacation, inactivity_days, viewing]
       properties:
         id: { type: integer }
+        account_no: { type: integer, description: '[Sprint 21 E2.1] The account''s own five-digit number, shown and searched' }
         name: { type: string }
         username: { type: string, description: 'English letters only, lower case' }
-        official: { type: boolean, description: 'A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11]' }
+        official: { type: boolean, description: 'A developer account (Owner-Sizar, Owner-Sliman), shown with the official badge [X11]' }
         avatar_url: { type: string, nullable: true, description: 'The picture (GET /users/{id}/avatar, or Google''s [UP5]), null without one' }
         email: { type: string, format: email, nullable: true, description: 'Null for an account made without one [UP5]' }
         email_verified: { type: boolean }
         verification:
           type: object
-          required: [verified, welcome_coins, whatsapp]
-          description: '[UP6] Verified by a WhatsApp code; until then the welcome coins wait'
+          required: [verified, welcome_coins, code_minutes]
+          description: '[UP6, Sprint 21 E2.4] Verified by a code sent to the email; until then the welcome coins wait'
           properties:
             verified: { type: boolean }
             welcome_coins: { type: integer }
-            whatsapp: { type: string, nullable: true, description: The support's WhatsApp with a ready message (the username and the account number) }
+            code_minutes: { type: integer, description: How long a code lasts }
+        referral:
+          type: object
+          required: [link, coins, paid, max, waiting]
+          description: '[Sprint 21 E2.3] The invite link: coins for each friend who signs up from it and verifies, up to max'
+          properties:
+            link: { type: string }
+            coins: { type: integer }
+            paid: { type: integer, description: Gifts so far }
+            max: { type: integer }
+            waiting: { type: integer, description: Friends signed up and not verified yet }
         role: { type: string, enum: [user, admin] }
         has_password: { type: boolean, description: False for an account made with Google only }
         google: { type: boolean, description: Linked to a Google account }

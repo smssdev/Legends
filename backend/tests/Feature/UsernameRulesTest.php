@@ -61,9 +61,9 @@ class UsernameRulesTest extends TestCase
         Sanctum::actingAs($admin);
         // Not yet official: no announcement.
         $this->postJson('/api/v1/admin/announcements', ['title' => 'تحديث', 'body' => 'نص'])->assertStatus(403);
-        $this->postJson("/api/v1/admin/users/{$admin->id}/official", ['name' => 'Owner-Soliman'])->assertOk()
-            ->assertJsonPath('user.username', 'owner-soliman')->assertJsonPath('user.official', true);
-        $this->postJson("/api/v1/admin/users/{$coach->id}/official", ['name' => 'Owner-Soliman'])->assertStatus(409);
+        $this->postJson("/api/v1/admin/users/{$admin->id}/official", ['name' => 'Owner-Sliman'])->assertOk()
+            ->assertJsonPath('user.username', 'owner-sliman')->assertJsonPath('user.official', true);
+        $this->postJson("/api/v1/admin/users/{$coach->id}/official", ['name' => 'Owner-Sliman'])->assertStatus(409);
         $this->postJson("/api/v1/admin/users/{$coach->id}/official", ['name' => 'Owner-Ali'])->assertStatus(422);
 
         Sanctum::actingAs($admin->fresh());
@@ -71,7 +71,7 @@ class UsernameRulesTest extends TestCase
         Sanctum::actingAs($coach);
         $this->getJson('/api/v1/messages')->assertOk()
             ->assertJsonPath('messages.0.title', 'تحديث جديد')
-            ->assertJsonPath('messages.0.sender', ['name' => 'سليمان', 'username' => 'Owner-Soliman', 'official' => true]);
+            ->assertJsonPath('messages.0.sender', ['name' => 'سليمان', 'username' => 'Owner-Sliman', 'official' => true]);
         $this->assertSame(2, DB::table('messages')->where('type', 'announcement')->count());
     }
 }

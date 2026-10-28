@@ -186,6 +186,12 @@ class MessageTextEn
                 'body' => sprintf('You did not set your team before the match against %s, so the assistant picked the lineup: rested the tired, left out the injured and suspended, and played a balanced plan.', (string) ($p['opponent'] ?? '')),
                 'link' => $leagueLink,
             ],
+            // [Sprint 21 E2.3] A friend signed up from the invite link and verified.
+            'referral_reward' => [
+                'title' => sprintf('Invite gift: %s coins', $p['coins'] ?? 0),
+                'body' => sprintf('%s signed up from your invite link and verified their account, so you got %s coins. %s more invites with a gift left.', (string) ($p['name'] ?? ''), $p['coins'] ?? 0, $p['left'] ?? 0),
+                'link' => '/wallet',
+            ],
             'announcement' => [
                 'title' => (string) ($p['title'] ?? 'An announcement from the Game Legend Manager team'),
                 'body' => (string) ($p['body'] ?? ''),

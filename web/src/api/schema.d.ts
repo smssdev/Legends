@@ -39,6 +39,8 @@ export interface paths {
                         password: string;
                         /** @description The device name */
                         device_name?: string;
+                        /** @description [Sprint 21 E2.3] The inviter's account number, from the invite link */
+                        ref?: number | null;
                     };
                 };
             };
@@ -511,6 +513,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/verify-account/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 21 E2.4] Mail a one-time verification code
+         * @description Six digits to the account's email (or the one sent here, required when the account has none; kept once verified). Valid 15 minutes, once, and 5 wrong tries end it. Three sends a quarter-hour.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        email?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent (or tried; sent false when the server's mail failed) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: boolean;
+                            /** @description The address, masked (k••••@gmail.com) */
+                            email: string;
+                            minutes: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/verify-account": {
         parameters: {
             query?: never;
@@ -521,8 +577,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * [UP6] Verify the account with the code the support sent on WhatsApp
-         * @description The welcome coins (1000) reach the wallet once, when the code is right and in time.
+         * [UP6, Sprint 21 E2.4] Verify the account with the code from the email (or a developer's)
+         * @description The welcome coins (1000) reach the wallet once, when the code is right and in time; the email is kept and confirmed, and the inviter gets their gift.
          */
         post: {
             parameters: {
@@ -5594,7 +5650,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Give a developer's account a reserved name (Owner-Hamza, Owner-Soliman) and its badge [X11] */
+        /** Give a developer's account a reserved name (Owner-Sizar, Owner-Sliman) and its badge [X11] */
         post: {
             parameters: {
                 query?: never;
@@ -5608,7 +5664,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        name: "Owner-Hamza" | "Owner-Soliman";
+                        name: "Owner-Sizar" | "Owner-Sliman";
                     };
                 };
             };
@@ -7644,8 +7700,10 @@ export interface components {
                     name: string;
                     username?: string | null;
                     avatar_url?: string | null;
-                    /** @description A developer account (Owner-Hamza, Owner-Soliman) [X11] */
+                    /** @description A developer account (Owner-Sizar, Owner-Sliman) [X11] */
                     official?: boolean;
+                    /** @description [Sprint 21 E2.5] A verified account */
+                    verified?: boolean;
                 };
                 club?: {
                     id: number;
@@ -8221,6 +8279,7 @@ export interface components {
                 username: string;
                 avatar_url: string | null;
                 official: boolean;
+                verified?: boolean;
             };
             trophies: components["schemas"]["Trophies"];
             won: number;
@@ -8233,7 +8292,10 @@ export interface components {
                 name: string;
                 username: string;
                 avatar_url: string | null;
+                account_no?: number;
                 official: boolean;
+                /** @description [Sprint 21 E2.5] A verified account (the lighter badge) */
+                verified?: boolean;
                 /** @description The coach's coins balance [UP7] */
                 coins: number;
                 level: components["schemas"]["CoachLevel"];
@@ -8284,9 +8346,12 @@ export interface components {
         CoachProfile: {
             coach: {
                 id: number;
+                account_no?: number;
                 name: string;
                 /** @description A developer account [X11] */
                 official?: boolean;
+                /** @description [Sprint 21 E2.5] A verified account */
+                verified?: boolean;
             };
             record: {
                 seasons: number;
@@ -8330,6 +8395,8 @@ export interface components {
             coach?: {
                 id: number;
                 name: string;
+                official?: boolean;
+                verified?: boolean;
             } | null;
             /** @description No coach; a bot runs it and it can be taken */
             bot: boolean;
@@ -8404,10 +8471,12 @@ export interface components {
         };
         Account: {
             id: number;
+            /** @description [Sprint 21 E2.1] The account's own five-digit number, shown and searched */
+            account_no: number;
             name: string;
             /** @description English letters only, lower case */
             username: string;
-            /** @description A developer account (Owner-Hamza, Owner-Soliman), shown with the official badge [X11] */
+            /** @description A developer account (Owner-Sizar, Owner-Sliman), shown with the official badge [X11] */
             official: boolean;
             /** @description The picture (GET /users/{id}/avatar, or Google's [UP5]), null without one */
             avatar_url: string | null;
@@ -8417,12 +8486,22 @@ export interface components {
              */
             email: string | null;
             email_verified: boolean;
-            /** @description [UP6] Verified by a WhatsApp code; until then the welcome coins wait */
+            /** @description [UP6, Sprint 21 E2.4] Verified by a code sent to the email; until then the welcome coins wait */
             verification: {
                 verified: boolean;
                 welcome_coins: number;
-                /** @description The support's WhatsApp with a ready message (the username and the account number) */
-                whatsapp: string | null;
+                /** @description How long a code lasts */
+                code_minutes: number;
+            };
+            /** @description [Sprint 21 E2.3] The invite link: coins for each friend who signs up from it and verifies, up to max */
+            referral: {
+                link: string;
+                coins: number;
+                /** @description Gifts so far */
+                paid: number;
+                max: number;
+                /** @description Friends signed up and not verified yet */
+                waiting: number;
             };
             /** @enum {string} */
             role: "user" | "admin";

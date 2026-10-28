@@ -28,7 +28,7 @@ class HomeController extends Controller
 
         return response()->json([
             'coach' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'avatar_url' => $user->avatarUrl(),
-                'official' => Username::official($user->username), 'level' => Career::level($record, $trophies), 'record' => $record,
+                'account_no' => $user->account_no, 'official' => Username::official($user->username), 'verified' => $user->account_verified_at !== null, 'level' => Career::level($record, $trophies), 'record' => $record,
                 'coins' => Wallet::balance($user->id)],
             'trophies' => $trophies,
             'slots' => $this->slots($user),
@@ -92,7 +92,7 @@ class HomeController extends Controller
             $record = Career::record($u->id);
             $trophies = Career::trophies($u->id);
 
-            return ['coach' => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'avatar_url' => $u->avatarUrl(), 'official' => Username::official($u->username)],
+            return ['coach' => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'avatar_url' => $u->avatarUrl(), 'official' => Username::official($u->username), 'verified' => $u->account_verified_at !== null],
                 'trophies' => $trophies, 'won' => $record['won'], 'played' => $record['played'], 'level' => Career::level($record, $trophies)['level']];
         })->sortBy($by === 'level'
             ? [['level', 'desc'], ['trophies.total', 'desc'], ['won', 'desc']]

@@ -589,7 +589,8 @@ class LeagueController extends Controller
             'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'free_clubs' => $l->team_count - $coaches,
             'pending_requests' => $l->isOwner($user) ? LeagueJoinRequest::where('league_id', $l->id)->where('status', 'pending')->count() : null,
-            'invite_url' => $approved ? url('/join/'.$l->code) : null,
+            // [Sprint 21 E2.3] With the member's number, so a friend who signs up from it counts for their gift.
+            'invite_url' => $approved ? url('/join/'.$l->code).'?ref='.$user->account_no : null,
             'me' => $this->presence($l, $user),
             // Coaches this season, and who left and why: every member sees a kick's reason [PLAN 2.1].
             'members' => $approved ? $this->members($l, $season?->id, $l->isOwner($user)) : [],
@@ -628,7 +629,7 @@ class LeagueController extends Controller
         return LeagueMembership::where('season_id', $seasonId)->whereNull('left_at')->with('user', 'club')->orderBy('joined_at')->get()
             ->map(fn (LeagueMembership $m) => [
                 'id' => $m->id,
-                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl(), 'official' => Username::official($m->user?->username)],
+                'user' => ['id' => $m->user_id, 'name' => $m->user?->name, 'username' => $m->user?->username, 'avatar_url' => $m->user?->avatarUrl(), 'official' => Username::official($m->user?->username), 'verified' => $m->user?->account_verified_at !== null],
                 'club' => $m->club ? ['id' => $m->club->id, 'name' => $m->club->name] : null,
                 'is_owner' => $m->user_id === $l->owner_id,
                 'on_holiday' => Presence::onHoliday($m),
@@ -659,7 +660,7 @@ class LeagueController extends Controller
             'id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'colors' => [$c->color_primary, $c->color_secondary],
             'crest_url' => url("/api/v1/data/clubs/{$c->master_club_id}/crest.svg"),
             'strength_cp' => (int) $c->strength_snapshot,
-            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'official' => Username::official($c->user->username)] : null,
+            'coach' => $c->user ? ['id' => $c->user->id, 'name' => $c->user->name, 'official' => Username::official($c->user->username), 'verified' => $c->user->account_verified_at !== null] : null,
             'bot' => $c->isBot(),
             'balance' => (int) $c->balance,
             'squad_value' => (int) $c->squad_value,

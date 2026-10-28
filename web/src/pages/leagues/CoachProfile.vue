@@ -2,6 +2,7 @@
 // A coach's profile (Sprint 33 W1, PLAN 2.11): his record as a coach, his titles and the objectives he was judged
 // on, in every league. What stays from season to season. No draft of its own: the design system's cards.
 import OfficialBadge from '../../components/OfficialBadge.vue'
+import VerifiedBadge from '../../components/VerifiedBadge.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -28,7 +29,7 @@ onMounted(async () => {
     <template v-else>
       <header class="flex items-center gap-3">
         <span class="grid size-14 place-items-center rounded-full bg-gold font-display text-2xl font-extrabold text-on-gold">{{ coach.coach.name.slice(0, 1) }}</span>
-        <div><h1 class="font-display text-3xl font-extrabold">{{ coach.coach.name }} <OfficialBadge v-if="coach.coach.official" /></h1><p class="text-sm text-text-muted">{{ $t('ملف المدرب') }}</p></div>
+        <div><h1 class="font-display text-3xl font-extrabold">{{ coach.coach.name }} <OfficialBadge v-if="coach.coach.official" /><VerifiedBadge v-else-if="coach.coach.verified" /></h1><p class="text-sm text-text-muted">{{ $t('ملف المدرب') }}</p></div>
       </header>
 
       <section :aria-label="$t('السجل')" class="grid grid-cols-3 gap-2 sm:grid-cols-6">

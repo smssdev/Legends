@@ -312,15 +312,21 @@ return [
     // a season of reference_season_days with vacation_cooldown_days between them; a longer one (up to
     // long_vacation_max_days) waits for the developers.
     'inactivity' => ['inactive_days' => 14, 'warn_after_days' => 12],
-    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
+    // [Sprint 21 E2] The verification code by email: valid verify_code_minutes, once, with verify_code_attempts wrong
+    // tries. And the invite gift: referral_coins to the inviter for each coach who signs up from their link and
+    // verifies, up to referral_max.
+    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
+        'referral_coins' => 100, 'referral_max' => 10, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
         'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
         // digits), so "modric" stays free. The developers' names are given by the admin only, with the official badge.
         'blocked_words' => ['owner', 'admin', 'support', 'moderator', 'official', 'legends', 'system', 'staff', 'developer'],
         'blocked_names' => ['mod', 'dev', 'gm', 'root', 'help', 'team'],
-        'official_usernames' => ['Owner-Hamza', 'Owner-Soliman'],
-        // Each developer's Gmail, on the server only: the confirmed address takes its name and the admin panel.
-        'official_emails' => ['Owner-Hamza' => env('OWNER_HAMZA_EMAIL'), 'Owner-Soliman' => env('OWNER_SOLIMAN_EMAIL')]],
+        // [Sprint 21 E2.6] The owner's names for the developers, fixed for good: Owner-Sizar and Owner-Sliman.
+        'official_usernames' => ['Owner-Sizar', 'Owner-Sliman'],
+        // Each developer's Gmail, on the server only: the confirmed address takes its name and the admin panel. The
+        // old keys (OWNER_HAMZA_EMAIL, OWNER_SOLIMAN_EMAIL) still work, so the server needs no change.
+        'official_emails' => ['Owner-Sizar' => env('OWNER_SIZAR_EMAIL', env('OWNER_HAMZA_EMAIL')), 'Owner-Sliman' => env('OWNER_SLIMAN_EMAIL', env('OWNER_SOLIMAN_EMAIL'))]],
     // The home server's health check every minute, with an alert on the phones by ntfy [PLAN 2.19, Sprint 21 B2].
     // Each phone subscribes to the topic in the ntfy app; no topic, no alert (the check still runs).
     'monitoring' => [

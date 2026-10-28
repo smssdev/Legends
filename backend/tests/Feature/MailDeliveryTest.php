@@ -105,7 +105,7 @@ class MailDeliveryTest extends TestCase
     public function test_a_developers_own_address_hears_why_the_resend_failed(): void
     {
         config(['mail.default' => 'brevo', 'mail.mailers.brevo.key' => 'bad', 'mail.from.address' => 'legends@gmail.com',
-            'game.account.official_emails' => ['Owner-Soliman' => 'dev@gmail.com', 'Owner-Hamza' => null]]);
+            'game.account.official_emails' => ['Owner-Sliman' => 'dev@gmail.com', 'Owner-Sizar' => null]]);
         Http::fake(['api.brevo.com/*' => Http::response(['message' => 'Key not found'], 401)]);
         Sanctum::actingAs(User::factory()->unverified()->create(['email' => 'dev@gmail.com']));
         $msg = $this->postJson('/api/v1/auth/email/resend')->assertStatus(503)->json('message');

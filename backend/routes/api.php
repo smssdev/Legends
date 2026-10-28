@@ -58,6 +58,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('vacation', 'vacation');
         // [UP6] The WhatsApp code that verifies the account and frees the welcome coins.
         Route::post('verify-account', 'verifyAccount')->middleware('throttle:10,1,verify-account');
+        // [Sprint 21 E2.4] The code by email: three a quarter-hour per account.
+        Route::post('verify-account/send', 'sendVerificationCode')->middleware('throttle:3,15,verify-send');
         Route::delete('vacation', 'endVacation');
     });
 });
