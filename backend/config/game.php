@@ -242,13 +242,18 @@ return [
         // Disk space under this many MB on the data disk is a warning.
         'min_free_mb' => 1024,
     ],
-    // The stadium [PLAN 2.9, Sprint 29]: three sections of three stages of five parts, one part at a time, each
-    // started by the coach and done in part_hours (scaled by the season's length). The pitch's effect is in
-    // match.home_pitch_bp (the engine reads it from the match's snapshot).
-    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 18,
-        'sections' => ['seats', 'pitch', 'training'],
-        'part_cost_bp' => [1 => 5, 2 => 8, 3 => 12],          // one part of a stage, as a share of the league's money scale
+    // The stadium [PLAN 2.9, Sprint 29; X7, 2026-10-24]: four sections of three stages, one part at a time, each
+    // started by the coach. Each stage is harder than the last: more parts (parts_by_stage), each longer
+    // (part_hours_by_stage), all scaled by the season's length, so the whole stadium takes about the season. The
+    // pitch's effect is in match.home_pitch_bp (the engine reads it from the match's snapshot). Every finished stage
+    // earns more: seats more tickets, tickets a dearer seat, and the pitch and training the sponsors' money
+    // (sponsor_bp_by_stage each), as a better ground draws better deals.
+    'stadium' => ['stages' => 3, 'parts_by_stage' => [1 => 3, 2 => 4, 3 => 5], 'part_hours_by_stage' => [1 => 12, 2 => 16, 3 => 22],
+        'sections' => ['seats', 'tickets', 'pitch', 'training'],
+        'part_cost_bp' => [1 => 8, 2 => 10, 3 => 12],         // one part of a stage, as a share of the league's money scale
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
+        'ticket_price_bp_by_stage' => [10000, 11500, 13000, 15000],   // tickets: the same seats, a dearer ticket
+        'sponsor_bp_by_stage' => [0, 300, 600, 1000],         // pitch and training: this much more from the sponsors
         // training: each session's step goes up by a random share in this range (basis points)
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
     // Backups off this machine [PLAN 2.19, Sprint 37]: an rclone remote to Google Drive (rclone config, once).

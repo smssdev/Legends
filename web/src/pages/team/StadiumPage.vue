@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
-// three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
-// start with its price. One part at a time; the countdown runs on the server's clock.
+// The stadium (Sprint 29 W1, PLAN 2.9; X7), per the WebStadium and MobileStadium drafts: the facts on top, then the
+// four sections with each stage's parts (more each stage, done gold, building green), each stage's effect, and the
+// next part's start with its price. One part at a time; the countdown runs on the server's clock.
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -22,16 +22,22 @@ const now = ref(Date.now())
 let skew = 0
 let tick = 0
 const INFO: Record<string, { title: string; effect: string; icon: string }> = {
-  seats: { title: 'التذاكر والمقاعد', effect: 'مقاعد أكثر ودخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16' },
-  pitch: { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية لكل مباراة على أرضك', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
-  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب ومعسكر أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
+  seats: { title: 'المقاعد', effect: 'مقاعد أكثر ودخل تذاكر أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16' },
+  tickets: { title: 'التذاكر', effect: 'تذكرة أغلى لنفس المقاعد، فدخل أعلى من كل مباراة على أرضك', icon: 'M4 8h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4zM10 8v10' },
+  pitch: { title: 'أرضية الملعب', effect: 'ميزة أرض أكبر، ودخل أعلى من الرعاة', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
+  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب أسرع، ودخل أعلى من الرعاة', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
 }
 const pct = (bp: number) => `+${(bp / 100).toLocaleString('ar-EG-u-nu-latn', { maximumFractionDigits: 1 })}%`
 function effect(s: Section, stage: number) {
-  // Seats: the extra tickets of a home match; pitch: the extra home advantage; training: the most a session speeds up.
-  if (s.section === 'seats') return `+${count(s.effects[stage]! - s.effects[0]!)}`
+  // Seats and tickets: the extra tickets of a home match; pitch: the extra home advantage; training: the most a
+  // session speeds up; and for pitch and training the extra sponsor money.
+  if (s.section === 'seats' || s.section === 'tickets') return `+${count(s.effects[stage]! - s.effects[0]!)}`
   return pct(s.effects[stage]!)
 }
+// Where each stage starts among a section's parts, and how many it has (more each stage).
+const stageParts = computed(() => v.value?.stages ?? [])
+const firstOf = (stage: number) => stageParts.value.filter((x) => x.stage < stage).reduce((n, x) => n + x.parts, 0)
+const hoursOf = (m: number) => Math.round(m / 60)
 const left = computed(() => {
   if (!v.value?.building) return ''
   const sec = Math.max(0, Math.floor((new Date(v.value.building.ends_at).getTime() - now.value) / 1000))
@@ -105,7 +111,7 @@ onBeforeUnmount(() => clearInterval(tick))
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
         <h1 class="font-display text-3xl font-extrabold">الملعب</h1>
-        <p class="mt-1 text-sm text-text-muted">جزء واحد في كل مرة · كل جزء {{ v ? Math.round(v.part_minutes / 60) : 18 }} ساعة · تبدأ كل جزء بنفسك</p>
+        <p class="mt-1 text-sm text-text-muted">جزء واحد في كل مرة · تبدأ كل جزء بنفسك<template v-if="v"> · كل مرحلة أصعب: {{ stageParts.map((x) => `${x.parts} أجزاء × ${hoursOf(x.part_minutes)} ساعة`).join('، ثم ') }} (بمقياس طول دوريك)</template></p>
       </div>
       <div v-if="v" class="rounded-lg bg-surface px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">أموال النادي</span>
@@ -122,18 +128,18 @@ onBeforeUnmount(() => clearInterval(tick))
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">السعة</span><b class="font-numbers text-2xl" dir="ltr">{{ count(v.facts.capacity) }}</b></div>
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">ميزة الأرض</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">دخل التذاكر للمباراة</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
-        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">الأجزاء المكتملة</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
+        <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">الأجزاء المكتملة</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b><span v-if="v.facts.sponsor_bp" class="block text-xs text-success">الرعاة {{ pct(v.facts.sponsor_bp) }}</span></div>
       </section>
 
       <section v-if="v.building" aria-label="يُبنى الآن" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 bg-surface p-4">
         <span class="flex-1"><b class="block">يُبنى الآن: {{ INFO[v.building.section]!.title }}</b>
-          <span class="text-sm text-text-muted">الجزء {{ v.building.part }} من 5 في المرحلة {{ v.building.stage }}</span></span>
+          <span class="text-sm text-text-muted">الجزء {{ v.building.part }} من {{ v.building.parts }} في المرحلة {{ v.building.stage }}</span></span>
         <span class="text-end"><span class="block text-xs text-text-muted">يكتمل بعد</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
         <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
           أنهِ الآن · <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
       </section>
 
-      <section aria-label="أقسام الملعب" class="grid gap-3 lg:grid-cols-3">
+      <section aria-label="أقسام الملعب" class="grid gap-3 md:grid-cols-2">
         <article v-for="s in v.sections" :key="s.section" class="flex flex-col gap-3 rounded-xl bg-surface p-4"
           :class="v.building?.section === s.section ? 'border border-success/50' : ''">
           <div class="flex items-start gap-3">
@@ -142,14 +148,17 @@ onBeforeUnmount(() => clearInterval(tick))
             </span>
             <span><b class="block font-display text-lg">{{ INFO[s.section]!.title }}</b><span class="text-sm text-text-muted">{{ INFO[s.section]!.effect }}</span></span>
           </div>
-          <div v-for="st in [1, 2, 3]" :key="st" class="flex items-center gap-3">
-            <span class="w-16 text-xs text-text-muted">المرحلة {{ st }}</span>
-            <span class="flex flex-1 gap-1" :aria-label="`المرحلة ${st}: ${Math.max(0, Math.min(5, s.done - (st - 1) * 5))} من 5`">
-              <span v-for="p in 5" :key="p" class="h-2.5 flex-1 rounded-full" :class="part(s, (st - 1) * 5 + p - 1)" />
+          <div v-for="st in stageParts" :key="st.stage" class="flex items-center gap-3">
+            <span class="w-16 text-xs text-text-muted">المرحلة {{ st.stage }}</span>
+            <span class="flex flex-1 gap-1" :aria-label="`المرحلة ${st.stage}: ${Math.max(0, Math.min(st.parts, s.done - firstOf(st.stage)))} من ${st.parts}`">
+              <span v-for="p in st.parts" :key="p" class="h-2.5 flex-1 rounded-full" :class="part(s, firstOf(st.stage) + p - 1)" />
             </span>
-            <span class="w-20 text-end font-numbers text-sm" :class="s.stage >= st ? 'text-gold' : 'text-text-muted'" dir="ltr">{{ effect(s, st) }}</span>
+            <span class="flex w-24 flex-col items-end text-xs" :class="s.stage >= st.stage ? 'text-gold' : 'text-text-muted'">
+              <span class="font-numbers" dir="ltr">{{ effect(s, st.stage) }}</span>
+              <span v-if="s.sponsor_bp">رعاة <span class="font-numbers" dir="ltr">{{ pct(s.sponsor_bp[st.stage]!) }}</span></span>
+            </span>
           </div>
-          <p class="text-sm text-text-muted">{{ s.stage }} من 3 مراحل · {{ s.done }} من 15 جزءاً</p>
+          <p class="text-sm text-text-muted">{{ s.stage }} من {{ stageParts.length }} مراحل · {{ s.done }} من {{ firstOf(stageParts.length + 1) }} جزءاً</p>
           <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-gold px-4 font-display font-bold text-on-gold disabled:opacity-40"
             :disabled="busy || !!v.building || s.next.cost > v.balance" @click="start(s)">
             ابدأ الجزء التالي · <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
@@ -157,7 +166,7 @@ onBeforeUnmount(() => clearInterval(tick))
         </article>
       </section>
 
-      <p class="rounded-xl bg-surface p-4 text-sm text-text-muted">الملعب كاملاً {{ v.parts_total }} جزءاً، أي حوالي 91% من الموسم. اختر أولوياتك: الدخل، أو ميزة الأرض، أو سرعة التدريب.</p>
+      <p class="rounded-xl bg-surface p-4 text-sm text-text-muted">الملعب كاملاً {{ v.parts_total }} جزءاً، أي قرابة الموسم كله. كل قسم يزيد دخلك: المقاعد والتذاكر من كل مباراة على أرضك، والأرضية والتدريب من الرعاة فوق أثرهما في الملعب. اختر أولوياتك.</p>
     </template>
   </div>
 </template>

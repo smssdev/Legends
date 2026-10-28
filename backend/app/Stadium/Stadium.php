@@ -11,14 +11,16 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * The stadium [PLAN 2.9, Sprint 29]: seats, pitch and training, three stages of five parts each. The coach starts
- * each part by hand and pays for it; it is done in 18 hours scaled by the season's length, coach online or not.
- * One part at a time across the whole stadium. A finished stage changes the game: more seats (and tickets), more
- * home advantage, faster training. A club left to the computer keeps what it built and finishes the part under way.
+ * The stadium [PLAN 2.9, Sprint 29; X7, 2026-10-24]: seats, tickets, pitch and training, three stages each, every
+ * stage harder than the last (more parts, each longer, game.stadium.parts_by_stage and part_hours_by_stage), all
+ * scaled by the season's length. The coach starts each part by hand and pays for it; it is done on time, coach
+ * online or not. One part at a time across the whole stadium. A finished stage changes the game and the money: more
+ * seats, dearer tickets, more home advantage and faster training, and the pitch and training draw more sponsor
+ * money. A club left to the computer keeps what it built and finishes the part under way.
  */
 class Stadium
 {
-    public const SECTIONS = ['seats', 'pitch', 'training'];
+    public const SECTIONS = ['seats', 'tickets', 'pitch', 'training'];
 
     /** The stage each section has reached. [section => 0..3] */
     public static function stages(int $clubId): array
@@ -38,6 +40,43 @@ class Stadium
         return (int) config('game.stadium.capacity_by_stage')[self::stage($clubId, 'seats')];
     }
 
+    /** The ticket price from the tickets section (basis points of the base price). */
+    public static function ticketBp(int $clubId): int
+    {
+        return (int) config('game.stadium.ticket_price_bp_by_stage')[self::stage($clubId, 'tickets')];
+    }
+
+    /** The sponsors' money from the pitch and the training ground (basis points on top of the base). */
+    public static function sponsorBp(int $clubId): int
+    {
+        $by = config('game.stadium.sponsor_bp_by_stage');
+
+        return 10000 + (int) $by[self::stage($clubId, 'pitch')] + (int) $by[self::stage($clubId, 'training')];
+    }
+
+    /** The parts of a stage. */
+    public static function partsIn(int $stage): int
+    {
+        return (int) config('game.stadium.parts_by_stage')[$stage];
+    }
+
+    /** Parts done in a section: every part of its finished stages, and those of the next. */
+    public static function partsDone(int $stage, int $parts): int
+    {
+        $done = $parts;
+        for ($s = 1; $s <= $stage; $s++) {
+            $done += self::partsIn($s);
+        }
+
+        return $done;
+    }
+
+    /** Every part of a section. */
+    public static function partsTotal(): int
+    {
+        return array_sum(config('game.stadium.parts_by_stage'));
+    }
+
     /** A training session's step with the training section's speed on top, drawn by the session's key. */
     public static function trainingStep(int $clubId, int $step, string $key): int
     {
@@ -46,12 +85,12 @@ class Stadium
         return intdiv($step * (10000 + $lo + crc32("stadium:{$key}") % ($hi - $lo + 1)), 10000);
     }
 
-    /** Seconds one part takes in this league. */
-    public static function partSeconds(int $leagueId): int
+    /** Seconds one part of a stage takes in this league: longer each stage, and scaled by the season's length. */
+    public static function partSeconds(int $leagueId, int $stage = 1): int
     {
         $scale = (int) DB::table('leagues')->where('id', $leagueId)->value('timer_scale');
 
-        return max(60, intdiv((int) config('game.stadium.part_hours') * 3600 * ($scale ?: 10000), 10000));
+        return max(60, intdiv((int) config('game.stadium.part_hours_by_stage')[$stage] * 3600 * ($scale ?: 10000), 10000));
     }
 
     /** The next part of a section: [stage, part], or null when the section is finished. */
@@ -94,7 +133,7 @@ class Stadium
             }
             $id = DB::table('stadium_builds')->insertGetId([
                 'club_id' => $clubId, 'section' => $section, 'stage' => $stage, 'part' => $part, 'cost' => $cost,
-                'ends_at' => $now->copy()->addSeconds(self::partSeconds($club->league_id)), 'status' => 'building',
+                'ends_at' => $now->copy()->addSeconds(self::partSeconds($club->league_id, $stage)), 'status' => 'building',
                 'idempotency_key' => $key, 'created_at' => $now, 'updated_at' => $now,
             ]);
             ClubLedger::post($clubId, 'stadium', -$cost, "stadium:{$id}", "stadium:{$section}:{$stage}:{$part}", spend: true);
@@ -121,7 +160,7 @@ class Stadium
                 return false;
             }
             $now = GameClock::now();
-            $stageDone = $b->part >= (int) config('game.stadium.parts_per_stage');
+            $stageDone = $b->part >= self::partsIn((int) $b->stage);
             DB::table('stadium_sections')->upsert([[
                 'club_id' => $b->club_id, 'section' => $b->section,
                 'stage' => $stageDone ? $b->stage : $b->stage - 1, 'parts' => $stageDone ? 0 : $b->part,
@@ -129,7 +168,7 @@ class Stadium
             ]], ['club_id', 'section'], ['stage', 'parts', 'updated_at']);
             $club = DB::table('clubs')->where('id', $b->club_id)->first();
             if ($club->user_id) {
-                Inbox::send($club->user_id, 'stadium_part', ['section' => $b->section, 'stage' => (int) $b->stage, 'part' => (int) $b->part, 'stage_done' => $stageDone],
+                Inbox::send($club->user_id, 'stadium_part', ['section' => $b->section, 'stage' => (int) $b->stage, 'part' => (int) $b->part, 'parts' => self::partsIn((int) $b->stage), 'stage_done' => $stageDone],
                     $club->league_id, $club->id);
             }
 

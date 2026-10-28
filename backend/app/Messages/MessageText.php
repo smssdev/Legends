@@ -12,7 +12,7 @@ class MessageText
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
-    private const SECTION = ['seats' => 'التذاكر والمقاعد', 'pitch' => 'أرضية الملعب', 'training' => 'منشأة التدريب'];
+    private const SECTION = ['seats' => 'المقاعد', 'tickets' => 'التذاكر', 'pitch' => 'أرضية الملعب', 'training' => 'منشأة التدريب'];
 
     private const RESULT = ['win' => 'فزت', 'draw' => 'تعادلت', 'loss' => 'خسرت'];
 
@@ -118,7 +118,7 @@ class MessageText
             'stadium_part' => [
                 'title' => ($p['stage_done'] ?? false) ? 'اكتملت مرحلة في الملعب' : 'اكتمل جزء في الملعب',
                 'body' => sprintf('%s: %s. ابدأ الجزء التالي من صفحة الملعب.', self::SECTION[$p['section']] ?? '',
-                    ($p['stage_done'] ?? false) ? "المرحلة {$p['stage']} مكتملة وأثرها يعمل الآن" : "الجزء {$p['part']} من 5 في المرحلة {$p['stage']}"),
+                    ($p['stage_done'] ?? false) ? "المرحلة {$p['stage']} مكتملة وأثرها يعمل الآن" : "الجزء {$p['part']} من ".($p['parts'] ?? 5)." في المرحلة {$p['stage']}"),
                 'link' => '/stadium',
             ],
             'season_end' => [

@@ -1242,7 +1242,7 @@ paths:
               type: object
               required: [section, idempotency_key]
               properties:
-                section: { type: string, enum: [seats, pitch, training] }
+                section: { type: string, enum: [seats, tickets, pitch, training] }
                 idempotency_key: { type: string, maxLength: 64 }
       responses:
         '200':
@@ -2826,31 +2826,37 @@ components:
             fitness: { type: integer, nullable: true, description: The eleven's average fitness }
     StadiumView:
       type: object
-      required: [balance, now, part_minutes, parts_total, facts, sections, building]
+      required: [balance, now, part_minutes, stages, parts_total, facts, sections, building]
       properties:
         balance: { type: integer }
         now: { type: string, format: date-time, description: The game clock, for the countdown }
-        part_minutes: { type: integer }
+        part_minutes: { type: integer, description: A part of stage 1 }
+        stages:
+          type: array
+          description: Each stage harder than the last, all scaled by the season's length
+          items: { type: object, required: [stage, parts, part_minutes], properties: { stage: { type: integer }, parts: { type: integer }, part_minutes: { type: integer } } }
         parts_total: { type: integer }
         facts:
           type: object
-          required: [capacity, home_bp, tickets_per_match, parts_done]
+          required: [capacity, home_bp, tickets_per_match, sponsor_bp, parts_done]
           properties:
             capacity: { type: integer }
             home_bp: { type: integer, description: The home advantage with the pitch (basis points) }
             tickets_per_match: { type: integer }
+            sponsor_bp: { type: integer, description: The extra sponsor money from the pitch and training (basis points) }
             parts_done: { type: integer }
         sections:
           type: array
           items:
             type: object
-            required: [section, stage, parts, done, effects, next]
+            required: [section, stage, parts, done, effects, sponsor_bp, next]
             properties:
-              section: { type: string, enum: [seats, pitch, training] }
+              section: { type: string, enum: [seats, tickets, pitch, training] }
               stage: { type: integer, description: Stages finished, 0 to 3 }
               parts: { type: integer, description: Parts finished of the next stage }
               done: { type: integer, description: Parts finished in all }
-              effects: { type: array, items: { type: integer }, description: 'The effect at stage 0 to 3: tickets per match, extra home advantage (bp), or the most training speeds up (bp)' }
+              effects: { type: array, items: { type: integer }, description: 'The effect at stage 0 to 3: tickets per match (seats, tickets), extra home advantage (bp), or the most training speeds up (bp)' }
+              sponsor_bp: { type: array, nullable: true, items: { type: integer }, description: 'Pitch and training: the extra sponsor money at stage 0 to 3 (bp)' }
               next:
                 type: object
                 nullable: true
@@ -2862,11 +2868,12 @@ components:
         building:
           type: object
           nullable: true
-          required: [section, stage, part, ends_at]
+          required: [section, stage, part, parts, ends_at]
           properties:
-            section: { type: string, enum: [seats, pitch, training] }
+            section: { type: string, enum: [seats, tickets, pitch, training] }
             stage: { type: integer }
             part: { type: integer }
+            parts: { type: integer, description: The parts of this stage }
             ends_at: { type: string, format: date-time }
     TrainingPlayer:
       type: object

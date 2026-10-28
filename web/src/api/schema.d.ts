@@ -2936,7 +2936,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @enum {string} */
-                        section: "seats" | "pitch" | "training";
+                        section: "seats" | "tickets" | "pitch" | "training";
                         idempotency_key: string;
                     };
                 };
@@ -6110,26 +6110,37 @@ export interface components {
              * @description The game clock
              */
             now: string;
+            /** @description A part of stage 1 */
             part_minutes: number;
+            /** @description Each stage harder than the last, all scaled by the season's length */
+            stages: {
+                stage: number;
+                parts: number;
+                part_minutes: number;
+            }[];
             parts_total: number;
             facts: {
                 capacity: number;
                 /** @description The home advantage with the pitch (basis points) */
                 home_bp: number;
                 tickets_per_match: number;
+                /** @description The extra sponsor money from the pitch and training (basis points) */
+                sponsor_bp: number;
                 parts_done: number;
             };
             sections: {
                 /** @enum {string} */
-                section: "seats" | "pitch" | "training";
+                section: "seats" | "tickets" | "pitch" | "training";
                 /** @description Stages finished */
                 stage: number;
                 /** @description Parts finished of the next stage */
                 parts: number;
                 /** @description Parts finished in all */
                 done: number;
-                /** @description The effect at stage 0 to 3: tickets per match, extra home advantage (bp), or the most training speeds up (bp) */
+                /** @description The effect at stage 0 to 3: tickets per match (seats, tickets), extra home advantage (bp), or the most training speeds up (bp) */
                 effects: number[];
+                /** @description Pitch and training: the extra sponsor money at stage 0 to 3 (bp) */
+                sponsor_bp: number[] | null;
                 next: {
                     stage: number;
                     part: number;
@@ -6138,9 +6149,11 @@ export interface components {
             }[];
             building: {
                 /** @enum {string} */
-                section: "seats" | "pitch" | "training";
+                section: "seats" | "tickets" | "pitch" | "training";
                 stage: number;
                 part: number;
+                /** @description The parts of this stage */
+                parts: number;
                 /** Format: date-time */
                 ends_at: string;
             } | null;

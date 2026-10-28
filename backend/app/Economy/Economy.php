@@ -50,12 +50,13 @@ class Economy
 
         // The home side's gate: each sector's sponsor and the tickets.
         foreach (self::contracts($f->home_id, $season->id) as $sector => $offer) {
-            ClubLedger::post($f->home_id, 'sponsor', $money->sponsor($scale, $season->rounds, $sector, $offer, $won['home']),
+            // A better pitch and training ground draw more sponsor money [X7].
+            ClubLedger::post($f->home_id, 'sponsor', intdiv($money->sponsor($scale, $season->rounds, $sector, $offer, $won['home']) * Stadium::sponsorBp($f->home_id), 10000),
                 "sponsor:{$f->id}:{$sector}", "fixture:{$f->id}");
         }
         [$min, $max] = self::strengthRange($season->league_id);
         $strength = (int) DB::table('clubs')->where('id', $f->home_id)->value('strength_snapshot');
-        ClubLedger::post($f->home_id, 'tickets', $money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max), Stadium::capacity($f->home_id)),
+        ClubLedger::post($f->home_id, 'tickets', intdiv($money->tickets($scale, $season->rounds, $money->attendance($strength, $min, $max), Stadium::capacity($f->home_id)) * Stadium::ticketBp($f->home_id), 10000),
             "tickets:{$f->id}", "fixture:{$f->id}");
 
         if ($f->competition !== 'league') {

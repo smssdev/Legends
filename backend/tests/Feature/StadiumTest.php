@@ -76,24 +76,51 @@ class StadiumTest extends TestCase
         $this->start('pitch', 'k4')->assertConflict()->assertJsonPath('message', 'رصيد النادي لا يكفي.');
     }
 
-    public function test_the_timer_finishes_with_the_coach_away_follows_the_season_and_five_parts_make_a_stage(): void
+    public function test_each_stage_is_harder_more_parts_each_longer_and_follows_the_season(): void
     {
-        $seconds = Stadium::partSeconds($this->league['id']);
-        $this->assertSame(intdiv(18 * 3600 * (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale'), 10000), $seconds);
-        foreach (range(1, 5) as $part) {
-            $this->start('pitch', "p{$part}")->assertOk()->assertJsonPath('building.part', $part);
+        $scale = (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale');
+        $this->assertSame(intdiv(12 * 3600 * $scale, 10000), Stadium::partSeconds($this->league['id'], 1));
+        $this->assertSame(intdiv(16 * 3600 * $scale, 10000), Stadium::partSeconds($this->league['id'], 2));
+        $this->assertSame(intdiv(22 * 3600 * $scale, 10000), Stadium::partSeconds($this->league['id'], 3));
+        // Stage 1 has three parts.
+        $seconds = Stadium::partSeconds($this->league['id'], 1);
+        foreach (range(1, 3) as $part) {
+            $this->start('pitch', "p{$part}")->assertOk()->assertJsonPath('building.part', $part)->assertJsonPath('building.parts', 3);
             Carbon::setTestNow(GameClock::now()->addSeconds($seconds - 60));
             $this->artisan('stadium:due')->assertSuccessful();
             $this->assertNotNull(Stadium::building($this->mine));
             Carbon::setTestNow(GameClock::now()->addSeconds(60));
             $this->artisan('stadium:due')->assertSuccessful();
             $this->assertNull(Stadium::building($this->mine));
-            $this->assertSame($part === 5 ? 1 : 0, Stadium::stage($this->mine, 'pitch'));
+            $this->assertSame($part === 3 ? 1 : 0, Stadium::stage($this->mine, 'pitch'));
         }
-        $this->assertSame(5, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'stadium_part')->count());
+        $this->assertSame(3, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'stadium_part')->count());
         $this->assertSame('اكتملت مرحلة في الملعب', $this->getJson('/api/v1/messages')->json('messages.0.title'));
-        $this->getJson($this->url())->assertJsonPath('sections.1.stage', 1)->assertJsonPath('sections.1.next.stage', 2)
-            ->assertJsonPath('facts.parts_done', 5)->assertJsonPath('facts.home_bp', 600);
+        $view = $this->getJson($this->url())->assertJsonPath('sections.2.section', 'pitch')->assertJsonPath('sections.2.stage', 1)
+            ->assertJsonPath('sections.2.next.stage', 2)->assertJsonPath('facts.parts_done', 3)->assertJsonPath('facts.home_bp', 600)
+            ->assertJsonPath('stages.1.parts', 4)->assertJsonPath('stages.2.parts', 5)->assertJsonPath('parts_total', 48)->json();
+        $this->assertSame(['seats', 'tickets', 'pitch', 'training'], array_column($view['sections'], 'section'));
+        // Stage 2: its first part takes 16 hours.
+        $this->start('pitch', 'p4')->assertOk()->assertJsonPath('building.stage', 2)->assertJsonPath('building.parts', 4);
+        $this->assertSame(Stadium::partSeconds($this->league['id'], 2), (int) GameClock::now()->diffInSeconds(Carbon::parse(Stadium::building($this->mine)->ends_at, 'UTC')));
+    }
+
+    public function test_tickets_make_each_seat_dearer_and_pitch_and_training_bring_sponsor_money(): void
+    {
+        $finance = fn () => $this->actingAs($this->owner)->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->json('stadium');
+        $was = $finance();
+        foreach ([1, 2, 3] as $stage) {
+            $this->stage('tickets', $stage);
+            $now = $finance();
+            $this->assertSame($was['capacity'], $now['capacity']);
+            $this->assertGreaterThan($was['tickets_per_match'], $now['tickets_per_match']);
+            $was = $now;
+        }
+        $this->assertSame(10000, Stadium::sponsorBp($this->mine));
+        $this->stage('pitch', 2);
+        $this->stage('training', 3);
+        $this->assertSame(10000 + 600 + 1000, Stadium::sponsorBp($this->mine));
+        $this->actingAs($this->owner)->getJson($this->url())->assertJsonPath('facts.sponsor_bp', 1600);
     }
 
     public function test_seats_bring_more_seats_and_more_from_each_home_match(): void
