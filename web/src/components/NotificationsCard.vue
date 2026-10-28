@@ -2,6 +2,7 @@
 // The app and its notifications (Sprint 36 W1, PLAN 2.13): install the site on the home screen (with the
 // iPhone's own steps), turn this browser's notifications on, and choose the kinds. A tap on a notification
 // opens its screen (public/sw.js).
+import { setTone, toneOn } from '../lib/tone'
 import UiToggle from './ui/UiToggle.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
@@ -87,6 +88,9 @@ onMounted(load)
       </ol>
       <span v-else class="text-text-muted">{{ $t('من قائمة المتصفح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».') }}</span>
     </div>
+
+    <!-- [Sprint 21 E3.6] The game's own tone when a message arrives, on this device. -->
+    <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة GLM حين تصلك رسالة واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
 
     <template v-if="settings">
       <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>

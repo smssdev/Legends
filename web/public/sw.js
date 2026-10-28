@@ -1,7 +1,7 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
 // Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
-const VERSION = 'legends-v4'
+const VERSION = 'legends-v5'
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -52,8 +52,12 @@ self.addEventListener('fetch', (e) => {
 self.addEventListener('push', (e) => {
   let n = {}
   try { n = e.data ? e.data.json() : {} } catch { n = { title: 'GLM', body: e.data?.text() ?? '' } }
+  // [Sprint 21 E3.6] The game's own buzz on Android (a browser gives a push notification no sound of its own), and
+  // the text's direction from its language: an English coach's notification reads left to right.
+  const arabic = /[\u0600-\u06FF]/.test((n.title || '') + (n.body || ''))
   e.waitUntil(self.registration.showNotification(n.title || 'GLM', {
-    body: n.body || '', tag: n.tag, icon: '/icon-192.png', badge: '/icon-192.png', dir: 'rtl', lang: 'ar', data: { link: n.link || '/' },
+    body: n.body || '', tag: n.tag, icon: '/icon-192.png', badge: '/icon-192.png', dir: arabic ? 'rtl' : 'ltr', lang: arabic ? 'ar' : 'en',
+    vibrate: [90, 50, 90, 50, 220], renotify: !!n.tag, data: { link: n.link || '/' },
   }))
 })
 

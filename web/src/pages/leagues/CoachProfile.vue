@@ -45,7 +45,7 @@ onMounted(async () => {
         <h2 class="font-display text-xl font-extrabold">{{ $t('الألقاب') }}</h2>
         <p v-if="!coach.titles.length" class="text-sm text-text-muted">{{ $t('لا ألقاب بعد.') }}</p>
         <div v-for="(t, i) in coach.titles" :key="i" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
-          <b :class="t.position === 1 ? 'text-gold' : ''">{{ TITLES[t.competition]![t.position] }}</b>
+          <b :class="t.position === 1 ? 'text-gold' : ''">{{ $t(TITLES[t.competition]![t.position]) }}</b>
           <span class="flex-1 truncate">{{ $cn(t.club) }} · {{ t.league }}</span>
           <span class="text-text-muted">{{ $t('الموسم {v0}', { v0: t.season }) }}</span>
         </div>

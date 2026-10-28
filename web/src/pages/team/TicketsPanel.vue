@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Tickets [X25]: go to the other clubs' coming matches and cheer one side; each ticket lifts that side's morale
 // for the match. One per match, club money, until the lock.
+import { intlLocale } from '../../lib/i18n'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -32,7 +33,7 @@ async function buy(fixture: number, side: 'home' | 'away') {
   }
   busy.value = null
 }
-const when = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'short', hour: 'numeric', minute: '2-digit' })
 </script>
 
 <template>

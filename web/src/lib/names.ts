@@ -1,7 +1,9 @@
 // The names switch [X40]: the leagues, clubs and players in Arabic (the default) or as the game stores them (Latin).
 // The dictionary is written at build time (scripts/names.mjs) and loaded once; a name it does not have stays as it
 // is. The choice is the coach's, on this device (Profile). The English commentary always says the Latin names.
-import { ref } from 'vue'
+// [Sprint 21 E3.2] The game in English is English throughout: its names are the Latin ones, whatever the switch.
+import { computed, ref } from 'vue'
+import { locale } from './i18n'
 
 export type NamesLang = 'ar' | 'en'
 const KEY = 'legends.names'
@@ -31,8 +33,11 @@ export function setNamesLang(l: NamesLang) {
   try { localStorage.setItem(KEY, l) } catch { /* private mode: this visit only */ }
 }
 
+/** The names actually shown: Latin in the English game, else the coach's choice. */
+export const shownNames = computed<NamesLang>(() => (locale.value === 'en' ? 'en' : namesLang.value))
+
 const pick = (table: keyof Dict, s: string | null | undefined) =>
-  !s || namesLang.value === 'en' ? (s ?? '') : (dict.value?.[table][s] ?? s)
+  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.[table][s] ?? s)
 
 /** A player's name as the coach chose to see it. */
 export const pn = (s: string | null | undefined) => pick('players', s)
@@ -42,4 +47,4 @@ export const cn = (s: string | null | undefined) => pick('clubs', s)
 export const ln = (s: string | null | undefined) => pick('leagues', s)
 /** Any name the game shows: a player's, else a club's, else a league's (what none knows stays as it is). */
 export const nm = (s: string | null | undefined) =>
-  !s || namesLang.value === 'en' ? (s ?? '') : (dict.value?.players[s] ?? dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? s)
+  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.players[s] ?? dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? s)

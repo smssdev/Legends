@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The inbox (Sprint 22 W1): the game's messages, newest first, the unread ones marked, each one leading to
 // its screen. No draft of its own: the design system's cards and the "الرسائل" section of WebHome's side bar.
+import { intlLocale } from '../lib/i18n'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -12,7 +13,7 @@ const router = useRouter()
 const ICON: Record<string, string> = {
   referee: '🟨', absence_warning: '⏰', left_absent: '🚪', kicked: '⛔', join_request: '✋', join_approved: '✅', join_rejected: '✖️', match_report: '📊',
 }
-const when = (iso: string) => new Intl.DateTimeFormat('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
+const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
 
 function open(m: Message) {
   inbox.read(m)

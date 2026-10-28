@@ -2,6 +2,7 @@
 // The integrity system [X28], only in a league whose owner switched it on: paying the next match's referee
 // (the VAR catches it one time in five), a security check that shows the spies on me and turning one into a
 // double agent, and taking my spy's proof of a bribe to the FA. A market ban shows here while it lasts.
+import { intlLocale } from '../../lib/i18n'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -47,7 +48,7 @@ const accuse = (spy: number) => act(async () => {
   const data = (await api.POST('/leagues/{league}/integrity/spies/{spy}/accuse', { params: { path: { league: props.leagueId, spy } } })).data!
   return data
 }, 'أدانت لجنة الانضباط النادي المرتشي.')
-const until = (iso: string) => new Date(iso).toLocaleString('ar', { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'short', hour: 'numeric', minute: '2-digit' })
 </script>
 
 <template>

@@ -15,7 +15,7 @@ import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
 import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 import { namesLang, setNamesLang } from '../lib/names'
-import { intlLocale, t } from '../lib/i18n'
+import { intlLocale, locale, t } from '../lib/i18n'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
 
 const auth = useAuth()
@@ -105,7 +105,7 @@ const holidayDays = ref(3)
 const holidayReason = ref('')
 const holidayMsg = ref('')
 const holidayDone = ref('')
-const dateText = (iso: string | null) => (iso ? new Date(iso).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }) : '')
+const dateText = (iso: string | null) => (iso ? new Date(iso).toLocaleString(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' }) : '')
 async function holiday(start: boolean) {
   holidayMsg.value = ''
   try {
@@ -363,14 +363,15 @@ async function remove() {
         <label v-for="v in MATCH_VIEWS" :key="v.id" class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border px-3 py-2" :class="viewing.chosenView.value === v.id ? 'border-gold bg-gold/10' : 'border-text/10'">
           <input type="radio" name="match-view" class="size-5 accent-[var(--color-gold)]" :value="v.id" :checked="viewing.chosenView.value === v.id" @change="saveViewing({ match_view: v.id })" />
           <span class="flex flex-col">
-            <span class="font-bold">{{ $nm(v.name) }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">{{ $t('قريباً') }}</span></span>
+            <span class="font-bold">{{ $t(v.name) }} <span v-if="v.id === 'unity' && !viewing.unityReady.value" class="rounded-pill bg-warning/15 px-2 py-0.5 text-xs text-warning">{{ $t('قريباً') }}</span></span>
             <span class="text-xs text-text-muted">{{ $t(v.hint) }}</span>
           </span>
         </label>
         <p v-if="viewing.chosenView.value === 'unity' && !viewing.unityReady.value" class="text-xs text-text-muted">{{ $t('حتى يجهز المطوّر تُعرض مبارياتك بالكرتوني، وتنتقل إليه تلقائياً حين يجهز.') }}</p>
       </fieldset>
       <!-- [X40] The names switch: the leagues, clubs and players in Arabic or in English, on this device. -->
-      <fieldset class="flex flex-col gap-2">
+      <!-- [Sprint 21 E3.2] In English the names are English: the switch is for the Arabic game. -->
+      <fieldset v-if="locale === 'ar'" class="flex flex-col gap-2">
         <legend class="mb-1 text-sm font-bold">{{ $t('أسماء الدوريات والأندية واللاعبين') }}</legend>
         <div class="grid grid-cols-2 gap-2" role="radiogroup" :aria-label="$t('لغة الأسماء')">
           <button v-for="[k, l] in ([['ar', 'العربية'], ['en', 'English']] as const)" :key="k" type="button" role="radio" :aria-checked="namesLang === k"

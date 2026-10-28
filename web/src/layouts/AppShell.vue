@@ -34,8 +34,11 @@ const slot = useSlot()
 watch(() => [auth.user?.id ?? 0, route.fullPath] as const, ([id], before) => id && slot.load(id, !before || before[0] !== id || route.name === 'home'), { immediate: true })
 
 // "الدوري والكأس" is the slot's own league page, and the media live under the league.
+// Before the slots come, the league remembered on this device stands in [Sprint 21 E3.3]: a league page opened
+// straight away shows its section bar at once, instead of the bar appearing a moment later and pushing the page down.
+const remembered = (() => { try { return Number(localStorage.getItem('legends.league')) || null } catch { return null } })()
 const pathOf = (s: Section) => {
-  const league = slot.current?.league?.id
+  const league = slot.current?.league?.id ?? (slot.slots.length ? null : remembered)
   if (s.name === 'league' && league) return `/leagues/${league}`
   if (s.inLeague) return league ? `/leagues/${league}${s.path}` : '/leagues'
   return s.path
@@ -58,7 +61,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
     <header class="sticky top-0 z-30">
       <!-- Row one: the club's tab, the mark, the coach's tab. -->
       <div class="shell-top relative border-b border-black/30">
-        <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 md:gap-4 md:px-6 md:py-0">
+        <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 md:gap-4 md:px-6 md:py-0" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
           <button v-if="inSlot" type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="$t('القائمة')" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
             <Icon name="menu" />
           </button>
@@ -74,6 +77,8 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
               </span>
             </span>
           </RouterLink>
+          <!-- [Sprint 21 E3.3] Its place held until the slots come, so the bar does not shift when the club appears. -->
+          <span v-else-if="inSlot && !slot.slots.length" class="chrome-tab chrome-start min-w-0 flex-1 animate-pulse md:w-80 md:flex-none" aria-hidden="true" />
           <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
 
           <div v-if="inSlot" class="hidden flex-1 justify-center md:flex">
@@ -94,14 +99,14 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
             </div>
             <!-- The coach's tab. -->
             <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" :aria-label="$t('حسابي')">
-              <span class="relative grid size-9 place-items-center overflow-hidden rounded-full bg-brand font-display text-lg font-extrabold text-white ring-2 ring-white md:size-11">
+              <span class="relative grid size-9 place-items-center overflow-hidden rounded-full bg-brand font-display text-lg font-extrabold text-white ring-2 ring-gold/70 md:size-10">
                 <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-full object-cover" /><template v-else>{{ initial }}</template>
               </span>
               <span class="hidden leading-tight md:block">
                 <b class="block max-w-32 truncate text-sm">{{ auth.user.name }}</b>
                 <span v-if="level" class="flex items-center gap-1.5 text-xs font-semibold">
-                  <span class="rounded bg-on-chrome px-1.5 font-numbers text-chrome">{{ level.level }}</span>
-                  <span class="h-1.5 w-14 overflow-hidden rounded-full bg-chrome-dark" aria-hidden="true"><span class="block h-full bg-brand" :style="{ width: `${level.progress_bp / 100}%` }" /></span>
+                  <span class="rounded bg-gold px-1.5 font-numbers text-on-gold">{{ level.level }}</span>
+                  <span class="h-1.5 w-14 overflow-hidden rounded-full bg-surface-sunk" aria-hidden="true"><span class="block h-full bg-brand" :style="{ width: `${level.progress_bp / 100}%` }" /></span>
                 </span>
               </span>
             </RouterLink>
@@ -115,7 +120,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
 
       <!-- Row two, inside a slot on the computer: the four portals, each opening its list under it [UP7]. -->
       <nav v-if="inSlot" class="shell-nav relative hidden md:block" :aria-label="$t('أقسام النادي')">
-        <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-3 md:px-6">
+        <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-3 md:px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
           <button
             v-for="g in groups"
             :key="g.key"
@@ -168,7 +173,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
     <RouterLink v-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
       {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
-    <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="inSlot ? 'pb-28' : 'pb-10'">
+    <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
       <RouterView />
     </main>
 
@@ -240,43 +245,29 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
   background: linear-gradient(90deg, transparent, var(--color-brand-light) 25%, var(--color-gold) 75%, transparent);
   opacity: 0.85;
 }
-/* The ivory tabs: the club and the coach, cut at an angle toward the middle like a broadcast graphic. */
-.chrome-tab {
+/* [Sprint 21 E3.4] The club's and the coach's tabs: modern glass cards on the night bar (they were ivory tabs cut at an
+   angle), the same look as every card under them. */
+.chrome-tab,
+.coach-tab {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   min-height: 2.75rem;
   padding: 0.3rem 0.75rem;
-  border-radius: 0.6rem;
-  color: var(--color-on-chrome);
-  background: linear-gradient(180deg, #ffffff 0%, var(--color-chrome) 55%, var(--color-chrome-dark) 100%);
-  box-shadow: 0 1px 0 #fff inset, 0 6px 16px -8px rgb(0 0 0 / 0.7);
+  border-radius: 0.9rem;
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-surface-raised) 70%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow: 0 6px 18px -10px rgb(0 0 0 / 0.8);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
+.coach-tab { padding: 0.25rem; border-radius: 999px; }
 @media (min-width: 768px) {
-  .chrome-tab {
-    min-height: 3.75rem;
-    border-radius: 0 0 0.9rem 0.9rem;
-    padding: 0.4rem 1.1rem;
-  }
-  /* RTL: the start is on the right, so the club's tab leans its left edge in, the coach's its right edge. */
-  .chrome-start { clip-path: polygon(0 0, 100% 0, 100% 100%, 1.1rem 100%); padding-inline-end: 1.6rem; }
-  .chrome-end { clip-path: polygon(0 0, 100% 0, calc(100% - 1.1rem) 100%, 0 100%); padding-inline-start: 1.6rem; }
+  .chrome-tab { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.35rem 1rem; }
+  .coach-tab { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.3rem 1rem 0.3rem 0.35rem; border-radius: 999px; }
 }
-.chrome-tab:hover { filter: brightness(1.04); }
-/* The coach's tab: only the avatar on the phone, where the club's tab needs the width. */
-@media (min-width: 768px) {
-  .coach-tab {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 3.75rem;
-    padding: 0.4rem 1.1rem 0.4rem 1.6rem;
-    border-radius: 0 0 0.9rem 0.9rem;
-    color: var(--color-on-chrome);
-    background: linear-gradient(180deg, #ffffff 0%, var(--color-chrome) 55%, var(--color-chrome-dark) 100%);
-    box-shadow: 0 1px 0 #fff inset, 0 6px 16px -8px rgb(0 0 0 / 0.7);
-  }
-}
+.chrome-tab:hover,
+.coach-tab:hover { border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); background: color-mix(in srgb, var(--color-surface-raised) 90%, transparent); }
 /* The coins: an orange pill as in every manager game's corner. */
 .pill-coins {
   display: flex;

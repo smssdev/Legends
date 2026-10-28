@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The server's status for developers (moved from the home screen by X18): the server's health and the live test
 // (Sprint 9 W1). The home screen is the coach's dashboard (Home.vue).
+import { intlLocale } from '../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError } from '../api/client'
 import { live, liveState } from '../lib/echo'
@@ -18,7 +19,7 @@ const pingSentAt = ref(0)
 const pingMs = ref(0)
 
 const gameTime = computed(() => (health.value ? new Date(serverMs + (now.value - fetchedAt)) : null))
-const fmt = (d: Date) => new Intl.DateTimeFormat('ar', { dateStyle: 'full', timeStyle: 'medium' }).format(d)
+const fmt = (d: Date) => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'full', timeStyle: 'medium' }).format(d)
 const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
 const liveLabel = computed(() => ({ connecting: 'يتصل…', connected: 'متصل', unavailable: 'غير متاح', failed: 'غير مدعوم', disconnected: 'منقطع' })[liveState.value])
 

@@ -4,6 +4,7 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import { intlLocale } from '../../lib/i18n'
 import { useGlossary } from '../../lib/glossary'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -183,7 +184,7 @@ async function unlist(p: Mine) {
   busy.value = null
 }
 const fee = (p: Mine) => (p.quick.fee.currency === 'coins' ? `${p.quick.fee.amount} كوينز` : `${money(p.quick.fee.amount)} من أموال النادي`)
-const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString('ar-EG', { weekday: 'long', hour: 'numeric', minute: '2-digit' }) : '')
+const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', hour: 'numeric', minute: '2-digit' }) : '')
 const hours = (h: number) => (h <= 1 ? 'ساعة تقريباً' : h === 2 ? 'ساعتين تقريباً' : h <= 10 ? `${h} ساعات تقريباً` : `${h} ساعة تقريباً`)
 
 watch(line, () => loadList())

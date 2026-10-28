@@ -142,7 +142,7 @@ onMounted(load)
       <article v-for="o in [...pending, ...done]" :key="o.id" class="flex flex-col gap-2 rounded-xl border bg-surface p-4" :class="o.status === 'pending' && o.incoming ? 'border-gold/50' : 'border-transparent'">
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <b>{{ o.incoming ? $t('عرض وارد من {v0}', { v0: o.from.name }) : $t('عرضك إلى {v0}', { v0: o.to.name }) }}</b>
-          <span class="rounded-pill bg-text/10 px-2 py-0.5 text-xs">{{ STATUS[o.status] }}</span>
+          <span class="rounded-pill bg-text/10 px-2 py-0.5 text-xs">{{ $t(STATUS[o.status]) }}</span>
           <span v-if="o.status === 'pending'" class="text-xs text-text-muted">{{ $t('ينتهي بعد {v0} ساعة', { v0: hours(o.expires_at) }) }}</span>
         </div>
         <div class="grid gap-2 sm:grid-cols-2">

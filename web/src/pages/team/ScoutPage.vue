@@ -2,6 +2,7 @@
 // The scout (Sprint 26 W1, docs/features/scout.md): the criteria with the cost and the time, the search under
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
+import { t } from '../../lib/i18n'
 import { useGlossary } from '../../lib/glossary'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
@@ -32,8 +33,8 @@ const left = computed(() => {
   return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map((n) => String(n).padStart(2, '0')).join(':')
 })
 const LINE_NAMES: Record<string, string> = { gk: 'حارس', def: 'دفاع', mid: 'وسط', att: 'هجوم' }
-const describe = (c: Record<string, any>) => [c.line && LINE_NAMES[c.line], c.position, `قوة ${c.min_overall}${c.max_overall ? '–' + c.max_overall : '+'}`,
-  c.max_age && `حتى ${c.max_age} سنة`, c.max_value && `حتى ${money(c.max_value)}`, c.nationality, c.league].filter(Boolean).join(' · ')
+const describe = (c: Record<string, any>) => [c.line && t(LINE_NAMES[c.line] ?? ''), c.position, t('قوة {v0}', { v0: `${c.min_overall}${c.max_overall ? '–' + c.max_overall : '+'}` }),
+  c.max_age && t('حتى {v0} سنة', { v0: c.max_age }), c.max_value && t('حتى {v0}', { v0: money(c.max_value) }), c.nationality, c.league].filter(Boolean).join(' · ')
 
 async function load() {
   try {
@@ -131,7 +132,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <h2 class="font-display text-lg font-bold">{{ $t('طلب جديد') }}</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الخط') }}
-            <select v-model="form.line" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">{{ $t('أي خط') }}</option><option v-for="(n, k) in LINE_NAMES" :key="k" :value="k">{{ n }}</option></select>
+            <select v-model="form.line" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">{{ $t('أي خط') }}</option><option v-for="(n, k) in LINE_NAMES" :key="k" :value="k">{{ $t(n) }}</option></select>
           </label>
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('المركز') }}
             <select v-model="form.position" class="h-touch rounded-md bg-surface-sunk px-2 text-text" dir="ltr"><option value="">{{ $t('أي مركز') }}</option><option v-for="p in v.options.positions" :key="p" :value="p">{{ p }}</option></select>

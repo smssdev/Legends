@@ -17,7 +17,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       <header class="flex items-center justify-between gap-3">
         <h2 class="font-display text-2xl font-extrabold">{{ $t('بطاقة اللاعب') }}</h2>
         <div class="flex items-center gap-2">
-          <UiChip :tone="player.role === 'starter' ? 'win' : 'neutral'">{{ ROLE[player.role] }}</UiChip>
+          <UiChip :tone="player.role === 'starter' ? 'win' : 'neutral'">{{ $t(ROLE[player.role]) }}</UiChip>
           <button type="button" class="flex size-touch items-center justify-center rounded-lg bg-surface text-xl" :aria-label="$t('إغلاق')" @click="$emit('close')">×</button>
         </div>
       </header>
@@ -38,7 +38,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         </div>
         <dl class="grid grid-cols-2 gap-x-4 gap-y-3">
           <div v-for="(v, k) in player.attributes" :key="k">
-            <dt class="flex justify-between text-sm"><span>{{ ATTRIBUTES[k] }}</span><span class="font-numbers text-base">{{ v ?? '—' }}</span></dt>
+            <dt class="flex justify-between text-sm"><span>{{ $t(ATTRIBUTES[k]) }}</span><span class="font-numbers text-base">{{ v ?? '—' }}</span></dt>
             <dd class="mt-1 h-1.5 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="barColor(v ?? 0)" :style="{ width: `${v ?? 0}%` }" /></dd>
           </div>
         </dl>

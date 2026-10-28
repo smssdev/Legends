@@ -6,6 +6,7 @@ import { ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
 import { live } from '../lib/echo'
+import { playTone } from '../lib/tone'
 
 export type Message = components['schemas']['Message']
 
@@ -86,6 +87,7 @@ export const useInbox = defineStore('inbox', () => {
         .listen('.message', (e: { message: Message; unread: number }) => {
           if (!messages.value.some((m) => m.id === e.message.id)) messages.value.unshift(e.message)
           unread.value = e.unread
+          playTone()
         })
         .listen('.messages-read', (e: { ids: number[]; unread: number }) => markRead(e.ids, e.unread))
     } catch {

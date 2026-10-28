@@ -15,9 +15,13 @@
 }
 
 @layer base {
+  /* The colour on html only: a body with its own background would paint over the stadium and the chalkboard
+     (fixed layers with a negative z-index), as it did until Sprint 21 E3.4. */
+  html {
+    background: var(--color-bg);
+  }
   html,
   body {
-    background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
     font-size: var(--text-base);

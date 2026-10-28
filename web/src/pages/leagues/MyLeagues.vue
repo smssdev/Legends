@@ -68,7 +68,7 @@ function link(l: League) {
             <h2 class="truncate font-display text-xl font-extrabold">{{ $nm(l.name) }}</h2>
             <p class="text-sm text-text-muted">{{ $ln(l.template) }} · <span class="font-numbers">{{ l.team_count }}</span> {{ $t('فريقاً') }}</p>
           </div>
-          <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ STATUS[l.status] }}</UiChip>
+          <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ $t(STATUS[l.status]) }}</UiChip>
         </div>
         <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">
           {{ $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', { v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }) }}

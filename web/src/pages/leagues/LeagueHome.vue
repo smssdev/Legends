@@ -32,15 +32,15 @@ const waiting = computed(() => requests.value.filter((r) => r.status === 'pendin
 
 async function load() {
   try {
-    const { data } = await api.GET('/leagues/{league}', { params: { path: { league: leagueId.value } } })
-    league.value = data!.league
-    if (league.value.my_club_id) rememberLeague(league.value.id)
-    if (league.value.is_owner || league.value.my_request === 'approved') {
-      clubs.value = (await api.GET('/leagues/{league}/clubs', { params: { path: { league: leagueId.value } } })).data!.clubs
-    }
-    if (league.value.is_owner) {
-      requests.value = (await api.GET('/leagues/{league}/requests', { params: { path: { league: leagueId.value } } })).data!.requests ?? []
-    }
+    // [Sprint 21 E3.5] The league and its clubs together, shown at once: the page builds in one go instead of
+    // growing twice. The clubs answer 403 to a coach still waiting; then there are none to show.
+    const path = { params: { path: { league: leagueId.value } } }
+    const [l, c] = await Promise.all([api.GET('/leagues/{league}', path), api.GET('/leagues/{league}/clubs', path).catch(() => null)])
+    const data = l.data!.league
+    if (data.my_club_id) rememberLeague(data.id)
+    clubs.value = data.is_owner || data.my_request === 'approved' ? (c?.data?.clubs ?? []) : []
+    league.value = data
+    if (data.is_owner) requests.value = (await api.GET('/leagues/{league}/requests', path)).data!.requests ?? []
   } catch (e) {
     error.value = asApiError(e).message
   }
@@ -170,6 +170,11 @@ onMounted(load)
     </p>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
 
+    <!-- [Sprint 21 E3.5] Until the league comes, its outline holds the page. -->
+    <div v-if="!league && !error" class="flex flex-col gap-5" aria-hidden="true">
+      <div class="h-16 w-2/3 animate-pulse rounded-xl bg-surface" />
+      <div class="h-[32rem] animate-pulse rounded-xl bg-surface" />
+    </div>
     <template v-if="league">
       <header class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
@@ -180,7 +185,7 @@ onMounted(load)
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <UiChip :tone="league.status === 'running' ? 'win' : 'neutral'">{{ STATUS[league.status] }}</UiChip>
+          <UiChip :tone="league.status === 'running' ? 'win' : 'neutral'">{{ $t(STATUS[league.status]) }}</UiChip>
           <UiChip v-if="league.fair_league" tone="win">{{ $t('دوري نزيه') }}</UiChip>
           <UiChip v-if="league.integrity" tone="loss">{{ $t('منظومة النزاهة') }}</UiChip>
           <UiChip v-if="league.is_dev" tone="gold">{{ $t('للتطوير') }}</UiChip>
@@ -225,7 +230,7 @@ onMounted(load)
             </div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('المدربون') }}</dt><dd class="font-bold"><span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }} <span class="font-numbers">{{ league.team_count }}</span></dd></div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ END_MODES[league.season_end_mode] }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
           </dl>
           <p class="text-xs text-text-muted">{{ $t('{v0} ساعات الجولات بتوقيت القاهرة.', { v0: league.locked ? $t('الإعدادات مقفلة منذ بداية الموسم.') : $t('الإعدادات تُقفل عند بداية الموسم.') }) }}</p>
           <UiButton v-if="isDev && league.is_owner && !league.locked" variant="quiet" @click="startNow">{{ $t('ابدأ الآن (للتطوير)') }}</UiButton>
@@ -309,7 +314,7 @@ onMounted(load)
       <UiCard v-if="league.departures.length" :title="$t('غادروا هذا الموسم')">
         <ul class="flex flex-col gap-2 text-sm">
           <li v-for="(d, i) in league.departures" :key="i" class="rounded-lg bg-surface-sunk p-3">
-            <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>: {{ LEFT[d.reason] }}
+            <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>: {{ $t(LEFT[d.reason]) }}
             <span v-if="d.kick_reason" class="mt-1 block">{{ $t('السبب: «{v0}»', { v0: d.kick_reason }) }}</span>
             <span class="block text-xs text-text-muted">{{ since(d.left_at) }}</span>
           </li>
