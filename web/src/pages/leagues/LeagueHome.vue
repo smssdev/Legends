@@ -15,6 +15,7 @@ import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import { money, strength } from '../../lib/format'
+import AdSlot from '../../components/ads/AdSlot.vue'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -378,5 +379,7 @@ onMounted(load)
       </UiCard>
     </template>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
+    <!-- [X57] One Google ad at the page's foot. -->
+    <AdSlot />
   </div>
 </template>

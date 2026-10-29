@@ -2,6 +2,7 @@
 // The account (Sprint 10 W1; modern in Sprint 21 E2.7): a header with the picture, the name, the badge and the
 // account's number, then the verification by email (E2.4) and the invite gift (E2.3), and the settings in cards.
 import UiToggle from '../components/ui/UiToggle.vue'
+import LegalLinks from '../components/LegalLinks.vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
@@ -463,5 +464,7 @@ async function remove() {
         </div>
       </form>
     </section>
+    <!-- [X57] The privacy policy and the terms. -->
+    <LegalLinks />
   </div>
 </template>

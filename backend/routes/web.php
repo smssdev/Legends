@@ -1,5 +1,6 @@
 <?php
 
+use App\Ads\AdSense;
 use App\Http\Controllers\AccountLinkController;
 use App\Http\Controllers\InviteController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,14 @@ Route::get('/auth/google/callback', [AccountLinkController::class, 'googleCallba
 
 // The invite link shared on WhatsApp: the app, with the league's card for the link preview [Sprint 14 B2].
 Route::get('/join/{code}', [InviteController::class, 'show'])->middleware('throttle:60,1')->where('code', '[A-Za-z0-9#-]{1,16}');
+
+// [X57] Google's ads.txt: the AdSense account that sells this site's ads, once it is set on the server.
+Route::get('/ads.txt', function () {
+    $line = AdSense::adsTxt();
+    abort_if($line === null, 404);
+
+    return response($line, 200, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'public, max-age=3600']);
+});
 
 Route::get('/', $spa);
 Route::fallback(function () use ($spa) {

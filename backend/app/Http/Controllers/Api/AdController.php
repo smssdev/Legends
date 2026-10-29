@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Ads\AdReward;
+use App\Ads\AdSense;
 use App\Ads\HouseAds;
 use App\Ads\RewardVerifier;
 use App\Http\Controllers\Controller;
@@ -16,12 +17,17 @@ use Illuminate\Validation\Rule;
 /** [Sprint 21 E9] A rewarded video the provider verified cuts the coach's training or stadium time. */
 class AdController extends Controller
 {
-    /** [Sprint 20 S4] A watch of one of the game's own ads: the ad and the token that claims the reward at its end. */
+    /**
+     * [Sprint 20 S4] A watch of one of the game's own ads: the ad and the token that claims the reward at its end.
+     * [X57] provider=adsense: a watch of Google's rewarded video, once Google has one ready, timed the same way.
+     */
     public function start(Request $request): JsonResponse
     {
         abort_unless(config('game.ads.enabled') && config('game.ads.driver') === 'house', 503, 'الإعلانات غير مفعّلة بعد.');
+        $provider = $request->validate(['provider' => ['sometimes', 'string', Rule::in(['house', 'adsense'])]])['provider'] ?? 'house';
+        abort_if($provider === 'adsense' && ! (AdSense::config()['rewarded'] ?? false), 503, 'إعلانات Google غير مفعّلة بعد.');
 
-        return response()->json(HouseAds::start($request->user()->id, (string) ($request->user()->locale ?? app()->getLocale())), 201);
+        return response()->json(HouseAds::start($request->user()->id, (string) ($request->user()->locale ?? app()->getLocale()), $provider), 201);
     }
 
     public function reward(Request $request, League $league, RewardVerifier $verifier): JsonResponse

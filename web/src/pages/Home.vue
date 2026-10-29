@@ -11,6 +11,8 @@ import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
+import LegalLinks from '../components/LegalLinks.vue'
+import AdSlot from '../components/ads/AdSlot.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
@@ -108,6 +110,7 @@ async function openRanking(by: 'trophies' | 'level') {
       <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-6 font-bold text-on-gold">{{ $t('أنشئ حساباً') }}</RouterLink>
       <RouterLink to="/login" class="flex h-12 items-center rounded-lg bg-surface px-6 font-bold">{{ $t('دخول') }}</RouterLink>
     </div>
+    <LegalLinks />
   </div>
 
   <div v-else class="flex flex-col gap-4">
@@ -249,6 +252,8 @@ async function openRanking(by: 'trophies' | 'level') {
       </aside>
     </div>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <!-- [X57] One Google ad at the bottom of the home screen, away from the slots' buttons. -->
+    <AdSlot v-if="home" class="relative mt-4" />
 
     <!-- The global ranking [X18]. -->
     <div v-if="ranking || rankingBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('لوحة شرف المدربين')" @click.self="ranking = null">
