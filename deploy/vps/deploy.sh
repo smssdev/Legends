@@ -8,8 +8,12 @@ HOST="${LEGENDS_HOST:-root@2.24.47.100}"
 KEY="${LEGENDS_KEY:-$HOME/.ssh/legends_vps}"
 ssh_() { ssh -i "$KEY" -o BatchMode=yes "$HOST" "$@"; }
 
+# [Sprint 21 E8.7] The disk first: a build needs room, and a full disk stops the database. Under 2 GB free, stop here.
+ssh_ 'free=$(df -Pm / | awk "NR==2 {print \$4}"); echo "Disk: ${free} MB free"; [ "$free" -ge 2048 ] || {
+  echo "Under 2 GB free: clean up first (docker image prune -a, docker builder prune). The pgdata volume is never touched."; exit 1; }'
+
 # Only what the image is built from (Dockerfile), not the audio, Unity and logo sources (hundreds of MB).
-git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web docs/design deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
+git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web docs/design docs/api/frame-golden.json deploy | ssh_ 'rm -rf /opt/legends/src.new && mkdir -p /opt/legends/src.new && tar -xz -C /opt/legends/src.new \
   && rm -rf /opt/legends/src && mv /opt/legends/src.new /opt/legends/src'
 
 # The secrets, made once on the server: the database password and the app key's seed.
@@ -24,7 +28,9 @@ grep -q "^REVERB_APP_SECRET=" /opt/legends/.env || echo "REVERB_APP_SECRET=$(ope
 ssh_ 'install -m 755 /opt/legends/src/deploy/vps/set.sh /usr/local/bin/legends-set \
   && install -m 755 /opt/legends/src/deploy/vps/backup.sh /usr/local/bin/legends-backup \
   && { command -v rclone > /dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rclone > /dev/null; } \
-  && echo "0 1 * * * root /usr/local/bin/legends-backup >> /var/log/legends-backup.log 2>&1" > /etc/cron.d/legends-backup'
+  && echo "0 1 * * * root /usr/local/bin/legends-backup >> /var/log/legends-backup.log 2>&1" > /etc/cron.d/legends-backup \
+  && echo "*/5 * * * * root docker exec legends-app-1 php artisan server:health --notify > /dev/null 2>&1" > /etc/cron.d/legends-health'
+# [Sprint 21 E8.7] Every 5 minutes the health check (the disk among it) alerts the phones by ntfy when NTFY_TOPIC is set.
 
 ssh_ 'cd /opt/legends/src/deploy/vps && docker compose --env-file /opt/legends/.env up -d --build && docker image prune -f > /dev/null'
 # The backups volume is made by Docker as root: the game (www-data) writes its copies there before each migrate.

@@ -1,6 +1,6 @@
-// The match screen's smooth mode [X30]: on a weak phone the cartoon simulator drops what costs the most for the
-// least (blurred glass, SVG glow filters, the crowd's hundreds of dots, the light beams) and draws its scenes at
-// 30 frames a second instead of 60, so the moments play without stutter. It turns on by itself from what the
+// The match screen's smooth mode [X30], its QualityTier (README 7.7): on a weak phone the cartoon simulator drops
+// what costs the most for the least (blurred glass, SVG glow filters, the crowd's hundreds of dots, the light
+// beams) and draws its scenes at 30 frames a second instead of 60, so the moments play without stutter. It turns on by itself from what the
 // device says of itself, or when the frames start to fall behind during a match; the coach can force it either way.
 import { ref, watch } from 'vue'
 

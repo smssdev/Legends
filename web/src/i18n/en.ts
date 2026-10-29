@@ -423,6 +423,7 @@ export const EN: Record<string, string> = {
   'المباراة القادمة': 'Next match',
   'مباراة جديدة': 'New match',
   'مساحة إعلانية': 'Ad space',
+  'عدت إلى الوقت الحالي: فاتتك {v0} دقيقة': 'Back to live: you missed {v0} minutes',
   'انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء': 'Connection lost, retrying... you won\'t miss anything',
   'تفاعل مع المباراة': 'React to the match',
   'التشجيع والاستهجان بعد': 'Cheering and booing in',

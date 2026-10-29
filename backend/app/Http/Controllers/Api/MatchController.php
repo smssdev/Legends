@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Data\ClubLogo;
 use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
+use App\League\LiveDegrade;
 use App\League\MatchOrders;
 use App\League\MatchReplay;
 use App\League\MatchRunner;
@@ -65,7 +66,7 @@ class MatchController extends Controller
         if ($m->status === 'live' && Cache::add("watched:{$request->user()->id}:{$m->id}", 1, 3600)) {
             Activity::record($request->user()->id, 'matches_watched');
         }
-        $since = (int) $request->query('since', 0);
+        $since = max(0, (int) $request->query('since', 0));
         $live = Cache::get("league-match:{$m->id}");
         $ticks = array_values(array_filter($live['recent'] ?? [], fn ($t) => $t['tick'] > $since));
         $now = GameClock::nowMs();
@@ -73,10 +74,14 @@ class MatchController extends Controller
         $shown = array_values(array_filter($ticks, fn ($t) => ($t['at'] ?? 0) <= $now + (int) config('game.match.live_lead_ms')));
 
         $tick = $shown ? end($shown)['tick'] : $since;
-        // Back after a gap (a lost connection, a locked phone): the minutes missed come back as their events,
-        // so nothing is lost; the latest minutes come whole.
+        // Back after a gap (a lost connection, a locked phone, a hidden tab, joining late): one path for all
+        // [E8.5]. The screen jumps to now with a summary of everything missed (the goals and the red cards), the
+        // events of the latest missed minutes, and the latest minutes whole. At most missed_max_minutes of events
+        // per request [E8.6]: the summary covers the rest, so a long gap never makes a big reply.
         $gap = $shown && $shown[0]['tick'] > $since + 1;
-        $missed = $gap ? $this->missed($m, $live, $since, $shown[0]['tick'], $you) : [];
+        $missed = $gap && LiveDegrade::summary() ? $this->missed($m, $live, $since, $shown[0]['tick'], $you) : [];
+        $summary = $gap && LiveDegrade::summary() ? self::summary($missed, $since, $shown[0]['tick']) : null;
+        $missed = array_slice($missed, -(int) config('game.live.missed_max_minutes'));
 
         return response()->json([
             'started' => true,
@@ -86,10 +91,13 @@ class MatchController extends Controller
             'next_at' => $m->status === 'live' ? (int) $m->next_at : null,
             'gap' => $gap,
             'missed' => $missed,
-            'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), $shown),
+            'summary' => $summary,
+            'ticks' => array_map(fn ($t) => LiveDegrade::voice() ? Simulator::redact($t, $you) : ['voice' => null] + Simulator::redact($t, $you), $shown),
             'readings' => $this->readings($m, $f, $you, $tick),
             // [UP17] The break under way: its end, the coaches ready, and whose injured player waits.
             'pause' => $m->status === 'live' ? MatchRunner::pauseOf($m->id) : null,
+            // [E8.7] Under load, how long the screens wait between polls (null: their own pace).
+            'poll_ms' => LiveDegrade::pollMs(),
         ] + MatchSocial::recent($m->id));
     }
 
@@ -131,6 +139,26 @@ class MatchController extends Controller
         ksort($byTick);
 
         return array_map(fn ($t) => Simulator::redact($t, $you), array_values($byTick));
+    }
+
+    /**
+     * What a screen missed in a gap [E8.5]: how many minutes, and the goals and red cards in them, in order.
+     * Built from the redacted minutes, so it holds nothing hidden.
+     */
+    public static function summary(array $missed, int $since, int $until): array
+    {
+        $goals = $reds = [];
+        foreach ($missed as $t) {
+            foreach ($t['events'] as $e) {
+                if ($e['type'] === 'goal') {
+                    $goals[] = ['minute' => $t['minute'], 'team' => $e['team'], 'scorer' => $e['scorer'] ?? null];
+                } elseif ($e['type'] === 'card' && ($e['color'] ?? null) === 'red') {
+                    $reds[] = ['minute' => $t['minute'], 'team' => $e['team'], 'player' => $e['player'] ?? null];
+                }
+            }
+        }
+
+        return ['from_tick' => $since + 1, 'to_tick' => $until - 1, 'minutes' => max(0, $until - 1 - $since), 'goals' => $goals, 'reds' => $reds];
     }
 
     /** The assistant's readings to this coach so far (other members get none). */

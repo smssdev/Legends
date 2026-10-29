@@ -2,10 +2,15 @@
 # PostgreSQL. CloudPanel's nginx gives HTTPS and passes the requests to 127.0.0.1:8000.
 # Run by deploy/vps/deploy.sh, with the secrets in /opt/legends/.env on the server (never in the repository).
 name: legends
+# [Sprint 21 E8.7] Docker keeps each container's output in files on the disk: five of 10 MB at most, then the oldest goes.
+x-logs: &logs
+  driver: json-file
+  options: { max-size: "10m", max-file: "5" }
 services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
+    logging: *logs
     environment:
       POSTGRES_USER: legends
       POSTGRES_DB: legends
@@ -23,6 +28,7 @@ services:
       context: ../..
     image: legends:latest
     restart: unless-stopped
+    logging: *logs
     depends_on:
       db:
         condition: service_healthy

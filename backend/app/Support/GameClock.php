@@ -31,6 +31,15 @@ class GameClock
         return (int) self::now()->getTimestampMs();
     }
 
+    /**
+     * A stopwatch for timing code (sim:perf) [Sprint 21 E8.1]: nanoseconds on the machine's monotonic clock. Only
+     * the difference of two readings means anything; it is never the game's time.
+     */
+    public static function stopwatchNs(): int
+    {
+        return hrtime(true);
+    }
+
     /** Seconds the game is ahead of real time (behind when negative). */
     public static function offset(): int
     {

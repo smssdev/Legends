@@ -13,6 +13,8 @@ COPY backend/resources/commentary/voice.json ./backend/resources/commentary/voic
 # The Arabic names of the leagues, clubs and players [X40]: the names dictionary the build writes.
 COPY data/names ./data/names
 COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
+# The RenderFrame golden vectors, checked before the build [Sprint 21 E8.4].
+COPY docs/api/frame-golden.json ./docs/api/frame-golden.json
 RUN cd web && npm run build
 
 FROM composer:2 AS vendor

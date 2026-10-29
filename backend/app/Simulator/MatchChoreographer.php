@@ -7,9 +7,9 @@ use App\Engine\MatchSetup;
 use App\Engine\SeededRandom;
 
 /**
- * Turns one minute of engine events into keyframes (docs/MATCH_VIEW.md 4.3):
+ * Turns one Tick of engine events into its Keyframes (docs/MATCH_VIEW.md 4.3, terms in README 7.7):
  * every player's position and the ball (with height) at 6 moments of the
- * minute. Clients only interpolate between frames, so the web app and the
+ * minute. Clients only interpolate RenderFrames between them, so the web app and the
  * Flutter app later draw exactly the same picture.
  *
  * Coordinates are decimetres: x 0..1050 (the home team attacks towards
