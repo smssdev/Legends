@@ -526,6 +526,16 @@ paths:
                     properties:
                       whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
                       telegram: { type: string, nullable: true, example: 'https://t.me/legends_support' }
+                  adsense:
+                    type: object
+                    nullable: true
+                    description: '[X57] Google AdSense for the web: null until the owner''s account (ADSENSE_CLIENT) is set on the server'
+                    required: [client, slot, rewarded, test]
+                    properties:
+                      client: { type: string, example: ca-pub-1234567890123456 }
+                      slot: { type: string, nullable: true, description: The display unit's id, null for none }
+                      rewarded: { type: boolean, description: 'Google''s rewarded video (H5 Games Ads) is tried before the game''s own ad' }
+                      test: { type: boolean, description: Google's test ads, until H5 Games Ads approves the site }
   /health/ping:
     post:
       tags: [system]
@@ -2572,7 +2582,15 @@ paths:
     post:
       tags: [team]
       summary: '[Sprint 20 S4] Watch one of the game''s own ads: the ad, and the token that claims the reward once its seconds have passed'
-      description: The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429).
+      description: The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429). [X57] provider=adsense times a watch of Google's rewarded video instead (ad is null), when the owner turned them on.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider: { type: string, enum: [house, adsense], default: house }
       responses:
         '201':
           description: The watch
@@ -2585,7 +2603,8 @@ paths:
                   token: { type: string, description: 'Sent to POST /leagues/{league}/ads/reward at the end' }
                   ends_at: { type: string, format: date-time, description: When the reward can be claimed }
                   ad:
-                    type: object
+                    type: [object, 'null']
+                    description: null for Google's video (provider=adsense)
                     required: [id, title, body, cta_label, cta_url, seconds]
                     properties:
                       { id: { type: [integer, 'null'], description: null for a built-in ad }, title: { type: string }, body: { type: string },

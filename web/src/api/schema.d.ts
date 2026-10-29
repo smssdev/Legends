@@ -1130,6 +1130,17 @@ export interface paths {
                                 /** @example https://t.me/legends_support */
                                 telegram: string | null;
                             };
+                            /** @description [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server */
+                            adsense?: {
+                                /** @example ca-pub-1234567890123456 */
+                                client: string;
+                                /** @description The display unit's id */
+                                slot: string | null;
+                                /** @description Google's rewarded video (H5 Games Ads) is tried before the game's own ad */
+                                rewarded: boolean;
+                                /** @description Google's test ads */
+                                test: boolean;
+                            } | null;
                         };
                     };
                 };
@@ -6594,7 +6605,7 @@ export interface paths {
         put?: never;
         /**
          * [Sprint 20 S4] Watch one of the game's own ads: the ad, and the token that claims the reward once its seconds have passed
-         * @description The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429).
+         * @description The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429). [X57] provider=adsense times a watch of Google's rewarded video instead (ad is null), when the owner turned them on.
          */
         post: {
             parameters: {
@@ -6603,7 +6614,17 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @default house
+                         * @enum {string}
+                         */
+                        provider?: "house" | "adsense";
+                    };
+                };
+            };
             responses: {
                 /** @description The watch */
                 201: {
@@ -6619,6 +6640,7 @@ export interface paths {
                              * @description When the reward can be claimed
                              */
                             ends_at: string;
+                            /** @description null for Google's video (provider=adsense) */
                             ad: {
                                 /** @description null for a built-in ad */
                                 id: number | null;
@@ -6627,7 +6649,7 @@ export interface paths {
                                 cta_label: string | null;
                                 cta_url: string | null;
                                 seconds: number;
-                            };
+                            } | null;
                         };
                     };
                 };

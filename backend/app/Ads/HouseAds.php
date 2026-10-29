@@ -21,25 +21,35 @@ class HouseAds implements RewardVerifier
         return 'house';
     }
 
-    /** A new watch for this account: the ad to show and the token that will claim the reward. */
-    public static function start(int $userId, string $locale): array
+    /**
+     * A new watch for this account: the ad to show and the token that will claim the reward. [X57] For Google's rewarded
+     * video (adsense) there is no ad of ours to show: Google plays its own, and the watch only times it on the server.
+     */
+    public static function start(int $userId, string $locale, string $provider = 'house'): array
     {
         $now = GameClock::now();
         // A few at a time: a token is a short wait, not a stock to hoard.
         abort_if(DB::table('ad_watches')->where('user_id', $userId)->whereNull('used_at')->where('started_at', '>', $now->copy()->subMinutes(10))->count() >= 5,
             429, 'شاهد الإعلان المفتوح أولاً.');
-        $ads = DB::table('house_ads')->where('active', true)->get();
-        $ad = $ads->isNotEmpty() ? $ads[random_int(0, $ads->count() - 1)] : null;
-        $shown = $ad
-            ? ['id' => $ad->id, 'title' => $ad->title, 'body' => $ad->body, 'cta_label' => $ad->cta_label, 'cta_url' => $ad->cta_url, 'seconds' => (int) $ad->seconds]
-            : self::builtIn($locale);
+        $ad = null;
+        if ($provider === 'adsense') {
+            $shown = null;
+            $seconds = (int) config('game.adsense.adsense_seconds');
+        } else {
+            $ads = DB::table('house_ads')->where('active', true)->get();
+            $ad = $ads->isNotEmpty() ? $ads[random_int(0, $ads->count() - 1)] : null;
+            $shown = $ad
+                ? ['id' => $ad->id, 'title' => $ad->title, 'body' => $ad->body, 'cta_label' => $ad->cta_label, 'cta_url' => $ad->cta_url, 'seconds' => (int) $ad->seconds]
+                : self::builtIn($locale);
+            $seconds = $shown['seconds'];
+        }
         $token = Str::random(48);
-        DB::table('ad_watches')->insert(['token' => $token, 'user_id' => $userId, 'house_ad_id' => $ad?->id, 'seconds' => $shown['seconds'], 'started_at' => $now]);
+        DB::table('ad_watches')->insert(['token' => $token, 'user_id' => $userId, 'house_ad_id' => $ad?->id, 'seconds' => $seconds, 'started_at' => $now, 'provider' => $provider]);
         if ($ad) {
             DB::table('house_ads')->where('id', $ad->id)->increment('views');
         }
 
-        return ['token' => $token, 'ad' => $shown, 'ends_at' => $now->copy()->addSeconds($shown['seconds'])->toIso8601ZuluString()];
+        return ['token' => $token, 'ad' => $shown, 'ends_at' => $now->copy()->addSeconds($seconds)->toIso8601ZuluString()];
     }
 
     /** One of the game's own ads, in the account's language. */

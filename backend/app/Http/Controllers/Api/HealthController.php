@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Ads\AdSense;
 use App\Events\ServerPing;
 use App\Http\Controllers\Controller;
 use App\Support\GameClock;
@@ -25,6 +26,8 @@ class HealthController extends Controller
             'clock_offset' => GameClock::offset(),
             'broadcast' => ['channel' => ServerPing::CHANNEL, 'event' => ServerPing::NAME],
             'support' => self::support(),
+            // [X57] Google AdSense for the web, null until the owner's account is set on the server.
+            'adsense' => AdSense::config(),
         ]);
     }
 

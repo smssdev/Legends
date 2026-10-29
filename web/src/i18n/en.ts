@@ -1906,4 +1906,13 @@ export const EN: Record<string, string> = {
   'خُصم {v0} كوينز من رصيدك.': '{v0} coins were taken from your balance.',
   'أكّد: {v0} كوينز': 'Confirm: {v0} coins',
   '{v0} لاعباً زاد تدريبهم ولياقتهم (+{v1})': '{v0} players gained training and fitness (+{v1})',
+  'سياسة الخصوصية': 'Privacy policy',
+  'الشروط والأحكام': 'Terms and conditions',
+  'الشروط والخصوصية': 'Terms and privacy',
+  'آخر تحديث:': 'Last updated:',
+  'العودة إلى اللعبة': 'Back to the game',
+  'روابط': 'Links',
+  'بإنشائك الحساب، بحساب Google أو بالخانات، فأنت توافق على': 'By creating your account, with Google or the fields, you agree to the',
+  'وعلى': 'and the',
+  'أُغلق الإعلان قبل نهايته، فلم يُقلَّص الوقت.': 'The ad was closed before its end, so no time was cut.',
 }

@@ -5,6 +5,7 @@
 // exposed, and one article a round for each coach.
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
+import AdSlot from '../../components/ads/AdSlot.vue'
 
 const props = defineProps<{ id: string }>()
 type Article = { id: number; title: string; body: string; status: string; author: { id: number; name: string }; at: string }
@@ -160,5 +161,7 @@ onMounted(() => load())
       <p v-if="sent" class="text-sm text-success" role="status">{{ sent }}</p>
     </form>
     </template>
+    <!-- [X57] One Google ad at the page's foot. -->
+    <AdSlot />
   </div>
 </template>

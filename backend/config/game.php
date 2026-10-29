@@ -445,6 +445,14 @@ return [
     // [Sprint 20, question 5] The board's mood: calm before after_rounds league rounds; then happy at or above the
     // objective's place, worried up to worried_places below it, angry further down.
     'board' => ['after_rounds' => 3, 'worried_places' => 2],
+    // [X57] Google AdSense, the owner's real ad revenue (the owner's request 2026-10-29), off until ADSENSE_CLIENT is set
+    // on the server (legends-set ADSENSE_CLIENT, the account's ca-pub-…): then /ads.txt names the account, the page
+    // carries its code, and display units show in a few calm places (never in a match). With ADSENSE_REWARDED, a
+    // rewarded video (H5 Games Ads) is tried before our own ad and cuts the same minutes; its watch is timed on the
+    // server for at least adsense_seconds (Google has no server check for the web), and the 5 a task stay. test asks
+    // Google for test ads (ADSENSE_TEST) until H5 Games Ads approves the site.
+    'adsense' => ['client' => env('ADSENSE_CLIENT'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
+        'test' => (bool) env('ADSENSE_TEST', false), 'adsense_seconds' => 10],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
             ['title' => 'ادعُ صديقاً واربح 100 كوينز', 'body' => 'انسخ رابط الدعوة من «حسابي». كل صديق يسجّل منه ويوثّق حسابه يعطيك 100 كوينز، حتى 10 أصدقاء.',
