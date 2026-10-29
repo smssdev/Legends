@@ -41,6 +41,27 @@ class LeagueMatch
         ], MatchFactory::snapshot()), $frozen);
     }
 
+    /**
+     * [Sprint 20 B4] A friendly between two clubs of a league, from their sheets as they are now (the coach's saved
+     * lineup and tactics, the computer's own for a bot), on the home side's ground, with a medium referee. Nothing of
+     * it is a fixture: no bribe, no ticket, no press statement; each side's morale as it stands.
+     */
+    public static function friendly(Club $home, Club $away, int $seed): array
+    {
+        $sheet = function (Club $club) {
+            $lineup = $club->isBot() ? TeamSheet::best($club, Bot::restBelow($club)) : MatchPrep::fixed($club)[0];
+
+            return (object) ['formation' => $lineup['formation'], 'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']),
+                'bench' => json_encode($lineup['bench']), 'takers' => json_encode(TeamSheet::takers($club, $lineup)),
+                'tactics' => json_encode($club->isBot() ? MatchSetup::DEFAULT_TACTICS : Tactics::of($club)), 'squad' => null];
+        };
+        $side = fn (Club $c) => self::side($c, $sheet($c)) + ['morale' => (int) $c->morale, 'bribed' => false];
+
+        return self::withFitness(MatchSetup::build($side($home), $side($away), [
+            'seed' => $seed, 'competition' => 'league', 'referee' => self::REFEREE['medium'], 'venue' => 'home', 'pitch' => Stadium::stage($home->id, 'pitch'),
+        ], MatchFactory::snapshot()), []);
+    }
+
     private static function side(Club $club, object $sheet): array
     {
         $takers = json_decode($sheet->takers, true);

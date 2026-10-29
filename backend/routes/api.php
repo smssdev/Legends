@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\FriendlyController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\HonoursController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PressController;
+use App\Http\Controllers\Api\QuestController;
 use App\Http\Controllers\Api\ScoutController;
 use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -119,6 +122,10 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::put('tactics', 'saveTactics');
         Route::put('scenarios', 'saveScenarios');
         Route::get('next-match', 'nextMatch');
+        // [Sprint 20 B1, B3] The club board in one request, and the matches the coach missed.
+        Route::get('summary', [ClubBoardController::class, 'summary']);
+        Route::get('missed', [ClubBoardController::class, 'missed']);
+        Route::post('missed/seen', [ClubBoardController::class, 'seen'])->middleware('throttle:30,1,missed-seen');
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
@@ -202,6 +209,12 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
         Route::post('{line}/finish', 'finish')->whereIn('line', ['gk', 'def', 'mid', 'att'])->middleware('throttle:30,1,finish');
     });
+    // [Sprint 20 B4] The friendlies.
+    Route::get('{league}/friendlies', [FriendlyController::class, 'show'])->whereNumber('league');
+    Route::post('{league}/friendlies', [FriendlyController::class, 'play'])->whereNumber('league')->middleware('throttle:10,1,friendlies');
+    // [Sprint 20 B5] The weekly quests.
+    Route::get('{league}/quests', [QuestController::class, 'show'])->whereNumber('league');
+    Route::post('{league}/quests/claim', [QuestController::class, 'claim'])->whereNumber('league')->middleware('throttle:20,1,quests');
     // [Sprint 21 E9] A verified rewarded video cuts a training or stadium time (off until the owner picks a provider).
     Route::post('{league}/ads/reward', [AdController::class, 'reward'])->whereNumber('league')->middleware('throttle:20,1,ads');
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
