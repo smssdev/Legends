@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Assistant\Assistant;
+use App\Assistant\PublicGuide;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,12 @@ class AssistantController extends Controller
         $page = $request->validate(['page' => ['sometimes', 'nullable', 'string', 'max:40']])['page'] ?? null;
 
         return response()->json($this->assistant->start($request->user(), (string) $page, app()->getLocale()));
+    }
+
+    /** [X58] The game's guide for everyone, signed in or not: the public "how to play" page. */
+    public function guide(): JsonResponse
+    {
+        return response()->json(['sections' => PublicGuide::sections(app()->getLocale())])->header('Cache-Control', 'public, max-age=600');
     }
 
     public function ask(Request $request): JsonResponse

@@ -6663,6 +6663,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/guide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * [X58] The game's guide for everyone: the public "how to play" page
+         * @description The Assistant Coach's explanations in sections, in the request's language (Accept-Language). No sign-in. 60 a minute.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The guide */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sections: components["schemas"]["GuideSection"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/assistant/start": {
         parameters: {
             query?: never;
@@ -9850,6 +9891,17 @@ export interface components {
             } | null;
             /** Format: date-time */
             at: string;
+        };
+        /** @description [X58] A section of the public guide */
+        GuideSection: {
+            /** @example tactics */
+            id: string;
+            title: string;
+            topics: {
+                id: string;
+                q: string;
+                a: string;
+            }[];
         };
         /** @description [Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far */
         AdStatus: {

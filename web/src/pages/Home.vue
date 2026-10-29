@@ -1,17 +1,16 @@
 <script setup lang="ts">
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
-// record, the trophies and the rankings below. A guest sees the way in.
+// record, the trophies and the rankings below. A guest sees the way in ([X58] the landing page).
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
-import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
-import LegalLinks from '../components/LegalLinks.vue'
+import Landing from './Landing.vue'
 import AdSlot from '../components/ads/AdSlot.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
@@ -108,16 +107,8 @@ async function openRanking(by: By) {
 </script>
 
 <template>
-  <div v-if="!auth.user" class="flex flex-col items-center gap-5 py-10 text-center">
-    <BrandMark />
-    <h1 class="font-display text-3xl font-extrabold">{{ $t('درّب ناديك المفضل مع أصحابك') }}</h1>
-    <p class="max-w-md text-text-soft">{{ $t('دوريات خاصة، ومباريات تديرها مباشرة، وحتى عشرة أندية في وقت واحد.') }}</p>
-    <div class="flex gap-3">
-      <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-6 font-bold text-on-gold">{{ $t('أنشئ حساباً') }}</RouterLink>
-      <RouterLink to="/login" class="flex h-12 items-center rounded-lg bg-surface px-6 font-bold">{{ $t('دخول') }}</RouterLink>
-    </div>
-    <LegalLinks />
-  </div>
+  <!-- [X58] A visitor sees the whole game before signing in. -->
+  <Landing v-if="!auth.user" />
 
   <div v-else class="flex flex-col gap-4">
     <!-- [Sprint 21 E3.4] The coach's chalkboard behind the home screen. -->
