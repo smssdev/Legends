@@ -8,9 +8,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { nm } from '../../lib/names'
 import { api, asApiError, ensureCsrf } from '../../api/client'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
-import { useGlossary } from '../../lib/glossary'
 import { money } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { barColor, useTeam, type Formation, type SquadPlayer } from './team'
@@ -91,7 +89,6 @@ const short = (latin: string) => {
   return w.length > 1 && w[w.length - 1].length <= 3 ? w.slice(-2).join(' ') : w[w.length - 1]
 }
 // Chemistry [X22]: measured by the server on the saved eleven, so the links show until the lineup changes.
-const g = useGlossary()
 const chemistry = computed(() => team.value?.lineup.chemistry)
 const chemColor = (score: number) => (score >= 85 ? 'var(--color-success)' : score < 50 ? 'var(--color-live)' : 'var(--color-gold)')
 const LINK_COLOR = { green: 'var(--color-success)', yellow: 'var(--color-gold)', red: 'var(--color-live)' } as const
@@ -403,7 +400,7 @@ async function saveCustom() {
       </div>
 
       <div v-if="chemistry" class="flex items-center gap-3 rounded-xl bg-surface px-3 py-2">
-        <span class="flex items-center gap-1 text-sm font-bold">{{ $t('الكيمياء') }}<HelpTip :text="g.chemistry" :label="$t('الكيمياء')" /></span>
+        <span class="flex items-center gap-1 text-sm font-bold">{{ $t('الكيمياء') }}</span>
         <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="chemistry.score" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('الكيمياء')">
           <span class="block h-full rounded-full" :style="{ width: `${chemistry.score}%`, background: chemColor(chemistry.score) }" />
         </span>
@@ -417,8 +414,6 @@ async function saveCustom() {
 
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
       <p v-if="selected" class="text-sm text-gold">{{ $t('اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.') }}</p>
-      <p v-if="!editing" class="text-xs text-text-muted">{{ $t('التشكيلة مقفلة. اضغط «تعديل» لتحريك اللاعبين وتبديلهم بالاحتياط وبباقي الفريق، ثم «حفظ».') }}</p>
-      <p v-else class="text-xs text-text-muted">{{ $t('اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.') }}</p>
 
       <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
       <div ref="pitch" :class="editing ? 'ring-2 ring-gold/60' : ''" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
@@ -515,7 +510,6 @@ async function saveCustom() {
 
       <section class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-takers">
         <h2 id="h-takers" class="font-display text-xl font-extrabold">{{ $t('القائد ومنفذو الكرات الثابتة') }}</h2>
-        <p class="text-xs text-text-muted">{{ $t('من الأساسيين المحفوظين. «تلقائي» يختار الأنسب، ولو خرج المنفذ يختار المحرك بديله.') }}</p>
         <label v-for="(label, role) in ROLES" :key="role" class="flex items-center justify-between gap-3">
           <span class="font-bold">{{ $t(label) }}</span>
           <select

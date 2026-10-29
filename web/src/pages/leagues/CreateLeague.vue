@@ -267,7 +267,6 @@ const field = (name: string) => error.value?.field(name) ?? ''
           <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('مقاعد المدربين') }}</dt><dd class="font-bold"><span class="font-numbers">{{ count }}</span> {{ $t('· مقعدك و') }}<span class="font-numbers">{{ count - 1 }}</span> {{ $t('لأصحابك') }}</dd></div>
           <div class="flex justify-between py-2"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(custom ? startingBudget : FREE.budget) }}</dd></div>
         </dl>
-        <p class="text-xs text-text-muted">{{ $t('بعد الإنشاء تختار فريقك، وتحصل على كود تشاركه. الفرق الأخرى يديرها الحاسوب حتى ينضم أصحابك.') }}</p>
         <p v-if="short" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="alert">{{ $t('رصيدك {v0} كوينز، والدوري المخصص يحتاج {v1}.', { v0: wallet.view?.balance ?? 0, v1: coins }) }}</p>
         <UiButton type="submit" block :disabled="!template || short">
           <template v-if="customized">{{ $t('إنشاء الدوري المخصص ·') }} <img src="/brand/coin.svg" alt="" class="inline size-5 align-[-4px]" /> <span class="font-numbers">{{ coins }}</span> {{ $t('كوينز') }}</template>

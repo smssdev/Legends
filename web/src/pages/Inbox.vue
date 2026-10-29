@@ -38,7 +38,6 @@ onMounted(() => inbox.load())
     <section v-else-if="!inbox.messages.length" class="flex flex-col items-center gap-2 rounded-xl bg-surface p-8 text-center">
       <span class="text-4xl" aria-hidden="true">📭</span>
       <h2 class="font-display text-xl font-extrabold">{{ $t('لا رسائل بعد') }}</h2>
-      <p class="text-sm text-text-muted">{{ $t('هنا يصلك حكم مباراتك، وتقاريرها، وطلبات الانضمام، وكل ما يخص دورياتك.') }}</p>
     </section>
 
     <ul v-else class="flex flex-col gap-2" :aria-label="$t('الرسائل')">

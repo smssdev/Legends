@@ -72,7 +72,6 @@ const go = (to: string) => {
           </button>
         </li>
       </ul>
-      <p class="mt-2 text-center text-xs text-text-muted">{{ $t('كل سطر يفتح شاشته، ويختفي حين تنجزه') }}</p>
     </template>
   </section>
 </template>

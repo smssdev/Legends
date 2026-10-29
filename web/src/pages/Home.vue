@@ -11,7 +11,6 @@ import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
-import HelpTip from '../components/ui/HelpTip.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
@@ -114,7 +113,7 @@ async function openRanking(by: 'trophies' | 'level') {
 
       <!-- The slots, the screen's heart, right under the card: all ten without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">
-        <h2 class="flex items-center text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }} <HelpTip :label="$t('الفتحات')" :text="$t('لك عشر فتحات: في كل واحدة نادٍ في دوري. اضغط فتحة ناديك لتدخلها، أو فتحة فارغة لتنضم إلى دوري أو تنشئ دوريك.')" /></h2>
+        <h2 class="flex items-center text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }}</h2>
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->

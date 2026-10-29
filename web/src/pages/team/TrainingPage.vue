@@ -3,8 +3,6 @@
 // bars and the countdown to the next session, and the candidates of the chosen line. Every number comes from
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
 import AdReward from '../../components/ads/AdReward.vue'
-import { useGlossary } from '../../lib/glossary'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -16,7 +14,6 @@ import { count, money, type Line } from '../../lib/format'
 
 type View = components['schemas']['TrainingView']
 // The "?" texts [X19].
-const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -99,8 +96,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><HelpTip :text="g.training" :label="$t('التدريب')" /><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'team' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الفريق ›') }}</RouterLink></span>
-        <p class="mt-1 text-sm text-text-muted">{{ $t('لاعب من كل خط · جلسة كل {v0} ساعات حتى لو كنت غائباً · عند 100% القوة +1 · التدريب مفتوح طوال الموسم: بعد الإمكانية أبطأ، حتى 99', { v0: v ? Math.round(v.interval_minutes / 60) : 8 }) }}</p>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'team' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الفريق ›') }}</RouterLink></span>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
@@ -166,7 +162,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
 
       <section :aria-label="$t('مرشحون للتدريب')" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
         <div class="flex flex-wrap items-center gap-2 px-1">
-          <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">{{ $t('مرشحون للتدريب') }}</h2><HelpTip :text="g.potential" :label="$t('الإمكانية')" /></span>
+          <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">{{ $t('مرشحون للتدريب') }}</h2></span>
           <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
           <div class="ms-auto flex gap-1" role="tablist" :aria-label="$t('الخط')">
             <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" role="tab" :aria-selected="line === k" class="h-touch rounded-md px-3 text-sm font-bold"

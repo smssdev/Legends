@@ -4,8 +4,6 @@
 // start with its price. One part at a time; the countdown runs on the server's clock.
 import AdReward from '../../components/ads/AdReward.vue'
 import { intlLocale } from '../../lib/i18n'
-import { useGlossary } from '../../lib/glossary'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -17,7 +15,6 @@ import { currentLeague } from '../../lib/currentLeague'
 type View = components['schemas']['StadiumView']
 type Section = View['sections'][number]
 // The "?" texts [X19].
-const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -110,8 +107,7 @@ onBeforeUnmount(() => clearInterval(tick))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الملعب') }}</h1><HelpTip :text="g.stadium" :label="$t('الملعب')" /></span>
-        <p class="mt-1 text-sm text-text-muted">{{ $t('جزء واحد في كل مرة · كل جزء {v0} ساعة · تبدأ كل جزء بنفسك', { v0: v ? Math.round(v.part_minutes / 60) : 18 }) }}</p>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الملعب') }}</h1></span>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
         <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
@@ -165,7 +161,6 @@ onBeforeUnmount(() => clearInterval(tick))
         </article>
       </section>
 
-      <p class="rounded-xl bg-surface p-4 text-sm text-text-muted">{{ $t('الملعب كاملاً {v0} جزءاً، أي حوالي 91% من الموسم. اختر أولوياتك: الدخل، أو ميزة الأرض، أو سرعة التدريب.', { v0: v.parts_total }) }}</p>
     </template>
   </div>
 </template>

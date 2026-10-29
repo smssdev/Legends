@@ -502,6 +502,10 @@ return [
     // [UP13] The assistant takes a team whose coach has not been in its league since its last match (or is on
     // holiday): the tired under min_fitness rest, and one of these balanced formations with balanced tactics.
     'assistant' => ['min_fitness' => 75, 'formations' => ['4-3-3A', '4-4-2A', '4-3-3B', '4-4-2B']],
+    // [Sprint 22] The Assistant Coach (Manager Bot): smart answers per coach per Cairo day (then the guide answers), the
+    // messages of the conversation sent back with each question, the longest question, and the reads of the coach's
+    // own club one answer may make.
+    'manager_bot' => ['daily_ai' => 30, 'history' => 8, 'question_max' => 500, 'reads_max' => 4],
     'specialists' => ['contract_days' => 7,
         // [X20] The staff by stars, 1 to 5: a coach for each line (the keeper coach for the keepers), the doctor, the
         // physio and the lawyer. The price is cost_bp (of the league's money scale) times stars_cost_bp; each effect

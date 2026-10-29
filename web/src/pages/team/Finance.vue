@@ -70,7 +70,6 @@ onMounted(load)
   <div class="flex flex-col gap-5">
     <header>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('المالية') }}</h1>
-      <p class="mt-1 text-sm text-text-muted">{{ $t('أموال النادي في هذا الدوري · تُصفّر مع الموسم الجديد') }}</p>
     </header>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
@@ -143,7 +142,6 @@ onMounted(load)
                   <span class="text-sm">{{ o.name }}</span>
                   <span class="text-end font-numbers text-sm" dir="ltr">+{{ money(o.per_match) }}<span v-if="o.per_win" class="block text-xs text-gold">{{ $t('+{v0} عند الفوز', { v0: money(o.per_win) }) }}</span></span>
                 </button>
-                <p class="text-xs text-text-muted">{{ $t('العقد للموسم كله ولا يُغيَّر.') }}</p>
               </div>
             </div>
           </section>
@@ -155,7 +153,6 @@ onMounted(load)
             <div class="flex justify-between"><span class="text-text-muted">{{ $t('لكل مباراة على أرضك') }}</span><b class="font-numbers text-success" dir="ltr">+{{ money(f.stadium.tickets_per_match) }}</b></div>
           </section>
 
-          <p class="rounded-xl bg-surface-sunk p-4 text-xs leading-6 text-text-muted">{{ $t('لو نزل الرصيد تحت الصفر بسبب الرواتب، يُمنع أي صرف. وبعد {v0} جولات متتالية بالسالب يُباع أغلى لاعب تلقائياً للمجموعة بـ 70% من قيمته.', { v0: f.debt_limit }) }}</p>
         </aside>
       </div>
     </template>

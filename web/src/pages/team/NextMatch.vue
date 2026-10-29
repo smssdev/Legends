@@ -150,7 +150,6 @@ const ACTIONS = [
         <ol class="grid grid-cols-2 gap-1 text-sm">
           <li v-for="p in match.opponent.sheet.starters" :key="p.id" class="truncate rounded bg-surface-sunk px-2 py-1">{{ $nm(p.name) }}</li>
         </ol>
-        <p class="text-xs text-text-muted">{{ $t('الضغط والأسلوب والإيقاع والتمركز لا تظهر لأحد غير صاحبها.') }}</p>
       </section>
 
       <section v-if="spy && !match.opponent.sheet" :aria-label="$t('تقرير الجاسوس')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
@@ -159,7 +158,6 @@ const ACTIONS = [
           <span v-if="spy.report" class="text-xs text-text-muted">{{ $t('كما كانت الساعة') }} <span class="font-numbers" dir="ltr">{{ spiedAt(spy.report.at) }}</span>{{ $t('، وقد يغيّرها الخصم') }}</span>
         </div>
         <template v-if="!spy.report">
-          <p class="text-sm text-text-muted">{{ $t('اعرف خطة الخصم وتشكيلته وتكتيكه العلني وفورمته الآن، قبل القفل. لا يعرف أنك تجسست عليه.') }}</p>
           <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="spying || locked" @click="sendSpy">
             {{ $t('أرسل جاسوساً ·') }} <PriceTag :amount="spy.cost" :currency="spy.currency" /></button>
         </template>

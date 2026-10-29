@@ -45,7 +45,6 @@ async function send() {
   <div class="mx-auto flex w-full max-w-3xl flex-col gap-4">
     <header>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('تواصل مع فريق التطوير') }}</h1>
-      <p class="mt-1 text-sm text-text-muted">{{ $t('رسائلك تصل لحسابات المطورين الرسمية، وردودهم تصلك هنا وفي صندوق رسائلك.') }}</p>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <section ref="list" class="flex max-h-[60dvh] min-h-60 flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-4" :aria-label="$t('المحادثة')" aria-live="polite">

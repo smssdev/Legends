@@ -55,7 +55,7 @@ onMounted(load)
         <p class="text-sm font-bold">{{ $t('اختر تصريحك الرسمي قبل المباراة:') }}</p>
         <button v-for="s in press.statements" :key="s.kind" type="button" class="min-h-touch rounded-lg bg-surface-sunk px-3 py-2 text-start text-sm hover:bg-surface-raised" @click="say(s.kind)">«{{ $t(s.text) }}»</button>
       </template>
-      <p v-else class="text-sm text-text-muted">{{ $t('يُعقد المؤتمر الساعة {v0}، قبل المباراة بنصف ساعة: تصريحك يرفع معنويات لاعبيك.', { v0: time(press.opens_at) }) }}</p>
+      <p v-else class="text-sm text-text-muted">{{ $t('يُعقد المؤتمر الساعة {v0}', { v0: time(press.opens_at) }) }}</p>
     </template>
     <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
   </section>

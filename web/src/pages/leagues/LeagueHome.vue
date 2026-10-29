@@ -212,7 +212,6 @@ onMounted(load)
 
       <div class="grid gap-4 md:grid-cols-2">
         <UiCard v-if="league.code" :title="$t('ادعُ أصحابك')">
-          <p class="text-sm text-text-muted">{{ $t('الرابط يفتح صفحة الانضمام بالكود جاهزاً: يرسلون طلباً، وتوافق أنت، ثم يختارون فرقهم.') }}</p>
           <span class="rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold" dir="ltr">{{ league.code }}</span>
           <div class="grid grid-cols-2 gap-2">
             <a :href="whatsapp" target="_blank" rel="noopener" class="flex h-12 items-center justify-center rounded-lg bg-success font-display font-extrabold text-on-gold">{{ $t('واتساب') }}</a>
@@ -249,7 +248,6 @@ onMounted(load)
         <p v-if="league.me.account_vacation" class="text-sm text-text-muted">{{ $t('إجازة حسابك تشمل هذا الدوري. تنهيها من') }} <RouterLink to="/profile" class="font-bold text-gold">{{ $t('حسابي') }}</RouterLink>.</p>
         <p v-else-if="league.me.vacation_requested" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">{{ $t('طلبت إجازة في هذا الدوري، وتنتظر موافقة مسؤوله.') }}</p>
         <form v-else-if="!league.me.vacation_used && !league.me.on_holiday" class="flex flex-col gap-2" @submit.prevent="holiday(true)">
-          <p class="text-sm text-text-muted">{{ $t('إجازة في هذا الدوري وحده (مرة في الموسم) تحتاج سبباً يوافق عليه مسؤول الدوري. ولإجازة تشمل كل دورياتك بلا طلب:') }} <RouterLink to="/profile" class="font-bold text-gold">{{ $t('إجازة الحساب') }}</RouterLink>.</p>
           <label class="flex flex-col gap-1.5">
             <span class="text-sm font-bold">{{ $t('المدة') }}</span>
             <select v-model.number="days" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4">

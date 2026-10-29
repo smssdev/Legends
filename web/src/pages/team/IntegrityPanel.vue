@@ -55,7 +55,6 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
   <section v-if="view?.on" class="flex flex-col gap-3 rounded-xl border border-live/30 bg-surface p-4" aria-labelledby="h-integrity">
     <div>
       <h2 id="h-integrity" class="font-display text-xl font-extrabold">{{ $t('ما وراء الكواليس') }}</h2>
-      <p class="text-sm text-text-muted">{{ $t('منظومة النزاهة مفعّلة في هذا الدوري. كل شيء هنا له ثمن وله مخاطرة.') }}</p>
     </div>
     <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
     <p v-if="view.banned_until" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t('ناديك محظور من السوق حتى {v0} بقرار لجنة الانضباط.', { v0: until(view.banned_until) }) }}</p>
@@ -63,7 +62,6 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
     <template v-if="view.fixture">
       <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
         <b>{{ $t('الحكم في مباراة {v0}', { v0: $nm(view.fixture.opponent) }) }}</b>
-        <p class="text-xs text-text-muted">{{ $t('يميل الحكم لك (بطاقات أقل لك وأكثر لخصمك، وركلات جزاء أسهل). لكن الفار يكشف {v0}% من المحاولات: يضيع المبلغ وتهبط المعنويات. وجاسوس الخصم قد يكتشفه ويرفع الأمر للجنة الانضباط.', { v0: view.bribe.var_percent }) }}</p>
         <p v-if="view.bribe.paid" class="text-sm font-bold text-gold">{{ $t('دفعت للحكم في هذه المباراة.') }}</p>
         <template v-else>
           <button v-if="!confirmBribe" type="button" class="h-touch rounded-md border border-live/50 px-4 text-sm font-bold text-danger" @click="confirmBribe = true">
@@ -89,7 +87,6 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
           </div>
         </template>
         <template v-else>
-          <p class="text-xs text-text-muted">{{ $t('محامٍ بأربع نجوم فأكثر يكشف الجواسيس، أو فحص أمني لهذه المباراة.') }}</p>
           <button type="button" class="h-touch self-start rounded-md bg-surface px-4 text-sm font-bold disabled:opacity-50" :disabled="busy" @click="security">
             {{ $t('فحص أمني ·') }} <PriceTag :amount="view.security.cost.amount" :currency="view.security.cost.currency" />
           </button>

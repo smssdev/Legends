@@ -153,7 +153,6 @@ onMounted(() => load())
 
     <form class="flex flex-col gap-2 rounded-xl bg-surface p-4" @submit.prevent="write">
       <h2 class="font-display text-lg font-extrabold">{{ $t('اكتب للجريدة') }}</h2>
-      <p class="text-sm text-text-muted">{{ $t('خبر، أو بيان، أو صفقة، أو رسالة لمنافسيك. يُنشر بعد موافقة مشرف الدوري.') }} {{ $t('مقال واحد لكل مدرب في كل جولة.') }}</p>
       <p v-if="p.wrote_this_round" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm text-text-soft" role="status">{{ $t('كتبت مقال الجولة {v0}. تكتب التالي في الجولة القادمة.', { v0: p.round }) }}</p>
       <input v-model="title" maxlength="120" :placeholder="$t('العنوان')" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('العنوان')" />
       <textarea v-model="body" :maxlength="p?.max ?? 2000" rows="5" :placeholder="$t('نص المقال')" class="rounded-lg border border-text/10 bg-surface-sunk p-3" :aria-label="$t('نص المقال')" />

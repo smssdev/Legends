@@ -115,7 +115,6 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
 
       <form v-if="view.can_create" class="flex flex-col gap-3 rounded-xl bg-surface p-4" @submit.prevent="create">
         <h2 class="font-display text-xl font-extrabold">{{ $t('أنشئ بطولة تحالفات') }}</h2>
-        <p class="text-sm text-text-muted">{{ $t('تحالفان من مدربي الدوري، والباقون يُوزعون عشوائياً. تُرسل للمطورين للاعتماد قبل أن تبدأ. والزميلان لا يلتقيان، ويختار قائدهما من يتأهل إن استحال غير ذلك.') }}</p>
         <label class="flex flex-col gap-1 text-sm">{{ $t('اسم البطولة') }}<input v-model="form.name" required minlength="3" maxlength="40" class="h-touch rounded-lg bg-surface-sunk px-3" /></label>
         <div class="grid grid-cols-2 gap-2">
           <label v-for="k in (['captain_a', 'captain_b'] as const)" :key="k" class="flex flex-col gap-1 text-sm">{{ $t('قائد {v0}', { v0: k === 'captain_a' ? NAMES.a : NAMES.b }) }}

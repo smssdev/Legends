@@ -40,7 +40,6 @@ onMounted(() => wallet.load())
         <button type="button" class="h-12 rounded-md bg-gold px-5 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || wallet.view.daily.claimed" @click="daily">
           {{ wallet.view.daily.claimed ? $t('استلمت مكافأة اليوم') : $t('استلم مكافأة اليوم · {v0}', { v0: wallet.view.daily.amount }) }}
         </button>
-        <p class="w-full text-xs text-text-muted">{{ $t('تُكسب داخل اللعبة فقط: الدخول اليومي، والفوز، وتحقيق الأهداف، والألقاب. ولا تتحول أبداً إلى أموال نادي.') }}</p>
       </section>
 
       <section v-if="wallet.view.leagues.length" :aria-label="$t('الصرف في كل دوري')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
@@ -63,7 +62,6 @@ onMounted(() => wallet.load())
             <button type="button" disabled class="h-touch w-full rounded-md bg-surface-raised font-bold text-text-muted">{{ $t('قريباً') }}</button>
           </div>
         </div>
-        <p class="text-xs text-text-muted">{{ $t('الشراء الحقيقي بعد النسخة الأولى. الآن تُكسب الكوينز باللعب فقط، فالكل متساوٍ.') }}</p>
       </section>
 
       <section :aria-label="$t('الحركات')" class="flex flex-col gap-1 rounded-xl bg-surface p-4">

@@ -6356,6 +6356,98 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/assistant/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 22] The conversation's opening on a page: who he is, the page's quick questions, and the smart answers left today */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The web's route name (others fall back to the home page's questions) */
+                    page?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The opening */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantStart"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assistant/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 22] One answer. A quick question's topic comes from the guide at once; anything else goes to the AI (one of the coach's smart answers of the day), which reads his own club in that league only; when the AI cannot answer the smart search answers from the guide (notice says why) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        question: string;
+                        /** @description A quick question's topic id */
+                        topic?: string | null;
+                        page?: string | null;
+                        /** @description The league of the club the coach is in; without a club there nothing of any club is read */
+                        league_id?: number | null;
+                        /** @description The conversation before, oldest first (never kept on the server) */
+                        history?: {
+                            /** @enum {string} */
+                            from: "me" | "bot";
+                            text: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The answer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantAnswer"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/support": {
         parameters: {
             query?: never;
@@ -8546,6 +8638,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AssistantQuestion: {
+            question: string;
+            /** @description Sent back with the question: answered from the guide at once. Null: a question for the AI about the coach's club */
+            topic: string | null;
+        };
+        AssistantStart: {
+            /** @description المدرب المساعد, or Manager Bot in English */
+            name: string;
+            intro: string;
+            questions: components["schemas"]["AssistantQuestion"][];
+            /** @description Whether the AI is set up on the server */
+            ai: boolean;
+            /** @description The smart answers left today (null without the AI) */
+            remaining: number | null;
+        };
+        AssistantAnswer: {
+            answer: string;
+            /** @enum {string} */
+            source: "ai" | "guide";
+            /** @description The section of the game its button opens (the web's section name) */
+            go: string | null;
+            related: components["schemas"]["AssistantQuestion"][];
+            remaining: number | null;
+            /**
+             * @description Why the guide answered instead of the AI: not set up, the coach's day used up, or the AI unable now
+             * @enum {string|null}
+             */
+            notice: "off" | "limit" | "error" | null;
+        };
         ScoutView: {
             cost: number;
             hours: number;

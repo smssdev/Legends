@@ -62,7 +62,6 @@ const played = (f: Fixture) => f.status === 'finished' && f.home_goals !== null 
     <header class="flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 class="font-display text-3xl font-extrabold">{{ $t('جدول المباريات') }}</h1>
-        <p class="mt-1 text-sm text-text-muted">{{ $t('الموسم كله جولة بجولة. اختر أي نادٍ لترى مبارياته، واضغط اسمه لترى لاعبيه.') }}</p>
       </div>
       <label v-if="clubs.length" class="flex flex-col gap-1 text-sm font-bold">{{ $t('النادي') }}
         <select v-model="club" class="h-touch min-w-56 rounded-lg bg-surface px-3 text-text">

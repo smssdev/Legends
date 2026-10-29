@@ -45,7 +45,6 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
     <header class="flex flex-wrap items-start gap-3">
       <div class="min-w-0 flex-1">
         <h1 class="font-display text-3xl font-extrabold">{{ $t('الوديات') }}</h1>
-        <p class="text-sm text-text-muted">{{ $t('بلا أثر على الجدول والمال واللياقة والإصابات، وتزيد تدريب من يلعب {v0}%.', { v0: v?.training_progress_pct ?? 3 }) }}</p>
       </div>
       <span v-if="v" class="rounded-pill bg-brand/20 px-3 py-1 font-numbers text-sm text-brand-light">{{ $t('{v0} من {v1} اليوم', { v0: v.left, v1: v.max }) }}</span>
     </header>

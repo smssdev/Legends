@@ -61,7 +61,6 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
   <div class="flex flex-col gap-4">
     <div>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('جدول الدوري') }}</h1>
-      <p class="mt-1 text-sm text-text-muted">{{ $t('كل ما يراه أعضاء الدوري عن الموسم. اضغط اسم أي نادٍ لترى تشكيلته ولاعبيه.') }}</p>
     </div>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى إحصائياته.') }}</p>

@@ -13,7 +13,6 @@ import TacticCycler from '../../components/tactics/TacticCycler.vue'
 import PlanPitch from '../../components/tactics/PlanPitch.vue'
 import LinesPitch from '../../components/tactics/LinesPitch.vue'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import ScenariosPanel from './ScenariosPanel.vue'
 import { currentLeague } from '../../lib/currentLeague'
@@ -23,8 +22,6 @@ const leagueId = ref<number | null>(null)
 const t = ref<T | null>(null)
 const saved = ref('')
 const tips = ref<string[]>([])
-// What each part does, behind its "?" [X5].
-const help = ref<Record<string, string>>({})
 const referee = ref<string | null>(null)
 const message = ref('')
 const loaded = ref(false)
@@ -100,8 +97,7 @@ async function load() {
   kinds.value = data!.scenario_kinds
   loaded.value = true
 }
-function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null; help?: Record<string, string> }) {
-  help.value = d.help ?? help.value
+function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]; referee?: string | null }) {
   t.value = { ...(d.tactics as T) }
   saved.value = JSON.stringify(t.value)
   tips.value = d.tips
@@ -133,7 +129,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <header class="flex items-start justify-between gap-3">
         <div>
           <h1 class="flex flex-wrap items-center gap-2 font-display text-3xl font-extrabold">{{ $t('التكتيك') }}<!-- [Sprint 20 W12] --><RouterLink :to="{ name: 'lineup' }" class="flex h-9 items-center rounded-pill bg-surface px-3 font-body text-xs font-bold text-brand-light">{{ $t('التشكيلة ›') }}</RouterLink></h1>
-          <p class="text-sm text-text-muted">{{ $t('الحكم: {v0} · الضغط والأسلوب والإيقاع والتمركز لا يراها الخصم', { v0: referee ? REFEREE[referee] : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</p>
+          <p class="text-sm text-text-muted">{{ $t('الحكم: {v0}', { v0: referee ? REFEREE[referee] : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</p>
         </div>
         <UiButton :disabled="!dirty" @click="save">{{ $t('حفظ') }}</UiButton>
       </header>
@@ -175,7 +171,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <div class="grid gap-3 md:grid-cols-2">
         <div class="flex flex-col gap-3">
           <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-4">
-            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label><HelpTip :text="help[sl.key]" :label="sl.label" /></span>
+            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label></span>
             <b class="text-center font-display text-lg">{{ $t(band(sl.key, t[sl.key])) }}</b>
             <div class="flex items-center gap-3">
               <output :for="`t-${sl.key}`" class="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-bg-deep font-numbers text-lg">{{ t[sl.key] }}</output>
@@ -184,13 +180,13 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
           </section>
           <div class="grid grid-cols-2 gap-3">
             <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
-              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('مصيدة التسلل') }}<HelpTip :text="help.trap" :label="$t('مصيدة التسلل')" /></span>
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('مصيدة التسلل') }}</span>
               <TacticCycler v-model="t.trap" :options="TRAP_OPTS" :label="$t('مصيدة التسلل')" class="w-full" />
               <TacticIcon :name="t.trap === 1 ? 'trap_on' : 'trap_off'" :active="true" class="!size-14" />
               <span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span>
             </section>
             <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
-              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('الرقابة') }}<HelpTip :text="help.marking" :label="$t('الرقابة')" /></span>
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('الرقابة') }}</span>
               <TacticCycler v-model="t.marking" :options="MARKING_OPTS" :label="$t('الرقابة')" class="w-full" />
               <TacticIcon :name="t.marking" :active="true" class="!size-14" />
               <span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span>
@@ -200,18 +196,18 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         <div class="flex flex-col gap-3">
           <div class="grid gap-3 sm:grid-cols-2">
             <section class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-3">
-              <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('خطة اللعب') }}<HelpTip :text="help.plan" :label="$t('خطة اللعب')" /></span>
+              <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('خطة اللعب') }}</span>
               <TacticCycler v-model="t.plan" :options="PLAN_OPTS" :label="$t('خطة اللعب')" />
               <PlanPitch :plan="t.plan" />
             </section>
             <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
-              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('قطع الكرة') }}<HelpTip :text="help.tackling" :label="$t('قطع الكرة')" /></span>
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('قطع الكرة') }}</span>
               <TacticCycler v-model="t.tackling" :options="TACKLING_OPTS" :label="$t('قطع الكرة')" class="w-full" />
               <TacticIcon :name="`tackle_${t.tackling}`" :active="true" class="!size-20 flex-1" />
             </section>
           </div>
           <section class="flex flex-col gap-3 rounded-xl border border-text/10 bg-surface p-4">
-            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('التمركز') }}<HelpTip :text="help.lines" :label="$t('التمركز')" /></span>
+            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('التمركز') }}</span>
             <div class="grid grid-cols-[6rem_1fr] items-center gap-2 sm:grid-cols-[minmax(0,10rem)_1fr] sm:gap-4">
               <LinesPitch :att="t.att" :mid="t.mid" :def="t.def" />
               <div class="flex min-w-0 flex-col gap-2">
@@ -228,7 +224,6 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       <section class="flex flex-col gap-2 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-tips">
         <div class="flex flex-wrap items-center justify-between gap-x-2">
           <h2 id="h-tips" class="text-sm text-text-muted">{{ $t('الأثر المتوقع في المباراة{v0}', { v0: dirty ? $t(' (يتحدث بعد الحفظ)') : '' }) }}</h2>
-          <HelpTip :text="help.tips" :label="$t('الأثر المتوقع')" />
         </div>
         <ul class="flex flex-col gap-1.5 text-sm">
           <li v-for="(tip, i) in tips" :key="i" class="rounded-lg bg-surface-sunk px-3 py-2">{{ tip }}</li>
@@ -310,7 +305,6 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
               </tbody>
             </table>
           </div>
-          <p class="text-xs text-text-muted">{{ $t('الشكل الدفاعي يصنعه الضغط والأسلوب ومصيدة التسلل وتمركز الخطوط. وخطة خصمك تظهر لك بعد القفل، وشكله الدفاعي لا يظهر: اقرأه من مبارياته.') }}</p>
         </div>
       </section>
 
