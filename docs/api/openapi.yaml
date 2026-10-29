@@ -3083,9 +3083,38 @@ components:
         application/json:
           schema:
             type: object
-            required: [tactics, tips, help, scenarios, scenario_kinds]
+            required: [tactics, tips, help, scenarios, scenario_kinds, book]
             properties:
               tactics: { $ref: '#/components/schemas/TacticsSet' }
+              book:
+                type: object
+                description: 'The tactics book [Sprint 21 E5.4]: each plan against each defensive shape (high, mid, low), from the engine''s own table'
+                required: [plans, shapes, mine]
+                properties:
+                  plans:
+                    type: array
+                    items:
+                      type: object
+                      required: [plan, edge, beats, loses_to]
+                      properties:
+                        plan: { type: string, enum: [counter, long, passing, wings, shots] }
+                        edge:
+                          type: object
+                          description: Edge against each shape, in basis points (of 10000) on getting through and making the chance
+                          required: [high, mid, low]
+                          properties: { high: { type: integer }, mid: { type: integer }, low: { type: integer } }
+                        beats: { type: array, items: { type: string, enum: [high, mid, low] } }
+                        loses_to: { type: array, items: { type: string, enum: [high, mid, low] } }
+                  shapes:
+                    type: array
+                    items:
+                      type: object
+                      required: [shape, beaten_by, stops]
+                      properties:
+                        shape: { type: string, enum: [high, mid, low] }
+                        beaten_by: { type: array, description: Best first, items: { type: string, enum: [counter, long, passing, wings, shots] } }
+                        stops: { type: array, description: Most stopped first, items: { type: string, enum: [counter, long, passing, wings, shots] } }
+                  mine: { type: string, nullable: true, enum: [high, mid, low, null], description: The shape my saved tactics make }
               tips: { type: array, items: { type: string } }
               referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
               help:

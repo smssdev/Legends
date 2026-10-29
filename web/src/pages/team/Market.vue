@@ -155,6 +155,13 @@ watch(price, (v) => {
     quote.value = data ?? null
   }, 250)
 })
+// About a hundred stops between the floor and the cap, each a round thousand.
+function stepOf(p: Mine) {
+  return Math.max(1000, Math.round((p.cap - p.floor) / 100 / 1000) * 1000)
+}
+function nudge(p: Mine, dir: 1 | -1) {
+  price.value = Math.min(p.cap, Math.max(p.floor, (Number(price.value) || p.value) + dir * stepOf(p)))
+}
 async function listAt(p: Mine, at: number) {
   if (!leagueId.value) return
   busy.value = p.id
@@ -325,12 +332,22 @@ onBeforeUnmount(() => clearInterval(clock))
                 <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">{{ $t('اعرضه بقيمته') }}</button>
                 <HelpTip :text="g.listing" :label="$t('العرض في السوق')" />
               </div>
-              <form class="flex flex-wrap items-end gap-2" @submit.prevent="price && listAt(p, Number(price))">
-                <label class="flex flex-col gap-1"><b>{{ $t('بسعرك') }}</b> <span class="text-xs text-text-muted">{{ $t('من {v0} إلى {v1}', { v0: money(p.floor), v1: money(p.cap) }) }}</span>
-                  <input v-model.number="price" type="number" inputmode="numeric" :min="p.floor" :max="p.cap" step="1000" class="h-touch w-40 rounded-md bg-surface px-2 font-numbers" dir="ltr" :aria-label="$t('سعر {v0}', { v0: p.name })" />
-                </label>
-                <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</button>
-                <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-[#FF8A8A]'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
+              <!-- [Sprint 21 E5.1] The price on a slider between the floor and the cap, with a step down and a step up. -->
+              <form class="flex flex-col gap-2" @submit.prevent="price && listAt(p, Number(price))">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <b>{{ $t('بسعرك') }}</b>
+                  <b dir="ltr" class="font-numbers text-lg text-gold">{{ money(Number(price) || p.value) }}</b>
+                </div>
+                <div class="flex items-center gap-2" dir="ltr">
+                  <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) <= p.floor" :aria-label="$t('أنقص السعر')" @click="nudge(p, -1)">−</button>
+                  <input v-model.number="price" type="range" :min="p.floor" :max="p.cap" :step="stepOf(p)" class="h-touch min-w-0 flex-1 accent-gold" :aria-label="$t('سعر {v0}', { v0: p.name })" />
+                  <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) >= p.cap" :aria-label="$t('زد السعر')" @click="nudge(p, 1)">+</button>
+                </div>
+                <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span class="font-numbers">{{ money(p.floor) }}</span><span class="font-numbers">{{ money(p.cap) }}</span></div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</button>
+                  <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-[#FF8A8A]'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
+                </div>
               </form>
             </div>
           </li>

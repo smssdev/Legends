@@ -24,6 +24,12 @@ const message = ref('')
 const loaded = ref(false)
 // The pre-match scenarios [X23], saved on their own.
 const scenarios = ref<components['schemas']['Scenario'][] | null>(null)
+// [Sprint 21 E5.4] The tactics book, from the engine's own table: what each plan beats, and what beats each shape.
+type Book = components['responses']['Tactics']['content']['application/json']['book']
+const book = ref<Book | null>(null)
+const bookOpen = ref(false)
+const SHAPES = { high: 'دفاع متقدم وضغط عالٍ', mid: 'دفاع متوسط', low: 'دفاع متأخر' } as const
+const SHAPE_SHORT = { high: 'متقدم', mid: 'متوسط', low: 'متأخر' } as const
 const kinds = ref<components['responses']['Tactics']['content']['application/json']['scenario_kinds']>([])
 
 const PLANS = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' } as const
@@ -63,6 +69,7 @@ async function load() {
   const { data } = await api.GET('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } } })
   apply(data!)
   scenarios.value = data!.scenarios
+  book.value = data!.book
   kinds.value = data!.scenario_kinds
   loaded.value = true
 }
@@ -80,6 +87,7 @@ async function save() {
     await ensureCsrf()
     const { data } = await api.PUT('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } }, body: t.value })
     apply(data!)
+    book.value = data!.book
     message.value = 'حُفظ التكتيك.'
   } catch (e) {
     message.value = asApiError(e).message
@@ -147,6 +155,51 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
           <button v-for="(label, k) in PLANS" :key="k" type="button" class="flex h-12 items-center gap-2 rounded-xl border px-3 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k"><TacticIcon :name="PLAN_ICON[k]" :active="t.plan === k" />{{ $t(label) }}</button>
         </div>
       </fieldset>
+
+      <!-- [Sprint 21 E5.4] The tactics book: each plan against each defensive shape, and the answer to each shape. -->
+      <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-book">
+        <button type="button" class="flex min-h-touch items-center justify-between gap-2 text-start" :aria-expanded="bookOpen" aria-controls="book-body" @click="bookOpen = !bookOpen">
+          <span>
+            <h2 id="h-book" class="font-display text-xl font-extrabold">{{ $t('كتاب التكتيك') }}</h2>
+            <span class="text-xs text-text-muted">{{ $t('لكل خطة خطة تتفوق عليها: الأضعف يرد بالخطة المناسبة. التفوق في الفرص، لا في قوة اللاعبين.') }}</span>
+          </span>
+          <span class="text-xl text-gold" aria-hidden="true">{{ bookOpen ? '−' : '+' }}</span>
+        </button>
+        <div v-if="bookOpen" id="book-body" class="flex flex-col gap-3">
+          <p v-if="book.mine" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm">
+            {{ $t('تكتيكك المحفوظ يصنع: {v0}.', { v0: $t(SHAPES[book.mine]) }) }}
+            <template v-if="book.shapes.find((x) => x.shape === book!.mine)?.beaten_by.length">
+              {{ $t('يتفوق عليه: {v0}.', { v0: book.shapes.find((x) => x.shape === book!.mine)!.beaten_by.map((p) => $t(PLANS[p])).join('، ') }) }}
+            </template>
+          </p>
+          <ul class="grid gap-2 sm:grid-cols-3">
+            <li v-for="sh in book.shapes" :key="sh.shape" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-3 text-sm">
+              <b>{{ $t('ضد {v0}', { v0: $t(SHAPES[sh.shape]) }) }}</b>
+              <span v-if="sh.beaten_by.length" class="text-success">{{ $t('العب: {v0}', { v0: sh.beaten_by.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
+              <span v-if="sh.stops.length" class="text-[#FF8A8A]">{{ $t('تجنّب: {v0}', { v0: sh.stops.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
+            </li>
+          </ul>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[20rem] text-sm">
+              <caption class="sr-only">{{ $t('كل خطة أمام كل شكل دفاعي') }}</caption>
+              <thead class="text-xs text-text-muted">
+                <tr><th scope="col" class="py-1 text-start">{{ $t('خطة اللعب') }}</th><th v-for="(label, k) in SHAPE_SHORT" :key="k" scope="col" class="py-1">{{ $t(label) }}</th></tr>
+              </thead>
+              <tbody>
+                <tr v-for="p in book.plans" :key="p.plan" class="border-t border-text/10" :class="p.plan === t.plan ? 'text-gold' : ''">
+                  <th scope="row" class="py-2 text-start font-bold">{{ $t(PLANS[p.plan]) }}</th>
+                  <td v-for="(_, k) in SHAPES" :key="k" class="py-2 text-center">
+                    <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')">▲</span>
+                    <span v-else-if="p.edge[k] < 0" class="font-bold text-[#FF8A8A]" :title="$t('تتعثر')">▼</span>
+                    <span v-else class="text-text-muted" :title="$t('متعادلة')">●</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-text-muted">{{ $t('الشكل الدفاعي يصنعه الضغط والأسلوب ومصيدة التسلل وتمركز الخطوط. وخطة خصمك تظهر لك بعد القفل، وشكله الدفاعي لا يظهر: اقرأه من مبارياته.') }}</p>
+        </div>
+      </section>
 
       <section class="flex flex-col gap-4 rounded-xl bg-surface p-4">
         <div v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">

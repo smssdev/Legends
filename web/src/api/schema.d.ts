@@ -9208,6 +9208,34 @@ export interface components {
             content: {
                 "application/json": {
                     tactics: components["schemas"]["TacticsSet"];
+                    /** @description The tactics book [Sprint 21 E5.4]: each plan against each defensive shape (high, mid, low), from the engine's own table */
+                    book: {
+                        plans: {
+                            /** @enum {string} */
+                            plan: "counter" | "long" | "passing" | "wings" | "shots";
+                            /** @description Edge against each shape, in basis points (of 10000) on getting through and making the chance */
+                            edge: {
+                                high: number;
+                                mid: number;
+                                low: number;
+                            };
+                            beats: ("high" | "mid" | "low")[];
+                            loses_to: ("high" | "mid" | "low")[];
+                        }[];
+                        shapes: {
+                            /** @enum {string} */
+                            shape: "high" | "mid" | "low";
+                            /** @description Best first */
+                            beaten_by: ("counter" | "long" | "passing" | "wings" | "shots")[];
+                            /** @description Most stopped first */
+                            stops: ("counter" | "long" | "passing" | "wings" | "shots")[];
+                        }[];
+                        /**
+                         * @description The shape my saved tactics make
+                         * @enum {string|null}
+                         */
+                        mine: "high" | "mid" | "low" | null;
+                    };
                     tips: string[];
                     /** @enum {string|null} */
                     referee?: "lenient" | "medium" | "strict" | null;

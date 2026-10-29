@@ -4,6 +4,7 @@
 // (pointer events: the same code for a finger and a mouse) or by tapping him and then the place he goes.
 // Dropped on open grass, a starter stays where he is dropped, inside his line's band, like PES [X5].
 // The server checks every rule and answers in Arabic; this screen only arranges.
+// [Sprint 21 E5.2] Locked until «تعديل»: then the moves, and «حفظ» saves and locks again (or «إلغاء» puts it back).
 import { computed, onMounted, ref } from 'vue'
 import { nm } from '../../lib/names'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -21,6 +22,7 @@ const starters = ref<(number | null)[]>([])
 const bench = ref<number[]>([])
 const saved = ref('')
 const saving = ref(false)
+const editing = ref(false)
 const message = ref('')
 const view = ref<'overall' | 'fitness' | 'age' | 'value'>('overall')
 const card = ref<SquadPlayer | null>(null)
@@ -47,6 +49,7 @@ function apply(l: { formation: string; starters: (number | null)[]; bench: numbe
 }
 /** Another formation: its own places. */
 function pick(name: string) {
+  editing.value = true
   formation.value = name
   const f = all.value.find((x) => x.name === name)
   if (f) places.value = f.slots.slice(1).map((s) => [s.x, s.y])
@@ -164,6 +167,11 @@ function move(from: Spot, to: Spot) {
 }
 
 function tap(s: Spot) {
+  if (!editing.value) {
+    // Locked: a tap on someone outside the eleven shows his card.
+    if (s.zone !== 'slot') card.value = players.value.get(playerAt(s) ?? 0) ?? null
+    return
+  }
   if (!selected.value) {
     if (playerAt(s) !== null) selected.value = s
     return
@@ -176,7 +184,7 @@ function tap(s: Spot) {
 const drag = ref<{ from: Spot; id: number; x: number; y: number; moved: boolean } | null>(null)
 function down(e: PointerEvent, s: Spot) {
   const id = playerAt(s)
-  if (id === null) return
+  if (id === null || !editing.value) return
   drag.value = { from: s, id, x: e.clientX, y: e.clientY, moved: false }
   window.addEventListener('pointermove', follow)
   window.addEventListener('pointerup', up, { once: true })
@@ -250,6 +258,7 @@ async function improve() {
   const keep = saved.value
   apply(data!.lineup)
   saved.value = keep
+  editing.value = true
   message.value = 'هذه أفضل تشكيلة الآن. اضغط «حفظ» لتثبيتها.'
 }
 
@@ -266,12 +275,21 @@ async function save() {
     team.value = data as typeof team.value
     saved.value = ''
     apply(team.value!.lineup)
+    editing.value = false
     message.value = 'حُفظت التشكيلة.'
   } catch (e) {
     const err = asApiError(e)
     message.value = Object.values(err.errors)[0]?.[0] ?? err.message
   }
   saving.value = false
+}
+
+/** Back to the saved lineup, locked. */
+function cancel() {
+  if (saved.value) [formation.value, starters.value, bench.value, places.value] = JSON.parse(saved.value)
+  editing.value = false
+  selected.value = null
+  message.value = ''
 }
 
 // Captain and set-piece takers [PLAN 2.16]: among the saved starters; empty = automatic.
@@ -352,7 +370,11 @@ async function saveCustom() {
           <h1 class="font-display text-3xl font-extrabold">{{ $t('التشكيلة') }}</h1>
           <p class="text-sm text-text-muted">{{ $nm(team.club.name) }}<template v-if="team.lineup.auto && !dirty"> {{ $t('· تلقائية («تحسين»)') }}</template></p>
         </div>
-        <UiButton :disabled="!dirty || saving" @click="save">{{ saving ? $t('يحفظ…') : $t('حفظ') }}</UiButton>
+        <div v-if="editing" class="flex gap-2">
+          <UiButton variant="quiet" :disabled="saving" @click="cancel">{{ $t('إلغاء') }}</UiButton>
+          <UiButton :disabled="!dirty || saving" @click="save">{{ saving ? $t('يحفظ…') : $t('حفظ') }}</UiButton>
+        </div>
+        <UiButton v-else variant="outline" @click="editing = true">{{ $t('تعديل') }}</UiButton>
       </header>
 
       <div class="flex gap-2 overflow-x-auto pb-1" :aria-label="$t('الطريقة')">
@@ -392,10 +414,11 @@ async function saveCustom() {
 
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
       <p v-if="selected" class="text-sm text-gold">{{ $t('اختر المكان الذي ينتقل إليه اللاعب، أو اسحبه.') }}</p>
-      <p class="text-xs text-text-muted">{{ $t('اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.') }}</p>
+      <p v-if="!editing" class="text-xs text-text-muted">{{ $t('التشكيلة مقفلة. اضغط «تعديل» لتحريك اللاعبين وتبديلهم بالاحتياط وبباقي الفريق، ثم «حفظ».') }}</p>
+      <p v-else class="text-xs text-text-muted">{{ $t('اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا.') }}</p>
 
       <!-- [X32] The pitch under floodlights: mown stripes, a light pool in the middle and a dark edge, framed in emerald. -->
-      <div ref="pitch" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
+      <div ref="pitch" :class="editing ? 'ring-2 ring-gold/60' : ''" class="lineup-pitch relative mx-auto aspect-[68/90] w-full max-w-md select-none overflow-hidden rounded-xxl md:max-w-lg">
         <div class="pointer-events-none absolute inset-3 rounded-md border-2 border-white/40" />
         <div class="pointer-events-none absolute inset-x-3 top-1/2 border-t-2 border-white/40" />
         <div class="pointer-events-none absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
@@ -410,10 +433,11 @@ async function saveCustom() {
           :key="i"
           type="button"
           :data-spot="`slot:${i}`"
-          class="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 touch-none flex-col items-center gap-0.5"
+          class="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-[top,left] duration-300 ease-out motion-reduce:transition-none"
+          :class="editing ? 'touch-none' : ''"
           :style="place(slot)"
           :aria-label="$t('{v0}: {v1}', { v0: slot.role, v1: starters[i] ? players.get(starters[i]!)?.name : $t('فارغة') })"
-          @touchmove.prevent
+          @touchmove="editing && $event.preventDefault()"
           @pointerdown="down($event, { zone: 'slot', index: i })"
           @click="click({ zone: 'slot', index: i })"
         >
@@ -445,9 +469,9 @@ async function saveCustom() {
             :key="id"
             type="button"
             :data-spot="`bench:${i}`"
-            class="flex h-20 w-32 shrink-0 touch-none flex-col justify-between rounded-xl bg-surface p-2 text-start"
-            :class="isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : ''"
-            @touchmove.prevent
+            class="flex h-20 w-32 shrink-0 flex-col justify-between rounded-xl bg-surface p-2 text-start"
+            :class="[isSelected({ zone: 'bench', index: i }) ? 'ring-2 ring-gold' : '', editing ? 'touch-none' : '']"
+            @touchmove="editing && $event.preventDefault()"
           @pointerdown="down($event, { zone: 'bench', index: i })"
             @click="click({ zone: 'bench', index: i })"
           >
@@ -472,9 +496,9 @@ async function saveCustom() {
             :key="p.id"
             type="button"
             :data-spot="`reserve:${i}`"
-            class="flex min-h-touch touch-none items-center gap-2 rounded-lg bg-surface p-2 text-start text-sm"
-            :class="[isSelected({ zone: 'reserve', index: i }) ? 'ring-2 ring-gold' : '', p.available ? '' : 'opacity-60']"
-            @touchmove.prevent
+            class="flex min-h-touch items-center gap-2 rounded-lg bg-surface p-2 text-start text-sm"
+            :class="[isSelected({ zone: 'reserve', index: i }) ? 'ring-2 ring-gold' : '', p.available ? '' : 'opacity-60', editing ? 'touch-none' : '']"
+            @touchmove="editing && $event.preventDefault()"
           @pointerdown="down($event, { zone: 'reserve', index: i })"
             @click="click({ zone: 'reserve', index: i })"
             @dblclick="card = p"
