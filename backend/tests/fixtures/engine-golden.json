@@ -1,5 +1,5 @@
 {
-    "engine_version": 10,
+    "engine_version": 11,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -112,7 +112,7 @@
             }
         },
         "engine": {
-            "version": 10,
+            "version": 11,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -123,31 +123,31 @@
                 "progress": 7500,
                 "create": 7500
             },
-            "matchup_cp": {
+            "matchup_bp": {
                 "counter": [
-                    300,
+                    900,
                     0,
-                    -300
+                    -900
                 ],
                 "long_balls": [
-                    200,
-                    -100,
-                    -100
+                    600,
+                    -300,
+                    -300
                 ],
                 "passing": [
-                    -100,
-                    200,
-                    -100
+                    -300,
+                    600,
+                    -300
                 ],
                 "wings": [
-                    -200,
+                    -600,
                     0,
-                    200
+                    600
                 ],
                 "long_shots": [
-                    -200,
-                    -100,
-                    300
+                    -600,
+                    -300,
+                    900
                 ]
             },
             "tackling_bonus_cp": [
@@ -175,11 +175,12 @@
             "chemistry_low_bp": 600,
             "trailing_push_from_minute": 60,
             "tactics_max_win_bp": 5800,
+            "counter_edge_min_pts": 3,
             "live_reading_every_minutes": 15,
             "phase_base_bp": {
                 "build": 8000,
-                "progress": 7500,
-                "create": 8200,
+                "progress": 6900,
+                "create": 7600,
                 "header": 3500
             },
             "phase_slope_bp": 17,
@@ -284,18 +285,18 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "3210c4294dedc15964321abf5ec7ba88b4e5022ef6092662976f2bfb8a9e9785"
+            "sha256": "645c36faf26d23beffa71ce482068a54095c26ef06175005402b497d3082dfff"
         },
         {
             "seed": 42,
             "competition": "league",
             "minutes": 94,
             "score": {
-                "home": 1,
-                "away": 1
+                "home": 0,
+                "away": 0
             },
             "shootout": null,
-            "sha256": "7ee4ef9d41b8f7947cad480de2758092edd8fb0db2bf6700309f0da9afef0b08"
+            "sha256": "de35edea781d796eb47b664cb81667315df0c0bcd5c2852aa66b4a9223573d20"
         },
         {
             "seed": 48213,
@@ -306,18 +307,21 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "a49075576d2ff252a58e4bfcafcfeca2a6ac2a3d7ee8216805143becbf39291f"
+            "sha256": "a674e789768b6af02ed424ac1fbda87c12a4a5bf8fd23d1dcf3bcecb405f6860"
         },
         {
             "seed": 7,
             "competition": "cup",
-            "minutes": 95,
+            "minutes": 127,
             "score": {
-                "home": 2,
+                "home": 1,
                 "away": 1
             },
-            "shootout": null,
-            "sha256": "543c7cd97c9ef62e127c9e2ac85c606393d27ae2c9b0cd5f6ff1d2e5e6861fab"
+            "shootout": {
+                "home": 3,
+                "away": 4
+            },
+            "sha256": "4e6cbc98a07af0864471dfaaae778e29965beb679e142f0b830e30e39a25dc14"
         },
         {
             "seed": 99,
@@ -328,7 +332,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "1d1e102a88fbf1089efed2da5bf969efb2428155e659cc78ecafc7180b16b1da"
+            "sha256": "fba6064fcdfa76646a04ec2aa99d70a8fb76e14820f2aea56737697ad80f5cb7"
         }
     ]
 }
