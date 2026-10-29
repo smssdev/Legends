@@ -5,7 +5,7 @@
 // Accept-Language, so the server's messages come in the same language.
 // The English dictionary (100 KB) loads only for a coach who plays in English [E1.4]: the Arabic majority never
 // downloads it, and the app mounts once it is here (i18nReady), so English never flashes Arabic.
-import { ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
 
 export type Locale = 'ar' | 'en'
 const KEY = 'glm.locale'
@@ -18,8 +18,19 @@ function stored(): Locale | null {
     return null
   }
 }
+// [SEO] A link with ?lang=en (or ar), as Google's English pages are, opens in that language and keeps it.
+function fromLink(): Locale | null {
+  try {
+    const v = new URLSearchParams(location.search).get('lang')
+    if (v !== 'ar' && v !== 'en') return null
+    localStorage.setItem(KEY, v)
+    return v
+  } catch {
+    return null
+  }
+}
 // Until the coach chooses: Arabic, the game's own language (many Arab phones run in English).
-export const locale = ref<Locale>(stored() ?? 'ar')
+export const locale = ref<Locale>(fromLink() ?? stored() ?? 'ar')
 
 function apply(l: Locale) {
   const html = document.documentElement
@@ -62,3 +73,7 @@ export function t(ar: string | null | undefined, vars?: Record<string, string | 
 
 /** The locale for Intl: Arabic with Latin digits, as the game shows numbers. */
 export const intlLocale = () => (locale.value === 'en' ? 'en-GB' : 'ar-EG-u-nu-latn')
+
+/** The crest in the page's language [SEO]: «المدرب الأسطورة» on it in Arabic, GLM in English (tools/brand/logo.py). */
+export const emblemSrc = computed(() => (locale.value === 'ar' ? '/brand/emblem-ar.svg' : '/brand/emblem.svg'))
+export const loaderSrc = computed(() => (locale.value === 'ar' ? '/brand/emblem-loader-ar.svg' : '/brand/emblem-loader.svg'))

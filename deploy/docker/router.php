@@ -18,7 +18,7 @@ const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/emai
 const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascript; charset=utf-8', 'css' => 'text/css; charset=utf-8',
     'json' => 'application/json; charset=utf-8', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'png' => 'image/png',
     'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'ico' => 'image/x-icon', 'woff2' => 'font/woff2', 'woff' => 'font/woff',
-    'webmanifest' => 'application/manifest+json', 'txt' => 'text/plain; charset=utf-8', 'html' => 'text/html; charset=utf-8',
+    'webmanifest' => 'application/manifest+json', 'txt' => 'text/plain; charset=utf-8', 'xml' => 'application/xml; charset=utf-8', 'html' => 'text/html; charset=utf-8',
     'wasm' => 'application/wasm', 'data' => 'application/octet-stream'];
 
 // Files whose name or folder changes with their content: kept for a year.
@@ -72,7 +72,9 @@ if (! $laravel && $uri !== '/' && $file !== false && str_starts_with($file, $pub
 }
 
 if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) && is_file($public.'/index.html')) {
-    send($public.'/index.html', 'no-cache');
+    // [SEO] A public page built with its own tags (web/scripts/seo.mjs: /register/index.html...) goes out as itself.
+    $own = $file !== false && str_starts_with($file.'/', $public.'/') ? $file.'/index.html' : null;
+    send($own !== null && is_file($own) ? $own : $public.'/index.html', 'no-cache');
 
     return true;
 }

@@ -3,12 +3,13 @@
 // skills and their CV. The content is in src/content/developers.ts, to edit and add to later.
 import OfficialBadge from '../components/OfficialBadge.vue'
 import { DEVELOPERS } from '../content/developers'
+import { emblemSrc } from '../lib/i18n'
 </script>
 
 <template>
   <div class="flex flex-col gap-5">
     <header class="flex flex-col items-center gap-2 text-center">
-      <img src="/brand/emblem.svg" alt="" class="size-20" />
+      <img :src="emblemSrc" alt="" class="size-20" />
       <h1 class="font-display text-3xl font-extrabold">{{ $t('فريق التطوير') }}</h1>
       <p class="max-w-xl text-text-soft">{{ $t('من صنع لعبة المدرب الأسطورة، ومن يعتني بها كل يوم.') }}</p>
     </header>

@@ -6,6 +6,7 @@ import './style.css'
 import App from './App.vue'
 import BrandMark from './components/BrandMark.vue'
 import { router } from './router'
+import { useSeo } from './lib/seo'
 import './lib/pwa'   // the install offer comes early: keep it for our button [Sprint 36]
 import './match/perf'   // the smooth mode on weak phones, for the whole app [X30]
 import './lib/theme'   // the night or the day look [X56]
@@ -15,6 +16,7 @@ loadNames()
 const app = createApp(App)
 Object.assign(app.config.globalProperties, { $pn: pn, $cn: cn, $ln: ln, $nm: nm, $t: t })
 app.component('BrandMark', BrandMark).use(createPinia()).use(router)
+useSeo(router)   // each page's title, description and keywords for Google [SEO]
 // [E1.4] In English, once the dictionary is here (it loads on its own, only for English).
 void i18nReady.then(() => app.mount('#app'))
 

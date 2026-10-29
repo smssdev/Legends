@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 // packaged build (composer build-web) its files sit in public/ and every
 // non-API path falls back to its index.html so the Vue router can take over.
 $spa = function () {
-    $index = public_path('index.html');
+    // [SEO] A public page built with its own tags (web/scripts/seo.mjs) goes out as itself.
+    $own = public_path(trim(request()->path(), '/').'/index.html');
+    $index = request()->path() !== '/' && ! str_contains(request()->path(), '..') && is_file($own) ? $own : public_path('index.html');
 
     return is_file($index)
         ? response()->file($index, ['Content-Type' => 'text/html; charset=UTF-8'])

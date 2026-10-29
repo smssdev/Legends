@@ -37,8 +37,10 @@ class InviteController extends Controller
 
         $index = public_path('index.html');
         $html = is_file($index) ? file_get_contents($index) : '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title></title></head><body><a href="/join?code='.e($code).'">'.e($title).'</a></body></html>';
-        $html = preg_replace('#<title>.*?</title>#s', '<title>'.e($title).'</title>', $html, 1);
-        $html = str_replace('</head>', "    {$meta}\n  </head>", $html);
+        // The page's own tags (web/src/content/seo.ts) give way to the league's card.
+        $html = preg_replace('#<!-- seo:[^>]*-->.*?<!-- /seo -->#s', '<meta name="robots" content="noindex">', $html, 1);
+        $html = preg_replace('#<title>.*?</title>#s', '', $html, 1);
+        $html = str_replace('</head>', '    <title>'.e($title)."</title>\n    {$meta}\n  </head>", $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8', 'Cache-Control' => 'no-cache']);
     }
