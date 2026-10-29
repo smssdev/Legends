@@ -23,7 +23,7 @@ class TacticsBookTest extends TestCase
 
     public function test_the_book_follows_the_engine_table(): void
     {
-        $engine = ['matchup_cp' => [
+        $engine = ['matchup_bp' => [
             'counter' => [300, 0, -300], 'long_balls' => [200, -100, -100], 'passing' => [-100, 200, -100],
             'wings' => [-200, 0, 200], 'long_shots' => [-200, -100, 300],
         ]];

@@ -3079,7 +3079,7 @@ components:
                         plan: { type: string, enum: [counter, long, passing, wings, shots] }
                         edge:
                           type: object
-                          description: Edge against each shape, in hundredths of a rating point
+                          description: Edge against each shape, in basis points (of 10000) on getting through and making the chance
                           required: [high, mid, low]
                           properties: { high: { type: integer }, mid: { type: integer }, low: { type: integer } }
                         beats: { type: array, items: { type: string, enum: [high, mid, low] } }

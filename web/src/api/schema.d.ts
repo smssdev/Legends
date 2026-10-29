@@ -9187,7 +9187,7 @@ export interface components {
                         plans: {
                             /** @enum {string} */
                             plan: "counter" | "long" | "passing" | "wings" | "shots";
-                            /** @description Edge against each shape, in hundredths of a rating point */
+                            /** @description Edge against each shape, in basis points (of 10000) on getting through and making the chance */
                             edge: {
                                 high: number;
                                 mid: number;

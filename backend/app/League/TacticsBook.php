@@ -6,7 +6,7 @@ use App\Engine\MatchEngine;
 
 /**
  * The tactics book [Sprint 21 E5.4]: each attack plan, the defensive shapes it beats and the ones that stop it, read
- * from the engine's own table (engine.matchup_cp) and its own rule for the shape, so the book can never say what the
+ * from the engine's own table (engine.matchup_bp) and its own rule for the shape, so the book can never say what the
  * match does not do. The weaker side's answer is the plan that beats the stronger side's shape: an edge in the chances
  * it makes, never in its players' strength.
  */
@@ -18,7 +18,7 @@ class TacticsBook
     private const KEYS = ['counter' => 'counter', 'long' => 'long_balls', 'passing' => 'passing', 'wings' => 'wings', 'shots' => 'long_shots'];
 
     /**
-     * plans: per plan, its edge against each shape (hundredths of a rating point), and the shapes it beats and loses to;
+     * plans: per plan, its edge against each shape (basis points on getting through and making the chance), and the shapes it beats and loses to;
      * shapes: per shape, the plans that beat it (best first) and the ones it stops; mine: the shape of these tactics.
      *
      * @param  array<string, mixed>|null  $tactics
@@ -27,7 +27,7 @@ class TacticsBook
     {
         $plans = [];
         foreach (self::KEYS as $plan => $key) {
-            $row = array_map('intval', $engine['matchup_cp'][$key] ?? [0, 0, 0]);
+            $row = array_map('intval', $engine['matchup_bp'][$key] ?? [0, 0, 0]);
             $edge = array_combine(self::SHAPES, $row);
             $plans[] = ['plan' => $plan, 'edge' => $edge,
                 'beats' => array_keys(array_filter($edge, fn ($v) => $v > 0)), 'loses_to' => array_keys(array_filter($edge, fn ($v) => $v < 0))];

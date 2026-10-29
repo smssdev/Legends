@@ -308,8 +308,10 @@ final class MatchEngine
         $this->third($atk, 1);
         $this->danger = $atk === 'home' ? 2 : -2;
         $mix = self::PLAN_MIX[$plan] ?? 'passing';
-        $matchup = (int) ($this->eng['matchup_cp'][$this->planKey($plan)][self::shape($td)] ?? 0);
-        $a = $this->ability($atk, $mix, Ability::LINES[$mix]) - $tempoLoss + $matchup + $this->posMod($ta, 'progress')
+        // The plan against the shape moves the odds of getting through and of making the chance, never the players
+        // [Sprint 21 E5.4]. Long shots skip the chance, so their one gate carries both.
+        $matchup = (int) ($this->eng['matchup_bp'][$this->planKey($plan)][self::shape($td)] ?? 0);
+        $a = $this->ability($atk, $mix, Ability::LINES[$mix]) - $tempoLoss + $this->posMod($ta, 'progress')
             + ($counter ? (int) $this->eng['counter_bonus_cp'] : 0);
         $holdMix = $plan === 'counter' ? 'hold_counter' : 'hold';
         $d = $this->ability($def, $holdMix, Ability::LINES[$holdMix]) + $tackleBonus + $this->posMod($td, 'hold');
@@ -340,7 +342,8 @@ final class MatchEngine
             $createBonus = (int) $this->eng['trap_fail_bonus_cp'];
         }
 
-        $r = $this->phase('progress', $a, $d, 0, ($counter ? $this->chemistry($atk) : 0) + $this->morale($atk) - $this->morale($def));
+        $r = $this->phase('progress', $a, $d, 0, ($counter ? $this->chemistry($atk) : 0) + $this->morale($atk) - $this->morale($def)
+            + ($plan === 'shots' ? 2 : 1) * $matchup);
         $phases[] = ['n' => 'progress', 'ok' => $r['ok'], 'p' => $r['p']];
         if (! $r['ok']) {
             $this->rate($def, $marker, 6, 'tackles');
@@ -371,7 +374,7 @@ final class MatchEngine
         if ($plan !== 'shots') {
             $a = $this->ability($atk, 'create', Ability::LINES['create']) - $tempoLoss + $createBonus + $this->posMod($ta, 'create');
             $d = $this->ability($def, 'mark', Ability::LINES['mark']) + $this->markingMod($td, $A);
-            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def));
+            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def) + $matchup);
             $phases[] = ['n' => 'create', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $corner = $this->rng->chance(2500);

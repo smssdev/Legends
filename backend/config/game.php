@@ -228,16 +228,19 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 10,
+        'version' => 11,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
         'phase_floor_bp' => 800, 'phase_ceiling_bp' => 9200,
         'funnel_target_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 7500],
-        'matchup_cp' => [                         // خطة الهجوم × شكل دفاع الخصم (عالٍ، متوسط، منخفض)، بمئات النقطة
-            'counter' => [300, 0, -300], 'long_balls' => [200, -100, -100],
-            'passing' => [-100, 200, -100], 'wings' => [-200, 0, 200],
-            'long_shots' => [-200, -100, 300],
+        // خطة الهجوم × شكل دفاع الخصم (عالٍ، متوسط، منخفض) [Sprint 21 E5.4]: تغيّر احتمال التقدم وصنع الفرصة
+        // (من 10000) لا قوة اللاعبين، والتسديد البعيد بلا صنع فرصة فيأخذها مرتين في التقدم. والخطة العادية (التمرير
+        // على الشكل المتوسط) +600، فقاعدتا التقدم والصنع أقل بـ 600 لتبقى المباراة العادية كما هي.
+        'matchup_bp' => [
+            'counter' => [900, 0, -900], 'long_balls' => [600, -300, -300],
+            'passing' => [-300, 600, -300], 'wings' => [-600, 0, 600],
+            'long_shots' => [-600, -300, 900],
         ],
         'tackling_bonus_cp' => [0, 20, 30, 40],   // قانوني، عادي، حماس، خشونة
         // Fatigue [X21]: per minute, in hundredths of a per cent, for a player of stamina 70. About 18% in a normal
@@ -257,9 +260,10 @@ return [
         'chemistry_high' => 85, 'chemistry_high_bp' => [300, 700], 'chemistry_low' => 50, 'chemistry_low_bp' => 600,
         'trailing_push_from_minute' => 60,
         'tactics_max_win_bp' => 5800,             // شرط sim:matrix
+        'counter_edge_min_pts' => 3,              // شرط sim:matrix: الأضعف بخطة كتاب التكتيك يأخذ 3 نقاط (من 100) أكثر من خططه الأخرى
         'live_reading_every_minutes' => 15,
         // Phase duels: success = base + slope × (attack − defence in rating points), clamped to floor..ceiling
-        'phase_base_bp' => ['build' => 8000, 'progress' => 7500, 'create' => 8200, 'header' => 3500],
+        'phase_base_bp' => ['build' => 8000, 'progress' => 6900, 'create' => 7600, 'header' => 3500],
         'phase_slope_bp' => 17,              // per rating point of difference
         'share_slope_bp' => 30,              // initiative share per point of midfield difference
         'home_share_bp' => 450,              // the home side has the ball more (of 10000, on its own ground)
