@@ -354,6 +354,16 @@ return [
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
+    // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.
+    // A result's base (win, draw, loss), and per step of step_cp (strength centi-points, up to max_steps) the opponent was
+    // stronger, per_step more (or, weaker, less): beating a stronger side earns more, losing to a weaker one costs more.
+    // away for a win or draw away, big_win for winning by big_margin goals or more, and the trophies' points by position.
+    // The tiers by their first points, each but the last in three divisions (III, II, I); a tier once reached is
+    // kept, so the points never fall below its start (nor below zero).
+    'rating' => ['win' => 20, 'draw' => 4, 'loss' => -14, 'per_step' => ['win' => 3, 'draw' => 3, 'loss' => 2], 'step_cp' => 200, 'max_steps' => 5,
+        'away' => 2, 'big_win' => 3, 'big_margin' => 3, 'trophies' => ['league' => [1 => 100, 2 => 40, 3 => 20], 'cup' => [1 => 60, 2 => 20]],
+        'tiers' => ['prospect' => 0, 'tactician' => 150, 'professional' => 400, 'elite' => 800, 'mastermind' => 1400, 'icon' => 2200, 'legend' => 3200],
+        'divisions' => 3, 'recent' => 10],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),

@@ -36,7 +36,7 @@ class Guide
      * assistant to read the coach's own club.
      */
     private const QUICK = [
-        'home' => ['slots', 'leagues_create', 'leagues_join', 'coins', '?analysis_overview'],
+        'home' => ['rating', 'slots', 'leagues_create', 'leagues_join', 'coins', '?analysis_overview'],
         'club' => ['club_board', 'objectives', 'friendlies', 'quests', '?analysis_overview'],
         'team' => ['morale', 'fitness', 'value', 'potential', '?analysis_best'],
         'lineup' => ['lineup_edit', 'chemistry', 'takers', '?analysis_lineup'],
@@ -133,6 +133,26 @@ class Guide
     }
 
     /** Every topic in one language. */
+    /** [Sprint 25] The rating's rules, from game.rating, so the guide says what the game counts. */
+    private static function rating(string $l): string
+    {
+        $w = config('game.rating');
+        $en = $l === 'en';
+        $names = $en ? ['prospect' => 'Prospect', 'tactician' => 'Tactician', 'professional' => 'Professional', 'elite' => 'Elite', 'mastermind' => 'Mastermind', 'icon' => 'Icon', 'legend' => 'Legend']
+            : ['prospect' => 'الواعد', 'tactician' => 'التكتيكي', 'professional' => 'المحترف', 'elite' => 'النخبة', 'mastermind' => 'العقل المدبر', 'icon' => 'الأيقونة', 'legend' => 'الأسطورة'];
+        $ladder = implode($en ? ', ' : '، ', array_map(fn ($k, $p) => $names[$k].' '.$p, array_keys($w['tiers']), $w['tiers']));
+        $step = rtrim(rtrim(number_format($w['step_cp'] / 100, 2), '0'), '.');
+        $t = $w['trophies'];
+
+        return $en
+            ? sprintf('Every league or cup match moves your points: a win %+d, a draw %+d and a loss %d against a side as strong as yours. For each %s points of strength the opponent was stronger (up to %d), a win earns %d more, a draw %d more and a loss costs %d less; against a weaker side the other way, so beating the strong pays and losing to the weak hurts. A win or draw away adds %d, and winning by %d goals or more %d. Trophies: the league title %d (second %d, third %d), the cup %d (finalist %d). The tiers by points: %s; each but the Legend in three divisions (III, II, I). A tier once reached is yours for good: a bad run costs points but never drops you below its start.',
+                $w['win'], $w['draw'], $w['loss'], $step, $w['max_steps'], $w['per_step']['win'], $w['per_step']['draw'], $w['per_step']['loss'], $w['away'], $w['big_margin'], $w['big_win'],
+                $t['league'][1], $t['league'][2], $t['league'][3], $t['cup'][1], $t['cup'][2], $ladder)
+            : sprintf('كل مباراة دوري أو كأس تحرّك نقاطك: الفوز %+d، والتعادل %+d، والخسارة %d أمام فريق بقوة فريقك. ولكل %s نقطة قوة يزيدها الخصم عليك (حتى %d) يزيد الفوز %d، والتعادل %d، وتنقص الخسارة %d؛ وأمام الأضعف بالعكس، فالفوز على القوي يكافئك والخسارة أمام الضعيف تكلفك. والفوز أو التعادل خارج أرضك يضيف %d، والفوز بفارق %d أهداف أو أكثر %d. والألقاب: الدوري %d (الثاني %d، والثالث %d)، والكأس %d (الوصيف %d). والدرجات بالنقاط: %s؛ وكل درجة إلا الأسطورة بثلاثة مستويات (III، II، I). والدرجة التي تبلغها تبقى لك: السلسلة السيئة تنقص نقاطك ولا تنزلك تحت بدايتها.',
+                $w['win'], $w['draw'], $w['loss'], $step, $w['max_steps'], $w['per_step']['win'], $w['per_step']['draw'], $w['per_step']['loss'], $w['away'], $w['big_margin'], $w['big_win'],
+                $t['league'][1], $t['league'][2], $t['league'][3], $t['cup'][1], $t['cup'][2], $ladder);
+    }
+
     public static function topics(string $l): array
     {
         $en = $l === 'en';
@@ -155,6 +175,10 @@ class Guide
             $t('slots', ['home'], 'leagues',
                 ['ما هي فتحات المدرب؟', 'فتحات فتحة اندية ثمانية اكثر من نادي فرقي مقفلة قفل فتح فوري', sprintf('لك %d فتحات: في كل واحدة نادٍ في دوري. يُفتح منها %d مع الحساب، وواحدة أخرى كل %d أيام من عمر حسابك، والعدّاد على كل فتحة مقفلة. أو افتح أول فتحة مقفلة فوراً بالكوينز (%s)، بالترتيب، وتبقى مفتوحة دائماً. اضغط فتحة ناديك لتدخلها، أو فتحة فارغة لتنضم إلى دوري أو تنشئ دوريك.', $c('league.max_active_teams'), $c('league.slots.open'), $c('league.slots.every_days'), implode('، ', array_map(fn ($n, $p) => "الفتحة {$n} بـ {$p}", array_keys($c('league.slots.unlock_coins')), $c('league.slots.unlock_coins'))))],
                 ['What are the coach slots?', 'slots slot clubs eight many teams locked unlock instant', sprintf('You have %d slots: each holds a club in a league. %d are open with the account, and one more every %d days of your account\'s age, with a countdown on each locked slot. Or open the first locked slot now for coins (%s), in order, and it stays open for good. Tap your club\'s slot to go in, or an empty slot to join a league or create your own.', $c('league.max_active_teams'), $c('league.slots.open'), $c('league.slots.every_days'), implode(', ', array_map(fn ($n, $p) => "slot {$n} for {$p}", array_keys($c('league.slots.unlock_coins')), $c('league.slots.unlock_coins'))))]),
+            // [Sprint 25] The coach's rating and its tiers.
+            $t('rating', ['home'], null,
+                ['كيف تُحسب نقاط المدرب ودرجاته؟', 'نقاط النقاط تصنيف درجة درجات رتبة رتب ترتيب تقييم المدرب اسطورة نخبة محترف تزيد تنقص خسارة فوز تعادل', self::rating('ar')],
+                ['How do the coach points and tiers work?', 'points rating rank tier tiers division legend elite professional win draw loss lose', self::rating('en')]),
             $t('club_board', ['club'], 'club',
                 ['ما هي لوحة النادي؟', 'لوحة النادي الرئيسية كروت بطاقات جائزة الجولة رجل الجولة', 'لوحة النادي أول صفحة لناديك: المباراة القادمة وعدّادها، وترتيبك، والتدريب والملعب الجاريان، وما ينتظرك. وفيها الوديات (مباراة الآن بلا أثر على الجدول تزيد تدريب لاعبيك)، والمهام الأسبوعية (كوينز لكل مهمة، وأموال للنادي في الكبرى)، وجوائز الجولة (رجل الجولة وأفضل مدرب وأفضل المباريات).'],
                 ['What is the club board?', 'club board home cards awards man of the round', 'The club board is your club\'s first page: the next match and its countdown, your position, the training and stadium in progress, and what waits for you. On it are the friendlies (a match now with no effect on the table that adds to your players\' training), the weekly quests (coins for each quest, and money for the club in the big one), and the round\'s awards (man of the round, best coach and the best matches).']),
