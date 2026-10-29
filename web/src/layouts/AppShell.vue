@@ -5,7 +5,7 @@
 //   club's money, the timers and what waits for the coach (each opening its window), and the messages; the coach's tab.
 // - Inside a slot, on the computer, a fixed side menu with every section; on the phone a bottom bar: «النادي» (the
 //   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
-// - [Sprint 22] The Assistant Coach's button on every screen, fixed on the right (above the bottom bar inside a slot).
+// - [Sprint 22] The Assistant Coach's button on every screen, fixed on the left in Arabic and the right in English (above the bottom bar inside a slot).
 // - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'

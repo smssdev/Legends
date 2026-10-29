@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // [Sprint 22 W1, W2] The Assistant Coach (Manager Bot in English), on every screen of the game: the owner's approved
-// draft (docs/design/legends-ui/ManagerBotDraft.html). A gold button fixed on the right in both languages, still, never
-// dragged; once a day a greeting beside it. Its window fills the phone and is a side panel on the computer: who he is,
+// draft (docs/design/legends-ui/ManagerBotDraft.html). A gold button fixed on the left in Arabic and on the right in
+// English (the owner, 2026-10-29), still, never dragged; once a day a greeting beside it. Its window fills the phone and is a side panel on the computer: who he is,
 // the page's quick questions, and the conversation. Every explanation of the game lives here, not on the screens.
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -90,7 +90,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
         <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 5h20a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" /><path d="M16 6v16" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="1.3" fill="currentColor" /></svg>
         <span class="bot-on" />
       </button>
-      <div v-if="hello" class="bot-hello" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
+      <div v-if="hello" class="bot-hello">
         <button type="button" class="bot-hello-x" :aria-label="$t('إغلاق')" @click="quiet">✕</button>
         <button type="button" class="text-start" @click="show">
           <b class="block text-sm">{{ $t('أهلاً كوتش!') }}</b>
@@ -144,11 +144,11 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 </template>
 
 <style scoped>
-/* Fixed on the right in both languages, above the phone's bottom bar inside a slot. */
-.bot-root { position: fixed; z-index: 40; right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
+/* Fixed on the left in Arabic and on the right in English (the line's end), above the phone's bottom bar inside a slot. */
+.bot-root { position: fixed; z-index: 40; inset-inline-end: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
 .bot-root.raised { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
 @media (min-width: 768px) { .bot-root.raised { bottom: 1.25rem; } }
-.bot-fab-row { display: flex; align-items: center; gap: 0.5rem; flex-direction: row-reverse; direction: ltr; }
+.bot-fab-row { display: flex; align-items: center; gap: 0.5rem; flex-direction: row-reverse; }
 .bot-fab {
   position: relative;
   display: grid;
@@ -164,18 +164,18 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 .bot-fab svg { width: 1.9rem; height: 1.9rem; }
 .bot-fab.small { width: 2.75rem; height: 2.75rem; box-shadow: none; }
 .bot-fab.small svg { width: 1.5rem; height: 1.5rem; }
-.bot-on { position: absolute; top: 0.15rem; right: 0.15rem; width: 0.8rem; height: 0.8rem; border-radius: 999px; background: var(--color-ring); border: 2px solid var(--color-bg); }
+.bot-on { position: absolute; top: 0.15rem; inset-inline-end: 0.15rem; width: 0.8rem; height: 0.8rem; border-radius: 999px; background: var(--color-ring); border: 2px solid var(--color-bg); }
 .bot-hello {
   position: relative;
   max-width: 15rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.9rem;
-  border-right: 4px solid var(--color-gold);
+  border-inline-end: 4px solid var(--color-gold);
   color: var(--color-on-chrome);
   background: var(--color-chrome);
   box-shadow: 0 8px 22px rgb(0 0 0 / 0.45);
 }
-.bot-hello-x { position: absolute; top: -0.6rem; left: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: 0.7rem; color: var(--color-text); background: var(--color-surface-raised); }
+.bot-hello-x { position: absolute; top: -0.6rem; inset-inline-start: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: 0.7rem; color: var(--color-text); background: var(--color-surface-raised); }
 /* The window: the whole phone, a side panel on the computer (opposite the side menu). */
 .bot-panel {
   position: fixed;

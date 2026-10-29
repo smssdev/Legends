@@ -139,16 +139,15 @@ p { margin: 0 }
 @media (max-width: 700px) { .desk { flex-basis: 100% } .intro h1 { font-size: 24px } }
 @media (prefers-reduced-motion: no-preference) { .pulse { animation: p 1.6s ease-in-out infinite } @keyframes p { 50% { opacity: .55 } } }
 /* Sprint 22: the Assistant Coach (Manager Bot) */
-.bot-fab { position: absolute; z-index: 3; right: 12px; display: flex; align-items: center; gap: 8px }
-[dir=ltr] .bot-fab { flex-direction: row-reverse }
+.bot-fab { position: absolute; z-index: 3; inset-inline-end: 12px; display: flex; align-items: center; gap: 8px; flex-direction: row-reverse }
 .fab { width: 56px; height: 56px; flex: none; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFD36B, var(--gold) 55%, #C08A0C); color: var(--onGold); display: grid; place-items: center; position: relative; box-shadow: 0 8px 22px rgba(0, 0, 0, .5), 0 0 0 3px rgba(79, 224, 181, .35) }
 .fab svg { width: 30px; height: 30px }
 .fab .on { position: absolute; top: 2px; inset-inline-end: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--mint); border: 2px solid var(--bg) }
 .fab.sm { width: 44px; height: 44px } .fab.sm svg { width: 24px; height: 24px }
-.hello { background: #F6EEDB; color: #13241D; border-radius: 14px; border-right: 4px solid var(--gold); padding: 8px 12px; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); position: relative; max-width: 230px }
+.hello { background: #F6EEDB; color: #13241D; border-radius: 14px; border-inline-end: 4px solid var(--gold); padding: 8px 12px; box-shadow: 0 8px 22px rgba(0, 0, 0, .45); position: relative; max-width: 230px }
 .hello b { display: block; font-size: 14px }
 .hello span { font-size: 12px; color: #13241D; opacity: .75 }
-.hello .x { position: absolute; top: -8px; left: -8px; width: 22px; height: 22px; border-radius: 50%; background: var(--raised); color: var(--text); font-size: 12px; display: grid; place-items: center }
+.hello .x { position: absolute; top: -8px; inset-inline-start: -8px; width: 22px; height: 22px; border-radius: 50%; background: var(--raised); color: var(--text); font-size: 12px; display: grid; place-items: center }
 .chat { position: absolute; inset: 0; background: var(--bg); display: grid; grid-template-rows: auto 1fr auto; z-index: 4 }
 .chat-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(180deg, #0F2A40, var(--panel)); border-bottom: 1px solid var(--hair) }
 .chat-head .grow { flex: 1; min-width: 0 }
@@ -192,7 +191,7 @@ p { margin: 0 }
   <section class="intro">
     <h1>مسودة <span>Sprint 22</span>: المدرب المساعد (Manager Bot)</h1>
     <p>كل شروحات الشاشات تخرج منها إلى شخصية واحدة ثابتة في كل الصفحات: <b>المدرب المساعد</b> بالعربية و<b>Manager Bot</b> بالإنجليزية. يعرف كل قواعد اللعبة، ويقرأ بيانات ناديك أنت ويحللها وينصحك. الأرقام والأسماء أمثلة. اكتب لي <b>«W2 موافق»</b> أو ملاحظتك على أي رمز.</p>
-    <div class="how"><span>زر واحد ثابت يميناً في كل الصفحات</span><span>لا «؟» ولا أسطر شرح في الشاشات</span><span>يقرأ ناديك أنت فقط ولا ينفذ شيئاً</span><span>لا شيء من تكتيك الخصم الخاص</span></div>
+    <div class="how"><span>زر واحد ثابت: يساراً بالعربية ويميناً بالإنجليزية</span><span>لا «؟» ولا أسطر شرح في الشاشات</span><span>يقرأ ناديك أنت فقط ولا ينفذ شيئاً</span><span>لا شيء من تكتيك الخصم الخاص</span></div>
     <div class="decide">
       <b>ما اخترته (غيّر أي بند):</b>
       <ol>
@@ -213,7 +212,7 @@ p { margin: 0 }
   <!-- W1 -->
   <section class="draft" id="w1">
     <header><span class="code">W1</span><h2>الزر والترحيب</h2></header>
-    <p class="why">مثل الصورة التي أرسلتها: دائرة عائمة وبجانبها فقاعة ترحيب، لكن بهوية Legends: دائرة ذهبية فيها فقاعة كلام بداخلها خط منتصف الملعب ودائرته، وحلقة نعناعية ثابتة، ونقطة «متصل». <b>لا يتحرك ولا ينبض.</b> الفقاعة بلون العاج (لون التبويبات) تظهر أول مرة في اليوم، وتُغلق بـ ×. <b>الزر ثابت في الجانب الأيمن</b> فوق الشريط السفلي، في كل الصفحات وفي اللغتين، ولا يغيّر مكانه ولا يُسحب.</p>
+    <p class="why">مثل الصورة التي أرسلتها: دائرة عائمة وبجانبها فقاعة ترحيب، لكن بهوية Legends: دائرة ذهبية فيها فقاعة كلام بداخلها خط منتصف الملعب ودائرته، وحلقة نعناعية ثابتة، ونقطة «متصل». <b>لا يتحرك ولا ينبض.</b> الفقاعة بلون العاج (لون التبويبات) تظهر أول مرة في اليوم، وتُغلق بـ ×. <b>الزر ثابت في الجانب الأيسر بالعربية، وفي الأيمن بالإنجليزية</b>، فوق الشريط السفلي في كل الصفحات، ولا يغيّر مكانه ولا يُسحب.</p>
     <div class="frames">
       <div class="frame"><small>الجوال بالعربية: أول فتح في اليوم</small>
         <div class="phone" style="height:560px">
