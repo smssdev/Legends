@@ -13,9 +13,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Wallet
 {
-    public const TYPES = ['welcome', 'league_custom', 'transfer_doc', 'transfer_coins', 'daily', 'win', 'draw', 'objective', 'title', 'spy', 'secret_training', 'specialist', 'finish_training', 'finish_scout', 'finish_stadium', 'quick_sale', 'bribe', 'security_check', 'double_agent', 'referral', 'quest', 'admin_gift'];
+    public const TYPES = ['welcome', 'league_custom', 'transfer_doc', 'transfer_coins', 'daily', 'win', 'draw', 'objective', 'title', 'spy', 'secret_training', 'specialist', 'finish_training', 'finish_scout', 'finish_stadium', 'quick_sale', 'bribe', 'security_check', 'double_agent', 'referral', 'quest', 'admin_gift', 'friendly', 'slot_unlock'];
 
-    public const LABELS = ['welcome' => 'مكافأة توثيق الحساب', 'referral' => 'هدية دعوة صديق', 'quest' => 'مهمة أسبوعية', 'admin_gift' => 'هدية من فريق التطوير', 'league_custom' => 'إنشاء دوري مخصص', 'transfer_doc' => 'توثيق صفقة', 'transfer_coins' => 'تعويض قيمة صفقة', 'daily' => 'مكافأة اليوم', 'win' => 'فوز', 'draw' => 'تعادل', 'objective' => 'تحقيق هدف', 'title' => 'لقب',
+    public const LABELS = ['welcome' => 'مكافأة توثيق الحساب', 'referral' => 'هدية دعوة صديق', 'quest' => 'مهمة أسبوعية', 'admin_gift' => 'هدية من فريق التطوير', 'friendly' => 'مباراة ودية', 'slot_unlock' => 'فتح فتحة مدرب فوراً', 'league_custom' => 'إنشاء دوري مخصص', 'transfer_doc' => 'توثيق صفقة', 'transfer_coins' => 'تعويض قيمة صفقة', 'daily' => 'مكافأة اليوم', 'win' => 'فوز', 'draw' => 'تعادل', 'objective' => 'تحقيق هدف', 'title' => 'لقب',
         'spy' => 'التجسس', 'secret_training' => 'التدريب السري', 'specialist' => 'أخصائي', 'finish_training' => 'إنهاء جلسة تدريب', 'quick_sale' => 'بيع فوري',
         'finish_scout' => 'إنهاء بحث الكشاف', 'finish_stadium' => 'إنهاء جزء الملعب', 'bribe' => 'مصاريف خاصة', 'security_check' => 'فحص أمني', 'double_agent' => 'جاسوس مزدوج'];
 

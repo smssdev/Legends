@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * The eleven's chemistry, 0..100 [X22]. Each player is linked to his two nearest team-mates on the pitch, and
  * each link is green (same nationality and the same original club, or game.chemistry.together_matches played
- * together for this club), yellow (same nationality, or from the same league) or red. The chemistry is the
+ * together for this club, friendlies included), yellow (same nationality, or from the same league) or red. The chemistry is the
  * mean of the links' values. The engine reads only the number; the lineup screen draws the links.
  * Nothing secret: it is the eleven's own, and the rival sees only the eleven and the score of a match.
  */
@@ -80,18 +80,20 @@ class Chemistry
         return $nation || ($a['league'] !== '' && $a['league'] === $b['league']) ? 'yellow' : 'red';
     }
 
-    /** How many of this club's matches each pair of the eleven played in together. */
+    /** How many of this club's matches each pair of the eleven played in together, its friendlies too [Sprint 24 B2]. */
     private static function together(int $clubId, array $ids): array
     {
         $wanted = array_flip($ids);
-        $out = [];
+        $lists = [];
         foreach (DB::table('match_stats')->where('club_id', $clubId)->pluck('players') as $json) {
-            $played = [];
-            foreach (json_decode($json, true) ?? [] as $p) {
-                if (($p['played'] ?? false) && isset($wanted[(int) $p['id']])) {
-                    $played[] = (int) $p['id'];
-                }
-            }
+            $lists[] = array_map(fn ($p) => (int) $p['id'], array_filter(json_decode($json, true) ?? [], fn ($p) => $p['played'] ?? false));
+        }
+        foreach (DB::table('friendlies')->where('club_id', $clubId)->whereNotNull('players')->pluck('players') as $json) {
+            $lists[] = array_map('intval', json_decode($json, true) ?? []);
+        }
+        $out = [];
+        foreach ($lists as $list) {
+            $played = array_values(array_filter($list, fn ($id) => isset($wanted[$id])));
             sort($played);
             foreach ($played as $i => $a) {
                 foreach (array_slice($played, $i + 1) as $b) {

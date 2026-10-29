@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
 use App\League\ClubAgenda;
+use App\League\CoachSlots;
 use App\League\Standings;
 use App\Messages\Inbox;
 use App\Models\Club;
@@ -18,8 +19,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * The coach's home screen [X18]: the profile card with the level, the club slots (a team in each of up to ten
- * leagues), the trophies, the coaches met, and the developers' latest announcements. And the global ranking.
+ * The coach's home screen [X18]: the profile card with the level, the club slots (a team in each of up to eight
+ * leagues, opening with the account's age), the trophies, the coaches met, and the developers' latest announcements. And the global ranking.
  */
 class HomeController extends Controller
 {
@@ -33,6 +34,8 @@ class HomeController extends Controller
             'coach' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'avatar_url' => $user->avatarUrl(),
                 'account_no' => $user->account_no, 'official' => Username::official($user->username), 'verified' => $user->account_verified_at !== null, 'level' => Career::level($record, $trophies), 'record' => $record,
                 'coins' => Wallet::balance($user->id)],
+            // [Sprint 24 B3] The slots open now, of all of them, and when the next one opens.
+            'slots_open' => CoachSlots::open($user), 'next_slot_at' => CoachSlots::next($user)?->toIso8601ZuluString(),
             'trophies' => $trophies,
             'slots' => $this->slots($user),
             'colleagues' => $this->colleagues($user->id),
@@ -41,15 +44,21 @@ class HomeController extends Controller
         ]);
     }
 
-    /** The slots (game.league.max_active_teams, 10): a club in a league, a request waiting for its answer, or free. */
+    /**
+     * The slots (game.league.max_active_teams, 8): a club in a league, a request waiting for its answer, free, or
+     * locked until the account is old enough [Sprint 24 B3] (opens_at, for the countdown). A team held from before
+     * the slots opened with age keeps its slot, so a coach may show more teams than open slots, never fewer.
+     */
     private function slots(User $user): array
     {
         $max = (int) config('game.league.max_active_teams');
+        $open = CoachSlots::open($user);
+        $created = Carbon::parse($user->created_at, 'UTC');
         $out = [];
         $memberships = DB::table('league_memberships')->join('leagues', 'leagues.id', '=', 'league_memberships.league_id')
             ->leftJoin('clubs', 'clubs.id', '=', 'league_memberships.club_id')
             ->where('league_memberships.user_id', $user->id)->whereNull('league_memberships.left_at')->whereNotNull('league_memberships.club_id')
-            ->orderBy('league_memberships.joined_at')->limit($max)
+            ->orderBy('league_memberships.joined_at')
             ->get(['leagues.id as league_id', 'leagues.name as league', 'leagues.status', 'league_memberships.season_id', 'clubs.id as club_id', 'clubs.name as club', 'clubs.master_club_id', 'clubs.balance']);
         foreach ($memberships as $m) {
             $order = Standings::order((int) $m->season_id);
@@ -68,15 +77,32 @@ class HomeController extends Controller
         }
         foreach (DB::table('league_join_requests')->join('leagues', 'leagues.id', '=', 'league_join_requests.league_id')
             ->where('league_join_requests.user_id', $user->id)->where('league_join_requests.status', 'pending')->limit($max)->get(['leagues.id', 'leagues.name']) as $r) {
-            if (count($out) < $max) {
+            if (count($out) < max($max, count($memberships))) {
                 $out[] = ['state' => 'waiting', 'league' => ['id' => (int) $r->id, 'name' => $r->name, 'status' => 'waiting'], 'pending' => 0, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
             }
         }
-        while (count($out) < $max) {
+        while (count($out) < $open) {
             $out[] = ['state' => 'free', 'league' => null, 'pending' => 0, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
         }
+        $first = true;
+        while (count($out) < $max) {
+            $n = count($out) + 1;
+            // Only the first locked slot is bought (with any before it): they open in order.
+            $out[] = ['state' => 'locked', 'league' => null, 'pending' => 0, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null,
+                'opens_at' => CoachSlots::opensAt($created, $n)->toIso8601ZuluString(), 'progress_bp' => CoachSlots::progressBp($user, $n),
+                'unlock_coins' => $first ? CoachSlots::price($user, $n) : null];
+            $first = false;
+        }
 
-        return array_map(fn ($s, $i) => ['slot' => $i + 1] + $s, $out, array_keys($out));
+        return array_map(fn ($s, $i) => ['slot' => $i + 1] + $s + ['opens_at' => null, 'progress_bp' => null, 'unlock_coins' => null], $out, array_keys($out));
+    }
+
+    /** [Sprint 24 B3] Open a locked slot now for its coins (and any locked before it), then the home screen again. */
+    public function unlock(Request $request, int $slot): JsonResponse
+    {
+        CoachSlots::unlock($request->user(), $slot);
+
+        return $this->show($request);
     }
 
     /** The other coaches in the coach's leagues (any season). */

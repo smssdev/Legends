@@ -148,9 +148,10 @@ class LeagueTest extends TestCase
 
     public function test_active_teams_stop_at_the_limit(): void
     {
-        // The limit is 10 (the coach's slots, X18); a smaller one keeps the test short, the rule is the same.
+        // The limit is 8 (the coach's slots, X18, Sprint 24); a smaller one keeps the test short, the rule is the same.
+        // An account old enough for all of them.
         config(['game.league.max_active_teams' => 4]);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['created_at' => GameClock::now()->subDays(100)]);
         $leagues = [];
         for ($i = 0; $i < 3; $i++) {
             $leagues[] = $this->makeLeague($user);

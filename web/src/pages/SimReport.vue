@@ -5,6 +5,7 @@
         <BrandMark />
       </RouterLink>
       <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">{{ $t('تقرير المباراة') }}</span>
+      <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true">⚡ {{ $t('الملخص السريع') }}</button>
       <div v-if="view && !league" role="radiogroup" :aria-label="$t('التقرير من وجهة نظر')" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
           {{ $nm(view.clubs[s].name) }}
@@ -12,6 +13,7 @@
       </div>
     </header>
 
+    <MatchRecap v-if="recap" :match-id="Number(id)" @close="recap = false" />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(error) }}</p>
     <p v-else-if="!report || !view" class="text-text-muted">{{ $t('جارٍ تحميل التقرير...') }}</p>
 
@@ -151,6 +153,7 @@ import Crest from '../components/Crest.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
+import MatchRecap from '../components/shell/MatchRecap.vue'
 import { clubColors, leagueMatch, sim, type MatchView, type Side } from '../api/sim'
 
 // league (Sprint 20 W1): a league match's report, the coach's own side only (the server knows which).
@@ -162,6 +165,8 @@ const view = ref<MatchView | null>(null)
 const report = ref<any>(null)
 const error = ref('')
 const side = ref<Side>((route.query.side as Side) || 'home')
+// [Sprint 24 W1] A league match's quick recap, over the report.
+const recap = ref(false)
 
 const color = (s: Side) => (view.value ? clubColors(view.value.clubs[s]).primary : '#163360')
 const rating = (r: number) => (r / 100).toFixed(1)

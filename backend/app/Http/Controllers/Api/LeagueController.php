@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\League\CoachSlots;
 use App\League\CupBracket;
 use App\League\Integrity;
 use App\League\Joining;
@@ -50,7 +51,10 @@ class LeagueController extends Controller
         return response()->json([
             'leagues' => $leagues->map(fn (League $l) => $this->leagueData($l, $user)),
             'active_teams' => Joining::activeTeams($user),
-            'max_active_teams' => config('game.league.max_active_teams'),
+            // [Sprint 24 B3] The slots open for the account's age now, of all of them, and when the next one opens.
+            'max_active_teams' => CoachSlots::open($user),
+            'slots_total' => (int) config('game.league.max_active_teams'),
+            'next_slot_at' => CoachSlots::next($user)?->toIso8601ZuluString(),
         ]);
     }
 

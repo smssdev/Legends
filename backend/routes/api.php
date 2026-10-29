@@ -237,6 +237,8 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::post('{match}/chat', 'chat')->whereNumber('match')->middleware('throttle:60,1,match-chat');
     Route::get('{match}/replay', 'replay')->whereNumber('match')->middleware('throttle:30,1,match-replay');
     Route::get('{match}/report', 'report')->whereNumber('match')->middleware('throttle:60,1,match-report');
+    // [Sprint 24 B1] The quick recap for a coach who missed the match.
+    Route::get('{match}/recap', 'recap')->whereNumber('match')->middleware('throttle:60,1,match-recap');
 });
 
 // The inbox [Sprint 22]: the account's messages; new ones and reads also arrive on App.Models.User.{id}.
@@ -333,6 +335,8 @@ Route::prefix('wallet')->middleware(['auth:sanctum', 'throttle:60,1,wallet'])->c
 Route::middleware(['auth:sanctum', 'throttle:60,1,home'])->controller(HomeController::class)->group(function () {
     Route::get('home', 'show');
     Route::get('rankings/coaches', 'ranking');
+    // [Sprint 24 B3] Open a locked slot now for coins.
+    Route::post('home/slots/{slot}/unlock', 'unlock')->whereNumber('slot');
 });
 
 // A coach's profile: titles, objectives and record [Sprint 33].
