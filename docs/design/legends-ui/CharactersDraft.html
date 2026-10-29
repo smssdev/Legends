@@ -139,6 +139,25 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
 .fx-pop { animation: pop 1.6s ease-out infinite; }
 .fx-z { animation: zz 2.4s ease-in-out infinite; }
 .fx-pulse { animation: pulse 1.6s ease-in-out infinite; }
+.char .up, .char .fo { transition: transform .45s cubic-bezier(.3, 1.4, .5, 1); }
+.m-idle .upL { transform: rotate(7deg); } .m-idle .upR { transform: rotate(-7deg); }
+.m-joy .upL { animation: waveL .5s ease-in-out infinite alternate; } .m-joy .upR { animation: waveR .5s ease-in-out infinite alternate; }
+.m-joy .foL { animation: foL .5s ease-in-out infinite alternate; } .m-joy .foR { animation: foR .5s ease-in-out infinite alternate; }
+.m-cheer .upL { transform: rotate(-15deg); } .m-cheer .upR { transform: rotate(15deg); }
+.m-cheer .foL { animation: clapFoL .35s ease-in-out infinite alternate; } .m-cheer .foR { animation: clapFoR .35s ease-in-out infinite alternate; }
+.m-sad .upL { transform: rotate(3deg); } .m-sad .upR { transform: rotate(-3deg); }
+.m-angry .upL { transform: rotate(32deg); } .m-angry .upR { transform: rotate(-32deg); }
+.m-angry .foL { transform: rotate(-82deg); } .m-angry .foR { transform: rotate(82deg); }
+.m-worried .upL { transform: rotate(-8deg); } .m-worried .upR { transform: rotate(8deg); }
+.m-worried .foL { transform: rotate(-64deg); } .m-worried .foR { transform: rotate(64deg); }
+.m-think .upL { transform: rotate(6deg); } .m-think .upR { transform: rotate(35deg); } .m-think .foR { transform: rotate(125deg); }
+.m-surprise .upL { transform: rotate(45deg); } .m-surprise .upR { transform: rotate(-45deg); }
+.m-surprise .foL { transform: rotate(80deg); } .m-surprise .foR { transform: rotate(-80deg); }
+.m-sleep .upL { transform: rotate(2deg); } .m-sleep .upR { transform: rotate(-2deg); }
+@keyframes foL { from { transform: rotate(8deg); } to { transform: rotate(35deg); } }
+@keyframes foR { from { transform: rotate(-8deg); } to { transform: rotate(-35deg); } }
+@keyframes clapFoL { from { transform: rotate(-60deg); } to { transform: rotate(-84deg); } }
+@keyframes clapFoR { from { transform: rotate(60deg); } to { transform: rotate(84deg); } }
 @keyframes breathe { 50% { transform: scale(1.012, 1.025); } }
 @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
 @keyframes bounce { to { transform: translateY(-12px); } }
@@ -167,7 +186,7 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
 
 <main dir="rtl" lang="ar">
   <header class="hero">
-    <span class="eyebrow">مسودة للاعتماد · 2026-10-29</span>
+    <span class="eyebrow">مسودة للاعتماد · النسخة 2 · 2026-10-29</span>
     <h1>شخصيات الأسطورة</h1>
     <p class="muted">تسعة نماذج في ثلاث مجموعات: التميمة، ووجه المدرب المساعد، والمدرب على الخط. ولكل نموذج تسعة مشاعر. اختر شعوراً من الشريط، فتتغير كل الشخصيات معاً لتقارن بينها. وكل الرسم من عندنا بألوان <span dir="ltr">tokens.json</span>، وكل شخصية ملف SVG صغير يتحرك مثل GIF.</p>
   </header>
@@ -254,6 +273,24 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
     </div>
   </section>
 
+  <section aria-labelledby="sR">
+    <div class="sec-head">
+      <span class="eyebrow">النسخة 2</span>
+      <h2 id="sR">ما تغيّر، وأبعد من ذلك</h2>
+      <p class="muted">في هذه النسخة: تظليل بالضوء والظل لكل لون، وخطوط ملونة بدل الأسود، وعيون بقزحية وبريق للبشر، ومدربون بنسب جسم قريبة من الحقيقة: رأس أصغر، وأرجل أطول، وذراع تنثني من المرفق.</p>
+    </div>
+    <div class="scroll">
+      <table class="moods">
+        <thead><tr><th scope="col">المستوى</th><th scope="col">كيف</th><th scope="col">الكلفة</th></tr></thead>
+        <tbody>
+          <tr><td>رسم متجهات مظلل (هذه الصفحة)</td><td>أرسمه أنا بالكود، ملف SVG صغير بحركة CSS</td><td>مجاني، وجاهز الآن</td></tr>
+          <tr><td>ثلاثي الأبعاد واقعي</td><td>الشخصيات نفسها في Unity مثل لاعبي المشهد، وتُصدَّر حركاتها إلى WebP متحرك للويب والتطبيق</td><td>مجاني، على جهاز سليمان بعد سبرنتات Unity</td></tr>
+          <tr><td>رسم يدوي احترافي</td><td>رسام يرسم النماذج المعتمدة بأسلوبه، ونحرّكها نحن</td><td>بأجر، ويحتاج قرارك</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section aria-labelledby="sF">
     <div class="sec-head">
       <h2 id="sF">ما أحتاجه منك</h2>
@@ -279,16 +316,29 @@ const MOODS = [
   { id: 'sleep', ar: 'نوم', when: 'الإجازة، والدوري متوقف بين المواسم', ev: 'holiday' },
 ];
 
-const st = (c, o = true, w = 3) => `style="fill:var(--${c})${o ? `;stroke:var(--k);stroke-width:${w};stroke-linejoin:round` : ''}"`;
+/* Volume: every cloth and skin colour is a soft radial gradient (light from the top left), and its outline is a darker shade of itself. */
+const SHADED = ['gold', 'goldD', 'goldL', 'em', 'emD', 'navy', 'navyD', 'chrome', 'chromeD', 'skin', 'bronze', 'orange', 'white', 'silver', 'night'];
+document.body.insertAdjacentHTML('afterbegin', `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${SHADED.map(c => `<radialGradient id="g-${c}" cx=".38" cy=".3" r=".85" fx=".32" fy=".22">
+  <stop offset="0" style="stop-color:color-mix(in srgb, var(--${c}) 62%, #fff)"/><stop offset=".5" style="stop-color:var(--${c})"/><stop offset="1" style="stop-color:color-mix(in srgb, var(--${c}) 68%, var(--k))"/></radialGradient>`).join('')}</defs></svg>`);
+const st = (c, o = true, w = 3) => `style="fill:${SHADED.includes(c) ? `url(#g-${c})` : `var(--${c})`}${o ? `;stroke:color-mix(in srgb, var(--${c}) 38%, var(--k));stroke-width:${(w * .8).toFixed(1)};stroke-linejoin:round` : ''}"`;
 const ln = (c, w = 3) => `style="fill:none;stroke:var(--${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
 
 function face(m, o = {}) {
   const ink = o.glow ? 'emL' : 'k';
   const S = (d, w = 3.4) => `<path d="${d}" ${ln(ink, w)}/>`;
   const dot = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" ${st(ink, false)}/>`;
-  const shine = (x, y) => o.glow ? '' : `<circle cx="${x}" cy="${y}" r="1.8" ${st('white', false)}/>`;
+  const shine = (x, y) => o.glow ? '' : `<circle cx="${x}" cy="${y}" r="1.8" style="fill:#fff"/>`;
   const E = [-16, 16];
   let eyes = '', brows = '', mouth = '', cheeks = '', fx = '';
+  /* People get real eyes: white, a coloured iris, a pupil and two glints. */
+  const real = (x, y, look = 0, ry = 7.5) => `<ellipse cx="${x}" cy="${y}" rx="6.5" ry="${ry}" style="fill:#fff;stroke:var(--k);stroke-width:2"/>`
+    + `<circle cx="${x + look}" cy="${y + 1}" r="4.4" style="fill:var(--${o.iris})"/><circle cx="${x + look}" cy="${y + 1}" r="2.2" style="fill:var(--k)"/>`
+    + `<circle cx="${x + look + 1.6}" cy="${y - 1}" r="1.3" style="fill:#fff"/><circle cx="${x + look - 1.4}" cy="${y + 2.6}" r=".7" style="fill:#fff"/>`;
+  let realEyes = '';
+  if (o.iris && ['idle', 'sad', 'think', 'worried', 'angry'].includes(m)) {
+    const look = m === 'think' ? 2.2 : 0, y = m === 'think' ? -2 : m === 'angry' ? 2 : 0, ry = m === 'angry' ? 5.5 : m === 'worried' ? 6.5 : 7.5;
+    realEyes = (m === 'idle' ? '<g class="blink">' : '') + E.map(x => real(x, y, look, ry)).join('') + (m === 'idle' ? '</g>' : '');
+  }
   switch (m) {
     case 'joy': case 'cheer':
       eyes = E.map(x => S(`M${x - 7} 2 Q${x} -8 ${x + 7} 2`, 3.8)).join(''); break;
@@ -312,6 +362,8 @@ function face(m, o = {}) {
     default:
       eyes = '<g class="blink">' + E.map(x => dot(x, 0, 5.5, 7) + shine(x + 2, -3)).join('') + '</g>';
   }
+  if (realEyes) eyes = realEyes;
+  if (o.iris && ['idle', 'joy', 'cheer', 'sleep'].includes(m)) brows = S('M-24 -13 Q-16 -17 -8 -13', 3) + S('M24 -13 Q16 -17 8 -13', 3);
   if (o.beak) {
     const open = ['joy', 'cheer', 'surprise', 'angry'].includes(m);
     const tip = m === 'surprise' ? 6 : 0;
@@ -362,6 +414,32 @@ const sleeveArm = (cloth, skin, len = 38, cuff) => (x, y) =>
 const legs = (cloth, shoe, shoeO = false) =>
   `<rect x="82" y="180" width="15" height="22" ${st(cloth)}/><rect x="103" y="180" width="15" height="22" ${st(cloth)}/>`
   + `<ellipse cx="88" cy="204" rx="12" ry="5" ${st(shoe, shoeO)}/><ellipse cx="112" cy="204" rx="12" ry="5" ${st(shoe, shoeO)}/>`;
+
+
+/* The touchline coaches are drawn closer to life: a head a sixth of the body, long legs, and arms with an elbow. */
+const coachArm = (side, x, y, o) => {
+  const s = side === 'L' ? 'L' : 'R';
+  const stripe = o.stripe ? (yy, h) => `<rect x="${x - 1.2}" y="${yy}" width="2.4" height="${h}" ${st(o.stripe, false)}/>` : () => '';
+  return `<g class="up up${s}" style="transform-origin:${x}px ${y}px"><rect x="${x - 7}" y="${y - 3}" width="14" height="31" rx="7" ${st(o.sleeve)}/>${stripe(y, 24)}
+    <g class="fo fo${s}" style="transform-origin:${x}px ${y + 26}px"><rect x="${x - 6}" y="${y + 22}" width="12" height="28" rx="6" ${st(o.sleeve)}/>${stripe(y + 26, 20)}
+    ${o.cuff ? `<rect x="${x - 6}" y="${y + 45}" width="12" height="4" ${st(o.cuff, false)}/>` : ''}
+    <ellipse cx="${x}" cy="${y + 54}" rx="6" ry="7" ${st(o.skin, true, 2.4)}/><ellipse cx="${x + (s === 'L' ? 4 : -4)}" cy="${y + 51}" rx="2.4" ry="3.6" ${st(o.skin, true, 1.8)}/></g></g>`;
+};
+function coach(o) {
+  const shoe = (d) => `<path d="${d}" ${st(o.shoe, o.shoeO !== undefined ? o.shoeO : false)}/>`;
+  return {
+    group: 'C', name: o.name, desc: o.desc, tags: o.tags, neck: '100px 92px', f: o.face || [100, 63, .62], fo: { iris: o.iris }, shadow: 40,
+    body: () => `<path d="M75 150 H99 L97 199 H83 Z" ${st(o.legs)}/><path d="M101 150 H125 L117 199 H103 Z" ${st(o.legs)}/>
+      ${o.legStripe ? `<path d="M77 154 L84 198 M123 154 L116 198" ${ln(o.legStripe, 2)}/>` : ''}
+      ${shoe('M81 197 H98 Q100 206 94 206 H75 Q70 206 73 201 Q75 197 81 197Z')}${shoe('M102 197 H119 Q125 197 127 201 Q130 206 125 206 H106 Q100 206 102 197Z')}
+      <rect x="93" y="80" width="14" height="18" rx="4" ${st(o.skin)}/>${o.torso}`,
+    head: `${o.hijab || ''}${o.hijab ? '' : `<ellipse cx="79" cy="64" rx="4.5" ry="6.5" ${st(o.skin, true, 2.4)}/><ellipse cx="121" cy="64" rx="4.5" ry="6.5" ${st(o.skin, true, 2.4)}/>`}
+      <ellipse cx="100" cy="${o.hijab ? 64 : 62}" rx="${o.hijab ? 17 : 21}" ry="${o.hijab ? 21 : 25}" ${st(o.skin, true, 2.6)}/>
+      <ellipse cx="100" cy="${o.hijab ? 82 : 84}" rx="9" ry="3" style="fill:var(--k);opacity:.12"/>
+      ${o.hair || ''}${o.hijabFront || ''}<path d="M101 ${o.hijab ? 64 : 63} q-3 5 0 6.5" style="fill:none;stroke:color-mix(in srgb, var(--${o.skin}) 50%, var(--k));stroke-width:1.6;stroke-linecap:round"/>`,
+    arms: coachArm('L', 72, 104, o) + coachArm('R', 128, 104, o),
+  };
+}
 
 const CHARS = {
   A1: {
@@ -415,7 +493,7 @@ const CHARS = {
   },
   B2: {
     group: 'B', name: 'مساعد بقبعة', desc: 'شاب بقبعة وقميص النادي. أقرب للمدرب المساعد الحقيقي على الخط، ودافئ أكثر من الروبوت.',
-    tags: ['نافذة الشات', 'ملاحظات المباراة'], neck: '100px 118px', f: [100, 92, .82], chin: '118deg',
+    tags: ['نافذة الشات', 'ملاحظات المباراة'], neck: '100px 118px', f: [100, 92, .82], fo: { iris: 'bronze' }, chin: '118deg',
     body: () => legs('navy', 'k') + `<rect x="68" y="120" width="64" height="62" rx="20" ${st('em')}/>
       <path d="M88 120 L100 134 L112 120" ${st('chrome')}/><circle cx="116" cy="144" r="5" ${st('gold', false)}/>
       <rect x="93" y="108" width="14" height="14" ${st('skin')}/>`,
@@ -433,42 +511,38 @@ const CHARS = {
     head: `<path d="M64 160 L50 198 L92 176Z" ${st('gold')}/><circle cx="100" cy="114" r="62" ${st('gold')}/><path d="M56 96 Q64 66 94 58" ${ln('goldL', 6)}/>`,
     arms: '',
   },
-  C1: {
-    group: 'C', name: 'مدرب ببدلة', desc: 'بدلة كحلية وربطة ذهبية. المدرب الكلاسيكي في المباريات الكبيرة.',
-    tags: ['المباراة المباشرة', 'المؤتمر الصحفي'], neck: '100px 116px', f: [100, 88, .8], chin: '120deg',
-    body: () => legs('navyD', 'k') + `<rect x="64" y="120" width="72" height="66" rx="18" ${st('navy')}/>
-      <path d="M88 120 L100 146 L112 120Z" ${st('white', false)}/><path d="M97 124 h6 l3 22 l-6 6 l-6 -6z" ${st('gold', true, 2)}/>
-      <path d="M88 120 L96 150 M112 120 L104 150" ${ln('k', 2.4)}/><path d="M116 138 h9 l-2 6 l-5 -2z" ${st('em', false)}/>
-      <rect x="93" y="106" width="14" height="16" ${st('skin')}/>`,
-    head: `<circle cx="69" cy="86" r="7" ${st('skin')}/><circle cx="131" cy="86" r="7" ${st('skin')}/>
-      <circle cx="100" cy="84" r="31" ${st('skin')}/>
-      <path d="M69 80 Q66 52 98 50 Q130 50 132 76 Q124 64 108 66 Q96 58 84 66 Q74 70 69 80Z" ${st('k')}/>`,
-    arms: arms(66, 134, 128, sleeveArm('navy', 'skin', 38, 'white')),
-  },
-  C2: {
-    group: 'C', name: 'مدرب بالتراك سوت', desc: 'بدلة تدريب خضراء بخطوط ذهبية، ولحية وصافرة. مدرب الملعب والتدريب.',
-    tags: ['المباراة المباشرة', 'التدريب'], neck: '100px 116px', f: [100, 84, .8], chin: '127deg',
-    body: () => legs('em', 'white', true) + `<rect x="66" y="120" width="68" height="64" rx="20" ${st('em')}/>
-      <path d="M100 126 V182" ${ln('emD', 3)}/><rect x="86" y="114" width="28" height="10" rx="4" ${st('emD')}/>
-      <path d="M90 122 Q100 152 110 122" ${ln('gold', 2)}/><rect x="95" y="146" width="13" height="7" rx="3" ${st('silver', true, 2)}/>`,
-    head: `<circle cx="69" cy="86" r="7" ${st('bronze')}/><circle cx="131" cy="86" r="7" ${st('bronze')}/>
-      <circle cx="100" cy="84" r="31" ${st('bronze')}/>
-      <path d="M70 86 Q72 116 100 116 Q128 116 130 86 Q124 108 100 110 Q76 108 70 86Z" ${st('k', false)}/>
-      <path d="M70 76 Q72 52 100 52 Q128 52 130 76 Q118 64 100 64 Q82 64 70 76Z" ${st('k', false)}/>
-      <circle cx="100" cy="84" r="31" ${ln('k', 3)}/>`,
-    arms: arms(68, 132, 128, (x, y) => sleeveArm('em', 'bronze', 36)(x, y) + `<rect x="${x - 1.5}" y="${y}" width="3" height="30" ${st('gold', false)}/>`),
-  },
-  C3: {
-    group: 'C', name: 'مدربة بحجاب', desc: 'مدربة بحجاب أخضر وسترة عاجية. تمنح المدربات شخصية تمثلهن.',
-    tags: ['المباراة المباشرة', 'ملف المدرب'], neck: '100px 118px', f: [100, 90, .78], chin: '115deg',
-    body: () => legs('k', 'gold') + `<rect x="64" y="120" width="72" height="66" rx="18" ${st('chrome')}/>
-      <path d="M100 140 V184" ${ln('chromeD', 2)}/><circle cx="106" cy="152" r="2.6" ${st('goldD', false)}/><circle cx="106" cy="166" r="2.6" ${st('goldD', false)}/>
-      <rect x="114" y="150" width="12" height="15" rx="2" ${st('gold', true, 2)}/>`,
-    head: `<path d="M62 88 Q62 44 100 44 Q138 44 138 88 L142 132 Q100 148 58 132Z" ${st('em')}/>
-      <ellipse cx="100" cy="90" rx="25" ry="29" ${st('skin')}/><path d="M74 76 Q78 58 100 58 Q122 58 126 76" ${ln('emD', 4)}/>
-      <circle cx="124" cy="120" r="3" ${st('gold', false)}/>`,
-    arms: arms(66, 134, 128, sleeveArm('chrome', 'skin', 38)),
-  },
+  C1: coach({
+    name: 'مدرب ببدلة', desc: 'بدلة كحلية وربطة ذهبية، وشعر مسرّح جانباً. المدرب الكلاسيكي في المباريات الكبيرة.',
+    tags: ['المباراة المباشرة', 'المؤتمر الصحفي'], skin: 'skin', iris: 'bronze', sleeve: 'navy', cuff: 'white',
+    legs: 'navyD', shoe: 'k',
+    torso: `<path d="M72 100 Q100 90 128 100 Q136 106 133 120 L126 154 L74 154 L67 120 Q64 106 72 100Z" ${st('navy')}/>
+      <path d="M90 96 L100 121 L110 96Z" ${st('white', false)}/><path d="M98 99 h4 l2.5 22 l-4.5 5 l-4.5 -5z" ${st('gold', true, 2)}/>
+      <path d="M90 96 L97 125 L92 128 M110 96 L103 125 L108 128" ${ln('k', 2)}/><circle cx="100" cy="136" r="2" ${st('goldD', false)}/><circle cx="100" cy="146" r="2" ${st('goldD', false)}/>
+      <path d="M113 110 h9 l-1.5 5 l-3.5 -1.5 l-3 1.5z" ${st('em', false)}/>`,
+    hair: `<path d="M78 62 Q74 34 100 32 Q126 32 123 58 Q119 46 108 46 Q97 39 87 46 Q80 51 78 62Z" ${st('k', false)}/>
+      <path d="M86 42 Q98 36 112 40" ${ln('navy', 2)}/>`,
+  }),
+  C2: coach({
+    name: 'مدرب بالتراك سوت', desc: 'بدلة تدريب خضراء بخطوط ذهبية، ولحية خفيفة وصافرة. مدرب الملعب والتدريب.',
+    tags: ['المباراة المباشرة', 'التدريب'], skin: 'bronze', iris: 'k', sleeve: 'em', stripe: 'gold',
+    legs: 'em', legStripe: 'gold', shoe: 'white', shoeO: true,
+    torso: `<path d="M72 100 Q100 90 128 100 Q136 106 133 120 L127 154 L73 154 L67 120 Q64 106 72 100Z" ${st('em')}/>
+      <path d="M100 100 V154" ${ln('emD', 2.4)}/><path d="M88 94 Q100 100 112 94 L112 100 Q100 106 88 100Z" ${st('emD')}/>
+      <path d="M68 116 L72 102 M132 116 L128 102" ${ln('gold', 2.4)}/>
+      <path d="M92 100 Q100 126 108 100" ${ln('gold', 1.6)}/><rect x="96" y="122" width="10" height="6" rx="3" ${st('silver', true, 1.8)}/>`,
+    hair: `<path d="M79 58 Q80 33 100 33 Q120 33 121 58 Q112 45 100 45 Q88 45 79 58Z" ${st('k', false)}/>
+      <path d="M79 62 Q80 90 100 90 Q120 90 121 62 Q118 80 100 83 Q82 80 79 62Z" style="fill:var(--k);opacity:.88"/>`,
+  }),
+  C3: coach({
+    name: 'مدربة بحجاب', desc: 'حجاب أخضر وسترة عاجية وبطاقة الجهاز الفني. تمنح المدربات شخصية تمثلهن.',
+    tags: ['المباراة المباشرة', 'ملف المدرب'], skin: 'skin', iris: 'emD', sleeve: 'chrome', face: [100, 64, .55],
+    legs: 'navyD', shoe: 'gold',
+    torso: `<path d="M72 100 Q100 90 128 100 Q136 106 133 120 L126 154 L74 154 L67 120 Q64 106 72 100Z" ${st('chrome')}/>
+      <path d="M100 112 V154" ${ln('chromeD', 2)}/><circle cx="105" cy="126" r="2.2" ${st('goldD', false)}/><circle cx="105" cy="140" r="2.2" ${st('goldD', false)}/>
+      <path d="M88 100 L112 128" ${ln('em', 2)}/><rect x="108" y="126" width="12" height="15" rx="2" ${st('gold', true, 2)}/>`,
+    hijab: `<path d="M76 68 Q72 28 100 28 Q128 28 124 68 L130 106 Q100 118 70 106Z" ${st('em')}/>`,
+    hijabFront: `<path d="M82 56 Q85 40 100 40 Q115 40 118 56" ${ln('emD', 3)}/><circle cx="121" cy="92" r="2.6" ${st('gold', false)}/>`,
+  }),
 };
 
 let uid = 0;
