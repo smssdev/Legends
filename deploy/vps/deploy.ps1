@@ -6,7 +6,8 @@
 #
 # What it does, in order, and it stops at the first problem:
 #   1. Checks Git for Windows (its sh, ssh and tar) and the server's key (%USERPROFILE%\.ssh\legends_vps).
-#   2. Refuses when this copy has changes not committed (they would not be what GitHub has).
+#   2. Changes here not committed (Unity work, a test): it lists them and asks to put them aside (git stash), safe and
+#      brought back after with `git stash pop`. New files git does not track are left alone: they are not deployed.
 #   3. Takes the latest main from GitHub (git pull, fast-forward only).
 #   4. Runs deploy\vps\deploy.sh: "safe to deploy" (no match live or within 30 minutes), the disk, the code over SSH,
 #      the image rebuilt, the game restarted. The database stays in its volume, never touched.
@@ -32,7 +33,17 @@ Write-Host "Git: $GitDir"
 Write-Host "Key: $Key"
 
 Step 'This copy of the code'
-if (git status --porcelain) { Fail 'There are changes here not committed. Commit or put them aside (git stash), then run this again.' }
+# [X55] Only changes to files git tracks matter (they could stop the pull); the deploy itself sends what is committed.
+$changed = git status --porcelain --untracked-files=no
+if ($changed) {
+    Write-Host 'These files changed here and are not committed:' -ForegroundColor Yellow
+    git status --short --untracked-files=no
+    $answer = Read-Host 'Put them aside and deploy? They stay safe: "git stash pop" brings them back after. [y/N]'
+    if ($answer -notin @('y', 'Y', 'yes', 'Yes')) { Fail 'Not deployed. Commit the changes, or answer y to put them aside.' }
+    git stash push -m ('before deploy ' + (Get-Date -Format 'yyyy-MM-dd HH:mm'))
+    if ($LASTEXITCODE -ne 0) { Fail 'Could not put the changes aside (git stash).' }
+    Write-Host 'Put aside. After the deploy, "git stash pop" brings them back.' -ForegroundColor Green
+}
 git fetch origin main
 if ($LASTEXITCODE -ne 0) { Fail 'Could not reach GitHub (git fetch).' }
 git checkout main
