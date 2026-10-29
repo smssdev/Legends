@@ -186,8 +186,9 @@ const ACTIONS = [
       </section>
     </template>
     <PressPanel v-if="leagueId && match" :league-id="leagueId" :fixture-id="match.fixture_id" :home="match.venue === 'home' ? match.club?.name ?? '' : match.opponent.name" :away="match.venue === 'home' ? match.opponent.name : match.club?.name ?? ''" />
-    <IntegrityPanel v-if="leagueId" :league-id="leagueId" />
-    <TicketsPanel v-if="leagueId" :league-id="leagueId" />
+    <!-- [Sprint 20 W15] Under the match card once it is in, so a panel that answers first is not pushed down by it. -->
+    <IntegrityPanel v-if="leagueId && loaded" :league-id="leagueId" />
+    <TicketsPanel v-if="leagueId && loaded" :league-id="leagueId" />
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
   </div>
 </template>

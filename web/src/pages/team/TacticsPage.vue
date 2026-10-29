@@ -132,7 +132,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
     <template v-else-if="t">
       <header class="flex items-start justify-between gap-3">
         <div>
-          <h1 class="font-display text-3xl font-extrabold">{{ $t('التكتيك') }}</h1>
+          <h1 class="flex flex-wrap items-center gap-2 font-display text-3xl font-extrabold">{{ $t('التكتيك') }}<!-- [Sprint 20 W12] --><RouterLink :to="{ name: 'lineup' }" class="flex h-9 items-center rounded-pill bg-surface px-3 font-body text-xs font-bold text-brand-light">{{ $t('التشكيلة ›') }}</RouterLink></h1>
           <p class="text-sm text-text-muted">{{ $t('الحكم: {v0} · الضغط والأسلوب والإيقاع والتمركز لا يراها الخصم', { v0: referee ? REFEREE[referee] : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</p>
         </div>
         <UiButton :disabled="!dirty" @click="save">{{ $t('حفظ') }}</UiButton>

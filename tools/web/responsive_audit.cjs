@@ -94,7 +94,7 @@ function inspect() {
       if (e.value > 0.02) window.__moved.push(`${e.value.toFixed(3)}: ${(e.sources ?? []).map((x) => name(x.node)).join(', ')}`)
     })).observe({ type: 'layout-shift', buffered: true })
   })
-  const screens = ['/', '/leagues', `/leagues/${league}`, '/team', '/lineup', '/tactics', '/training', '/specialists', '/market', '/scout', '/stadium', '/finance',
+  const screens = ['/', '/leagues', `/leagues/${league}`, '/club', '/friendlies', '/quests', '/team', '/lineup', '/tactics', '/training', '/specialists', '/market', '/scout', '/stadium', '/finance',
     '/match', '/stats', '/fixtures', `/leagues/${league}/predictions`, `/leagues/${league}/newspaper`, '/inbox', '/profile', '/wallet', '/leagues/new']
   let failed = 0
   for (const lang of (process.env.LANGS || 'ar,en').split(',')) {

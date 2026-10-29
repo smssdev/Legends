@@ -99,7 +99,7 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-end gap-3">
       <div class="flex-1">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><HelpTip :text="g.training" :label="$t('التدريب')" /></span>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><HelpTip :text="g.training" :label="$t('التدريب')" /><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'team' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الفريق ›') }}</RouterLink></span>
         <p class="mt-1 text-sm text-text-muted">{{ $t('لاعب من كل خط · جلسة كل {v0} ساعات حتى لو كنت غائباً · عند 100% القوة +1 · التدريب مفتوح طوال الموسم: بعد الإمكانية أبطأ، حتى 99', { v0: v ? Math.round(v.interval_minutes / 60) : 8 }) }}</p>
       </div>
       <div v-if="v" class="money-box px-4 py-2 text-end">
