@@ -27,6 +27,7 @@ const SECTIONS = {
   users: { label: 'المستخدمون', icon: 'team' },
   leagues: { label: 'الدوريات', icon: 'leagues' },
   announcements: { label: 'الإعلانات', icon: 'bell' },
+  houseAds: { label: 'إعلانات المكافأة', icon: 'match' },
   vacations: { label: 'الإجازات', icon: 'stadium' },
   conversations: { label: 'الرسائل', icon: 'inbox' },
   alliances: { label: 'بطولات التحالفات', icon: 'match' },
@@ -47,6 +48,10 @@ const leagues = ref<any[]>([])
 const announcements = ref<any[]>([])
 const openAnnouncement = ref<number | null>(null)
 const vacations = ref<any[]>([])
+// [Sprint 20 S4] The game's own rewarded ads.
+const houseAds = ref<S['HouseAd'][]>([])
+const houseDefaults = ref(0)
+const draft = ref({ title: '', body: '', cta_label: '', cta_url: '', seconds: 30 })
 const vacationFilter = ref<'pending' | 'decided'>('pending')
 const conversations = ref<any[]>([])
 const thread = ref<any | null>(null)
@@ -96,6 +101,7 @@ async function show(s: Section) {
   if (s === 'leagues') leagues.value = (await api.GET('/admin/leagues')).data!.leagues
   if (s === 'announcements') announcements.value = (await api.GET('/admin/announcements')).data!.announcements
   if (s === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
+  if (s === 'houseAds') await loadHouseAds()
   if (s === 'conversations') { conversations.value = (await api.GET('/admin/conversations')).data!.conversations; thread.value = null }
   if (s === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (s === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
@@ -158,6 +164,27 @@ const announce = () => run(async () => {
   notice.value = t('أُرسل إلى {v0} حساب، ووصل إشعاراً لكل الأجهزة المشتركة.', { v0: data!.sent })
   annTitle.value = annBody.value = ''
   announcements.value = (await api.GET('/admin/announcements')).data!.announcements
+})
+
+// The rewarded ads [Sprint 20 S4]: written here, shown to the coaches at random while active.
+async function loadHouseAds() {
+  const data = (await api.GET('/admin/house-ads')).data!
+  houseAds.value = data.ads
+  houseDefaults.value = data.defaults
+}
+const addHouseAd = () => run(async () => {
+  const d = draft.value
+  await api.POST('/admin/house-ads', { body: { title: d.title, body: d.body, cta_label: d.cta_label || null, cta_url: d.cta_url || null, seconds: d.seconds } })
+  draft.value = { title: '', body: '', cta_label: '', cta_url: '', seconds: 30 }
+  await loadHouseAds()
+})
+const toggleHouseAd = (a: S['HouseAd']) => run(async () => {
+  await api.PATCH('/admin/house-ads/{id}', { params: { path: { id: a.id } }, body: { active: !a.active } })
+  await loadHouseAds()
+})
+const deleteHouseAd = (a: S['HouseAd']) => run(async () => {
+  await api.DELETE('/admin/house-ads/{id}', { params: { path: { id: a.id } } })
+  await loadHouseAds()
 })
 
 // The holidays [Sprint 21 E7.4].
@@ -376,6 +403,35 @@ onMounted(load)
             <div v-if="openAnnouncement === a.id" class="flex flex-col gap-2 border-t border-text/5 px-4 pb-4 pt-3 text-sm">
               <p class="whitespace-pre-line">{{ a.body }}</p>
               <p class="text-xs text-text-muted">{{ $t('أرسله {v0} (@{v1}) في {v2} إلى {v3} حساب.', { v0: a.sender?.name ?? '-', v1: a.sender?.username ?? '-', v2: when(a.at), v3: a.sent }) }}</p>
+            </div>
+          </article>
+        </template>
+
+        <!-- [Sprint 20 S4] The rewarded ads: each watch cuts 30 minutes off a training or stadium wait. -->
+        <template v-if="tab === 'houseAds'">
+          <section :aria-label="$t('إعلان مكافأة جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+            <h2 class="font-display text-lg font-bold">{{ $t('إعلان مكافأة جديد') }}</h2>
+            <p class="text-xs text-text-muted">{{ $t('يظهر للمدربين حين يضغطون «شاهد إعلاناً» في التدريب أو الملعب، ويقلّص 30 دقيقة بعد انتهاء وقته. وحين لا يوجد إعلان مفعّل تظهر إعلانات اللعبة ({v0}).', { v0: houseDefaults }) }}</p>
+            <input v-model="draft.title" maxlength="80" :placeholder="$t('العنوان')" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" />
+            <textarea v-model="draft.body" maxlength="300" rows="3" :placeholder="$t('النص')" class="rounded-md border border-text/10 bg-surface-sunk p-3" />
+            <div class="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
+              <input v-model="draft.cta_label" maxlength="40" :placeholder="$t('نص الرابط (اختياري)')" class="h-touch min-w-0 rounded-md border border-text/10 bg-surface-sunk px-3" />
+              <input v-model="draft.cta_url" maxlength="300" type="url" dir="ltr" placeholder="https://" class="h-touch min-w-0 rounded-md border border-text/10 bg-surface-sunk px-3" />
+              <label class="flex items-center gap-2 text-sm">{{ $t('الثواني') }}<input v-model.number="draft.seconds" type="number" min="15" max="60" class="h-touch w-20 rounded-md border border-text/10 bg-surface-sunk px-2 font-numbers" /></label>
+            </div>
+            <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || draft.title.length < 3 || draft.body.length < 3" @click="addHouseAd">{{ $t('أضف الإعلان') }}</button>
+          </section>
+          <p v-if="!houseAds.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا إعلانات منك بعد: تظهر إعلانات اللعبة.') }}</p>
+          <article v-for="a in houseAds" :key="a.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4" :class="a.active ? '' : 'opacity-60'">
+            <div class="flex flex-wrap items-center gap-2">
+              <b class="min-w-0 flex-1 font-display">{{ a.title }}</b>
+              <span class="text-xs text-text-muted">{{ $t('{v0} ث · ظهر {v1} مرة', { v0: a.seconds, v1: a.views }) }}</span>
+            </div>
+            <p class="text-sm">{{ a.body }}</p>
+            <p v-if="a.cta_url" class="truncate text-xs text-ring" dir="ltr">{{ a.cta_label ? a.cta_label + ' · ' : '' }}{{ a.cta_url }}</p>
+            <div class="flex gap-2">
+              <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="toggleHouseAd(a)">{{ a.active ? $t('أوقفه') : $t('فعّله') }}</button>
+              <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-[#FF8A8A]" :disabled="busy" @click="deleteHouseAd(a)">{{ $t('احذف') }}</button>
             </div>
           </article>
         </template>

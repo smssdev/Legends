@@ -11,6 +11,7 @@ use App\League\FormationBook;
 use App\League\MatchPrep;
 use App\League\Morale;
 use App\League\Scenarios;
+use App\League\Spy;
 use App\League\Tactics;
 use App\League\TacticsBook;
 use App\League\TeamSheet;
@@ -204,11 +205,13 @@ class TeamController extends Controller
             // My morale for this match with my crowd and the tickets cheering me [X25] (the opponent's is not shown).
             'morale' => Morale::forMatch($f, $home ? 'home' : 'away'),
             // My club beside the opponent, for the VS card [X29].
+            // [Sprint 20 S1] The tactics page's header: each side's last five results (public), and my formation now.
             'club' => ['id' => $club->id, 'name' => $club->name, 'code' => $club->code, 'strength_cp' => (int) $club->strength_snapshot,
-                'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+                'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg"), 'coach' => $request->user()->name,
+                'form' => Spy::form($club->id), 'formation' => $mine->formation ?? TeamSheet::current($club)['formation']],
             'opponent' => [
                 'id' => $opponent->id, 'name' => $opponent->name, 'code' => $opponent->code, 'strength_cp' => (int) $opponent->strength_snapshot,
-                'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name,
+                'crest_url' => url("/api/v1/data/clubs/{$opponent->master_club_id}/crest.svg"), 'coach' => $opponent->user?->name, 'form' => Spy::form($opponent->id),
                 // Only after the lock, and only these.
                 'sheet' => $theirs ? [
                     'formation' => $theirs->formation,

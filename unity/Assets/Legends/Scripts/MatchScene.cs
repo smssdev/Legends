@@ -87,11 +87,12 @@ namespace Legends
 
             foreach (var kv in players)
             {
+                // As the golden vectors: a player in frame i only (sent off, replaced) stays where he was, and one who
+                // is not in frame i is not drawn until his own frame.
                 bool inA = a.Players.TryGetValue(kv.Key, out var pa);
                 bool inB = b.Players.TryGetValue(kv.Key, out var pb);
-                kv.Value.gameObject.SetActive(inA || inB);
-                if (!inA && !inB) continue;
-                if (!inA) pa = pb;
+                kv.Value.gameObject.SetActive(inA);
+                if (!inA) continue;
                 if (!inB) pb = pa;
                 var from = World(pa, flip);
                 var to = World(pb, flip);
@@ -110,13 +111,15 @@ namespace Legends
         public float Progress => Current == null ? 0f : Mathf.Clamp01(elapsedMs / Current.Ms);
 
         /// <summary>
-        /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, eased by k (0..1).
+        /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, by k (0..1).
+        /// Linear, exactly as the cartoon player and docs/api/frame-golden.json (Sprint 20 S5, the owner's decision):
+        /// past the end the last frame holds, never an extrapolation.
         /// </summary>
         public static void Segment(int frames, float t, out int i, out float k)
         {
             float at = Mathf.Clamp01(t) * (frames - 1);
             i = Mathf.Clamp((int)at, 0, Mathf.Max(0, frames - 2));
-            k = frames < 2 ? 0f : Mathf.SmoothStep(0, 1, Mathf.Clamp01(at - i));
+            k = frames < 2 ? 0f : Mathf.Clamp01(at - i);
         }
 
         /// <summary>The ends change at half time, and again in extra time's second half.</summary>

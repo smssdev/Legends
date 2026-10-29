@@ -264,8 +264,16 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('conversations', 'conversations');
         Route::get('conversations/{user}', 'conversation')->whereNumber('user');
         Route::post('conversations/{user}', 'writeTo')->whereNumber('user')->middleware('throttle:30,1,admin-write');
+        // [Sprint 20 S4] The game's own rewarded ads.
+        Route::get('house-ads', 'houseAds');
+        Route::post('house-ads', 'storeHouseAd');
+        Route::patch('house-ads/{id}', 'updateHouseAd')->whereNumber('id');
+        Route::delete('house-ads/{id}', 'deleteHouseAd')->whereNumber('id');
     });
 });
+
+// [Sprint 20 S4] A watch of one of the game's own rewarded ads.
+Route::post('ads/start', [AdController::class, 'start'])->middleware(['auth:sanctum', 'throttle:20,1,ads-start']);
 
 // [Sprint 21 E7.7] The coach's conversation with the game's developers.
 Route::prefix('support')->middleware(['auth:sanctum', 'throttle:60,1,support'])->controller(SupportController::class)->group(function () {

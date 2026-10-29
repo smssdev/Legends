@@ -78,7 +78,7 @@ class Spy
     }
 
     /** The last five results in every competition, newest first: W, D or L. */
-    private static function form(int $clubId): array
+    public static function form(int $clubId): array
     {
         return DB::table('fixtures')->where('status', 'finished')->whereNotNull('home_goals')
             ->where(fn ($q) => $q->where('home_id', $clubId)->orWhere('away_id', $clubId))

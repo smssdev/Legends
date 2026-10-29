@@ -12,7 +12,7 @@ type Best = { score: number; home: string; away: string; home_goals: number; awa
 type Scandal = { club: string; coach: string | null; accuser: string; points: number; fine: number; at: string }
 type Paper = {
   edition: null | { round: number; rounds: number[]; results: { home: string; away: string; home_goals: number; away_goals: number }[]; stories: { kind: string; title: string; text: string }[]; team: { id: number; name: string; line: string; position: string; club: string; rating: number }[]
-    best_matches: Best[]; player: { name: string; club: string; position: string; rating: number } | null
+    best_matches: Best[]; player: { name: string; club: string; position: string; rating: number; goals?: number; assists?: number } | null
     coach: { coach: { id: number; name: string }; club: string; opponent: string; goals: [number, number]; away: boolean } | null; scandals: Scandal[] }
   articles: Article[]; pending: Article[]; is_owner: boolean; max: number; wrote_this_round: boolean; round: number
 }
@@ -78,7 +78,7 @@ onMounted(() => load())
         <div v-if="p.edition.player" class="flex items-center gap-3 rounded-lg bg-gold/10 p-3">
           <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-2xl" aria-hidden="true">⭐</span>
           <span class="min-w-0"><span class="block text-xs font-bold text-gold">{{ $t('رجل الجولة') }}</span><b class="block truncate font-display text-lg"><bdi>{{ $nm(p.edition.player.name) }}</bdi></b>
-            <span class="text-xs text-text-muted">{{ $nm(p.edition.player.club) }} · <span class="font-numbers text-gold">{{ (p.edition.player.rating / 10).toFixed(1) }}</span></span></span>
+            <span class="text-xs text-text-muted">{{ $nm(p.edition.player.club) }} · <span class="font-numbers text-gold">{{ (p.edition.player.rating / 100).toFixed(1) }}</span><template v-if="p.edition.player.goals || p.edition.player.assists"> · {{ $t('{v0} هدف · {v1} صناعة', { v0: p.edition.player.goals ?? 0, v1: p.edition.player.assists ?? 0 }) }}</template></span></span>
         </div>
         <div v-if="p.edition.coach" class="flex items-center gap-3 rounded-lg bg-brand/15 p-3">
           <span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand text-2xl" aria-hidden="true">🧠</span>
@@ -119,7 +119,7 @@ onMounted(() => load())
           <ul class="flex flex-col text-sm">
             <li v-for="t in p.edition.team" :key="t.id" class="flex items-center gap-2 border-t border-text/5 py-1.5 first:border-0">
               <span class="w-10 text-xs text-text-muted">{{ $t(LINE[t.line] ?? '') }}</span><bdi class="flex-1 truncate font-bold">{{ $nm(t.name) }}</bdi>
-              <span class="truncate text-xs text-text-muted">{{ $nm(t.club) }}</span><b class="font-numbers text-gold">{{ (t.rating / 10).toFixed(1) }}</b>
+              <span class="truncate text-xs text-text-muted">{{ $nm(t.club) }}</span><b class="font-numbers text-gold">{{ (t.rating / 100).toFixed(1) }}</b>
             </li>
           </ul>
         </div>

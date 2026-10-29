@@ -45,48 +45,93 @@ class Newspaper
 
         return ['round' => $round, 'rounds' => $played->sort()->values()->all(), 'results' => $results,
             'stories' => self::stories($fixtures, $clubs, $matches), 'team' => $team,
-            'best_matches' => self::bestMatches($fixtures, $clubs, $matches), 'player' => $team ? collect($team)->sortByDesc('rating')->first() : null,
+            'best_matches' => self::bestMatches($fixtures, $clubs, $matches), 'player' => self::playerOfTheRound($fixtures, $matches),
             'coach' => self::coachOfTheRound($fixtures, $clubs), 'scandals' => self::scandals($season->id)];
     }
 
-    /** The round's matches most worth watching again: goals, a close score and a surprise. */
+    /** The round's matches most worth watching again (NewsFormulas::match), best first. */
     private static function bestMatches($fixtures, $clubs, $matches): array
     {
         $w = config('game.press.news');
+        $weights = $w['match'] + ['upset_gap' => $w['upset_gap']];
+        // The goals in order and the red cards of every match of the round, in one query.
+        $events = DB::table('match_events')->whereIn('match_id', $matches->values())->whereIn('type', ['goal', 'card'])->orderBy('id')
+            ->get(['match_id', 'type', 'minute', 'club_id', 'payload'])->groupBy('match_id');
 
-        return $fixtures->map(function ($f) use ($w, $clubs, $matches) {
-            $diff = abs($f->home_goals - $f->away_goals);
-            $upset = false;
-            if ($diff > 0) {
-                [$win, $lose] = $f->home_goals > $f->away_goals ? [$f->home_id, $f->away_id] : [$f->away_id, $f->home_id];
-                $upset = $clubs[$lose]->strength_snapshot - $clubs[$win]->strength_snapshot >= $w['upset_gap'];
-            }
-            $score = ($f->home_goals + $f->away_goals) * $w['goals'] + ($diff === 0 ? $w['close'] : ($diff === 1 ? intdiv($w['close'], 2) : 0)) + ($upset ? $w['upset'] : 0);
+        return $fixtures->map(function ($f) use ($weights, $clubs, $matches, $events) {
+            $own = $events[$matches[$f->id] ?? 0] ?? collect();
+            $goals = $own->where('type', 'goal')->map(fn ($e) => ['minute' => (int) $e->minute, 'side' => (int) $e->club_id === (int) $f->home_id ? 'home' : 'away'])->values()->all();
+            $reds = $own->where('type', 'card')->filter(fn ($e) => (json_decode($e->payload, true)['color'] ?? null) === 'red')->count();
+            $score = NewsFormulas::match(['home_goals' => (int) $f->home_goals, 'away_goals' => (int) $f->away_goals,
+                'home_strength' => (int) $clubs[$f->home_id]->strength_snapshot, 'away_strength' => (int) $clubs[$f->away_id]->strength_snapshot], $goals, $reds, $weights);
+            $diff = $f->home_goals - $f->away_goals;
+            $loserStronger = $diff > 0 ? $clubs[$f->away_id]->strength_snapshot - $clubs[$f->home_id]->strength_snapshot : $clubs[$f->home_id]->strength_snapshot - $clubs[$f->away_id]->strength_snapshot;
 
             return ['score' => $score, 'home' => $clubs[$f->home_id]->name, 'away' => $clubs[$f->away_id]->name, 'home_goals' => (int) $f->home_goals,
-                'away_goals' => (int) $f->away_goals, 'upset' => $upset, 'match_id' => $matches[$f->id] ?? null];
-        })->sortByDesc('score')->take((int) $w['best_matches'])->values()->all();
+                'away_goals' => (int) $f->away_goals, 'upset' => $diff !== 0 && $loserStronger >= $weights['upset_gap'],
+                'comeback' => NewsFormulas::comeback($goals, $f->home_goals <=> $f->away_goals), 'match_id' => $matches[$f->id] ?? null];
+        })->sortByDesc('score')->take((int) config('game.press.news.best_matches'))->values()->all();
     }
 
-    /** The coach whose win said most: its margin, what his side lacked in strength, and away from home. */
+    /** The round's player (NewsFormulas::player): his rating, goals, assists, clean sheet and his side's result. */
+    private static function playerOfTheRound($fixtures, $matches): ?array
+    {
+        $w = config('game.press.news.player');
+        $byMatch = $fixtures->keyBy(fn ($f) => $matches[$f->id] ?? 0);
+        $best = null;
+        foreach (DB::table('match_stats')->whereIn('match_id', $matches->values())->get() as $s) {
+            $f = $byMatch[$s->match_id] ?? null;
+            if (! $f) {
+                continue;
+            }
+            $home = (int) $s->club_id === (int) $f->home_id;
+            [$for, $against] = $home ? [(int) $f->home_goals, (int) $f->away_goals] : [(int) $f->away_goals, (int) $f->home_goals];
+            foreach (json_decode($s->players, true) as $p) {
+                if (empty($p['played'])) {
+                    continue;
+                }
+                $row = ['id' => (int) $p['id'], 'club_id' => (int) $s->club_id, 'rating' => (int) $p['rating'], 'goals' => (int) $p['goals'], 'assists' => (int) ($p['assists'] ?? 0),
+                    'conceded' => $against, 'result' => $for <=> $against];
+                $candidates[] = $row;
+            }
+        }
+        if (empty($candidates)) {
+            return null;
+        }
+        $lines = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->whereIn('players.id', array_column($candidates, 'id'))
+            ->get(['players.id', 'master_players.name', 'master_players.line', 'master_players.position'])->keyBy('id');
+        foreach ($candidates as $c) {
+            $info = $lines[$c['id']] ?? null;
+            if (! $info) {
+                continue;
+            }
+            $score = NewsFormulas::player($c + ['line' => $info->line], $w);
+            if (! $best || $score > $best['score'] || ($score === $best['score'] && $c['rating'] > $best['rating'])) {
+                $best = ['score' => $score, 'id' => $c['id'], 'name' => $info->name, 'line' => $info->line, 'position' => $info->position,
+                    'club' => (string) DB::table('clubs')->where('id', $c['club_id'])->value('name'), 'rating' => $c['rating'], 'goals' => $c['goals'], 'assists' => $c['assists']];
+            }
+        }
+
+        return $best;
+    }
+
+    /** The coach whose result said most (NewsFormulas::coach); a coached side only, never one that lost. */
     private static function coachOfTheRound($fixtures, $clubs): ?array
     {
-        $w = config('game.press.news.coach');
+        $w = config('game.press.news.coach') + ['upset_gap' => config('game.press.news.upset_gap')];
         $coaches = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', $clubs->keys())->get(['clubs.id', 'users.id as user_id', 'users.name'])->keyBy('id');
         $best = null;
         foreach ($fixtures as $f) {
-            if ($f->home_goals === $f->away_goals) {
-                continue;
-            }
-            [$win, $lose, $away] = $f->home_goals > $f->away_goals ? [$f->home_id, $f->away_id, false] : [$f->away_id, $f->home_id, true];
-            if (! isset($coaches[$win])) {
-                continue;
-            }
-            $gap = max(0, intdiv($clubs[$lose]->strength_snapshot - $clubs[$win]->strength_snapshot, $w['gap_per_point']));
-            $score = abs($f->home_goals - $f->away_goals) * $w['margin'] + $gap + ($away ? $w['away'] : 0);
-            if (! $best || $score > $best['score']) {
-                $best = ['score' => $score, 'coach' => ['id' => (int) $coaches[$win]->user_id, 'name' => $coaches[$win]->name], 'club' => $clubs[$win]->name,
-                    'opponent' => $clubs[$lose]->name, 'goals' => [max($f->home_goals, $f->away_goals), min($f->home_goals, $f->away_goals)], 'away' => $away];
+            foreach ([[$f->home_id, $f->away_id, (int) $f->home_goals, (int) $f->away_goals, false], [$f->away_id, $f->home_id, (int) $f->away_goals, (int) $f->home_goals, true]] as [$club, $other, $for, $against, $away]) {
+                if (! isset($coaches[$club])) {
+                    continue;
+                }
+                $score = NewsFormulas::coach(['for' => $for, 'against' => $against, 'strength' => (int) $clubs[$club]->strength_snapshot,
+                    'opponent_strength' => (int) $clubs[$other]->strength_snapshot, 'away' => $away], $w);
+                if ($score !== null && (! $best || $score > $best['score'])) {
+                    $best = ['score' => $score, 'coach' => ['id' => (int) $coaches[$club]->user_id, 'name' => $coaches[$club]->name], 'club' => $clubs[$club]->name,
+                        'opponent' => $clubs[$other]->name, 'goals' => [$for, $against], 'away' => $away];
+                }
             }
         }
 
@@ -132,7 +177,7 @@ class Newspaper
             $out[] = ['kind' => 'goals', 'title' => sprintf(__('مهرجان أهداف بين %s و%s'), $name($feast->home_id), $name($feast->away_id)),
                 'text' => sprintf(__('%d أهداف في مباراة واحدة.'), $feast->home_goals + $feast->away_goals)];
         }
-        $reds = DB::table('match_events')->whereIn('match_id', $matches->values())->where('type', 'card')->where('payload', 'like', '%"red"%')->count();
+        $reds = DB::table('match_events')->whereIn('match_id', $matches->values())->where('type', 'card')->whereLike('payload', '%"red"%')->count();
         if ($reds) {
             $out[] = ['kind' => 'reds', 'title' => $reds === 1 ? __('بطاقة حمراء تهز الجولة') : sprintf(__('%d بطاقات حمراء في جولة ساخنة'), $reds), 'text' => __('الحكام لم يرحموا أحداً هذه الجولة.')];
         }

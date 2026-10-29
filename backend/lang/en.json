@@ -323,5 +323,6 @@
   "لك مقال واحد في كل جولة، وكتبت مقال الجولة %d.": "One article a round each, and you wrote round %d's.",
   "الإعلانات غير مفعّلة بعد.": "Ads are not switched on yet.",
   "لم يتأكد مزوّد الإعلانات من مشاهدة الفيديو كاملاً.": "The ad provider did not confirm the video was watched to the end.",
-  "وصلت إلى %d فيديوهات لهذه المهمة.": "You have reached %d videos for this task."
+  "وصلت إلى %d فيديوهات لهذه المهمة.": "You have reached %d videos for this task.",
+  "شاهد الإعلان المفتوح أولاً.": "Finish the ad you opened first."
 }

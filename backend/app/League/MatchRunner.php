@@ -43,8 +43,15 @@ class MatchRunner
             $started += self::guarded(fn () => self::start($id) ? 1 : 0);
         }
         $minutes = 0;
-        foreach (DB::table('matches')->where('status', 'live')->where('next_at', '<=', GameClock::nowMs() + self::lead())->pluck('id') as $id) {
-            $minutes += self::guarded(fn () => self::play($id));
+        $due = DB::table('matches')->where('status', 'live')->where('next_at', '<=', GameClock::nowMs() + self::lead())->orderBy('next_at')->get(['id', 'next_at']);
+        $began = GameClock::stopwatchNs();
+        foreach ($due as $m) {
+            $minutes += self::guarded(fn () => self::play($m->id));
+        }
+        // [Sprint 20 S6] How late this step played its oldest due minute, or how long it took, feeds the automatic
+        // degradation; a step with nothing due reports 0, so the load falls back when the rush is over.
+        if ($due->isNotEmpty() || DB::table('matches')->where('status', 'live')->exists()) {
+            LiveDegrade::observe($due->isEmpty() ? 0 : max(GameClock::nowMs() - (int) $due->first()->next_at, intdiv(GameClock::stopwatchNs() - $began, 1_000_000)));
         }
         $published = 0;
         foreach (DB::table('matches')->where('status', 'done')->where('publish_at', '<=', GameClock::now())->pluck('id') as $id) {

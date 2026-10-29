@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
-/** [Sprint 21 E9] Rewarded videos: off by default, 30 minutes a verified video, 5 a task, the same video once. */
+/** [Sprint 21 E9, Sprint 20 S4] Rewarded ads: our own provider, 30 minutes a verified watch, 5 a task, the same watch once. */
 class AdRewardTest extends TestCase
 {
     use MakesLeagues, RefreshDatabase;
@@ -58,14 +58,46 @@ class AdRewardTest extends TestCase
         });
     }
 
-    public function test_off_until_the_owner_picks_a_provider(): void
+    public function test_switched_off_or_with_no_provider_nothing_is_cut(): void
     {
+        config(['game.ads.enabled' => false, 'game.ads.driver' => 'none']);
         $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/stadium", ['section' => 'seats', 'idempotency_key' => 'k1'])->assertOk();
         $this->reward(['item' => 'stadium', 'token' => 'ok-1'])->assertStatus(503);
-        // Switched on with no provider chosen: every token is refused.
+        $this->postJson('/api/v1/ads/start')->assertStatus(503);
+        // Switched on with no provider: every token is refused.
         config(['game.ads.enabled' => true]);
         $this->reward(['item' => 'stadium', 'token' => 'ok-1'])->assertStatus(422);
         $this->assertSame(0, DB::table('ad_rewards')->count());
+    }
+
+    public function test_our_own_ads_pay_only_once_watched_to_their_end(): void
+    {
+        // [Sprint 20 S4] The default provider: the game's own ads, timed on the server.
+        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/stadium", ['section' => 'seats', 'idempotency_key' => 'k1'])->assertOk()
+            ->assertJsonPath('building.ads.enabled', true)->assertJsonPath('building.ads.used', 0)->assertJsonPath('building.ads.max', 5);
+        $ends = Carbon::parse(DB::table('stadium_builds')->value('ends_at'), 'UTC');
+        // No ad written yet: one of the built-in ones, 30 seconds.
+        $watch = $this->postJson('/api/v1/ads/start')->assertCreated()->assertJsonPath('ad.id', null)->assertJsonPath('ad.seconds', 30)->json();
+        $this->reward(['item' => 'stadium', 'token' => $watch['token']])->assertStatus(422);   // skipped before its end
+        Carbon::setTestNow(Carbon::now()->addSeconds(30));
+        $this->reward(['item' => 'stadium', 'token' => $watch['token']])->assertOk()->assertJsonPath('used', 1)
+            ->assertJsonPath('ends_at', $ends->copy()->subMinutes(30)->toIso8601ZuluString());
+        // The same watch again cuts nothing, and another coach cannot use it.
+        $this->reward(['item' => 'stadium', 'token' => $watch['token']])->assertOk()->assertJsonPath('used', 1);
+        $this->assertSame(1, DB::table('ad_rewards')->count());
+
+        // The developers' own ad is shown instead, counted, and its link is http(s) only.
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)->withHeader('Referer', config('app.url'));
+        $this->postJson('/api/v1/admin/house-ads', ['title' => 'رعاية', 'body' => 'نص الإعلان', 'cta_url' => 'javascript:alert(1)'])->assertStatus(422);
+        $id = $this->postJson('/api/v1/admin/house-ads', ['title' => 'رعاية', 'body' => 'نص الإعلان', 'cta_label' => 'زرنا', 'cta_url' => 'https://example.com', 'seconds' => 15])
+            ->assertCreated()->json('ad.id');
+        $this->actingAs($this->owner)->postJson('/api/v1/ads/start')->assertCreated()->assertJsonPath('ad.id', $id)->assertJsonPath('ad.seconds', 15);
+        $this->actingAs($admin)->getJson('/api/v1/admin/house-ads')->assertOk()->assertJsonPath('ads.0.views', 1);
+        $this->patchJson("/api/v1/admin/house-ads/{$id}", ['active' => false])->assertOk()->assertJsonPath('ad.active', false);
+        $this->actingAs($this->owner)->postJson('/api/v1/ads/start')->assertCreated()->assertJsonPath('ad.id', null);
+        $this->actingAs($admin)->deleteJson("/api/v1/admin/house-ads/{$id}")->assertOk();
+        $this->actingAs($this->owner)->getJson('/api/v1/admin/house-ads')->assertForbidden();
     }
 
     public function test_each_verified_video_cuts_thirty_minutes_once_and_five_at_most(): void

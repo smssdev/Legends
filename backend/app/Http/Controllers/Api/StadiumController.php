@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Ads\AdReward;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\Http\Controllers\Controller;
@@ -64,6 +65,8 @@ class StadiumController extends Controller
             'building' => $building ? [
                 'section' => $building->section, 'stage' => (int) $building->stage, 'part' => (int) $building->part,
                 'ends_at' => Carbon::parse($building->ends_at, 'UTC')->toIso8601ZuluString(),
+                // [Sprint 20 S4] The rewarded ads for this part: on or off, the minutes a video cuts, and how many so far.
+                'ads' => AdReward::status('stadium', (int) $building->id),
             ] : null,
         ]);
     }

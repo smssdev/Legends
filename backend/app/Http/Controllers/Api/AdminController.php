@@ -303,6 +303,56 @@ class AdminController extends Controller
         return $this->conversation($user);
     }
 
+    /** [Sprint 20 S4] The game's own rewarded ads, newest first, with how often each was shown. */
+    public function houseAds(): JsonResponse
+    {
+        return response()->json(['ads' => DB::table('house_ads')->orderByDesc('id')->get()->map(fn ($a) => $this->houseAd($a)),
+            'defaults' => count(config('game.ads.house_defaults')), 'enabled' => (bool) config('game.ads.enabled') && config('game.ads.driver') === 'house']);
+    }
+
+    public function storeHouseAd(Request $request): JsonResponse
+    {
+        $data = $request->validate($this->houseAdRules(true));
+        $now = GameClock::now();
+        $id = DB::table('house_ads')->insertGetId(['user_id' => $request->user()->id, 'title' => $data['title'], 'body' => $data['body'],
+            'cta_label' => $data['cta_label'] ?? null, 'cta_url' => $data['cta_url'] ?? null, 'seconds' => $data['seconds'] ?? (int) config('game.ads.house_seconds'),
+            'active' => $data['active'] ?? true, 'created_at' => $now, 'updated_at' => $now]);
+
+        return response()->json(['ad' => $this->houseAd(DB::table('house_ads')->find($id))], 201);
+    }
+
+    public function updateHouseAd(Request $request, int $id): JsonResponse
+    {
+        abort_unless(DB::table('house_ads')->where('id', $id)->exists(), 404);
+        $data = $request->validate($this->houseAdRules(false));
+        DB::table('house_ads')->where('id', $id)->update($data + ['updated_at' => GameClock::now()]);
+
+        return response()->json(['ad' => $this->houseAd(DB::table('house_ads')->find($id))]);
+    }
+
+    public function deleteHouseAd(int $id): JsonResponse
+    {
+        DB::table('house_ads')->where('id', $id)->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
+    private function houseAdRules(bool $new): array
+    {
+        $req = $new ? 'required' : 'sometimes';
+
+        // A link opens only on the web (http or https), never a script.
+        return ['title' => [$req, 'string', 'min:3', 'max:80'], 'body' => [$req, 'string', 'min:3', 'max:300'],
+            'cta_label' => ['sometimes', 'nullable', 'string', 'max:40'], 'cta_url' => ['sometimes', 'nullable', 'url:http,https', 'max:300'],
+            'seconds' => ['sometimes', 'integer', 'min:15', 'max:60'], 'active' => ['sometimes', 'boolean']];
+    }
+
+    private function houseAd(object $a): array
+    {
+        return ['id' => $a->id, 'title' => $a->title, 'body' => $a->body, 'cta_label' => $a->cta_label, 'cta_url' => $a->cta_url, 'seconds' => (int) $a->seconds,
+            'active' => (bool) $a->active, 'views' => (int) $a->views, 'at' => Carbon::parse($a->created_at, 'UTC')->toIso8601ZuluString()];
+    }
+
     /** owner-sizar → Owner-Sizar, as written in the settings. */
     private function officialName(string $username): string
     {

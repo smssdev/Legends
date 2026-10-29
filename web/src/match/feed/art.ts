@@ -27,7 +27,7 @@ const sa = (e, k, v) => { const key = '_' + k; if (e[key] === v) return; e[key] 
 let uid = 0
 export const crest = ([c1, c2, t]) => {
   const id = 'cr' + ++uid
-  return `<svg viewBox="0 0 64 72"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${shade(c1, -50)}"/></linearGradient></defs><path d="M32 2 L60 10 V36 C60 54 47 65 32 70 C17 65 4 54 4 36 V10 Z" fill="url(#${id})" stroke="${c2}" stroke-width="3"/><path d="M32 9 L53 15 V35 C53 49 43 58 32 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed, Alexandria, sans-serif" font-weight="800" font-size="${t.length > 2 ? 17 : 20}" fill="${lum(c1) > 150 ? '#0A1F42' : '#fff'}">${t}</text></svg>`
+  return `<svg viewBox="0 0 64 72"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${shade(c1, -50)}"/></linearGradient></defs><path d="M32 2 L60 10 V36 C60 54 47 65 32 70 C17 65 4 54 4 36 V10 Z" fill="url(#${id})" stroke="${c2}" stroke-width="3"/><path d="M32 9 L53 15 V35 C53 49 43 58 32 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="${t.length > 2 ? 17 : 20}" fill="${lum(c1) > 150 ? '#0A1F42' : '#fff'}">${t}</text></svg>`
 }
 
 // Line icons, gold on glass, for the timeline cards.
@@ -88,7 +88,7 @@ function stage(side) {
   <g>${Array.from({ length: SMOOTH ? 70 : 220 }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${['#2B4F8C', '#3D63A8', c, '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
   <rect x="-80" y="122" width="800" height="16" fill="url(#${id}b)"/>
   <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
-  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Alexandria, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
+  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Amin, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
   <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#${id}t)"/>
   ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = (y0 - LINE + 12) * 1.0, k1 = (y1 - LINE + 12) * 1.0; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="rgba(255,255,255,.035)"/>` }).join('')}
   <g fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
@@ -144,7 +144,7 @@ export function player(p, kit, no, s = 1, o = {}) {
     <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>
     <path d="M-6 21 Q0 -2 6 21" fill="rgba(0,0,0,.08)"/>
     <path d="M-15 -9 Q0 -15 15 -9" fill="none" stroke="${o.trim ?? shade(kit, light ? -45 : 45)}" stroke-width="2"/>
-    <text x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Alexandria, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>`
+    <text x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>`
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
   const arms = [part(-14.5, -7, arm), part(14.5, -7, arm)]
   part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/>`)
@@ -226,12 +226,12 @@ const drawTrail = (trl, path, f, op, from = 0) => { const pts = Array.from({ len
 function title(svg, text, color) {
   const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: 'rgba(4,11,28,.75)', opacity: 0 }, svg)
   const r1 = el('rect', { x: 0, y: 4, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg), r2 = el('rect', { x: 0, y: 62, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg)
-  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), opacity: 0 }, svg)
+  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), opacity: 0 }, svg)
   t.textContent = text
   return (f) => { const e = ease(f); sa(band, 'opacity', f); sa(r1, 'opacity', f); sa(r2, 'opacity', f); sa(r1, 'transform', `translate(${(1 - e) * -640} 0)`); sa(r2, 'transform', `translate(${(1 - e) * 640} 0)`); sa(t, 'opacity', f); sa(t, 'transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`) }
 }
 function bigNumber(svg, no, kit) {
-  const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Alexandria, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
+  const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Amin, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
   t.textContent = no ?? ''
   return (f) => { sa(t, 'opacity', f * 0.35); sa(t, 'transform', `translate(${(1 - ease(f)) * 60} 0)`) }
 }
@@ -574,7 +574,7 @@ export const SCENES = {
     const dots = [[-110, 0], [-70, -50], [-70, -17], [-70, 17], [-70, 50], [-20, -35], [-20, 0], [-20, 35], [35, -50], [45, 0], [35, 50]].map(([x, y]) => { const d = el('circle', { r: 8, fill: kit, stroke: '#071733', 'stroke-width': 2 }, tab); d.dataset.x = x; d.dataset.y = y; return d })
     const ar = el('g', { fill: 'none', stroke: '#FFD36B', 'stroke-width': 3, 'stroke-linecap': 'round', filter: ref(svg, 'glow') }, tab)
     const A = [[-20, -35, 30, -60], [-20, 35, 30, 60], [-70, -50, -30, -75], [-70, 50, -30, 75]].map(([a, b, c, d]) => el('path', { d: `M${a} ${b} L${c} ${d}`, 'stroke-dasharray': 80, 'stroke-dashoffset': 80 }, ar))
-    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
+    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Amin, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
     return { dur: 4.6, svg, update(t) {
       sa(tab, 'transform', `translate(320 ${lerp(380, 158, ease(seg(t, 0, 0.6)))}) scale(.9)`)
       const push = ease(seg(t, 1, 2)); dots.forEach((d) => { sa(d, 'cx', +d.dataset.x + (+d.dataset.x > -100 ? push * 26 : 0)); sa(d, 'cy', d.dataset.y) })
@@ -586,7 +586,7 @@ export const SCENES = {
     // Half time and full time: the score and the numbers of the match so far.
     const svg = stage('home'), g = el('g', {}, svg)
     el('rect', { x: 110, y: 26, width: 420, height: 296, rx: 18, fill: 'rgba(4,11,28,.9)', stroke: 'rgba(245,184,46,.35)' }, g)
-    el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 900, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
+    el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
     el('text', { x: 320, y: 108, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 42, fill: '#fff', direction: 'ltr' }, g).textContent = e.score ?? ''
     const rows = (e.stats ?? []).slice(0, 4)
     const bars = rows.map(([label, h, a], i) => {

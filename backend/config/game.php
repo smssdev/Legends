@@ -193,7 +193,10 @@ return [
         'missed_max_minutes' => 30,
         // [E8.7] The degradation ladder under load (App\League\LiveDegrade): 1 drops the catch-up summary, 2 the
         // commentator's voice, 3 tells the screens to poll every poll_ms. Also `php artisan matches:degrade`.
-        'degrade' => ['level' => (int) env('GAME_DEGRADE_LEVEL', 0), 'poll_ms' => 3000],
+        // [Sprint 20 S6] And by itself: the smoothed lateness of the runner's steps (ms) past up_ms[0], [1] or [2]
+        // raises it to 1, 2 or 3 at once; it comes down a step after hold_s under half the level's threshold.
+        'degrade' => ['level' => (int) env('GAME_DEGRADE_LEVEL', 0), 'poll_ms' => 3000,
+            'auto' => ['enabled' => (bool) env('GAME_DEGRADE_AUTO', true), 'up_ms' => [1500, 3000, 6000], 'hold_s' => 120]],
     ],
     // [Sprint 21 E8.7] logs:trim (hourly): a log over this size is kept as NAME.log.1 and starts again.
     'logs' => ['max_mb' => 20],
@@ -376,7 +379,21 @@ return [
     // [Sprint 21 E9] Rewarded videos: each one the provider verifies cuts minutes_per_video off a training slot's next
     // session or a stadium part, up to max_per_item for the same task. Off, with no provider, until the owner picks one
     // (README section 11): no paid or account-bound SDK is in the game.
-    'ads' => ['enabled' => (bool) env('ADS_ENABLED', false), 'driver' => env('ADS_DRIVER', 'none'), 'minutes_per_video' => 30, 'max_per_item' => 5],
+    // [Sprint 20 S4] The provider is our own (house, App\Ads\HouseAds), on by the owner's decision 2026-10-29: the
+    // developers' ads from the admin panel, else these built-in ones, each house_seconds long by default.
+    'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
+        'house_seconds' => 30, 'house_defaults' => [
+            ['title' => 'ادعُ صديقاً واربح 100 كوينز', 'body' => 'انسخ رابط الدعوة من «حسابي». كل صديق يسجّل منه ويوثّق حسابه يعطيك 100 كوينز، حتى 10 أصدقاء.',
+                'title_en' => 'Invite a friend, win 100 coins', 'body_en' => 'Copy your invite link from "My account". Every friend who signs up from it and verifies gives you 100 coins, up to 10 friends.'],
+            ['title' => 'لكل خطة خطة تهزمها', 'body' => 'افتح «كتاب التكتيك» في صفحة التكتيك: اعرف الخطة التي تتفوق على دفاع خصمك، فيكون للأضعف رد.',
+                'title_en' => 'Every plan has its answer', 'body_en' => 'Open the tactics book on the tactics page: find the plan that beats your opponent\'s defence, so the weaker side has an answer.'],
+            ['title' => 'لا تدريب بلا مدرب', 'body' => 'تعاقد مع مدرب كل خط من الجهاز الفني، ثم ضع لاعباً من كل خط في التدريب: جلسة كل 6 ساعات.',
+                'title_en' => 'No training without a coach', 'body_en' => 'Hire each line\'s coach from the technical staff, then put a player of each line in training: a session every 6 hours.'],
+            ['title' => 'الملعب يصنع الفارق', 'body' => 'وسّع المدرجات وحسّن أرض التدريب: كل جزء 20 ساعة، وكل مرحلة تزيد دخلك أو تسرّع تطور لاعبيك.',
+                'title_en' => 'The stadium makes the difference', 'body_en' => 'Grow the stands and the training ground: each part takes 20 hours, and every stage adds income or speeds up your players.'],
+            ['title' => 'المباراة تُدار حية', 'body' => 'ادخل مباراتك المباشرة: غيّر الخطة وأجرِ التبديلات في نوافذ المدرب، والمعلق يرافقك.',
+                'title_en' => 'The match is managed live', 'body_en' => 'Join your live match: change the plan and make substitutions in the coach\'s windows, with the commentator beside you.'],
+        ]],
 
     'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
@@ -448,12 +465,18 @@ return [
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
     'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000,
-        // [Sprint 21 E4.6] The league's news, until the owner sends his own formulas. A match's interest: its goals
-        // (goals each), a close score (close for a draw, half of it for one goal), and a surprise (upset, when the
-        // winner was at least upset_gap strength points weaker). The coach of the round: his win's margin (margin
-        // each goal), what his side lacked in strength (one point per gap_per_point), and an away win (away).
-        'news' => ['best_matches' => 3, 'goals' => 3, 'close' => 4, 'upset' => 6, 'upset_gap' => 300,
-            'coach' => ['margin' => 2, 'gap_per_point' => 100, 'away' => 2], 'scandals' => 5]],
+        // [Sprint 21 E4.6, final formulas Sprint 20 S3] The league's news (App\League\NewsFormulas). upset_gap: strength
+        // points that make one side clearly stronger on paper.
+        // A match: goal for each goal, draw for a draw with goals or one_goal for a one-goal game, upset when the winner
+        // was the clearly weaker side (upset_draw for a draw between unequal sides), late_goal for each equaliser or
+        // go-ahead goal from late_minute (up to late_max), comeback when the winner was behind, and red for each red card.
+        // A player: his rating (6.00 = 600), goal and assist each, clean_sheet for a keeper or defender, and his side's win or draw.
+        // A coach: win (or draw against a clearly stronger side), margin for each goal up to margin_max, one point per
+        // gap_per_point his side was weaker, away for a result away, and clean_sheet.
+        'news' => ['best_matches' => 3, 'scandals' => 5, 'upset_gap' => 300,
+            'match' => ['goal' => 3, 'draw' => 5, 'one_goal' => 3, 'upset' => 8, 'upset_draw' => 4, 'late_goal' => 3, 'late_minute' => 85, 'late_max' => 2, 'comeback' => 6, 'red' => 2],
+            'player' => ['goal' => 60, 'assist' => 35, 'clean_sheet' => 40, 'win' => 20, 'draw' => 5],
+            'coach' => ['win' => 10, 'draw' => 3, 'margin' => 3, 'margin_max' => 3, 'gap_per_point' => 100, 'away' => 3, 'clean_sheet' => 2]]],
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.

@@ -1,12 +1,18 @@
 <script setup lang="ts">
-// Tactics (Sprint 17 W1), after the draft MobileTactics: the plan, three sliders, tackling, the positions
-// of each line, the trap and marking, with tips in our own words. Tips explain how the engine plays them;
-// they change no number [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent.
-import UiToggle from '../../components/ui/UiToggle.vue'
+// Tactics (Sprint 17 W1). [Sprint 20 S1] Laid out as the owner's picture, in our colours and drawings: the match on
+// top (both sides, their strength and last five, the formations and the referee), then a board of cards: the three
+// sliders with their word and number, the trap and the marking on the right; the plan on its pitch, the tackling, and
+// the three lines' positions on theirs on the left; each choice between two arrows. Then the expected effect, quick
+// presets, the tactics book and the scenarios. Tips explain how the engine plays them; they change no number
+// [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
-import type { components } from '../../api/schema'
+import type { components, paths } from '../../api/schema'
 import TacticIcon from '../../components/tactics/TacticIcon.vue'
+import TacticCycler from '../../components/tactics/TacticCycler.vue'
+import PlanPitch from '../../components/tactics/PlanPitch.vue'
+import LinesPitch from '../../components/tactics/LinesPitch.vue'
+import ClubCrest from '../../components/ui/ClubCrest.vue'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import ScenariosPanel from './ScenariosPanel.vue'
@@ -31,6 +37,9 @@ const bookOpen = ref(false)
 const SHAPES = { high: 'دفاع متقدم وضغط عالٍ', mid: 'دفاع متوسط', low: 'دفاع متأخر' } as const
 const SHAPE_SHORT = { high: 'متقدم', mid: 'متوسط', low: 'متأخر' } as const
 const kinds = ref<components['responses']['Tactics']['content']['application/json']['scenario_kinds']>([])
+// [S1] The match the tactics are for (null between seasons): the header.
+type Next = NonNullable<paths['/leagues/{league}/team/next-match']['get']['responses'][200]['content']['application/json']['match']>
+const next = ref<Next | null>(null)
 
 const PLANS = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' } as const
 const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
@@ -45,8 +54,7 @@ const LINES = [
   { key: 'def', label: 'الدفاع', color: 'bg-[#3B82F6]', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
 ] as const
 const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
-// [UP16] The icons of each choice, and the quick presets of the spec (10): each sets the knobs the engine plays with.
-const PLAN_ICON: Record<string, string> = { counter: 'counter', shots: 'shots', long: 'long_balls', passing: 'tiki_taka', wings: 'wings' }
+// [UP16] The quick presets of the spec (10): each sets the knobs the engine plays with.
 const MENTALITY = [
   { id: 'all_out', label: 'الهجوم الكاسح', style: 95 }, { id: 'attacking', label: 'هجومي', style: 75 }, { id: 'balanced', label: 'متوازن', style: 50 },
   { id: 'defensive', label: 'دفاعي', style: 25 }, { id: 'park_bus', label: 'ركن الحافلة', style: 5 },
@@ -57,6 +65,23 @@ const PASSING = [
 ] as const
 const PRESSING = [{ id: 'press_low', label: 'منخفض', value: 20 }, { id: 'press_mid', label: 'متوسط', value: 50 }, { id: 'press_high', label: 'خنق الخصم', value: 85 }] as const
 const near = (a: number, b: number) => Math.abs(a - b) <= 10
+// [S1] The board's words: each slider's value in five bands, and every choice for the arrows.
+const BANDS: Record<string, string[]> = {
+  pressing: ['منخفض جداً', 'منخفض', 'طبيعي', 'عالٍ', 'خنق الخصم'],
+  style: ['ركن الحافلة', 'دفاعي', 'متوازن', 'هجومي', 'هجوم كاسح'],
+  tempo: ['بطيء', 'هادئ', 'متوسط', 'سريع', 'سريع جداً'],
+}
+const band = (key: string, v: number) => BANDS[key][Math.min(4, Math.floor(v / 20.0001))]
+const opts = <K extends string | number>(o: Record<K, string> | readonly string[]) =>
+  (Array.isArray(o) ? o.map((label, i) => ({ value: i as K, label })) : (Object.entries(o) as [K, string][]).map(([value, label]) => ({ value, label })))
+const PLAN_OPTS = opts(PLANS as Record<keyof typeof PLANS, string>)
+const TACKLING_OPTS = opts<number>(TACKLING)
+const TRAP_OPTS = [{ value: 1, label: 'نعم' }, { value: 0, label: 'لا' }]
+const MARKING_OPTS = [{ value: 'zone', label: 'دفاع المنطقة' }, { value: 'man', label: 'رجل لرجل' }]
+const LINE_LABEL = { att: 'المهاجمون', mid: 'لاعبو الوسط', def: 'المدافعون' } as const
+const LINE_TEXT = { att: 'text-line-att', mid: 'text-text', def: 'text-line-def' } as const
+const FORM: Record<string, { label: string; cls: string }> = { W: { label: 'ف', cls: 'bg-success text-on-gold' }, D: { label: 'ت', cls: 'bg-surface-raised text-text' }, L: { label: 'خ', cls: 'bg-live text-white' } }
+const strength = (cp: number) => Math.round(cp / 100)
 const mentality = computed(() => MENTALITY.reduce((best, m) => (Math.abs(m.style - (t.value?.style ?? 50)) < Math.abs(best.style - (t.value?.style ?? 50)) ? m : best)).id)
 const dirty = computed(() => !!t.value && JSON.stringify(t.value) !== saved.value)
 
@@ -66,7 +91,9 @@ async function load() {
     loaded.value = true
     return
   }
-  const { data } = await api.GET('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } } })
+  const path = { params: { path: { league: leagueId.value } } }
+  const [{ data }, nm] = await Promise.all([api.GET('/leagues/{league}/team/tactics', path), api.GET('/leagues/{league}/team/next-match', path).catch(() => null)])
+  next.value = nm?.data?.match ?? null
   apply(data!)
   scenarios.value = data!.scenarios
   book.value = data!.book
@@ -112,6 +139,92 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
       </header>
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 
+      <!-- [S1] The match: my side at the start, the opponent at the end, their strength and the referee between. -->
+      <section v-if="next" class="overflow-hidden rounded-xl border border-text/10 bg-panel" :aria-label="$t('المباراة القادمة')">
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-3 sm:p-4">
+          <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+            <ClubCrest :url="next.club.crest_url" :code="next.club.code" :size="44" class="shrink-0" />
+            <span class="min-w-0"><b class="block truncate font-display text-base sm:text-xl">{{ $nm(next.club.name) }}</b><span class="block truncate text-xs text-text-muted">{{ next.club.coach }}</span></span>
+          </div>
+          <div class="flex items-center gap-1.5 sm:gap-3">
+            <span class="grid size-11 place-items-center rounded-full border-2 border-ring font-numbers text-xl sm:size-14 sm:text-2xl" :title="$t('القوة')">{{ strength(next.club.strength_cp) }}</span>
+            <span class="font-numbers text-2xl font-extrabold italic text-gold sm:text-4xl" dir="ltr">VS</span>
+            <span class="grid size-11 place-items-center rounded-full border-2 border-ring font-numbers text-xl sm:size-14 sm:text-2xl" :title="$t('القوة')">{{ strength(next.opponent.strength_cp) }}</span>
+          </div>
+          <div class="flex min-w-0 flex-row-reverse items-center gap-2 text-end sm:gap-3">
+            <ClubCrest :url="next.opponent.crest_url" :code="next.opponent.code" :size="44" class="shrink-0" />
+            <span class="min-w-0"><b class="block truncate font-display text-base sm:text-xl">{{ $nm(next.opponent.name) }}</b><span class="block truncate text-xs text-text-muted">{{ next.opponent.coach ?? $t('الكمبيوتر') }}</span></span>
+          </div>
+        </div>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 bg-bg-deep px-3 py-2 text-sm">
+          <div class="flex min-w-0 items-center gap-1">
+            <span v-for="(r, i) in next.club.form" :key="i" class="grid size-6 place-items-center rounded-full text-xs font-bold" :class="FORM[r].cls" :title="$t(FORM[r].label)">{{ $t(FORM[r].label) }}</span>
+            <span class="ms-1 truncate font-numbers text-base" dir="ltr">{{ next.club.formation.replace(/^custom:.*/, '') || $t('خطتي') }}</span>
+          </div>
+          <span class="whitespace-nowrap text-xs text-text-soft">{{ $t('الحكم: {v0}', { v0: next.referee ? $t(REFEREE[next.referee]) : '؟' }) }}</span>
+          <div class="flex min-w-0 flex-row-reverse items-center gap-1">
+            <span v-for="(r, i) in next.opponent.form" :key="i" class="grid size-6 place-items-center rounded-full text-xs font-bold" :class="FORM[r].cls" :title="$t(FORM[r].label)">{{ $t(FORM[r].label) }}</span>
+            <!-- His formation only after the lock; before it, a question mark. -->
+            <span class="me-1 truncate font-numbers text-base" dir="ltr">{{ next.opponent.sheet?.formation ?? '?' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- [S1] The board: the sliders, the trap and the marking first (the right in Arabic); the plan, the tackling and
+           the positions second. One column on a phone. -->
+      <div class="grid gap-3 md:grid-cols-2">
+        <div class="flex flex-col gap-3">
+          <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-4">
+            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label><HelpTip :text="help[sl.key]" :label="sl.label" /></span>
+            <b class="text-center font-display text-lg">{{ $t(band(sl.key, t[sl.key])) }}</b>
+            <div class="flex items-center gap-3">
+              <output :for="`t-${sl.key}`" class="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-bg-deep font-numbers text-lg">{{ t[sl.key] }}</output>
+              <input :id="`t-${sl.key}`" v-model.number="t[sl.key]" type="range" min="0" max="100" step="5" class="h-11 flex-1 accent-ring" :aria-valuetext="$t(band(sl.key, t[sl.key]))" />
+            </div>
+          </section>
+          <div class="grid grid-cols-2 gap-3">
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('مصيدة التسلل') }}<HelpTip :text="help.trap" :label="$t('مصيدة التسلل')" /></span>
+              <TacticCycler v-model="t.trap" :options="TRAP_OPTS" :label="$t('مصيدة التسلل')" class="w-full" />
+              <TacticIcon :name="t.trap === 1 ? 'trap_on' : 'trap_off'" :active="true" class="!size-14" />
+              <span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span>
+            </section>
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('الرقابة') }}<HelpTip :text="help.marking" :label="$t('الرقابة')" /></span>
+              <TacticCycler v-model="t.marking" :options="MARKING_OPTS" :label="$t('الرقابة')" class="w-full" />
+              <TacticIcon :name="t.marking" :active="true" class="!size-14" />
+              <span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span>
+            </section>
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <section class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-3">
+              <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('خطة اللعب') }}<HelpTip :text="help.plan" :label="$t('خطة اللعب')" /></span>
+              <TacticCycler v-model="t.plan" :options="PLAN_OPTS" :label="$t('خطة اللعب')" />
+              <PlanPitch :plan="t.plan" />
+            </section>
+            <section class="flex flex-col items-center gap-2 rounded-xl border border-text/10 bg-surface p-3">
+              <span class="flex items-center gap-1 text-sm font-bold text-ring">{{ $t('قطع الكرة') }}<HelpTip :text="help.tackling" :label="$t('قطع الكرة')" /></span>
+              <TacticCycler v-model="t.tackling" :options="TACKLING_OPTS" :label="$t('قطع الكرة')" class="w-full" />
+              <TacticIcon :name="`tackle_${t.tackling}`" :active="true" class="!size-20 flex-1" />
+            </section>
+          </div>
+          <section class="flex flex-col gap-3 rounded-xl border border-text/10 bg-surface p-4">
+            <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring">{{ $t('التمركز') }}<HelpTip :text="help.lines" :label="$t('التمركز')" /></span>
+            <div class="grid grid-cols-[6rem_1fr] items-center gap-2 sm:grid-cols-[minmax(0,10rem)_1fr] sm:gap-4">
+              <LinesPitch :att="t.att" :mid="t.mid" :def="t.def" />
+              <div class="flex min-w-0 flex-col gap-2">
+                <div v-for="l in LINES" :key="l.key" class="flex flex-col">
+                  <span class="text-center text-xs font-bold" :class="LINE_TEXT[l.key]">{{ $t(LINE_LABEL[l.key]) }}</span>
+                  <TacticCycler v-model="(t as unknown as Record<string, string>)[l.key]" :options="opts(l.options as Record<string, string>)" :label="$t(LINE_LABEL[l.key])" />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
       <section class="flex flex-col gap-2 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-tips">
         <div class="flex flex-wrap items-center justify-between gap-x-2">
           <h2 id="h-tips" class="text-sm text-text-muted">{{ $t('الأثر المتوقع في المباراة{v0}', { v0: dirty ? $t(' (يتحدث بعد الحفظ)') : '' }) }}</h2>
@@ -122,6 +235,10 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </ul>
       </section>
 
+      <!-- Quick presets [UP16]: each sets the knobs above. -->
+      <details class="rounded-xl bg-surface p-4">
+        <summary class="min-h-touch cursor-pointer content-center font-bold">{{ $t('قوالب سريعة') }}</summary>
+        <div class="mt-3 flex flex-col gap-4">
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-2 font-bold">{{ $t('العقلية') }}</legend>
         <div class="grid grid-cols-5 gap-1">
@@ -149,12 +266,8 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
         </div>
       </fieldset>
 
-      <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">{{ $t('خطة اللعب') }} <span class="text-xs font-normal text-text-muted">{{ $t('(يراها الخصم بعد القفل)') }}</span><HelpTip :text="help.plan" :label="$t('خطة اللعب')" /></legend>
-        <div class="flex flex-wrap gap-2">
-          <button v-for="(label, k) in PLANS" :key="k" type="button" class="flex h-12 items-center gap-2 rounded-xl border px-3 font-bold" :class="t.plan === k ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface'" :aria-pressed="t.plan === k" @click="t.plan = k"><TacticIcon :name="PLAN_ICON[k]" :active="t.plan === k" />{{ $t(label) }}</button>
         </div>
-      </fieldset>
+      </details>
 
       <!-- [Sprint 21 E5.4] The tactics book: each plan against each defensive shape, and the answer to each shape. -->
       <section v-if="book" class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-book">
@@ -200,45 +313,6 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
           <p class="text-xs text-text-muted">{{ $t('الشكل الدفاعي يصنعه الضغط والأسلوب ومصيدة التسلل وتمركز الخطوط. وخطة خصمك تظهر لك بعد القفل، وشكله الدفاعي لا يظهر: اقرأه من مبارياته.') }}</p>
         </div>
       </section>
-
-      <section class="flex flex-col gap-4 rounded-xl bg-surface p-4">
-        <div v-for="s in SLIDERS" :key="s.key" class="flex flex-col gap-1">
-          <span class="flex flex-wrap items-center justify-between font-bold"><span class="flex items-center gap-1"><label :for="`t-${s.key}`">{{ $t(s.label) }}</label><HelpTip :text="help[s.key]" :label="s.label" /></span><span class="font-numbers text-2xl text-gold">{{ t[s.key] }}</span></span>
-          <input :id="`t-${s.key}`" v-model.number="t[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" />
-          <span class="flex justify-between text-xs text-text-muted"><span>{{ $t(s.low) }}</span><span>{{ $t(s.high) }}</span></span>
-        </div>
-      </section>
-
-      <fieldset>
-        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">{{ $t('قطع الكرة') }} <span class="text-xs font-normal text-text-muted">{{ $t('(يراه الخصم بعد القفل)') }}</span><HelpTip :text="help.tackling" :label="$t('قطع الكرة')" /></legend>
-        <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1">
-          <button v-for="(label, i) in TACKLING" :key="i" type="button" class="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-xs font-bold" :class="t.tackling === i ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t.tackling === i" @click="t.tackling = i"><TacticIcon :name="`tackle_${i}`" :active="t.tackling === i" />{{ $t(label) }}</button>
-        </div>
-      </fieldset>
-
-      <fieldset class="flex flex-col gap-2">
-        <legend class="mb-2 flex w-full flex-wrap items-center gap-x-1 font-bold">{{ $t('التمركز') }}<HelpTip :text="help.lines" :label="$t('التمركز')" /></legend>
-        <div v-for="l in LINES" :key="l.key" class="flex items-center gap-2">
-          <span class="flex w-20 shrink-0 items-center gap-1.5 text-sm"><span class="size-2.5 rounded-full" :class="l.color" />{{ $t(l.label) }}</span>
-          <div class="grid flex-1 grid-cols-3 gap-1 rounded-xl bg-surface p-1">
-            <button v-for="(label, k) in l.options" :key="k" type="button" class="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-bold" :class="t[l.key] === k ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t[l.key] === k" @click="(t as Record<string, unknown>)[l.key] = k"><TacticIcon :name="`${l.key}_${k}`" :active="t[l.key] === k" />{{ $t(label) }}</button>
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="grid gap-2 md:grid-cols-2">
-        <div class="flex min-h-touch flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
-          <span class="flex items-center gap-1"><label for="t-trap"><span class="block font-bold">{{ $t('مصيدة التسلل') }}</span><span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span></label><HelpTip :text="help.trap" :label="$t('مصيدة التسلل')" /></span>
-          <span class="flex items-center gap-2"><TacticIcon :name="t.trap === 1 ? 'trap_on' : 'trap_off'" :active="true" />
-          <UiToggle id="t-trap" tone="success" :label="$t('مصيدة التسلل')" class="[&_label]:sr-only" :model-value="t.trap === 1" @update:model-value="(on: boolean) => (t!.trap = on ? 1 : 0)" /></span>
-        </div>
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3">
-          <span class="flex items-center gap-1"><span><span class="block font-bold">{{ $t('الرقابة') }}</span><span class="text-xs text-text-muted">{{ $t('يراها الخصم بعد القفل') }}</span></span><HelpTip :text="help.marking" :label="$t('الرقابة')" /></span>
-          <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1">
-            <button v-for="(label, k) in { zone: 'منطقة', man: 'رجل لرجل' }" :key="k" type="button" class="flex min-h-12 items-center gap-1 rounded-md px-2 text-sm font-bold" :class="t.marking === k ? 'bg-surface-raised text-text' : 'text-text-soft'" :aria-pressed="t.marking === k" @click="t.marking = k"><TacticIcon :name="k" :active="t.marking === k" />{{ $t(label) }}</button>
-          </div>
-        </div>
-      </div>
 
       <ScenariosPanel v-if="leagueId && scenarios" :league-id="leagueId" :scenarios="scenarios" :kinds="kinds" />
     </template>
