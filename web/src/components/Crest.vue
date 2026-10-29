@@ -17,5 +17,5 @@ const light = (hex: string) => {
   const n = parseInt(hex.slice(1), 16)
   return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 > 150
 }
-const text = computed(() => (light(props.primary) ? (light(props.secondary) ? '#0A1F42' : props.secondary) : '#FFFFFF'))
+const text = computed(() => (light(props.primary) ? (light(props.secondary) ? '#0B1A2C' : props.secondary) : '#FFFFFF'))
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div ref="host" class="mc" :class="{ smooth, scene: sceneOn }" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
+  <div ref="host" class="mc theme-night" :class="{ smooth, scene: sceneOn }" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
     <div class="atmo" aria-hidden="true" />
 
     <div class="sb">

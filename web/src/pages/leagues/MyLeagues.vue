@@ -53,7 +53,7 @@ function link(l: League) {
       </div>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
 
     <div v-else-if="leagues.length === 0" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
@@ -70,7 +70,7 @@ function link(l: League) {
           </div>
           <UiChip :tone="l.status === 'running' ? 'win' : 'neutral'">{{ $t(STATUS[l.status]) }}</UiChip>
         </div>
-        <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">
+        <p v-if="l.me?.absence_warning" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">
           {{ $t('لم تدخل هذا الدوري منذ يومين. ادخله قبل {v0} وإلا يعود فريقك للحاسوب.', { v0: l.me.away_deadline ? when(l.me.away_deadline) : $t('نهاية اليوم الثالث') }) }}
         </p>
         <div class="flex flex-wrap items-center gap-2 text-sm">

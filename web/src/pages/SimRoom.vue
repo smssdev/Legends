@@ -7,7 +7,7 @@
       <span class="rounded-pill bg-gold/15 px-3 py-1 text-sm font-bold text-gold">{{ $t('مباراة مع صديق') }}</span>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(error) }}</p>
 
     <!-- The host waits: share the link, the match starts when the friend joins. -->
     <section v-if="room && isHost" class="flex flex-col items-center gap-4 rounded-xl bg-surface p-5 text-center">

@@ -75,7 +75,7 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
       </p>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <div class="grid gap-4 md:grid-cols-[1fr_22rem]">
       <ul class="flex flex-col gap-2" :aria-label="$t('الأندية')">

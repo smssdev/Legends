@@ -7,7 +7,7 @@
       <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('المحاكي · بذرة') }} <span class="font-numbers">{{ view?.seed }}</span></span>
       <div class="flex-1" />
       <template v-if="live">
-        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-[#FF8A8A]"><span class="size-2 rounded-full bg-live" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
+        <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-danger"><span class="size-2 rounded-full bg-live" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
         <button v-if="friendLink" type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="share">{{ copied ? $t('نُسخ الرابط') : $t('رابط الصديق') }}</button>
       </template>
       <div v-else class="flex items-center gap-1 rounded-lg bg-surface p-1" role="group" :aria-label="$t('سرعة المحاكاة')">
@@ -32,7 +32,7 @@
       <RouterLink v-for="o in others" :key="o.id" :to="{ name: 'league-match', params: { id: o.id } }" class="flex h-touch items-center rounded-md px-3 font-numbers text-sm" :class="String(o.id) === id ? 'bg-gold text-on-gold' : 'bg-surface'" :aria-current="String(o.id) === id ? 'page' : undefined" dir="ltr">{{ o.home }} - {{ o.away }}</RouterLink>
     </nav>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -105,7 +105,7 @@
           <div v-if="league" class="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             <template v-for="s in (['home', 'away'] as const)" :key="s">
               <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-success/15 px-2 text-sm font-bold text-success disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('cheer', s)">📣 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
-              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-[#FF8A8A] disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
+              <button type="button" class="flex h-touch items-center justify-center gap-1 truncate rounded-lg bg-live/15 px-2 text-sm font-bold text-danger disabled:opacity-40" :disabled="cheerLeft > 0" @click="react('boo', s)">👎 <span class="truncate">{{ $nm(view.clubs[s].name) }}</span></button>
             </template>
           </div>
           <p v-if="league && cheerLeft > 0" class="text-center text-xs text-text-muted">{{ $t('التشجيع والاستهجان بعد') }} <span class="font-numbers">{{ cheerLeft }}</span> {{ $t('ثانية') }}</p>
@@ -161,7 +161,7 @@
               <button v-for="p in subOut ? bench : onPitch" :key="p.id" type="button" :disabled="!canChange" class="flex min-h-11 items-center gap-2 rounded-md px-2 disabled:opacity-40" :class="subOut?.id === p.id ? 'bg-warning/15' : 'bg-surface-sunk hover:bg-surface-raised'" @click="subOut ? sendSub(p) : (subOut = p)">
                 <span class="w-8 rounded-sm px-1 text-center text-xs font-bold" :class="lineClass(p.line)">{{ p.pos }}</span>
                 <span class="flex-1 truncate text-start text-sm">{{ $nm(p.name) }}</span>
-                <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-[#F5D90A]" :aria-label="$t('بطاقة صفراء')" />
+                <span v-if="p.yc" class="h-3.5 w-2.5 rounded-[2px] bg-card-yellow" :aria-label="$t('بطاقة صفراء')" />
                 <span class="w-12 text-start font-numbers" :class="fitClass(p.fit)">{{ subOut ? p.ovr : p.fit + '%' }}</span>
               </button>
               <button v-if="subOut" type="button" class="h-10 rounded-md bg-surface-raised text-sm" @click="subOut = null">{{ $t('رجوع') }}</button>
@@ -196,7 +196,7 @@
               <span class="flex-1"><b>{{ $t(o.label) }}</b></span><span class="text-gold">{{ minute[0] === 0 ? $t('يُطبق مع صافرة البداية') : $t('يُطبق في الدقيقة القادمة') }}</span>
             </div>
             <div v-for="o in applied" :key="o.key" class="rounded-lg border border-success/50 bg-success/15 px-3 py-2 text-sm"><b>{{ $t(o.label) }}</b> {{ $t('طُبّق في الدقيقة {v0}', { v0: o.minute }) }}</div>
-            <div v-for="r in rejected" :key="r" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]">{{ r }}</div>
+            <div v-for="r in rejected" :key="r" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ r }}</div>
           </template>
         </section>
 
@@ -221,7 +221,7 @@
             <input v-model="chatText" type="text" maxlength="140" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('رسالة')" />
             <button type="submit" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="!chatText.trim() || chatWait">{{ $t('إرسال') }}</button>
           </form>
-          <p v-if="chatError" class="text-xs text-[#FF8A8A]" role="status">{{ $t(chatError) }}</p>
+          <p v-if="chatError" class="text-xs text-danger" role="status">{{ $t(chatError) }}</p>
         </section>
 
         <section class="flex max-h-[420px] flex-col gap-1 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('مجريات المباراة')">

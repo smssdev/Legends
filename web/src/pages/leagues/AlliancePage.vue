@@ -73,7 +73,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
       <h1 class="font-display text-3xl font-extrabold">{{ $t('بطولة التحالفات') }}</h1>
       <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm font-bold text-gold">{{ $t('الدوري') }}</RouterLink>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 
     <template v-if="view">

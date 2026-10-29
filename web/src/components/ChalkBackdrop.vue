@@ -6,15 +6,15 @@
 </script>
 
 <template>
-  <div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden" aria-hidden="true">
-    <svg class="absolute inset-0 size-full" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+  <div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden text-text" aria-hidden="true">
+    <svg class="absolute inset-0 size-full" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
           <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="grain" />
           <feDisplacementMap in="SourceGraphic" in2="grain" scale="3.2" />
         </filter>
         <marker id="chalk-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M1 1 L8 5 L1 9" stroke="#fff" stroke-width="1.6" fill="none" />
+          <path d="M1 1 L8 5 L1 9" stroke="currentColor" stroke-width="1.6" fill="none" />
         </marker>
       </defs>
       <g filter="url(#chalk)" class="chalk" stroke-width="3">
@@ -24,7 +24,7 @@
           <path d="M60 150 H230 V330 H60" />
           <path d="M60 205 H120 V275 H60" />
           <path d="M230 205 A80 80 0 0 1 230 275" />
-          <circle cx="175" cy="240" r="3" fill="#fff" />
+          <circle cx="175" cy="240" r="3" fill="currentColor" />
         </g>
         <!-- A corner: crosses run, noughts mark, and the ball's flight curls in. -->
         <g opacity="0.7">

@@ -39,7 +39,7 @@ function left(iso: string) {
 const locked = computed(() => match.value?.status !== 'scheduled')
 const spy = ref<components['schemas']['SpyView'] | null>(null)
 const spying = ref(false)
-const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-white/20'], L: ['خ', 'bg-live text-white'] }
+const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-text/20'], L: ['خ', 'bg-live text-white'] }
 const spiedAt = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 async function sendSpy() {
   spying.value = true
@@ -81,7 +81,7 @@ const ACTIONS = [
 <template>
   <div class="flex flex-col gap-4">
     <h1 class="font-display text-3xl font-extrabold">{{ $t('المباراة القادمة') }}</h1>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
     <p v-else-if="loaded && !match" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('لا مباريات قادمة الآن.') }}</p>
     <template v-else-if="match">
@@ -103,16 +103,16 @@ const ACTIONS = [
               <RatingRing :value="Math.round(side.strength_cp / 100)" :label="$t('القوة')" :color="i === 0 ? 'var(--color-gold)' : 'var(--color-ring)'" :size="60" />
             </div>
             <div class="flex flex-col items-center gap-1">
-              <span class="font-display text-4xl font-extrabold italic text-white drop-shadow md:text-6xl">VS</span>
+              <span class="font-display text-4xl font-extrabold italic text-text drop-shadow md:text-6xl">VS</span>
               <span class="text-[11px] font-bold text-text-muted">{{ locked ? $t('مقفلة') : $t('يُقفل بعد') }}</span>
-              <span class="rounded-lg bg-black/40 px-3 py-1 font-numbers text-xl font-bold text-ring md:text-2xl" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
+              <span class="rounded-lg bg-bg-deep/70 px-3 py-1 font-numbers text-xl font-bold text-ring md:text-2xl" dir="ltr">{{ locked ? '🔒' : left(match.lock_at) }}</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-3 p-4 pt-0">
           <dl class="grid grid-cols-3 gap-2 text-center text-sm">
             <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('الموعد') }}</dt><dd class="font-bold">{{ when(match.scheduled_at) }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('المعنويات') }}</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-[#FF8A8A]' : 'text-gold'">{{ match.morale }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('المعنويات') }}</dt><dd class="font-numbers text-lg font-bold" :class="match.morale >= 75 ? 'text-success' : match.morale < 50 ? 'text-danger' : 'text-gold'">{{ match.morale }}</dd></div>
             <div class="rounded-lg bg-surface-sunk p-2"><dt class="text-xs text-text-muted">{{ $t('الحكم') }}</dt><dd class="font-bold">{{ match.referee ? REFEREE[match.referee] : $t('قبلها بنصف ساعة') }}</dd></div>
           </dl>
           <p v-if="match.match_of_day" class="rounded-lg bg-gold/15 px-3 py-2 text-center text-sm font-bold text-gold">{{ $t('⭐ قمة الجولة: كل مدربي الدوري مدعوون لمشاهدتها الليلة') }}</p>
@@ -204,7 +204,7 @@ const ACTIONS = [
   height: 5.5rem;
   border-radius: 999px;
   background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 60%, transparent), 0 12px 26px -10px rgb(0 0 0 / 0.8);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 60%, transparent), 0 12px 26px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .action-card {
   display: flex;

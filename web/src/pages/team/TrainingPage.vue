@@ -89,7 +89,7 @@ onMounted(() => {
 onBeforeUnmount(() => clearInterval(tick))
 // The slot cards' tiers [X29], as the squad's cards.
 const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
-const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'border-text/25 from-[#33415a] to-[#10284F]', bronze: 'border-[#B4692A]/40 from-[#3b2414] to-[#10284F]' } as const
+const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-text/25 from-silver/20 to-surface', bronze: 'border-bronze/40 from-bronze/30 to-surface' } as const
 </script>
 
 <template>
@@ -104,18 +104,18 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
         <span class="block text-xs text-text-muted">{{ $t('الجلسة') }} <span class="font-numbers" dir="ltr">{{ count(v.cost) }}</span></span>
       </div>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="v">
-      <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t('رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.') }}</p>
+      <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t('رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.') }}</p>
 
       <section :aria-label="$t('خانات التدريب')" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <!-- Each slot as a card [X29]: its line's colour on top, and a filled slot in its player's tier (gold, silver, bronze). -->
         <article v-for="s in v.slots" :key="s.line" class="relative flex flex-col gap-3 overflow-hidden rounded-xl p-4"
-          :class="s.player ? ['border bg-gradient-to-b', TIER[tier(s.player.overall)]] : 'border border-dashed border-white/15 bg-surface/50'">
+          :class="s.player ? ['border bg-gradient-to-b', TIER[tier(s.player.overall)]] : 'border border-dashed border-text/15 bg-surface/50'">
           <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${s.line})` }" aria-hidden="true" />
           <div class="flex items-center gap-2">
             <LineBadge :line="s.line as Line" />

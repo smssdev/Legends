@@ -1811,4 +1811,9 @@ export const EN: Record<string, string> = {
   'اكتب سؤالك...': 'Type your question...',
   'يُعقد المؤتمر الساعة {v0}': 'The press conference is at {v0}',
   'الدعم': 'Support',
+  // [X56] The look switch.
+  'المظهر': 'Look',
+  'ليلي': 'Night',
+  'نهاري': 'Day',
+  'كما في إعدادات جهازك': 'As your device is set',
 }

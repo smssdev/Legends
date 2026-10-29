@@ -45,7 +45,7 @@ onMounted(load)
         <span aria-hidden="true">👥</span>{{ $t('توقّع {v0} من المدربين هذه الجولة', { v0: r.predictors ?? 0 }) }}
       </p>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="r && !r.round" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('لا جولة قادمة الآن.') }}</p>
     <ul v-if="r?.round" class="grid gap-3 md:grid-cols-2">
       <li v-for="m in r.matches" :key="m.fixture_id" class="flex flex-col gap-2 rounded-xl bg-surface p-3">

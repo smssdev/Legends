@@ -10,7 +10,7 @@ const props = defineProps<{ name: string; line: Line; position: string; overall:
 const LABELS: Record<string, string> = { pac: 'سرعة', sho: 'تسديد', pas: 'تمرير', dri: 'مراوغة', def: 'دفاع', phy: 'بدنية', diving: 'طيران', handling: 'إمساك', kicking: 'ركل', positioning: 'تمركز', reflexes: 'ردة فعل' }
 const stats = computed(() => Object.entries(props.attributes ?? {}).filter(([, v]) => v != null).slice(0, 6) as [string, number][])
 const tier = computed(() => (props.overall >= 85 ? 'gold' : props.overall >= 75 ? 'silver' : 'bronze'))
-const FACE = { gold: 'from-[#4a3809] via-surface-raised to-surface ring-gold/70', silver: 'from-[#3a4a52] via-surface-raised to-surface ring-chrome/40', bronze: 'from-[#45291a] via-surface-raised to-surface ring-[#B4692A]/60' }
+const FACE = { gold: 'from-gold/25 via-surface-raised to-surface ring-gold/70', silver: 'from-silver/20 via-surface-raised to-surface ring-chrome/40', bronze: 'from-bronze/30 via-surface-raised to-surface ring-bronze/60' }
 // The name as the coach chose to see it [X40]; on the card its last part (the whole of a one-word name).
 const shortName = computed(() => {
   const full = nm(props.name)
@@ -20,7 +20,7 @@ const shortName = computed(() => {
 </script>
 
 <template>
-  <div class="relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-b p-3 ring-1 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40" :class="[FACE[tier], selected ? 'ring-2 ring-gold' : '', price === undefined ? 'aspect-[3/4]' : 'min-h-[16rem]']">
+  <div class="relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-b p-3 ring-1 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-shade/40" :class="[FACE[tier], selected ? 'ring-2 ring-gold' : '', price === undefined ? 'aspect-[3/4]' : 'min-h-[16rem]']">
     <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${line})` }" aria-hidden="true" />
     <span class="pointer-events-none absolute -bottom-6 -end-6 size-28 rounded-full opacity-20 blur-2xl" :style="{ background: `var(--color-line-${line})` }" aria-hidden="true" />
     <div class="flex items-start justify-between">

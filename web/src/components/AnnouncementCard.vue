@@ -42,7 +42,7 @@ const internal = computed(() => !!props.cta && props.cta.url.startsWith('/'))
   border-radius: 1rem;
   color: var(--color-on-chrome);
   background: var(--color-chrome);
-  box-shadow: 0 10px 28px -16px rgb(0 0 0 / 0.8);
+  box-shadow: 0 10px 28px -16px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .ann-cta {
   display: flex;

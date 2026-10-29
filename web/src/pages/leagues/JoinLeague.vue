@@ -133,7 +133,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
               >{{ c }}</span>
             </span>
           </label>
-          <p v-if="error" id="code-err" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+          <p v-if="error" id="code-err" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
           <UiButton type="submit" block :disabled="sending || clean.length !== 8">{{ sending ? $t('يرسل…') : $t('أرسل طلب الانضمام') }}</UiButton>
         </form>
 
@@ -192,7 +192,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
           <h2 class="font-display text-2xl font-extrabold">{{ $t('رفض {v0} طلبك', { v0: owner }) }}</h2>
           <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('عودة لدورياتي') }}</RouterLink>
         </template>
-        <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+        <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
       </section>
     </div>
   </div>

@@ -60,7 +60,7 @@ onMounted(() => load())
       <RouterLink :to="{ name: 'league-home', params: { id } }" class="text-sm text-text-muted">{{ $t('› الدوري') }}</RouterLink>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('أخبار الدوري') }}</h1>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <section v-if="p?.edition" class="flex flex-col gap-3 rounded-xl border border-gold/30 bg-surface p-4" aria-labelledby="h-edition">
       <div class="flex flex-wrap items-center gap-2">
@@ -100,7 +100,7 @@ onMounted(() => load())
       </div>
       <!-- [Sprint 21 E4.6] Exposed: the bribes an opponent caught, as the FA ruled them. -->
       <div v-if="p.edition.scandals?.length" class="flex flex-col gap-1.5 rounded-lg border border-live/40 bg-live/10 p-3">
-        <h3 class="font-bold text-[#FF8A8A]">{{ $t('فضائح الرشوة') }}</h3>
+        <h3 class="font-bold text-danger">{{ $t('فضائح الرشوة') }}</h3>
         <p v-for="(c, i) in p.edition.scandals" :key="i" class="text-sm">
           {{ $t('كشف {v0} رشوة الحكم من {v1}{v2}: خصم {v3} نقاط وغرامة.', { v0: $nm(c.accuser), v1: $nm(c.club), v2: c.coach ? ' (' + c.coach + ')' : '', v3: c.points }) }}
         </p>
@@ -146,7 +146,7 @@ onMounted(() => load())
         <p class="whitespace-pre-line text-sm text-text-soft">{{ a.body }}</p>
         <div v-if="p.is_owner" class="flex gap-2">
           <button type="button" class="h-touch rounded-md bg-success/20 px-4 font-bold text-success" @click="decide(a.id, true)">{{ $t('انشره') }}</button>
-          <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="decide(a.id, false)">{{ $t('ارفضه') }}</button>
+          <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-danger" @click="decide(a.id, false)">{{ $t('ارفضه') }}</button>
         </div>
       </article>
     </section>

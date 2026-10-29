@@ -79,7 +79,7 @@ async function openRanking(by: 'trophies' | 'level') {
   <div v-else class="flex flex-col gap-4">
     <!-- [Sprint 21 E3.4] The coach's chalkboard behind the home screen. -->
     <ChalkBackdrop />
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <!-- [Sprint 21 E3.4] On a computer two columns fill the screen: the card and the slots, and beside them the
          announcements, the record and quick ways in. On a phone the same in one column. -->
     <div v-if="home" class="relative grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-6">
@@ -94,7 +94,7 @@ async function openRanking(by: 'trophies' | 'level') {
           <span class="text-xs font-bold text-gold">{{ greeting }}</span>
           <b class="truncate font-display text-lg leading-tight md:text-xl">{{ home.coach.name }} <OfficialBadge v-if="home.coach.official" /><VerifiedBadge v-else-if="home.coach.verified" /></b>
           <div class="flex items-center gap-2">
-            <span class="grid size-7 shrink-0 place-items-center rounded-md bg-[#B4692A] font-numbers text-sm font-extrabold text-white" :title="$t('المستوى {n}', { n: home.coach.level.level })">{{ home.coach.level.level }}</span>
+            <span class="grid size-7 shrink-0 place-items-center rounded-md bg-bronze font-numbers text-sm font-extrabold text-white" :title="$t('المستوى {n}', { n: home.coach.level.level })">{{ home.coach.level.level }}</span>
             <div class="h-1.5 max-w-40 flex-1 overflow-hidden rounded-pill bg-surface-sunk" role="progressbar" :aria-valuenow="home.coach.level.progress_bp / 100" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم إلى المستوى التالي')">
               <div class="h-full rounded-pill bg-success" :style="{ width: home.coach.level.progress_bp / 100 + '%' }" />
             </div>
@@ -131,7 +131,7 @@ async function openRanking(by: 'trophies' | 'level') {
             <span class="slot-band">
               <b class="font-numbers text-sm">{{ s.slot }}</b>
               <span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ s.league!.name }}</span>
-              <span v-if="s.position" class="rounded bg-black/30 px-1 font-numbers text-[11px]" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
+              <span v-if="s.position" class="rounded bg-shade/30 px-1 font-numbers text-[11px]" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
               <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-[11px] text-white" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
             </span>
             <span class="flex flex-1 items-center justify-center gap-2 px-2 py-1.5">
@@ -158,7 +158,7 @@ async function openRanking(by: 'trophies' | 'level') {
       <aside class="flex flex-col gap-3" :aria-label="$t('آخر الأخبار')">
 
         <!-- The developers' announcements: updates and news [X11, X18]. -->
-        <section class="flex flex-col gap-1 rounded-xl bg-gradient-to-l from-[#B4692A]/60 via-surface-raised to-surface p-3" :aria-label="$t('الإعلانات')">
+        <section class="flex flex-col gap-1 rounded-xl bg-gradient-to-l from-bronze/60 via-surface-raised to-surface p-3" :aria-label="$t('الإعلانات')">
           <div class="flex items-center gap-2 text-sm font-bold"><svg viewBox="0 0 24 24" class="size-5 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1ZM16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14" /></svg>{{ $t('الإعلانات') }}
             <span v-if="home.announcements.length > 1" class="ms-auto flex gap-1">
               <button v-for="(a, i) in home.announcements" :key="a.id" type="button" class="size-touch rounded-full" :aria-label="$t('الإعلان {n}', { n: i + 1 })" @click="announcement = i"><span class="mx-auto block size-2 rounded-full" :class="i === announcement ? 'bg-gold' : 'bg-text/30'" /></button>
@@ -242,7 +242,7 @@ async function openRanking(by: 'trophies' | 'level') {
   text-align: center;
   background: color-mix(in srgb, var(--color-panel) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 22%, transparent);
-  box-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.8);
+  box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--color-shade) 80%, transparent);
   transition: transform 0.15s ease;
 }
 .slot-card:hover { transform: scale(1.03); border-color: var(--color-brand-light); }
@@ -254,10 +254,10 @@ async function openRanking(by: 'trophies' | 'level') {
   align-items: center;
   gap: 0.4rem;
   padding: 0.3rem 0.6rem;
-  color: #fff;
+  color: var(--color-text);
   background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.slot-card.is-club .slot-band { background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); background-blend-mode: soft-light, normal; }
+.slot-card.is-club .slot-band { color: #fff; background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark)); background-blend-mode: soft-light, normal; }
 .slot-card.is-waiting .slot-band { background: color-mix(in srgb, var(--color-warning) 35%, transparent); }
 .slot-disc {
   display: grid;
@@ -267,7 +267,7 @@ async function openRanking(by: 'trophies' | 'level') {
   height: 2.75rem;
   border-radius: 999px;
   background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
-  box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.8);
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .slot-foot {
   padding: 0.35rem 0.5rem;
@@ -315,5 +315,5 @@ async function openRanking(by: 'trophies' | 'level') {
   background: color-mix(in srgb, var(--color-panel) 88%, transparent);
   transition: transform 0.15s ease;
 }
-button.home-tile:hover { transform: scale(1.03); box-shadow: 0 8px 18px -12px rgb(0 0 0 / 0.8); }
+button.home-tile:hover { transform: scale(1.03); box-shadow: 0 8px 18px -12px color-mix(in srgb, var(--color-shade) 80%, transparent); }
 </style>

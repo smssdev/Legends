@@ -7,7 +7,7 @@
 // a league, then opens each screen at 360, 768, 1280 and 1920 pixels in Arabic and in English. For each it reports
 // the sideways overflow, visible elements that overlap a sibling, how far the page moved between the first paint and
 // the settled page (layout shift), and Arabic left in the English page. A screenshot of each is saved in out-dir.
-// Exits 1 when any screen fails, so it can gate a change.
+// Exits 1 when any screen fails, so it can gate a change. THEME=light runs it in the day look [X56].
 const { chromium } = require('playwright')
 const { execFileSync } = require('child_process')
 const fs = require('fs')
@@ -81,6 +81,7 @@ function inspect() {
   fs.mkdirSync(OUT, { recursive: true })
   const browser = await chromium.launch()
   const ctx = await browser.newContext()
+  if (process.env.THEME) await ctx.addInitScript((t) => localStorage.setItem('legends.theme', t), process.env.THEME)
   const page = await ctx.newPage()
   const { league } = await setup(page)
   // Once for every page this tab opens: the layout shift since the first paint.

@@ -57,14 +57,14 @@ const until = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
       <h2 id="h-integrity" class="font-display text-xl font-extrabold">{{ $t('ما وراء الكواليس') }}</h2>
     </div>
     <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
-    <p v-if="view.banned_until" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t('ناديك محظور من السوق حتى {v0} بقرار لجنة الانضباط.', { v0: until(view.banned_until) }) }}</p>
+    <p v-if="view.banned_until" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t('ناديك محظور من السوق حتى {v0} بقرار لجنة الانضباط.', { v0: until(view.banned_until) }) }}</p>
 
     <template v-if="view.fixture">
       <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
         <b>{{ $t('الحكم في مباراة {v0}', { v0: $nm(view.fixture.opponent) }) }}</b>
         <p v-if="view.bribe.paid" class="text-sm font-bold text-gold">{{ $t('دفعت للحكم في هذه المباراة.') }}</p>
         <template v-else>
-          <button v-if="!confirmBribe" type="button" class="h-touch rounded-md border border-live/50 px-4 text-sm font-bold text-[#FF8A8A]" @click="confirmBribe = true">
+          <button v-if="!confirmBribe" type="button" class="h-touch rounded-md border border-live/50 px-4 text-sm font-bold text-danger" @click="confirmBribe = true">
             {{ $t('ادفع للحكم · {v0} +', { v0: money(view.bribe.money) }) }} <PriceTag :amount="view.bribe.extra.amount" :currency="view.bribe.extra.currency" />
           </button>
           <div v-else class="flex gap-2">

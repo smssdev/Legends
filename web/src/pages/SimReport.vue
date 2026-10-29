@@ -12,7 +12,7 @@
       </div>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(error) }}</p>
     <p v-else-if="!report || !view" class="text-text-muted">{{ $t('جارٍ تحميل التقرير...') }}</p>
 
     <template v-if="report && view">
@@ -62,11 +62,11 @@
         <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="verdict">
           <h2 id="verdict" class="font-display text-xl font-extrabold">{{ $t('رأي المدرب المساعد') }}</h2>
           <p v-for="v in report.verdict" :key="v.text" class="flex items-start gap-2 text-sm">
-            <span class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-bold" :class="v.tag === 'ممتاز' ? 'bg-pitch/25 text-[#7BE0A0]' : 'bg-live/20 text-[#FF8A8A]'">{{ $t(v.tag) }}</span>
+            <span class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-bold" :class="v.tag === 'ممتاز' ? 'bg-pitch/25 text-success' : 'bg-live/20 text-danger'">{{ $t(v.tag) }}</span>
             <span>{{ $t(v.text) }}</span>
           </p>
         </section>
-        <section v-if="report.man_of_the_match" class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-[#3a2c07] to-[#10284F] p-4 text-center shadow-lg shadow-black/40" aria-labelledby="motm">
+        <section v-if="report.man_of_the_match" class="relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border border-gold/50 bg-gradient-to-b from-gold/25 to-surface p-4 text-center shadow-lg shadow-black/40" aria-labelledby="motm">
           <span class="absolute inset-x-0 top-0 h-1 bg-gold" aria-hidden="true" />
           <span class="text-2xl" aria-hidden="true">⭐</span>
           <h2 id="motm" class="text-sm font-bold text-gold">{{ $t('رجل المباراة') }}</h2>
@@ -125,7 +125,7 @@
             <span class="flex-1 truncate">{{ $nm(p.name) }}</span>
             <span v-if="p.goals" class="text-xs" :aria-label="$t('{v0} هدف', { v0: p.goals })">⚽{{ p.goals > 1 ? p.goals : '' }}</span>
             <span v-if="p.assists" class="text-xs text-text-muted">{{ $t('صناعة {v0}', { v0: p.assists }) }}</span>
-            <span class="w-10 rounded-sm text-center font-numbers text-lg" :class="p.rating >= 750 ? 'bg-pitch/30 text-[#7BE0A0]' : p.rating < 600 ? 'bg-live/20 text-[#FF8A8A]' : 'bg-surface-raised'">{{ rating(p.rating) }}</span>
+            <span class="w-10 rounded-sm text-center font-numbers text-lg" :class="p.rating >= 750 ? 'bg-pitch/30 text-success' : p.rating < 600 ? 'bg-live/20 text-danger' : 'bg-surface-raised'">{{ rating(p.rating) }}</span>
           </div>
         </div>
       </section>
@@ -168,7 +168,7 @@ const rating = (r: number) => (r / 100).toFixed(1)
 
 const resultLabel = computed(() => ({ win: 'فوز', loss: 'خسارة', draw: 'تعادل' })[report.value?.result as 'win'] ?? '')
 const resultClass = computed(() =>
-  report.value?.result === 'win' ? 'bg-pitch/30 text-[#7BE0A0]' : report.value?.result === 'loss' ? 'bg-live/20 text-[#FF8A8A]' : 'bg-surface-raised text-text-soft',
+  report.value?.result === 'win' ? 'bg-pitch/30 text-success' : report.value?.result === 'loss' ? 'bg-live/20 text-danger' : 'bg-surface-raised text-text-soft',
 )
 // Thirds come home-defence first; the pitch is drawn with home attacking left to right.
 const thirdsLtr = computed<number[]>(() => report.value?.thirds ?? [33, 34, 33])
@@ -223,7 +223,7 @@ onMounted(async () => {
 .score-board {
   background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 40%, transparent), var(--color-panel)), url("/art/stadium-blur.jpg") center / cover;
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
-  box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9);
+  box-shadow: 0 24px 50px -24px color-mix(in srgb, var(--color-shade) 90%, transparent);
 }
 .score-band {
   background: url("/art/pattern-star.svg") center / 40px 40px repeat, linear-gradient(180deg, var(--color-brand), var(--color-brand-dark));
@@ -236,6 +236,6 @@ onMounted(async () => {
   height: 4.75rem;
   border-radius: 999px;
   background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent), 0 12px 24px -10px rgb(0 0 0 / 0.8);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent), 0 12px 24px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 </style>

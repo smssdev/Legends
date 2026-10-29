@@ -72,7 +72,7 @@ onMounted(load)
       <h1 class="font-display text-3xl font-extrabold">{{ $t('المالية') }}</h1>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 

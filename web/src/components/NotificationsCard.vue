@@ -76,7 +76,7 @@ onMounted(load)
 <template>
   <section class="flex flex-col gap-4 rounded-xl bg-surface p-4" aria-labelledby="h-app">
     <h2 id="h-app" class="font-display text-xl font-extrabold">{{ $t('التطبيق والإشعارات') }}</h2>
-    <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
       <b>{{ $t('ثبّت GLM على شاشتك الرئيسية') }}</b>
