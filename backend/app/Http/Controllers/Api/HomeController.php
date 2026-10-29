@@ -12,6 +12,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
 use App\Season\Career;
+use App\Season\CoachRating;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +34,9 @@ class HomeController extends Controller
         return response()->json([
             'coach' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'avatar_url' => $user->avatarUrl(),
                 'account_no' => $user->account_no, 'official' => Username::official($user->username), 'verified' => $user->account_verified_at !== null, 'level' => Career::level($record, $trophies), 'record' => $record,
-                'coins' => Wallet::balance($user->id)],
+                'coins' => Wallet::balance($user->id), 'rating' => CoachRating::of($user->id)],
+            // [Sprint 25] The rating's tiers, for the ladder.
+            'rating_tiers' => CoachRating::ladder(),
             // [Sprint 24 B3] The slots open now, of all of them, and when the next one opens.
             'slots_open' => CoachSlots::open($user), 'next_slot_at' => CoachSlots::next($user)?->toIso8601ZuluString(),
             'trophies' => $trophies,
@@ -113,22 +116,29 @@ class HomeController extends Controller
         return DB::table('league_memberships')->whereIn('league_id', $leagues)->whereNotNull('user_id')->where('user_id', '!=', $userId)->distinct()->count('user_id');
     }
 
-    /** The coaches' global ranking [X18]: by trophies (then league titles, then wins), or by level. Top 50 and the coach's own place. */
+    /**
+     * The coaches' global ranking [X18]: by trophies (then league titles, then wins), by level, or by the rating's
+     * points [Sprint 25] (then trophies). Top 50 and the coach's own place.
+     */
     public function ranking(Request $request): JsonResponse
     {
-        $by = $request->validate(['by' => ['sometimes', 'in:trophies,level']])['by'] ?? 'trophies';
+        $by = $request->validate(['by' => ['sometimes', 'in:trophies,level,rating']])['by'] ?? 'trophies';
         $ids = DB::table('league_memberships')->whereNotNull('user_id')->whereNotNull('club_id')->distinct()->pluck('user_id')
             ->merge(DB::table('titles')->whereNotNull('user_id')->distinct()->pluck('user_id'))->unique();
         $users = User::whereIn('id', $ids)->get(['id', 'name', 'username']);
         $rows = $users->map(function (User $u) {
             $record = Career::record($u->id);
             $trophies = Career::trophies($u->id);
+            $rating = CoachRating::of($u->id);
 
             return ['coach' => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'avatar_url' => $u->avatarUrl(), 'official' => Username::official($u->username), 'verified' => $u->account_verified_at !== null],
-                'trophies' => $trophies, 'won' => $record['won'], 'played' => $record['played'], 'level' => Career::level($record, $trophies)['level']];
-        })->sortBy($by === 'level'
-            ? [['level', 'desc'], ['trophies.total', 'desc'], ['won', 'desc']]
-            : [['trophies.total', 'desc'], ['trophies.league', 'desc'], ['won', 'desc']])->values()
+                'trophies' => $trophies, 'won' => $record['won'], 'played' => $record['played'], 'level' => Career::level($record, $trophies)['level'],
+                'rating' => ['points' => $rating['points'], 'tier' => $rating['tier']['key'], 'division' => $rating['tier']['division']]];
+        })->sortBy(match ($by) {
+            'level' => [['level', 'desc'], ['trophies.total', 'desc'], ['won', 'desc']],
+            'rating' => [['rating.points', 'desc'], ['trophies.total', 'desc'], ['won', 'desc']],
+            default => [['trophies.total', 'desc'], ['trophies.league', 'desc'], ['won', 'desc']],
+        })->values()
             ->map(fn ($r, $i) => ['position' => $i + 1] + $r);
         $mine = $rows->firstWhere('coach.id', $request->user()->id);
 

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Club;
 use App\Models\User;
 use App\Season\Career;
+use App\Season\CoachRating;
 use App\Support\GameClock;
 use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,5 +80,54 @@ class HomeDashboardTest extends TestCase
         $this->assertSame(1, $r['coaches'][0]['trophies']['cup']);
         $this->actingAs($a)->getJson('/api/v1/rankings/coaches?by=level')->assertOk()->assertJsonPath('by', 'level');
         $this->actingAs($a)->getJson('/api/v1/rankings/coaches?by=money')->assertStatus(422);
+    }
+
+    /** [Sprint 25] The rating on the home screen: a win and a loss move it by the opponent's strength; the ranking by points. */
+    public function test_the_rating_rises_and_falls_with_the_results(): void
+    {
+        Carbon::setTestNow('2026-10-22 10:00:00');
+        $this->template(full: true);
+        $owner = User::factory()->create();
+        $league = $this->makeLeague($owner);
+        $mine = (int) DB::table('clubs')->where('user_id', $owner->id)->value('id');
+        $home = $this->actingAs($owner)->getJson('/api/v1/home')->assertOk()->json();
+        $this->assertSame(0, $home['coach']['rating']['points']);
+        $this->assertSame('prospect', $home['coach']['rating']['tier']['key']);
+        $this->assertSame([], $home['coach']['rating']['recent']);
+        $this->assertSame(array_keys(config('game.rating.tiers')), array_column($home['rating_tiers'], 'key'));
+
+        $season = DB::table('seasons')->where('league_id', $league['id'])->value('id');
+        $fixtures = DB::table('fixtures')->where('season_id', $season)->where('is_bye', false)->whereNotNull('home_id')->whereNotNull('away_id')
+            ->where(fn ($q) => $q->where('home_id', $mine)->orWhere('away_id', $mine))->orderBy('scheduled_at')->limit(2)->get();
+        $w = config('game.rating');
+        $expected = [];
+        foreach ($fixtures as $n => $f) {
+            $isHome = $f->home_id === $mine;
+            [$for, $against] = $n === 0 ? [3, 0] : [0, 1];
+            DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => $isHome ? $for : $against, 'away_goals' => $isHome ? $against : $for,
+                'scheduled_at' => GameClock::now()->addMinutes(10 + $n)]);
+            $expected[] = CoachRating::delta(['for' => $for, 'against' => $against, 'strength' => (int) DB::table('clubs')->where('id', $mine)->value('strength_snapshot'),
+                'opponent_strength' => (int) DB::table('clubs')->where('id', $isHome ? $f->away_id : $f->home_id)->value('strength_snapshot'), 'away' => ! $isHome], $w);
+        }
+        $this->assertGreaterThan(0, $expected[0]);
+        $this->assertLessThan(0, $expected[1]);
+
+        $rating = $this->actingAs($owner)->getJson('/api/v1/home')->assertOk()->json('coach.rating');
+        $this->assertSame(max(0, $expected[0] + $expected[1]), $rating['points']);
+        $this->assertSame($expected[0], $rating['peak']);
+        // Newest first: the loss, then the win; the loss shows what it truly took (never below zero).
+        $this->assertSame(['loss', 'win'], array_column($rating['recent'], 'result'));
+        $this->assertSame([$rating['points'] - $expected[0], $expected[0]], array_column($rating['recent'], 'delta'));
+
+        // A league title adds its points, and the ranking by points puts the champion first.
+        $other = User::factory()->create(['name' => 'البطل']);
+        $this->makeLeague($other);
+        DB::table('titles')->insert(['league_id' => $league['id'], 'season_id' => $season, 'user_id' => $other->id, 'club_id' => DB::table('clubs')->where('user_id', $other->id)->value('id'),
+            'competition' => 'league', 'position' => 1, 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+        $r = $this->actingAs($owner)->getJson('/api/v1/rankings/coaches?by=rating')->assertOk()->json();
+        $this->assertSame('rating', $r['by']);
+        $this->assertSame([$w['trophies']['league'][1], $rating['points']], array_column(array_column($r['coaches'], 'rating'), 'points'));
+        $this->assertSame('البطل', $r['coaches'][0]['coach']['name']);
+        $this->assertSame(2, $r['me']['position']);
     }
 }
