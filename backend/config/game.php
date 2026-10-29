@@ -64,7 +64,10 @@ return [
     ],
     'league' => [
         'lock_last_bp' => 2500, 'absence_days' => 3,
-        'absence_warning_hours' => 48, 'max_active_teams' => 10,   // the coach's slots: a team in each of up to 10 leagues [X18, 2026-10-25]
+        'absence_warning_hours' => 48, 'max_active_teams' => 8,   // the coach's slots: a team in each of up to 8 leagues [X18; Sprint 24: 8]
+        // [Sprint 24 B3] The slots open with the account's age: `open` from the start, then one every `every_days`;
+        // or at once, in order, for unlock_coins (by slot number; the owner's first model, 2026-10-29). Teams held before it all stay.
+        'slots' => ['open' => 2, 'every_days' => 10, 'unlock_coins' => [3 => 50, 4 => 100, 5 => 150, 6 => 200, 7 => 250, 8 => 300]],
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
         'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
@@ -415,9 +418,11 @@ return [
     // (README section 11): no paid or account-bound SDK is in the game.
     // [Sprint 20 S4] The provider is our own (house, App\Ads\HouseAds), on by the owner's decision 2026-10-29: the
     // developers' ads from the admin panel, else these built-in ones, each house_seconds long by default.
-    // [Sprint 20 B4] Friendlies: free, per_day a day for each club (Cairo's day), not within block_minutes of the club's
-    // next match; each player who played gets training_progress on his bar (of training.progress_scale, 10000).
-    'friendlies' => ['per_day' => 3, 'block_minutes' => 60, 'training_progress' => 300],
+    // [Sprint 20 B4] Friendlies: not within block_minutes of the club's next match; each player who played gets
+    // training_progress on his bar (of training.progress_scale, 10000) and the friendly counts for chemistry.
+    // [Sprint 24 B2] coins each (the owner's decision 2026-10-29), taken when the coach confirms, with no daily limit
+    // (the season's coin cap still holds). In a fair league no coins are spent, so it stays free and per_day a day.
+    'friendlies' => ['coins' => 5, 'per_day' => 3, 'block_minutes' => 60, 'training_progress' => 300],
     // [Sprint 20 B5] The weekly quests (Monday to Monday, Cairo): a target each and coins; the big one (unbeaten: at
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.
     'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],
@@ -454,7 +459,7 @@ return [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
-            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward'],
+            'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
             'news' => ['announcement', 'official_message', 'coins_gift'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],

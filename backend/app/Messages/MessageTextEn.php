@@ -186,6 +186,12 @@ class MessageTextEn
                 'body' => sprintf('You did not set your team before the match against %s, so the assistant picked the lineup: rested the tired, left out the injured and suspended, and played a balanced plan.', (string) ($p['opponent'] ?? '')),
                 'link' => $leagueLink,
             ],
+            // [Sprint 24 B3] A slot opened with the account's age.
+            'slot_opened' => [
+                'title' => sprintf('Congratulations! Coach slot %s is open', $p['slot'] ?? ''),
+                'body' => sprintf('You now have %s of %s slots open: join a new league or create your own.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' The next one opens in %d days.', (int) config('game.league.slots.every_days')) : ' That is the last of your slots.'),
+                'link' => '/',
+            ],
             // [X54] The developers gave the account coins.
             'coins_gift' => [
                 'title' => sprintf('A gift from the team: %s coins', $p['coins'] ?? 0),

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
-/** [X18] The home screen: ten club slots, the trophies and the level, the announcements, and the global ranking. */
+/** [X18] The home screen: eight club slots (Sprint 24), the trophies and the level, the announcements, and the global ranking. */
 class HomeDashboardTest extends TestCase
 {
     use MakesLeagues, RefreshDatabase;
@@ -24,7 +24,7 @@ class HomeDashboardTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_ten_slots_one_club_one_waiting_and_the_rest_free(): void
+    public function test_eight_slots_one_club_one_waiting_and_the_rest_locked(): void
     {
         Carbon::setTestNow('2026-10-22 10:00:00');
         $this->template(full: true);
@@ -35,8 +35,10 @@ class HomeDashboardTest extends TestCase
         $this->actingAs($owner)->postJson('/api/v1/leagues/join', ['code' => $second['code']])->assertCreated();
 
         $home = $this->actingAs($owner)->getJson('/api/v1/home')->assertOk()->json();
-        $this->assertSame(range(1, 10), array_column($home['slots'], 'slot'));
-        $this->assertSame(['club', 'waiting', ...array_fill(0, 8, 'free')], array_column($home['slots'], 'state'));
+        $this->assertSame(range(1, 8), array_column($home['slots'], 'slot'));
+        // [Sprint 24 B3] A new account: two open slots, the six others locked until it is older.
+        $this->assertSame(['club', 'waiting', ...array_fill(0, 6, 'locked')], array_column($home['slots'], 'state'));
+        $this->assertSame(2, $home['slots_open']);
         $this->assertSame($league['id'], $home['slots'][0]['league']['id']);
         $this->assertNotNull($home['slots'][0]['club']['crest_url']);
         // [UP7] The card shows the club's cash and the coach's coins.

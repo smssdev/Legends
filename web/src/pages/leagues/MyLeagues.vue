@@ -8,7 +8,10 @@ import UiChip from '../../components/ui/UiChip.vue'
 
 const leagues = ref<League[]>([])
 const active = ref(0)
-const max = ref(4)
+const max = ref(2)
+// [Sprint 24 B3] The slots open with the account's age: max is those open now, of total, and when the next opens.
+const total = ref(8)
+const nextSlot = ref<string | null>(null)
 const loaded = ref(false)
 const error = ref('')
 
@@ -18,6 +21,8 @@ onMounted(async () => {
     leagues.value = data!.leagues
     active.value = data!.active_teams
     max.value = data!.max_active_teams
+    total.value = data!.slots_total
+    nextSlot.value = data!.next_slot_at
   } catch (e) {
     error.value = asApiError(e).message
   }
@@ -40,6 +45,7 @@ function link(l: League) {
         <p class="mt-1 text-text-muted">
           <span class="font-numbers">{{ active }}</span> {{ $t('من') }} <span class="font-numbers">{{ max }}</span> {{ $t('فرق نشطة') }}
         </p>
+        <p v-if="nextSlot" class="mt-1 text-xs text-text-muted">{{ $t('فتحاتك المفتوحة {v0} من {v1}، والتالية {v2}', { v0: max, v1: total, v2: when(nextSlot) }) }}</p>
       </div>
       <div class="flex gap-2">
         <RouterLink :to="{ name: 'join' }" class="flex h-12 items-center rounded-lg border border-gold/70 px-5 font-display font-extrabold text-gold hover:bg-gold/10">{{ $t('انضم بكود') }}</RouterLink>

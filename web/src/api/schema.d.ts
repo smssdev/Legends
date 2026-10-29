@@ -1216,8 +1216,21 @@ export interface paths {
                         "application/json": {
                             leagues: components["schemas"]["League"][];
                             active_teams: number;
-                            /** @example 4 */
+                            /**
+                             * @description [Sprint 24 B3] The slots open now for the account's age (2, then one more every 10 days)
+                             * @example 2
+                             */
                             max_active_teams: number;
+                            /**
+                             * @description All the slots (game.league.max_active_teams)
+                             * @example 8
+                             */
+                            slots_total: number;
+                            /**
+                             * Format: date-time
+                             * @description When the next slot opens (null when all are open)
+                             */
+                            next_slot_at: string | null;
                         };
                     };
                 };
@@ -4653,7 +4666,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** [Sprint 20 B4] The friendlies: the opponents (the closest in strength recommended), those left today, and why none can be played now */
+        /** [Sprint 20 B4, Sprint 24 B2] The friendlies: the opponents (the closest in strength recommended), what one costs, and why none can be played now */
         get: {
             parameters: {
                 query?: never;
@@ -4678,7 +4691,10 @@ export interface paths {
             };
         };
         put?: never;
-        /** [Sprint 20 B4] Play a friendly now: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training for those who played */
+        /**
+         * [Sprint 20 B4, Sprint 24 B2] Play a friendly now for its coins: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training and chemistry for those who played
+         * @description The coins are taken with the match, once by the key (the same key again returns the same friendly, 200). In a fair league it is free and limited per day.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -4692,10 +4708,22 @@ export interface paths {
                 content: {
                     "application/json": {
                         opponent_id: number;
+                        idempotency_key: string;
                     };
                 };
             };
             responses: {
+                /** @description This key already played it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Friendlies"] & {
+                            friendly: components["schemas"]["Friendly"];
+                        };
+                    };
+                };
                 /** @description The friendly and the page after it */
                 201: {
                     headers: {
@@ -5070,6 +5098,99 @@ export interface paths {
                     };
                 };
                 404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/home/slots/{slot}/unlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slot: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 24 B3] Open a locked slot now for coins (and any locked before it: they open in order), for good
+         * @description The price is game.league.slots.unlock_coins (50 for the third up to 300 for the eighth). Paid once by the slot: a repeated tap pays nothing more.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slot: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The home screen after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HomeScreen"];
+                    };
+                };
+                401: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/matches/{match}/recap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * [Sprint 24 B1] The quick recap of a finished match, for a coach of either side who missed it
+         * @description From the coach's own report: the big moments in order (goals, cards, substitutions, injuries, penalties), each
+         *     with the score after it, then the final score, the main numbers (possession as each side's share of the attacks)
+         *     and the three best ratings of each side. Opening it marks the match seen, like the report.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The recap */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MatchRecap"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
             };
         };
         put?: never;
@@ -7656,7 +7777,7 @@ export interface paths {
         };
         /**
          * The coach's home screen [X18]
-         * @description The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+         * @description The profile card with the level, the eight club slots (locked ones with their countdown and price, Sprint 24), the trophies, the coaches met, and the latest announcements.
          */
         get: {
             parameters: {
@@ -9541,6 +9662,81 @@ export interface components {
                 player: string | null;
             }[];
         };
+        MatchRecap: {
+            match_id: number;
+            competition: string;
+            round: number;
+            home: components["schemas"]["RecapClub"];
+            away: components["schemas"]["RecapClub"];
+            /** @enum {string} */
+            side: "home" | "away";
+            /** @enum {string} */
+            result: "win" | "draw" | "loss";
+            score: {
+                home: number;
+                away: number;
+            };
+            shootout: {
+                home?: number;
+                away?: number;
+            } | null;
+            moments: {
+                minute: number;
+                /** @enum {string} */
+                type: "goal" | "card" | "sub" | "injury" | "penalty";
+                /** @enum {string|null} */
+                team: "home" | "away" | null;
+                /** @description The scorer, the booked or injured player, or who went off */
+                player: string | null;
+                /** @description The assist of a goal, or who came on */
+                other: string | null;
+                /** @enum {string|null} */
+                color: "yellow" | "red" | null;
+                /** @description The score after this moment */
+                score: {
+                    home: number;
+                    away: number;
+                };
+            }[];
+            stats: {
+                home: components["schemas"]["RecapStats"];
+                away: components["schemas"]["RecapStats"];
+            };
+            best: {
+                home: components["schemas"]["RecapRating"][];
+                away: components["schemas"]["RecapRating"][];
+            };
+            man_of_the_match: {
+                id?: number;
+                name?: string | null;
+                team?: string;
+                rating?: number;
+            } | null;
+        };
+        RecapClub: {
+            id: number;
+            name: string;
+            code: string;
+            crest_url: string;
+        };
+        RecapRating: {
+            id: number;
+            name: string | null;
+            /** @description Out of 1000 (7.4 = 740) */
+            rating: number;
+        };
+        RecapStats: {
+            /** @description Percent; the two sides make 100 */
+            possession: number;
+            shots: number;
+            on_target: number;
+            big_chances: number;
+            corners: number;
+            fouls: number;
+            yellow: number;
+            red: number;
+            saves: number;
+        };
         Friendly: {
             id: number;
             opponent: {
@@ -9569,11 +9765,19 @@ export interface components {
                     rating: number;
                 }[];
                 played: number;
+                /** @description [Sprint 24 B2] The coins it cost (0 in a fair league, and before Sprint 24) */
+                coins?: number;
             };
         };
         Friendlies: {
-            max: number;
-            left: number;
+            /** @description [Sprint 24 B2] What a friendly costs (game.friendlies.coins, 5; 0 in a fair league) */
+            coins: number;
+            /** @description The coach's coins */
+            balance: number;
+            /** @description The friendlies a day in a fair league; null elsewhere: no daily limit */
+            max: number | null;
+            /** @description Those left today in a fair league; null elsewhere */
+            left: number | null;
             blocked: {
                 /** @enum {string} */
                 reason: "live" | "before_match";
@@ -10093,16 +10297,32 @@ export interface components {
             /** @description The other coaches met in the coach's leagues */
             colleagues: number;
             announcements: components["schemas"]["Message"][];
-            /** @description Always game.league.max_active_teams of them (10) */
+            /** @description [Sprint 24 B3] The slots open for the account's age */
+            slots_open: number;
+            /**
+             * Format: date-time
+             * @description When the next slot opens (null when all are open)
+             */
+            next_slot_at: string | null;
+            /** @description game.league.max_active_teams of them (8), or more for a coach who held more teams before Sprint 24 */
             slots: {
                 slot: number;
                 /** @description [Sprint 20 B2] What waits for the coach in this club (as the club board counts it) */
                 pending: number;
                 /**
-                 * @description A club, a join request waiting for its answer, or free
+                 * @description A club, a join request waiting for its answer, free, or locked until the account is old enough [Sprint 24 B3]
                  * @enum {string}
                  */
-                state: "club" | "waiting" | "free";
+                state: "club" | "waiting" | "free" | "locked";
+                /**
+                 * Format: date-time
+                 * @description When a locked slot opens (for the countdown)
+                 */
+                opens_at: string | null;
+                /** @description A locked slot's wait so far, from the account's first day, out of 10000 */
+                progress_bp: number | null;
+                /** @description The first locked slot's price to open it now (with any locked before it); null on the others */
+                unlock_coins: number | null;
                 league: {
                     id: number;
                     name: string;

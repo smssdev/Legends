@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -195,6 +195,12 @@ class MessageText
                 'title' => 'المدرب المساعد قاد فريقك',
                 'body' => sprintf('لم تضبط فريقك قبل مباراة %s، فاختار المساعد التشكيلة: أراح المجهدين، واستبعد المصابين والموقوفين، ولعب بخطة متزنة.', (string) ($p['opponent'] ?? '')),
                 'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
+            ],
+            // [Sprint 24 B3] A slot opened with the account's age.
+            'slot_opened' => [
+                'title' => sprintf('مبروك! فُتحت فتحة المدرب رقم %s', $p['slot'] ?? ''),
+                'body' => sprintf('صار لك %s فتحات من %s: انضم إلى دوري جديد أو أنشئ دوريك.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' والفتحة التالية بعد %d أيام.', (int) config('game.league.slots.every_days')) : ' وهذه آخر فتحاتك.'),
+                'link' => '/',
             ],
             // [X54] The developers gave the account coins.
             'coins_gift' => [

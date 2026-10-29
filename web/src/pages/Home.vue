@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
-// cash and coins) and the ten club slots right under it, all in one screen without scrolling; the announcements, the
+// cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in.
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { api, asApiError } from '../api/client'
+import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
 import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
@@ -15,6 +15,7 @@ import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
 import { useAuth } from '../stores/auth'
+import { useWallet } from '../stores/wallet'
 
 type Home = components['schemas']['HomeScreen']
 type Ranked = components['schemas']['RankedCoach']
@@ -47,6 +48,37 @@ watch(() => auth.user?.id, load)
 
 const now = useNow()
 const soon = (iso: string) => new Date(iso).getTime() - now.value < 86400000
+// [Sprint 24 B3] A locked slot counts down to the day it opens; when the next one is due, the slots come again.
+watch(now, (t) => {
+  if (home.value?.next_slot_at && new Date(home.value.next_slot_at).getTime() <= t) {
+    home.value.next_slot_at = null
+    load()
+  }
+})
+// [Sprint 24 B3] Opening a locked slot at once for coins: confirmed first, then the slot lights up.
+const buying = ref<Home['slots'][number] | null>(null)
+const buyBusy = ref(false)
+const buyError = ref('')
+const opened = ref<number[]>([])
+async function unlock() {
+  if (!buying.value) return
+  buyBusy.value = true
+  buyError.value = ''
+  try {
+    await ensureCsrf()
+    const slot = buying.value.slot
+    const locked = home.value!.slots.filter((x) => x.state === 'locked' && x.slot <= slot).map((x) => x.slot)
+    home.value = (await api.POST('/home/slots/{slot}/unlock', { params: { path: { slot } } })).data!
+    buying.value = null
+    opened.value = locked
+    useWallet().load()
+    setTimeout(() => (opened.value = []), 1600)
+  } catch (e) {
+    buyError.value = asApiError(e).message
+  } finally {
+    buyBusy.value = false
+  }
+}
 function openSlot(s: Home['slots'][number]) {
   if (s.state === 'waiting') return router.push(`/leagues/${s.league!.id}`)
   rememberLeague(s.league!.id)
@@ -111,19 +143,30 @@ async function openRanking(by: 'trophies' | 'level') {
         </div>
       </section>
 
-      <!-- The slots, the screen's heart, right under the card: all ten without scrolling. -->
+      <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">
-        <h2 class="flex items-center text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }}</h2>
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
+        <h2 class="flex items-center gap-2 text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }}<span class="font-numbers text-xs" dir="ltr">{{ home.slots_open }}/{{ home.slots.length }}</span></h2>
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
           <template v-for="s in home.slots" :key="s.slot">
           <!-- [Sprint 20 W1] An empty slot: «أنشئ دورياً» at once, and «انضم بكود». -->
-          <div v-if="s.state === 'free'" class="slot-card is-free" role="group" :aria-label="$t('الفتحة {n}: دوري جديد', { n: s.slot })">
+          <div v-if="s.state === 'free'" class="slot-card is-free" :class="opened.includes(s.slot) ? 'is-opened' : ''" role="group" :aria-label="$t('الفتحة {n}: دوري جديد', { n: s.slot })">
             <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ $t('فتحة فارغة') }}</span></span>
             <span class="flex flex-1 flex-col justify-center gap-1.5 p-2">
               <RouterLink to="/leagues/new" class="flex min-h-10 items-center justify-center rounded-lg bg-gold text-sm font-bold text-on-gold">{{ $t('أنشئ دورياً') }}</RouterLink>
               <RouterLink to="/join" class="flex min-h-10 items-center justify-center rounded-lg bg-surface-raised text-sm font-bold">{{ $t('انضم بكود') }}</RouterLink>
+            </span>
+          </div>
+          <!-- [Sprint 24 B3] A locked slot: it opens with the account's age (the countdown and the bar of the wait), or
+               the first one at once for coins. -->
+          <div v-else-if="s.state === 'locked'" class="slot-card is-locked" :class="s.unlock_coins ? 'is-next' : ''" role="group" :aria-label="$t('الفتحة {n}: مقفلة', { n: s.slot })">
+            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">🔒 {{ $t('مقفلة') }}</span></span>
+            <span class="flex flex-1 flex-col items-center justify-center gap-1 p-2 text-center">
+              <span class="text-[11px] text-text-muted">{{ $t('تُفتح مجاناً بعد') }}</span>
+              <b class="font-numbers text-sm" dir="ltr">{{ countdown(s.opens_at, now) || $t('الآن') }}</b>
+              <span class="h-1 w-full overflow-hidden rounded-pill bg-surface-sunk" aria-hidden="true"><span class="block h-full bg-brand-light" :style="{ width: (s.progress_bp ?? 0) / 100 + '%' }" /></span>
+              <button v-if="s.unlock_coins" type="button" class="mt-1 min-h-10 w-full rounded-lg bg-gold px-2 text-xs font-bold text-on-gold" @click="buying = s">{{ $t('فتح فوري ({v0} كوينز)', { v0: s.unlock_coins }) }}</button>
             </span>
           </div>
           <button v-else type="button" class="slot-card group" :class="`is-${s.state}`"
@@ -228,6 +271,21 @@ async function openRanking(by: 'trophies' | 'level') {
         </template>
       </div>
     </div>
+
+    <!-- [Sprint 24 B3] The confirmation before the coins go, or the way to more coins when they are short. -->
+    <div v-if="buying && home" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فتح فوري')">
+      <div class="flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-gold/40 bg-surface p-5 text-center shadow-2xl">
+        <span class="text-4xl" aria-hidden="true">🔓</span>
+        <p class="font-bold">{{ $t('هل أنت متأكد من فتح الفتحة رقم {v0} فوراً مقابل {v1} كوينز؟', { v0: buying.slot, v1: buying.unlock_coins }) }}</p>
+        <p class="text-sm text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ home.coach.coins }}</b></p>
+        <p v-if="buyError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">{{ $t(buyError) }}</p>
+        <div class="flex gap-2">
+          <button v-if="home.coach.coins >= (buying.unlock_coins ?? 0)" type="button" class="h-touch flex-1 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-50" :disabled="buyBusy" @click="unlock">{{ $t('افتحها الآن') }}</button>
+          <RouterLink v-else to="/wallet" class="flex h-touch flex-1 items-center justify-center rounded-lg bg-gold font-bold text-on-gold">{{ $t('رصيدك لا يكفي: اشحن الكوينز') }}</RouterLink>
+          <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="buying = null">{{ $t('إلغاء') }}</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -249,6 +307,16 @@ async function openRanking(by: 'trophies' | 'level') {
 @media (min-width: 1024px) { .slot-card { min-height: 8.5rem; } }
 @media (min-width: 1536px) { .slot-card { min-height: 10.5rem; } .slot-disc { width: 3.5rem; height: 3.5rem; } }
 .slot-card.is-free { border-style: dashed; background: color-mix(in srgb, var(--color-panel) 60%, transparent); }
+.slot-card.is-locked { opacity: 0.75; background: color-mix(in srgb, var(--color-panel) 45%, transparent); }
+.slot-card.is-locked.is-next { opacity: 1; border-color: color-mix(in srgb, var(--color-gold) 55%, transparent); }
+.slot-card.is-opened { animation: slot-open 1.5s ease-out; }
+@keyframes slot-open {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-gold) 80%, transparent); }
+  40% { transform: scale(1.06); box-shadow: 0 0 28px 6px color-mix(in srgb, var(--color-gold) 60%, transparent); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+@media (prefers-reduced-motion: reduce) { .slot-card.is-opened { animation: none; } }
+.slot-card.is-locked:hover { transform: none; border-color: color-mix(in srgb, var(--color-brand-light) 22%, transparent); }
 .slot-band {
   display: flex;
   align-items: center;

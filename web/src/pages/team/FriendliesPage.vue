@@ -1,12 +1,14 @@
 <script setup lang="ts">
 // [Sprint 20 B4] Friendlies (the owner's approved draft): a match now against any club of the league, played whole by
 // the engine with no effect on the table, money, fitness or injuries, and a little training for those who played.
-// Free, three a day; the closest in strength recommended; the report at once.
+// The closest in strength recommended; the report at once. [Sprint 24 B2] Five coins each with no daily limit: the
+// first tap asks to confirm with the price, and the coins go with the match. Free and three a day in a fair league.
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
 import { countdown, useNow } from '../../lib/clock'
+import { useWallet } from '../../stores/wallet'
 
 type View = components['schemas']['Friendlies']
 const leagueId = ref<number | null>(null)
@@ -16,6 +18,9 @@ const message = ref('')
 const busy = ref(false)
 const loaded = ref(false)
 const now = useNow()
+// The opponent waiting for the coach to confirm the price.
+const confirming = ref<number | null>(null)
+const canPay = computed(() => !!v.value && (v.value.left === null ? v.value.balance >= v.value.coins : v.value.left > 0))
 const path = computed(() => ({ params: { path: { league: leagueId.value! } } }))
 
 onMounted(async () => {
@@ -25,12 +30,18 @@ onMounted(async () => {
 })
 async function play(opponent: number) {
   message.value = ''
+  if (v.value?.coins && confirming.value !== opponent) {
+    confirming.value = opponent
+    return
+  }
+  confirming.value = null
   busy.value = true
   try {
     await ensureCsrf()
-    const { data } = await api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent } })
+    const { data } = await api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: crypto.randomUUID() } })
     last.value = data!.friendly
     v.value = data!
+    useWallet().load()
   } catch (e) {
     message.value = asApiError(e).message
   } finally {
@@ -46,10 +57,15 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       <div class="min-w-0 flex-1">
         <h1 class="font-display text-3xl font-extrabold">{{ $t('الوديات') }}</h1>
       </div>
-      <span v-if="v" class="rounded-pill bg-brand/20 px-3 py-1 font-numbers text-sm text-brand-light">{{ $t('{v0} من {v1} اليوم', { v0: v.left, v1: v.max }) }}</span>
+      <span v-if="v && v.left !== null" class="rounded-pill bg-brand/20 px-3 py-1 font-numbers text-sm text-brand-light">{{ $t('{v0} من {v1} اليوم', { v0: v.left, v1: v.max }) }}</span>
+      <span v-else-if="v" class="flex flex-col items-end gap-1">
+        <span class="rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold">{{ $t('الودية بـ {v0} كوينز', { v0: v.coins }) }}</span>
+        <span class="text-xs text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ v.balance }}</b></span>
+      </span>
     </header>
     <p v-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm text-warning" role="status">{{ $t(message) }}</p>
+    <p v-if="v && v.left === null && v.balance < v.coins" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">{{ $t('رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.') }}</p>
     <p v-if="v?.blocked" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">
       {{ v.blocked.reason === 'live' ? $t('مباراتك تُلعب الآن: الوديات بعدها.') : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) }) }}
     </p>
@@ -64,6 +80,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       <ul v-if="last.report.goals.length" class="flex flex-wrap gap-x-3 text-sm">
         <li v-for="(g, i) in last.report.goals" :key="i" :class="g.side === 'home' ? '' : 'text-text-muted'"><span class="font-numbers text-text-muted" dir="ltr">{{ g.minute }}'</span> <bdi>{{ $nm(g.name ?? '') }}</bdi></li>
       </ul>
+      <p v-if="last.report.coins" class="text-xs text-text-muted">{{ $t('خُصم {v0} كوينز من رصيدك.', { v0: last.report.coins }) }}</p>
       <p class="text-xs text-text-muted">{{ $t('الأفضل') }}: <template v-for="(p, i) in last.report.best" :key="p.id"><bdi>{{ $nm(p.name ?? '') }}</bdi> <span class="font-numbers text-gold">{{ (p.rating / 100).toFixed(1) }}</span><template v-if="i < last.report.best.length - 1">، </template></template> · {{ $t('{v0} لاعباً زاد تدريبهم', { v0: last.report.played }) }}</p>
     </section>
 
@@ -75,7 +92,10 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
           <b class="block truncate">{{ $nm(o.name) }} · <span class="font-numbers text-brand-light">{{ Math.round(o.strength_cp / 100) }}</span></b>
           <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
         </span>
-        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || !v.left || !!v.blocked" @click="play(o.id)">{{ $t('العب') }}</button>
+        <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
+        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || !canPay || !!v.blocked" @click="play(o.id)">
+          {{ confirming === o.id ? $t('أكّد: {v0} كوينز', { v0: v.coins }) : $t('العب') }}
+        </button>
       </li>
     </ul>
 
