@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
-// record, the trophies and the rankings below. A guest sees the way in ([X58] the landing page).
+// record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -107,7 +107,7 @@ async function openRanking(by: By) {
 </script>
 
 <template>
-  <!-- [X58] A visitor sees the whole game before signing in. -->
+  <!-- [X59] A visitor sees the whole game before signing in. -->
   <Landing v-if="!auth.user" />
 
   <div v-else class="flex flex-col gap-4">

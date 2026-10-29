@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// [X58] «طريقة اللعب»: the game's guide for everyone (GET /guide), the Assistant Coach's own explanations in sections,
+// [X59] «طريقة اللعب»: the game's guide for everyone (GET /guide), the Assistant Coach's own explanations in sections,
 // open to visitors and search engines so the site shows the whole game before signing in. A search narrows it, the
 // contents jump to a section, and Google's ads (when the owner's account is on) sit between sections, not in them.
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import AdSlot from '../components/ads/AdSlot.vue'
 import PublicFooter from '../components/PublicFooter.vue'
 import PublicHeader from '../components/PublicHeader.vue'
-import { locale, t } from '../lib/i18n'
+import { locale } from '../lib/i18n'
 import { useAuth } from '../stores/auth'
 
 type Section = components['schemas']['GuideSection']
@@ -26,7 +26,6 @@ async function load() {
   }
 }
 watch(locale, load, { immediate: true })
-watchEffect(() => { document.title = `${t('طريقة اللعب')} · GLM` })
 
 const shown = computed(() => {
   const q = query.value.trim().toLowerCase()

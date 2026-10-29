@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/** [X58] The game's guide is open to visitors, in both languages, every topic of the assistant but his own. */
+/** [X59] The game's guide is open to visitors, in both languages, every topic of the assistant but his own. */
 class PublicGuideTest extends TestCase
 {
     use RefreshDatabase;

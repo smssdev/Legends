@@ -6671,7 +6671,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * [X58] The game's guide for everyone: the public "how to play" page
+         * [X59] The game's guide for everyone: the public "how to play" page
          * @description The Assistant Coach's explanations in sections, in the request's language (Accept-Language). No sign-in. 60 a minute.
          */
         get: {
@@ -9892,7 +9892,7 @@ export interface components {
             /** Format: date-time */
             at: string;
         };
-        /** @description [X58] A section of the public guide */
+        /** @description [X59] A section of the public guide */
         GuideSection: {
             /** @example tactics */
             id: string;

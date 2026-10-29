@@ -3,7 +3,7 @@
 namespace App\Assistant;
 
 /**
- * [X58] The game's guide as a public page (the owner's request 2026-10-29): the Assistant Coach's own explanations,
+ * [X59] The game's guide as a public page (the owner's request 2026-10-29): the Assistant Coach's own explanations,
  * open to visitors and search engines, so the site shows what the game is before signing in (as Google AdSense asks
  * of a site). Grouped in sections by each topic's first page; the assistant's own topic stays in the assistant.
  */

@@ -318,7 +318,7 @@ Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notif
     Route::delete('subscriptions', 'unsubscribe');
 });
 
-// [X58] The game's guide, public: the "how to play" page for visitors and search engines.
+// [X59] The game's guide, public: the "how to play" page for visitors and search engines.
 Route::get('guide', [AssistantController::class, 'guide'])->middleware('throttle:60,1,guide');
 
 // [Sprint 22] The Assistant Coach (Manager Bot): the conversation's opening on a page, and one answer (each smart

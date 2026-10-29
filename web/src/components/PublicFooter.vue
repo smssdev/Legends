@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [X58] The foot of the public pages: the guide, the developers, the privacy policy, the terms and the support.
+// [X59] The foot of the public pages: the guide, the developers, the privacy policy, the terms and the support.
 import SupportLinks from './SupportLinks.vue'
 </script>
 
@@ -13,7 +13,7 @@ import SupportLinks from './SupportLinks.vue'
         <RouterLink to="/terms" class="flex min-h-touch items-center">{{ $t('الشروط والأحكام') }}</RouterLink>
       </nav>
       <SupportLinks compact />
-      <p class="text-xs text-text-muted">{{ $t('GLM لعبة مستقلة، غير تابعة لأي نادٍ أو دوري أو اتحاد كرة قدم.') }} © <span class="font-numbers" dir="ltr">2026</span> GLM</p>
+      <p class="text-xs text-text-muted">{{ $t('المدرب الأسطورة لعبة مستقلة، غير تابعة لأي نادٍ أو دوري أو اتحاد كرة قدم.') }} © <span class="font-numbers" dir="ltr">2026</span> {{ $t('المدرب الأسطورة') }}</p>
     </div>
   </footer>
 </template>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// [X58] The visitor's home page (the owner's request 2026-10-29): what GLM is, what is in it, how to start, and the
+// [X59] The visitor's home page (the owner's request 2026-10-29): what GLM is, what is in it, how to start, and the
 // common questions, all readable before signing in, as Google AdSense asks of a site, and as a visitor deserves.
 // Every number in it is the game's own (the slots, the guide); nothing here is a rule, only a description.
 import PublicFooter from '../components/PublicFooter.vue'
+import { emblemSrc } from '../lib/i18n'
 
 const FEATURES = [
   { icon: '◎', title: 'مباراة حية تديرها لحظة بلحظة', body: 'تابع مباراتك دقيقة بدقيقة، وبدّل لاعبيك وغيّر تكتيكك أثناء اللعب، وخصمك يرى ما يحدث في الملعب لا خطتك.' },
@@ -25,7 +26,7 @@ const FAQ = [
   { q: 'هل أحتاج إلى تحميل تطبيق؟', a: 'لا. تعمل من المتصفح على الجوال والكمبيوتر، ويمكنك تثبيتها على الشاشة الرئيسية كتطبيق.' },
   { q: 'ماذا لو فاتتني مباراة؟', a: 'تُلعب وحدها بتشكيلتك وتكتيكك، وتجد عند عودتك ملخصاً سريعاً لما فاتك.' },
   { q: 'كم نادياً أدرّب؟', a: 'حتى 8 أندية في دوريات مختلفة، تُفتح فتحاتها مع عمر حسابك.' },
-  { q: 'هل الأندية واللاعبون حقيقيون؟', a: 'الأسماء لأغراض اللعب فقط، وGLM لعبة مستقلة غير تابعة لأي نادٍ أو دوري أو اتحاد.' },
+  { q: 'هل الأندية واللاعبون حقيقيون؟', a: 'الأسماء لأغراض اللعب فقط، والمدرب الأسطورة لعبة مستقلة غير تابعة لأي نادٍ أو دوري أو اتحاد.' },
   { q: 'بأي لغة اللعبة؟', a: 'بالعربية والإنجليزية، وتبدّل بينهما متى شئت.' },
 ]
 </script>
@@ -35,7 +36,7 @@ const FAQ = [
     <!-- The hero: the stadium at night, the promise and the two ways in. -->
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
-        <img src="/brand/emblem.svg" alt="GLM" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
+        <img :src="emblemSrc" :alt="$t('المدرب الأسطورة')" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
         <span class="rounded-pill bg-gold/15 px-4 py-1 text-sm font-bold text-gold">{{ $t('لعبة إدارة كرة قدم عربية مجانية') }}</span>
         <h1 class="font-display text-4xl font-extrabold leading-tight md:text-6xl">{{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span></h1>
         <p class="max-w-xl text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك في دوريات خاصة، وأدر كل مباراة مباشرة لحظة بلحظة، من الجوال أو الكمبيوتر.') }}</p>
@@ -76,7 +77,7 @@ const FAQ = [
       </section>
 
       <!-- Why GLM. -->
-      <section class="grid gap-3 rounded-2xl border border-gold/30 bg-surface p-6 md:grid-cols-3" :aria-label="$t('لماذا GLM؟')">
+      <section class="grid gap-3 rounded-2xl border border-gold/30 bg-surface p-6 md:grid-cols-3" :aria-label="$t('لماذا المدرب الأسطورة؟')">
         <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('عربية من الأساس') }}</b><p class="text-sm text-text-soft">{{ $t('صُممت بالعربية أولاً، بأسماء الأندية واللاعبين بالعربية، ومعها الإنجليزية.') }}</p></div>
         <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('مجانية بالكامل') }}</b><p class="text-sm text-text-soft">{{ $t('بلا اشتراك، ولا شيء يُشترى بمال حقيقي: الفوز بقرارك لا بمحفظتك.') }}</p></div>
         <div class="flex flex-col gap-1"><b class="text-gold">{{ $t('على أي جهاز') }}</b><p class="text-sm text-text-soft">{{ $t('من المتصفح على الجوال والكمبيوتر، وحسابك واحد على كل الأجهزة.') }}</p></div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [X58] The top of the public pages (the guide, the privacy policy, the terms): the brand home, the guide, the
+// [X59] The top of the public pages (the guide, the privacy policy, the terms): the brand home, the guide, the
 // language, and the way in for a visitor.
 import BrandMark from './BrandMark.vue'
 import LanguageSwitch from './LanguageSwitch.vue'

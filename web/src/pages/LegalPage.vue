@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // [X57] The privacy policy and the terms (src/content/legal.ts): open to everyone, signed in or not, as Google
-// AdSense and the stores ask, in the coach's language, with the way to reach us at the bottom. [X58] The public
+// AdSense and the stores ask, in the coach's language, with the way to reach us at the bottom. [X59] The public
 // pages' header and footer.
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import PublicFooter from '../components/PublicFooter.vue'
 import PublicHeader from '../components/PublicHeader.vue'
 import { LEGAL, UPDATED, type LegalKind } from '../content/legal'
@@ -10,7 +10,6 @@ import { locale } from '../lib/i18n'
 
 const props = defineProps<{ kind: LegalKind }>()
 const doc = computed(() => LEGAL[props.kind][locale.value])
-watchEffect(() => { document.title = `${doc.value.title} · GLM` })
 </script>
 
 <template>

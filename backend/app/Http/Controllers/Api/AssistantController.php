@@ -20,7 +20,7 @@ class AssistantController extends Controller
         return response()->json($this->assistant->start($request->user(), (string) $page, app()->getLocale()));
     }
 
-    /** [X58] The game's guide for everyone, signed in or not: the public "how to play" page. */
+    /** [X59] The game's guide for everyone, signed in or not: the public "how to play" page. */
     public function guide(): JsonResponse
     {
         return response()->json(['sections' => PublicGuide::sections(app()->getLocale())])->header('Cache-Control', 'public, max-age=600');
