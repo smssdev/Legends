@@ -36,6 +36,7 @@ class WeeklyQuestsTest extends TestCase
         $this->postJson("{$url}/claim", ['quest' => 'friendly'])->assertConflict();
 
         $opponent = DB::table('clubs')->where('league_id', $league['id'])->where('id', '!=', $mine)->value('id');
+        Wallet::post($owner->id, 'admin_gift', 5, 'gift:1');
         $this->postJson("/api/v1/leagues/{$league['id']}/friendlies", ['opponent_id' => $opponent, 'idempotency_key' => 'f1'])->assertCreated();
         $coins = Wallet::balance($owner->id);
         $this->getJson($url)->assertJsonPath('quests.0.complete', true);

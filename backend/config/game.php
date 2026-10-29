@@ -419,10 +419,10 @@ return [
     // [Sprint 20 S4] The provider is our own (house, App\Ads\HouseAds), on by the owner's decision 2026-10-29: the
     // developers' ads from the admin panel, else these built-in ones, each house_seconds long by default.
     // [Sprint 20 B4] Friendlies: not within block_minutes of the club's next match; each player who played gets
-    // training_progress on his bar (of training.progress_scale, 10000) and the friendly counts for chemistry.
-    // [Sprint 24 B2] coins each (the owner's decision 2026-10-29), taken when the coach confirms, with no daily limit
-    // (the season's coin cap still holds). In a fair league no coins are spent, so it stays free and per_day a day.
-    'friendlies' => ['coins' => 5, 'per_day' => 3, 'block_minutes' => 60, 'training_progress' => 300],
+    // training_progress on his bar (of training.progress_scale, 10000), `fitness` more fitness (up to 100), and the
+    // friendly counts for chemistry. [Sprint 24 B2] coins each (the owner's request 2026-10-29), taken when the coach
+    // confirms, in every league (fair ones too), with no limit: no daily one, and not in the season's coin cap.
+    'friendlies' => ['coins' => 5, 'fitness' => 5, 'block_minutes' => 60, 'training_progress' => 300],
     // [Sprint 20 B5] The weekly quests (Monday to Monday, Cairo): a target each and coins; the big one (unbeaten: at
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.
     'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],

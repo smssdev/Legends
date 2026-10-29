@@ -1882,4 +1882,5 @@ export const EN: Record<string, string> = {
   'رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.': 'Not enough coins for a friendly. Coins come from quests and wins.',
   'خُصم {v0} كوينز من رصيدك.': '{v0} coins were taken from your balance.',
   'أكّد: {v0} كوينز': 'Confirm: {v0} coins',
+  '{v0} لاعباً زاد تدريبهم ولياقتهم (+{v1})': '{v0} players gained training and fitness (+{v1})',
 }

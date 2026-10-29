@@ -4692,8 +4692,8 @@ export interface paths {
         };
         put?: never;
         /**
-         * [Sprint 20 B4, Sprint 24 B2] Play a friendly now for its coins: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training and chemistry for those who played
-         * @description The coins are taken with the match, once by the key (the same key again returns the same friendly, 200). In a fair league it is free and limited per day.
+         * [Sprint 20 B4, Sprint 24 B2] Play a friendly now for its coins: the engine plays it whole, with no effect on the table or money; fitness, a little training and chemistry for those who played
+         * @description The coins are taken with the match, once by the key (the same key again returns the same friendly, 200), in any league and with no limit (not counted in the season's coin cap).
          */
         post: {
             parameters: {
@@ -4737,7 +4737,6 @@ export interface paths {
                 };
                 404: components["responses"]["Error"];
                 409: components["responses"]["Error"];
-                429: components["responses"]["Error"];
             };
         };
         delete?: never;
@@ -9765,19 +9764,17 @@ export interface components {
                     rating: number;
                 }[];
                 played: number;
-                /** @description [Sprint 24 B2] The coins it cost (0 in a fair league, and before Sprint 24) */
+                /** @description [Sprint 24 B2] The coins it cost (0 before Sprint 24) */
                 coins?: number;
             };
         };
         Friendlies: {
-            /** @description [Sprint 24 B2] What a friendly costs (game.friendlies.coins, 5; 0 in a fair league) */
+            /** @description [Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit */
             coins: number;
             /** @description The coach's coins */
             balance: number;
-            /** @description The friendlies a day in a fair league; null elsewhere: no daily limit */
-            max: number | null;
-            /** @description Those left today in a fair league; null elsewhere */
-            left: number | null;
+            /** @description [Sprint 24 B2] The fitness each player who plays gains (up to 100) */
+            fitness: number;
             blocked: {
                 /** @enum {string} */
                 reason: "live" | "before_match";

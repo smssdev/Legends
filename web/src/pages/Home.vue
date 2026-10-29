@@ -16,6 +16,7 @@ import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
+import { chime } from '../lib/chime'
 
 type Home = components['schemas']['HomeScreen']
 type Ranked = components['schemas']['RankedCoach']
@@ -55,7 +56,7 @@ watch(now, (t) => {
     load()
   }
 })
-// [Sprint 24 B3] Opening a locked slot at once for coins: confirmed first, then the slot lights up.
+// [Sprint 24 B3] Opening a locked slot at once for coins: confirmed first, then the slot lights up with a chime.
 const buying = ref<Home['slots'][number] | null>(null)
 const buyBusy = ref(false)
 const buyError = ref('')
@@ -71,6 +72,7 @@ async function unlock() {
     home.value = (await api.POST('/home/slots/{slot}/unlock', { params: { path: { slot } } })).data!
     buying.value = null
     opened.value = locked
+    chime()
     useWallet().load()
     setTimeout(() => (opened.value = []), 1600)
   } catch (e) {
