@@ -159,7 +159,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   border-radius: 999px;
   color: var(--color-on-gold);
   background: radial-gradient(circle at 35% 30%, var(--color-gold-light), var(--color-gold) 55%, var(--color-gold-dark));
-  box-shadow: 0 8px 22px rgb(0 0 0 / 0.5), 0 0 0 3px color-mix(in srgb, var(--color-ring) 35%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 50%, transparent), 0 0 0 3px color-mix(in srgb, var(--color-ring) 35%, transparent);
 }
 .bot-fab svg { width: 1.9rem; height: 1.9rem; }
 .bot-fab.small { width: 2.75rem; height: 2.75rem; box-shadow: none; }
@@ -173,7 +173,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   border-inline-end: 4px solid var(--color-gold);
   color: var(--color-on-chrome);
   background: var(--color-chrome);
-  box-shadow: 0 8px 22px rgb(0 0 0 / 0.45);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 45%, transparent);
 }
 .bot-hello-x { position: absolute; top: -0.6rem; inset-inline-start: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: 0.7rem; color: var(--color-text); background: var(--color-surface-raised); }
 /* The window: the whole phone, a side panel on the computer (opposite the side menu). */
@@ -186,18 +186,18 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   background: var(--color-bg);
 }
 @media (min-width: 768px) {
-  .bot-panel { inset-inline-start: auto; width: 23rem; border-inline-start: 1px solid rgb(255 255 255 / 0.1); box-shadow: -20px 0 50px rgb(0 0 0 / 0.5); }
+  .bot-panel { inset-inline-start: auto; width: 23rem; border-inline-start: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); box-shadow: -20px 0 50px color-mix(in srgb, var(--color-shade) 50%, transparent); }
 }
-.bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; padding-top: max(0.6rem, env(safe-area-inset-top)); background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid rgb(255 255 255 / 0.1); }
+.bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; padding-top: max(0.6rem, env(safe-area-inset-top)); background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
 .bot-close { display: grid; width: 2.75rem; height: 2.75rem; flex: none; place-items: center; border-radius: 0.75rem; background: var(--color-surface-raised); }
 .bot-body { display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; padding: 0.75rem; overscroll-behavior: contain; }
 .bot-msg { max-width: 88%; padding: 0.5rem 0.7rem; border-radius: 0.9rem; font-size: 0.875rem; line-height: 1.75; overflow-wrap: anywhere; }
-.bot-msg.bot { align-self: flex-start; background: var(--color-surface); border: 1px solid rgb(255 255 255 / 0.1); border-start-start-radius: 0.25rem; }
+.bot-msg.bot { align-self: flex-start; background: var(--color-surface); border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); border-start-start-radius: 0.25rem; }
 .bot-msg.me { align-self: flex-end; color: #fff; background: var(--color-brand); border-start-end-radius: 0.25rem; }
 .bot-go { display: flex; align-items: center; margin-top: 0.4rem; min-height: 2.75rem; padding: 0 0.75rem; border-radius: 0.6rem; font-weight: 800; font-size: 0.8rem; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-qs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .bot-q { min-height: 2.75rem; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-align: start; color: var(--color-ring); background: color-mix(in srgb, var(--color-brand) 18%, transparent); border: 1px solid color-mix(in srgb, var(--color-ring) 30%, transparent); }
-.bot-ask { display: flex; gap: 0.5rem; padding: 0.6rem 0.75rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); border-top: 1px solid rgb(255 255 255 / 0.1); background: var(--color-panel); }
+.bot-ask { display: flex; gap: 0.5rem; padding: 0.6rem 0.75rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
 .bot-input { flex: 1; min-height: 2.75rem; max-height: 8rem; resize: none; padding: 0.6rem 0.75rem; border-radius: 0.75rem; font: inherit; color: var(--color-text); background: var(--color-surface-sunk); }
 .bot-send { width: 2.75rem; height: 2.75rem; flex: none; border-radius: 0.75rem; font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-send:disabled { opacity: 0.5; }
