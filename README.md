@@ -29,7 +29,7 @@
 | 5 | **التجربة الكاملة** | سليمان وحمزة والأصدقاء | دوري حقيقي على السيرفر: القفل، والمباريات المباشرة، والتقارير، والسوق، والتدريب. وكل خطأ يُرسل لـ Claude مع لقطة شاشة |
 | 6 | **مراجعة تقييمات لاعبي الدوريات العربية** (X34) | سليمان وحمزة | `data/arab/arab_players_review.csv`: عمود `overallRating`، ويُرسل الملف المعدّل لـ Claude |
 | 7 | **اختبار Sprint 21 وحذف فرعه الباقي** | حمزة وسليمان | حمزة يختبر حسب «ما يختبره حمزة» في [ملف السبرنت](sprints/21-owner-updates2.md). وسليمان يحذف الفروع البعيدة `claude/*` المدموجة (GitHub ← Branches)، ثم **ينشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd`** (يرفض وحده إن كانت مباراة حية) |
-| 8 | **Google Search Console** (X57) | سليمان | بعد النشر: search.google.com/search-console ← «إضافة موقع» ← بادئة عنوان URL `https://srv2100776.hstgr.cloud` ← التحقق (وسم HTML يُرسل لـ Claude فيضيفه، أو DNS) ← «ملفات Sitemap» ← `sitemap.xml`. ثم «فحص عنوان URL» للرئيسية و«طلب الفهرسة» |
+| 8 | **Google Search Console** (X57) | سليمان | الخطوات كاملة في [`docs/maps.md`](docs/maps.md). باختصار، بعد النشر: search.google.com/search-console ← «إضافة موقع» ← بادئة عنوان URL `https://srv2100776.hstgr.cloud` ← التحقق (وسم HTML يُرسل لـ Claude فيضيفه، أو DNS) ← «ملفات Sitemap» ← `sitemap.xml`. ثم «فحص عنوان URL» للرئيسية و«طلب الفهرسة» |
 
 ## 0. القرارات الثابتة (صاحب المشروع)
 
