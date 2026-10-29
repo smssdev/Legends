@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -196,6 +196,12 @@ class MessageText
                 'body' => sprintf('لم تضبط فريقك قبل مباراة %s، فاختار المساعد التشكيلة: أراح المجهدين، واستبعد المصابين والموقوفين، ولعب بخطة متزنة.', (string) ($p['opponent'] ?? '')),
                 'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
             ],
+            // [X54] The developers gave the account coins.
+            'coins_gift' => [
+                'title' => sprintf('هدية من فريق التطوير: %s كوينز', $p['coins'] ?? 0),
+                'body' => (string) ($p['reason'] ?? ''),
+                'link' => '/wallet',
+            ],
             // [Sprint 21 E2.3] A friend signed up from the invite link and verified.
             'referral_reward' => [
                 'title' => sprintf('هدية دعوة: %s كوينز', $p['coins'] ?? 0),
@@ -210,10 +216,11 @@ class MessageText
                 'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
             ],
             // From the game's developers, with the official badge [X11].
+            // [X54] The announcement opens on the announcements page, as a card.
             'announcement' => [
                 'title' => (string) ($p['title'] ?? 'إعلان من فريق لعبة المدرب الأسطورة'),
                 'body' => (string) ($p['body'] ?? ''),
-                'link' => null,
+                'link' => '/announcements',
                 'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
             ],
             default => ['title' => 'رسالة', 'body' => '', 'link' => null],

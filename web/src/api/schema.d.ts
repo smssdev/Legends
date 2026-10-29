@@ -6219,6 +6219,85 @@ export interface paths {
         };
         trace?: never;
     };
+    "/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X54] The developers' announcements as cards, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: components["schemas"]["AnnouncementCard"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/announcements/{id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        /** [X54] An announcement's picture (JPEG), public like a crest */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The picture */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/start": {
         parameters: {
             query?: never;
@@ -6741,7 +6820,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** [Sprint 21 E7.2] The announcements sent, newest first, whole, with the sender and the time */
+        /** [Sprint 21 E7.2] The announcements sent, newest first, as cards, with the sender and the time */
         get: {
             parameters: {
                 query?: never;
@@ -6758,26 +6837,14 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            announcements: {
-                                id: number;
-                                title: string;
-                                body: string;
-                                sent: number;
-                                sender: {
-                                    name: string;
-                                    username: string;
-                                    official: boolean;
-                                } | null;
-                                /** Format: date-time */
-                                at: string;
-                            }[];
+                            announcements: components["schemas"]["AnnouncementCard"][];
                         };
                     };
                 };
             };
         };
         put?: never;
-        /** A message to every account from an official developer account, with the badge [X11] */
+        /** A message to every account from an official developer account, with the badge [X11]; [X54] a card with an optional wide picture and button */
         post: {
             parameters: {
                 query?: never;
@@ -6787,9 +6854,28 @@ export interface paths {
             };
             requestBody: {
                 content: {
+                    "multipart/form-data": {
+                        title: string;
+                        /** @description Paragraphs split by empty lines */
+                        body: string;
+                        /** @description The button's label (with cta_url) */
+                        cta_label?: string;
+                        /** @description A page of the game (/...) or a site (http, https) */
+                        cta_url?: string;
+                        /**
+                         * Format: binary
+                         * @description JPEG, PNG, WebP or GIF up to game.announcements.image_max_kb; kept as a JPEG at most 1200 wide
+                         */
+                        image?: string;
+                    };
                     "application/json": {
                         title: string;
+                        /** @description Paragraphs split by empty lines */
                         body: string;
+                        /** @description The button's label (with cta_url) */
+                        cta_label?: string;
+                        /** @description A page of the game (/...) or a site (http, https) */
+                        cta_url?: string;
                     };
                 };
             };
@@ -6802,10 +6888,66 @@ export interface paths {
                     content: {
                         "application/json": {
                             sent: number;
+                            announcement: components["schemas"]["AnnouncementCard"];
                         };
                     };
                 };
                 403: components["responses"]["Error"];
+                422: components["responses"]["ValidationError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/coins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X54] Coins to any account by its five-digit number, with the reason the coach reads; once per idempotency key; logged */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        account_no: number;
+                        /** @description At most game.admin.coins_max */
+                        amount: number;
+                        reason: string;
+                        idempotency_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Given */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            user: {
+                                id: number;
+                                name: string;
+                                account_no: number;
+                            };
+                            balance: number;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
                 422: components["responses"]["ValidationError"];
             };
         };
@@ -9170,6 +9312,24 @@ export interface components {
                 complete: boolean;
                 claimed: boolean;
             }[];
+        };
+        AnnouncementCard: {
+            id: number;
+            title: string;
+            body: string;
+            sent: number;
+            image_url: string | null;
+            cta: {
+                label: string;
+                url: string;
+            } | null;
+            sender: {
+                name: string;
+                username: string;
+                official: boolean;
+            } | null;
+            /** Format: date-time */
+            at: string;
         };
         /** @description [Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far */
         AdStatus: {

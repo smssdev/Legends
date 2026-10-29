@@ -64,6 +64,8 @@ export const router = createRouter({
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
         { path: 'inbox', name: 'inbox', component: () => import('./pages/Inbox.vue'), meta: { auth: true } },
+        // [X54] The developers' announcements as cards.
+        { path: 'announcements', name: 'announcements', component: () => import('./pages/AnnouncementsPage.vue'), meta: { auth: true } },
         { path: 'join/:code?', name: 'join', component: () => import('./pages/leagues/JoinLeague.vue'), meta: { auth: true } },
         // Sprint 11: the component library on a real club
         { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },

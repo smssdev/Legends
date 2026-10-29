@@ -95,7 +95,7 @@ function inspect() {
     })).observe({ type: 'layout-shift', buffered: true })
   })
   const screens = ['/', '/leagues', `/leagues/${league}`, '/club', '/friendlies', '/quests', '/team', '/lineup', '/tactics', '/training', '/specialists', '/market', '/scout', '/stadium', '/finance',
-    '/match', '/stats', '/fixtures', `/leagues/${league}/predictions`, `/leagues/${league}/newspaper`, '/inbox', '/profile', '/wallet', '/leagues/new']
+    '/match', '/stats', '/fixtures', `/leagues/${league}/predictions`, `/leagues/${league}/newspaper`, '/inbox', '/announcements', '/profile', '/wallet', '/leagues/new']
   let failed = 0
   for (const lang of (process.env.LANGS || 'ar,en').split(',')) {
     await page.evaluate((l) => localStorage.setItem('glm.locale', l), lang)

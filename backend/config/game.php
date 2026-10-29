@@ -388,6 +388,9 @@ return [
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.
     'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],
         'training' => ['target' => 1, 'coins' => 10], 'unbeaten' => ['target' => 2, 'money_bp' => 50]],
+    // [X54] An announcement's picture: at most image_max_kb uploaded, kept as a JPEG at most image_width wide and
+    // image_max_height high (a wide banner, as the owner's picture).
+    'announcements' => ['image_max_kb' => 4096, 'image_width' => 1200, 'image_max_height' => 600],
     // [Sprint 20 B3] The after-round window: the matches missed in the last days days, at most max.
     'after_round' => ['days' => 3, 'max' => 5],
     // [Sprint 20, question 5] The board's mood: calm before after_rounds league rounds; then happy at or above the
@@ -407,7 +410,9 @@ return [
                 'title_en' => 'The match is managed live', 'body_en' => 'Join your live match: change the plan and make substitutions in the coach\'s windows, with the commentator beside you.'],
         ]],
 
-    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100],
+    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100,
+        // [X54] The most coins an admin gives an account at once.
+        'coins_max' => 100000],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [
@@ -417,7 +422,7 @@ return [
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
-            'news' => ['announcement', 'official_message'],
+            'news' => ['announcement', 'official_message', 'coins_gift'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).

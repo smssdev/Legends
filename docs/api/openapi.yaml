@@ -2454,6 +2454,21 @@ paths:
       summary: '[Sprint 20 S4] Delete an ad'
       responses:
         '200': { description: Deleted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /announcements:
+    get:
+      tags: [account]
+      summary: '[X54] The developers'' announcements as cards, newest first'
+      responses:
+        '200': { description: The cards, content: { application/json: { schema: { type: object, required: [announcements], properties: { announcements: { type: array, items: { $ref: '#/components/schemas/AnnouncementCard' } } } } } } }
+  /announcements/{id}/image:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [account]
+      summary: '[X54] An announcement''s picture (JPEG), public like a crest'
+      security: []
+      responses:
+        '200': { description: The picture, content: { image/jpeg: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
   /ads/start:
     post:
       tags: [team]
@@ -2646,48 +2661,65 @@ paths:
   /admin/announcements:
     get:
       tags: [admin]
-      summary: '[Sprint 21 E7.2] The announcements sent, newest first, whole, with the sender and the time'
+      summary: '[Sprint 21 E7.2] The announcements sent, newest first, as cards, with the sender and the time'
       responses:
-        '200':
-          description: The announcements
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [announcements]
-                properties:
-                  announcements:
-                    type: array
-                    items:
-                      type: object
-                      required: [id, title, body, sent, sender, at]
-                      properties:
-                        id: { type: integer }
-                        title: { type: string }
-                        body: { type: string }
-                        sent: { type: integer }
-                        sender: { type: object, nullable: true, required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
-                        at: { type: string, format: date-time }
+        '200': { description: The announcements, content: { application/json: { schema: { type: object, required: [announcements], properties: { announcements: { type: array, items: { $ref: '#/components/schemas/AnnouncementCard' } } } } } } }
     post:
       tags: [admin]
-      summary: A message to every account from an official developer account, with the badge [X11]
+      summary: 'A message to every account from an official developer account, with the badge [X11]; [X54] a card with an optional wide picture and button'
       requestBody:
         required: true
         content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title: { type: string, maxLength: 120 }
+                body: { type: string, maxLength: 2000, description: Paragraphs split by empty lines }
+                cta_label: { type: string, maxLength: 40, description: 'The button''s label (with cta_url)' }
+                cta_url: { type: string, maxLength: 300, description: 'A page of the game (/...) or a site (http, https)' }
+                image: { type: string, format: binary, description: 'JPEG, PNG, WebP or GIF up to game.announcements.image_max_kb; kept as a JPEG at most 1200 wide' }
           application/json:
             schema:
               type: object
               required: [title, body]
               properties:
                 title: { type: string, maxLength: 120 }
-                body: { type: string, maxLength: 2000 }
+                body: { type: string, maxLength: 2000, description: Paragraphs split by empty lines }
+                cta_label: { type: string, maxLength: 40, description: 'The button''s label (with cta_url)' }
+                cta_url: { type: string, maxLength: 300, description: 'A page of the game (/...) or a site (http, https)' }
       responses:
         '201':
           description: Sent
           content:
             application/json:
-              schema: { type: object, required: [sent], properties: { sent: { type: integer } } }
+              schema: { type: object, required: [sent, announcement], properties: { sent: { type: integer }, announcement: { $ref: '#/components/schemas/AnnouncementCard' } } }
         '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/coins:
+    post:
+      tags: [admin]
+      summary: '[X54] Coins to any account by its five-digit number, with the reason the coach reads; once per idempotency key; logged'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [account_no, amount, reason, idempotency_key]
+              properties:
+                account_no: { type: integer, minimum: 10000, maximum: 99999 }
+                amount: { type: integer, minimum: 1, description: At most game.admin.coins_max }
+                reason: { type: string, minLength: 3, maxLength: 200 }
+                idempotency_key: { type: string, maxLength: 60 }
+      responses:
+        '200':
+          description: Given
+          content:
+            application/json:
+              schema: { type: object, required: [user, balance], properties: { user: { type: object, required: [id, name, account_no], properties: { id: { type: integer }, name: { type: string }, account_no: { type: integer } } }, balance: { type: integer } } }
+        '404': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
   /admin/commentary:
     get:
@@ -4166,6 +4198,18 @@ components:
               reward: { type: object, properties: { coins: { type: integer }, money: { type: integer } } }
               complete: { type: boolean }
               claimed: { type: boolean }
+    AnnouncementCard:
+      type: object
+      required: [id, title, body, sent, image_url, cta, sender, at]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        body: { type: string }
+        sent: { type: integer }
+        image_url: { type: [string, 'null'] }
+        cta: { type: [object, 'null'], required: [label, url], properties: { label: { type: string }, url: { type: string } } }
+        sender: { type: [object, 'null'], required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
+        at: { type: string, format: date-time }
     AdStatus:
       type: object
       description: '[Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far'

@@ -30,4 +30,29 @@ class Avatar
 
         return $jpeg;
     }
+
+    /**
+     * [X54] An announcement's wide picture: its own shape kept, at most $width wide and $maxHeight high, as a JPEG
+     * (never the file as it came). Null when the bytes are not an image GD reads.
+     */
+    public static function wide(string $bytes, int $width, int $maxHeight): ?string
+    {
+        $src = @imagecreatefromstring($bytes);
+        if ($src === false) {
+            return null;
+        }
+        [$w, $h] = [imagesx($src), imagesy($src)];
+        $scale = min(1, $width / $w, $maxHeight / $h);
+        [$nw, $nh] = [max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale))];
+        $out = imagecreatetruecolor($nw, $nh);
+        imagefill($out, 0, 0, imagecolorallocate($out, 255, 255, 255));
+        imagecopyresampled($out, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
+        ob_start();
+        imagejpeg($out, null, 82);
+        $jpeg = (string) ob_get_clean();
+        imagedestroy($src);
+        imagedestroy($out);
+
+        return $jpeg;
+    }
 }

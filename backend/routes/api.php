@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
+use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
@@ -277,6 +278,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('conversations', 'conversations');
         Route::get('conversations/{user}', 'conversation')->whereNumber('user');
         Route::post('conversations/{user}', 'writeTo')->whereNumber('user')->middleware('throttle:30,1,admin-write');
+        // [X54] Coins to any account by its number.
+        Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
         // [Sprint 20 S4] The game's own rewarded ads.
         Route::get('house-ads', 'houseAds');
         Route::post('house-ads', 'storeHouseAd');
@@ -284,6 +287,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::delete('house-ads/{id}', 'deleteHouseAd')->whereNumber('id');
     });
 });
+
+// [X54] The developers' announcements as cards, and their pictures (public like a crest, for an <img>).
+Route::get('announcements', [AnnouncementController::class, 'index'])->middleware(['auth:sanctum', 'throttle:60,1,announcements']);
+Route::get('announcements/{id}/image', [AnnouncementController::class, 'image'])->whereNumber('id')->middleware('throttle:240,1,announcement-image');
 
 // [Sprint 20 S4] A watch of one of the game's own rewarded ads.
 Route::post('ads/start', [AdController::class, 'start'])->middleware(['auth:sanctum', 'throttle:20,1,ads-start']);

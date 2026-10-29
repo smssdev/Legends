@@ -166,13 +166,15 @@ async function openRanking(by: 'trophies' | 'level') {
             </span>
           </div>
           <template v-if="latest">
-            <RouterLink to="/inbox" class="flex flex-col gap-0.5">
+            <!-- [X54] The announcements page, each as a card. -->
+            <RouterLink to="/announcements" class="flex flex-col gap-0.5">
               <b class="font-display">{{ $t(latest.title) }}</b>
               <span class="line-clamp-2 text-sm text-text-soft">{{ latest.body }}</span>
               <span class="text-xs text-text-muted">{{ latest.sender?.name }} <OfficialBadge v-if="latest.sender?.official" /> · {{ when(latest.created_at) }}</span>
             </RouterLink>
           </template>
           <p v-else class="text-sm text-text-muted">{{ $t('لا إعلانات بعد. هنا تصلك تحديثات اللعبة وأخبارها من فريق التطوير.') }}</p>
+          <RouterLink v-if="latest" to="/announcements" class="self-end text-xs font-bold text-gold">{{ $t('كل الإعلانات ›') }}</RouterLink>
         </section>
 
         <div class="grid grid-cols-4 gap-2 xl:grid-cols-2">

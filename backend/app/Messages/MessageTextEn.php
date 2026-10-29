@@ -186,6 +186,12 @@ class MessageTextEn
                 'body' => sprintf('You did not set your team before the match against %s, so the assistant picked the lineup: rested the tired, left out the injured and suspended, and played a balanced plan.', (string) ($p['opponent'] ?? '')),
                 'link' => $leagueLink,
             ],
+            // [X54] The developers gave the account coins.
+            'coins_gift' => [
+                'title' => sprintf('A gift from the team: %s coins', $p['coins'] ?? 0),
+                'body' => (string) ($p['reason'] ?? ''),
+                'link' => '/wallet',
+            ],
             // [Sprint 21 E2.3] A friend signed up from the invite link and verified.
             'referral_reward' => [
                 'title' => sprintf('Invite gift: %s coins', $p['coins'] ?? 0),
@@ -202,7 +208,7 @@ class MessageTextEn
             'announcement' => [
                 'title' => (string) ($p['title'] ?? 'An announcement from the Game Legend Manager team'),
                 'body' => (string) ($p['body'] ?? ''),
-                'link' => null,
+                'link' => '/announcements',
                 'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
             ],
             default => ['title' => 'Message', 'body' => '', 'link' => null],
