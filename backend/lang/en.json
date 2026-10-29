@@ -331,5 +331,13 @@
   "هذا النادي ليس في دوريك.": "This club is not in your league.",
   "لا وديات قبل مباراتك بساعة ولا أثناءها.": "No friendlies in the hour before your match or during it.",
   "مهمة أسبوعية": "Weekly quest",
-  "مهمة الأسبوع الكبرى": "The week's big quest"
+  "مهمة الأسبوع الكبرى": "The week's big quest",
+  "تعرض %d لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.": "You have %d players listed now, the most at one time: take one off or wait for a sale.",
+  "الفعالية غير موجودة.": "The event does not exist.",
+  "انتهت هذه الفعالية.": "This event has ended.",
+  "موعد النهاية بعد البداية وبعد الآن.": "The end must be after the start and after now.",
+  "الفعالية مؤقتة: %d أيام على الأكثر.": "Events are temporary: %d days at most.",
+  "القوة من %d إلى %d.": "The power is from %d to %d.",
+  "عدد اللاعبين من 1 إلى %d.": "The number of players is from 1 to %d.",
+  "بيع لاعب معروض: فوق قيمته": "Listed player sold: above value"
 }

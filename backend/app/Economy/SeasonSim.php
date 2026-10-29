@@ -93,6 +93,14 @@ class SeasonSim
         if ($trader) {
             $this->traderSells($trader, $clubs, $book);
         }
+        // [Sprint 23] The lister sells his own players to outside buyers at up to 250% all season, and buys their
+        // like back from the pool at their value: at most the season's room above the value is his gain.
+        if ($lister = $scenario['lister'] ?? null) {
+            $premium = intdiv($scale * (int) ($this->cfg['outside_premium_bp_per_season'] ?? 0), 10000);
+            $book[$lister]['balance'] += $premium;
+            $book[$lister]['income'] += $premium;
+            $book[$lister]['premium'] = $premium;
+        }
         $order = $ids;
         usort($order, fn ($a, $b) => [$book[$b]['pts'], $book[$b]['gd'], $clubs[$b]['strength']] <=> [$book[$a]['pts'], $book[$a]['gd'], $clubs[$a]['strength']]);
         foreach ($order as $i => $id) {

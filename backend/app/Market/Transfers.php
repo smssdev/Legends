@@ -25,7 +25,8 @@ class Transfers
     public const OPEN = ['pending'];
 
     /**
-     * The coach lists one of his players at his price, from half his value to his sale cap [X6]. Other coaches may
+     * The coach lists one of his players at his price, from half his value to his sale cap [X6], up to max_listings
+     * at a time [Sprint 23]. Other coaches may
      * buy him meanwhile; otherwise a buyer from outside the league takes him at that price when its time comes
      * (App\Market\Buyer): the dearer, the longer the wait. Listing again at a new price starts a new wait.
      */
@@ -37,12 +38,18 @@ class Transfers
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
         $leagueId = (int) DB::table('clubs')->where('id', $clubId)->value('league_id');
         Market::assertOpen($leagueId);
+        // [Sprint 23] At most max_listings players listed at a time (a new price for one listed already is fine).
+        $max = (int) config('game.economy.max_listings');
+        if (DB::table('transfer_listings')->where('club_id', $clubId)->where('player_id', '!=', $playerId)->count() >= $max) {
+            throw new HttpException(422, sprintf(__('تعرض %d لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.'), $max));
+        }
         [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $clubId)];
         if ($price < $floor || $price > $cap) {
             throw new HttpException(422, sprintf('سعر البيع من %s إلى سقف هذا اللاعب %s.', number_format($floor), number_format($cap)));
         }
+        $m = DB::table('master_players')->where('id', $p->master_player_id)->first(['age']);
         DB::table('transfer_listings')->upsert([['club_id' => $clubId, 'player_id' => $playerId, 'price' => $price,
-            'sells_at' => Buyer::sellsAt($price, (int) $p->value, $leagueId),
+            'sells_at' => Buyer::sellsAt($price, (int) $p->value, $leagueId, (int) $m->age, (int) $p->overall + (int) $p->training_bonus),
             'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]], ['player_id'], ['price', 'sells_at', 'updated_at']);
     }
 

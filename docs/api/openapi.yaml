@@ -1239,7 +1239,7 @@ paths:
         about 300 players from outside the league's clubs renewed in each window, sells at 100% of the value; a bot club
         sells at a fixed 125% and keeps 18 players and 2 keepers; the pool buys back at 70% of the value without training.
       parameters:
-        - { name: source, in: query, schema: { type: string, enum: [list, pool, bots], default: list }, description: '[UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first)' }
+        - { name: source, in: query, schema: { type: string, enum: [list, pool, bots], default: list }, description: '[UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first); [Sprint 23] special (offer|in_form|legend, an event''s player, listed first of all), was_price (the price before a discount), renews_at (sooner in a transfer madness) and events (TimedEventNow[])' }
         - { name: line, in: query, schema: { type: string, enum: [gk, def, mid, att] } }
         - { name: q, in: query, schema: { type: string }, description: Part of a name }
         - { name: club, in: query, schema: { type: integer }, description: One bot club }
@@ -1450,7 +1450,7 @@ paths:
     post:
       tags: [market]
       summary: List one of my players at my price (50% of his value to his sale cap)
-      description: The cap is 130% of his value, or his value for a player the club bought. Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap), and the money comes to the club.
+      description: '[Sprint 23] The cap is 250% of his value, or his value for a player the club bought, and never more than the season''s room above the value for outside buyers (outside_premium_bp_per_season of the money scale, less what they paid and what the club''s other listings ask above it). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: what is above the value as its own line (listing_premium).'
       requestBody:
         required: true
         content:
@@ -1731,6 +1731,7 @@ paths:
         Sprint 27 (PLAN 2.8). One player of each line trains at a time. Every session (8 hours scaled by the season's
         length) costs club money and moves his bar by a random step, coach online or not; at 100% his rating and
         attributes go up by one and the slot empties. No training past his potential. Due sessions run before the answer.
+        [Sprint 23] The step is bigger for the young and smaller from 29 (age_bp), and bigger in an extreme progression.
       responses:
         '200':
           description: Training
@@ -2456,6 +2457,68 @@ paths:
       summary: '[Sprint 20 S4] Delete an ad'
       responses:
         '200': { description: Deleted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /admin/events:
+    get:
+      tags: [admin]
+      summary: '[Sprint 23] The timed events, the latest end first, with each kind''s default power, range and count'
+      responses:
+        '200':
+          description: The events
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [events, kinds, max_days]
+                properties:
+                  events: { type: array, items: { $ref: '#/components/schemas/TimedEvent' } }
+                  kinds: { type: object, additionalProperties: { type: object, additionalProperties: { type: integer } } }
+                  max_days: { type: integer }
+    post:
+      tags: [admin]
+      summary: '[Sprint 23] A timed event: every league or one, from its start (now by default) to its end (14 days at most)'
+      description: madness (outside buyers and the market's renewal faster), progression (every training step bigger), discount (the pool cheaper), offers (players at a discount each renewal), in_form (players of the week, a few points above their rating), legends (players over the league's best, at 150%). The last three renew the market when they start.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind, ends_at]
+              properties:
+                kind: { type: string, enum: [madness, progression, discount, offers, in_form, legends] }
+                league_id: { type: [integer, 'null'] }
+                starts_at: { type: [string, 'null'], format: date-time }
+                ends_at: { type: string, format: date-time }
+                power: { type: [integer, 'null'], description: Within the kind's range (its default when absent) }
+                count: { type: [integer, 'null'], minimum: 1 }
+      responses:
+        '201': { description: Made, content: { application/json: { schema: { type: object, required: [event], properties: { event: { $ref: '#/components/schemas/TimedEvent' } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/events/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      tags: [admin]
+      summary: '[Sprint 23] Change a running or coming event: its end, power or count'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ends_at: { type: string, format: date-time }
+                power: { type: integer }
+                count: { type: integer, minimum: 1 }
+      responses:
+        '200': { description: Changed, content: { application/json: { schema: { type: object, required: [event], properties: { event: { $ref: '#/components/schemas/TimedEvent' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [admin]
+      summary: '[Sprint 23] One not started is deleted; one running ends now (and stays as a record)'
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok, deleted], properties: { ok: { type: boolean }, deleted: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
   /announcements:
     get:
       tags: [account]
@@ -3819,8 +3882,17 @@ components:
                 properties:
                   pays: { type: integer }
                   fee: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
-              wait_hours: { type: object, required: [value, cap], properties: { value: { type: integer }, cap: { type: integer } }, description: About how long the outside buyer takes at his value and at his cap }
+              wait_hours: { type: object, required: [value, cap], properties: { value: { type: integer }, cap: { type: integer } }, description: 'About how long the outside buyer takes at his value and at his cap (his age and rating, and a transfer madness, counted) [Sprint 23]' }
               listed: { type: object, nullable: true, required: [price, sells_at], properties: { price: { type: integer }, sells_at: { type: string, format: date-time, nullable: true } } }
+        selling:
+          type: object
+          description: '[Sprint 23] Listing: how many at once, how many now, and the season''s room above the value for outside buyers'
+          required: [max_listings, listed, room, allowance]
+          properties:
+            max_listings: { type: integer }
+            listed: { type: integer }
+            room: { type: integer, description: What is left of the allowance, less what the listings ask above the value }
+            allowance: { type: integer }
     ClubFinance:
       type: object
       required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]
@@ -4273,6 +4345,26 @@ components:
       description: '[Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far'
       required: [enabled, minutes, max, used]
       properties: { enabled: { type: boolean }, minutes: { type: integer }, max: { type: integer }, used: { type: integer } }
+    TimedEventNow:
+      type: object
+      description: '[Sprint 23] An admin''s event running now, for the coach''s screens'
+      required: [kind, power, ends_at]
+      properties:
+        kind: { type: string, enum: [madness, progression, discount, offers, in_form, legends] }
+        power: { type: integer, description: 'madness and progression: times as fast (bp); discount and offers: off the price (bp); in_form: points; legends: points over the league''s best' }
+        ends_at: { type: string, format: date-time }
+    TimedEvent:
+      type: object
+      required: [id, kind, league, starts_at, ends_at, power, count, state]
+      properties:
+        id: { type: integer }
+        kind: { type: string, enum: [madness, progression, discount, offers, in_form, legends] }
+        league: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string, nullable: true } }, description: Null for every league }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        power: { type: integer }
+        count: { type: integer, description: 'The special players each market renewal brings (offers, in_form, legends); 0 for the others' }
+        state: { type: string, enum: [upcoming, running, ended] }
     HouseAd:
       type: object
       required: [id, title, body, cta_label, cta_url, seconds, active, views, at]
@@ -4337,7 +4429,8 @@ components:
         training_bonus: { type: integer }
         potential: { type: integer }
         progress: { type: integer, description: The bar, 0 to 100 }
-        sessions: { type: integer, description: About how many sessions a +1 takes at his rating }
+        sessions: { type: integer, description: 'About how many sessions a +1 takes at his rating and age [Sprint 23]' }
+        age_bp: { type: integer, description: '[Sprint 23] How big his sessions are at his age, in bp (10000 = the average)' }
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
@@ -4349,6 +4442,7 @@ components:
         balance: { type: integer }
         interval_minutes: { type: integer }
         now: { type: string, format: date-time, description: The game clock, for the countdowns }
+        events: { type: array, items: { $ref: '#/components/schemas/TimedEventNow' }, description: '[Sprint 23] An extreme progression running in this league (the strongest)' }
         slots:
           type: array
           items:

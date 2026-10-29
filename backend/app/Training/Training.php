@@ -10,6 +10,7 @@ use App\Messages\MessageText;
 use App\Stadium\Stadium;
 use App\Staff\Specialists;
 use App\Support\GameClock;
+use App\TimedEvents\TimedEvents;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -132,8 +133,10 @@ class Training
                 return 0;   // no money: the session is missed, the bar stays
             }
             $key = "{$p->id}:{$slotId}:{$session}";
-            // The stadium's training ground, then the line's coach by his stars [X20].
-            $step = Specialists::trainingStep($club->id, $p->line, Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key, (int) $p->potential), $key));
+            // His age, the stadium's training ground, then the line's coach by his stars [X20], and an extreme
+            // progression from the admin [Sprint 23].
+            $step = Specialists::trainingStep($club->id, $p->line, Stadium::trainingStep($club->id, Gain::fromConfig()->step($p->overall + $p->training_bonus, $key, (int) $p->potential, (int) $p->age), $key));
+            $step = intdiv($step * TimedEvents::times('progression', (int) $club->league_id), 10000);
             if (! self::advance($p, $step)) {
                 return 1;
             }

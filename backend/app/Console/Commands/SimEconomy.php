@@ -55,6 +55,7 @@ class SimEconomy extends Command
             'spender' => $sim->run($clubs, $budget, $play, ['spender' => $median]),
             'colluders' => $sim->run($clubs, $budget, $play, ['colluders' => [$ids[count($ids) - 1], $ids[count($ids) - 2]]]),
             'trader' => $sim->run($clubs, $budget, $play, ['trader' => $median]),
+            'lister' => $sim->run($clubs, $budget, $play, ['lister' => $median]),
         ];
         $summary = SeasonSim::summary($runs['normal'], $cfg['sim_targets']);
 
@@ -82,6 +83,14 @@ class SimEconomy extends Command
             $clubs[$median]['name'], number_format(-($t['traded'] ?? 0)), number_format($t['balance']), number_format($n['clubs'][$median]['balance'])));
         $summary['trade_cycle_profit'] = ($t['traded'] ?? 0);
         $summary['ok'] = $summary['ok'] && $summary['trade_cycle_profit'] < 0;
+
+        // [Sprint 23] Selling at 250% all season: the room above the value is the most it brings, kept under the money growth target.
+        $l = $runs['lister']['clubs'][$median];
+        $summary['lister_ratio'] = round($l['balance'] / max(1, $n['clubs'][$median]['balance']), 2);
+        $this->line(sprintf('البائع بـ 250%% طوال الموسم (%s): كسب فوق القيمة %s على الأكثر، فأنهى بـ %s بدل %s (×%s، والحد ×%s).',
+            $clubs[$median]['name'], number_format($l['premium']), number_format($l['balance']), number_format($n['clubs'][$median]['balance']),
+            $summary['lister_ratio'], $cfg['sim_targets']['money_growth_max']));
+        $summary['ok'] = $summary['ok'] && $summary['lister_ratio'] <= $cfg['sim_targets']['money_growth_max'];
 
         if ($this->option('report')) {
             @mkdir(dirname($this->option('report')), 0775, true);

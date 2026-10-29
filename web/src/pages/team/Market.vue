@@ -11,6 +11,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
+import EventsBar from '../../components/ui/EventsBar.vue'
 import Trades from './Trades.vue'
 import ScoutPage from './ScoutPage.vue'
 import { useWallet } from '../../stores/wallet'
@@ -41,8 +42,10 @@ const LINES: { id: Line; label: string }[] = [{ id: 'gk', label: 'حراس ال�
 
 // [UP11] The transfer list of one line, its renewal countdown, a player's deal and the celebration.
 type Seller = { kind: 'world' | 'bot' | 'coach'; club_id: number | null; club: string | null; coach: string | null; logo: string | null }
-type Row = Market['players'][number] & { seller: Seller; star?: boolean }
-type ListView = { closed: string | null; line: Line; balance: number; renews_at: string | null; players: Row[] }
+// [Sprint 23] special: an admin's event's player (an offer, a player of the week, a legend); was_price: before a discount.
+type Row = Market['players'][number] & { seller: Seller; star?: boolean; special?: 'offer' | 'in_form' | 'legend' | null; was_price?: number | null }
+type ListView = { closed: string | null; line: Line; balance: number; renews_at: string | null; events?: components['schemas']['TimedEventNow'][]; players: Row[] }
+const SPECIAL = { offer: '🎁 عرض خاص', in_form: '🔥 نجم الأسبوع', legend: '👑 أسطورة' } as const
 type Quote = { price: number; cash: number; doc_coins: number; short: number; compensate: { cash: number; coins: number } | null; can: boolean; why: string | null }
 const list = ref<ListView | null>(null)
 const now = ref(Date.now())
@@ -244,6 +247,8 @@ onBeforeUnmount(() => clearInterval(clock))
           </div>
           <span v-if="list?.renews_at" class="flex h-11 items-center gap-2 rounded-lg border border-gold/40 bg-surface px-3 text-sm">{{ $t('الصفقات التالية بعد') }} <b class="font-numbers text-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
         </div>
+        <!-- [Sprint 23] The admin's events running in this league. -->
+        <EventsBar :events="list?.events" @ended="loadList" />
         <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl bg-surface p-2">
           <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
@@ -252,14 +257,14 @@ onBeforeUnmount(() => clearInterval(clock))
               <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
-                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span></b>
+                  <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-[11px] font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
                   <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ p.nationality }}</template></span>
                 </span>
                 <span class="hidden min-w-0 max-w-48 items-center gap-1.5 text-xs sm:flex">
                   <img v-if="p.seller.logo" :src="p.seller.logo" alt="" class="size-6 object-contain" loading="lazy" />
                   <span class="min-w-0"><span class="block truncate">{{ p.seller.club ? $nm(p.seller.club) : '' }}</span><span v-if="p.seller.coach" class="block truncate text-brand-light">{{ p.seller.coach }}</span></span>
                 </span>
-                <span class="w-16 text-end font-numbers text-base font-bold sm:w-20 sm:text-lg" dir="ltr">{{ money(p.price) }}</span>
+                <span class="flex w-16 flex-col items-end sm:w-20"><s v-if="p.was_price" class="font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.was_price) }}</s><span class="font-numbers text-base font-bold sm:text-lg" :class="p.was_price ? 'text-success' : ''" dir="ltr">{{ money(p.price) }}</span></span>
               </button>
             </li>
           </ul>
@@ -301,6 +306,11 @@ onBeforeUnmount(() => clearInterval(clock))
       </div>
 
       <section v-else :aria-label="$t('بيع لاعبيّ')" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
+        <!-- [Sprint 23] How many may be listed at once, and what outside buyers may still pay above the value this season. -->
+        <p v-if="m.selling" class="flex flex-wrap gap-x-4 gap-y-1 px-2 pt-1 text-xs text-text-muted">
+          <span>{{ $t('المعروضون: {v0} من {v1}', { v0: m.selling.listed, v1: m.selling.max_listings }) }}</span>
+          <span>{{ $t('المتاح فوق القيمة هذا الموسم:') }} <b dir="ltr" class="font-numbers text-text">{{ money(m.selling.room) }}</b></span>
+        </p>
         <ul class="flex flex-col">
           <li v-for="p in m.mine" :key="p.id" class="flex flex-col border-t border-text/5 px-2 py-2">
             <div class="flex items-center gap-3">

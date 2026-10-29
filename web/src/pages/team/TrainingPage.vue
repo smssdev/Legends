@@ -8,6 +8,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
+import EventsBar from '../../components/ui/EventsBar.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
@@ -111,6 +112,8 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
 
     <template v-else-if="v">
       <p v-if="v.balance < v.cost" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t('رصيد النادي لا يكفي جلسة، فالجلسات تفوت حتى يرجع الرصيد.') }}</p>
+      <!-- [Sprint 23] An extreme progression (or another event) running now. -->
+      <EventsBar :events="v.events" @ended="load" />
 
       <section :aria-label="$t('خانات التدريب')" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <!-- Each slot as a card [X29]: its line's colour on top, and a filled slot in its player's tier (gold, silver, bronze). -->
@@ -174,7 +177,9 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
         </div>
         <div v-for="p in candidates" :key="p.id" class="grid grid-cols-[1fr_3rem_6rem] items-center gap-2 rounded-lg bg-surface-sunk px-2 py-2 sm:grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem]">
           <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
-          <span class="hidden text-center font-numbers sm:block">{{ p.age }}</span>
+          <!-- [Sprint 23] Age, the strongest factor: green for the young who train faster, orange from 29. -->
+          <span class="hidden text-center font-numbers sm:block" :class="(p.age_bp ?? 10000) > 10000 ? 'text-success' : (p.age_bp ?? 10000) < 10000 ? 'text-warning' : ''"
+            :title="$t('سرعة التدريب في عمره {v0}%', { v0: Math.round((p.age_bp ?? 10000) / 100) })">{{ p.age }}</span>
           <span class="text-center font-numbers text-lg">{{ p.overall }}</span>
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>

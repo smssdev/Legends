@@ -9,6 +9,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Staff\Specialists;
 use App\Support\GameClock;
+use App\TimedEvents\TimedEvents;
 use App\Training\Gain;
 use App\Training\Training;
 use App\Wallet\Finish;
@@ -38,7 +39,9 @@ class TrainingController extends Controller
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
                 'overall' => $p->overall + $p->training_bonus, 'training_bonus' => (int) $p->training_bonus, 'potential' => (int) $p->potential,
                 'progress' => intdiv($p->training_progress * 100, (int) config('game.training.progress_scale')),
-                'sessions' => $gain->sessions($p->overall + $p->training_bonus, (int) $p->potential),
+                // About how many sessions his +1 takes, at his age [Sprint 23], and how fast his age trains (bp).
+                'sessions' => intdiv($gain->sessions($p->overall + $p->training_bonus, (int) $p->potential) * 10000 + $gain->ageBp((int) $p->age) - 1, $gain->ageBp((int) $p->age)),
+                'age_bp' => $gain->ageBp((int) $p->age),
                 'injured' => $p->injured_matches > 0,
                 'maxed' => $p->overall + $p->training_bonus >= $gain->ceiling(),
                 'over_potential' => $p->overall + $p->training_bonus >= $p->potential,
@@ -49,6 +52,8 @@ class TrainingController extends Controller
             'balance' => (int) DB::table('clubs')->where('id', $club->id)->value('balance'),
             'interval_minutes' => intdiv(Training::interval($league->id), 60),
             'now' => GameClock::now()->toIso8601ZuluString(),
+            // [Sprint 23] An extreme progression running now (every step bigger).
+            'events' => TimedEvents::forScreen($league->id, ['progression']),
             'slots' => array_map(function ($line) use ($slots, $players, $club) {
                 $s = $slots[$line] ?? null;
                 $coach = Specialists::LINE_COACH[$line];

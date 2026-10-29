@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Market\Pool;
 use App\Models\Club;
 use App\Models\League;
 use App\Staff\Specialists;
@@ -43,7 +44,7 @@ class ClubAgenda
         $claimed = DB::table('wallet_transactions')->where('idempotency_key', "daily:{$userId}:".$cairo->toDateString())->exists();
         $out[] = ['kind' => 'daily', 'at' => $claimed ? $cairo->copy()->addDay()->startOfDay()->utc()->toIso8601ZuluString() : null, 'amount' => (int) config('game.premium.earn.daily')];
         if ($league->pool_renewed_at) {
-            $out[] = ['kind' => 'market', 'at' => Carbon::parse($league->pool_renewed_at, 'UTC')->addHours((int) config('game.economy.pool_hours'))->toIso8601ZuluString()];
+            $out[] = ['kind' => 'market', 'at' => Pool::renewsAt($league)->toIso8601ZuluString()];
         }
         usort($out, fn ($a, $b) => [$a['at'] !== null, $a['at']] <=> [$b['at'] !== null, $b['at']]);
 

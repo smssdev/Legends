@@ -132,8 +132,20 @@ return [
         // buyer from outside takes it after a wait from this table (price in bp of value => hours, before the
         // season's scale), give or take jitter_bp.
         'quick_sale_fee_bp' => 1000,
-        'sale_cap_bp' => 13000,
-        'virtual_buyer' => ['hours_at_bp' => [5000 => 1, 10000 => 6, 13000 => 36], 'jitter_bp' => 2000],
+        // [Sprint 23, the owner's decision 2026-10-29] The cap is 250% of the value (OSM's), and the wait grows
+        // steeply past the value: about a day at 150%, four at 200%, eight at the cap. The buyer's demand then
+        // moves it by the player's age and rating (demand: wait in bp, below 10000 sooner): the young and the
+        // good-but-not-great go first, the old and the weak last. A player the club bought still sells at his value.
+        'sale_cap_bp' => 25000,
+        'virtual_buyer' => ['hours_at_bp' => [5000 => 1, 10000 => 6, 15000 => 24, 20000 => 96, 25000 => 192], 'jitter_bp' => 2000,
+            // age (up to) => wait bp, and rating (up to) => wait bp
+            'demand_age' => [21 => 7000, 23 => 8000, 27 => 10000, 30 => 12500, 99 => 16000],
+            'demand_overall' => [64 => 14000, 69 => 11000, 85 => 8500, 99 => 10000]],
+        // [Sprint 23] What keeps the economy whole at 250%: a club lists at most max_listings players at a time, and
+        // what outside buyers pay above the value in a season (with what its other listings already ask above it)
+        // stays under this share of the league's money scale, about half a season's income; the cap shrinks to fit.
+        'max_listings' => 4,
+        'outside_premium_bp_per_season' => 400,
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
         // Wages: this share of the squad's value over a season, paid each league round.
@@ -181,11 +193,31 @@ return [
         // rating => about how many sessions a +1 takes; between two points in a straight line
         'sessions_by_overall' => [55 => 4, 65 => 6, 75 => 14, 80 => 19, 85 => 23, 89 => 25, 92 => 30, 99 => 40],
         'step_bp' => [5000, 15000],      // each session moves the bar by half to one and a half of the average
+        // [Sprint 23] Age, the strongest factor: each session's step in bp by the player's age (up to): the young
+        // grow fastest, from 29 slower and slower.
+        'age_step_bp' => [19 => 13000, 21 => 11500, 23 => 10000, 26 => 8500, 28 => 7500, 30 => 6000, 32 => 4500, 99 => 3500],
         'cost_bp_per_season' => 40,      // one slot busy all season costs this share of the league's money scale
         'season_gain_target' => [3, 5],
         // Open training [X16]: no stop at the potential. Above it each +1 takes this many times the sessions, one more
         // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
         'over_potential_factor' => 2, 'ceiling' => 99],
+    // [Sprint 23] The admin's timed events (App\TimedEvents\TimedEvents): each runs from its start to its end, set in the
+    // admin panel, in every league or in one. power is per kind (with its default and range), count the special
+    // players each market renewal brings while it runs.
+    'timed_events' => ['max_days' => 14, 'kinds' => [
+        // The outside buyers and the market's renewal this many times as fast (bp: 20000 = twice).
+        'madness' => ['power' => 20000, 'min' => 12500, 'max' => 40000],
+        // Every training step this many times as big (bp).
+        'progression' => ['power' => 20000, 'min' => 12500, 'max' => 30000],
+        // The world's players (the pool) this much cheaper (bp of the price).
+        'discount' => ['power' => 2500, 'min' => 500, 'max' => 5000],
+        // Special offers: count players of each renewal at this discount (bp), until the next renewal.
+        'offers' => ['power' => 3000, 'min' => 1000, 'max' => 5000, 'count' => 8, 'count_max' => 20],
+        // Players of the week: count players of each renewal in form, this many points above their rating (it stays with them).
+        'in_form' => ['power' => 3, 'min' => 1, 'max' => 5, 'count' => 6, 'count_max' => 20],
+        // Legends: count players of each renewal from the league's best up to this many points over it, at price_bp of their value.
+        'legends' => ['power' => 8, 'min' => 1, 'max' => 15, 'count' => 4, 'count_max' => 10, 'price_bp' => 15000],
+    ]],
     // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
     // The live broadcast's server side [Sprint 21 E8], outside game.match so it never enters a match's snapshot.
     'live' => [
