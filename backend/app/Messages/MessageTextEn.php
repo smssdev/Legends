@@ -192,6 +192,13 @@ class MessageTextEn
                 'body' => sprintf('%s signed up from your invite link and verified their account, so you got %s coins. %s more invites with a gift left.', (string) ($p['name'] ?? ''), $p['coins'] ?? 0, $p['left'] ?? 0),
                 'link' => '/wallet',
             ],
+            // [Sprint 21 E7.7] A developer wrote to the coach.
+            'official_message' => [
+                'title' => sprintf('A message from %s', (string) ($p['username'] ?? 'the team')),
+                'body' => (string) ($p['body'] ?? ''),
+                'link' => '/support',
+                'sender' => ['name' => (string) ($p['from'] ?? ''), 'username' => (string) ($p['username'] ?? ''), 'official' => true],
+            ],
             'announcement' => [
                 'title' => (string) ($p['title'] ?? 'An announcement from the Game Legend Manager team'),
                 'body' => (string) ($p['body'] ?? ''),

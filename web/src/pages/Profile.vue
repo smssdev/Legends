@@ -416,6 +416,8 @@ async function remove() {
 
     <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-support">
       <h2 id="h-support" class="font-display text-xl font-extrabold">{{ $t('الدعم الفني') }}</h2>
+      <!-- [Sprint 21 E7.7] Write to the developers from inside the game. -->
+      <RouterLink :to="{ name: 'support' }" class="flex h-12 items-center justify-center gap-2 self-start rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('راسل فريق التطوير') }}</RouterLink>
       <SupportLinks />
       <p class="text-xs text-text-muted">{{ $t('إن لم تظهر الأزرار فالدعم لم يُفعَّل على الخادم بعد.') }}</p>
     </section>

@@ -42,6 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'vacation_until' => 'datetime',
             'account_verified_at' => 'datetime',
             'referral_paid_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
     }
 
@@ -113,6 +114,8 @@ class User extends Authenticatable implements MustVerifyEmail
             ],
             // [Sprint 21 E2.3] The invite link and its gifts.
             'referral' => Referral::summary($this),
+            // [Sprint 21 E7.3] Suspended by the developers: the reason, shown to the coach.
+            'suspended' => $this->suspended_at ? ['reason' => $this->suspended_reason] : null,
             'role' => $this->role,
             'has_password' => $this->hasPassword(),
             'google' => $this->google_id !== null,

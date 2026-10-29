@@ -5318,10 +5318,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The accounts, newest first (200) */
+        /** [Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Five digits: the account number; else part of the name, username or email */
+                    q?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -5335,18 +5338,186 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            users: {
-                                id: number;
-                                name: string;
-                                username: string;
-                                email: string | null;
-                                role: string;
-                                /** @description [UP6] Verified by a WhatsApp code */
-                                verified: boolean;
+                            admins: components["schemas"]["AdminUser"][];
+                            users: components["schemas"]["AdminUser"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 21 E7.3] Delete a coach's account for good (never an admin's), confirmed by its number; logged */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description The account number */
+                        confirm: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 21 E7.3] Suspend a coach's account with the reason he reads; logged */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Suspended */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        /** [Sprint 21 E7.3] Lift the suspension; logged */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Lifted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 21 E7.5] The activity day by day (Cairo) and what the admins did to accounts */
+        get: {
+            parameters: {
+                query?: {
+                    days?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The days, newest first, and the log */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            days: {
+                                day: string;
+                                active: number;
+                                logins: number;
+                                watched: number;
+                                orders: number;
+                                joined: number;
+                            }[];
+                            log: {
+                                action: string;
+                                admin: string | null;
+                                target: string | null;
+                                details: string | null;
                                 /** Format: date-time */
-                                joined: string;
-                                last_day: string | null;
-                                matches_watched: number;
+                                at: string;
                             }[];
                         };
                     };
@@ -5355,6 +5526,191 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 21 E7.7] The conversations with the coaches: the last message and the coach's unread */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The conversations */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            conversations: {
+                                user: {
+                                    id: number;
+                                    name: string;
+                                    username: string;
+                                    account_no: number | null;
+                                };
+                                last: string;
+                                from_team: boolean;
+                                unread: number;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/conversations/{user}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        /** [Sprint 21 E7.7] One coach's thread (marks his messages read) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The thread */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminThread"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 21 E7.7] An official developer account writes to the coach; it reaches his inbox with the badge */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The thread after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminThread"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/support": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 21 E7.7] My conversation with the game's developers (marks theirs read) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The thread */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            messages: components["schemas"]["SupportMessage"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 21 E7.7] Write to the developers */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The thread after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            messages: components["schemas"]["SupportMessage"][];
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -5392,6 +5748,8 @@ export interface paths {
                                 teams: number;
                                 dev: boolean;
                                 owner: string | null;
+                                /** @description [Sprint 21 E7.6] The creator's account number */
+                                owner_no?: number | null;
                                 coaches: number;
                                 season: number;
                             }[];
@@ -5533,6 +5891,7 @@ export interface paths {
                                     id: number;
                                     name: string;
                                     username: string;
+                                    account_no?: number | null;
                                 };
                                 days: number;
                                 reason: string;
@@ -5540,6 +5899,13 @@ export interface paths {
                                 status: "pending" | "approved" | "rejected";
                                 /** Format: date-time */
                                 asked_at: string;
+                                /** Format: date-time */
+                                starts_at?: string | null;
+                                /** Format: date-time */
+                                ends_at?: string | null;
+                                /** Format: date-time */
+                                decided_at?: string | null;
+                                decided_by?: string | null;
                             }[];
                         };
                     };
@@ -5749,7 +6115,41 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** [Sprint 21 E7.2] The announcements sent, newest first, whole, with the sender and the time */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The announcements */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: {
+                                id: number;
+                                title: string;
+                                body: string;
+                                sent: number;
+                                sender: {
+                                    name: string;
+                                    username: string;
+                                    official: boolean;
+                                } | null;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
         put?: never;
         /** A message to every account from an official developer account, with the badge [X11] */
         post: {
@@ -5873,7 +6273,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description referee, match_soon, offers, done, absence */
+                        /** @description referee, match_soon, offers, done, absence, news */
                         kinds: {
                             [key: string]: boolean;
                         };
@@ -8128,7 +8528,7 @@ export interface components {
             devices: number;
             kinds: {
                 /** @enum {string} */
-                kind: "referee" | "match_soon" | "offers" | "done" | "absence";
+                kind: "referee" | "match_soon" | "offers" | "done" | "absence" | "news";
                 on: boolean;
             }[];
         };
@@ -8483,10 +8883,56 @@ export interface components {
                 [key: string]: number | null;
             };
         };
+        AdminUser: {
+            id: number;
+            account_no: number | null;
+            name: string;
+            username: string;
+            email: string | null;
+            role: string;
+            official: boolean;
+            verified: boolean;
+            suspended: {
+                /** Format: date-time */
+                at: string;
+                reason: string | null;
+            } | null;
+            /** Format: date-time */
+            joined: string;
+            last_day: string | null;
+            matches_watched: number;
+        };
+        SupportMessage: {
+            id: number;
+            body: string;
+            /** @description Written by a developer */
+            from_team: boolean;
+            sender: {
+                name: string;
+                username: string;
+                official: boolean;
+            } | null;
+            read: boolean;
+            /** Format: date-time */
+            at: string;
+        };
+        AdminThread: {
+            user: {
+                id: number;
+                name: string;
+                username: string;
+                account_no: number | null;
+            };
+            messages: components["schemas"]["SupportMessage"][];
+        };
         Account: {
             id: number;
             /** @description [Sprint 21 E2.1] The account's own five-digit number, shown and searched */
             account_no: number;
+            /** @description [Sprint 21 E7.3] Suspended by the developers */
+            suspended?: {
+                reason: string | null;
+            } | null;
             name: string;
             /** @description English letters only, lower case */
             username: string;
