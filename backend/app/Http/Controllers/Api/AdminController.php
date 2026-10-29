@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Admin\Conversations;
 use App\Admin\TwoFactor;
+use App\Auth\AccountDeletion;
 use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
+use App\Auth\Sessions;
 use App\Auth\Username;
 use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
@@ -88,25 +91,100 @@ class AdminController extends Controller
         ]);
     }
 
-    public function users(): JsonResponse
+    /**
+     * [Sprint 21 E7.3] The accounts, the admins apart from the coaches, searched by the account's number (five
+     * digits) or by the name, the username or the email.
+     */
+    public function users(Request $request): JsonResponse
     {
+        $q = trim((string) ($request->validate(['q' => ['nullable', 'string', 'max:80']])['q'] ?? ''));
         $rows = DB::table('users')->leftJoin('user_activity', 'user_activity.user_id', '=', 'users.id')
-            ->groupBy('users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at')
-            ->orderByDesc('users.id')->limit(200)
-            ->get(['users.id', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', DB::raw('max(user_activity.day) as last_day'),
-                DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
+            ->when($q !== '', fn ($query) => preg_match('/^\d{5}$/', $q) ? $query->where('users.account_no', (int) $q)
+                : $query->where(fn ($w) => $w->whereLike('users.name', "%{$q}%")->orWhereLike('users.username', '%'.strtolower($q).'%')->orWhereLike('users.email', '%'.strtolower($q).'%')))
+            ->groupBy('users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason')
+            ->orderByDesc('users.id')->limit(300)
+            ->get(['users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason',
+                DB::raw('max(user_activity.day) as last_day'), DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
+        $row = fn ($u) => ['id' => $u->id, 'account_no' => $u->account_no, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role,
+            'official' => Username::official($u->username), 'verified' => $u->account_verified_at !== null,
+            'suspended' => $u->suspended_at ? ['at' => Carbon::parse($u->suspended_at, 'UTC')->toIso8601ZuluString(), 'reason' => $u->suspended_reason] : null,
+            'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live];
 
-        return response()->json(['users' => $rows->map(fn ($u) => ['id' => $u->id, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role, 'verified' => $u->account_verified_at !== null,
-            'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live])]);
+        return response()->json(['admins' => $rows->where('role', 'admin')->map($row)->values(), 'users' => $rows->where('role', '!=', 'admin')->map($row)->values()]);
+    }
+
+    /** [Sprint 21 E7.3] Suspend a coach's account (not an admin's), with the reason he will read; logged. */
+    public function suspend(Request $request, User $user): JsonResponse
+    {
+        abort_if($user->isAdmin(), 409, 'لا يُعلَّق حساب مدير.');
+        $reason = trim((string) $request->validate(['reason' => ['required', 'string', 'min:3', 'max:300']])['reason']);
+        $user->forceFill(['suspended_at' => GameClock::now(), 'suspended_reason' => $reason])->save();
+        Sessions::forget($user->id);
+        $user->tokens()->delete();
+        $this->log($request, 'suspend', $user, $reason);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function unsuspend(Request $request, User $user): JsonResponse
+    {
+        $user->forceFill(['suspended_at' => null, 'suspended_reason' => null])->save();
+        $this->log($request, 'unsuspend', $user);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** [Sprint 21 E7.3] Delete a coach's account for good: the admin types its number to confirm; logged. */
+    public function deleteUser(Request $request, User $user): JsonResponse
+    {
+        abort_if($user->isAdmin(), 409, 'لا يُحذف حساب مدير من اللوحة.');
+        $confirm = (int) $request->validate(['confirm' => ['required', 'integer']])['confirm'];
+        abort_unless($confirm === (int) $user->account_no, 422, 'اكتب رقم الحساب نفسه لتأكيد الحذف.');
+        $this->log($request, 'delete', $user, "{$user->name} @{$user->username}");
+        AccountDeletion::delete($user);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** What the admins did to accounts, newest first. */
+    private function log(Request $request, string $action, User $user, ?string $details = null): void
+    {
+        DB::table('admin_log')->insert(['admin_id' => $request->user()->id, 'action' => $action, 'target_user_id' => $user->id,
+            'details' => $details ? mb_substr($details, 0, 300) : null, 'created_at' => GameClock::now()]);
+    }
+
+    /** [Sprint 21 E7.5] The activity day by day (Cairo), the new accounts, and what the admins did. */
+    public function activity(Request $request): JsonResponse
+    {
+        $days = (int) ($request->validate(['days' => ['nullable', 'integer', 'min:7', 'max:90']])['days'] ?? 14);
+        $today = GameClock::now()->setTimezone('Africa/Cairo')->startOfDay();
+        $from = $today->copy()->subDays($days - 1)->toDateString();
+        $rows = DB::table('user_activity')->where('day', '>=', $from)->groupBy('day')
+            ->get(['day', DB::raw('count(*) as active'), DB::raw('sum(logins) as logins'), DB::raw('sum(matches_watched) as watched'), DB::raw('sum(orders) as orders')])->keyBy('day');
+        $joined = DB::table('users')->where('created_at', '>=', $today->copy()->subDays($days - 1)->setTimezone('UTC'))->pluck('created_at')
+            ->countBy(fn ($at) => Carbon::parse($at, 'UTC')->setTimezone('Africa/Cairo')->toDateString());
+        $out = [];
+        for ($d = 0; $d < $days; $d++) {
+            $day = $today->copy()->subDays($d)->toDateString();
+            $r = $rows[$day] ?? null;
+            $out[] = ['day' => $day, 'active' => (int) ($r->active ?? 0), 'logins' => (int) ($r->logins ?? 0), 'watched' => (int) ($r->watched ?? 0), 'orders' => (int) ($r->orders ?? 0), 'joined' => (int) ($joined[$day] ?? 0)];
+        }
+        $names = DB::table('users')->pluck('name', 'id');
+        $log = DB::table('admin_log')->orderByDesc('id')->limit(50)->get()
+            ->map(fn ($l) => ['action' => $l->action, 'admin' => $names[$l->admin_id] ?? null, 'target' => $l->target_user_id ? ($names[$l->target_user_id] ?? null) : null,
+                'details' => $l->details, 'at' => Carbon::parse($l->created_at, 'UTC')->toIso8601ZuluString()]);
+
+        return response()->json(['days' => $out, 'log' => $log]);
     }
 
     public function leagues(): JsonResponse
     {
         $rows = DB::table('leagues')->leftJoin('users', 'users.id', '=', 'leagues.owner_id')->orderByDesc('leagues.id')->limit(200)
-            ->get(['leagues.id', 'leagues.name', 'leagues.status', 'leagues.team_count', 'leagues.is_dev', 'users.name as owner']);
+            ->get(['leagues.id', 'leagues.name', 'leagues.status', 'leagues.team_count', 'leagues.is_dev', 'users.name as owner', 'users.account_no as owner_no']);
 
         return response()->json(['leagues' => $rows->map(fn ($l) => ['id' => $l->id, 'name' => $l->name, 'status' => $l->status, 'teams' => (int) $l->team_count,
-            'dev' => (bool) $l->is_dev, 'owner' => $l->owner,
+            // [Sprint 21 E7.6] The creator's account number beside his name.
+            'dev' => (bool) $l->is_dev, 'owner' => $l->owner, 'owner_no' => $l->owner_no,
             'coaches' => DB::table('clubs')->where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'season' => (int) DB::table('seasons')->where('league_id', $l->id)->max('number')])]);
     }
@@ -128,12 +206,16 @@ class AdminController extends Controller
     /** [UP13] The long holidays the developers decide, the waiting ones first. */
     public function vacations(): JsonResponse
     {
-        $rows = DB::table('account_vacations')->join('users', 'users.id', '=', 'account_vacations.user_id')->where('account_vacations.status', '!=', 'auto')
+        $rows = DB::table('account_vacations')->join('users', 'users.id', '=', 'account_vacations.user_id')->leftJoin('users as deciders', 'deciders.id', '=', 'account_vacations.decided_by')
+            ->where('account_vacations.status', '!=', 'auto')
             ->orderByRaw("case when account_vacations.status = 'pending' then 0 else 1 end")->orderByDesc('account_vacations.id')->limit(100)
-            ->get(['account_vacations.*', 'users.name', 'users.username']);
+            ->get(['account_vacations.*', 'users.name', 'users.username', 'users.account_no', 'deciders.name as decider']);
+        $at = fn ($v) => $v ? Carbon::parse($v, 'UTC')->toIso8601ZuluString() : null;
 
-        return response()->json(['vacations' => $rows->map(fn ($r) => ['id' => $r->id, 'user' => ['id' => $r->user_id, 'name' => $r->name, 'username' => $r->username],
-            'days' => (int) $r->days, 'reason' => $r->reason, 'status' => $r->status, 'asked_at' => Carbon::parse($r->created_at, 'UTC')->toIso8601ZuluString()])]);
+        // [Sprint 21 E7.4] Who, for how long, from when to when, why, and who decided.
+        return response()->json(['vacations' => $rows->map(fn ($r) => ['id' => $r->id, 'user' => ['id' => $r->user_id, 'name' => $r->name, 'username' => $r->username, 'account_no' => $r->account_no],
+            'days' => (int) $r->days, 'reason' => $r->reason, 'status' => $r->status, 'asked_at' => $at($r->created_at),
+            'starts_at' => $at($r->starts_at), 'ends_at' => $at($r->ends_at), 'decided_at' => $at($r->decided_at), 'decided_by' => $r->decider])]);
     }
 
     public function decideVacation(Request $request, int $id): JsonResponse
@@ -172,8 +254,42 @@ class AdminController extends Controller
             Inbox::send($id, 'announcement', $payload);
             $sent++;
         }
+        // [Sprint 21 E7.2] Kept as sent: the text, who sent it and when.
+        DB::table('announcements')->insert(['user_id' => $from->id, 'title' => $data['title'], 'body' => $data['body'], 'sent' => $sent, 'created_at' => GameClock::now()]);
 
         return response()->json(['sent' => $sent], 201);
+    }
+
+    /** [Sprint 21 E7.2] The announcements sent, newest first, each whole with its sender and time. */
+    public function announcements(): JsonResponse
+    {
+        $rows = DB::table('announcements')->leftJoin('users', 'users.id', '=', 'announcements.user_id')->orderByDesc('announcements.id')->limit(100)
+            ->get(['announcements.*', 'users.name', 'users.username']);
+
+        return response()->json(['announcements' => $rows->map(fn ($a) => ['id' => $a->id, 'title' => $a->title, 'body' => $a->body, 'sent' => (int) $a->sent,
+            'sender' => $a->name ? ['name' => $a->name, 'username' => $this->officialName((string) $a->username), 'official' => Username::official($a->username)] : null,
+            'at' => Carbon::parse($a->created_at, 'UTC')->toIso8601ZuluString()])]);
+    }
+
+    /** [Sprint 21 E7.7] The conversations with the coaches; one coach's thread; a developer writes to a coach. */
+    public function conversations(): JsonResponse
+    {
+        return response()->json(['conversations' => Conversations::inbox()]);
+    }
+
+    public function conversation(User $user): JsonResponse
+    {
+        Conversations::markRead($user->id, true);
+
+        return response()->json(['user' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'account_no' => $user->account_no], 'messages' => Conversations::thread($user->id)]);
+    }
+
+    public function writeTo(Request $request, User $user): JsonResponse
+    {
+        $body = trim((string) $request->validate(['body' => ['required', 'string', 'min:1', 'max:'.Conversations::MAX]])['body']);
+        Conversations::fromTeam($request->user(), $user, $body);
+
+        return $this->conversation($user);
     }
 
     /** owner-sizar → Owner-Sizar, as written in the settings. */

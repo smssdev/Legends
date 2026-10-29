@@ -115,7 +115,7 @@ class OperationsTest extends TestCase
         Activity::record($user->id, 'visits');
         Activity::record($user->id, 'matches_watched');
         $this->getJson('/api/v1/admin/overview')->assertOk()->assertJsonPath('users', 2)->assertJsonPath('active_today', 2);
-        $this->getJson('/api/v1/admin/users')->assertOk()->assertJsonCount(2, 'users');
+        $this->getJson('/api/v1/admin/users')->assertOk()->assertJsonCount(1, 'users')->assertJsonCount(1, 'admins');
         $this->getJson('/api/v1/admin/leagues')->assertOk();
         $this->getJson('/api/v1/admin/commentary')->assertOk();
         // [X33] Whether a deploy is safe now, and a backup to download off the server.

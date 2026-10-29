@@ -2146,7 +2146,9 @@ paths:
   /admin/users:
     get:
       tags: [admin]
-      summary: The accounts, newest first (200)
+      summary: '[Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name'
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string, maxLength: 80 }, description: 'Five digits: the account number; else part of the name, username or email' }
       responses:
         '200':
           description: The accounts
@@ -2154,23 +2156,113 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [users]
+                required: [admins, users]
                 properties:
-                  users:
+                  admins: { type: array, items: { $ref: '#/components/schemas/AdminUser' } }
+                  users: { type: array, items: { $ref: '#/components/schemas/AdminUser' } }
+  /admin/users/{user}:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [admin]
+      summary: '[Sprint 21 E7.3] Delete a coach''s account for good (never an admin''s), confirmed by its number; logged'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [confirm], properties: { confirm: { type: integer, description: The account number } } } } }
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/users/{user}/suspend:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 21 E7.3] Suspend a coach''s account with the reason he reads; logged'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string, minLength: 3, maxLength: 300 } } } } }
+      responses:
+        '200': { description: Suspended, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [admin]
+      summary: '[Sprint 21 E7.3] Lift the suspension; logged'
+      responses:
+        '200': { description: Lifted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /admin/activity:
+    get:
+      tags: [admin]
+      summary: '[Sprint 21 E7.5] The activity day by day (Cairo) and what the admins did to accounts'
+      parameters:
+        - { name: days, in: query, required: false, schema: { type: integer, minimum: 7, maximum: 90 } }
+      responses:
+        '200':
+          description: The days, newest first, and the log
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [days, log]
+                properties:
+                  days:
+                    type: array
+                    items: { type: object, required: [day, active, logins, watched, orders, joined], properties: { day: { type: string }, active: { type: integer }, logins: { type: integer }, watched: { type: integer }, orders: { type: integer }, joined: { type: integer } } }
+                  log:
+                    type: array
+                    items: { type: object, required: [action, admin, target, details, at], properties: { action: { type: string }, admin: { type: string, nullable: true }, target: { type: string, nullable: true }, details: { type: string, nullable: true }, at: { type: string, format: date-time } } }
+  /admin/conversations:
+    get:
+      tags: [admin]
+      summary: '[Sprint 21 E7.7] The conversations with the coaches: the last message and the coach''s unread'
+      responses:
+        '200':
+          description: The conversations
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [conversations]
+                properties:
+                  conversations:
                     type: array
                     items:
                       type: object
-                      required: [id, name, username, email, role, verified, joined, last_day, matches_watched]
+                      required: [user, last, from_team, unread, at]
                       properties:
-                        id: { type: integer }
-                        name: { type: string }
-                        username: { type: string }
-                        email: { type: string, nullable: true }
-                        role: { type: string }
-                        verified: { type: boolean, description: '[UP6] Verified by a WhatsApp code' }
-                        joined: { type: string, format: date-time }
-                        last_day: { type: string, nullable: true }
-                        matches_watched: { type: integer }
+                        user: { type: object, required: [id, name, username, account_no], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, account_no: { type: integer, nullable: true } } }
+                        last: { type: string }
+                        from_team: { type: boolean }
+                        unread: { type: integer }
+                        at: { type: string, format: date-time }
+  /admin/conversations/{user}:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [admin]
+      summary: '[Sprint 21 E7.7] One coach''s thread (marks his messages read)'
+      responses:
+        '200': { description: The thread, content: { application/json: { schema: { $ref: '#/components/schemas/AdminThread' } } } }
+    post:
+      tags: [admin]
+      summary: '[Sprint 21 E7.7] An official developer account writes to the coach; it reaches his inbox with the badge'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [body], properties: { body: { type: string, maxLength: 2000 } } } } }
+      responses:
+        '200': { description: The thread after it, content: { application/json: { schema: { $ref: '#/components/schemas/AdminThread' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /support:
+    get:
+      tags: [auth]
+      summary: '[Sprint 21 E7.7] My conversation with the game''s developers (marks theirs read)'
+      responses:
+        '200': { description: The thread, content: { application/json: { schema: { type: object, required: [messages], properties: { messages: { type: array, items: { $ref: '#/components/schemas/SupportMessage' } } } } } } }
+    post:
+      tags: [auth]
+      summary: '[Sprint 21 E7.7] Write to the developers'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [body], properties: { body: { type: string, maxLength: 2000 } } } } }
+      responses:
+        '200': { description: The thread after it, content: { application/json: { schema: { type: object, required: [messages], properties: { messages: { type: array, items: { $ref: '#/components/schemas/SupportMessage' } } } } } } }
   /admin/leagues:
     get:
       tags: [admin]
@@ -2196,6 +2288,7 @@ paths:
                         teams: { type: integer }
                         dev: { type: boolean }
                         owner: { type: string, nullable: true }
+                        owner_no: { type: integer, nullable: true, description: '[Sprint 21 E7.6] The creator''s account number' }
                         coaches: { type: integer }
                         season: { type: integer }
   /admin/backups:
@@ -2238,11 +2331,15 @@ paths:
                       required: [id, user, days, reason, status, asked_at]
                       properties:
                         id: { type: integer }
-                        user: { type: object, required: [id, name, username], properties: { id: { type: integer }, name: { type: string }, username: { type: string } } }
+                        user: { type: object, required: [id, name, username], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, account_no: { type: integer, nullable: true } } }
                         days: { type: integer }
                         reason: { type: string }
                         status: { type: string, enum: [pending, approved, rejected] }
                         asked_at: { type: string, format: date-time }
+                        starts_at: { type: string, format: date-time, nullable: true }
+                        ends_at: { type: string, format: date-time, nullable: true }
+                        decided_at: { type: string, format: date-time, nullable: true }
+                        decided_by: { type: string, nullable: true }
   /admin/vacations/{id}/decide:
     post:
       tags: [admin]
@@ -2318,6 +2415,30 @@ paths:
                   error: { type: string, nullable: true }
                   fix: { type: string, nullable: true }
   /admin/announcements:
+    get:
+      tags: [admin]
+      summary: '[Sprint 21 E7.2] The announcements sent, newest first, whole, with the sender and the time'
+      responses:
+        '200':
+          description: The announcements
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [announcements]
+                properties:
+                  announcements:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, title, body, sent, sender, at]
+                      properties:
+                        id: { type: integer }
+                        title: { type: string }
+                        body: { type: string }
+                        sent: { type: integer }
+                        sender: { type: object, nullable: true, required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
+                        at: { type: string, format: date-time }
     post:
       tags: [admin]
       summary: A message to every account from an official developer account, with the badge [X11]
@@ -2383,7 +2504,7 @@ paths:
               type: object
               required: [kinds]
               properties:
-                kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence' }
+                kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence, news' }
       responses:
         '200':
           description: The settings after
@@ -3858,7 +3979,7 @@ components:
             type: object
             required: [kind, on]
             properties:
-              kind: { type: string, enum: [referee, match_soon, offers, done, absence] }
+              kind: { type: string, enum: [referee, match_soon, offers, done, absence, news] }
               on: { type: boolean }
     WalletView:
       type: object
@@ -4174,12 +4295,45 @@ components:
           type: object
           description: pac, sho, pas, dri, def, phy for outfield players; diving, handling, kicking, positioning, reflexes for keepers
           additionalProperties: { type: integer, nullable: true }
+    AdminUser:
+      type: object
+      required: [id, account_no, name, username, email, role, official, verified, suspended, joined, last_day, matches_watched]
+      properties:
+        id: { type: integer }
+        account_no: { type: integer, nullable: true }
+        name: { type: string }
+        username: { type: string }
+        email: { type: string, nullable: true }
+        role: { type: string }
+        official: { type: boolean }
+        verified: { type: boolean }
+        suspended: { type: object, nullable: true, required: [at, reason], properties: { at: { type: string, format: date-time }, reason: { type: string, nullable: true } } }
+        joined: { type: string, format: date-time }
+        last_day: { type: string, nullable: true }
+        matches_watched: { type: integer }
+    SupportMessage:
+      type: object
+      required: [id, body, from_team, sender, read, at]
+      properties:
+        id: { type: integer }
+        body: { type: string }
+        from_team: { type: boolean, description: Written by a developer }
+        sender: { type: object, nullable: true, required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
+        read: { type: boolean }
+        at: { type: string, format: date-time }
+    AdminThread:
+      type: object
+      required: [user, messages]
+      properties:
+        user: { type: object, required: [id, name, username, account_no], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, account_no: { type: integer, nullable: true } } }
+        messages: { type: array, items: { $ref: '#/components/schemas/SupportMessage' } }
     Account:
       type: object
       required: [id, account_no, name, username, official, avatar_url, email, email_verified, verification, referral, role, has_password, google, vacation, inactivity_days, viewing]
       properties:
         id: { type: integer }
         account_no: { type: integer, description: '[Sprint 21 E2.1] The account''s own five-digit number, shown and searched' }
+        suspended: { type: object, nullable: true, required: [reason], description: '[Sprint 21 E7.3] Suspended by the developers', properties: { reason: { type: string, nullable: true } } }
         name: { type: string }
         username: { type: string, description: 'English letters only, lower case' }
         official: { type: boolean, description: 'A developer account (Owner-Sizar, Owner-Sliman), shown with the official badge [X11]' }

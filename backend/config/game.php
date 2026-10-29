@@ -366,6 +366,8 @@ return [
             'match_soon' => ['match_soon'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward'],
+            // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
+            'news' => ['announcement', 'official_message'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).

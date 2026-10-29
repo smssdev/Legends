@@ -4,6 +4,7 @@ use App\Http\Errors\ApiErrors;
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\CompressJson;
 use App\Http\Middleware\LeagueActivity;
+use App\Http\Middleware\NotSuspended;
 use App\Http\Middleware\RecordActivity;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
@@ -33,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Security headers on every answer, and big JSON gzipped [E1].
         $middleware->append(SecurityHeaders::class);
         $middleware->appendToGroup('api', CompressJson::class);
+        // [Sprint 21 E7.3] A suspended account is told why and kept out.
+        $middleware->appendToGroup('api', NotSuspended::class);
         // The public link (Tailscale Funnel) reaches the game through tailscaled on this machine: trust only
         // that local hop's X-Forwarded-* headers, so links and cookies are https on the public address.
         // A Codespace sets TRUSTED_PROXIES=* (.devcontainer/env.sh): there only GitHub's forwarding reaches the game.

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
 use App\Http\Controllers\Api\SpyController;
 use App\Http\Controllers\Api\StadiumController;
+use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TrainingController;
@@ -250,7 +251,23 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('vacations', 'vacations');
         Route::post('vacations/{id}/decide', 'decideVacation')->whereNumber('id');
         Route::post('announcements', 'announce');
+        // [Sprint 21 E7] The announcements as sent, the accounts' suspension and deletion, the activity, and the
+        // developers' conversations with the coaches.
+        Route::get('announcements', 'announcements');
+        Route::post('users/{user}/suspend', 'suspend')->whereNumber('user');
+        Route::delete('users/{user}/suspend', 'unsuspend')->whereNumber('user');
+        Route::delete('users/{user}', 'deleteUser')->whereNumber('user');
+        Route::get('activity', 'activity');
+        Route::get('conversations', 'conversations');
+        Route::get('conversations/{user}', 'conversation')->whereNumber('user');
+        Route::post('conversations/{user}', 'writeTo')->whereNumber('user')->middleware('throttle:30,1,admin-write');
     });
+});
+
+// [Sprint 21 E7.7] The coach's conversation with the game's developers.
+Route::prefix('support')->middleware(['auth:sanctum', 'throttle:60,1,support'])->controller(SupportController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::post('/', 'write')->middleware('throttle:10,1,support-write');
 });
 
 // Notifications [Sprint 36]: the kinds wanted and this browser's subscription.
