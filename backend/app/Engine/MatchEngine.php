@@ -248,7 +248,8 @@ final class MatchEngine
         return ['p' => $p, 'ok' => $roll < $p, 'margin' => $p - $roll];
     }
 
-    private function shape(array $tactics): int
+    /** The defensive shape a side's tactics make: 0 high, 1 middle, 2 low (the tactics book reads the same rule). */
+    public static function shape(array $tactics): int
     {
         $score = $tactics['pressing'] + intdiv($tactics['style'] - 50, 2) + ($tactics['trap'] ? 15 : 0)
             + ($tactics['def'] === 'mid' ? 5 : 0) - ($tactics['mid'] === 'def' ? 8 : 0);
@@ -307,7 +308,7 @@ final class MatchEngine
         $this->third($atk, 1);
         $this->danger = $atk === 'home' ? 2 : -2;
         $mix = self::PLAN_MIX[$plan] ?? 'passing';
-        $matchup = (int) ($this->eng['matchup_cp'][$this->planKey($plan)][$this->shape($td)] ?? 0);
+        $matchup = (int) ($this->eng['matchup_cp'][$this->planKey($plan)][self::shape($td)] ?? 0);
         $a = $this->ability($atk, $mix, Ability::LINES[$mix]) - $tempoLoss + $matchup + $this->posMod($ta, 'progress')
             + ($counter ? (int) $this->eng['counter_bonus_cp'] : 0);
         $holdMix = $plan === 'counter' ? 'hold_counter' : 'hold';

@@ -12,6 +12,7 @@ use App\League\MatchPrep;
 use App\League\Morale;
 use App\League\Scenarios;
 use App\League\Tactics;
+use App\League\TacticsBook;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\League;
@@ -135,6 +136,7 @@ class TeamController extends Controller
 
         return response()->json(['tactics' => $t, 'tips' => Tactics::tips($t, $next?->referee_strictness), 'referee' => $next?->referee_strictness,
             'help' => app()->getLocale() === 'en' ? Tactics::HELP_EN : Tactics::HELP, 'scenarios' => Scenarios::of($club),
+            'book' => TacticsBook::build(config('game.engine'), $t),
             'scenario_kinds' => collect(Scenarios::KINDS)->map(fn ($m, $kind) => ['kind' => $kind, 'minute' => $m ? ['default' => $m[0], 'min' => $m[1], 'max' => $m[2]] : null])->values()]);
     }
 
