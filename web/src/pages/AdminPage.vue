@@ -29,6 +29,7 @@ const SECTIONS = {
   leagues: { label: 'الدوريات', icon: 'leagues' },
   announcements: { label: 'الإعلانات', icon: 'bell' },
   houseAds: { label: 'إعلانات المكافأة', icon: 'match' },
+  events: { label: 'الفعاليات', icon: 'league' },
   vacations: { label: 'الإجازات', icon: 'stadium' },
   conversations: { label: 'الرسائل', icon: 'inbox' },
   alliances: { label: 'بطولات التحالفات', icon: 'match' },
@@ -53,6 +54,11 @@ const vacations = ref<any[]>([])
 const houseAds = ref<S['HouseAd'][]>([])
 const houseDefaults = ref(0)
 const draft = ref({ title: '', body: '', cta_label: '', cta_url: '', seconds: 30 })
+// [Sprint 23] The timed events: what the admin turns on, where, and from when to when.
+const events = ref<S['TimedEvent'][]>([])
+const eventKinds = ref<Record<string, Record<string, number>>>({})
+const eventMaxDays = ref(14)
+const evDraft = ref<{ kind: S['TimedEvent']['kind']; league_id: number | null; starts: string; hours: number; power: number | null; count: number | null }>({ kind: 'madness', league_id: null, starts: '', hours: 48, power: null, count: null })
 const vacationFilter = ref<'pending' | 'decided'>('pending')
 const conversations = ref<any[]>([])
 const thread = ref<any | null>(null)
@@ -103,6 +109,7 @@ async function show(s: Section) {
   if (s === 'announcements') announcements.value = (await api.GET('/admin/announcements')).data!.announcements
   if (s === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
   if (s === 'houseAds') await loadHouseAds()
+  if (s === 'events') await loadEvents()
   if (s === 'conversations') { conversations.value = (await api.GET('/admin/conversations')).data!.conversations; thread.value = null }
   if (s === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (s === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
@@ -219,6 +226,50 @@ const toggleHouseAd = (a: S['HouseAd']) => run(async () => {
 const deleteHouseAd = (a: S['HouseAd']) => run(async () => {
   await api.DELETE('/admin/house-ads/{id}', { params: { path: { id: a.id } } })
   await loadHouseAds()
+})
+
+// The timed events [Sprint 23]: the power is shown in its own unit (× for the multipliers, % for the discounts, points).
+const EVENT_KINDS: { id: S['TimedEvent']['kind']; label: string }[] = [
+  { id: 'madness', label: '⚡ جنون الانتقالات' }, { id: 'progression', label: '🚀 التقدم الفائق' }, { id: 'discount', label: '🏷️ خصم السوق' },
+  { id: 'offers', label: '🎁 العروض الخاصة' }, { id: 'in_form', label: '🔥 نجوم الأسبوع' }, { id: 'legends', label: '👑 الأساطير' },
+]
+const EVENT_HELP: Record<string, string> = {
+  madness: 'المشترون من خارج الدوري وتجديد السوق أسرع بهذا المضاعف.',
+  progression: 'كل جلسة تدريب أكبر بهذا المضاعف.',
+  discount: 'لاعبو العالم (مجموعة السوق) أرخص بهذه النسبة.',
+  offers: 'في كل تجديد للسوق: هذا العدد من اللاعبين بخصم بهذه النسبة حتى التجديد التالي. يبدأ بتجديد السوق فوراً.',
+  in_form: 'في كل تجديد: هذا العدد من اللاعبين في قمة مستواهم، بزيادة بهذه النقاط تبقى معهم. يبدأ بتجديد السوق فوراً.',
+  legends: 'في كل تجديد: هذا العدد من اللاعبين أقوى من أفضل لاعبي الدوري حتى هذه النقاط، بسعر أعلى. يبدأ بتجديد السوق فوراً.',
+}
+const unit = (kind: string) => (kind === 'madness' || kind === 'progression' ? 'x' : kind === 'discount' || kind === 'offers' ? '%' : 'pt')
+const toUi = (kind: string, power: number) => (unit(kind) === 'x' ? power / 10000 : unit(kind) === '%' ? power / 100 : power)
+const fromUi = (kind: string, v: number) => Math.round(unit(kind) === 'x' ? v * 10000 : unit(kind) === '%' ? v * 100 : v)
+const powerText = (kind: string, power: number) => (unit(kind) === 'x' ? `x${toUi(kind, power)}` : unit(kind) === '%' ? `${toUi(kind, power)}%` : `+${power}`)
+const evKind = computed(() => eventKinds.value[evDraft.value.kind])
+async function loadEvents() {
+  const data = (await api.GET('/admin/events')).data!
+  events.value = data.events
+  eventKinds.value = data.kinds
+  eventMaxDays.value = data.max_days
+  if (!leagues.value.length) leagues.value = (await api.GET('/admin/leagues')).data!.leagues
+}
+const addEvent = () => run(async () => {
+  const d = evDraft.value
+  const starts = d.starts ? new Date(d.starts) : new Date()
+  const ends = new Date(starts.getTime() + d.hours * 3600_000)
+  await api.POST('/admin/events', { body: { kind: d.kind, league_id: d.league_id, starts_at: d.starts ? starts.toISOString() : null, ends_at: ends.toISOString(),
+    power: d.power === null ? null : fromUi(d.kind, d.power), count: evKind.value?.count ? d.count : null } })
+  notice.value = t('بدأت الفعالية، وتنتهي وحدها في موعدها.')
+  evDraft.value = { ...d, starts: '', power: null, count: null }
+  await loadEvents()
+})
+const extendEvent = (e: S['TimedEvent']) => run(async () => {
+  await api.PATCH('/admin/events/{id}', { params: { path: { id: e.id } }, body: { ends_at: new Date(new Date(e.ends_at).getTime() + 24 * 3600_000).toISOString() } })
+  await loadEvents()
+})
+const stopEvent = (e: S['TimedEvent']) => run(async () => {
+  await api.DELETE('/admin/events/{id}', { params: { path: { id: e.id } } })
+  await loadEvents()
 })
 
 // The holidays [Sprint 21 E7.4].
@@ -487,6 +538,47 @@ onMounted(load)
             <div class="flex gap-2">
               <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="toggleHouseAd(a)">{{ a.active ? $t('أوقفه') : $t('فعّله') }}</button>
               <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="deleteHouseAd(a)">{{ $t('احذف') }}</button>
+            </div>
+          </article>
+        </template>
+
+        <!-- [Sprint 23] The timed events: none permanent, each with its start and end, in every league or one. -->
+        <template v-if="tab === 'events'">
+          <section :aria-label="$t('فعالية جديدة')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+            <h2 class="font-display text-lg font-bold">{{ $t('فعالية جديدة') }}</h2>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <label class="flex flex-col gap-1 text-sm">{{ $t('النوع') }}
+                <select v-model="evDraft.kind" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" @change="evDraft.power = evDraft.count = null">
+                  <option v-for="k in EVENT_KINDS" :key="k.id" :value="k.id">{{ $t(k.label) }}</option>
+                </select></label>
+              <label class="flex flex-col gap-1 text-sm">{{ $t('أين') }}
+                <select v-model="evDraft.league_id" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3">
+                  <option :value="null">{{ $t('كل الدوريات') }}</option>
+                  <option v-for="l in leagues" :key="l.id" :value="l.id">{{ l.name }} (#{{ l.id }})</option>
+                </select></label>
+              <label class="flex flex-col gap-1 text-sm">{{ $t('البداية (فارغة = الآن)') }}
+                <input v-model="evDraft.starts" type="datetime-local" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" /></label>
+              <label class="flex flex-col gap-1 text-sm">{{ $t('المدة بالساعات (حتى {v0} يوماً)', { v0: eventMaxDays }) }}
+                <input v-model.number="evDraft.hours" type="number" min="1" :max="eventMaxDays * 24" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3 font-numbers" /></label>
+              <label v-if="evKind" class="flex flex-col gap-1 text-sm">{{ $t('القوة: من {v0} إلى {v1}', { v0: powerText(evDraft.kind, evKind.min), v1: powerText(evDraft.kind, evKind.max) }) }}
+                <input v-model.number="evDraft.power" type="number" :step="unit(evDraft.kind) === 'x' ? 0.25 : 1" :min="toUi(evDraft.kind, evKind.min)" :max="toUi(evDraft.kind, evKind.max)"
+                  :placeholder="String(toUi(evDraft.kind, evKind.power))" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3 font-numbers" /></label>
+              <label v-if="evKind?.count" class="flex flex-col gap-1 text-sm">{{ $t('عدد اللاعبين في كل تجديد (حتى {v0})', { v0: evKind.count_max }) }}
+                <input v-model.number="evDraft.count" type="number" min="1" :max="evKind.count_max" :placeholder="String(evKind.count)" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3 font-numbers" /></label>
+            </div>
+            <p class="text-xs text-text-muted">{{ $t(EVENT_HELP[evDraft.kind]) }}</p>
+            <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !evDraft.hours || evDraft.hours > eventMaxDays * 24" @click="addEvent">{{ $t('ابدأ الفعالية') }}</button>
+          </section>
+          <p v-if="!events.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا فعاليات بعد.') }}</p>
+          <article v-for="e in events" :key="e.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4" :class="e.state === 'ended' ? 'opacity-60' : ''">
+            <div class="flex flex-wrap items-center gap-2">
+              <b class="min-w-0 flex-1 font-display">{{ $t(EVENT_KINDS.find((k) => k.id === e.kind)?.label ?? e.kind) }} <span class="font-numbers text-gold" dir="ltr">{{ powerText(e.kind, e.power) }}</span></b>
+              <span class="rounded-pill px-2 text-xs font-bold" :class="e.state === 'running' ? 'bg-success/15 text-success' : e.state === 'upcoming' ? 'bg-gold/15 text-gold' : 'bg-text/10 text-text-muted'">{{ $t(e.state === 'running' ? 'جارية' : e.state === 'upcoming' ? 'قادمة' : 'انتهت') }}</span>
+            </div>
+            <p class="text-xs text-text-muted">{{ e.league ? e.league.name : $t('كل الدوريات') }} · {{ when(e.starts_at) }} ← {{ when(e.ends_at) }}<template v-if="e.count"> · {{ $t('{v0} لاعبين في كل تجديد', { v0: e.count }) }}</template></p>
+            <div v-if="e.state !== 'ended'" class="flex gap-2">
+              <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="extendEvent(e)">{{ $t('مدّها 24 ساعة') }}</button>
+              <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="stopEvent(e)">{{ $t(e.state === 'running' ? 'أنهِها الآن' : 'احذف') }}</button>
             </div>
           </article>
         </template>

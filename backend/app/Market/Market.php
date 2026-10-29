@@ -6,6 +6,7 @@ use App\League\ClubLedger;
 use App\League\Integrity;
 use App\League\MatchPrep;
 use App\Support\GameClock;
+use App\TimedEvents\TimedEvents;
 use App\Wallet\Price;
 use App\Wallet\Wallet;
 use Illuminate\Support\Carbon;
@@ -77,11 +78,26 @@ class Market
         if ($player->club_id === null) {
             $scouted = $buyer !== null && ($player->scouted_by ?? null) === $buyer;
 
-            return $player->in_pool || $scouted ? intdiv((int) $player->value * $cfg['buy_from_pool_bp'], 10000) : null;
+            return $player->in_pool || $scouted ? self::poolPrice($player) : null;
         }
         $bot = DB::table('clubs')->where('id', $player->club_id)->whereNull('user_id')->exists();
 
         return $bot ? intdiv((int) $player->value * $cfg['buy_from_bot_bp'], 10000) : null;
+    }
+
+    /**
+     * A world player's price [Sprint 23]: 100% of his value, a special offer's or a legend's own share of it, and a
+     * market discount from the admin on the plain ones (the specials have their own price).
+     */
+    public static function poolPrice(object $player): int
+    {
+        if (($player->pool_price_bp ?? null) !== null) {
+            return intdiv((int) $player->value * (int) $player->pool_price_bp, 10000);
+        }
+        $price = intdiv((int) $player->value * (int) config('game.economy.buy_from_pool_bp'), 10000);
+        $off = TimedEvents::power('discount', (int) $player->league_id);
+
+        return $off > 0 ? intdiv($price * (10000 - min(9000, $off)), 10000) : $price;
     }
 
     /**
@@ -146,7 +162,7 @@ class Market
             // The player is this buyer's only if nobody took him first.
             $taken = DB::table('players')->where('id', $playerId)
                 ->where(fn ($q) => $from === null ? $q->whereNull('club_id')->where(fn ($q) => $q->where('in_pool', true)->orWhere('scouted_by', $clubId)) : $q->where('club_id', $from))
-                ->update(['club_id' => $clubId, 'in_pool' => false, 'scouted_by' => null, 'updated_at' => GameClock::now()]);
+                ->update(['club_id' => $clubId, 'in_pool' => false, 'scouted_by' => null, 'pool_kind' => null, 'pool_price_bp' => null, 'bought_for' => $price, 'updated_at' => GameClock::now()]);
             if ($taken !== 1) {
                 throw new HttpException(409, 'سبقك مدرب آخر إلى هذا اللاعب.');
             }
@@ -184,7 +200,8 @@ class Market
         MatchPrep::assertFree([$playerId]);
 
         return DB::transaction(function () use ($clubId, $playerId, $key) {
-            $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
+            // Done already: the balance after its last line (the profit's, when it made one) [Sprint 23].
+            $done = DB::table('club_transactions')->whereIn('idempotency_key', [$key, "{$key}:profit"])->orderByDesc('id')->first();
             if ($done) {
                 return (int) $done->balance_after;
             }
@@ -193,6 +210,8 @@ class Market
             $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
             abort_unless($p, 404, __('اللاعب ليس في فريقك.'));
             self::assertKeeps($clubId, $p, (int) config('game.economy.min_squad'), __('لا يمكن أن ينزل فريقك عن %d لاعباً.'));
+            // [Sprint 23] His value, within the season's profit room.
+            $pays = Buyer::quickPays($p, $clubId);
             $fee = intdiv((int) $p->value * (int) config('game.economy.quick_sale_fee_bp'), 10000);
             Price::charge($clubId, 'quick_sale', $fee, "{$key}:fee", "player:{$playerId}");
             $sold = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
@@ -201,7 +220,7 @@ class Market
             }
             Transfers::left($playerId, $clubId);
 
-            return ClubLedger::post($clubId, 'pool_sale', (int) $p->value, $key, "player:{$playerId}");
+            return Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
         });
     }
 

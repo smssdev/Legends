@@ -2906,7 +2906,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description [UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first) */
+                    /** @description [UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first); [Sprint 23] special (offer|in_form|legend, an event's player, listed first of all), was_price (the price before a discount), renews_at (sooner in a transfer madness) and events (TimedEventNow[]) */
                     source?: "list" | "pool" | "bots";
                     line?: "gk" | "def" | "mid" | "att";
                     /** @description Part of a name */
@@ -3581,7 +3581,7 @@ export interface paths {
         put?: never;
         /**
          * List one of my players at my price (50% of his value to his sale cap)
-         * @description The cap is 130% of his value, or his value for a player the club bought. Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap), and the money comes to the club.
+         * @description [Sprint 23] The cap is 250% of his value, and never more than his cost (what the club paid, or his value at the season's start) plus the season's profit room (sale_profit_bp_per_season of the money scale, less the profit made selling outside and what the club's other listings ask over their cost). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: the profit over his cost as its own line (sale_profit), as for the instant sale.
          */
         post: {
             parameters: {
@@ -4301,6 +4301,7 @@ export interface paths {
          * @description Sprint 27 (PLAN 2.8). One player of each line trains at a time. Every session (8 hours scaled by the season's
          *     length) costs club money and moves his bar by a random step, coach online or not; at 100% his rating and
          *     attributes go up by one and the slot empties. No training past his potential. Due sessions run before the answer.
+         *     [Sprint 23] The step is bigger for the young and smaller from 29 (age_bp), and bigger in an extreme progression.
          */
         get: {
             parameters: {
@@ -6215,6 +6216,170 @@ export interface paths {
                     };
                 };
                 404: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
+    "/admin/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 23] The timed events, the latest end first, with each kind's default power, range and count */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            events: components["schemas"]["TimedEvent"][];
+                            kinds: {
+                                [key: string]: {
+                                    [key: string]: number;
+                                };
+                            };
+                            max_days: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * [Sprint 23] A timed event: every league or one, from its start (now by default) to its end (14 days at most)
+         * @description madness (outside buyers and the market's renewal faster), progression (every training step bigger), discount (the pool cheaper), offers (players at a discount each renewal), in_form (players of the week, a few points above their rating), legends (players over the league's best, at 150%). The last three renew the market when they start.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "madness" | "progression" | "discount" | "offers" | "in_form" | "legends";
+                        league_id?: number | null;
+                        /** Format: date-time */
+                        starts_at?: string | null;
+                        /** Format: date-time */
+                        ends_at: string;
+                        /** @description Within the kind's range (its default when absent) */
+                        power?: number | null;
+                        count?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Made */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            event: components["schemas"]["TimedEvent"];
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 23] One not started is deleted; one running ends now (and stays as a record) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                            deleted: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        /** [Sprint 23] Change a running or coming event: its end, power or count */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        ends_at?: string;
+                        power?: number;
+                        count?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Changed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            event: components["schemas"]["TimedEvent"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
             };
         };
         trace?: never;
@@ -8806,12 +8971,15 @@ export interface components {
                 overall: number;
                 /** @description His value now */
                 value: number;
+                /** @description [Sprint 23] His cost to the club (what it paid, or his value at the season's start): the profit of selling him outside is counted from it */
+                cost?: number;
                 /** @description The least a listing asks */
                 floor: number;
-                /** @description The most a listing asks (his sale cap) */
+                /** @description The most a listing asks: 250% of his value, within the season's profit room [Sprint 23] */
                 cap: number;
                 /** @description The instant sale */
                 quick: {
+                    /** @description His value, within the season's profit room [Sprint 23] */
                     pays: number;
                     fee: {
                         /** @enum {string} */
@@ -8819,7 +8987,7 @@ export interface components {
                         amount: number;
                     };
                 };
-                /** @description About how long the outside buyer takes at his value and at his cap */
+                /** @description About how long the outside buyer takes at his value and at his cap (his age and rating, and a transfer madness, counted) [Sprint 23] */
                 wait_hours: {
                     value: number;
                     cap: number;
@@ -8830,6 +8998,14 @@ export interface components {
                     sells_at: string | null;
                 } | null;
             }[];
+            /** @description [Sprint 23] Listing: how many at once, how many now, and the season's profit room selling outside the league */
+            selling?: {
+                max_listings: number;
+                listed: number;
+                /** @description What is left of the season's profit room, less what the listings ask over their cost */
+                room: number;
+                allowance: number;
+            };
         };
         ClubFinance: {
             balance: number;
@@ -9459,6 +9635,34 @@ export interface components {
             max: number;
             used: number;
         };
+        /** @description [Sprint 23] An admin's event running now, for the coach's screens */
+        TimedEventNow: {
+            /** @enum {string} */
+            kind: "madness" | "progression" | "discount" | "offers" | "in_form" | "legends";
+            /** @description madness and progression: times as fast (bp); discount and offers: off the price (bp); in_form: points; legends: points over the league's best */
+            power: number;
+            /** Format: date-time */
+            ends_at: string;
+        };
+        TimedEvent: {
+            id: number;
+            /** @enum {string} */
+            kind: "madness" | "progression" | "discount" | "offers" | "in_form" | "legends";
+            /** @description Null for every league */
+            league: {
+                id: number;
+                name: string | null;
+            } | null;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            power: number;
+            /** @description The special players each market renewal brings (offers, in_form, legends); 0 for the others */
+            count: number;
+            /** @enum {string} */
+            state: "upcoming" | "running" | "ended";
+        };
         HouseAd: {
             id: number;
             title: string;
@@ -9527,8 +9731,10 @@ export interface components {
             potential: number;
             /** @description The bar */
             progress: number;
-            /** @description About how many sessions a +1 takes at his rating */
+            /** @description About how many sessions a +1 takes at his rating and age [Sprint 23] */
             sessions: number;
+            /** @description [Sprint 23] How big his sessions are at his age, in bp (10000 = the average) */
+            age_bp?: number;
             injured: boolean;
             /** @description At 99, training adds nothing [X16] */
             maxed: boolean;
@@ -9545,6 +9751,8 @@ export interface components {
              * @description The game clock
              */
             now: string;
+            /** @description [Sprint 23] An extreme progression running in this league (the strongest) */
+            events?: components["schemas"]["TimedEventNow"][];
             slots: {
                 /** @enum {string} */
                 line: "gk" | "def" | "mid" | "att";

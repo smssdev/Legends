@@ -25,7 +25,7 @@ class SimTraining extends Command
         $players = DB::table('master_players')->join('master_clubs', 'master_clubs.id', '=', 'master_players.master_club_id')
             ->where('master_clubs.league_name', $this->option('league'))->where('master_players.data_version', $version)
             ->whereColumn('master_players.potential', '>', 'master_players.overall')
-            ->orderBy('master_players.id')->get(['master_players.id', 'master_players.overall', 'master_players.potential']);
+            ->orderBy('master_players.id')->get(['master_players.id', 'master_players.overall', 'master_players.potential', 'master_players.age']);
         if ($players->isEmpty()) {
             $this->error('No players with room to grow in '.$this->option('league').'.');
 
@@ -34,19 +34,26 @@ class SimTraining extends Command
         $gain = Gain::fromConfig();
         $seed = (int) $this->option('seed');
         $rows = [];
+        $ages = [];
         $total = 0;
         $capped = 0;
         foreach ($players as $p) {
-            $g = $gain->run((int) $p->overall, (int) $p->potential, $sessions, "{$seed}:{$p->id}");
+            $g = $gain->run((int) $p->overall, (int) $p->potential, $sessions, "{$seed}:{$p->id}", 0, (int) $p->age);
             $total += $g;
             $capped += $p->overall + $g >= $p->potential ? 1 : 0;
             $band = intdiv($p->overall, 5) * 5;
             $rows[$band][] = $g;
+            $ages[min(33, max(17, intdiv((int) $p->age - 17, 4) * 4 + 17))][] = $g;
         }
         ksort($rows);
         $this->table(['القوة', 'لاعبون', 'متوسط الزيادة', 'جلسات +1'], array_map(fn ($band, $g) => [
             "{$band}-".($band + 4), count($g), number_format(array_sum($g) / count($g), 2), $gain->sessions($band + 2),
         ], array_keys($rows), $rows));
+        // [Sprint 23] And by age: the young first.
+        ksort($ages);
+        $this->table(['العمر', 'لاعبون', 'متوسط الزيادة', 'خطوة الجلسة'], array_map(fn ($age, $g) => [
+            $age >= 33 ? '33+' : "{$age}-".($age + 3), count($g), number_format(array_sum($g) / count($g), 2), ($gain->ageBp($age) / 100).'%',
+        ], array_keys($ages), $ages));
         $mean = $total / $players->count();
         [$lo, $hi] = $cfg['season_gain_target'];
         $ok = $mean >= $lo && $mean <= $hi;

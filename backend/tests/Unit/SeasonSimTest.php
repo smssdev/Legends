@@ -51,14 +51,16 @@ class SeasonSimTest extends TestCase
         $this->assertSame($sane['clubs'][5]['balance'] + 750_000, $pair['clubs'][5]['balance']);
     }
 
-    public function test_buying_training_and_selling_to_the_pool_never_pays(): void
+    public function test_a_dealer_makes_no_more_than_the_seasons_profit_room(): void
     {
-        $sim = new SeasonSim(Money::fromConfig(), config('game.economy'));
+        // [Sprint 23] 250%, buy-train-sell, the discounts: all of it within sale_profit_bp_per_season of the scale.
+        $cfg = config('game.economy');
+        $sim = new SeasonSim(Money::fromConfig(), $cfg);
         $sane = $sim->run($this->clubs(), 3_000_000, $this->play());
-        $trader = $sim->run($this->clubs(), 3_000_000, $this->play(), ['trader' => 3]);
-        $this->assertGreaterThan(0, $trader['clubs'][3]['bought']);
-        $this->assertLessThan(0, $trader['clubs'][3]['traded']);
-        $this->assertLessThan($sane['clubs'][3]['balance'], $trader['clubs'][3]['balance']);
+        $dealer = $sim->run($this->clubs(), 3_000_000, $this->play(), ['dealer' => 3]);
+        $room = intdiv($sane['scale'] * $cfg['sale_profit_bp_per_season'], 10000);
+        $this->assertGreaterThan(0, $room);
+        $this->assertSame($sane['clubs'][3]['balance'] + $room, $dealer['clubs'][3]['balance']);
     }
 
     public function test_a_deep_debt_sells_the_dearest_players_but_keeps_a_squad(): void

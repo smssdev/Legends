@@ -115,15 +115,18 @@ class MarketTest extends TestCase
     public function test_the_instant_sale_pays_the_full_value_with_the_training_for_a_fee(): void
     {
         $p = $this->dearest()[0];
-        // Trained since: his value went up, and the sale pays it [X6].
+        // Trained since: his value went up, and the sale pays it [X6], the profit within the season's room [Sprint 23].
         $value = (int) $p->value * 2;
         DB::table('players')->where('id', $p->id)->update(['value' => $value, 'training_bonus' => 3]);
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => $value * 100]);
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         // A fair league: no coins, so the fee is 10% of his value from the club.
         $this->actingAs($this->owner)->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 's1'])->assertOk()
             ->assertJsonPath('balance', $before - intdiv($value, 10) + $value);
         $this->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 's1'])->assertOk()->assertJsonPath('balance', $before - intdiv($value, 10) + $value);
         $this->assertTrue((bool) DB::table('players')->where('id', $p->id)->value('in_pool'));
+        // His value at the season's start back, and the training's profit as its own line.
+        $this->assertSame($value - (int) $p->base_value, (int) DB::table('club_transactions')->where('type', 'sale_profit')->sum('amount'));
         $this->assertBooks();
         // Never below 16 players.
         $left = DB::table('players')->where('club_id', $this->mine)->count();
@@ -152,16 +155,20 @@ class MarketTest extends TestCase
     {
         $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
         [$a, $b] = $this->dearest();
+        // Room enough for the whole 250% [Sprint 23].
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => (int) $a->value * 100]);
         $this->actingAs($this->owner);
-        // The cap: 130% of his value for his own player.
-        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 13000, 10000) + 1])->assertUnprocessable();
-        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 13000, 10000)])->assertOk();
+        // The cap: 250% of his value for his own player.
+        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 25000, 10000) + 1])->assertUnprocessable();
+        $this->postJson($tr, ['player_id' => $a->id, 'price' => intdiv((int) $a->value * 25000, 10000)])->assertOk();
         $this->postJson($tr, ['player_id' => $b->id, 'price' => (int) $b->value])->assertOk();
         $at = fn ($p) => Carbon::parse(DB::table('transfer_listings')->where('player_id', $p->id)->value('sells_at'), 'UTC');
         $scale = (int) DB::table('leagues')->where('id', $this->league['id'])->value('timer_scale');
         $this->assertGreaterThan($at($b), $at($a));
-        // At his value: six hours on the season's scale, give or take a fifth.
-        $six = intdiv(6 * 3600 * $scale, 10000);
+        // At his value: six hours on the season's scale, moved by the buyer's demand for his age and rating, give or take a fifth.
+        $age = (int) DB::table('master_players')->where('id', $b->master_player_id)->value('age');
+        $demand = intdiv(Buyer::demand('demand_age', $age) * Buyer::demand('demand_overall', (int) $b->overall), 10000);
+        $six = intdiv(intdiv(6 * 3600 * $scale, 10000) * $demand, 10000);
         $this->assertEqualsWithDelta($six, GameClock::now()->diffInSeconds($at($b)), intdiv($six, 5) + 1);
 
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
@@ -174,16 +181,85 @@ class MarketTest extends TestCase
         Carbon::setTestNow($at($a)->copy()->addSecond());
         $this->assertSame(1, Buyer::due());
         $this->assertSame(0, DB::table('transfer_listings')->count());
+        // What he brought over his cost (his value at the season's start) is its own line, counted against the season's room.
+        $this->assertSame(intdiv((int) $a->value * 25000, 10000) - (int) $a->base_value, (int) DB::table('club_transactions')->where('club_id', $this->mine)->where('type', 'sale_profit')->sum('amount'));
         $this->assertBooks();
     }
 
-    public function test_a_bought_player_is_capped_at_his_value(): void
+    public function test_the_young_and_good_sell_sooner_than_the_old_and_weak(): void
+    {
+        $id = $this->league['id'];
+        // The same price and value: 20 and 80 against 33 and 60.
+        $young = Buyer::wait(1_000_000, 1_000_000, $id, 10000, 20, 80);
+        $old = Buyer::wait(1_000_000, 1_000_000, $id, 10000, 33, 60);
+        $this->assertSame(6 * 3600, Buyer::wait(1_000_000, 1_000_000, $id, 10000));
+        $this->assertLessThan(6 * 3600, $young);
+        $this->assertGreaterThan(2 * $young, $old);
+        // At the cap, about eight days.
+        $this->assertSame(192 * 3600, Buyer::wait(2_500_000, 1_000_000, $id, 10000));
+    }
+
+    public function test_four_listings_at_a_time_and_the_seasons_profit_room(): void
+    {
+        $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
+        $mine = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->orderBy('id')->limit(5)->get();
+        $this->actingAs($this->owner);
+        foreach ($mine->take(4) as $p) {
+            $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value])->assertOk();
+        }
+        $this->postJson($tr, ['player_id' => $mine[4]->id, 'price' => (int) $mine[4]->value])->assertUnprocessable()
+            ->assertJsonPath('message', 'تعرض 4 لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.');
+        // A new price for one listed already is fine.
+        $this->postJson($tr, ['player_id' => $mine[0]->id, 'price' => (int) $mine[0]->value + 1])->assertOk();
+        $this->deleteJson("{$tr}/{$mine[3]->id}")->assertOk();
+        $this->postJson($tr, ['player_id' => $mine[4]->id, 'price' => (int) $mine[4]->value])->assertOk();
+
+        // The room: 5% of the money scale; what one listing asks over its cost is kept from the others' caps.
+        DB::table('transfer_listings')->delete();
+        [$a, $b] = [$mine[0], $mine[1]];
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => 20_000_000]);
+        $room = Buyer::room($this->mine);
+        $this->assertSame(1_000_000, $room['allowance']);
+        $capA = Buyer::cap($a, $this->mine);
+        $this->assertSame(min(intdiv((int) $a->value * 25000, 10000), (int) $a->base_value + 1_000_000), $capA);
+        $this->postJson($tr, ['player_id' => $a->id, 'price' => (int) $a->base_value + 800_000])->assertOk();
+        $this->assertSame(min(intdiv((int) $b->value * 25000, 10000), (int) $b->base_value + 200_000), Buyer::cap($b, $this->mine));
+        // His own ask does not count against him.
+        $this->assertSame($capA, Buyer::cap($a, $this->mine));
+        $this->getJson($this->url().'?source=pool')->assertOk()->assertJsonPath('selling.max_listings', 4)->assertJsonPath('selling.room', 200_000);
+    }
+
+    public function test_a_bought_players_profit_is_counted_from_what_was_paid(): void
     {
         $p = $this->poolPlayer();
         $this->actingAs($this->owner)->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'k1'])->assertOk();
+        $paid = (int) DB::table('players')->where('id', $p->id)->value('bought_for');
+        $this->assertSame((int) $p->value, $paid);
+        // Trained to twice his value: with room enough, he lists up to 250% of it.
+        DB::table('players')->where('id', $p->id)->update(['value' => 2 * $paid]);
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => $paid * 1000]);
+        $p = DB::table('players')->find($p->id);
+        $this->assertSame(5 * $paid, Buyer::cap($p, $this->mine));
+        // With the season's profit room spent: his cost alone, for a listing and for the instant sale.
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => 1]);
+        $this->assertSame($paid, Buyer::cap($p, $this->mine));
+        $this->assertSame($paid, Buyer::quickPays($p, $this->mine));
         $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
-        $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value + 1])->assertUnprocessable();
-        $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value])->assertOk();
+        $this->postJson($tr, ['player_id' => $p->id, 'price' => $paid + 1])->assertUnprocessable();
+        $this->postJson($tr, ['player_id' => $p->id, 'price' => $paid])->assertOk();
+    }
+
+    public function test_a_discount_bought_and_sold_at_once_makes_no_more_than_the_room(): void
+    {
+        // The market's discount at 50%: bought at half, sold now at his full value; the profit is the room's.
+        DB::table('timed_events')->insert(['kind' => 'discount', 'league_id' => null, 'starts_at' => GameClock::now(), 'ends_at' => GameClock::now()->addDay(),
+            'power' => 5000, 'count' => 0, 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+        $p = $this->poolPlayer();
+        DB::table('leagues')->where('id', $this->league['id'])->update(['money_scale' => 1_000_000]);
+        $this->actingAs($this->owner)->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'd1'])->assertOk();
+        $this->postJson($this->url('/sell'), ['player_id' => $p->id, 'idempotency_key' => 'd2'])->assertOk();
+        $this->assertSame(min(intdiv((int) $p->value, 2), 50_000), (int) DB::table('club_transactions')->where('type', 'sale_profit')->sum('amount'));
+        $this->assertBooks();
     }
 
     public function test_the_pool_renews_every_4_hours_from_every_league_at_this_leagues_level(): void

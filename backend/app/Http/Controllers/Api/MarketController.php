@@ -6,12 +6,13 @@ use App\Data\ClubLogo;
 use App\Http\Controllers\Controller;
 use App\Market\Buyer;
 use App\Market\Market;
+use App\Market\Pool;
 use App\Models\Club;
 use App\Models\League;
+use App\TimedEvents\TimedEvents;
 use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -73,7 +74,7 @@ class MarketController extends Controller
             'players' => $rows->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
                 'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
-                'value' => (int) $p->value, 'price' => intdiv((int) $p->value * $bp, 10000),
+                'value' => (int) $p->value, 'price' => $source === 'pool' ? Market::poolPrice($p) : intdiv((int) $p->value * $bp, 10000),
                 'club' => $p->club_id ? ['id' => $p->club_id, 'name' => $clubs[$p->club_id] ?? ''] : null,
                 // For the player's card in the market [X29].
                 'attributes' => $p->line === 'gk'
@@ -81,7 +82,9 @@ class MarketController extends Controller
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
             ]),
             // My players and the ways to sell each [X6]: now for a fee at his full value, or listed up to his cap.
-            'mine' => $this->mine($club, $league),
+            'mine' => $this->mine($club, $league, $room = Buyer::room($club->id)),
+            // [Sprint 23] How many may be listed at once, and the season's room above the value for outside buyers.
+            'selling' => ['max_listings' => (int) $cfg['max_listings'], 'listed' => count($room['reserved']), 'room' => $room['left'], 'allowance' => $room['allowance']],
         ]);
     }
 
@@ -104,7 +107,9 @@ class MarketController extends Controller
             ->get(['clubs.id', 'clubs.name', 'clubs.master_club_id', 'users.name as coach'])->keyBy('id');
         $listed = DB::table('transfer_listings')->whereIn('club_id', $coaches->keys())->pluck('price', 'player_id');
         // The stars first, then the strongest of the rest [UP11].
-        $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)->orderByDesc('players.pool_star')->orderByDesc('players.overall')->limit(40)->get();
+        // [Sprint 23] The events' special players first of all.
+        $world = $base()->whereNull('players.club_id')->where('players.in_pool', true)
+            ->orderByRaw('case when players.pool_kind is null then 1 else 0 end')->orderByDesc('players.pool_star')->orderByDesc('players.overall')->limit(40)->get();
         $fromBots = $base()->whereIn('players.club_id', $bots->keys())->orderByDesc('players.overall')->limit(30)->get();
         $fromCoaches = $base()->whereIn('players.id', $listed->keys())->where('players.club_id', '!=', $club->id)->orderByDesc('players.overall')->get();
         // Every master club named below in one query: the world players' clubs and the league's clubs (their logos) [E1.3].
@@ -115,6 +120,8 @@ class MarketController extends Controller
             'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
             'value' => (int) $p->value, 'price' => $price, 'seller' => $seller, 'star' => (bool) ($p->pool_star ?? false),
+            // [Sprint 23] An event's special player (offer, in_form, legend), and the price before a discount.
+            'special' => $p->pool_kind ?? null, 'was_price' => $seller['kind'] === 'world' && $price < (int) $p->value ? (int) $p->value : null,
             'attributes' => $p->line === 'gk'
                 ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                 : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],
@@ -124,17 +131,18 @@ class MarketController extends Controller
                 'coach' => $coaches[$p->club_id]->coach, 'logo' => $logo($coaches[$p->club_id]->master_club_id)])))
             ->concat($fromBots->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_bot_bp'], 10000), ['kind' => 'bot', 'club_id' => $p->club_id,
                 'club' => $bots[$p->club_id]->name, 'coach' => null, 'logo' => $logo($bots[$p->club_id]->master_club_id)])))
-            ->concat($world->map(fn ($p) => $row($p, intdiv((int) $p->value * $cfg['buy_from_pool_bp'], 10000), ['kind' => 'world', 'club_id' => null,
+            ->concat($world->map(fn ($p) => $row($p, Market::poolPrice($p), ['kind' => 'world', 'club_id' => null,
                 'club' => $masters[$p->master_club_id]->name ?? null, 'coach' => null,
                 'logo' => $logo($p->master_club_id)])))
-            ->sortBy([['star', 'desc'], ['overall', 'desc']])->values();
-        $renewed = $league->pool_renewed_at ? Carbon::parse($league->pool_renewed_at, 'UTC') : null;
+            ->sortBy([fn ($a, $b) => ($b['special'] !== null) <=> ($a['special'] !== null), ['star', 'desc'], ['overall', 'desc']])->values();
 
         return [
             'closed' => Market::closed($league->id),
             'line' => $line,
             'balance' => (int) $club->fresh()->balance,
-            'renews_at' => $renewed?->copy()->addHours((int) $cfg['pool_hours'])->toIso8601ZuluString(),
+            'renews_at' => Pool::renewsAt($league)?->toIso8601ZuluString(),
+            // [Sprint 23] The admin's events running now in this league, with their end.
+            'events' => TimedEvents::forScreen($league->id),
             'players' => $players,
         ];
     }
@@ -160,7 +168,7 @@ class MarketController extends Controller
         return response()->json(['transfers' => Market::history($league->id)]);
     }
 
-    private function mine(Club $club, League $league): array
+    private function mine(Club $club, League $league, array $room): array
     {
         $cfg = config('game.economy');
         $listed = DB::table('transfer_listings')->where('club_id', $club->id)->get()->keyBy('player_id');
@@ -168,20 +176,22 @@ class MarketController extends Controller
         $bought = Buyer::boughtIds($club->id);
         $scale = (int) $league->timer_scale ?: 10000;
         $fair = (bool) $league->fair_league;
+        $mad = TimedEvents::times('madness', $league->id);
+        $hours = fn (int $price, object $p) => intdiv(intdiv(Buyer::wait($price, (int) $p->value, $league->id, $scale, (int) $p->age, (int) $p->overall + (int) $p->training_bonus) * 10000, $mad) + 1800, 3600);
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
-            ->orderByDesc('players.value')->get(['players.id', 'master_players.name', 'master_players.position', 'master_players.line', 'players.overall', 'players.training_bonus', 'players.value'])
-            ->map(function ($p) use ($club, $league, $cfg, $listed, $bought, $scale, $fair) {
-                $cap = Buyer::cap($p, $club->id, isset($bought[$p->id]));
+            ->orderByDesc('players.value')->get(['players.id', 'players.club_id', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'players.overall', 'players.training_bonus', 'players.value', 'players.base_value', 'players.bought_for'])
+            ->map(function ($p) use ($club, $league, $cfg, $listed, $bought, $room, $fair, $mad, $hours) {
+                $cap = Buyer::cap($p, $club->id, $room, $bought);
                 $l = $listed[$p->id] ?? null;
 
                 return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'overall' => (int) $p->overall + (int) $p->training_bonus,
-                    'value' => (int) $p->value, 'floor' => Buyer::floor($p), 'cap' => $cap,
-                    'quick' => ['pays' => (int) $p->value, 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000), fair: $fair)],
-                    // About how long the outside buyer takes, at his value and at his cap.
-                    'wait_hours' => ['value' => intdiv(Buyer::wait((int) $p->value, (int) $p->value, $league->id, $scale) + 1800, 3600),
-                        'cap' => intdiv(Buyer::wait($cap, (int) $p->value, $league->id, $scale) + 1800, 3600)],
-                    'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Carbon::parse($l->sells_at, 'UTC')->toIso8601ZuluString() : null] : null,
+                    // [Sprint 23] His cost (what the club paid, or his value at the season's start): the profit is counted from it.
+                    'value' => (int) $p->value, 'cost' => Buyer::basis($p, $bought), 'floor' => Buyer::floor($p, $cap), 'cap' => $cap,
+                    'quick' => ['pays' => Buyer::quickPays($p, $club->id, $room, $bought), 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000), fair: $fair)],
+                    // About how long the outside buyer takes, at his value and at his cap (his age and rating, and a madness, counted).
+                    'wait_hours' => ['value' => $hours((int) $p->value, $p), 'cap' => $hours($cap, $p)],
+                    'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Buyer::effectiveAt($l, $mad)->toIso8601ZuluString() : null] : null,
                 ];
             })->all();
     }
@@ -193,10 +203,13 @@ class MarketController extends Controller
         $data = $request->validate(['player_id' => 'required|integer', 'price' => 'required|integer|min:1']);
         $p = DB::table('players')->where('id', $data['player_id'])->where('club_id', $club->id)->first();
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
-        [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $club->id)];
+        $cap = Buyer::cap($p, $club->id);
+        $floor = Buyer::floor($p, $cap);
+        $age = (int) DB::table('master_players')->where('id', $p->master_player_id)->value('age');
+        $wait = Buyer::wait(min($cap, max($floor, $data['price'])), (int) $p->value, $league->id, null, $age, (int) $p->overall + (int) $p->training_bonus);
 
         return response()->json(['floor' => $floor, 'cap' => $cap, 'ok' => $data['price'] >= $floor && $data['price'] <= $cap,
-            'wait_hours' => intdiv(Buyer::wait(min($cap, max($floor, $data['price'])), (int) $p->value, $league->id) + 1800, 3600)]);
+            'wait_hours' => intdiv(intdiv($wait * 10000, TimedEvents::times('madness', $league->id)) + 1800, 3600)]);
     }
 
     public function buy(Request $request, League $league): JsonResponse

@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\StadiumController;
 use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\TimedEventController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
@@ -286,6 +287,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('house-ads', 'storeHouseAd');
         Route::patch('house-ads/{id}', 'updateHouseAd')->whereNumber('id');
         Route::delete('house-ads/{id}', 'deleteHouseAd')->whereNumber('id');
+        // [Sprint 23] The timed events: transfer madness, extreme progression, the market's discount and its special players.
+        Route::get('events', [TimedEventController::class, 'index']);
+        Route::post('events', [TimedEventController::class, 'store'])->middleware('throttle:30,1,admin-events');
+        Route::patch('events/{id}', [TimedEventController::class, 'update'])->whereNumber('id');
+        Route::delete('events/{id}', [TimedEventController::class, 'destroy'])->whereNumber('id');
     });
 });
 
