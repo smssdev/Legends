@@ -1605,6 +1605,7 @@ export const EN: Record<string, string> = {
   'بحث': 'Search',
   'المشرفون': 'Admins',
   'لا نتائج.': 'No results.',
+  'المزيد من المدربين': 'More coaches',
   'معلّق': 'Suspended',
   'انضم {v0} · آخر يوم {v1} · {v2} مباراة حية': 'Joined {v0} · last day {v1} · {v2} live matches',
   'السبب: {v0}': 'Reason: {v0}',

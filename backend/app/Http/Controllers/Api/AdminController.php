@@ -97,20 +97,27 @@ class AdminController extends Controller
      */
     public function users(Request $request): JsonResponse
     {
-        $q = trim((string) ($request->validate(['q' => ['nullable', 'string', 'max:80']])['q'] ?? ''));
-        $rows = DB::table('users')->leftJoin('user_activity', 'user_activity.user_id', '=', 'users.id')
+        $data = $request->validate(['q' => ['nullable', 'string', 'max:80'], 'page' => ['nullable', 'integer', 'min:1', 'max:10000']]);
+        $q = trim((string) ($data['q'] ?? ''));
+        // [Sprint 21 close] The coaches a page at a time (the admins are few and come whole), newest first.
+        $page = (int) ($data['page'] ?? 1);
+        $per = (int) config('game.admin.users_per_page');
+        $query = fn (bool $admins) => DB::table('users')->leftJoin('user_activity', 'user_activity.user_id', '=', 'users.id')
+            ->where('users.role', $admins ? '=' : '!=', 'admin')
             ->when($q !== '', fn ($query) => preg_match('/^\d{5}$/', $q) ? $query->where('users.account_no', (int) $q)
                 : $query->where(fn ($w) => $w->whereLike('users.name', "%{$q}%")->orWhereLike('users.username', '%'.strtolower($q).'%')->orWhereLike('users.email', '%'.strtolower($q).'%')))
             ->groupBy('users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason')
-            ->orderByDesc('users.id')->limit(300)
-            ->get(['users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason',
+            ->orderByDesc('users.id')
+            ->select(['users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason',
                 DB::raw('max(user_activity.day) as last_day'), DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
         $row = fn ($u) => ['id' => $u->id, 'account_no' => $u->account_no, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role,
             'official' => Username::official($u->username), 'verified' => $u->account_verified_at !== null,
             'suspended' => $u->suspended_at ? ['at' => Carbon::parse($u->suspended_at, 'UTC')->toIso8601ZuluString(), 'reason' => $u->suspended_reason] : null,
             'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live];
+        $users = $query(false)->offset(($page - 1) * $per)->limit($per + 1)->get();
 
-        return response()->json(['admins' => $rows->where('role', 'admin')->map($row)->values(), 'users' => $rows->where('role', '!=', 'admin')->map($row)->values()]);
+        return response()->json(['admins' => $page === 1 ? $query(true)->limit(50)->get()->map($row)->values() : [],
+            'users' => $users->take($per)->map($row)->values(), 'page' => $page, 'has_more' => $users->count() > $per]);
     }
 
     /** [Sprint 21 E7.3] Suspend a coach's account (not an admin's), with the reason he will read; logged. */
@@ -169,8 +176,10 @@ class AdminController extends Controller
             $r = $rows[$day] ?? null;
             $out[] = ['day' => $day, 'active' => (int) ($r->active ?? 0), 'logins' => (int) ($r->logins ?? 0), 'watched' => (int) ($r->watched ?? 0), 'orders' => (int) ($r->orders ?? 0), 'joined' => (int) ($joined[$day] ?? 0)];
         }
-        $names = DB::table('users')->pluck('name', 'id');
-        $log = DB::table('admin_log')->orderByDesc('id')->limit(50)->get()
+        $log = DB::table('admin_log')->orderByDesc('id')->limit(50)->get();
+        // Only the names the log needs, not every account's.
+        $names = DB::table('users')->whereIn('id', $log->pluck('admin_id')->merge($log->pluck('target_user_id'))->filter()->unique())->pluck('name', 'id');
+        $log = $log
             ->map(fn ($l) => ['action' => $l->action, 'admin' => $names[$l->admin_id] ?? null, 'target' => $l->target_user_id ? ($names[$l->target_user_id] ?? null) : null,
                 'details' => $l->details, 'at' => Carbon::parse($l->created_at, 'UTC')->toIso8601ZuluString()]);
 
@@ -181,12 +190,14 @@ class AdminController extends Controller
     {
         $rows = DB::table('leagues')->leftJoin('users', 'users.id', '=', 'leagues.owner_id')->orderByDesc('leagues.id')->limit(200)
             ->get(['leagues.id', 'leagues.name', 'leagues.status', 'leagues.team_count', 'leagues.is_dev', 'users.name as owner', 'users.account_no as owner_no']);
+        // The coaches and the season of every league in two queries, not two per league.
+        $coaches = DB::table('clubs')->whereIn('league_id', $rows->pluck('id'))->whereNotNull('user_id')->groupBy('league_id')->select('league_id', DB::raw('count(*) as n'))->pluck('n', 'league_id');
+        $seasons = DB::table('seasons')->whereIn('league_id', $rows->pluck('id'))->groupBy('league_id')->select('league_id', DB::raw('max(number) as n'))->pluck('n', 'league_id');
 
         return response()->json(['leagues' => $rows->map(fn ($l) => ['id' => $l->id, 'name' => $l->name, 'status' => $l->status, 'teams' => (int) $l->team_count,
             // [Sprint 21 E7.6] The creator's account number beside his name.
             'dev' => (bool) $l->is_dev, 'owner' => $l->owner, 'owner_no' => $l->owner_no,
-            'coaches' => DB::table('clubs')->where('league_id', $l->id)->whereNotNull('user_id')->count(),
-            'season' => (int) DB::table('seasons')->where('league_id', $l->id)->max('number')])]);
+            'coaches' => (int) ($coaches[$l->id] ?? 0), 'season' => (int) ($seasons[$l->id] ?? 0)])]);
     }
 
     /** The email settings and a test email to the given address, with the exact error and its fix [X8]. */

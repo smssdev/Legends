@@ -373,7 +373,12 @@ return [
     // The admin panel [PLAN 2.17, Sprint 37]: a code from the authenticator is asked again after these hours.
     // [X46] The two-step code for the admin panel: off by the owner's decision (2026-10-27). The panel is for the two
     // official accounts, tied to their Gmail on the server, and the admins the owner makes. ADMIN_TWO_FACTOR=true asks again.
-    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12],
+    // [Sprint 21 E9] Rewarded videos: each one the provider verifies cuts minutes_per_video off a training slot's next
+    // session or a stadium part, up to max_per_item for the same task. Off, with no provider, until the owner picks one
+    // (README section 11): no paid or account-bound SDK is in the game.
+    'ads' => ['enabled' => (bool) env('ADS_ENABLED', false), 'driver' => env('ADS_DRIVER', 'none'), 'minutes_per_video' => 30, 'max_per_item' => 5],
+
+    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [

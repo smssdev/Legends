@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AuthController;
@@ -201,6 +202,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::delete('{line}', 'remove')->whereIn('line', ['gk', 'def', 'mid', 'att']);
         Route::post('{line}/finish', 'finish')->whereIn('line', ['gk', 'def', 'mid', 'att'])->middleware('throttle:30,1,finish');
     });
+    // [Sprint 21 E9] A verified rewarded video cuts a training or stadium time (off until the owner picks a provider).
+    Route::post('{league}/ads/reward', [AdController::class, 'reward'])->whereNumber('league')->middleware('throttle:20,1,ads');
     Route::get('{league}/clubs/{club}', 'club')->whereNumber(['league', 'club']);
     Route::post('{league}/clubs/{club}/claim', 'claim')->whereNumber(['league', 'club']);
 });

@@ -50,6 +50,28 @@ class AdminToolsTest extends TestCase
         $this->assertSame(['suspend', 'unsuspend'], DB::table('admin_log')->orderBy('id')->pluck('action')->all());
     }
 
+    public function test_a_suspended_app_account_is_kept_out_with_its_bearer_token_too(): void
+    {
+        // The app signs in by token: the suspension must hold there too, not only for the site's session.
+        $coach = User::factory()->create(['password' => 'secret-pass-1']);
+        $this->actingAs($this->admin)->postJson("/api/v1/admin/users/{$coach->id}/suspend", ['reason' => 'غش في المباريات'])->assertOk();
+        $token = $coach->createToken('phone')->plainTextToken;
+        $this->app['auth']->forgetGuards();
+        $this->withHeaders(['Referer' => '', 'Authorization' => "Bearer {$token}"]);
+        $this->getJson('/api/v1/leagues')->assertForbidden()->assertJsonPath('message', 'حسابك معلّق من فريق التطوير: غش في المباريات');
+        $this->getJson('/api/v1/auth/me')->assertOk()->assertJsonPath('user.suspended.reason', 'غش في المباريات');
+    }
+
+    public function test_the_coaches_come_a_page_at_a_time(): void
+    {
+        config(['game.admin.users_per_page' => 2]);
+        User::factory()->count(3)->create();
+        $first = $this->actingAs($this->admin)->getJson('/api/v1/admin/users')->assertOk()->assertJsonCount(2, 'users')->assertJsonCount(1, 'admins')
+            ->assertJsonPath('has_more', true)->json();
+        $second = $this->getJson('/api/v1/admin/users?page=2')->assertOk()->assertJsonCount(1, 'users')->assertJsonCount(0, 'admins')->assertJsonPath('has_more', false)->json();
+        $this->assertEmpty(array_intersect(array_column($first['users'], 'id'), array_column($second['users'], 'id')));
+    }
+
     public function test_deleting_asks_for_the_account_number_and_is_logged(): void
     {
         $coach = User::factory()->create();

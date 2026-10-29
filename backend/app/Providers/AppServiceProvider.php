@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Ads\DisabledVerifier;
+use App\Ads\RewardVerifier;
 use App\Database\PostgresConnection;
 use App\Database\SQLiteConnector;
 use App\Mail\ApiTransport;
@@ -32,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         if (PHP_VERSION_ID < 80400) {
             $this->app->bind('db.connector.sqlite', SQLiteConnector::class);
         }
+        // [Sprint 21 E9] The rewarded videos' provider: none until the owner chooses one (README section 11).
+        $this->app->bind(RewardVerifier::class, fn () => match (config('game.ads.driver')) {
+            default => new DisabledVerifier,
+        });
     }
 
     /**

@@ -104,10 +104,16 @@ async function show(s: Section) {
 const go = (s: Section) => run(() => show(s))
 
 // The accounts [Sprint 21 E7.3].
-async function loadUsers() {
-  const data = (await api.GET('/admin/users', { params: { query: search.value.trim() ? { q: search.value.trim() } : {} } })).data!
-  admins.value = data.admins
-  users.value = data.users
+// The coaches a page at a time: «المزيد» adds the next page under the ones shown.
+const usersPage = ref(1)
+const moreUsers = ref(false)
+async function loadUsers(page = 1) {
+  const q = search.value.trim()
+  const data = (await api.GET('/admin/users', { params: { query: { ...(q ? { q } : {}), ...(page > 1 ? { page } : {}) } } })).data!
+  if (page === 1) admins.value = data.admins
+  users.value = page === 1 ? data.users : [...users.value, ...data.users]
+  usersPage.value = data.page
+  moreUsers.value = data.has_more
 }
 const shownUsers = computed(() => (userTab.value === 'admins' ? admins.value : users.value))
 const codes = ref<Record<number, string>>({})
@@ -289,7 +295,7 @@ onMounted(load)
 
         <!-- [Sprint 21 E7.3] The accounts: the admins apart, search by number or name, and the actions. -->
         <template v-if="tab === 'users'">
-          <form class="flex flex-wrap gap-2" role="search" @submit.prevent="run(loadUsers)">
+          <form class="flex flex-wrap gap-2" role="search" @submit.prevent="run(() => loadUsers())">
             <input v-model="search" :placeholder="$t('رقم الحساب أو الاسم أو البريد')" class="h-touch min-w-0 flex-1 rounded-lg bg-surface px-3" :aria-label="$t('بحث')" />
             <button type="submit" class="h-touch rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('بحث') }}</button>
           </form>
@@ -333,6 +339,8 @@ onMounted(load)
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted" @click="acting = null">{{ $t('تراجع') }}</button>
             </form>
           </article>
+          <button v-if="userTab === 'users' && moreUsers" type="button" class="h-touch self-center rounded-lg bg-surface-raised px-6 text-sm font-bold disabled:opacity-40" :disabled="busy"
+            @click="run(() => loadUsers(usersPage + 1))">{{ $t('المزيد من المدربين') }}</button>
         </template>
 
         <!-- [Sprint 21 E7.6] The leagues, each creator with his account number. -->
