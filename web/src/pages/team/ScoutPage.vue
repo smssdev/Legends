@@ -3,8 +3,6 @@
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
 import { t } from '../../lib/i18n'
-import { useGlossary } from '../../lib/glossary'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -16,7 +14,6 @@ import { count, money, type Line } from '../../lib/format'
 
 type View = components['schemas']['ScoutView']
 // The "?" texts [X19].
-const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
@@ -112,8 +109,7 @@ onBeforeUnmount(() => clearInterval(tick))
 <template>
   <div class="flex flex-col gap-4">
     <header>
-      <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الكشاف') }}</h1><HelpTip :text="g.scout" :label="$t('الكشاف')" /></span>
-      <p class="mt-1 text-sm text-text-muted">{{ $t('يبحث لك عن لاعبين من خارج أندية الدوري، وتشتريهم وحدك بسعر المجموعة حتى تتجدد') }}</p>
+      <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الكشاف') }}</h1></span>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>

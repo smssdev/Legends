@@ -307,7 +307,6 @@ async function remove() {
         <h2 id="h-invite" class="font-display text-xl font-extrabold">{{ $t('ادعُ أصدقاءك') }}</h2>
         <span class="text-sm text-gold">{{ $t('{v0} كوينز لكل صديق', { v0: user.referral.coins }) }}</span>
       </div>
-      <p class="text-sm text-text-muted">{{ $t('كل مدرب يسجّل من رابطك ويوثّق حسابه يمنحك {v0} كوينز، حتى {v1} دعوات.', { v0: user.referral.coins, v1: user.referral.max }) }}</p>
       <div class="flex flex-wrap items-center gap-2">
         <span class="min-w-0 flex-1 truncate rounded-lg bg-surface-sunk px-3 py-3 text-sm" dir="ltr">{{ user.referral.link }}</span>
         <button type="button" class="h-12 rounded-lg bg-surface-raised px-4 font-bold" @click="copy(user.referral.link, 'link')">{{ copied === 'link' ? $t('نُسخ') : $t('انسخ') }}</button>
@@ -390,7 +389,6 @@ async function remove() {
       <p class="rounded-lg border border-warning/50 bg-warning/10 px-4 py-3 text-sm font-bold text-warning" role="note">
         {{ $t('تنبيه رسمي: إذا لم يتم استخدام حسابك أو تسجيل الدخول لمدة {v0} يوماً متواصلة (دون تفعيل إجازة رسمية)، فسيتم حذف الحساب وبيانات الفرق نهائياً وتلقائياً.', { v0: user.inactivity_days }) }}
       </p>
-      <p class="text-sm text-text-muted">{{ $t('إجازة لحسابك كله تحميه من الحذف: لا يُحسب غيابك في أي دوري، والمدرب المساعد يقود فرقك. حتى {v0} أيام تبدأ فوراً (مرتين في الموسم)، والأطول يراجعها فريق التطوير. ولإجازة في دوري واحد اطلبها من صفحة الدوري.', { v0: user.vacation.auto_days }) }}</p>
       <template v-if="user.vacation.on">
         <p class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ $t('أنت في إجازة حتى {v0}.', { v0: dateText(user.vacation.until) }) }}</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="holiday(false)">{{ $t('عدت، أنهِ الإجازة') }}</button>

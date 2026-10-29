@@ -134,17 +134,14 @@ const leagueId = computed(() => store.league)
 
         <RouterLink to="/friendlies" class="card">
           <h2 class="card-h"><Icon name="friendly" :size="18" />{{ $t('الوديات') }}</h2>
-          <p class="text-sm text-text-muted">{{ $t('مباراة الآن بلا أثر على الجدول، تزيد تدريب لاعبيك.') }}</p>
         </RouterLink>
 
         <RouterLink to="/quests" class="card">
           <h2 class="card-h"><Icon name="quest" :size="18" />{{ $t('المهام الأسبوعية') }}</h2>
-          <p class="text-sm text-text-muted">{{ $t('كوينز لكل مهمة، وأموال للنادي في الكبرى.') }}</p>
         </RouterLink>
 
         <RouterLink v-if="leagueId" :to="`/leagues/${leagueId}/newspaper`" class="card">
           <h2 class="card-h"><Icon name="news" :size="18" />{{ $t('أخبار الدوري') }}</h2>
-          <p class="text-sm text-text-muted">{{ $t('رجل الجولة وأفضل مدرب وأفضل المباريات.') }}</p>
         </RouterLink>
       </div>
     </template>

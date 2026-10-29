@@ -5,6 +5,7 @@
 //   club's money, the timers and what waits for the coach (each opening its window), and the messages; the coach's tab.
 // - Inside a slot, on the computer, a fixed side menu with every section; on the phone a bottom bar: «النادي» (the
 //   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
+// - [Sprint 22] The Assistant Coach's button on every screen, fixed on the right (above the bottom bar inside a slot).
 // - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -12,6 +13,7 @@ import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
+import ManagerBot from '../components/assistant/ManagerBot.vue'
 import { money } from '../lib/format'
 import { useAuth } from '../stores/auth'
 import { useBoard } from '../stores/board'
@@ -186,6 +188,9 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 
     <!-- [W7] The matches missed since the last visit: one window, once. -->
     <AfterRound v-if="inSlot && board.board?.missed && board.league" :league-id="board.league" />
+
+    <!-- [Sprint 22] The Assistant Coach: every explanation of the game, on every screen. -->
+    <ManagerBot v-if="auth.user" :raised="inSlot" />
   </div>
 </template>
 

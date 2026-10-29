@@ -79,7 +79,6 @@ async function save() {
     <div class="flex items-start justify-between gap-3">
       <div>
         <h2 id="h-scenarios" class="font-display text-2xl font-extrabold">{{ $t('السيناريوهات') }}</h2>
-        <p class="text-sm text-text-muted">{{ $t('خطط تُنفَّذ وحدها في لحظتها، حتى لو لم تكن تتابع المباراة. لا يراها الخصم.') }}</p>
       </div>
       <UiButton :disabled="!dirty" @click="save">{{ $t('حفظ') }}</UiButton>
     </div>

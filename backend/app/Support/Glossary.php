@@ -11,9 +11,17 @@ class Glossary
 {
     public static function all(): array
     {
-        if (app()->getLocale() === 'en') {
-            return self::english();
-        }
+        return self::of(app()->getLocale());
+    }
+
+    /** [Sprint 22] In one language, whatever the request's: the Assistant Coach's guide reads both. */
+    public static function of(string $locale): array
+    {
+        return $locale === 'en' ? self::english() : self::arabic();
+    }
+
+    private static function arabic(): array
+    {
         $t = config('game.training');
         $s = config('game.scout');
         $e = config('game.economy');

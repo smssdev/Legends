@@ -170,7 +170,6 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
     </template>
 
     <template v-else>
-      <p class="text-xs text-text-muted">{{ $t('خروج المغلوب من مباراة واحدة. الأقوى معفون من الدور التمهيدي، والقرعة عشوائية.') }}</p>
       <div class="flex gap-3 overflow-x-auto pb-2">
         <div v-for="s in stages" :key="s.stage" class="flex min-w-48 flex-col gap-2">
           <h3 class="font-display font-extrabold text-gold">{{ $t(STAGES[s.stage]) }}</h3>

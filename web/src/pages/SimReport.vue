@@ -139,6 +139,8 @@
         <span v-if="!league" class="self-center text-sm text-text-muted">{{ $t('البذرة') }} <b class="font-numbers" dir="ltr">{{ view.seed }}</b></span>
       </div>
     </template>
+    <!-- [Sprint 22] The Assistant Coach, back after the live match: he reads this report too. -->
+    <ManagerBot v-if="league" />
   </main>
 </template>
 
@@ -146,6 +148,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Crest from '../components/Crest.vue'
+import ManagerBot from '../components/assistant/ManagerBot.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
 import { clubColors, leagueMatch, sim, type MatchView, type Side } from '../api/sim'
