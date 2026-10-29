@@ -87,6 +87,8 @@ export const router = createRouter({
     // [X57] The privacy policy and the terms, open to everyone (Google AdSense and the stores ask for them)
     { path: '/privacy', name: 'privacy', component: () => import('./pages/LegalPage.vue'), props: { kind: 'privacy' } },
     { path: '/terms', name: 'terms', component: () => import('./pages/LegalPage.vue'), props: { kind: 'terms' } },
+    // [X59] The game's guide, open to everyone
+    { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
     // The match and its report fill the screen
     // A league match, live from the server (Sprint 18): the simulator's viewer on the league's match
     { path: '/live/:id(\\d+)', name: 'league-match', component: () => import('./pages/SimMatch.vue'), props: (r) => ({ id: String(r.params.id), league: true }), meta: { auth: true } },

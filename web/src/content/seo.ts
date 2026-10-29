@@ -73,6 +73,20 @@ export const PAGES: Record<string, PageSeo> = {
     keywords: { ar: ['مطورو اللعبة', 'فريق المدرب الأسطورة'], en: ['game developers', 'GLM team'] },
     sitemap: { priority: '0.4', changefreq: 'monthly' },
   },
+  // [X59] The game's guide, open to everyone: the Assistant Coach's explanations, the site's richest page.
+  guide: {
+    path: '/guide',
+    title: { ar: 'طريقة اللعب: دليل المدرب الأسطورة الكامل', en: 'How to play: the complete GLM guide' },
+    description: {
+      ar: 'دليل المدرب الأسطورة كاملاً: كيف تبني ناديك، وتختار تكتيكك، وتدرّب لاعبيك، وتدير السوق والملعب والمالية، وتعيش المباراة مباشرة.',
+      en: 'The complete Game Legend Manager guide: how to build your club, choose your tactics, train your players, run the market, stadium and money, and live every match.',
+    },
+    keywords: {
+      ar: ['طريقة اللعب', 'دليل اللعبة', 'شرح التكتيك', 'التدريب', 'سوق الانتقالات', 'الكأس'],
+      en: ['how to play', 'game guide', 'tactics explained', 'training', 'transfer market', 'cup'],
+    },
+    sitemap: { priority: '0.8', changefreq: 'weekly' },
+  },
   // [X57] The privacy policy and the terms, open to everyone.
   privacy: {
     path: '/privacy',

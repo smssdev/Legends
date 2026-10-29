@@ -2611,6 +2611,22 @@ paths:
                         cta_label: { type: [string, 'null'] }, cta_url: { type: [string, 'null'] }, seconds: { type: integer } }
         '429': { $ref: '#/components/responses/Error' }
         '503': { $ref: '#/components/responses/Error' }
+  /guide:
+    get:
+      tags: [assistant]
+      summary: '[X59] The game''s guide for everyone: the public "how to play" page'
+      description: The Assistant Coach's explanations in sections, in the request's language (Accept-Language). No sign-in. 60 a minute.
+      security: []
+      responses:
+        '200':
+          description: The guide
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sections]
+                properties:
+                  sections: { type: array, items: { $ref: '#/components/schemas/GuideSection' } }
   /assistant/start:
     get:
       tags: [assistant]
@@ -4456,6 +4472,19 @@ components:
         cta: { type: [object, 'null'], required: [label, url], properties: { label: { type: string }, url: { type: string } } }
         sender: { type: [object, 'null'], required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
         at: { type: string, format: date-time }
+    GuideSection:
+      type: object
+      description: '[X59] A section of the public guide'
+      required: [id, title, topics]
+      properties:
+        id: { type: string, example: tactics }
+        title: { type: string }
+        topics:
+          type: array
+          items:
+            type: object
+            required: [id, q, a]
+            properties: { id: { type: string }, q: { type: string }, a: { type: string } }
     AdStatus:
       type: object
       description: '[Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far'
