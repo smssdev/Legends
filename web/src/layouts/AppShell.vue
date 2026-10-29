@@ -1,14 +1,20 @@
 <script setup lang="ts">
-// The frame around every game screen (Sprint 9 W1, X29, X32, and rebuilt by updates1 UP7 after the spec, 2026-10-26):
-// - A header with the club (crest, name, league and place) on one side and the coach on the other, the mark between.
-// - Inside a slot a hamburger opens the side menu with every section; and four portals (the team, the club and its
-//   money, the competitions, the media) each open their own short list: under the header on the computer, from the
-//   bottom bar on the phone.
-// - Outside a slot (the home screen, my leagues, the account, the inbox) no sections, only the header.
+// The frame around every game screen (Sprint 9 W1, X29, X32, UP7; rebuilt by Sprint 20 W2 and W6, the owner's approved
+// drafts, docs/design/legends-ui/Sprint20Drafts.html):
+// - The top bar, one in every screen: inside a slot the club (a tap opens the club switcher), the coins and the
+//   club's money, the timers and what waits for the coach (each opening its window), and the messages; the coach's tab.
+// - Inside a slot, on the computer, a fixed side menu with every section; on the phone a bottom bar: «النادي» (the
+//   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
+// - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
+import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
+import AgendaPanel from '../components/shell/AgendaPanel.vue'
+import AfterRound from '../components/shell/AfterRound.vue'
+import { money } from '../lib/format'
 import { useAuth } from '../stores/auth'
+import { useBoard } from '../stores/board'
 import { useInbox } from '../stores/inbox'
 import { useSlot } from '../stores/slot'
 import { useWallet } from '../stores/wallet'
@@ -19,9 +25,9 @@ const route = useRoute()
 const broadcast = useBroadcast()
 const auth = useAuth()
 const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
-// The side menu, and the portal whose list is open.
-const drawer = ref(false)
+// The portal whose list is open (phone), and the top bar's open window.
 const portal = ref<Group | null>(null)
+const agenda = ref<'timers' | 'pending' | null>(null)
 // The unread messages on the inbox's entry [Sprint 22].
 const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
@@ -34,8 +40,7 @@ const slot = useSlot()
 watch(() => [auth.user?.id ?? 0, route.fullPath] as const, ([id], before) => id && slot.load(id, !before || before[0] !== id || route.name === 'home'), { immediate: true })
 
 // "الدوري والكأس" is the slot's own league page, and the media live under the league.
-// Before the slots come, the league remembered on this device stands in [Sprint 21 E3.3]: a league page opened
-// straight away shows its section bar at once, instead of the bar appearing a moment later and pushing the page down.
+// Before the slots come, the league remembered on this device stands in [Sprint 21 E3.3].
 const remembered = (() => { try { return Number(localStorage.getItem('legends.league')) || null } catch { return null } })()
 const pathOf = (s: Section) => {
   const league = slot.current?.league?.id ?? (slot.slots.length ? null : remembered)
@@ -53,52 +58,50 @@ const openGroup = computed(() => groups.value.find((g) => g.key === portal.value
 const togglePortal = (g: Group) => (portal.value = portal.value === g ? null : g)
 const level = computed(() => slot.coach?.level ?? null)
 const unread = computed(() => (inbox.unread > 99 ? '99+' : inbox.unread ? String(inbox.unread) : ''))
-watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
+// [Sprint 20 B1] The board of the slot: the money, the timers and the to-do list on the top bar.
+const board = useBoard()
+watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
+const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
+const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
+watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 </script>
 
 <template>
   <div class="min-h-dvh">
     <header class="sticky top-0 z-30">
-      <!-- Row one: the club's tab, the mark, the coach's tab. -->
       <div class="shell-top relative border-b border-black/30">
-        <div class="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 md:gap-4 md:px-6 md:py-0" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
-          <button v-if="inSlot" type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="$t('القائمة')" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
-            <Icon name="menu" />
-          </button>
-
-          <!-- The club's tab (inside a slot), the brand's tab outside. -->
-          <RouterLink v-if="inSlot && slot.current?.club" :to="pathOf(clubSections[0])" class="chrome-tab chrome-start min-w-0 flex-1 md:w-80 md:flex-none" :aria-label="$t('نادي {name}', { name: slot.current.club.name })">
-            <img :src="slot.current.club.crest_url" alt="" class="size-9 shrink-0 drop-shadow md:size-11" />
-            <span class="min-w-0 flex-1 leading-tight">
-              <b class="block truncate font-display text-base md:text-lg">{{ $nm(slot.current.club.name) }}</b>
-              <span class="flex items-center gap-1.5 truncate text-xs font-semibold opacity-75">
-                <span class="truncate">{{ $nm(slot.current.league?.name) }}</span>
-                <span v-if="slot.current.position" class="shrink-0 rounded bg-brand px-1.5 font-numbers text-white" dir="ltr">{{ slot.current.position }}/{{ slot.current.teams }}</span>
-              </span>
-            </span>
-          </RouterLink>
-          <!-- [Sprint 21 E3.3] Its place held until the slots come, so the bar does not shift when the club appears. -->
-          <span v-else-if="inSlot && !slot.slots.length" class="chrome-tab chrome-start min-w-0 flex-1 animate-pulse md:w-80 md:flex-none" aria-hidden="true" />
+        <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
+          <!-- The club (inside a slot: a tap switches clubs), the brand outside. -->
+          <ClubSwitcher v-if="inSlot" />
           <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
-
-          <div v-if="inSlot" class="hidden flex-1 justify-center md:flex">
-            <RouterLink to="/" :aria-label="$t('الرئيسية')" class="py-2"><BrandMark size="sm" /></RouterLink>
-          </div>
-          <div v-if="!inSlot" class="flex-1" />
+          <div class="flex-1" />
 
           <template v-if="auth.user">
-            <div class="flex shrink-0 items-center gap-1.5 md:gap-2">
-              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
-              <RouterLink to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
+            <div class="flex shrink-0 items-center gap-1 md:gap-2">
+              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
+              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
               <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
                 <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
               </RouterLink>
-              <RouterLink to="/inbox" class="relative flex size-touch items-center justify-center rounded-full bg-white/10 hover:bg-white/20" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
-                <Icon name="inbox" /><span v-if="unread" class="absolute -end-0.5 -top-0.5 min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-xs text-white">{{ unread }}</span>
+              <!-- [W2] The club's money beside the coins, always in sight inside a slot. -->
+              <RouterLink v-if="inSlot && board.board" to="/finance" class="pill-money" :aria-label="$t('أموال النادي: {v0}', { v0: money(board.board.money.cash) })">
+                <b class="font-numbers text-base" dir="ltr">{{ money(board.board.money.cash) }}</b>
+              </RouterLink>
+              <template v-if="inSlot">
+                <button type="button" class="bar-icon" :aria-label="$t('المؤقتات')" :aria-expanded="agenda === 'timers'" @click="agenda = agenda === 'timers' ? null : 'timers'">
+                  <Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span>
+                </button>
+                <button type="button" class="bar-icon" :aria-label="waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" :aria-expanded="agenda === 'pending'" @click="agenda = agenda === 'pending' ? null : 'pending'">
+                  <Icon name="todo" /><span v-if="waiting" class="bar-badge bg-live text-white">{{ waiting }}</span>
+                </button>
+              </template>
+              <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->
+              <RouterLink to="/inbox" class="bar-icon" :class="inSlot ? 'max-sm:hidden' : ''" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
+                <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>
               </RouterLink>
             </div>
             <!-- The coach's tab. -->
-            <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" :aria-label="$t('حسابي')">
+            <RouterLink to="/profile" class="coach-tab chrome-end shrink-0" :class="inSlot ? 'in-slot' : ''" :aria-label="$t('حسابي')">
               <span class="relative grid size-9 place-items-center overflow-hidden rounded-full bg-brand font-display text-lg font-extrabold text-white ring-2 ring-gold/70 md:size-10">
                 <img v-if="auth.user.avatar_url" :src="auth.user.avatar_url" alt="" class="size-full object-cover" /><template v-else>{{ initial }}</template>
               </span>
@@ -115,49 +118,20 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
             <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
             <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-white/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
+          <AgendaPanel v-if="agenda" :kind="agenda" @close="agenda = null" />
         </div>
       </div>
 
-      <!-- Row two, inside a slot on the computer: the four portals, each opening its list under it [UP7]. -->
-      <nav v-if="inSlot" class="shell-nav relative hidden md:block" :aria-label="$t('أقسام النادي')">
-        <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-3 md:px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
-          <button
-            v-for="g in groups"
-            :key="g.key"
-            type="button"
-            class="nav-item"
-            :class="groupActive(g.key) || portal === g.key ? 'is-active' : ''"
-            :aria-expanded="portal === g.key"
-            aria-controls="portal-list"
-            @click="togglePortal(g.key)"
-          >
-            <Icon :name="g.icon" /><span>{{ $t(g.label) }}</span>
-          </button>
-          <div class="flex-1" />
-          <RouterLink v-if="slot.current?.next_match" to="/match" class="my-2 hidden shrink-0 items-center gap-2 self-center rounded-pill px-3 py-1.5 text-xs font-bold lg:flex" :class="slot.current.next_match.live ? 'bg-live text-white' : 'bg-black/25 text-white'">
-            <span v-if="slot.current.next_match.live" class="size-2 animate-pulse rounded-full bg-white" />{{ $t(slot.current.next_match.live ? $t('مباشر الآن') : $t('القادمة')) }}: {{ $nm(slot.current.next_match.opponent) }}
+      <!-- A portal's list on the phone: a sheet over the bottom bar. -->
+      <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:hidden" @click="portal = null" />
+      <section v-if="inSlot && openGroup" id="portal-list" class="portal-list md:hidden" :aria-label="$t(openGroup.label)">
+        <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ $t(openGroup.label) }}</h2>
+        <div class="grid grid-cols-3 gap-2">
+          <RouterLink v-for="s in openGroup.items" :key="s.name" :to="pathOf(s)" class="portal-item" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
+            <Icon :name="s.icon" />{{ $t(s.label) }}
           </RouterLink>
         </div>
-      </nav>
-
-    <!-- A portal's list: a sheet over the bottom bar on the phone, a panel under the portals on the computer (inside
-       the header, so it hangs from it). -->
-    <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:bg-transparent" @click="portal = null" />
-    <section v-if="inSlot && openGroup" id="portal-list" class="portal-list" :aria-label="$t(openGroup.label)">
-      <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ $t(openGroup.label) }}</h2>
-      <div class="grid grid-cols-3 gap-2 md:grid-cols-4">
-        <RouterLink
-          v-for="s in openGroup.items"
-          :key="s.name"
-          :to="pathOf(s)"
-          class="portal-item"
-          :class="route.path === pathOf(s) ? 'is-active' : ''"
-          :aria-current="route.path === pathOf(s) ? 'page' : undefined"
-        >
-          <Icon :name="s.icon" />{{ $t(s.label) }}
-        </RouterLink>
-      </div>
-    </section>
+      </section>
     </header>
 
     <!-- [X41] The match plays on behind this screen: its score and minute, back to it, or mute it. -->
@@ -177,57 +151,41 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
     <RouterLink v-else-if="auth.user && !auth.user.verification?.verified && route.name !== 'profile'" to="/profile" class="block bg-warning/20 px-4 py-2 text-center text-sm">
       {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
-    <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
-      <RouterView />
-    </main>
 
-    <!-- Inside a slot on the phone: the four portals and the menu at the bottom [UP7]. -->
-    <template v-if="inSlot">
-      <nav class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
-        <button
-          v-for="g in groups"
-          :key="g.key"
-          type="button"
-          class="tab-item"
-          :class="groupActive(g.key) || portal === g.key ? 'is-active' : ''"
-          :aria-expanded="portal === g.key"
-          aria-controls="portal-list"
-          @click="togglePortal(g.key)"
-        >
-          <Icon :name="g.icon" /><span class="leading-tight">{{ $t(g.label) }}</span>
-        </button>
-        <button type="button" class="tab-item" :aria-expanded="drawer" aria-controls="side-menu" @click="drawer = true">
-          <Icon name="menu" />{{ $t('القائمة') }}
-        </button>
-      </nav>
-
-    </template>
-
-    <!-- The side menu: every section in its portal, and the coach's own pages [UP7]. -->
-    <template v-if="drawer">
-      <div class="fixed inset-0 z-40 bg-black/60" @click="drawer = false" />
-      <aside id="side-menu" class="side-menu" :aria-label="$t('القائمة')" @keydown.esc="drawer = false">
-        <div class="flex items-center gap-2 border-b border-white/10 pb-2">
-          <BrandMark size="sm" />
-          <span class="flex-1" />
-          <button type="button" class="flex size-touch items-center justify-center rounded-md hover:bg-white/10" :aria-label="$t('إغلاق القائمة')" @click="drawer = false"><Icon name="close" /></button>
+    <div :class="inSlot ? 'md:grid md:grid-cols-[15rem_minmax(0,1fr)]' : ''">
+      <!-- [W6] Inside a slot on the computer: every section, always in sight. -->
+      <nav v-if="inSlot" class="side-nav hidden md:flex" :aria-label="$t('أقسام النادي')">
+        <RouterLink v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" class="side-item" :class="active(pathOf(s)) ? 'is-active' : ''" :aria-current="active(pathOf(s)) ? 'page' : undefined">
+          <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
+        </RouterLink>
+        <div v-for="g in groups" :key="g.key" class="flex flex-col">
+          <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t(g.label) }}</h3>
+          <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="side-item" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
+            <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
+          </RouterLink>
         </div>
-        <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فتحات المدرب') }}</RouterLink>
-        <template v-if="inSlot">
-          <div v-for="g in groups" :key="g.key" class="flex flex-col">
-            <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t(g.label) }}</h3>
-            <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="side-item" :class="route.path === pathOf(s) ? 'is-active' : ''"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
-          </div>
-        </template>
         <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t('حسابي') }}</h3>
+        <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فرقي') }}</RouterLink>
         <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />{{ $t('دورياتي') }}</RouterLink>
-        <RouterLink to="/wallet" class="side-item"><img src="/brand/coin.svg" alt="" class="size-[18px]" />{{ $t('المحفظة') }}</RouterLink>
-        <RouterLink to="/inbox" class="side-item"><Icon name="inbox" :size="18" />{{ $t('الرسائل') }}</RouterLink>
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
-        <RouterLink to="/developers" class="side-item"><Icon name="sim" :size="18" />{{ $t('المطورون') }}</RouterLink>
-        <RouterLink v-if="auth.user?.role === 'admin'" to="/admin" class="side-item"><Icon name="staff" :size="18" />{{ $t('لوحة الإدارة') }}</RouterLink>
-      </aside>
-    </template>
+      </nav>
+      <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
+        <RouterView />
+      </main>
+    </div>
+
+    <!-- [W6] Inside a slot on the phone: «النادي» first, then the four portals. -->
+    <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
+      <RouterLink to="/club" class="tab-item" :class="route.path === '/club' && !portal ? 'is-active' : ''" :aria-current="route.path === '/club' ? 'page' : undefined">
+        <Icon name="club" /><span class="leading-tight">{{ $t('النادي') }}</span>
+      </RouterLink>
+      <button v-for="g in groups" :key="g.key" type="button" class="tab-item" :class="groupActive(g.key) || portal === g.key ? 'is-active' : ''" :aria-expanded="portal === g.key" aria-controls="portal-list" @click="togglePortal(g.key)">
+        <Icon :name="g.icon" /><span class="leading-tight">{{ $t(g.label) }}</span>
+      </button>
+    </nav>
+
+    <!-- [W7] The matches missed since the last visit: one window, once. -->
+    <AfterRound v-if="inSlot && board.board?.missed && board.league" :league-id="board.league" />
   </div>
 </template>
 
@@ -251,7 +209,7 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
 }
 /* [Sprint 21 E3.4] The club's and the coach's tabs: modern glass cards on the night bar (they were ivory tabs cut at an
    angle), the same look as every card under them. */
-.chrome-tab,
+:global(.chrome-tab),
 .coach-tab {
   display: flex;
   align-items: center;
@@ -266,11 +224,13 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 .coach-tab { padding: 0.25rem; border-radius: 999px; }
+/* [Sprint 20 W2] Inside a slot the phone's bar keeps its room for the club: the account is on the home screen. */
+@media (max-width: 767px) { .coach-tab.in-slot { display: none; } }
 @media (min-width: 768px) {
-  .chrome-tab { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.35rem 1rem; }
+  :global(.chrome-tab) { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.35rem 1rem; }
   .coach-tab { min-height: 3.25rem; margin-block: 0.5rem; padding: 0.3rem 1rem 0.3rem 0.35rem; border-radius: 999px; }
 }
-.chrome-tab:hover,
+:global(.chrome-tab:hover),
 .coach-tab:hover { border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); background: color-mix(in srgb, var(--color-surface-raised) 90%, transparent); }
 /* The coins: an orange pill as in every manager game's corner. */
 .pill-coins {
@@ -284,46 +244,52 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
   background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 60%, var(--color-gold-dark));
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, 0 4px 12px -6px rgb(0 0 0 / 0.6);
 }
-/* Row two: Legends' emerald, each section an icon over its name, the current one lifted in ivory with a gold mark. */
-.shell-nav {
-  background:
-    url("/art/pattern-star.svg") center / 40px 40px repeat,
-    linear-gradient(180deg, var(--color-brand) 0%, var(--color-brand-dark) 100%);
-  background-blend-mode: soft-light, normal;
-  box-shadow: 0 8px 20px -12px rgb(0 0 0 / 0.8);
-}
-.nav-item {
+/* [Sprint 20 W2] The club's money: an emerald pill beside the coins; the timers', to-do and messages' icons. */
+.pill-money {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
+}
+.bar-icon {
+  position: relative;
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
   align-items: center;
   justify-content: center;
-  gap: 0.15rem;
-  min-width: 4.75rem;
-  padding: 0.45rem 0.5rem 0.4rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: rgb(255 255 255 / 0.85);
-  white-space: nowrap;
-  border-radius: 0.5rem 0.5rem 0 0;
-  margin-top: 0.3rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
 }
-.nav-item:hover { background: rgb(255 255 255 / 0.12); color: #fff; }
-.nav-item { min-width: 7rem; flex-direction: row; gap: 0.45rem; font-size: 0.8rem; }
-.nav-item {
-  position: relative;
-}
-.nav-item.is-active {
-  color: var(--color-brand-dark);
-  background: linear-gradient(180deg, #ffffff, var(--color-chrome));
-}
-.nav-item.is-active::after {
-  content: "";
+.bar-icon:hover { background: rgb(255 255 255 / 0.2); }
+.bar-badge {
   position: absolute;
-  bottom: 0;
-  inset-inline: 30%;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: var(--color-gold);
+  top: -0.15rem;
+  inset-inline-end: -0.15rem;
+  min-width: 1.25rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  font-family: var(--font-numbers);
+  font-size: 0.75rem;
+  text-align: center;
+}
+@media (max-width: 380px) { .pill-money { display: none } }
+/* [Sprint 20 W6] The computer's fixed side menu inside a slot. */
+.side-nav {
+  position: sticky;
+  top: 4.25rem;
+  height: calc(100dvh - 4.25rem);
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow-y: auto;
+  padding: 1rem 0.75rem;
+  background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
+  border-inline-end: 1px solid rgb(255 255 255 / 0.06);
 }
 /* [UP7] A portal's list: a sheet above the phone's bottom bar, a panel under the portals on the computer. */
 .portal-list {
@@ -337,9 +303,6 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
   background: var(--color-surface);
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
   box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.8);
-}
-@media (min-width: 768px) {
-  .portal-list { position: absolute; top: 100%; bottom: auto; inset-inline-start: max(1.5rem, calc((100% - 80rem) / 2 + 1.5rem)); inset-inline-end: auto; width: 32rem; margin: 0.4rem 0 0; }
 }
 .portal-item {
   display: flex;
@@ -357,24 +320,6 @@ watch(() => route.fullPath, () => { drawer.value = false; portal.value = null })
 }
 .portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.7); color: var(--color-text); }
 .portal-item.is-active { color: #fff; background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
-/* [UP7] The side menu slides in from the start (the right in Arabic). */
-.side-menu {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-start: 0;
-  z-index: 45;
-  display: flex;
-  width: min(18rem, 85vw);
-  flex-direction: column;
-  gap: 0.1rem;
-  overflow-y: auto;
-  padding: 0.75rem;
-  background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
-  border-inline-end: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
-  animation: side-in 0.18s ease-out;
-}
-@keyframes side-in { from { transform: translateX(var(--side-from, 100%)); } to { transform: none; } }
-:global([dir="ltr"]) .side-menu { --side-from: -100%; }
 .side-item {
   display: flex;
   min-height: 2.75rem;

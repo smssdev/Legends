@@ -11,6 +11,8 @@ export interface Section { name: string; path: string; label: string; icon: keyo
 export const SECTIONS: Section[] = [
   { name: 'home', path: '/', label: 'الرئيسية', icon: 'home' },
   { name: 'leagues', path: '/leagues', label: 'دورياتي', icon: 'leagues' },
+  // [Sprint 20 W5] The club board: the first page of a slot, outside the portals.
+  { name: 'club', path: '/club', label: 'لوحة النادي', icon: 'club', club: true },
   { name: 'team', path: '/team', label: 'الفريق', icon: 'team', club: true, group: 'team' },
   { name: 'lineup', path: '/lineup', label: 'التشكيلة', icon: 'lineup', club: true, group: 'team' },
   { name: 'tactics', path: '/tactics', label: 'التكتيك', icon: 'tactics', club: true, group: 'team' },
@@ -20,11 +22,15 @@ export const SECTIONS: Section[] = [
   { name: 'scout', path: '/scout', label: 'الكشاف', icon: 'scout', club: true, group: 'club' },
   { name: 'stadium', path: '/stadium', label: 'الملعب', icon: 'stadium', club: true, group: 'club' },
   { name: 'finance', path: '/finance', label: 'المالية', icon: 'finance', club: true, group: 'club' },
+  // [Sprint 20 B5] The weekly quests.
+  { name: 'quests', path: '/quests', label: 'المهام الأسبوعية', icon: 'quest', club: true, group: 'club' },
   { name: 'match', path: '/match', label: 'المباراة', icon: 'match', club: true, group: 'comps' },
   { name: 'league', path: '/league', label: 'الدوري والكأس', icon: 'league', club: true, group: 'comps' },
   // [Sprint 21 E4.3] The whole season's fixtures, any club's.
   { name: 'fixtures', path: '/fixtures', label: 'جدول المباريات', icon: 'match', club: true, group: 'comps' },
   { name: 'stats', path: '/stats', label: 'جدول الدوري', icon: 'league', club: true, group: 'comps' },
+  // [Sprint 20 B4] The friendlies.
+  { name: 'friendlies', path: '/friendlies', label: 'الوديات', icon: 'friendly', club: true, group: 'comps' },
   { name: 'newspaper', path: '/newspaper', label: 'أخبار الدوري', icon: 'news', club: true, group: 'media', inLeague: true },
   { name: 'predictions', path: '/predictions', label: 'التوقعات', icon: 'predict', club: true, group: 'media', inLeague: true },
   { name: 'inbox', path: '/inbox', label: 'الرسائل', icon: 'inbox' },

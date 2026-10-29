@@ -205,7 +205,7 @@ onBeforeUnmount(() => clearInterval(clock))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-center gap-3">
       <div class="flex-[1_1_240px]">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('السوق') }}</h1><HelpTip :text="g.pool" :label="$t('مجموعة السوق')" /></span>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('السوق') }}</h1><HelpTip :text="g.pool" :label="$t('مجموعة السوق')" /><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'scout' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الكشاف ›') }}</RouterLink></span>
         <p class="mt-1 text-sm text-text-muted">
           <template v-if="m?.closed">{{ m.closed }}</template>
           <template v-else-if="m">{{ $t('مفتوح حتى الجولة {v0} · صفقات جديدة كل بضع ساعات، من كل الدوريات وبقوة دوريك', { v0: m.open_until_round }) }}</template>

@@ -6,6 +6,12 @@ defineProps<{ name: keyof typeof PATHS; size?: number }>()
 <script lang="ts">
 export const PATHS = {
   home: 'M3 10.5 12 3l9 7.5M5 9v11h5v-6h4v6h5V9',
+  // [Sprint 20] The club board, the timers, the to-do list, the friendlies and the quests.
+  club: 'M12 2.5 20 5v6.5c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10V5Z',
+  clock: 'M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-12v4l3 2M9 2h6',
+  todo: 'M9 6h11M9 12h11M9 18h11M3.5 6l1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2',
+  friendly: 'M7 4h10M12 4v4M5 20a7 7 0 0 1 14 0M8.5 13a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0',
+  quest: 'M12 3.5 14.6 9l6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8Z',
   match: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 5 3.8 2.8-1.5 4.4H9.7l-1.5-4.4Z',
   team: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 10v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7.5M22 21v-1a6 6 0 0 0-4-5.6',
   lineup: 'M3 5h18v14H3zM12 5v14M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9h3v6H3M21 9h-3v6h3',

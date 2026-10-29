@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the ten club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in.
+import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError } from '../api/client'
@@ -45,11 +46,13 @@ async function load() {
 onMounted(load)
 watch(() => auth.user?.id, load)
 
+const now = useNow()
+const soon = (iso: string) => new Date(iso).getTime() - now.value < 86400000
 function openSlot(s: Home['slots'][number]) {
-  if (s.state === 'free') return router.push('/leagues')
   if (s.state === 'waiting') return router.push(`/leagues/${s.league!.id}`)
   rememberLeague(s.league!.id)
-  router.push('/team')
+  // [Sprint 20 W1] A club's slot opens its club board.
+  router.push('/club')
 }
 
 async function openRanking(by: 'trophies' | 'level') {
@@ -115,12 +118,22 @@ async function openRanking(by: 'trophies' | 'level') {
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
-          <button v-for="s in home.slots" :key="s.slot" type="button" class="slot-card group" :class="`is-${s.state}`"
-            :aria-label="s.state === 'free' ? $t('الفتحة {n}: دوري جديد', { n: s.slot }) : $t('الفتحة {n}: {league}', { n: s.slot, league: s.league?.name ?? '' })" @click="openSlot(s)">
+          <template v-for="s in home.slots" :key="s.slot">
+          <!-- [Sprint 20 W1] An empty slot: «أنشئ دورياً» at once, and «انضم بكود». -->
+          <div v-if="s.state === 'free'" class="slot-card is-free" role="group" :aria-label="$t('الفتحة {n}: دوري جديد', { n: s.slot })">
+            <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ $t('فتحة فارغة') }}</span></span>
+            <span class="flex flex-1 flex-col justify-center gap-1.5 p-2">
+              <RouterLink to="/leagues/new" class="flex min-h-10 items-center justify-center rounded-lg bg-gold text-sm font-bold text-on-gold">{{ $t('أنشئ دورياً') }}</RouterLink>
+              <RouterLink to="/join" class="flex min-h-10 items-center justify-center rounded-lg bg-surface-raised text-sm font-bold">{{ $t('انضم بكود') }}</RouterLink>
+            </span>
+          </div>
+          <button v-else type="button" class="slot-card group" :class="`is-${s.state}`"
+            :aria-label="$t('الفتحة {n}: {league}', { n: s.slot, league: s.league?.name ?? '' }) + (s.pending ? ' · ' + $t('ما ينتظرك: {n}', { n: s.pending }) : '')" @click="openSlot(s)">
             <span class="slot-band">
               <b class="font-numbers text-sm">{{ s.slot }}</b>
-              <span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ s.state === 'free' ? $t('فتحة فارغة') : s.league!.name }}</span>
+              <span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ s.league!.name }}</span>
               <span v-if="s.position" class="rounded bg-black/30 px-1 font-numbers text-[11px]" dir="ltr">{{ s.position }}/{{ s.teams }}</span>
+              <span v-if="s.pending" class="min-w-5 rounded-pill bg-live px-1 text-center font-numbers text-[11px] text-white" :title="$t('ما ينتظرك')">{{ s.pending }}</span>
             </span>
             <span class="flex flex-1 items-center justify-center gap-2 px-2 py-1.5">
               <template v-if="s.state === 'club'">
@@ -131,16 +144,14 @@ async function openRanking(by: 'trophies' | 'level') {
                 <span class="text-xl" aria-hidden="true">⏳</span>
                 <span class="text-[11px] text-text-muted">{{ $t('ينتظر موافقة المنشئ') }}</span>
               </template>
-              <template v-else>
-                <span class="grid size-8 place-items-center rounded-full bg-gradient-to-b from-brand-light to-brand text-lg font-extrabold text-white" aria-hidden="true">+</span>
-                <b class="font-display text-sm">{{ $t('دوري جديد') }}</b>
-              </template>
             </span>
             <span v-if="s.state === 'club'" class="slot-foot" :class="s.next_match?.live ? 'is-live' : ''">
-              <template v-if="s.next_match">{{ s.next_match.live ? '● ' + $t('مباشر الآن') : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
+              <!-- [Sprint 20 W1] Within a day, the countdown itself. -->
+              <template v-if="s.next_match">{{ s.next_match.live ? '● ' + $t('مباشر الآن') : soon(s.next_match.scheduled_at) ? countdown(s.next_match.scheduled_at, now) : when(s.next_match.scheduled_at) }} · {{ $t(s.next_match.venue === 'home' ? $t('ضد') : $t('عند')) }} {{ $nm(s.next_match.opponent) }}</template>
               <template v-else>{{ $t('لا مباريات قادمة') }}</template>
             </span>
           </button>
+          </template>
         </div>
       </section>
       </div>

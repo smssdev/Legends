@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // A player's card (Sprint 16 W1), after the draft MobilePlayer: rating and line, the attributes with bars,
-// fitness, room to grow and value. The season's numbers and the market buttons come with their sprints.
+// fitness, room to grow and value. [Sprint 20 W9] A sheet from the bottom on the phone, a panel from the side on the
+// computer, so the list behind stays where it was; and its actions: train him, or sell him.
 import LineBadge from '../../components/ui/LineBadge.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import { money, type Line } from '../../lib/format'
@@ -12,8 +13,8 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-center" @click.self="$emit('close')">
-    <section class="flex max-h-[92dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-t-xxl bg-bg p-4 md:rounded-xxl" role="dialog" aria-modal="true" :aria-label="player.name">
+  <div class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-stretch md:justify-end" @click.self="$emit('close')" @keydown.esc="$emit('close')">
+    <section class="flex max-h-[92dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-t-xxl bg-bg p-4 md:max-h-none md:w-[28rem] md:rounded-none md:border-s md:border-white/10" role="dialog" aria-modal="true" :aria-label="player.name">
       <header class="flex items-center justify-between gap-3">
         <h2 class="font-display text-2xl font-extrabold">{{ $t('بطاقة اللاعب') }}</h2>
         <div class="flex items-center gap-2">
@@ -53,7 +54,10 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         {{ player.injured_matches ? $t('مصاب: يغيب {v0} مباريات', { v0: player.injured_matches }) : $t('موقوف: {v0} مباريات', { v0: player.suspended_matches }) }}
       </p>
       <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap. -->
-      <RouterLink :to="{ name: 'market', query: { tab: 'sell' } }" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning" @click="$emit('close')">{{ $t('بيع اللاعب') }}</RouterLink>
+      <div class="grid grid-cols-2 gap-2">
+        <RouterLink :to="{ name: 'training' }" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold" @click="$emit('close')">{{ $t('درّبه') }}</RouterLink>
+        <RouterLink :to="{ name: 'market', query: { tab: 'sell' } }" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning" @click="$emit('close')">{{ $t('بيع اللاعب') }}</RouterLink>
+      </div>
     </section>
   </div>
 </template>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // The squad (Sprint 16 W1), after the draft MobileSquad: count, strength and value, filters by line, and
-// each player with his line, status, fitness, value and rating. A tap opens his card.
+// each player with his line, status, fitness, value and rating. A tap opens his card. [Sprint 20 W11] Its header also
+// says the eleven's average, the place against the objective, the formation, the strongest player and the next
+// opponent, and «فريق نادٍ آخر» opens any club's squad of the league (without its tactics).
 import { computed, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
@@ -11,6 +13,18 @@ import { LINES, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
 import { t } from '../../lib/i18n'
+import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
+import { api } from '../../api/client'
+import { useBoard } from '../../stores/board'
+
+const board = useBoard()
+const others = ref<{ id: number; name: string }[]>([])
+const otherClub = ref<number | null>(null)
+async function loadOthers() {
+  if (others.value.length || !board.league) return
+  const data = (await api.GET('/leagues/{league}/clubs', { params: { path: { league: board.league } } })).data
+  others.value = (data?.clubs ?? []).filter((c) => c.id !== board.board?.club.id).map((c) => ({ id: c.id, name: c.name }))
+}
 
 const { team, error, loaded, load } = useTeam()
 const g = useGlossary()
@@ -29,6 +43,9 @@ onMounted(load)
 const players = computed(() => (team.value?.players ?? []).filter((p) => line.value === 'all' || p.line === line.value))
 const count = (l: Line) => (team.value?.players ?? []).filter((p) => p.line === l).length
 const captain = computed(() => team.value?.takers.captain?.player_id)
+const starters = computed(() => (team.value?.players ?? []).filter((p) => p.role === 'starter'))
+const average = computed(() => (starters.value.length ? Math.round(starters.value.reduce((n, p) => n + p.overall, 0) / starters.value.length) : null))
+const best = computed(() => [...(team.value?.players ?? [])].sort((a, b) => b.overall - a.overall)[0] ?? null)
 // [Sprint 21 E3.5] The list by line, each under its own heading: keepers, defenders, midfield, attack.
 const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
 
@@ -66,6 +83,21 @@ function status(p: SquadPlayer) {
       <!-- [X29] The team's strength by line, four rings as in the classic manager games. -->
       <section v-if="team.lines" class="grid grid-cols-4 gap-2 rounded-2xl bg-surface p-3 md:p-4" :aria-label="$t('قوة الفريق بالخطوط')">
         <RatingRing v-for="l in (['att', 'mid', 'def', 'gk'] as const)" :key="l" :value="team.lines[l]" :label="LINES[l].plural === 'حراس' ? $t('الحارس') : $t(LINES[l].plural)" :color="`var(--color-line-${l})`" />
+      </section>
+      <!-- [Sprint 20 W11] The team at a glance, and any other club's squad. -->
+      <section class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-surface px-4 py-3 text-sm" :aria-label="$t('الفريق في سطر')">
+        <span v-if="average">{{ $t('المعدل') }} <b class="font-numbers text-base">{{ average }}</b></span>
+        <span v-if="board.board">{{ $t('الطريقة') }} <b class="font-numbers text-base" dir="ltr">{{ board.board.lineup.formation.replace(/^custom:.*/, '') || $t('خطتي') }}</b></span>
+        <span v-if="board.board?.standings.position">{{ $t('المركز') }} <b class="font-numbers text-base">{{ board.board.standings.position }}</b><template v-if="board.board.board"> · {{ $t('الهدف {v0}', { v0: board.board.board.target }) }}</template></span>
+        <span v-if="best">{{ $t('الأعلى قوة') }}: <b><bdi>{{ $nm(best.name) }}</bdi></b> <span class="font-numbers text-gold">{{ best.overall }}</span></span>
+        <span v-if="board.board?.match">{{ $t('الخصم القادم') }}: <b>{{ $nm(board.board.match.opponent.name) }}</b></span>
+        <label class="ms-auto flex items-center gap-2">
+          <span class="sr-only">{{ $t('فريق نادٍ آخر') }}</span>
+          <select class="h-10 rounded-lg bg-surface-sunk px-2 text-sm" :value="''" @focus="loadOthers" @pointerdown="loadOthers" @change="otherClub = Number(($event.target as HTMLSelectElement).value) || null; ($event.target as HTMLSelectElement).value = ''">
+            <option value="">{{ $t('فريق نادٍ آخر ▾') }}</option>
+            <option v-for="c in others" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>
+          </select>
+        </label>
       </section>
       <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" :aria-label="$t('المعنويات')">
         <span class="flex items-center gap-1 font-bold">{{ $t('المعنويات') }}<HelpTip :text="g.morale" :label="$t('المعنويات')" /></span>
@@ -146,5 +178,6 @@ function status(p: SquadPlayer) {
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <PlayerCard v-if="open" :player="open" @close="open = null" />
+    <ClubSquadDialog v-if="otherClub && board.league" :league-id="board.league" :club-id="otherClub" @close="otherClub = null" />
   </div>
 </template>

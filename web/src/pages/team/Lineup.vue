@@ -396,7 +396,10 @@ async function saveCustom() {
           <span class="size-2.5 rounded-full" :class="{ def: 'bg-[#3B82F6]', mid: 'bg-[#22A35A]', att: 'bg-[#F08A3C]' }[l]" />{{ $t(label) }}
           <span class="font-numbers text-base font-bold">{{ current.lines[l] }}</span>
         </span>
-        <UiButton variant="outline" class="ms-auto" @click="improve">{{ $t('تحسين') }}</UiButton>
+        <!-- [Sprint 20 W10, W12] The server's best eleven (in the edit mode), and the screens next to this one. -->
+        <UiButton variant="outline" class="ms-auto" @click="improve">{{ $t('أفضل تشكيلة') }}</UiButton>
+        <RouterLink :to="{ name: 'tactics' }" class="flex h-10 items-center rounded-xl bg-surface px-3 text-sm font-bold">{{ $t('التكتيك ›') }}</RouterLink>
+        <RouterLink :to="{ name: 'specialists' }" class="flex h-10 items-center rounded-xl bg-surface px-3 text-sm font-bold">{{ $t('الجهاز الفني ›') }}</RouterLink>
       </div>
 
       <div v-if="chemistry" class="flex items-center gap-3 rounded-xl bg-surface px-3 py-2">
