@@ -131,11 +131,15 @@ class Joining
         }
     }
 
-    /** Up to 4 clubs at once, in 4 different leagues [PLAN 2.1]. */
+    /** A club in each league, up to the slots open for the account's age [PLAN 2.1, X18, Sprint 24 B3]. */
     public static function assertCanTakeAnother(User $user): void
     {
-        if (self::activeTeams($user) >= config('game.league.max_active_teams')) {
-            throw new HttpException(409, 'وصلت للحد: '.config('game.league.max_active_teams').' فرق نشطة في وقت واحد.');
+        $open = CoachSlots::open($user);
+        if (self::activeTeams($user) >= $open) {
+            $next = CoachSlots::next($user);
+            throw new HttpException(409, $next
+                ? sprintf(__('فتحاتك المفتوحة كلها مشغولة (%d). تُفتح فتحتك التالية بعد %d يوماً.'), $open, max(1, intdiv($next->getTimestamp() - GameClock::now()->getTimestamp() + 86399, 86400)))
+                : sprintf(__('وصلت للحد: %d فرق نشطة في وقت واحد.'), $open));
         }
     }
 

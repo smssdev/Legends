@@ -32,8 +32,8 @@ class ManagerBotGuideTest extends TestCase
 
     public function test_the_numbers_come_from_the_config(): void
     {
-        config(['game.friendlies.per_day' => 7, 'game.stadium.part_hours' => 11]);
-        $this->assertStringContainsString('لك 7 في اليوم', Guide::find('friendlies', 'ar')['a']);
+        config(['game.friendlies.coins' => 7, 'game.stadium.part_hours' => 11]);
+        $this->assertStringContainsString('ثمنها 7 كوينز', Guide::find('friendlies', 'ar')['a']);
         $this->assertStringContainsString('11 hours', Guide::find('stadium_plan', 'en')['a']);
     }
 

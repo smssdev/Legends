@@ -554,11 +554,13 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [leagues, active_teams, max_active_teams]
+                required: [leagues, active_teams, max_active_teams, slots_total, next_slot_at]
                 properties:
                   leagues: { type: array, items: { $ref: '#/components/schemas/League' } }
                   active_teams: { type: integer }
-                  max_active_teams: { type: integer, example: 4 }
+                  max_active_teams: { type: integer, example: 2, description: '[Sprint 24 B3] The slots open now for the account''s age (2, then one more every 10 days)' }
+                  slots_total: { type: integer, example: 8, description: All the slots (game.league.max_active_teams) }
+                  next_slot_at: { type: [string, 'null'], format: date-time, description: When the next slot opens (null when all are open) }
         '401': { $ref: '#/components/responses/Error' }
     post:
       tags: [leagues]
@@ -1850,17 +1852,26 @@ paths:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
       tags: [team]
-      summary: '[Sprint 20 B4] The friendlies: the opponents (the closest in strength recommended), those left today, and why none can be played now'
+      summary: '[Sprint 20 B4, Sprint 24 B2] The friendlies: the opponents (the closest in strength recommended), what one costs, and why none can be played now'
       responses:
         '200': { description: The friendlies, content: { application/json: { schema: { $ref: '#/components/schemas/Friendlies' } } } }
         '403': { $ref: '#/components/responses/Error' }
     post:
       tags: [team]
-      summary: '[Sprint 20 B4] Play a friendly now: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training for those who played'
+      summary: '[Sprint 20 B4, Sprint 24 B2] Play a friendly now for its coins: the engine plays it whole, with no effect on the table or money; fitness, a little training and chemistry for those who played'
+      description: The coins are taken with the match, once by the key (the same key again returns the same friendly, 200), in any league and with no limit (not counted in the season's coin cap).
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object, required: [opponent_id], properties: { opponent_id: { type: integer } } } } }
+        content: { application/json: { schema: { type: object, required: [opponent_id, idempotency_key], properties: { opponent_id: { type: integer }, idempotency_key: { type: string, maxLength: 64 } } } } }
       responses:
+        '200':
+          description: This key already played it
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Friendlies' }
+                  - { type: object, required: [friendly], properties: { friendly: { $ref: '#/components/schemas/Friendly' } } }
         '201':
           description: The friendly and the page after it
           content:
@@ -1871,7 +1882,6 @@ paths:
                   - { type: object, required: [friendly], properties: { friendly: { $ref: '#/components/schemas/Friendly' } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
-        '429': { $ref: '#/components/responses/Error' }
   /leagues/{league}/quests:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2047,6 +2057,30 @@ paths:
                       injured: { type: object, additionalProperties: { type: integer } }
                   chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
         '404': { $ref: '#/components/responses/Error' }
+  /home/slots/{slot}/unlock:
+    parameters: [{ name: slot, in: path, required: true, schema: { type: integer, minimum: 3, maximum: 8 } }]
+    post:
+      tags: [leagues]
+      summary: '[Sprint 24 B3] Open a locked slot now for coins (and any locked before it: they open in order), for good'
+      description: 'The price is game.league.slots.unlock_coins (50 for the third up to 300 for the eighth). Paid once by the slot: a repeated tap pays nothing more.'
+      responses:
+        '200': { description: The home screen after it, content: { application/json: { schema: { $ref: '#/components/schemas/HomeScreen' } } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /matches/{match}/recap:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: '[Sprint 24 B1] The quick recap of a finished match, for a coach of either side who missed it'
+      description: |
+        From the coach's own report: the big moments in order (goals, cards, substitutions, injuries, penalties), each
+        with the score after it, then the final score, the main numbers (possession as each side's share of the attacks)
+        and the three best ratings of each side. Opening it marks the match seen, like the report.
+      responses:
+        '200': { description: The recap, content: { application/json: { schema: { $ref: '#/components/schemas/MatchRecap' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /matches/{match}/report:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2975,7 +3009,7 @@ paths:
     get:
       tags: [leagues]
       summary: The coach's home screen [X18]
-      description: The profile card with the level, the four club slots, the trophies, the coaches met, and the latest announcements.
+      description: The profile card with the level, the eight club slots (locked ones with their countdown and price, Sprint 24), the trophies, the coaches met, and the latest announcements.
       responses:
         '200':
           description: The home screen
@@ -4285,6 +4319,66 @@ components:
         man_of_the_match: { type: [object, 'null'], required: [id, name, rating, mine], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer }, mine: { type: boolean } } }
         coins: { type: integer }
         changes: { type: array, items: { type: object, required: [kind, player], properties: { kind: { type: string, enum: [injury, red] }, player: { type: [string, 'null'] } } } }
+    MatchRecap:
+      type: object
+      required: [match_id, competition, round, home, away, side, result, score, shootout, moments, stats, best, man_of_the_match]
+      properties:
+        match_id: { type: integer }
+        competition: { type: string }
+        round: { type: integer }
+        home: { $ref: '#/components/schemas/RecapClub' }
+        away: { $ref: '#/components/schemas/RecapClub' }
+        side: { type: string, enum: [home, away] }
+        result: { type: string, enum: [win, draw, loss] }
+        score: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
+        shootout: { type: [object, 'null'], properties: { home: { type: integer }, away: { type: integer } } }
+        moments:
+          type: array
+          items:
+            type: object
+            required: [minute, type, team, player, other, color, score]
+            properties:
+              minute: { type: integer }
+              type: { type: string, enum: [goal, card, sub, injury, penalty] }
+              team: { type: [string, 'null'], enum: [home, away, null] }
+              player: { type: [string, 'null'], description: 'The scorer, the booked or injured player, or who went off' }
+              other: { type: [string, 'null'], description: 'The assist of a goal, or who came on' }
+              color: { type: [string, 'null'], enum: [yellow, red, null] }
+              score: { type: object, required: [home, away], properties: { home: { type: integer }, away: { type: integer } }, description: The score after this moment }
+        stats:
+          type: object
+          required: [home, away]
+          properties:
+            home: { $ref: '#/components/schemas/RecapStats' }
+            away: { $ref: '#/components/schemas/RecapStats' }
+        best:
+          type: object
+          required: [home, away]
+          properties:
+            home: { type: array, items: { $ref: '#/components/schemas/RecapRating' } }
+            away: { type: array, items: { $ref: '#/components/schemas/RecapRating' } }
+        man_of_the_match: { type: [object, 'null'], properties: { id: { type: integer }, name: { type: [string, 'null'] }, team: { type: string }, rating: { type: integer } } }
+    RecapClub:
+      type: object
+      required: [id, name, code, crest_url]
+      properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } }
+    RecapRating:
+      type: object
+      required: [id, name, rating]
+      properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer, description: 'Out of 1000 (7.4 = 740)' } }
+    RecapStats:
+      type: object
+      required: [possession, shots, on_target, big_chances, corners, fouls, yellow, red, saves]
+      properties:
+        possession: { type: integer, description: Percent; the two sides make 100 }
+        shots: { type: integer }
+        on_target: { type: integer }
+        big_chances: { type: integer }
+        corners: { type: integer }
+        fouls: { type: integer }
+        yellow: { type: integer }
+        red: { type: integer }
+        saves: { type: integer }
     Friendly:
       type: object
       required: [id, opponent, goals_for, goals_against, report, at]
@@ -4301,12 +4395,14 @@ components:
             goals: { type: array, items: { type: object, required: [minute, side, name], properties: { minute: { type: integer }, side: { type: string, enum: [home, away], description: home is my club }, name: { type: [string, 'null'] } } } }
             best: { type: array, items: { type: object, required: [id, name, rating], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer } } } }
             played: { type: integer }
+            coins: { type: integer, description: '[Sprint 24 B2] The coins it cost (0 before Sprint 24)' }
     Friendlies:
       type: object
-      required: [max, left, blocked, training_progress_pct, opponents, recent]
+      required: [coins, balance, fitness, blocked, training_progress_pct, opponents, recent]
       properties:
-        max: { type: integer }
-        left: { type: integer }
+        coins: { type: integer, description: '[Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit' }
+        balance: { type: integer, description: The coach's coins }
+        fitness: { type: integer, description: '[Sprint 24 B2] The fitness each player who plays gains (up to 100)' }
         blocked: { type: [object, 'null'], required: [reason], properties: { reason: { type: string, enum: [live, before_match] }, until: { type: string, format: date-time } } }
         training_progress_pct: { type: integer }
         opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean } } } }
@@ -4732,7 +4828,7 @@ components:
         level: { type: integer }
     HomeScreen:
       type: object
-      required: [coach, trophies, slots, colleagues, announcements]
+      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements]
       properties:
         coach:
           type: object
@@ -4751,16 +4847,21 @@ components:
         trophies: { $ref: '#/components/schemas/Trophies' }
         colleagues: { type: integer, description: The other coaches met in the coach's leagues }
         announcements: { type: array, items: { $ref: '#/components/schemas/Message' } }
+        slots_open: { type: integer, description: '[Sprint 24 B3] The slots open for the account''s age' }
+        next_slot_at: { type: [string, 'null'], format: date-time, description: When the next slot opens (null when all are open) }
         slots:
           type: array
-          description: Always game.league.max_active_teams of them (10)
+          description: game.league.max_active_teams of them (8), or more for a coach who held more teams before Sprint 24
           items:
             type: object
-            required: [slot, state, league, pending, club, position, teams, next_match]
+            required: [slot, state, league, pending, club, position, teams, next_match, opens_at, progress_bp, unlock_coins]
             properties:
               slot: { type: integer }
               pending: { type: integer, description: '[Sprint 20 B2] What waits for the coach in this club (as the club board counts it)' }
-              state: { type: string, enum: [club, waiting, free], description: 'A club, a join request waiting for its answer, or free' }
+              state: { type: string, enum: [club, waiting, free, locked], description: 'A club, a join request waiting for its answer, free, or locked until the account is old enough [Sprint 24 B3]' }
+              opens_at: { type: [string, 'null'], format: date-time, description: When a locked slot opens (for the countdown) }
+              progress_bp: { type: [integer, 'null'], description: 'A locked slot''s wait so far, from the account''s first day, out of 10000' }
+              unlock_coins: { type: [integer, 'null'], description: 'The first locked slot''s price to open it now (with any locked before it); null on the others' }
               league: { type: object, nullable: true, required: [id, name, status], properties: { id: { type: integer }, name: { type: string }, status: { type: string } } }
               club: { type: object, nullable: true, required: [id, name, crest_url, cash], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string }, cash: { type: integer, description: 'The club''s money [UP7]' } } }
               position: { type: integer, nullable: true }

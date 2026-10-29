@@ -1,12 +1,14 @@
 <script setup lang="ts">
 // [Sprint 20 W7, B3] The matches the coach missed since his last visit, in one window: the score, the goals, the man
 // of the match, the coins, and what changed in his squad; «شاهد الإعادة» and «التقرير» (each marks it seen), the
-// next one, or «تخطَّ الكل». Once skipped, a match does not come back.
+// next one, or «تخطَّ الكل». Once skipped, a match does not come back. [Sprint 24 W1] «الملخص السريع» first: the
+// match's big moments fast, then the numbers (MatchRecap), and it counts as seen.
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { useBoard } from '../../stores/board'
+import MatchRecap from './MatchRecap.vue'
 
 const props = defineProps<{ leagueId: number }>()
 const router = useRouter()
@@ -30,11 +32,20 @@ function open(to: string) {
   board.refresh()
   router.push(to)
 }
+// The recap open for this match; closing it moves to the next missed match.
+const recap = ref<number | null>(null)
+function recapClosed() {
+  recap.value = null
+  matches.value.splice(at.value, 1)
+  if (at.value >= matches.value.length) at.value = Math.max(0, matches.value.length - 1)
+  if (!matches.value.length) board.refresh()
+}
 const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 'bg-surface-raised text-text'], [-1]: ['خسارة', 'bg-live/20 text-danger'] } as const
 </script>
 
 <template>
-  <div v-if="m" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فاتتك مباراة')">
+  <MatchRecap v-if="recap" :match-id="recap" @close="recapClosed" />
+  <div v-else-if="m" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فاتتك مباراة')">
     <div class="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-gold/40 bg-surface p-5 shadow-2xl">
       <div class="flex items-center text-xs text-text-muted">
         <span class="flex-1">{{ $t(m.competition === 'league' ? 'فاتتك مباراة · الجولة {v0}' : 'فاتتك مباراة · الكأس', { v0: m.round }) }}</span>
@@ -56,8 +67,9 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
         <span v-if="m.coins" class="rounded-pill bg-gold px-2 font-numbers text-xs font-bold text-on-gold" dir="ltr">+{{ m.coins }}</span>
         <span v-for="(c, i) in m.changes" :key="i" class="rounded-pill px-2 text-xs" :class="c.kind === 'injury' ? 'bg-live/20 text-danger' : 'bg-warning/20 text-warning'"><bdi>{{ $nm(c.player ?? '') }}</bdi> {{ $t(c.kind === 'injury' ? 'مصاب' : 'مطرود') }}</span>
       </div>
+      <button type="button" class="h-touch rounded-lg bg-gold font-bold text-on-gold" @click="recap = m.match_id">⚡ {{ $t('الملخص السريع') }}</button>
       <div class="flex gap-2">
-        <button type="button" class="h-touch flex-1 rounded-lg bg-gold font-bold text-on-gold" @click="open(`/live/${m.match_id}`)">{{ $t('شاهد الإعادة') }}</button>
+        <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="open(`/live/${m.match_id}`)">{{ $t('شاهد الإعادة') }}</button>
         <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="open(`/live/${m.match_id}/report`)">{{ $t('التقرير') }}</button>
       </div>
       <div class="flex gap-2">

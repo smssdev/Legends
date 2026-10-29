@@ -9,7 +9,7 @@ use App\Models\League;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** [Sprint 20 B4] The friendlies: who to play, how many are left today, and a match now with no effect. */
+/** [Sprint 20 B4, Sprint 24 B2] The friendlies: who to play, what one costs, and a match now with no effect. */
 class FriendlyController extends Controller
 {
     public function show(Request $request, League $league): JsonResponse
@@ -20,10 +20,10 @@ class FriendlyController extends Controller
     public function play(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $data = $request->validate(['opponent_id' => ['required', 'integer']]);
-        $played = Friendlies::play($club, (int) $data['opponent_id'], $request->user()->id);
+        $data = $request->validate(['opponent_id' => ['required', 'integer'], 'idempotency_key' => ['required', 'string', 'max:64']]);
+        [$played, $new] = Friendlies::play($club, (int) $data['opponent_id'], $request->user()->id, $data['idempotency_key']);
 
-        return response()->json(['friendly' => $played] + Friendlies::view($club->fresh()), 201);
+        return response()->json(['friendly' => $played] + Friendlies::view($club->fresh()), $new ? 201 : 200);
     }
 
     private function club(Request $request, League $league): Club

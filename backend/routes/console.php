@@ -22,6 +22,8 @@ Schedule::command('seasons:close')->everyMinute()->withoutOverlapping();
 Schedule::command('stadium:due')->everyMinute()->withoutOverlapping();
 // Staff whose contract ended unrenewed resign [X20].
 Schedule::command('staff:due')->everyMinute()->withoutOverlapping();
+// A slot that opened with the account's age is announced in the inbox [Sprint 24 B3].
+Schedule::command('slots:announce')->everyFiveMinutes()->withoutOverlapping();
 
 // The scheduler's own sign of life for the health check (the watchdog runs that check apart) [Sprint 21 B2].
 Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('heartbeat');

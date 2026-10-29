@@ -105,4 +105,37 @@ class ClubBoardTest extends TestCase
         $this->getJson($this->url('missed'))->assertJsonCount(0, 'matches');
         $this->assertSame(0, $this->getJson($this->url('summary'))->json('missed'));
     }
+
+    /** [Sprint 24 B1] The quick recap of a missed match: for its coaches only, once it is over, and it counts as seen. */
+    public function test_the_quick_recap_of_a_missed_match(): void
+    {
+        $f = DB::table('fixtures')->where('season_id', DB::table('seasons')->where('league_id', $this->league['id'])->value('id'))
+            ->where(fn ($q) => $q->where('home_id', $this->mine)->orWhere('away_id', $this->mine))->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('scheduled_at')->first();
+        $side = $f->home_id === $this->mine ? 'home' : 'away';
+        DB::table('fixtures')->where('id', $f->id)->update(['status' => 'finished', 'home_goals' => 1, 'away_goals' => 0, 'scheduled_at' => GameClock::now()->subHour()]);
+        $now = GameClock::now();
+        $match = DB::table('matches')->insertGetId(['fixture_id' => $f->id, 'seed' => 1, 'engine_version' => 1, 'config_snapshot' => '{}', 'initial_state' => '{}', 'state' => '{}',
+            'home_goals' => 1, 'away_goals' => 0, 'mode' => 'league', 'status' => 'live', 'started_at' => $now, 'created_at' => $now, 'updated_at' => $now]);
+        $player = (int) DB::table('players')->where('club_id', $f->home_id)->value('id');
+        $report = ['result' => $side === 'home' ? 'win' : 'loss', 'score' => ['home' => 1, 'away' => 0], 'shootout' => null,
+            'timeline' => [['minute' => 33, 'type' => 'goal', 'team' => 'home', 'scorer' => $player, 'assist' => 0, 'score' => ['home' => 1, 'away' => 0]]],
+            'ratings' => ['home' => [['id' => $player, 'name' => 'Scorer', 'rating' => 800]], 'away' => []],
+            'stats' => ['home' => ['attacks' => 30, 'shots' => 9], 'away' => ['attacks' => 20, 'shots' => 4]], 'man_of_the_match' => null];
+        DB::table('match_reports')->insert(['match_id' => $match, 'club_id' => $this->mine, 'report' => json_encode($report), 'created_at' => $now]);
+
+        // Not before the end.
+        $this->getJson("/api/v1/matches/{$match}/recap")->assertConflict();
+        DB::table('matches')->where('id', $match)->update(['status' => 'finished', 'finished_at' => $now]);
+        $this->getJson($this->url('missed'))->assertJsonCount(1, 'matches');
+
+        $recap = $this->getJson("/api/v1/matches/{$match}/recap")->assertOk()
+            ->assertJsonPath('side', $side)->assertJsonPath('score.home', 1)->assertJsonPath('home.id', $f->home_id)
+            ->assertJsonPath('moments.0.player', 'Scorer')->assertJsonPath('moments.0.score.home', 1)
+            ->assertJsonPath('stats.home.possession', 60)->assertJsonPath('stats.away.shots', 4)->json();
+        $this->assertSame(['Scorer'], array_column($recap['best']['home'], 'name'));
+        // Seen: the after-round window no longer offers it.
+        $this->getJson($this->url('missed'))->assertJsonCount(0, 'matches');
+        // Another league's member never sees it; a member who coaches neither side may not either.
+        $this->actingAs(User::factory()->create())->getJson("/api/v1/matches/{$match}/recap")->assertNotFound();
+    }
 }

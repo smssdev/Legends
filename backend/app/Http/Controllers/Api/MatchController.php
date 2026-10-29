@@ -7,6 +7,7 @@ use App\Engine\MatchSetup;
 use App\Http\Controllers\Controller;
 use App\League\LiveDegrade;
 use App\League\MatchOrders;
+use App\League\MatchRecap;
 use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\League\MatchSocial;
@@ -186,6 +187,25 @@ class MatchController extends Controller
         abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
 
         return response()->json(['side' => $you] + json_decode($row->report, true));
+    }
+
+    /**
+     * [Sprint 24 B1] The quick recap for a coach who missed his match: its big moments with the score after each,
+     * then the final numbers, from his own report (MatchRecap). Read, like the report, so the after-round window
+     * no longer offers it.
+     */
+    public function recap(Request $request, int $match): JsonResponse
+    {
+        [$m, $f, $you] = $this->load($request, $match);
+        abort_unless($you, 403, 'الملخص لمدربي الفريقين فقط.');
+        $row = DB::table('match_reports')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)->first();
+        abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
+        MissedMatches::seen($request->user()->id, [$m->id]);
+        $clubs = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->get(['id', 'name', 'code', 'master_club_id'])->keyBy('id');
+        $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")];
+
+        return response()->json(['match_id' => (int) $m->id, 'competition' => $f->competition, 'round' => (int) $f->round,
+            'home' => $card($f->home_id), 'away' => $card($f->away_id)] + MatchRecap::build(['side' => $you] + json_decode($row->report, true)));
     }
 
     /**
