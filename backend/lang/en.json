@@ -324,5 +324,12 @@
   "الإعلانات غير مفعّلة بعد.": "Ads are not switched on yet.",
   "لم يتأكد مزوّد الإعلانات من مشاهدة الفيديو كاملاً.": "The ad provider did not confirm the video was watched to the end.",
   "وصلت إلى %d فيديوهات لهذه المهمة.": "You have reached %d videos for this task.",
-  "شاهد الإعلان المفتوح أولاً.": "Finish the ad you opened first."
+  "شاهد الإعلان المفتوح أولاً.": "Finish the ad you opened first.",
+  "لم تكتمل هذه المهمة بعد.": "This quest is not complete yet.",
+  "أخذت مكافأة هذه المهمة من قبل.": "You already took this quest's reward.",
+  "لعبت وديات اليوم كلها (%d). تعود غداً.": "You played all of today's friendlies (%d). They come back tomorrow.",
+  "هذا النادي ليس في دوريك.": "This club is not in your league.",
+  "لا وديات قبل مباراتك بساعة ولا أثناءها.": "No friendlies in the hour before your match or during it.",
+  "مهمة أسبوعية": "Weekly quest",
+  "مهمة الأسبوع الكبرى": "The week's big quest"
 }

@@ -4508,6 +4508,304 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * [Sprint 20 B1] The club board in one request: the next match, the lineup's state, the mini table, the board's mood, the timers and what waits
+         * @description The opponent's formation and public tactics only after the lock, never his private ones. 403 without a club in the league.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The board */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ClubBoard"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/missed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 20 B3] The club's finished matches its coach has not seen (game.after_round), newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The missed matches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            matches: components["schemas"]["MissedMatch"][];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/missed/seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 20 B3] Skip: the named matches (all, when none is named) are seen */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        match_ids?: number[];
+                    };
+                };
+            };
+            responses: {
+                /** @description What is still missed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            matches: components["schemas"]["MissedMatch"][];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/friendlies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 20 B4] The friendlies: the opponents (the closest in strength recommended), those left today, and why none can be played now */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The friendlies */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Friendlies"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** [Sprint 20 B4] Play a friendly now: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training for those who played */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        opponent_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The friendly and the page after it */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Friendlies"] & {
+                            friendly: components["schemas"]["Friendly"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/quests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [Sprint 20 B5] This week's quests (Monday to Monday, Cairo): progress, reward, and whether claimed */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The quests */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Quests"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/quests/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 20 B5] Take a finished quest's reward, once a week */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        quest: "friendly" | "wins" | "stadium" | "training" | "unbeaten";
+                    };
+                };
+            };
+            responses: {
+                /** @description The quests after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Quests"];
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/next-match": {
         parameters: {
             query?: never;
@@ -8641,6 +8939,238 @@ export interface components {
                 fitness: number | null;
             } | null;
         };
+        ClubBoard: {
+            club: {
+                id: number;
+                name: string;
+                code: string;
+                crest_url: string;
+            };
+            money: {
+                cash: number;
+                coins: number;
+            };
+            match: {
+                fixture_id: number;
+                match_id: number | null;
+                competition: string;
+                round: number;
+                /** @enum {string} */
+                venue: "home" | "away";
+                /** @enum {string} */
+                status: "scheduled" | "locked" | "live";
+                /** Format: date-time */
+                scheduled_at: string;
+                referee: string | null;
+                club: {
+                    id: number;
+                    name: string;
+                    code: string;
+                    strength_cp: number;
+                    crest_url: string;
+                    form: ("W" | "D" | "L")[];
+                    coach?: string | null;
+                    /** @description After the lock only */
+                    formation?: string | null;
+                    /** @description After the lock, the public four only */
+                    tactics?: {
+                        [key: string]: unknown;
+                    } | null;
+                };
+                opponent: {
+                    id: number;
+                    name: string;
+                    code: string;
+                    strength_cp: number;
+                    crest_url: string;
+                    form: ("W" | "D" | "L")[];
+                    coach?: string | null;
+                    /** @description After the lock only */
+                    formation?: string | null;
+                    /** @description After the lock, the public four only */
+                    tactics?: {
+                        [key: string]: unknown;
+                    } | null;
+                };
+            } | null;
+            lineup: {
+                formation: string;
+                auto: boolean;
+                /** @description No injured or suspended starter */
+                ready: boolean;
+            };
+            standings: {
+                position: number | null;
+                teams: number;
+                played: number;
+                /** @description The first three, and mine below them when lower */
+                top: {
+                    id: number;
+                    name: string;
+                    code: string;
+                    points: number;
+                    position: number;
+                    mine: boolean;
+                }[];
+            };
+            board: {
+                /** @enum {string} */
+                mood: "calm" | "happy" | "worried" | "angry";
+                target: number;
+                kind: string;
+                position: number | null;
+            } | null;
+            /** @description Soonest first; at is null when ready now (the daily coins) */
+            timers: {
+                /** @enum {string} */
+                kind: "match" | "training" | "stadium" | "scout" | "daily" | "market";
+                /** Format: date-time */
+                at: string | null;
+                live?: boolean;
+                opponent?: string | null;
+                line?: string;
+                player?: string;
+                section?: string;
+                part?: number;
+                stage?: number;
+                amount?: number;
+            }[];
+            /** @description The most urgent first */
+            pending: {
+                /** @enum {string} */
+                kind: "window" | "lineup" | "offers" | "requests" | "training_empty" | "training_done";
+                /** @enum {string} */
+                severity: "high" | "mid" | "low";
+                count?: number;
+                match_id?: number;
+                /** @description ms */
+                until?: number;
+                lines?: string[];
+                players?: {
+                    id: number;
+                    name: string;
+                    /** @enum {string} */
+                    why: "injured" | "suspended";
+                }[];
+            }[];
+            /** @description Matches missed (B3) */
+            missed: number;
+        };
+        MissedMatch: {
+            match_id: number;
+            competition: string;
+            round: number;
+            /** @enum {string} */
+            venue: "home" | "away";
+            /** Format: date-time */
+            at: string;
+            home: {
+                id: number;
+                name: string;
+                code: string;
+                crest_url: string;
+            };
+            away: {
+                id: number;
+                name: string;
+                code: string;
+                crest_url: string;
+            };
+            home_goals: number;
+            away_goals: number;
+            /**
+             * @description For my club
+             * @enum {integer}
+             */
+            result: -1 | 0 | 1;
+            goals: {
+                minute: number;
+                /** @enum {string} */
+                side: "home" | "away";
+                scorer: string | null;
+            }[];
+            man_of_the_match: {
+                id: number;
+                name: string | null;
+                rating: number;
+                mine: boolean;
+            } | null;
+            coins: number;
+            changes: {
+                /** @enum {string} */
+                kind: "injury" | "red";
+                player: string | null;
+            }[];
+        };
+        Friendly: {
+            id: number;
+            opponent: {
+                id: number;
+                name: string;
+                code: string;
+                crest_url: string;
+            };
+            goals_for: number;
+            goals_against: number;
+            /** Format: date-time */
+            at: string;
+            report: {
+                goals: {
+                    minute: number;
+                    /**
+                     * @description home is my club
+                     * @enum {string}
+                     */
+                    side: "home" | "away";
+                    name: string | null;
+                }[];
+                best: {
+                    id: number;
+                    name: string | null;
+                    rating: number;
+                }[];
+                played: number;
+            };
+        };
+        Friendlies: {
+            max: number;
+            left: number;
+            blocked: {
+                /** @enum {string} */
+                reason: "live" | "before_match";
+                /** Format: date-time */
+                until?: string;
+            } | null;
+            training_progress_pct: number;
+            opponents: {
+                id: number;
+                name: string;
+                code: string;
+                crest_url: string;
+                strength_cp: number;
+                coach: string | null;
+                recommended: boolean;
+            }[];
+            recent: components["schemas"]["Friendly"][];
+        };
+        Quests: {
+            /** Format: date */
+            week: string;
+            /** Format: date-time */
+            renews_at: string;
+            quests: {
+                /** @enum {string} */
+                quest: "friendly" | "wins" | "stadium" | "training" | "unbeaten";
+                progress: number;
+                target: number;
+                reward: {
+                    coins?: number;
+                    money?: number;
+                };
+                complete: boolean;
+                claimed: boolean;
+            }[];
+        };
         /** @description [Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far */
         AdStatus: {
             enabled: boolean;
@@ -9077,6 +9607,8 @@ export interface components {
             /** @description Always game.league.max_active_teams of them (10) */
             slots: {
                 slot: number;
+                /** @description [Sprint 20 B2] What waits for the coach in this club (as the club board counts it) */
+                pending: number;
                 /**
                  * @description A club, a join request waiting for its answer, or free
                  * @enum {string}

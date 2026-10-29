@@ -1812,6 +1812,82 @@ paths:
               schema: { $ref: '#/components/schemas/ClubFinance' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/summary:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 20 B1] The club board in one request: the next match, the lineup''s state, the mini table, the board''s mood, the timers and what waits'
+      description: 'The opponent''s formation and public tactics only after the lock, never his private ones. 403 without a club in the league.'
+      responses:
+        '200':
+          description: The board
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClubBoard' }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/missed:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 20 B3] The club''s finished matches its coach has not seen (game.after_round), newest first'
+      responses:
+        '200': { description: The missed matches, content: { application/json: { schema: { type: object, required: [matches], properties: { matches: { type: array, items: { $ref: '#/components/schemas/MissedMatch' } } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/missed/seen:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: '[Sprint 20 B3] Skip: the named matches (all, when none is named) are seen'
+      requestBody:
+        required: false
+        content: { application/json: { schema: { type: object, properties: { match_ids: { type: array, maxItems: 20, items: { type: integer } } } } } }
+      responses:
+        '200': { description: What is still missed, content: { application/json: { schema: { type: object, required: [matches], properties: { matches: { type: array, items: { $ref: '#/components/schemas/MissedMatch' } } } } } } }
+  /leagues/{league}/friendlies:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 20 B4] The friendlies: the opponents (the closest in strength recommended), those left today, and why none can be played now'
+      responses:
+        '200': { description: The friendlies, content: { application/json: { schema: { $ref: '#/components/schemas/Friendlies' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [team]
+      summary: '[Sprint 20 B4] Play a friendly now: the engine plays it whole, with no effect on the table, money, fitness or injuries; a little training for those who played'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [opponent_id], properties: { opponent_id: { type: integer } } } } }
+      responses:
+        '201':
+          description: The friendly and the page after it
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Friendlies' }
+                  - { type: object, required: [friendly], properties: { friendly: { $ref: '#/components/schemas/Friendly' } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/quests:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 20 B5] This week''s quests (Monday to Monday, Cairo): progress, reward, and whether claimed'
+      responses:
+        '200': { description: The quests, content: { application/json: { schema: { $ref: '#/components/schemas/Quests' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/quests/claim:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: '[Sprint 20 B5] Take a finished quest''s reward, once a week'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [quest], properties: { quest: { type: string, enum: [friendly, wins, stadium, training, unbeaten] } } } } }
+      responses:
+        '200': { description: The quests after it, content: { application/json: { schema: { $ref: '#/components/schemas/Quests' } } } }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/next-match:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -3966,6 +4042,130 @@ components:
                 trap: { type: integer }
             form: { type: array, items: { type: string, enum: [W, D, L] }, description: Newest first }
             fitness: { type: integer, nullable: true, description: The eleven's average fitness }
+    ClubBoard:
+      type: object
+      required: [club, money, match, lineup, standings, board, timers, pending, missed]
+      properties:
+        club: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+        money: { type: object, required: [cash, coins], properties: { cash: { type: integer }, coins: { type: integer } } }
+        match:
+          type: [object, 'null']
+          required: [fixture_id, match_id, competition, round, venue, status, scheduled_at, referee, club, opponent]
+          properties:
+            fixture_id: { type: integer }
+            match_id: { type: [integer, 'null'] }
+            competition: { type: string }
+            round: { type: integer }
+            venue: { type: string, enum: [home, away] }
+            status: { type: string, enum: [scheduled, locked, live] }
+            scheduled_at: { type: string, format: date-time }
+            referee: { type: [string, 'null'] }
+            club: { type: object, required: [id, name, code, strength_cp, crest_url, form], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, strength_cp: { type: integer }, crest_url: { type: string }, form: { type: array, items: { type: string, enum: [W, D, L] } }, coach: { type: [string, 'null'] }, formation: { type: [string, 'null'], description: After the lock only }, tactics: { type: [object, 'null'], additionalProperties: true, description: 'After the lock, the public four only' } } }
+            opponent: { type: object, required: [id, name, code, strength_cp, crest_url, form], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, strength_cp: { type: integer }, crest_url: { type: string }, form: { type: array, items: { type: string, enum: [W, D, L] } }, coach: { type: [string, 'null'] }, formation: { type: [string, 'null'], description: After the lock only }, tactics: { type: [object, 'null'], additionalProperties: true, description: 'After the lock, the public four only' } } }
+        lineup: { type: object, required: [formation, auto, ready], properties: { formation: { type: string }, auto: { type: boolean }, ready: { type: boolean, description: No injured or suspended starter } } }
+        standings:
+          type: object
+          required: [position, teams, played, top]
+          properties:
+            position: { type: [integer, 'null'] }
+            teams: { type: integer }
+            played: { type: integer }
+            top: { type: array, description: 'The first three, and mine below them when lower', items: { type: object, required: [id, name, code, points, position, mine], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, points: { type: integer }, position: { type: integer }, mine: { type: boolean } } } }
+        board: { type: [object, 'null'], required: [mood, target, kind, position], properties: { mood: { type: string, enum: [calm, happy, worried, angry] }, target: { type: integer }, kind: { type: string }, position: { type: [integer, 'null'] } } }
+        timers:
+          type: array
+          description: Soonest first; at is null when ready now (the daily coins)
+          items:
+            type: object
+            required: [kind, at]
+            properties:
+              kind: { type: string, enum: [match, training, stadium, scout, daily, market] }
+              at: { type: [string, 'null'], format: date-time }
+              live: { type: boolean }
+              opponent: { type: [string, 'null'] }
+              line: { type: string }
+              player: { type: string }
+              section: { type: string }
+              part: { type: integer }
+              stage: { type: integer }
+              amount: { type: integer }
+        pending:
+          type: array
+          description: The most urgent first
+          items:
+            type: object
+            required: [kind, severity]
+            properties:
+              kind: { type: string, enum: [window, lineup, offers, requests, training_empty, training_done] }
+              severity: { type: string, enum: [high, mid, low] }
+              count: { type: integer }
+              match_id: { type: integer }
+              until: { type: integer, description: ms }
+              lines: { type: array, items: { type: string } }
+              players: { type: array, items: { type: object, required: [id, name, why], properties: { id: { type: integer }, name: { type: string }, why: { type: string, enum: [injured, suspended] } } } }
+        missed: { type: integer, description: Matches missed (B3) }
+    MissedMatch:
+      type: object
+      required: [match_id, competition, round, venue, at, home, away, home_goals, away_goals, result, goals, man_of_the_match, coins, changes]
+      properties:
+        match_id: { type: integer }
+        competition: { type: string }
+        round: { type: integer }
+        venue: { type: string, enum: [home, away] }
+        at: { type: string, format: date-time }
+        home: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+        away: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+        home_goals: { type: integer }
+        away_goals: { type: integer }
+        result: { type: integer, enum: [-1, 0, 1], description: 'For my club' }
+        goals: { type: array, items: { type: object, required: [minute, side, scorer], properties: { minute: { type: integer }, side: { type: string, enum: [home, away] }, scorer: { type: [string, 'null'] } } } }
+        man_of_the_match: { type: [object, 'null'], required: [id, name, rating, mine], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer }, mine: { type: boolean } } }
+        coins: { type: integer }
+        changes: { type: array, items: { type: object, required: [kind, player], properties: { kind: { type: string, enum: [injury, red] }, player: { type: [string, 'null'] } } } }
+    Friendly:
+      type: object
+      required: [id, opponent, goals_for, goals_against, report, at]
+      properties:
+        id: { type: integer }
+        opponent: { type: object, required: [id, name, code, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string } } }
+        goals_for: { type: integer }
+        goals_against: { type: integer }
+        at: { type: string, format: date-time }
+        report:
+          type: object
+          required: [goals, best, played]
+          properties:
+            goals: { type: array, items: { type: object, required: [minute, side, name], properties: { minute: { type: integer }, side: { type: string, enum: [home, away], description: home is my club }, name: { type: [string, 'null'] } } } }
+            best: { type: array, items: { type: object, required: [id, name, rating], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer } } } }
+            played: { type: integer }
+    Friendlies:
+      type: object
+      required: [max, left, blocked, training_progress_pct, opponents, recent]
+      properties:
+        max: { type: integer }
+        left: { type: integer }
+        blocked: { type: [object, 'null'], required: [reason], properties: { reason: { type: string, enum: [live, before_match] }, until: { type: string, format: date-time } } }
+        training_progress_pct: { type: integer }
+        opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean } } } }
+        recent: { type: array, items: { $ref: '#/components/schemas/Friendly' } }
+    Quests:
+      type: object
+      required: [week, renews_at, quests]
+      properties:
+        week: { type: string, format: date }
+        renews_at: { type: string, format: date-time }
+        quests:
+          type: array
+          items:
+            type: object
+            required: [quest, progress, target, reward, complete, claimed]
+            properties:
+              quest: { type: string, enum: [friendly, wins, stadium, training, unbeaten] }
+              progress: { type: integer }
+              target: { type: integer }
+              reward: { type: object, properties: { coins: { type: integer }, money: { type: integer } } }
+              complete: { type: boolean }
+              claimed: { type: boolean }
     AdStatus:
       type: object
       description: '[Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far'
@@ -4359,9 +4559,10 @@ components:
           description: Always game.league.max_active_teams of them (10)
           items:
             type: object
-            required: [slot, state, league, club, position, teams, next_match]
+            required: [slot, state, league, pending, club, position, teams, next_match]
             properties:
               slot: { type: integer }
+              pending: { type: integer, description: '[Sprint 20 B2] What waits for the coach in this club (as the club board counts it)' }
               state: { type: string, enum: [club, waiting, free], description: 'A club, a join request waiting for its answer, or free' }
               league: { type: object, nullable: true, required: [id, name, status], properties: { id: { type: integer }, name: { type: string }, status: { type: string } } }
               club: { type: object, nullable: true, required: [id, name, crest_url, cash], properties: { id: { type: integer }, name: { type: string }, crest_url: { type: string }, cash: { type: integer, description: 'The club''s money [UP7]' } } }

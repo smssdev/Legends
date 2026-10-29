@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\League\ClubAgenda;
 use App\League\Standings;
 use App\Messages\Inbox;
+use App\Models\Club;
+use App\Models\League;
 use App\Models\User;
 use App\Season\Career;
 use App\Wallet\Wallet;
@@ -54,7 +57,10 @@ class HomeController extends Controller
                 ->where(fn ($q) => $q->where('home_id', $m->club_id)->orWhere('away_id', $m->club_id))->whereNotNull('home_id')->whereNotNull('away_id')
                 ->orderBy('scheduled_at')->first();
             $opponent = $next ? DB::table('clubs')->where('id', $next->home_id === $m->club_id ? $next->away_id : $next->home_id)->value('name') : null;
-            $out[] = ['state' => 'club', 'league' => ['id' => (int) $m->league_id, 'name' => $m->league, 'status' => $m->status],
+            // [Sprint 20 B2] What waits for the coach in this club, as the club board counts it.
+            $club = Club::find($m->club_id);
+            $pending = count(ClubAgenda::pending($club, League::find($m->league_id), $user->id));
+            $out[] = ['state' => 'club', 'league' => ['id' => (int) $m->league_id, 'name' => $m->league, 'status' => $m->status], 'pending' => $pending,
                 'club' => ['id' => (int) $m->club_id, 'name' => $m->club, 'crest_url' => url("/api/v1/data/clubs/{$m->master_club_id}/crest.svg"), 'cash' => (int) $m->balance],
                 'position' => ($i = array_search((int) $m->club_id, $order, true)) === false ? null : $i + 1, 'teams' => count($order),
                 'next_match' => $next ? ['opponent' => $opponent, 'venue' => $next->home_id === $m->club_id ? 'home' : 'away', 'live' => $next->status === 'live',
@@ -63,11 +69,11 @@ class HomeController extends Controller
         foreach (DB::table('league_join_requests')->join('leagues', 'leagues.id', '=', 'league_join_requests.league_id')
             ->where('league_join_requests.user_id', $user->id)->where('league_join_requests.status', 'pending')->limit($max)->get(['leagues.id', 'leagues.name']) as $r) {
             if (count($out) < $max) {
-                $out[] = ['state' => 'waiting', 'league' => ['id' => (int) $r->id, 'name' => $r->name, 'status' => 'waiting'], 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
+                $out[] = ['state' => 'waiting', 'league' => ['id' => (int) $r->id, 'name' => $r->name, 'status' => 'waiting'], 'pending' => 0, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
             }
         }
         while (count($out) < $max) {
-            $out[] = ['state' => 'free', 'league' => null, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
+            $out[] = ['state' => 'free', 'league' => null, 'pending' => 0, 'club' => null, 'position' => null, 'teams' => null, 'next_match' => null];
         }
 
         return array_map(fn ($s, $i) => ['slot' => $i + 1] + $s, $out, array_keys($out));

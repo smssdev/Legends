@@ -381,6 +381,18 @@ return [
     // (README section 11): no paid or account-bound SDK is in the game.
     // [Sprint 20 S4] The provider is our own (house, App\Ads\HouseAds), on by the owner's decision 2026-10-29: the
     // developers' ads from the admin panel, else these built-in ones, each house_seconds long by default.
+    // [Sprint 20 B4] Friendlies: free, per_day a day for each club (Cairo's day), not within block_minutes of the club's
+    // next match; each player who played gets training_progress on his bar (of training.progress_scale, 10000).
+    'friendlies' => ['per_day' => 3, 'block_minutes' => 60, 'training_progress' => 300],
+    // [Sprint 20 B5] The weekly quests (Monday to Monday, Cairo): a target each and coins; the big one (unbeaten: at
+    // least target matches without a defeat) pays money_bp of the league's money scale to the club.
+    'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],
+        'training' => ['target' => 1, 'coins' => 10], 'unbeaten' => ['target' => 2, 'money_bp' => 50]],
+    // [Sprint 20 B3] The after-round window: the matches missed in the last days days, at most max.
+    'after_round' => ['days' => 3, 'max' => 5],
+    // [Sprint 20, question 5] The board's mood: calm before after_rounds league rounds; then happy at or above the
+    // objective's place, worried up to worried_places below it, angry further down.
+    'board' => ['after_rounds' => 3, 'worried_places' => 2],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
             ['title' => 'ادعُ صديقاً واربح 100 كوينز', 'body' => 'انسخ رابط الدعوة من «حسابي». كل صديق يسجّل منه ويوثّق حسابه يعطيك 100 كوينز، حتى 10 أصدقاء.',

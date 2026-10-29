@@ -11,6 +11,7 @@ use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\League\MatchSocial;
 use App\League\Members;
+use App\League\MissedMatches;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Simulator\CoachWindows;
@@ -105,6 +106,7 @@ class MatchController extends Controller
     public function react(Request $request, int $match): JsonResponse
     {
         [$m, , $you] = $this->load($request, $match);
+        MissedMatches::seen($request->user()->id, [$m->id]);
         $data = $request->validate([
             'key' => ['required', Rule::in([...config('game.match.reactions'), ...MatchSocial::CHEERS])],
             'target' => ['required_if:key,boo,cheer', 'nullable', Rule::in(['home', 'away'])],
@@ -178,6 +180,8 @@ class MatchController extends Controller
     {
         [$m, $f, $you] = $this->load($request, $match);
         abort_unless($you, 403, 'التقرير لمدربي الفريقين فقط.');
+        // [Sprint 20 B3] Read: the after-round window no longer offers it.
+        MissedMatches::seen($request->user()->id, [$m->id]);
         $row = DB::table('match_reports')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)->first();
         abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
 
