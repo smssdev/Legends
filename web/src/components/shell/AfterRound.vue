@@ -30,7 +30,7 @@ function open(to: string) {
   board.refresh()
   router.push(to)
 }
-const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 'bg-surface-raised text-text'], [-1]: ['خسارة', 'bg-live/20 text-[#FF8A8A]'] } as const
+const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 'bg-surface-raised text-text'], [-1]: ['خسارة', 'bg-live/20 text-danger'] } as const
 </script>
 
 <template>
@@ -54,7 +54,7 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
       <div class="flex flex-wrap items-center gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
         <span v-if="m.man_of_the_match" class="min-w-0 flex-1">{{ $t('رجل المباراة') }}: <b><bdi>{{ $nm(m.man_of_the_match.name ?? '') }}</bdi></b> <span class="font-numbers text-gold">{{ (m.man_of_the_match.rating / 100).toFixed(1) }}</span></span>
         <span v-if="m.coins" class="rounded-pill bg-gold px-2 font-numbers text-xs font-bold text-on-gold" dir="ltr">+{{ m.coins }}</span>
-        <span v-for="(c, i) in m.changes" :key="i" class="rounded-pill px-2 text-xs" :class="c.kind === 'injury' ? 'bg-live/20 text-[#FF8A8A]' : 'bg-warning/20 text-warning'"><bdi>{{ $nm(c.player ?? '') }}</bdi> {{ $t(c.kind === 'injury' ? 'مصاب' : 'مطرود') }}</span>
+        <span v-for="(c, i) in m.changes" :key="i" class="rounded-pill px-2 text-xs" :class="c.kind === 'injury' ? 'bg-live/20 text-danger' : 'bg-warning/20 text-warning'"><bdi>{{ $nm(c.player ?? '') }}</bdi> {{ $t(c.kind === 'injury' ? 'مصاب' : 'مطرود') }}</span>
       </div>
       <div class="flex gap-2">
         <button type="button" class="h-touch flex-1 rounded-lg bg-gold font-bold text-on-gold" @click="open(`/live/${m.match_id}`)">{{ $t('شاهد الإعادة') }}</button>

@@ -22,7 +22,7 @@ onMounted(async () => {
 <template>
   <div class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة النادي')" @click.self="emit('close')" @keydown.esc="emit('close')">
     <div class="flex max-h-[85dvh] w-full max-w-xl flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
-      <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+      <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
       <p v-else-if="!squad" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
       <template v-else>
         <div class="flex items-center gap-3">
@@ -32,7 +32,7 @@ onMounted(async () => {
         </div>
         <div v-for="p in squad.players" :key="p.id" class="flex min-h-touch items-center gap-3 border-t border-text/5 text-sm">
           <span class="w-10 font-numbers text-xs text-text-muted" dir="ltr">{{ p.position }}</span>
-          <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted">{{ $t('· {v0} سنة', { v0: p.age }) }}</span><span v-if="p.injured_matches" class="text-xs text-[#FF8A8A]"> {{ $t('· مصاب') }}</span><span v-if="p.suspended_matches" class="text-xs text-warning"> {{ $t('· موقوف') }}</span></span>
+          <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted">{{ $t('· {v0} سنة', { v0: p.age }) }}</span><span v-if="p.injured_matches" class="text-xs text-danger"> {{ $t('· مصاب') }}</span><span v-if="p.suspended_matches" class="text-xs text-warning"> {{ $t('· موقوف') }}</span></span>
           <b class="font-numbers">{{ p.overall }}</b>
           <span class="w-16 text-end font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.value) }}</span>
         </div>

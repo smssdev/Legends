@@ -54,7 +54,7 @@ const inputType = computed(() => {
         </svg>
       </button>
     </div>
-    <p v-if="error" :id="id + '-err'" class="text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" :id="id + '-err'" class="text-sm text-danger">{{ $t(error) }}</p>
     <p v-else-if="hint" :id="id + '-hint'" class="text-xs text-text-muted">{{ $t(hint) }}</p>
   </div>
 </template>

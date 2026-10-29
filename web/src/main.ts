@@ -8,6 +8,7 @@ import BrandMark from './components/BrandMark.vue'
 import { router } from './router'
 import './lib/pwa'   // the install offer comes early: keep it for our button [Sprint 36]
 import './match/perf'   // the smooth mode on weak phones, for the whole app [X30]
+import './lib/theme'   // the night or the day look [X56]
 
 // The names switch [X40]: $nm, $pn, $cn and $ln in every template, and the dictionary fetched once.
 loadNames()

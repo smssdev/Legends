@@ -73,7 +73,7 @@ async function sendPing() {
       <p class="mt-1 text-text-muted">{{ $t('دورياتك، وحالة الخادم، والبث المباشر، والمحاكي.') }}</p>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-server">
@@ -113,7 +113,7 @@ async function sendPing() {
         <p v-if="ping === 'ok'" class="rounded-lg bg-success/15 px-3 py-2 text-sm" role="status">
           {{ $t('وصل: {v0} · خلال', { v0: pingNote }) }} <span class="font-numbers">{{ pingMs }}</span> {{ $t('ملّي ثانية') }}
         </p>
-        <p v-else-if="ping === 'failed'" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ pingNote }}</p>
+        <p v-else-if="ping === 'failed'" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ pingNote }}</p>
       </section>
     </div>
 

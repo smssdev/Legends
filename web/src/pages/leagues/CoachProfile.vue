@@ -24,7 +24,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-else-if="!coach" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <template v-else>
       <header class="flex items-center gap-3">

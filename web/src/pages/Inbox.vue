@@ -33,7 +33,7 @@ onMounted(() => inbox.load())
       <UiButton v-if="inbox.unread" variant="outline" @click="inbox.readAll()">{{ $t('اجعلها كلها مقروءة') }}</UiButton>
     </div>
 
-    <p v-if="inbox.error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(inbox.error) }}</p>
+    <p v-if="inbox.error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(inbox.error) }}</p>
     <p v-else-if="!inbox.loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <section v-else-if="!inbox.messages.length" class="flex flex-col items-center gap-2 rounded-xl bg-surface p-8 text-center">
       <span class="text-4xl" aria-hidden="true">📭</span>

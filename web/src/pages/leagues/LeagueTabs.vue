@@ -15,7 +15,7 @@ type Row = { position: number; id: number; name: string; code: string; crest_url
 type Stage = { stage: string; scheduled_at: string; ties: { id: number; slot: number; home?: { name: string; code: string; crest_url: string } | null; away?: { name: string; code: string; crest_url: string } | null; next?: { slot: number; side: string } | null }[] }
 
 const props = defineProps<{ leagueId: number; myClubId?: number | null; teamCount: number }>()
-const PODIUM: Record<number, string> = { 1: 'bg-gradient-to-b from-gold-light to-gold text-on-gold shadow shadow-gold/30', 2: 'bg-gradient-to-b from-[#E4E9F2] to-[#A9B6CC] text-on-gold', 3: 'bg-gradient-to-b from-[#E0A06A] to-[#B4692A] text-white' }
+const PODIUM: Record<number, string> = { 1: 'bg-gradient-to-b from-gold-light to-gold text-on-gold shadow shadow-gold/30', 2: 'bg-gradient-to-b from-chrome to-silver text-on-gold', 3: 'bg-gradient-to-b from-[#E0A06A] to-bronze text-white' }
 const tab = ref<'table' | 'fixtures' | 'cup' | 'honours'>('table')
 // The hall of fame (Sprint 33): loaded when its tab is opened.
 type Honours = components['schemas']['Honours']
@@ -90,7 +90,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
       <button type="button" role="tab" class="h-12 rounded-lg font-display text-base font-extrabold md:text-lg" :class="tab === 'honours' ? 'bg-gold text-on-gold' : 'text-text-soft'"
         :aria-selected="tab === 'honours'" @click="openHonours">{{ $t('الشرف') }}</button>
     </div>
-    <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <!-- [Sprint 21 E3.5] Until the table comes, a row per club holds its place, so the page does not jump. -->
     <div v-if="!season && !error && tab === 'table'" class="flex flex-col gap-1.5" aria-hidden="true">

@@ -46,7 +46,7 @@ async function send() {
     <header>
       <h1 class="font-display text-3xl font-extrabold">{{ $t('تواصل مع فريق التطوير') }}</h1>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <section ref="list" class="flex max-h-[60dvh] min-h-60 flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-4" :aria-label="$t('المحادثة')" aria-live="polite">
       <p v-if="loaded && !messages.length" class="m-auto text-center text-sm text-text-muted">{{ $t('لا رسائل بعد. اكتب سؤالك أو اقتراحك وسيرد عليك الفريق.') }}</p>
       <p v-for="m in messages" :key="m.id" class="max-w-[85%] whitespace-pre-line rounded-xl px-3 py-2 text-sm" :class="m.from_team ? 'self-start bg-gold/15' : 'self-end bg-surface-sunk'">

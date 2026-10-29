@@ -35,7 +35,7 @@ function pick(leagueId: number) {
     <span v-else class="chrome-tab chrome-start block w-full animate-pulse" aria-hidden="true" />
     <template v-if="open">
       <div class="fixed inset-0 z-40" @click="open = false" />
-      <div id="club-switcher" class="absolute start-0 top-full z-50 mt-2 flex w-72 max-w-[85vw] flex-col gap-1.5 rounded-xl border border-white/10 bg-surface p-2 shadow-2xl" role="menu" @keydown.esc="open = false">
+      <div id="club-switcher" class="absolute start-0 top-full z-50 mt-2 flex w-72 max-w-[85vw] flex-col gap-1.5 rounded-xl border border-text/10 bg-surface p-2 shadow-2xl" role="menu" @keydown.esc="open = false">
         <span class="px-2 text-xs text-text-muted">{{ $t('فرقي') }}</span>
         <button v-for="s in clubs" :key="s.slot" type="button" role="menuitem" class="flex min-h-touch items-center gap-2 rounded-lg bg-surface-sunk px-2 py-1.5 text-start hover:bg-surface-raised" @click="pick(s.league!.id)">
           <img :src="s.club!.crest_url" alt="" class="size-8 shrink-0" />

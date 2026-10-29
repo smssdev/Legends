@@ -63,7 +63,7 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
       <h1 class="font-display text-3xl font-extrabold">{{ $t('مكتبة المكونات') }}</h1>
       <p class="mt-1 text-text-muted">{{ $t('مكونات نظام التصميم على نادٍ حقيقي من البيانات.') }}</p>
     </div>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <UiCard :title="$t('الأزرار والشارات')">
       <div class="flex flex-wrap gap-2">

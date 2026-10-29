@@ -107,9 +107,9 @@ const links = computed(() => {
 // The mini cards on the pitch [X29], as the squad's cards: gold from 85, silver from 75, bronze under.
 const tier = (overall: number) => (overall >= 85 ? 'gold' : overall >= 75 ? 'silver' : 'bronze')
 const MINI = {
-  gold: 'border-gold from-[#6b5214] to-surface text-gold',
-  silver: 'border-chrome/70 from-[#4a5a63] to-surface text-text',
-  bronze: 'border-[#B4692A] from-[#55331a] to-surface text-text',
+  gold: 'border-gold from-gold/30 to-surface text-gold',
+  silver: 'border-chrome/70 from-silver/25 to-surface text-text',
+  bronze: 'border-bronze from-bronze/35 to-surface text-text',
 } as const
 
 // Moving players: a "spot" is a slot on the pitch, a place on the bench, or the rest of the squad.
@@ -356,7 +356,7 @@ async function saveCustom() {
 
 <template>
   <div class="flex flex-col gap-4 pb-6">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <div v-else-if="loaded && !team" class="rounded-xl bg-surface p-8 text-center">
       <p class="mb-3 text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
       <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink>
@@ -390,7 +390,7 @@ async function saveCustom() {
 
       <div class="flex flex-wrap items-center gap-2">
         <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex h-10 items-center gap-2 rounded-xl bg-surface px-3 text-sm">
-          <span class="size-2.5 rounded-full" :class="{ def: 'bg-[#3B82F6]', mid: 'bg-[#22A35A]', att: 'bg-[#F08A3C]' }[l]" />{{ $t(label) }}
+          <span class="size-2.5 rounded-full" :class="{ def: 'bg-line-def', mid: 'bg-line-mid', att: 'bg-line-att' }[l]" />{{ $t(label) }}
           <span class="font-numbers text-base font-bold">{{ current.lines[l] }}</span>
         </span>
         <!-- [Sprint 20 W10, W12] The server's best eleven (in the edit mode), and the screens next to this one. -->
@@ -442,7 +442,7 @@ async function saveCustom() {
           <template v-if="starters[i] && players.get(starters[i]!)">
             <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
             <span
-              class="mini-card relative flex h-16 w-13 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-black/50"
+              class="mini-card relative flex h-16 w-13 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
               :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
             >
               <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
@@ -543,12 +543,12 @@ async function saveCustom() {
           </select>
         </div>
         <div class="flex gap-2 text-sm">
-          <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="rounded-lg px-2 py-1" :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-[#FF8A8A]'">
+          <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="rounded-lg px-2 py-1" :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-danger'">
             {{ $t(label) }} <span class="font-numbers">{{ customLines[l] }}</span> ({{ LIMITS[l][0] }}–{{ LIMITS[l][1] }})
           </span>
           <span class="ms-auto font-numbers">{{ cells.length }}/10</span>
         </div>
-        <div class="grid gap-1 rounded-xl bg-[#1f8f4e] p-2">
+        <div class="grid gap-1 rounded-xl bg-pitch p-2">
           <div v-for="[row, label] in ROWS" :key="row" class="grid grid-cols-5 gap-1" :aria-label="label">
             <button
               v-for="col in [1, 2, 3, 4, 5]"
@@ -565,7 +565,7 @@ async function saveCustom() {
           </div>
           <div class="flex h-11 items-center justify-center text-sm font-bold text-white">{{ $t('الحارس') }}</div>
         </div>
-        <p v-if="customError" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(customError) }}</p>
+        <p v-if="customError" class="text-sm text-danger" role="alert">{{ $t(customError) }}</p>
         <div class="flex gap-2">
           <UiButton type="submit" block>{{ $t('احفظ التشكيلة') }}</UiButton>
           <UiButton variant="quiet" @click="customOpen = false">{{ $t('إلغاء') }}</UiButton>
@@ -580,8 +580,8 @@ async function saveCustom() {
   background:
     radial-gradient(ellipse 70% 45% at 50% 50%, rgb(255 255 255 / 0.12), transparent 70%),
     radial-gradient(ellipse 120% 90% at 50% 50%, transparent 60%, rgb(0 0 0 / 0.35)),
-    repeating-linear-gradient(0deg, #1d8a4b 0, #1d8a4b 7.5%, #23994f 7.5%, #23994f 15%);
-  box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent), 0 30px 60px -30px rgb(0 0 0 / 0.9);
+    repeating-linear-gradient(0deg, var(--color-pitch-dark) 0, var(--color-pitch-dark) 7.5%, var(--color-pitch) 7.5%, var(--color-pitch) 15%);
+  box-shadow: 0 0 0 3px var(--color-brand-dark), 0 0 0 5px color-mix(in srgb, var(--color-gold) 45%, transparent), 0 30px 60px -30px color-mix(in srgb, var(--color-shade) 90%, transparent);
 }
 /* A sheen across the top of each mini card, as on a printed card. */
 .mini-card::after {

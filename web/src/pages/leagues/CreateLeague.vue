@@ -161,8 +161,8 @@ const field = (name: string) => error.value?.field(name) ?? ''
       </div>
     </header>
 
-    <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(loadError) }}</p>
-    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error.message) }}</p>
+    <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(loadError) }}</p>
+    <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error.message) }}</p>
 
     <form v-if="step === 'settings'" class="grid gap-4 lg:grid-cols-[1fr_22rem]" @submit.prevent="toClubs">
       <div class="flex flex-col gap-4">
@@ -175,12 +175,12 @@ const field = (name: string) => error.value?.field(name) ?? ''
               <select v-model="template" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" :aria-invalid="!!field('template')">
                 <option v-for="t in templates" :key="t.name" :value="t.name">{{ $t('{v0} · {v1} نادياً', { v0: $nm(t.name), v1: t.clubs }) }}</option>
               </select>
-              <span v-if="field('template')" class="text-sm text-[#FF8A8A]">{{ field('template') }}</span>
+              <span v-if="field('template')" class="text-sm text-danger">{{ field('template') }}</span>
             </label>
             <label class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('بداية الموسم (بتوقيتك)') }}</span>
               <input v-model="startsAt" type="datetime-local" :min="minStart" :max="maxStart" required class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" />
-              <span v-if="field('starts_at')" class="text-sm text-[#FF8A8A]">{{ field('starts_at') }}</span>
+              <span v-if="field('starts_at')" class="text-sm text-danger">{{ field('starts_at') }}</span>
             </label>
           </div>
         </section>
@@ -211,7 +211,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
                   <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أكثر')" :disabled="teams >= fullTeams" @click="teams++">+</button>
                 </div>
                 <span class="text-xs text-text-muted">{{ $t('من {v0} (نصف أندية الدوري) إلى {v1}', { v0: minTeams, v1: fullTeams }) }}</span>
-                <span v-if="field('team_count')" class="text-sm text-[#FF8A8A]">{{ field('team_count') }}</span>
+                <span v-if="field('team_count')" class="text-sm text-danger">{{ field('team_count') }}</span>
               </div>
               <fieldset class="flex flex-col gap-1.5">
                 <legend class="mb-1.5 text-sm font-bold">{{ $t('فترة الإعداد') }}</legend>
@@ -225,7 +225,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
                 <UiToggle v-model="customTime" class="rounded-lg bg-surface-sunk p-3"><b>{{ $t('ساعة مباريات محددة') }}</b></UiToggle>
                 <input v-if="customTime" v-model="time" type="time" required dir="ltr" :aria-label="$t('ساعة المباريات بتوقيت القاهرة')" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4 font-numbers text-lg" />
                 <span v-if="customTime" class="text-xs text-text-muted">{{ $t('بتوقيت القاهرة، كل مباريات الجولة معاً') }}</span>
-                <span v-if="field('round_times')" class="text-sm text-[#FF8A8A]">{{ field('round_times') }}</span>
+                <span v-if="field('round_times')" class="text-sm text-danger">{{ field('round_times') }}</span>
               </div>
               <label class="flex flex-col gap-2">
                 <span class="flex items-center justify-between text-sm font-bold">{{ $t('ميزانية البداية لكل نادٍ') }} <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>

@@ -14,7 +14,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
 
 <template>
   <div class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-stretch md:justify-end" @click.self="$emit('close')" @keydown.esc="$emit('close')">
-    <section class="flex max-h-[92dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-t-xxl bg-bg p-4 md:max-h-none md:w-[28rem] md:rounded-none md:border-s md:border-white/10" role="dialog" aria-modal="true" :aria-label="player.name">
+    <section class="flex max-h-[92dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-t-xxl bg-bg p-4 md:max-h-none md:w-[28rem] md:rounded-none md:border-s md:border-text/10" role="dialog" aria-modal="true" :aria-label="player.name">
       <header class="flex items-center justify-between gap-3">
         <h2 class="font-display text-2xl font-extrabold">{{ $t('بطاقة اللاعب') }}</h2>
         <div class="flex items-center gap-2">
@@ -46,11 +46,11 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       </div>
 
       <dl class="grid grid-cols-3 gap-2 text-center">
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="player.fitness >= 75 ? 'text-success' : player.fitness >= 55 ? 'text-warning' : 'text-[#FF8A8A]'">{{ player.fitness }}%</dd></div>
+        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="player.fitness >= 75 ? 'text-success' : player.fitness >= 55 ? 'text-warning' : 'text-danger'">{{ player.fitness }}%</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('سقف التطور') }}</dt><dd class="font-numbers text-2xl">{{ player.potential }}</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('القيمة') }}</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
       </dl>
-      <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]">
+      <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">
         {{ player.injured_matches ? $t('مصاب: يغيب {v0} مباريات', { v0: player.injured_matches }) : $t('موقوف: {v0} مباريات', { v0: player.suspended_matches }) }}
       </p>
       <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap. -->
