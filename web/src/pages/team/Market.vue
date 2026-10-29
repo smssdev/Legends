@@ -5,8 +5,6 @@
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
 import { intlLocale } from '../../lib/i18n'
-import { useGlossary } from '../../lib/glossary'
-import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -21,7 +19,6 @@ import { money, type Line } from '../../lib/format'
 
 type Market = components['schemas']['Market']
 // The "?" texts [X19].
-const g = useGlossary()
 const leagueId = ref<number | null>(null)
 const m = ref<Market | null>(null)
 const loaded = ref(false)
@@ -205,7 +202,7 @@ onBeforeUnmount(() => clearInterval(clock))
   <div class="flex flex-col gap-4">
     <header class="flex flex-wrap items-center gap-3">
       <div class="flex-[1_1_240px]">
-        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('السوق') }}</h1><HelpTip :text="g.pool" :label="$t('مجموعة السوق')" /><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'scout' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الكشاف ›') }}</RouterLink></span>
+        <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('السوق') }}</h1><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'scout' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الكشاف ›') }}</RouterLink></span>
         <p class="mt-1 text-sm text-text-muted">
           <template v-if="m?.closed">{{ m.closed }}</template>
           <template v-else-if="m">{{ $t('مفتوح حتى الجولة {v0} · صفقات جديدة كل بضع ساعات، من كل الدوريات وبقوة دوريك', { v0: m.open_until_round }) }}</template>
@@ -275,7 +272,6 @@ onBeforeUnmount(() => clearInterval(clock))
           <PlayerTile :name="picked.name" :line="picked.line as Line" :position="picked.position" :overall="picked.overall" :value="picked.value" :price="picked.price"
             :attributes="picked.attributes" :status="$t('{v0} سنة · {v1}{v2}', { v0: picked.age, v1: picked.seller.club ? $nm(picked.seller.club) : '', v2: picked.seller.coach ? ' · ' + picked.seller.coach : '' })" status-tone="text-text-muted" />
           <template v-if="picked.seller.kind === 'coach'">
-            <p class="text-sm text-text-muted">{{ $t('لاعب معروض من مدرب: يُرسل عرض بسعره، ويقبله مدربه أو يرده.') }}</p>
             <button type="button" class="h-12 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !!list?.closed" @click="buy(false)">{{ $t('قدّم عرضاً بـ') }} <span dir="ltr" class="font-numbers">{{ money(picked.price) }}</span></button>
           </template>
           <template v-else-if="deal">
@@ -305,7 +301,6 @@ onBeforeUnmount(() => clearInterval(clock))
       </div>
 
       <section v-else :aria-label="$t('بيع لاعبيّ')" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
-        <p class="px-2 pt-2 text-sm text-text-muted">{{ $t('بيع فوري بقيمة اللاعب الكاملة مقابل رسوم صغيرة، أو اعرضه بقيمته أو بسعرك حتى سقفه بلا رسوم: لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري، وكلما ارتفع السعر طال الانتظار. والتدريب يرفع قيمة اللاعب وسعره.') }}</p>
         <ul class="flex flex-col">
           <li v-for="p in m.mine" :key="p.id" class="flex flex-col border-t border-text/5 px-2 py-2">
             <div class="flex items-center gap-3">
@@ -324,13 +319,12 @@ onBeforeUnmount(() => clearInterval(clock))
                 <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy !== null" @click="unlist(p)">{{ $t('اسحبه من البيع') }}</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="inline-flex flex-wrap items-center"><b>{{ $t('بيع فوري') }}</b><HelpTip :text="g.quick_sale" :label="$t('البيع الفوري')" /></span><span>{{ $t(': تحصل الآن على') }} <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> {{ $t('مقابل {v0}.', { v0: fee(p) }) }}</span>
+                <span class="inline-flex flex-wrap items-center"><b>{{ $t('بيع فوري') }}</b></span><span>{{ $t(': تحصل الآن على') }} <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> {{ $t('مقابل {v0}.', { v0: fee(p) }) }}</span>
                 <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : $t('بع الآن') }}</button>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span><b>{{ $t('بقيمته') }}</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> {{ $t('بلا رسوم، ويُباع خلال {v0}.', { v0: hours(p.wait_hours.value) }) }}</span>
                 <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">{{ $t('اعرضه بقيمته') }}</button>
-                <HelpTip :text="g.listing" :label="$t('العرض في السوق')" />
               </div>
               <!-- [Sprint 21 E5.1] The price on a slider between the floor and the cap, with a step down and a step up. -->
               <form class="flex flex-col gap-2" @submit.prevent="price && listAt(p, Number(price))">

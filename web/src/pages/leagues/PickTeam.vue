@@ -129,7 +129,6 @@ onMounted(() => load().catch((e) => (error.value = asApiError(e).message)))
             <span class="w-8 text-center font-numbers text-base font-bold">{{ p.overall }}</span>
           </li>
         </ul>
-        <p class="text-xs text-text-muted">{{ $t('ميزانيته عند الاستلام بين 500 ألف وميزانية البداية.') }}</p>
       </aside>
     </div>
 

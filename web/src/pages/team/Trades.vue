@@ -111,7 +111,6 @@ onMounted(load)
       </section>
       <section :aria-label="$t('اعرض لاعبيك')" class="rounded-xl bg-surface p-2">
         <h2 class="px-2 pt-2 font-display text-lg font-bold">{{ $t('اعرض لاعبيك') }}</h2>
-        <p class="px-2 text-xs text-text-muted">{{ $t('السعر من نصف القيمة إلى سقف اللاعب. المدربون يقدّمون عروضهم فتقبل أو ترفض أو ترد، ولو لم يشتره أحد يشتريه نادٍ من خارج الدوري في موعده (تفاصيل كل لاعب في «بيع لاعبيّ»).') }}</p>
         <ul>
           <li v-for="p in mine" :key="p.id" class="flex flex-wrap items-center gap-3 border-t border-text/5 px-2 py-2">
             <LineBadge :line="p.line as Line" />

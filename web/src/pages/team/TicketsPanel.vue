@@ -40,7 +40,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
   <section v-if="data && data.fixtures.length" class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="h-tickets">
     <div>
       <h2 id="h-tickets" class="font-display text-xl font-extrabold">{{ $t('التذاكر') }}</h2>
-      <p class="text-sm text-text-muted">{{ $t('احضر مباريات منافسيك وشجّع أحد الفريقين: كل تذكرة ترفع معنوياته') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> {{ $t('في تلك المباراة. سعر التذكرة {v0}.', { v0: money(data.price) }) }}</p>
+      <p class="text-sm text-text-muted">{{ $t('المعنويات') }} <b class="font-numbers text-gold">+{{ data.boost }}</b> · <span dir="ltr">{{ money(data.price) }}</span></p>
     </div>
     <p v-if="message" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
     <ul class="flex flex-col gap-2">

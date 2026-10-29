@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
@@ -307,6 +308,13 @@ Route::prefix('notifications')->middleware(['auth:sanctum', 'throttle:30,1,notif
     Route::put('/', 'update');
     Route::post('subscriptions', 'subscribe');
     Route::delete('subscriptions', 'unsubscribe');
+});
+
+// [Sprint 22] The Assistant Coach (Manager Bot): the conversation's opening on a page, and one answer (each smart
+// answer counts against the coach's day; the guide's answers are free).
+Route::prefix('assistant')->middleware(['auth:sanctum'])->controller(AssistantController::class)->group(function () {
+    Route::get('start', 'start')->middleware('throttle:60,1,assistant-start');
+    Route::post('ask', 'ask')->middleware('throttle:20,1,assistant-ask');
 });
 
 // The coins wallet [Sprint 34].

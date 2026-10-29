@@ -8,6 +8,8 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: assistant
+    description: The Assistant Coach, Manager Bot in English (Sprint 22)
   - name: admin
     description: The admin panel, for the admin after the two-step code, from the site only (Sprint 37)
   - name: notifications
@@ -2493,6 +2495,37 @@ paths:
                         cta_label: { type: [string, 'null'] }, cta_url: { type: [string, 'null'] }, seconds: { type: integer } }
         '429': { $ref: '#/components/responses/Error' }
         '503': { $ref: '#/components/responses/Error' }
+  /assistant/start:
+    get:
+      tags: [assistant]
+      summary: '[Sprint 22] The conversation''s opening on a page: who he is, the page''s quick questions, and the smart answers left today'
+      parameters:
+        - { name: page, in: query, required: false, schema: { type: string, maxLength: 40 }, description: 'The web''s route name (others fall back to the home page''s questions)' }
+      responses:
+        '200': { description: The opening, content: { application/json: { schema: { $ref: '#/components/schemas/AssistantStart' } } } }
+  /assistant/ask:
+    post:
+      tags: [assistant]
+      summary: '[Sprint 22] One answer. A quick question''s topic comes from the guide at once; anything else goes to the AI (one of the coach''s smart answers of the day), which reads his own club in that league only; when the AI cannot answer the smart search answers from the guide (notice says why)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question: { type: string, maxLength: 500 }
+                topic: { type: string, nullable: true, maxLength: 40, description: A quick question's topic id }
+                page: { type: string, nullable: true, maxLength: 40 }
+                league_id: { type: integer, nullable: true, description: The league of the club the coach is in; without a club there nothing of any club is read }
+                history:
+                  type: array
+                  maxItems: 8
+                  description: The conversation before, oldest first (never kept on the server)
+                  items: { type: object, required: [from, text], properties: { from: { type: string, enum: [me, bot] }, text: { type: string, maxLength: 2000 } } }
+      responses:
+        '200': { description: The answer, content: { application/json: { schema: { $ref: '#/components/schemas/AssistantAnswer' } } } }
   /support:
     get:
       tags: [auth]
@@ -3626,6 +3659,31 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    AssistantQuestion:
+      type: object
+      required: [question, topic]
+      properties:
+        question: { type: string }
+        topic: { type: string, nullable: true, description: 'Sent back with the question: answered from the guide at once. Null: a question for the AI about the coach''s club' }
+    AssistantStart:
+      type: object
+      required: [name, intro, questions, ai, remaining]
+      properties:
+        name: { type: string, description: 'المدرب المساعد, or Manager Bot in English' }
+        intro: { type: string }
+        questions: { type: array, items: { $ref: '#/components/schemas/AssistantQuestion' } }
+        ai: { type: boolean, description: Whether the AI is set up on the server }
+        remaining: { type: integer, nullable: true, description: The smart answers left today (null without the AI) }
+    AssistantAnswer:
+      type: object
+      required: [answer, source, go, related, remaining, notice]
+      properties:
+        answer: { type: string }
+        source: { type: string, enum: [ai, guide] }
+        go: { type: string, nullable: true, description: 'The section of the game its button opens (the web''s section name)' }
+        related: { type: array, items: { $ref: '#/components/schemas/AssistantQuestion' } }
+        remaining: { type: integer, nullable: true }
+        notice: { type: string, nullable: true, enum: [off, limit, error, null], description: 'Why the guide answered instead of the AI: not set up, the coach''s day used up, or the AI unable now' }
     ScoutView:
       type: object
       required: [cost, hours, balance, options, requests]

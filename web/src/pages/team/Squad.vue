@@ -7,8 +7,6 @@ import { computed, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import RatingRing from '../../components/ui/RatingRing.vue'
-import HelpTip from '../../components/ui/HelpTip.vue'
-import { useGlossary } from '../../lib/glossary'
 import { LINES, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
@@ -27,7 +25,6 @@ async function loadOthers() {
 }
 
 const { team, error, loaded, load } = useTeam()
-const g = useGlossary()
 // Morale [X25]: green from 75, red under 50.
 const moraleColor = (v: number) => (v >= 75 ? 'var(--color-success)' : v < 50 ? 'var(--color-live)' : 'var(--color-gold)')
 const line = ref<'all' | Line>('all')
@@ -100,7 +97,7 @@ function status(p: SquadPlayer) {
         </label>
       </section>
       <section v-if="team.morale" class="flex items-center gap-3 rounded-xl bg-surface px-4 py-3" :aria-label="$t('المعنويات')">
-        <span class="flex items-center gap-1 font-bold">{{ $t('المعنويات') }}<HelpTip :text="g.morale" :label="$t('المعنويات')" /></span>
+        <span class="flex items-center gap-1 font-bold">{{ $t('المعنويات') }}</span>
         <span class="h-2 flex-1 overflow-hidden rounded-full bg-surface-sunk" role="meter" :aria-valuenow="team.morale.value" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('المعنويات')">
           <span class="block h-full rounded-full" :style="{ width: `${team.morale.value}%`, background: moraleColor(team.morale.value) }" />
         </span>
