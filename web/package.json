@@ -9,6 +9,7 @@
     "dev": "vite",
     "prebuild": "npm run tokens && npm run names && npm run i18n && npm run frames",
     "build": "vue-tsc -b && vite build",
+    "postbuild": "node --experimental-strip-types --no-warnings scripts/seo.mjs",
     "preview": "vite preview",
     "api": "openapi-typescript ../docs/api/openapi.yaml -o src/api/schema.d.ts",
     "names": "node scripts/names.mjs",

@@ -19,7 +19,7 @@ const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/emai
 const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascript; charset=utf-8', 'css' => 'text/css; charset=utf-8',
     'json' => 'application/json; charset=utf-8', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'png' => 'image/png',
     'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'ico' => 'image/x-icon', 'woff2' => 'font/woff2', 'woff' => 'font/woff',
-    'webmanifest' => 'application/manifest+json', 'txt' => 'text/plain; charset=utf-8', 'html' => 'text/html; charset=utf-8',
+    'webmanifest' => 'application/manifest+json', 'txt' => 'text/plain; charset=utf-8', 'xml' => 'application/xml; charset=utf-8', 'html' => 'text/html; charset=utf-8',
     'wasm' => 'application/wasm', 'data' => 'application/octet-stream'];
 
 // Files whose name or folder changes with their content: kept for a year.
@@ -73,6 +73,9 @@ if (! $laravel && $uri !== '/' && $file !== false && str_starts_with($file, $pub
 }
 
 if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) && is_file($public.'/index.html')) {
+    // [SEO] A public page built with its own tags (web/scripts/seo.mjs: /register/index.html...) goes out as itself.
+    $own = $file !== false && str_starts_with($file.'/', $public.'/') ? $file.'/index.html' : null;
+    $page = $own !== null && is_file($own) ? $own : $public.'/index.html';
     // [X57] With the owner's AdSense account set (ADSENSE_CLIENT), every page carries Google's code in its head, as
     // AdSense asks to check the site; the Vue app (src/lib/adsense.ts) finds it there and places the units.
     $client = (string) getenv('ADSENSE_CLIENT');
@@ -80,7 +83,7 @@ if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) &&
         $test = filter_var(getenv('ADSENSE_TEST'), FILTER_VALIDATE_BOOLEAN) ? ' data-adbreak-test="on"' : '';
         $html = str_replace('</head>', '<meta name="google-adsense-account" content="'.$client.'" />'
             .'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='.$client.'" crossorigin="anonymous" data-ad-frequency-hint="30s"'.$test.'></script></head>',
-            (string) file_get_contents($public.'/index.html'));
+            (string) file_get_contents($page));
         header('Content-Type: text/html; charset=utf-8');
         header('Cache-Control: no-cache');
         header('Content-Length: '.strlen($html));
@@ -90,7 +93,7 @@ if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) &&
 
         return true;
     }
-    send($public.'/index.html', 'no-cache');
+    send($page, 'no-cache');
 
     return true;
 }

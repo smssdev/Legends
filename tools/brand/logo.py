@@ -9,6 +9,9 @@ from docs/design/tokens.json (night ink, emerald, gold, ivory). No mark that the
   stars, the GLM monogram slanted forward (G and L in silver, M for Manager in gold, each
   wrapped in ink and gold), a football breaking out of its point and a gold laurel round it.
 
+  [SEO] the crest in Arabic (emblem-ar.svg): the same, with «المدرب» over «الأسطورة» in place of the monogram,
+  as paths in the game's font (tools/brand/arabic_name.py). The Arabic screens, the app icon and the invite card.
+
 Writes brand/current/*.svg; tools/brand/render.mjs makes the PNGs and copies the web's files.
 """
 import json, os
@@ -125,6 +128,34 @@ def crest(wreath=True):
             + ball(256, 418, 40, uid='crestBall'))
 
 
+# [SEO] The Arabic name, «المدرب» over «الأسطورة», as paths in the game's font (tools/brand/arabic_name.py).
+NAME_AR = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'name-ar.json'), encoding='utf-8'))
+
+
+AR_DEFS = (f'<defs><linearGradient id="silverBox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/>'
+           f'<stop offset=".46" stop-color="{IVORY}"/><stop offset=".5" stop-color="#D9D2BC"/><stop offset=".53" stop-color="#B9B19A"/>'
+           f'<stop offset="1" stop-color="{IVORY}"/></linearGradient></defs>')
+
+
+def name_ar(cx, top, width, gap=4, outline=True):
+    """«المدرب» in silver over «الأسطورة» in gold, centred on cx from top, the longer line width wide; returns
+    (svg, bottom). outline=True wraps it in the sticker filter, as the monogram."""
+    coach, legend = NAME_AR['coach'], NAME_AR['legend']
+    k = width / (legend['box'][2] - legend['box'][0])
+    body, y = '', top
+    for word, fill in ((coach, 'url(#silverBox)'), (legend, 'url(#gold)')):
+        x0, y0, x1, y1 = word['box']
+        body += (f'<path transform="translate({cx - (x0 + x1) / 2 * k:.2f} {y - y0 * k:.2f}) scale({k:.5f})" '
+                 f'd="{word["d"]}" fill="{fill}"/>')
+        y += (y1 - y0) * k + gap
+    return (f'<g filter="url(#sticker)">{body}</g>' if outline else body), y - gap
+
+
+def crest_ar(wreath=True):
+    """The crest with the Arabic name in place of the monogram: the game's mark in Arabic [SEO]."""
+    return crest(wreath).replace(monogram(130, 186, scale=.93), name_ar(256, 180, 236)[0])
+
+
 def svg(body, w=512, h=512, extra=''):
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">{DEFS}{extra}{body}</svg>\n'
 
@@ -145,7 +176,7 @@ def coin():
             + '<ellipse cx="168" cy="132" rx="64" ry="20" fill="#FFFFFF" opacity=".3" transform="rotate(-32 168 132)"/>')
 
 
-def loader():
+def loader(mark=crest):
     """The splash mark (spec 1): the crest rises in, then a gold arc orbits it while the game checks the
     connection. CSS inside the SVG, so it runs as a plain <img>; still for reduced motion."""
     style = ('<style>'
@@ -155,7 +186,7 @@ def loader():
              '@media (prefers-reduced-motion:reduce){.inside{animation:none;opacity:1;transform:none}.orbit{animation:none}}'
              '</style>')
     return (style
-            + f'<g class="inside"><g transform="translate(256 260) scale(.82) translate(-256 -262)">{crest()}</g></g>'
+            + f'<g class="inside"><g transform="translate(256 260) scale(.82) translate(-256 -262)">{mark()}</g></g>'
             + f'<g class="orbit"><circle cx="256" cy="260" r="246" fill="none" stroke="{GOLD}" stroke-opacity=".15" stroke-width="6"/>'
             + f'<path d="M256 14 A246 246 0 0 1 469 137" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/></g>')
 
@@ -166,8 +197,11 @@ def rule(x1, x2, y):
 
 FILES = {
     'emblem.svg': svg(crest()),
+    # [SEO] The crest in Arabic, for the Arabic screens, the installed app and the link previews.
+    'emblem-ar.svg': svg(crest_ar(), extra=AR_DEFS),
     # the app icon: full bleed for round (maskable) masks, the crest inside the safe circle
-    'icon.svg': svg(tile() + f'<g transform="translate(46 40) scale(.82)">{crest()}</g>'),
+    # [SEO] in Arabic, the game's language (the manifest's name is «المدرب الأسطورة»)
+    'icon.svg': svg(tile() + f'<g transform="translate(46 40) scale(.82)">{crest_ar()}</g>', extra=AR_DEFS),
     # browser tab: the monogram big on a rounded tile, so it reads at 16 pixels
     'favicon.svg': svg(tile(rx=112)
                        + '<g clip-path="url(#favClip)">' + rays(256, 256) + '<path d="M0 410 L256 460 L512 410 V512 H0 Z" fill="%s"/><path d="M0 410 L256 460 L512 410" fill="none" stroke="%s" stroke-width="12"/></g>' % (EMERALD_DARK, GOLD)
@@ -175,6 +209,7 @@ FILES = {
                        extra='<defs><clipPath id="favClip"><rect width="512" height="512" rx="112"/></clipPath></defs>'),
     'coin.svg': svg(coin()),
     'emblem-loader.svg': svg(loader(), h=520),
+    'emblem-loader-ar.svg': svg(loader(crest_ar), h=520, extra=AR_DEFS),
     # the full logo: the crest, the name under it and the line under that
     'logo.svg': svg(
         f'<rect width="1024" height="1060" fill="url(#inkFill)"/><rect width="1024" height="1060" fill="url(#glow)"/>'
@@ -197,14 +232,14 @@ FILES = {
     'og-invite.svg': svg(
         f'<rect width="1200" height="630" fill="url(#inkFill)"/>'
         f'<circle cx="330" cy="315" r="300" fill="url(#glow)"/>'
-        f'<g transform="translate(90 70) scale(.94)">{crest()}</g>'
+        f'<g transform="translate(90 70) scale(.94)">{crest_ar()}</g>'
         f'<rect x="660" y="120" width="6" height="390" rx="3" fill="{GOLD}" opacity=".5"/>'
         f'<text x="1110" y="215" text-anchor="start" font-family="{SANS}" font-weight="800" font-size="72" fill="{IVORY}" direction="rtl">دعوة لدوري</text>'
         f'<text x="1110" y="305" text-anchor="start" font-family="{SANS}" font-weight="800" font-size="72" fill="{GOLD}" direction="rtl">مع أصحابك</text>'
         f'<text x="1110" y="385" text-anchor="start" font-family="{SANS}" font-weight="700" font-size="34" fill="{IVORY}" opacity=".8" direction="rtl">اختر ناديك وأدِره ضدهم</text>'
-        + monogram(938, 440, scale=.63, sw=26, outline=False)
-        + f'<text x="1110" y="535" text-anchor="end" font-family="{SANS}" font-weight="800" font-size="20" letter-spacing="5" fill="{IVORY}" opacity=".65">GAME LEGEND MANAGER</text>',
-        w=1200, h=630),
+        + f'<text x="1110" y="490" text-anchor="start" font-family="{SANS}" font-weight="800" font-size="44" fill="{IVORY}" direction="rtl">المدرب <tspan fill="{GOLD}">الأسطورة</tspan></text>'
+        + f'<text x="1110" y="535" text-anchor="start" font-family="{SANS}" font-weight="700" font-size="24" fill="{IVORY}" opacity=".65" direction="rtl">لعبة إدارة كرة القدم مع أصحابك</text>',
+        w=1200, h=630, extra=AR_DEFS),
 }
 
 if __name__ == '__main__':
