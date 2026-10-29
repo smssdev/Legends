@@ -98,7 +98,7 @@ onBeforeUnmount(() => clearInterval(timer))
   <Teleport to="body">
     <div v-if="watch" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/85 p-4" role="dialog" aria-modal="true" :aria-label="$t('إعلان')">
       <div class="flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl border border-gold/40 bg-surface p-6 text-center shadow-2xl">
-        <span class="self-center rounded-pill bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{ $t('إعلان من GLM') }}</span>
+        <span class="self-center rounded-pill bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{ $t('إعلان من المدرب الأسطورة') }}</span>
         <h2 class="font-display text-2xl font-extrabold text-gold">{{ watch.ad.title }}</h2>
         <p class="text-base leading-relaxed">{{ watch.ad.body }}</p>
         <a v-if="watch.ad.cta_url" :href="watch.ad.cta_url" target="_blank" rel="noopener noreferrer nofollow" class="self-center font-bold text-ring underline">{{ watch.ad.cta_label || watch.ad.cta_url }}</a>

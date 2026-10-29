@@ -1,5 +1,0 @@
-# [X57] The game's public pages (the way in, the privacy policy and the terms) are open to search engines and to
-# Google AdSense's crawler; the API is not a page.
-User-agent: *
-Disallow: /api/
-Allow: /

@@ -2,6 +2,7 @@
 // The splash screen [UP4]: GLM's emblem (its ball spins in the SVG itself) breathes while the server is reached (/health); then the game fades in. If the
 // server does not answer, the message and a retry, and the game stays behind until it does.
 import { onMounted, ref } from 'vue'
+import { loaderSrc } from '../lib/i18n'
 
 const emit = defineEmits<{ done: [] }>()
 const state = ref<'checking' | 'failed' | 'leaving'>('checking')
@@ -31,7 +32,7 @@ onMounted(check)
 
 <template>
   <div class="splash" :class="state === 'leaving' ? 'is-leaving' : ''" role="status" aria-live="polite">
-    <img src="/brand/emblem-loader.svg" :alt="$t('لعبة المدرب الأسطورة')" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" />
+    <img :src="loaderSrc" :alt="$t('لعبة المدرب الأسطورة')" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" />
     <template v-if="state === 'failed'">
       <p class="max-w-xs text-center text-sm leading-relaxed text-text-soft">{{ $t('تعذر الاتصال بالخادم، يرجى التحقق من اتصالك بالإنترنت') }}</p>
       <button type="button" class="h-touch rounded-lg bg-gold px-6 font-bold text-on-gold" @click="check">{{ $t('إعادة المحاولة') }}</button>

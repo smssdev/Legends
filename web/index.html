@@ -9,7 +9,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="GLM" />
+    <meta name="apple-mobile-web-app-title" content="المدرب الأسطورة" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- The game's font, Amin (Sprint 20 S2), from our own files; Barlow Condensed for the scores and counters. -->
@@ -26,8 +26,39 @@
         }
       } catch (e) {}
     </script>
-    <meta name="description" content="GLM، لعبة المدرب الأسطورة: لعبة إدارة كرة قدم عربية مجانية أونلاين. درّب ناديك في دوريات خاصة مع أصحابك، وأدر مبارياتك مباشرة لحظة بلحظة." />
-    <title>GLM · لعبة المدرب الأسطورة</title>
+    <!-- seo: each public page's tags (src/content/seo.ts); the build writes them, src/lib/seo.ts keeps them as the coach moves -->
+    <title>المدرب الأسطورة · لعبة إدارة كرة القدم أونلاين مع أصحابك</title>
+    <meta name="description" content="المدرب الأسطورة لعبة عربية مجانية لإدارة كرة القدم أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية." />
+    <!-- /seo -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "المدرب الأسطورة",
+            "alternateName": ["لعبة المدرب الأسطورة", "Game Legend Manager", "GLM"],
+            "url": "https://srv2100776.hstgr.cloud/",
+            "inLanguage": ["ar", "en"]
+          },
+          {
+            "@type": "VideoGame",
+            "name": "المدرب الأسطورة",
+            "alternateName": "Game Legend Manager",
+            "description": "لعبة عربية مجانية لإدارة كرة القدم أونلاين: دوريات خاصة مع الأصدقاء، ومباريات تُدار حية بالتكتيك والتبديلات، وسوق وتدريب وملعب.",
+            "url": "https://srv2100776.hstgr.cloud/",
+            "image": "https://srv2100776.hstgr.cloud/icon-512.png",
+            "genre": ["Sports", "Football manager", "Simulation"],
+            "gamePlatform": ["Web browser", "Android"],
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any",
+            "playMode": "MultiPlayer",
+            "inLanguage": ["ar", "en"],
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
