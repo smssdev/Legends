@@ -11,12 +11,16 @@ import BrandMark from '../components/BrandMark.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
+import LegalLinks from '../components/LegalLinks.vue'
+import AdSlot from '../components/ads/AdSlot.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
 import { chime } from '../lib/chime'
+import RatingBadge from '../components/RatingBadge.vue'
+import { divisionName, signed, tierName } from '../lib/rating'
 
 type Home = components['schemas']['HomeScreen']
 type Ranked = components['schemas']['RankedCoach']
@@ -25,7 +29,11 @@ const router = useRouter()
 const home = ref<Home | null>(null)
 const error = ref('')
 const announcement = ref(0)
-const ranking = ref<{ by: 'trophies' | 'level'; coaches: Ranked[]; me: Ranked | null } | null>(null)
+type By = 'rating' | 'trophies' | 'level'
+const ranking = ref<{ by: By; coaches: Ranked[]; me: Ranked | null } | null>(null)
+// [Sprint 25] The rating's sheet: the tier, the ladder and the latest changes.
+const ratingOpen = ref(false)
+const rating = computed(() => home.value?.coach.rating ?? null)
 const rankingBusy = ref(false)
 
 const latest = computed(() => home.value?.announcements[announcement.value] ?? null)
@@ -88,7 +96,7 @@ function openSlot(s: Home['slots'][number]) {
   router.push('/club')
 }
 
-async function openRanking(by: 'trophies' | 'level') {
+async function openRanking(by: By) {
   rankingBusy.value = true
   try {
     ranking.value = (await api.GET('/rankings/coaches', { params: { query: { by } } })).data as any
@@ -108,6 +116,7 @@ async function openRanking(by: 'trophies' | 'level') {
       <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-6 font-bold text-on-gold">{{ $t('أنشئ حساباً') }}</RouterLink>
       <RouterLink to="/login" class="flex h-12 items-center rounded-lg bg-surface px-6 font-bold">{{ $t('دخول') }}</RouterLink>
     </div>
+    <LegalLinks />
   </div>
 
   <div v-else class="flex flex-col gap-4">
@@ -134,6 +143,13 @@ async function openRanking(by: 'trophies' | 'level') {
             </div>
             <span class="font-numbers text-[11px] text-text-muted" dir="ltr">{{ home.coach.level.xp }}/{{ home.coach.level.next }}</span>
           </div>
+          <!-- [Sprint 25] The rating: the tier's emblem, its name and division, and the points; opens the sheet. -->
+          <button type="button" class="rating-chip" :aria-label="$t('نقاط المدرب ودرجته')" @click="ratingOpen = true">
+            <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
+            <span class="truncate text-xs font-extrabold">{{ tierName(home.coach.rating.tier.key) }} <span class="font-numbers" dir="ltr">{{ divisionName(home.coach.rating.tier.division) }}</span></span>
+            <b class="font-numbers text-xs text-gold" dir="ltr">{{ home.coach.rating.points }}</b>
+            <span v-if="home.coach.rating.recent[0]" class="font-numbers text-[11px] font-bold" :class="home.coach.rating.recent[0].delta >= 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ signed(home.coach.rating.recent[0].delta) }}</span>
+          </button>
         </div>
         <div class="flex shrink-0 flex-col items-end gap-1.5">
           <RouterLink to="/wallet" class="flex items-center gap-1 rounded-pill bg-gold/15 px-2.5 py-1 text-sm font-bold" :aria-label="$t('الكوينز')">
@@ -234,6 +250,10 @@ async function openRanking(by: 'trophies' | 'level') {
             <svg viewBox="0 0 24 24" class="size-6 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" /></svg>
             <span class="text-[11px] font-bold">{{ $t('لوحة الشرف') }}</span>
           </button>
+          <button type="button" class="home-tile" @click="openRanking('rating')">
+            <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
+            <span class="text-[11px] font-bold">{{ $t('ترتيب النقاط') }}</span>
+          </button>
           <button type="button" class="home-tile" @click="openRanking('level')">
             <svg viewBox="0 0 24 24" class="size-6 text-gold" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
             <span class="text-[11px] font-bold">{{ $t('المستويات') }}</span>
@@ -249,28 +269,86 @@ async function openRanking(by: 'trophies' | 'level') {
       </aside>
     </div>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+    <!-- [X57] One Google ad at the bottom of the home screen, away from the slots' buttons. -->
+    <AdSlot v-if="home" class="relative mt-4" />
 
     <!-- The global ranking [X18]. -->
     <div v-if="ranking || rankingBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('لوحة شرف المدربين')" @click.self="ranking = null">
       <div class="flex max-h-[85dvh] w-full max-w-lg flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
         <div class="flex items-center gap-2">
-          <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t(ranking?.by === 'level' ? $t('ترتيب المستويات') : $t('لوحة شرف المدربين')) }}</h2>
+          <h2 class="flex-1 font-display text-xl font-extrabold">{{ ranking?.by === 'level' ? $t('ترتيب المستويات') : ranking?.by === 'rating' ? $t('ترتيب النقاط') : $t('لوحة شرف المدربين') }}</h2>
           <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="ranking = null">✕</button>
         </div>
         <p v-if="rankingBusy" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
         <template v-else-if="ranking">
           <div class="flex gap-2">
-            <button v-for="[k, l] in ([['trophies', 'بالكؤوس'], ['level', 'بالمستوى']] as const)" :key="k" type="button" class="h-touch rounded-pill px-4 text-sm font-bold" :class="ranking.by === k ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="openRanking(k)">{{ $t(l) }}</button>
+            <button v-for="[k, l] in ([['rating', 'بالنقاط'], ['trophies', 'بالكؤوس'], ['level', 'بالمستوى']] as const)" :key="k" type="button" class="h-touch rounded-pill px-4 text-sm font-bold" :class="ranking.by === k ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="openRanking(k)">{{ $t(l) }}</button>
           </div>
           <div v-for="r in ranking.coaches" :key="r.coach.id" class="flex min-h-touch items-center gap-3 border-t border-text/5" :class="r.coach.id === auth.user?.id ? 'text-gold' : ''">
             <span class="w-7 text-center font-numbers text-text-muted">{{ r.position }}</span>
             <RouterLink :to="{ name: 'coach', params: { id: r.coach.id } }" class="min-w-0 flex-1 truncate font-bold">{{ r.coach.name }} <OfficialBadge v-if="r.coach.official" /><VerifiedBadge v-else-if="r.coach.verified" /></RouterLink>
-            <span class="text-xs text-text-muted">{{ $t('م{n}', { n: r.level }) }}</span>
-            <b class="font-numbers">🏆 {{ r.trophies.total }}</b>
+            <template v-if="ranking.by === 'rating'">
+              <RatingBadge :tier="r.rating.tier" :division="r.rating.division" :size="20" />
+              <b class="font-numbers" dir="ltr">{{ r.rating.points }}</b>
+            </template>
+            <template v-else>
+              <span class="text-xs text-text-muted">{{ $t('م{n}', { n: r.level }) }}</span>
+              <b class="font-numbers">🏆 {{ r.trophies.total }}</b>
+            </template>
           </div>
           <p v-if="ranking.me && ranking.me.position > 50" class="border-t border-gold/40 pt-2 text-sm">{{ $t('مركزك:') }} <b class="font-numbers">{{ ranking.me.position }}</b></p>
           <p v-if="!ranking.coaches.length" class="text-text-muted">{{ $t('لا مدربين بعد.') }}</p>
         </template>
+      </div>
+    </div>
+
+    <!-- [Sprint 25] The rating's sheet: the emblem and the points, the way to the next division, the seven tiers, and
+         the latest changes. How the points are counted is in the assistant's guide. -->
+    <div v-if="ratingOpen && rating && home" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('نقاط المدرب ودرجته')" @click.self="ratingOpen = false">
+      <div class="flex max-h-[88dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-surface p-4">
+        <div class="flex items-center gap-2">
+          <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('نقاط المدرب ودرجته') }}</h2>
+          <button type="button" class="size-touch rounded-md bg-surface-raised" :aria-label="$t('إغلاق')" @click="ratingOpen = false">✕</button>
+        </div>
+        <div class="rating-hero" :class="`is-${rating.tier.key}`">
+          <RatingBadge :tier="rating.tier.key" :division="rating.tier.division" :size="72" />
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <b class="font-display text-2xl leading-tight">{{ tierName(rating.tier.key) }} <span class="font-numbers" dir="ltr">{{ divisionName(rating.tier.division) }}</span></b>
+            <span class="text-sm text-text-soft"><b class="font-numbers text-lg text-gold" dir="ltr">{{ rating.points }}</b> {{ $t('نقطة') }}</span>
+            <template v-if="rating.tier.next !== null">
+              <div class="h-2 overflow-hidden rounded-pill bg-surface-sunk" role="progressbar" :aria-valuenow="rating.tier.progress_bp / 100" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم إلى الدرجة التالية')">
+                <div class="h-full rounded-pill bg-gold" :style="{ width: rating.tier.progress_bp / 100 + '%' }" />
+              </div>
+              <span class="text-[11px] text-text-muted">{{ $t('{n} نقطة للمستوى التالي', { n: rating.tier.next - rating.points }) }}</span>
+            </template>
+            <span v-else class="text-xs font-bold text-gold">{{ $t('بلغت القمة') }}</span>
+          </div>
+        </div>
+        <p class="text-[11px] text-text-muted">{{ $t('أعلى ما بلغت: {n} نقطة', { n: rating.peak }) }}</p>
+
+        <!-- The ladder, top tier first: those reached in colour, the current one marked. -->
+        <ol class="flex flex-col gap-1.5" :aria-label="$t('الدرجات')">
+          <li v-for="tier in [...home.rating_tiers].reverse()" :key="tier.key" class="flex min-h-touch items-center gap-3 rounded-lg px-2"
+            :class="tier.key === rating.tier.key ? 'bg-gold/15 ring-1 ring-gold/60' : ''">
+            <RatingBadge :tier="tier.key" :division="tier.key === rating.tier.key ? rating.tier.division : null" :size="28" :dim="tier.min > rating.points" />
+            <span class="flex-1 font-bold" :class="tier.min > rating.points ? 'text-text-muted' : ''">{{ tierName(tier.key) }}</span>
+            <span class="font-numbers text-xs text-text-muted" dir="ltr">{{ tier.min }}+</span>
+          </li>
+        </ol>
+
+        <div class="flex flex-col gap-1">
+          <h3 class="font-bold">{{ $t('آخر التغييرات') }}</h3>
+          <p v-if="!rating.recent.length" class="text-sm text-text-muted">{{ $t('تبدأ نقاطك مع أول مباراة لناديك.') }}</p>
+          <div v-for="(c, i) in rating.recent" :key="i" class="flex min-h-touch items-center gap-3 border-t border-text/5 text-sm">
+            <b class="w-11 text-center font-numbers" :class="c.delta > 0 ? 'text-success' : c.delta < 0 ? 'text-danger' : 'text-text-muted'" dir="ltr">{{ signed(c.delta) }}</b>
+            <span v-if="c.kind === 'trophy'" class="flex-1">🏆 {{ c.competition === 'cup' ? $t('الكأس: المركز {n}', { n: c.position ?? 0 }) : $t('الدوري: المركز {n}', { n: c.position ?? 0 }) }}</span>
+            <template v-else>
+              <span class="min-w-0 flex-1 truncate">{{ $t(c.result === 'win' ? 'فوز على {o}' : c.result === 'draw' ? 'تعادل مع {o}' : 'خسارة أمام {o}', { o: c.opponent ?? '' }) }}</span>
+              <b class="font-numbers" dir="ltr">{{ c.for }}-{{ c.against }}</b>
+            </template>
+            <span v-if="c.competition === 'cup' && c.kind === 'match'" class="text-[11px] text-text-muted">{{ $t('الكأس') }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -292,6 +370,36 @@ async function openRanking(by: 'trophies' | 'level') {
 </template>
 
 <style scoped>
+.rating-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface-raised) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
+}
+.rating-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: radial-gradient(circle at 15% 40%, color-mix(in srgb, var(--tier) 35%, transparent), transparent 65%), var(--color-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--tier) 50%, transparent);
+}
+.rating-hero.is-prospect { --tier: var(--color-text-muted); }
+.rating-hero.is-tactician { --tier: var(--color-bronze); }
+.rating-hero.is-professional { --tier: var(--color-silver); }
+.rating-hero.is-elite { --tier: var(--color-gold); }
+.rating-hero.is-mastermind { --tier: var(--color-brand); }
+.rating-hero.is-icon { --tier: var(--color-live); }
+.rating-hero.is-legend { --tier: var(--color-gold-light); animation: legend-glow 2.4s ease-in-out infinite alternate; }
+@keyframes legend-glow { to { box-shadow: 0 0 26px 2px color-mix(in srgb, var(--color-gold) 45%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .rating-hero.is-legend { animation: none; } }
 .slot-card {
   position: relative;
   display: flex;

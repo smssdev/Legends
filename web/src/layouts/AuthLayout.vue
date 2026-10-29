@@ -3,6 +3,8 @@
 // on the computer the brand on one side and the form on the other; on the phone the form alone.
 // [X32] In Legends' signature: our blurred stadium under an emerald glow and the star lattice, the form on a panel.
 // [X56] The stadium side is a night poster in both looks (theme-night); the form follows the coach's look.
+// [X57] The privacy policy and the terms under every form.
+import LegalLinks from '../components/LegalLinks.vue'
 import { emblemSrc } from '../lib/i18n'
 </script>
 
@@ -26,6 +28,7 @@ import { emblemSrc } from '../lib/i18n'
           <BrandMark />
         </RouterLink>
         <RouterView />
+        <LegalLinks />
       </div>
     </main>
   </div>

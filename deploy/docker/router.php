@@ -13,7 +13,8 @@ $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/');
 $file = realpath($public.$uri);
 
 // Laravel's own paths: the API, sign-in, broadcasting, the links opened from emails and WhatsApp, the health check.
-const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/join/', '/up'];
+// [X57] And Google's /ads.txt, written from the AdSense account set on the server.
+const LARAVEL = ['/api/', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/join/', '/up', '/ads.txt'];
 
 const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascript; charset=utf-8', 'css' => 'text/css; charset=utf-8',
     'json' => 'application/json; charset=utf-8', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'png' => 'image/png',
@@ -74,7 +75,25 @@ if (! $laravel && $uri !== '/' && $file !== false && str_starts_with($file, $pub
 if (! $laravel && in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) && is_file($public.'/index.html')) {
     // [SEO] A public page built with its own tags (web/scripts/seo.mjs: /register/index.html...) goes out as itself.
     $own = $file !== false && str_starts_with($file.'/', $public.'/') ? $file.'/index.html' : null;
-    send($own !== null && is_file($own) ? $own : $public.'/index.html', 'no-cache');
+    $page = $own !== null && is_file($own) ? $own : $public.'/index.html';
+    // [X57] With the owner's AdSense account set (ADSENSE_CLIENT), every page carries Google's code in its head, as
+    // AdSense asks to check the site; the Vue app (src/lib/adsense.ts) finds it there and places the units.
+    $client = (string) getenv('ADSENSE_CLIENT');
+    if (preg_match('/^ca-pub-\d{10,20}$/', $client)) {
+        $test = filter_var(getenv('ADSENSE_TEST'), FILTER_VALIDATE_BOOLEAN) ? ' data-adbreak-test="on"' : '';
+        $html = str_replace('</head>', '<meta name="google-adsense-account" content="'.$client.'" />'
+            .'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='.$client.'" crossorigin="anonymous" data-ad-frequency-hint="30s"'.$test.'></script></head>',
+            (string) file_get_contents($page));
+        header('Content-Type: text/html; charset=utf-8');
+        header('Cache-Control: no-cache');
+        header('Content-Length: '.strlen($html));
+        if ($_SERVER['REQUEST_METHOD'] !== 'HEAD') {
+            echo $html;
+        }
+
+        return true;
+    }
+    send($page, 'no-cache');
 
     return true;
 }

@@ -354,6 +354,16 @@ return [
     'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
+    // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.
+    // A result's base (win, draw, loss), and per step of step_cp (strength centi-points, up to max_steps) the opponent was
+    // stronger, per_step more (or, weaker, less): beating a stronger side earns more, losing to a weaker one costs more.
+    // away for a win or draw away, big_win for winning by big_margin goals or more, and the trophies' points by position.
+    // The tiers by their first points, each but the last in three divisions (III, II, I); a tier once reached is
+    // kept, so the points never fall below its start (nor below zero).
+    'rating' => ['win' => 20, 'draw' => 4, 'loss' => -14, 'per_step' => ['win' => 3, 'draw' => 3, 'loss' => 2], 'step_cp' => 200, 'max_steps' => 5,
+        'away' => 2, 'big_win' => 3, 'big_margin' => 3, 'trophies' => ['league' => [1 => 100, 2 => 40, 3 => 20], 'cup' => [1 => 60, 2 => 20]],
+        'tiers' => ['prospect' => 0, 'tactician' => 150, 'professional' => 400, 'elite' => 800, 'mastermind' => 1400, 'icon' => 2200, 'legend' => 3200],
+        'divisions' => 3, 'recent' => 10],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
@@ -435,6 +445,14 @@ return [
     // [Sprint 20, question 5] The board's mood: calm before after_rounds league rounds; then happy at or above the
     // objective's place, worried up to worried_places below it, angry further down.
     'board' => ['after_rounds' => 3, 'worried_places' => 2],
+    // [X57] Google AdSense, the owner's real ad revenue (the owner's request 2026-10-29), off until ADSENSE_CLIENT is set
+    // on the server (legends-set ADSENSE_CLIENT, the account's ca-pub-…): then /ads.txt names the account, the page
+    // carries its code, and display units show in a few calm places (never in a match). With ADSENSE_REWARDED, a
+    // rewarded video (H5 Games Ads) is tried before our own ad and cuts the same minutes; its watch is timed on the
+    // server for at least adsense_seconds (Google has no server check for the web), and the 5 a task stay. test asks
+    // Google for test ads (ADSENSE_TEST) until H5 Games Ads approves the site.
+    'adsense' => ['client' => env('ADSENSE_CLIENT'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
+        'test' => (bool) env('ADSENSE_TEST', false), 'adsense_seconds' => 10],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
             ['title' => 'ادعُ صديقاً واربح 100 كوينز', 'body' => 'انسخ رابط الدعوة من «حسابي». كل صديق يسجّل منه ويوثّق حسابه يعطيك 100 كوينز، حتى 10 أصدقاء.',

@@ -1130,6 +1130,17 @@ export interface paths {
                                 /** @example https://t.me/legends_support */
                                 telegram: string | null;
                             };
+                            /** @description [X57] Google AdSense for the web: null until the owner's account (ADSENSE_CLIENT) is set on the server */
+                            adsense?: {
+                                /** @example ca-pub-1234567890123456 */
+                                client: string;
+                                /** @description The display unit's id */
+                                slot: string | null;
+                                /** @description Google's rewarded video (H5 Games Ads) is tried before the game's own ad */
+                                rewarded: boolean;
+                                /** @description Google's test ads */
+                                test: boolean;
+                            } | null;
                         };
                     };
                 };
@@ -6594,7 +6605,7 @@ export interface paths {
         put?: never;
         /**
          * [Sprint 20 S4] Watch one of the game's own ads: the ad, and the token that claims the reward once its seconds have passed
-         * @description The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429).
+         * @description The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429). [X57] provider=adsense times a watch of Google's rewarded video instead (ad is null), when the owner turned them on.
          */
         post: {
             parameters: {
@@ -6603,7 +6614,17 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @default house
+                         * @enum {string}
+                         */
+                        provider?: "house" | "adsense";
+                    };
+                };
+            };
             responses: {
                 /** @description The watch */
                 201: {
@@ -6619,6 +6640,7 @@ export interface paths {
                              * @description When the reward can be claimed
                              */
                             ends_at: string;
+                            /** @description null for Google's video (provider=adsense) */
                             ad: {
                                 /** @description null for a built-in ad */
                                 id: number | null;
@@ -6627,7 +6649,7 @@ export interface paths {
                                 cta_label: string | null;
                                 cta_url: string | null;
                                 seconds: number;
-                            };
+                            } | null;
                         };
                     };
                 };
@@ -7814,11 +7836,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The coaches' global ranking, top 50 and the coach's own place [X18] */
+        /** The coaches' global ranking, top 50 and the coach's own place [X18]; by the rating's points [Sprint 25] */
         get: {
             parameters: {
                 query?: {
-                    by?: "trophies" | "level";
+                    by?: "trophies" | "level" | "rating";
                 };
                 header?: never;
                 path?: never;
@@ -7834,7 +7856,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @enum {string} */
-                            by: "trophies" | "level";
+                            by: "trophies" | "level" | "rating";
                             coaches: components["schemas"]["RankedCoach"][];
                             me: components["schemas"]["RankedCoach"] | null;
                         };
@@ -10254,6 +10276,49 @@ export interface components {
             /** @description The way to the next level */
             progress_bp: number;
         };
+        /** @enum {string} */
+        RatingTierKey: "prospect" | "tactician" | "professional" | "elite" | "mastermind" | "icon" | "legend";
+        /** @description [Sprint 25] Where the points stand: the tier, its division, and the way to the next division or tier */
+        RatingTier: {
+            key: components["schemas"]["RatingTierKey"];
+            /** @description The tier's place */
+            rank: number;
+            /** @description 3 = III (the first) to 1 = I; none for the legend */
+            division: number | null;
+            /** @description The points the tier starts at; the points never fall below it once reached */
+            min: number;
+            /** @description The points this division starts at */
+            from: number;
+            /** @description The points the next division or tier starts at; none for the legend */
+            next: number | null;
+            /** @description The way to the next */
+            progress_bp: number;
+        };
+        /** @description [Sprint 25] The coach's rating: points that rise and fall with every league or cup match by the opponent's strength, and trophies (config game.rating) */
+        CoachRating: {
+            points: number;
+            /** @description The highest points ever */
+            peak: number;
+            tier: components["schemas"]["RatingTier"];
+            /** @description The latest changes, newest first */
+            recent: {
+                /** @enum {string} */
+                kind: "match" | "trophy";
+                /** @enum {string} */
+                competition: "league" | "cup";
+                /** @description What the change truly moved (a kept tier may hold a loss back) */
+                delta: number;
+                /** Format: date-time */
+                at: string;
+                /** @enum {string|null} */
+                result: "win" | "draw" | "loss" | null;
+                for: number | null;
+                against: number | null;
+                opponent: string | null;
+                /** @description A trophy's place */
+                position: number | null;
+            }[];
+        };
         RankedCoach: {
             position: number;
             coach: {
@@ -10268,6 +10333,11 @@ export interface components {
             won: number;
             played: number;
             level: number;
+            rating: {
+                points: number;
+                tier: components["schemas"]["RatingTierKey"];
+                division: number | null;
+            };
         };
         HomeScreen: {
             coach: {
@@ -10282,6 +10352,7 @@ export interface components {
                 /** @description The coach's coins balance [UP7] */
                 coins: number;
                 level: components["schemas"]["CoachLevel"];
+                rating: components["schemas"]["CoachRating"];
                 record: {
                     seasons: number;
                     played: number;
@@ -10293,6 +10364,12 @@ export interface components {
             trophies: components["schemas"]["Trophies"];
             /** @description The other coaches met in the coach's leagues */
             colleagues: number;
+            /** @description [Sprint 25] The rating's tiers in order, with the points each starts at */
+            rating_tiers: {
+                key: components["schemas"]["RatingTierKey"];
+                rank: number;
+                min: number;
+            }[];
             announcements: components["schemas"]["Message"][];
             /** @description [Sprint 24 B3] The slots open for the account's age */
             slots_open: number;

@@ -48,5 +48,8 @@ async function submit() {
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الإنشاء…') : $t('إنشاء الحساب') }}</button>
   </form>
+  <!-- [X57] The account is made on the terms and the privacy policy. -->
+  <p class="text-center text-xs leading-relaxed text-text-muted">{{ $t('بإنشائك الحساب، بحساب Google أو بالخانات، فأنت توافق على') }}
+    <RouterLink to="/terms" class="font-bold text-gold underline">{{ $t('الشروط والأحكام') }}</RouterLink> {{ $t('وعلى') }} <RouterLink to="/privacy" class="font-bold text-gold underline">{{ $t('سياسة الخصوصية') }}</RouterLink>.</p>
   <p class="text-center text-sm text-text-muted">{{ $t('عندك حساب؟') }} <RouterLink to="/login" class="font-bold text-gold">{{ $t('سجّل الدخول') }}</RouterLink></p>
 </template>

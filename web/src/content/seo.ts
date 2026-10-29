@@ -73,6 +73,27 @@ export const PAGES: Record<string, PageSeo> = {
     keywords: { ar: ['مطورو اللعبة', 'فريق المدرب الأسطورة'], en: ['game developers', 'GLM team'] },
     sitemap: { priority: '0.4', changefreq: 'monthly' },
   },
+  // [X57] The privacy policy and the terms, open to everyone.
+  privacy: {
+    path: '/privacy',
+    title: { ar: 'سياسة الخصوصية | المدرب الأسطورة', en: 'Privacy policy | GLM' },
+    description: {
+      ar: 'سياسة الخصوصية في المدرب الأسطورة: ما نجمعه من بيانات ولماذا، والإعلانات والكوكيز، وحقك في حذف حسابك.',
+      en: 'Game Legend Manager\'s privacy policy: what we collect and why, the ads and cookies, and your right to delete your account.',
+    },
+    keywords: { ar: ['سياسة الخصوصية', 'حذف الحساب'], en: ['privacy policy', 'delete account'] },
+    sitemap: { priority: '0.3', changefreq: 'monthly' },
+  },
+  terms: {
+    path: '/terms',
+    title: { ar: 'الشروط والأحكام | المدرب الأسطورة', en: 'Terms and conditions | GLM' },
+    description: {
+      ar: 'شروط استخدام المدرب الأسطورة: اللعب النظيف، والكوينز، والحسابات، وحقوق المدربين.',
+      en: 'Game Legend Manager\'s terms of use: fair play, the coins, the accounts and the coaches\' rights.',
+    },
+    keywords: { ar: ['شروط الاستخدام', 'اللعب النظيف'], en: ['terms of use', 'fair play'] },
+    sitemap: { priority: '0.3', changefreq: 'monthly' },
+  },
 }
 
 /** A page's keywords with the shared ones, as one meta content. */
@@ -120,8 +141,9 @@ export function sitemapXml(lastmod: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`
 }
 
-/** robots.txt: the public pages open, the API and the private screens closed, and where the sitemap is. */
+/** robots.txt: the public pages open, the API and the private screens closed, and where the sitemap is. Google's
+ * ads crawler (AdSense, X57) reads every page but the API, so the ads match the screens they show on. */
 export function robotsTxt(): string {
   const closed = ['/api/', '/admin', '/sanctum/', '/broadcasting/', '/auth/google/', '/email/verify/', '/live/', '/sim/', '/dev/', '/reset-password', '/forgot-password']
-  return `User-agent: *\nAllow: /\n${closed.map((p) => `Disallow: ${p}`).join('\n')}\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
+  return `User-agent: *\nAllow: /\n${closed.map((p) => `Disallow: ${p}`).join('\n')}\n\nUser-agent: Mediapartners-Google\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
 }
