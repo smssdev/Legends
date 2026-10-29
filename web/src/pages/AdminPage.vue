@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import AnnouncementCard from '../components/AnnouncementCard.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
@@ -121,6 +122,17 @@ async function loadUsers(page = 1) {
   usersPage.value = data.page
   moreUsers.value = data.has_more
 }
+// [X54] The coins form; a user's row fills its number.
+const gift = ref({ account: '', amount: 100, reason: '' })
+function fillGift(no: number) {
+  gift.value.account = String(no)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+const giveCoins = () => run(async () => {
+  const { data } = await api.POST('/admin/coins', { body: { account_no: Number(gift.value.account), amount: gift.value.amount, reason: gift.value.reason.trim(), idempotency_key: crypto.randomUUID() } })
+  notice.value = t('وصلت {v0} كوينز إلى {v1} (#{v2}). رصيده الآن {v3}.', { v0: gift.value.amount, v1: data!.user.name, v2: data!.user.account_no, v3: data!.balance })
+  gift.value = { account: '', amount: 100, reason: '' }
+})
 const shownUsers = computed(() => (userTab.value === 'admins' ? admins.value : users.value))
 const codes = ref<Record<number, string>>({})
 const issueCode = (id: number) => run(async () => {
@@ -159,8 +171,30 @@ const writeTo = (u: AdminUser) => run(async () => {
 // The announcements [Sprint 21 E7.2]: written here, each opened whole with its sender and time.
 const annTitle = ref('')
 const annBody = ref('')
+// [X54] The card's optional picture and button, and its preview as the coaches will see it.
+const annImage = ref<File | null>(null)
+const annPreview = ref<string | null>(null)
+const annCtaLabel = ref('')
+const annCtaUrl = ref('')
+function pickImage(e: Event) {
+  const f = (e.target as HTMLInputElement).files?.[0] ?? null
+  annImage.value = f
+  if (annPreview.value) URL.revokeObjectURL(annPreview.value)
+  annPreview.value = f ? URL.createObjectURL(f) : null
+}
 const announce = () => run(async () => {
-  const { data } = await api.POST('/admin/announcements', { body: { title: annTitle.value, body: annBody.value } })
+  const form = new FormData()
+  form.append('title', annTitle.value)
+  form.append('body', annBody.value)
+  if (annImage.value) form.append('image', annImage.value)
+  if (annCtaLabel.value.trim() && annCtaUrl.value.trim()) {
+    form.append('cta_label', annCtaLabel.value.trim())
+    form.append('cta_url', annCtaUrl.value.trim())
+  }
+  const { data } = await api.POST('/admin/announcements', { body: form as never, bodySerializer: (b) => b as unknown as FormData })
+  annImage.value = null
+  annPreview.value = null
+  annCtaLabel.value = annCtaUrl.value = ''
   notice.value = t('أُرسل إلى {v0} حساب، ووصل إشعاراً لكل الأجهزة المشتركة.', { v0: data!.sent })
   annTitle.value = annBody.value = ''
   announcements.value = (await api.GET('/admin/announcements')).data!.announcements
@@ -322,6 +356,14 @@ onMounted(load)
 
         <!-- [Sprint 21 E7.3] The accounts: the admins apart, search by number or name, and the actions. -->
         <template v-if="tab === 'users'">
+          <!-- [X54] Coins to any account by its number. -->
+          <form class="flex flex-wrap items-end gap-2 rounded-xl bg-surface p-3" :aria-label="$t('أضف كوينز لحساب')" @submit.prevent="giveCoins">
+            <b class="basis-full font-display text-sm">{{ $t('أضف كوينز لحساب') }}</b>
+            <label class="flex flex-col gap-1 text-xs">{{ $t('رقم الحساب') }}<input v-model="gift.account" inputmode="numeric" maxlength="5" dir="ltr" class="h-touch w-28 rounded-md bg-surface-sunk px-3 font-numbers" /></label>
+            <label class="flex flex-col gap-1 text-xs">{{ $t('الكوينز') }}<input v-model.number="gift.amount" type="number" min="1" dir="ltr" class="h-touch w-28 rounded-md bg-surface-sunk px-3 font-numbers" /></label>
+            <label class="flex min-w-48 flex-1 flex-col gap-1 text-xs">{{ $t('السبب (يراه المدرب)') }}<input v-model="gift.reason" maxlength="200" class="h-touch rounded-md bg-surface-sunk px-3 text-sm" /></label>
+            <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy || !/^\d{5}$/.test(gift.account) || !(gift.amount > 0) || gift.reason.trim().length < 3">{{ $t('أضف') }}</button>
+          </form>
           <form class="flex flex-wrap gap-2" role="search" @submit.prevent="run(() => loadUsers())">
             <input v-model="search" :placeholder="$t('رقم الحساب أو الاسم أو البريد')" class="h-touch min-w-0 flex-1 rounded-lg bg-surface px-3" :aria-label="$t('بحث')" />
             <button type="submit" class="h-touch rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('بحث') }}</button>
@@ -347,6 +389,7 @@ onMounted(load)
                 <button v-else type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" @click="issueCode(u.id)">{{ $t('كود توثيق') }}</button>
               </template>
               <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" @click="writeTo(u)">{{ $t('راسله') }}</button>
+              <button type="button" class="h-10 rounded-md bg-gold/15 px-3 text-xs font-bold text-gold" @click="fillGift(u.account_no ?? 0)">{{ $t('أضف كوينز') }}</button>
               <select v-if="u.role === 'admin'" class="h-10 rounded-md bg-surface-sunk px-2 text-xs" :aria-label="$t('أعطه اسماً رسمياً')" @change="makeOfficial(u.id, ($event.target as HTMLSelectElement).value)">
                 <option value="">{{ $t('اسم رسمي') }}</option><option>Owner-Sizar</option><option>Owner-Sliman</option>
               </select>
@@ -390,7 +433,19 @@ onMounted(load)
             <h2 class="font-display text-lg font-bold">{{ $t('إعلان جديد لكل اللاعبين') }}</h2>
             <p class="text-xs text-text-muted">{{ $t('يُرسل من حسابك الرسمي (Owner-Sizar أو Owner-Sliman) بشارته، ويصل رسالة وإشعاراً لكل الحسابات.') }}</p>
             <input v-model="annTitle" maxlength="120" :placeholder="$t('العنوان')" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" />
-            <textarea v-model="annBody" maxlength="2000" rows="4" :placeholder="$t('النص')" class="rounded-md border border-text/10 bg-surface-sunk p-3" />
+            <textarea v-model="annBody" maxlength="2000" rows="5" :placeholder="$t('النص (سطر فارغ بين الفقرات)')" class="rounded-md border border-text/10 bg-surface-sunk p-3" />
+            <!-- [X54] An optional wide picture, and an optional button to a page of the game or a site. -->
+            <label class="flex flex-wrap items-center gap-2 text-sm">{{ $t('صورة (اختيارية)') }}
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" class="text-xs" @change="pickImage" />
+            </label>
+            <div class="grid gap-2 sm:grid-cols-[1fr_2fr]">
+              <input v-model="annCtaLabel" maxlength="40" :placeholder="$t('نص الزر (اختياري)')" class="h-touch min-w-0 rounded-md border border-text/10 bg-surface-sunk px-3" />
+              <input v-model="annCtaUrl" maxlength="300" dir="ltr" :placeholder="$t('/leagues أو https://…')" class="h-touch min-w-0 rounded-md border border-text/10 bg-surface-sunk px-3" />
+            </div>
+            <div v-if="annTitle || annBody" class="flex flex-col gap-1">
+              <span class="text-xs text-text-muted">{{ $t('كما سيراه المدربون') }}</span>
+              <AnnouncementCard :title="annTitle" :body="annBody" :at="new Date().toISOString()" :image-url="annPreview" :cta="annCtaLabel.trim() && annCtaUrl.trim() ? { label: annCtaLabel.trim(), url: annCtaUrl.trim() } : null" />
+            </div>
             <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !annTitle || !annBody" @click="announce">{{ $t('أرسل للجميع') }}</button>
           </section>
           <p v-if="!announcements.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا إعلانات بعد.') }}</p>
@@ -401,7 +456,7 @@ onMounted(load)
               <span class="text-gold" aria-hidden="true">{{ openAnnouncement === a.id ? '▲' : '▼' }}</span>
             </button>
             <div v-if="openAnnouncement === a.id" class="flex flex-col gap-2 border-t border-text/5 px-4 pb-4 pt-3 text-sm">
-              <p class="whitespace-pre-line">{{ a.body }}</p>
+              <AnnouncementCard :title="a.title" :body="a.body" :at="a.at" :image-url="a.image_url" :cta="a.cta" />
               <p class="text-xs text-text-muted">{{ $t('أرسله {v0} (@{v1}) في {v2} إلى {v3} حساب.', { v0: a.sender?.name ?? '-', v1: a.sender?.username ?? '-', v2: when(a.at), v3: a.sent }) }}</p>
             </div>
           </article>

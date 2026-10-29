@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Messages\Inbox;
 use App\Models\User;
+use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -70,6 +73,40 @@ class AdminToolsTest extends TestCase
             ->assertJsonPath('has_more', true)->json();
         $second = $this->getJson('/api/v1/admin/users?page=2')->assertOk()->assertJsonCount(1, 'users')->assertJsonCount(0, 'admins')->assertJsonPath('has_more', false)->json();
         $this->assertEmpty(array_intersect(array_column($first['users'], 'id'), array_column($second['users'], 'id')));
+    }
+
+    public function test_an_admin_gives_coins_by_account_number_once_per_key_and_logged(): void
+    {
+        // [X54] Coins to any account by its five-digit number.
+        $coach = User::factory()->create();
+        $before = Wallet::balance($coach->id);
+        $body = ['account_no' => $coach->account_no, 'amount' => 250, 'reason' => 'تعويض عن عطل', 'idempotency_key' => 'gift-1'];
+        $this->actingAs($this->admin)->postJson('/api/v1/admin/coins', $body)->assertOk()->assertJsonPath('balance', $before + 250);
+        // The same tap again gives nothing more.
+        $this->postJson('/api/v1/admin/coins', $body)->assertOk()->assertJsonPath('balance', $before + 250);
+        $this->assertSame(1, DB::table('admin_log')->where('action', 'coins')->count());
+        $this->assertSame('coins_gift', DB::table('messages')->where('user_id', $coach->id)->orderByDesc('id')->value('type'));
+        $this->postJson('/api/v1/admin/coins', ['account_no' => $coach->account_no === 99999 ? 99998 : 99999] + $body)->assertNotFound();
+        $this->postJson('/api/v1/admin/coins', ['amount' => 0] + $body)->assertStatus(422);
+        $this->actingAs($coach)->postJson('/api/v1/admin/coins', $body)->assertForbidden();
+    }
+
+    public function test_an_announcement_is_a_card_with_its_picture_and_button(): void
+    {
+        // [X54] The owner's picture: the title and date, a wide picture, the text, and a button.
+        $png = UploadedFile::fake()->image('banner.png', 2400, 900);
+        $this->actingAs($this->admin)->post('/api/v1/admin/announcements', ['title' => 'دوري الكرة الذهبية', 'body' => "انضم إلى الدوري.\n\nاختر فريقك.",
+            'image' => $png, 'cta_label' => 'شجع فريقك', 'cta_url' => '/leagues'], ['Accept' => 'application/json'])->assertCreated();
+        $this->post('/api/v1/admin/announcements', ['title' => 'رابط سيئ', 'body' => 'نص', 'cta_label' => 'اضغط', 'cta_url' => 'javascript:alert(1)'], ['Accept' => 'application/json'])->assertStatus(422);
+        $coach = User::factory()->create();
+        $card = $this->actingAs($coach)->getJson('/api/v1/announcements')->assertOk()->json('announcements.0');
+        $this->assertSame('دوري الكرة الذهبية', $card['title']);
+        $this->assertSame(['label' => 'شجع فريقك', 'url' => '/leagues'], $card['cta']);
+        $this->assertNotNull($card['image_url']);
+        $image = $this->get(parse_url($card['image_url'], PHP_URL_PATH))->assertOk()->assertHeader('Content-Type', 'image/jpeg')->getContent();
+        // Kept as a JPEG at most 1200 wide.
+        $this->assertLessThanOrEqual(1200, getimagesizefromstring($image)[0]);
+        $this->assertSame('/announcements', Inbox::view(DB::table('messages')->where('type', 'announcement')->orderByDesc('id')->first())['link']);
     }
 
     public function test_deleting_asks_for_the_account_number_and_is_logged(): void

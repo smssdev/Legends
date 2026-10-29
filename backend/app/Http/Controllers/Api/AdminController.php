@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Admin\Announcements;
 use App\Admin\Conversations;
 use App\Admin\TwoFactor;
 use App\Auth\AccountDeletion;
@@ -16,8 +17,10 @@ use App\Messages\Inbox;
 use App\Models\User;
 use App\Simulator\Commentary;
 use App\Support\Activity;
+use App\Support\Avatar;
 use App\Support\GameClock;
 use App\Support\Mailer;
+use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -258,28 +261,60 @@ class AdminController extends Controller
     {
         $from = $request->user();
         abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Sizar أو Owner-Sliman).');
-        $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000']]);
-        $payload = ['title' => $data['title'], 'body' => $data['body'], 'from' => $from->name, 'username' => $this->officialName($from->username)];
+        // [X54] A card: an optional wide picture, and an optional button to a page of the game (/...) or a site (https).
+        $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:'.config('game.announcements.image_max_kb')],
+            'cta_label' => ['nullable', 'required_with:cta_url', 'string', 'max:40'],
+            'cta_url' => ['nullable', 'required_with:cta_label', 'string', 'max:300', 'regex:#^(https?://[^\s]+|/[A-Za-z0-9/_\-?=&%.]*)$#']]);
+        $jpeg = null;
+        if ($request->hasFile('image')) {
+            $jpeg = Avatar::wide((string) file_get_contents($request->file('image')->getRealPath()), (int) config('game.announcements.image_width'), (int) config('game.announcements.image_max_height'));
+            abort_unless($jpeg !== null, 422, 'تعذرت قراءة الصورة، جرّب صورة أخرى.');
+        }
+        $now = GameClock::now();
+        // [Sprint 21 E7.2] Kept as sent: the text, who sent it and when.
+        $id = DB::table('announcements')->insertGetId(['user_id' => $from->id, 'title' => $data['title'], 'body' => $data['body'], 'sent' => 0,
+            'cta_label' => $data['cta_label'] ?? null, 'cta_url' => $data['cta_url'] ?? null, 'has_image' => $jpeg !== null, 'created_at' => $now]);
+        if ($jpeg !== null) {
+            DB::table('announcement_images')->insert(['announcement_id' => $id, 'image' => $jpeg, 'created_at' => $now]);
+        }
+        $payload = ['title' => $data['title'], 'body' => $data['body'], 'from' => $from->name, 'username' => $this->officialName($from->username), 'announcement_id' => $id];
         $sent = 0;
-        foreach (User::query()->pluck('id') as $id) {
-            Inbox::send($id, 'announcement', $payload);
+        foreach (User::query()->pluck('id') as $uid) {
+            Inbox::send($uid, 'announcement', $payload);
             $sent++;
         }
-        // [Sprint 21 E7.2] Kept as sent: the text, who sent it and when.
-        DB::table('announcements')->insert(['user_id' => $from->id, 'title' => $data['title'], 'body' => $data['body'], 'sent' => $sent, 'created_at' => GameClock::now()]);
+        DB::table('announcements')->where('id', $id)->update(['sent' => $sent]);
 
-        return response()->json(['sent' => $sent], 201);
+        return response()->json(['sent' => $sent, 'announcement' => Announcements::card(DB::table('announcements')->leftJoin('users', 'users.id', '=', 'announcements.user_id')
+            ->where('announcements.id', $id)->first(['announcements.*', 'users.name', 'users.username']))], 201);
     }
 
     /** [Sprint 21 E7.2] The announcements sent, newest first, each whole with its sender and time. */
     public function announcements(): JsonResponse
     {
-        $rows = DB::table('announcements')->leftJoin('users', 'users.id', '=', 'announcements.user_id')->orderByDesc('announcements.id')->limit(100)
-            ->get(['announcements.*', 'users.name', 'users.username']);
+        return response()->json(['announcements' => Announcements::list(100)]);
+    }
 
-        return response()->json(['announcements' => $rows->map(fn ($a) => ['id' => $a->id, 'title' => $a->title, 'body' => $a->body, 'sent' => (int) $a->sent,
-            'sender' => $a->name ? ['name' => $a->name, 'username' => $this->officialName((string) $a->username), 'official' => Username::official($a->username)] : null,
-            'at' => Carbon::parse($a->created_at, 'UTC')->toIso8601ZuluString()])]);
+    /**
+     * [X54, the owner's request 2026-10-29] Coins to any account, by its five-digit number: an amount, the reason the
+     * coach reads, logged; once per idempotency key, so a double tap gives once.
+     */
+    public function giveCoins(Request $request): JsonResponse
+    {
+        $data = $request->validate(['account_no' => ['required', 'integer', 'between:10000,99999'], 'amount' => ['required', 'integer', 'min:1', 'max:'.config('game.admin.coins_max')],
+            'reason' => ['required', 'string', 'min:3', 'max:200'], 'idempotency_key' => ['required', 'string', 'max:60']]);
+        $user = User::where('account_no', $data['account_no'])->first();
+        abort_unless($user, 404, 'لا حساب بهذا الرقم.');
+        $key = 'admin_gift:'.$data['idempotency_key'];
+        $fresh = ! DB::table('wallet_transactions')->where('idempotency_key', $key)->exists();
+        $balance = Wallet::post($user->id, 'admin_gift', (int) $data['amount'], $key, 'admin:'.$request->user()->id);
+        if ($fresh) {
+            $this->log($request, 'coins', $user, "+{$data['amount']} · ".trim($data['reason']));
+            Inbox::send($user->id, 'coins_gift', ['coins' => (int) $data['amount'], 'reason' => trim($data['reason']), 'from' => $request->user()->name]);
+        }
+
+        return response()->json(['user' => ['id' => $user->id, 'name' => $user->name, 'account_no' => $user->account_no], 'balance' => $balance]);
     }
 
     /** [Sprint 21 E7.7] The conversations with the coaches; one coach's thread; a developer writes to a coach. */
