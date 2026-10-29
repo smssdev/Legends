@@ -1681,6 +1681,44 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/StadiumView' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/ads/reward:
+    parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: '[Sprint 21 E9] A rewarded video the provider verified cuts 30 minutes off a training slot or the stadium part (5 videos a task)'
+      description: |
+        Off until the owner picks the ad provider (README section 11): 503 while game.ads.enabled is false, 422 for any token
+        while the driver is none. The provider's reward id is kept unique, so the same token sent twice cuts once.
+        A task is never moved before now: cut past its end, it is due and the scheduler finishes it within the minute.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [item, token]
+              properties:
+                item: { type: string, enum: [training, stadium] }
+                line: { type: string, enum: [gk, def, mid, att], description: 'The training slot (required for training)' }
+                token: { type: string, maxLength: 4096, description: The provider's token for the watched video }
+      responses:
+        '200':
+          description: The task's time after the cut
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [minutes, used, max, ends_at]
+                properties:
+                  minutes: { type: integer, description: Minutes a video cuts }
+                  used: { type: integer, description: Videos counted for this task }
+                  max: { type: integer }
+                  ends_at: { type: string, format: date-time, description: 'The slot''s next session or the part''s end, after the cut' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
   /leagues/{league}/training:
     parameters: [{ name: league, in: path, required: true, schema: { type: integer } }]
     get:
@@ -2167,9 +2205,10 @@ paths:
   /admin/users:
     get:
       tags: [admin]
-      summary: '[Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name'
+      summary: '[Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name; the coaches a page at a time (game.admin.users_per_page)'
       parameters:
         - { name: q, in: query, required: false, schema: { type: string, maxLength: 80 }, description: 'Five digits: the account number; else part of the name, username or email' }
+        - { name: page, in: query, required: false, schema: { type: integer, minimum: 1 }, description: 'The coaches'' page (the admins come whole on page 1)' }
       responses:
         '200':
           description: The accounts
@@ -2177,10 +2216,12 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [admins, users]
+                required: [admins, users, page, has_more]
                 properties:
                   admins: { type: array, items: { $ref: '#/components/schemas/AdminUser' } }
                   users: { type: array, items: { $ref: '#/components/schemas/AdminUser' } }
+                  page: { type: integer }
+                  has_more: { type: boolean, description: More coaches on the next page }
   /admin/users/{user}:
     parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
     delete:

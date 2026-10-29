@@ -4211,6 +4211,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/ads/reward": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 21 E9] A rewarded video the provider verified cuts 30 minutes off a training slot or the stadium part (5 videos a task)
+         * @description Off until the owner picks the ad provider (README section 11): 503 while game.ads.enabled is false, 422 for any token
+         *     while the driver is none. The provider's reward id is kept unique, so the same token sent twice cuts once.
+         *     A task is never moved before now: cut past its end, it is due and the scheduler finishes it within the minute.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        item: "training" | "stadium";
+                        /**
+                         * @description The training slot (required for training)
+                         * @enum {string}
+                         */
+                        line?: "gk" | "def" | "mid" | "att";
+                        /** @description The provider's token for the watched video */
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The task's time after the cut */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Minutes a video cuts */
+                            minutes: number;
+                            /** @description Videos counted for this task */
+                            used: number;
+                            max: number;
+                            /**
+                             * Format: date-time
+                             * @description The slot's next session or the part's end, after the cut
+                             */
+                            ends_at: string;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+                503: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/training": {
         parameters: {
             query?: never;
@@ -5344,12 +5419,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** [Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name */
+        /** [Sprint 21 E7.3] The accounts, the admins apart, newest first; searched by the account number or a name; the coaches a page at a time (game.admin.users_per_page) */
         get: {
             parameters: {
                 query?: {
                     /** @description Five digits: the account number; else part of the name, username or email */
                     q?: string;
+                    /** @description The coaches' page (the admins come whole on page 1) */
+                    page?: number;
                 };
                 header?: never;
                 path?: never;
@@ -5366,6 +5443,9 @@ export interface paths {
                         "application/json": {
                             admins: components["schemas"]["AdminUser"][];
                             users: components["schemas"]["AdminUser"][];
+                            page: number;
+                            /** @description More coaches on the next page */
+                            has_more: boolean;
                         };
                     };
                 };

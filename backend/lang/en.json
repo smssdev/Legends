@@ -320,5 +320,8 @@
   "محامي النادي": "Club lawyer",
   "المعد النفسي": "Sports psychologist",
   "لا تدريب بلا مدرب: تعاقد مع %s من الجهاز الفني أولاً.": "No training without a coach: hire the %s from the technical staff first.",
-  "لك مقال واحد في كل جولة، وكتبت مقال الجولة %d.": "One article a round each, and you wrote round %d's."
+  "لك مقال واحد في كل جولة، وكتبت مقال الجولة %d.": "One article a round each, and you wrote round %d's.",
+  "الإعلانات غير مفعّلة بعد.": "Ads are not switched on yet.",
+  "لم يتأكد مزوّد الإعلانات من مشاهدة الفيديو كاملاً.": "The ad provider did not confirm the video was watched to the end.",
+  "وصلت إلى %d فيديوهات لهذه المهمة.": "You have reached %d videos for this task."
 }
