@@ -52,6 +52,13 @@ class AdReward
         });
     }
 
+    /** What the screens show beside a task: whether ads are on, the minutes a video cuts, and the videos used of the most. */
+    public static function status(string $item, ?int $itemId): array
+    {
+        return ['enabled' => (bool) config('game.ads.enabled') && config('game.ads.driver') !== 'none', 'minutes' => (int) config('game.ads.minutes_per_video'),
+            'max' => (int) config('game.ads.max_per_item'), 'used' => $itemId ? DB::table('ad_rewards')->where('item', $item)->where('item_id', $itemId)->count() : 0];
+    }
+
     /** The club's task the video is for: [table, id, the time column it cuts]. */
     private static function task(int $clubId, string $item, ?string $line): array
     {

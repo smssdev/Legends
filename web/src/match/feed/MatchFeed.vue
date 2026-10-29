@@ -451,12 +451,12 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .side.away { flex-direction: row-reverse; text-align: left }
 .side.away::before { background: linear-gradient(270deg, transparent, var(--c)) }
 .nm { position: relative; min-width: 0; display: grid }
-.nm b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 21px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.nm b { font-family: 'Amin', sans-serif; font-weight: 800; font-size: clamp(13px, 3.4cqw, 21px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .nm small { color: #93A3BF; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .crest { width: clamp(32px, 6cqw, 50px); flex: none; position: relative; filter: drop-shadow(0 4px 10px rgba(0,0,0,.5)) }
 .crest :deep(svg), .crest :deep(img) { display: block; width: 100%; height: auto }
 .mid { display: grid; justify-items: center; align-content: center; padding: 4px 14px; background: linear-gradient(180deg, rgba(5,13,31,.75), rgba(5,13,31,.95)); border-inline: 1px solid rgba(255,255,255,.09) }
-.score { font-family: 'Barlow Condensed', 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(30px, 7.5cqw, 50px); line-height: .95; letter-spacing: .04em; color: #fff; font-variant-numeric: tabular-nums }
+.score { font-family: 'Barlow Condensed', 'Amin', sans-serif; font-weight: 800; font-size: clamp(30px, 7.5cqw, 50px); line-height: .95; letter-spacing: .04em; color: #fff; font-variant-numeric: tabular-nums }
 .score.pop { animation: pop .7s }
 @keyframes pop { 25% { transform: scale(1.25); color: #FFD36B; text-shadow: 0 0 18px #F5B82E } }
 .live { display: flex; align-items: center; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .06em; color: #FFD36B }
@@ -485,7 +485,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .ico { width: 36px; height: 36px; flex: none; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09) }
 .ico :deep(svg) { width: 22px; height: 22px }
 .card .tx { min-width: 0; display: grid }
-.card .tx b { font-family: 'Alexandria', sans-serif; font-weight: 700; font-size: clamp(13px, 2.7cqw, 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.card .tx b { font-family: 'Amin', sans-serif; font-weight: 700; font-size: clamp(13px, 2.7cqw, 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .card .tx span { color: #93A3BF; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .card.goal { background: linear-gradient(100deg, rgba(245,184,46,.28), rgba(16,40,79,.7) 60%); border-color: rgba(245,184,46,.5) }
 .card.goal .tx span { color: #FFD36B; font-weight: 700 }
@@ -509,9 +509,9 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .stage.shake { animation: shake .45s }
 @keyframes shake { 20% { transform: translate(-6px, 3px) } 40% { transform: translate(5px, -4px) } 60% { transform: translate(-4px, 2px) } 80% { transform: translate(3px, -1px) } }
 .lower { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #071733), #071733 55%); border-top: 1px solid rgba(255,255,255,.08) }
-.lower .ev { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4cqw, 27px); color: #FFD36B }
+.lower .ev { font-family: 'Amin', sans-serif; font-weight: 900; font-size: clamp(17px, 4cqw, 27px); color: #FFD36B }
 .lower .who { display: grid; min-width: 0 }
-.lower .who b { font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: clamp(14px, 3cqw, 18px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.lower .who b { font-family: 'Amin', sans-serif; font-weight: 800; font-size: clamp(14px, 3cqw, 18px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .lower .who span { color: #C9D2E1; font-size: 12px }
 .lower .min { margin-inline-start: auto; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; opacity: .9 }
 
@@ -531,11 +531,11 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .preview { position: absolute; inset: 0; z-index: 12; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 16px; overflow-y: auto; background: radial-gradient(70% 60% at 50% 40%, rgba(245,184,46,.12), transparent 70%), linear-gradient(180deg, #0B2149, #050D1F) }
 .plan { font-size: 14px; color: #C9D2E1; text-align: center }
 .plan b { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; color: #FFD36B }
-.kick { font-family: 'Alexandria', sans-serif; font-weight: 700; color: #FFD36B; letter-spacing: .06em; font-size: 13px }
+.kick { font-family: 'Amin', sans-serif; font-weight: 700; color: #FFD36B; letter-spacing: .06em; font-size: 13px }
 .teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: clamp(10px, 4cqw, 40px); width: min(100%, 720px) }
 .team { display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0 }
 .team .crest { width: clamp(64px, 15cqw, 116px) }
-.team b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(17px, 4.4cqw, 28px) }
+.team b { font-family: 'Amin', sans-serif; font-weight: 900; font-size: clamp(17px, 4.4cqw, 28px) }
 .team small { color: #93A3BF; font-weight: 600 }
 .vs { font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 800; font-size: clamp(32px, 9cqw, 62px); color: #F5B82E; text-shadow: 0 0 24px rgba(245,184,46,.35) }
 .stats { width: min(100%, 560px); display: grid; gap: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09) }
@@ -547,9 +547,9 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(100%, 560px) }
 .key { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(16,40,79,.86); border: 1px solid rgba(255,255,255,.09); border-inline-start: 3px solid var(--c); min-width: 0 }
 .key .no { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; color: var(--c); width: 32px; text-align: center }
-.key b { font-family: 'Alexandria', sans-serif; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.key b { font-family: 'Amin', sans-serif; font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .key span span { color: #93A3BF; font-size: 12px }
-.go { min-height: 50px; padding: 0 34px; border-radius: 14px; border: 0; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 17px; color: #050D1F; background: linear-gradient(180deg, #FFD36B, #F5B82E); box-shadow: 0 10px 30px rgba(245,184,46,.35); cursor: pointer }
+.go { min-height: 50px; padding: 0 34px; border-radius: 14px; border: 0; font-family: 'Amin', sans-serif; font-weight: 800; font-size: 17px; color: #050D1F; background: linear-gradient(180deg, #FFD36B, #F5B82E); box-shadow: 0 10px 30px rgba(245,184,46,.35); cursor: pointer }
 .go:focus-visible { outline: 3px solid #fff; outline-offset: 2px }
 @container (max-width: 560px) { .keys { grid-template-columns: 1fr } }
 
@@ -564,7 +564,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 /* Falling by transform, not by top: no layout on every frame [X30]. */
 @keyframes fall { to { transform: translate3d(30px, 420px, 0) rotate(540deg) } }
 .party .burst { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); display: grid; justify-items: center; padding: 6px 18px; border-radius: 12px; background: color-mix(in srgb, var(--c) 80%, #071733); border: 2px solid #F5B82E; box-shadow: 0 10px 30px rgba(0,0,0,.5); animation: burst .6s cubic-bezier(.2,.9,.25,1.4) .35s both }
-.party .burst b { font-family: 'Alexandria', sans-serif; font-weight: 900; font-size: clamp(16px, 4cqw, 26px); white-space: nowrap }
+.party .burst b { font-family: 'Amin', sans-serif; font-weight: 900; font-size: clamp(16px, 4cqw, 26px); white-space: nowrap }
 .party .burst small { color: #FFD36B; font-weight: 700; font-size: 12px }
 @keyframes burst { from { opacity: 0; transform: translateX(-50%) scale(.4) } }
 
@@ -573,7 +573,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .rx.home { right: var(--x) }
 .rx.away { left: var(--x) }
 .rx .e { font-size: 30px; line-height: 1 }
-.rx .t { display: grid; font-family: 'Alexandria', sans-serif; font-weight: 800; font-size: 14px; line-height: 1.25 }
+.rx .t { display: grid; font-family: 'Amin', sans-serif; font-weight: 800; font-size: 14px; line-height: 1.25 }
 .rx .t small { color: #93A3BF; font-size: 11px; font-weight: 600 }
 @keyframes rise { 0% { opacity: 0; transform: translateY(20px) scale(.6) } 12% { opacity: 1; transform: translateY(0) scale(1.08) } 20% { transform: scale(1) } 80% { opacity: 1 } 100% { opacity: 0; transform: translateY(-160px) } }
 .rx-leave-active { transition: opacity .3s }

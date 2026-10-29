@@ -3226,7 +3226,7 @@ export interface paths {
         };
         /**
          * [UP12] The newspaper: a played round's report (results, stories, team of the week) and the coaches' articles
-         * @description [Sprint 21 E4.5, E4.6] «أخبار الدوري»: the edition also has best_matches (score, home, away, goals, upset, match_id), player (the round's best rated), coach (the coach of the round: coach, club, opponent, goals, away) and scandals (the bribes an opponent exposed: club, coach, accuser, points, fine, at). wrote_this_round and round: one article a round for each coach.
+         * @description [Sprint 21 E4.5, E4.6] «أخبار الدوري»: the edition also has best_matches (score, home, away, goals, upset, comeback, match_id), player (the player of the round: score, id, name, line, position, club, rating, goals, assists), coach (the coach of the round: score, coach, club, opponent, goals, away) and scandals (the bribes an opponent exposed: club, coach, accuser, points, fine, at); the formulas are App\League\NewsFormulas (Sprint 20 S3). wrote_this_round and round: one article a round for each coach.
          */
         get: {
             parameters: {
@@ -4224,8 +4224,9 @@ export interface paths {
         put?: never;
         /**
          * [Sprint 21 E9] A rewarded video the provider verified cuts 30 minutes off a training slot or the stadium part (5 videos a task)
-         * @description Off until the owner picks the ad provider (README section 11): 503 while game.ads.enabled is false, 422 for any token
-         *     while the driver is none. The provider's reward id is kept unique, so the same token sent twice cuts once.
+         * @description The provider is the game's own (Sprint 20 S4): the token is a watch from POST /ads/start, accepted once its seconds
+         *     have passed. 503 while game.ads.enabled is false, 422 for a token not yet watched to its end (or any token with the
+         *     driver none). The provider's reward id is kept unique, so the same token sent twice cuts once.
          *     A task is never moved before now: cut past its end, it is due and the scheduler finishes it within the minute.
          */
         post: {
@@ -4575,6 +4576,12 @@ export interface paths {
                                     code: string;
                                     strength_cp: number;
                                     crest_url: string;
+                                    /** @description [Sprint 20 S1] My name */
+                                    coach: string;
+                                    /** @description [Sprint 20 S1] The last five results, newest first */
+                                    form: ("W" | "D" | "L")[];
+                                    /** @description [Sprint 20 S1] My formation now (the locked one after the lock) */
+                                    formation: string;
                                 };
                                 opponent: {
                                     id: number;
@@ -4583,6 +4590,8 @@ export interface paths {
                                     strength_cp: number;
                                     crest_url: string;
                                     coach?: string | null;
+                                    /** @description [Sprint 20 S1] The last five results, newest first (public) */
+                                    form?: ("W" | "D" | "L")[];
                                     /** @description Only after the lock */
                                     sheet?: {
                                         formation: string;
@@ -5749,6 +5758,219 @@ export interface paths {
                     };
                 };
                 403: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/house-ads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 20 S4] The game's own rewarded ads, newest first, with how often each was shown */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ads */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ads: components["schemas"]["HouseAd"][];
+                            /** @description The built-in ads shown while none is active */
+                            defaults: number;
+                            enabled: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 20 S4] A new ad (title and body required) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        body?: string;
+                        cta_label?: string | null;
+                        /** @description http or https only */
+                        cta_url?: string | null;
+                        seconds?: number;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Made */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ad: components["schemas"]["HouseAd"];
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/house-ads/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 20 S4] Delete an ad */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** [Sprint 20 S4] Change an ad, or switch it off and on */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title?: string;
+                        body?: string;
+                        cta_label?: string | null;
+                        /** @description http or https only */
+                        cta_url?: string | null;
+                        seconds?: number;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Changed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ad: components["schemas"]["HouseAd"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
+    "/ads/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 20 S4] Watch one of the game's own ads: the ad, and the token that claims the reward once its seconds have passed
+         * @description The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The watch */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Sent to POST /leagues/{league}/ads/reward at the end */
+                            token: string;
+                            /**
+                             * Format: date-time
+                             * @description When the reward can be claimed
+                             */
+                            ends_at: string;
+                            ad: {
+                                /** @description null for a built-in ad */
+                                id: number | null;
+                                title: string;
+                                body: string;
+                                cta_label: string | null;
+                                cta_url: string | null;
+                                seconds: number;
+                            };
+                        };
+                    };
+                };
+                429: components["responses"]["Error"];
+                503: components["responses"]["Error"];
             };
         };
         delete?: never;
@@ -8419,6 +8641,25 @@ export interface components {
                 fitness: number | null;
             } | null;
         };
+        /** @description [Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far */
+        AdStatus: {
+            enabled: boolean;
+            minutes: number;
+            max: number;
+            used: number;
+        };
+        HouseAd: {
+            id: number;
+            title: string;
+            body: string;
+            cta_label: string | null;
+            cta_url: string | null;
+            seconds: number;
+            active: boolean;
+            views: number;
+            /** Format: date-time */
+            at: string;
+        };
         StadiumView: {
             balance: number;
             /**
@@ -8459,6 +8700,7 @@ export interface components {
                 part: number;
                 /** Format: date-time */
                 ends_at: string;
+                ads: components["schemas"]["AdStatus"];
             } | null;
         };
         TrainingPlayer: {
@@ -8505,6 +8747,7 @@ export interface components {
                     name: string;
                     hired: boolean;
                 };
+                ads: components["schemas"]["AdStatus"];
             }[];
             players: components["schemas"]["TrainingPlayer"][];
         };

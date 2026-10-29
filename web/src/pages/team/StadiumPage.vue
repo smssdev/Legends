@@ -2,6 +2,7 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import AdReward from '../../components/ads/AdReward.vue'
 import { intlLocale } from '../../lib/i18n'
 import { useGlossary } from '../../lib/glossary'
 import HelpTip from '../../components/ui/HelpTip.vue'
@@ -136,6 +137,8 @@ onBeforeUnmount(() => clearInterval(tick))
         <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('يكتمل بعد') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
         <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
           {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
+        <!-- [Sprint 20 S4] A game ad cuts the part's time. -->
+        <AdReward v-if="leagueId" :league-id="leagueId" item="stadium" :ads="v.building.ads" @done="load" />
       </section>
 
       <section :aria-label="$t('أقسام الملعب')" class="grid gap-3 lg:grid-cols-3">

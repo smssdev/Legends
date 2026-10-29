@@ -158,12 +158,34 @@ namespace Legends.Tests
             Assert.AreEqual(2, i); Assert.AreEqual(0.5f, k, 1e-5f);
             MatchScene.Segment(6, 0.6f, out i, out k);     // exactly frame 3
             Assert.AreEqual(3, i); Assert.AreEqual(0f, k, 1e-4f);
-            MatchScene.Segment(6, 0.04f, out i, out k);    // 0.2 of the way to frame 1, eased: slower than linear near a frame
-            Assert.AreEqual(0, i); Assert.Less(k, 0.2f); Assert.Greater(k, 0f);
+            MatchScene.Segment(6, 0.04f, out i, out k);    // 0.2 of the way to frame 1, linear (Sprint 20 S5)
+            Assert.AreEqual(0, i); Assert.AreEqual(0.2f, k, 1e-5f);
             MatchScene.Segment(1, 0.7f, out i, out k);     // one frame: stays on it
             Assert.AreEqual(0, i); Assert.AreEqual(0f, k);
             MatchScene.Segment(6, 2f, out i, out k);       // past the end: the last frame
             Assert.AreEqual(4, i); Assert.AreEqual(1f, k, 1e-5f);
+        }
+
+        static string GoldenPath => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "docs", "api", "frame-golden.json"));
+
+        /// <summary>
+        /// [Sprint 20 S5] The scene places the frames exactly as the cartoon player: every case of the shared golden
+        /// vectors (docs/api/frame-golden.json, checked by `npm run frames` on the web).
+        /// </summary>
+        [Test]
+        public void SegmentFollowsTheGoldenVectors()
+        {
+            var golden = MiniJson.Parse(File.ReadAllText(GoldenPath));
+            var cases = MiniJson.Arr(golden, "segments");
+            Assert.Greater(cases.Count, 0);
+            foreach (var c in cases)
+            {
+                var o = (Dictionary<string, object>)c;
+                float u = System.Convert.ToSingle(o["u"], System.Globalization.CultureInfo.InvariantCulture);
+                MatchScene.Segment((int)MiniJson.Int(c, "count"), u, out int i, out float k);
+                Assert.AreEqual(MiniJson.Int(c, "i"), i, "i at u " + u);
+                Assert.AreEqual(System.Convert.ToSingle(o["k"], System.Globalization.CultureInfo.InvariantCulture), k, 1e-4f, "k at u " + u);
+            }
         }
 
         // ------------------------------------------------------------ the recording

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Ads\AdReward;
 use App\Http\Controllers\Controller;
 use App\Messages\MessageText;
 use App\Models\Club;
@@ -54,6 +55,8 @@ class TrainingController extends Controller
 
                 return ['line' => $line, 'player' => $s ? $players[$s->player_id] ?? null : null, 'sessions_done' => $s ? (int) $s->sessions : 0,
                     'next_at' => $s ? Carbon::parse($s->next_at, 'UTC')->toIso8601ZuluString() : null,
+                    // [Sprint 20 S4] The rewarded ads for this slot's player.
+                    'ads' => AdReward::status('training', $s ? (int) $s->id : null),
                     // [Sprint 21 E6] The line trains only with its coach.
                     'coach' => ['type' => $coach, 'name' => __(MessageText::STAFF[$coach]), 'hired' => Specialists::has($club->id, $coach)]];
             }, Training::LINES),

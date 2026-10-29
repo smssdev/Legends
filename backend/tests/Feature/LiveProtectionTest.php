@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\MatchMinute;
 use App\League\LiveDegrade;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
@@ -34,6 +35,54 @@ class LiveProtectionTest extends TestCase
         $this->assertSame(0, LiveDegrade::level());
         config(['game.live.degrade.level' => 2]);
         $this->assertFalse(LiveDegrade::voice());
+    }
+
+    public function test_the_level_rises_by_itself_under_load_and_comes_down_after_a_calm_hold(): void
+    {
+        // [Sprint 20 S6] Thresholds 1.5s, 3s and 6s of smoothed lateness; down a step after 120s under half of it.
+        Cache::flush();
+        Carbon::setTestNow('2026-10-29 20:00:00');
+        $this->assertSame(0, LiveDegrade::observe(0));
+        // One slow step does not flap the level: the load is smoothed (a quarter of 4000 = 1000).
+        $this->assertSame(0, LiveDegrade::observe(4000));
+        $this->assertSame(1000, LiveDegrade::load());
+        // 1750 crosses 1.5s; 2312, 2734, then 3050 crosses 3s.
+        $this->assertSame(1, LiveDegrade::observe(4000));
+        foreach (range(1, 3) as $i) {
+            LiveDegrade::observe(4000);
+        }
+        $this->assertSame(2, LiveDegrade::auto());
+        $this->assertFalse(LiveDegrade::voice());
+        foreach (range(1, 8) as $i) {
+            LiveDegrade::observe(20000);
+        }
+        $this->assertSame(3, LiveDegrade::level());
+        $this->assertSame(3000, LiveDegrade::pollMs());
+        // A manual level wins over the automatic one.
+        LiveDegrade::set(0);
+        $this->assertSame(0, LiveDegrade::level());
+        LiveDegrade::set(null);
+
+        // Calm again: the load falls, but the level waits out the hold before each step down.
+        foreach (range(1, 20) as $i) {
+            LiveDegrade::observe(0);
+        }
+        $this->assertSame(3, LiveDegrade::auto());
+        Carbon::setTestNow('2026-10-29 20:02:01');
+        $this->assertSame(2, LiveDegrade::observe(0));
+        $this->assertSame(2, LiveDegrade::observe(0));
+        Carbon::setTestNow('2026-10-29 20:04:02');
+        $this->assertSame(1, LiveDegrade::observe(0));
+        Carbon::setTestNow('2026-10-29 20:06:03');
+        $this->assertSame(0, LiveDegrade::observe(0));
+
+        // Switched off, the automatic level reads 0 whatever the load.
+        config(['game.live.degrade.auto.enabled' => false]);
+        foreach (range(1, 10) as $i) {
+            LiveDegrade::observe(20000);
+        }
+        $this->assertSame(0, LiveDegrade::level());
+        Carbon::setTestNow();
     }
 
     public function test_a_log_over_the_limit_is_rotated_and_written_on(): void

@@ -74,7 +74,8 @@ class WalletTest extends TestCase
 
     public function test_2_a_season_earns_wins_draws_objectives_and_titles(): void
     {
-        $this->league(over: ['is_dev' => true, 'prep_days' => 1, 'starts_at' => GameClock::now()->toIso8601ZuluString()]);
+        // The league's own frozen "now" (league() sets the clock to 2026-10-22 10:00), not the real day the tests run.
+        $this->league(over: ['is_dev' => true, 'prep_days' => 1, 'starts_at' => '2026-10-22T10:00:00Z']);
         $this->actingAs($this->owner)->postJson($this->url('start'))->assertOk();
         for ($i = 0; $i < 3000 && DB::table('seasons')->where('league_id', $this->league['id'])->where('number', 1)->value('status') === 'running'; $i++) {
             Carbon::setTestNow(GameClock::now()->addSeconds(15));

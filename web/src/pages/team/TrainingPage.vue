@@ -2,6 +2,7 @@
 // Training (Sprint 27 W1, PLAN 2.8), per the WebTraining and MobileTraining drafts: the four slots with their
 // bars and the countdown to the next session, and the candidates of the chosen line. Every number comes from
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
+import AdReward from '../../components/ads/AdReward.vue'
 import { useGlossary } from '../../lib/glossary'
 import HelpTip from '../../components/ui/HelpTip.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -143,6 +144,10 @@ const TIER = { gold: 'border-gold/50 from-[#3a2c07] to-[#10284F]', silver: 'bord
               <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish(s.line)"
                 :title="$t('أنهِ الجلسة الآن')">{{ $t('الآن ·') }} <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">{{ $t('إفراغ') }}</button>
+            </div>
+            <!-- [Sprint 20 S4] A game ad cuts the next session's wait. -->
+            <div v-if="leagueId && s.ads.enabled" class="flex flex-wrap items-center gap-2">
+              <AdReward :league-id="leagueId" item="training" :line="s.line as Line" :ads="s.ads" @done="load" />
             </div>
           </template>
           <!-- [Sprint 21 E6] No coach for the line, no training: the way to hire him. -->

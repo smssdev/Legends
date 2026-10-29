@@ -25,6 +25,8 @@ class MatchesDegrade extends Command
             LiveDegrade::set((int) $this->argument('level'), max(1, (int) $this->option('hours')));
         }
         $this->info('Live degradation level: '.LiveDegrade::level());
+        // [Sprint 20 S6] What the automatic level reads.
+        $this->line('Automatic: level '.LiveDegrade::auto().', load '.LiveDegrade::load().' ms'.(config('game.live.degrade.auto.enabled') ? '' : ' (off)'));
 
         return self::SUCCESS;
     }

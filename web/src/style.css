@@ -14,6 +14,27 @@
   --text-4xl: 1.75rem;
 }
 
+/* [Sprint 20 S2] The game's font, Amin (Mostafa Amin), in its three weights from our own files: Arabic and Latin
+   alike. Each face also covers the weights near it, so a font-bold or font-black never falls back to a fake bold. */
+@font-face {
+  font-family: 'Amin';
+  src: url('/fonts/amin-regular.woff2') format('woff2');
+  font-weight: 100 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Amin';
+  src: url('/fonts/amin-medium.woff2') format('woff2');
+  font-weight: 500 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Amin';
+  src: url('/fonts/amin-bold.woff2') format('woff2');
+  font-weight: 700 900;
+  font-display: swap;
+}
+
 @layer base {
   /* The colour on html only: a body with its own background would paint over the stadium and the chalkboard
      (fixed layers with a negative z-index), as it did until Sprint 21 E3.4. */
