@@ -17,6 +17,7 @@ import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
 import { namesLang, setNamesLang } from '../lib/names'
 import { intlLocale, locale, t } from '../lib/i18n'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
+import ThemeSwitch from '../components/ThemeSwitch.vue'
 
 const auth = useAuth()
 const route = useRoute()
@@ -274,11 +275,11 @@ async function remove() {
             <span v-if="joined" class="rounded-pill bg-surface-sunk px-3 py-1.5 text-xs text-text-muted">{{ $t('منذ {v0}', { v0: joined }) }}</span>
           </div>
         </div>
-        <div class="order-first flex w-full justify-end sm:order-none sm:w-auto sm:self-start"><LanguageSwitch /></div>
+        <div class="order-first flex w-full flex-wrap justify-end gap-2 sm:order-none sm:w-auto sm:flex-col sm:items-end sm:self-start"><LanguageSwitch /><ThemeSwitch /></div>
       </div>
       <div v-if="user.avatar_url || picErr" class="relative mt-3 flex flex-wrap items-center gap-3">
         <button v-if="user.avatar_url" type="button" class="h-touch rounded-md px-3 text-sm text-text-muted" @click="removePicture">{{ $t('احذف الصورة') }}</button>
-        <p v-if="picErr" class="text-sm text-[#FF8A8A]" role="alert">{{ picErr }}</p>
+        <p v-if="picErr" class="text-sm text-danger" role="alert">{{ picErr }}</p>
       </div>
     </header>
     <p v-if="welcome" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ $t(welcome) }}</p>
@@ -379,7 +380,7 @@ async function remove() {
         </div>
         <span class="text-xs text-text-muted">{{ $t('ما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.') }}</span>
       </fieldset>
-      <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-[#FF8A8A]' : 'text-success'" role="status">{{ $t(viewMsg) }}</p>
+      <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-danger' : 'text-success'" role="status">{{ $t(viewMsg) }}</p>
     </section>
 
     <RouterLink :to="{ name: 'developers' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">{{ $t('فريق التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('تعرّف على من صنع اللعبة') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
@@ -409,7 +410,7 @@ async function remove() {
         <button type="submit" class="h-12 self-start rounded-lg bg-gold px-5 font-bold text-on-gold" :disabled="!holidayReason.trim()">{{ holidayDays > user.vacation.auto_days ? $t('أرسل الطلب') : $t('ابدأ الإجازة') }}</button>
       </form>
       <p v-if="holidayDone" class="text-sm text-success" role="status">{{ $t(holidayDone) }}</p>
-      <p v-if="holidayMsg" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(holidayMsg) }}</p>
+      <p v-if="holidayMsg" class="text-sm text-danger" role="alert">{{ $t(holidayMsg) }}</p>
     </section>
 
     <NotificationsCard />
@@ -432,9 +433,9 @@ async function remove() {
 
     <!-- Deleting is apart from signing out, and asks twice [X12]: what is lost, then the word and the password. -->
     <section class="flex flex-col gap-3 rounded-xl border border-live/40 p-4" aria-labelledby="h-delete">
-      <h2 id="h-delete" class="font-display text-xl font-extrabold text-[#FF8A8A]">{{ $t('حذف الحساب نهائياً') }}</h2>
+      <h2 id="h-delete" class="font-display text-xl font-extrabold text-danger">{{ $t('حذف الحساب نهائياً') }}</h2>
       <p class="text-sm text-text-muted">{{ $t('لا علاقة له بتسجيل الخروج: الحذف لا يمكن التراجع عنه.') }}</p>
-      <button v-if="deleteStep === 0" type="button" class="h-touch self-start rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="deleteStep = 1">{{ $t('أريد حذف حسابي') }}</button>
+      <button v-if="deleteStep === 0" type="button" class="h-touch self-start rounded-md bg-live/15 px-4 font-bold text-danger" @click="deleteStep = 1">{{ $t('أريد حذف حسابي') }}</button>
       <div v-else-if="deleteStep === 1" class="flex flex-col gap-3 rounded-lg bg-live/10 p-3 text-sm" role="alertdialog" aria-labelledby="h-delete-1">
         <b id="h-delete-1">{{ $t('الخطوة 1 من 2: هذا ما سيضيع للأبد') }}</b>
         <ul class="list-disc ps-5 text-text-soft">

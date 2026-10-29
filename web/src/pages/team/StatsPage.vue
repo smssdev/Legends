@@ -63,7 +63,7 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
       <h1 class="font-display text-3xl font-extrabold">{{ $t('جدول الدوري') }}</h1>
       <p class="mt-1 text-sm text-text-muted">{{ $t('كل ما يراه أعضاء الدوري عن الموسم. اضغط اسم أي نادٍ لترى تشكيلته ولاعبيه.') }}</p>
     </div>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى إحصائياته.') }}</p>
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
@@ -133,7 +133,7 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
           <tbody class="font-numbers"><tr v-for="f in s.finance" :key="f.club.id" class="border-t border-text/5 text-center" :class="mine(f.club.id)">
             <td class="py-2 text-start font-sans"><button type="button" class="font-bold hover:text-gold" @click="openSquad(f.club)">{{ $nm(f.club.name) }}</button></td>
             <td dir="ltr">{{ money(f.bought) }}</td><td>{{ f.bought_count }}</td><td dir="ltr">{{ money(f.sold) }}</td><td>{{ f.sold_count }}</td>
-            <td dir="ltr" :class="f.net >= 0 ? 'text-success' : 'text-[#FF8A8A]'">{{ f.net >= 0 ? '+' : '' }}{{ money(f.net) }}</td>
+            <td dir="ltr" :class="f.net >= 0 ? 'text-success' : 'text-danger'">{{ f.net >= 0 ? '+' : '' }}{{ money(f.net) }}</td>
           </tr></tbody>
         </table>
       </section>

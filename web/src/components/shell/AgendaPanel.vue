@@ -88,11 +88,11 @@ const go = (to: string) => {
   padding: 0.6rem 0.85rem calc(1rem + env(safe-area-inset-bottom, 0px));
   border-radius: 1.25rem 1.25rem 0 0;
   background: var(--color-surface);
-  border-top: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow: 0 -12px 40px rgb(0 0 0 / 0.6);
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: 0 -12px 40px color-mix(in srgb, var(--color-shade) 60%, transparent);
 }
 @media (min-width: 768px) {
-  .agenda { position: absolute; top: 100%; bottom: auto; inset-inline-start: auto; inset-inline-end: 1rem; width: 24rem; margin-top: 0.4rem; border-radius: 1rem; border: 1px solid rgb(255 255 255 / 0.08); }
+  .agenda { position: absolute; top: 100%; bottom: auto; inset-inline-start: auto; inset-inline-end: 1rem; width: 24rem; margin-top: 0.4rem; border-radius: 1rem; border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
 }
 .agenda-row {
   display: flex;

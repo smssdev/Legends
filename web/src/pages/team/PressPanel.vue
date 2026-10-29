@@ -57,6 +57,6 @@ onMounted(load)
       </template>
       <p v-else class="text-sm text-text-muted">{{ $t('يُعقد المؤتمر الساعة {v0}، قبل المباراة بنصف ساعة: تصريحك يرفع معنويات لاعبيك.', { v0: time(press.opens_at) }) }}</p>
     </template>
-    <p v-if="error" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
   </section>
 </template>

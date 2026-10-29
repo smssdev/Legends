@@ -214,7 +214,7 @@ onBeforeUnmount(() => clearInterval(clock))
       <span v-if="m" class="money-box flex h-11 items-center gap-2 px-4 text-sm"><span class="text-text-muted">{{ $t('أموال النادي') }}</span><b class="font-numbers text-lg" :class="m.balance < 0 ? 'text-warning' : ''" dir="ltr">{{ money(Math.abs(m.balance)) }}</b></span>
     </header>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
@@ -346,7 +346,7 @@ onBeforeUnmount(() => clearInterval(clock))
                 <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span class="font-numbers">{{ money(p.floor) }}</span><span class="font-numbers">{{ money(p.cap) }}</span></div>
                 <div class="flex flex-wrap items-center gap-2">
                   <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</button>
-                  <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-[#FF8A8A]'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
+                  <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-danger'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
                 </div>
               </form>
             </div>

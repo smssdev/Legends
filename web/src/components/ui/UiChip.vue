@@ -8,10 +8,10 @@ withDefaults(defineProps<{ tone?: 'neutral' | 'live' | 'win' | 'draw' | 'loss' |
     class="inline-flex h-8 items-center gap-1.5 rounded-pill px-3 text-sm font-bold"
     :class="{
       neutral: 'bg-surface-raised text-text-soft',
-      live: 'bg-live/15 text-[#FF8A8A]',
+      live: 'bg-live/15 text-danger',
       win: 'bg-success/15 text-success',
       draw: 'bg-surface-raised text-text-soft',
-      loss: 'bg-live/15 text-[#FF8A8A]',
+      loss: 'bg-live/15 text-danger',
       gold: 'bg-gold/15 text-gold',
       warning: 'bg-warning/15 text-warning',
     }[tone]"

@@ -69,7 +69,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 <template>
   <div class="min-h-dvh">
     <header class="sticky top-0 z-30">
-      <div class="shell-top relative border-b border-black/30">
+      <div class="shell-top relative border-b border-shade/30">
         <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
           <!-- The club (inside a slot: a tap switches clubs), the brand outside. -->
           <ClubSwitcher v-if="inSlot" />
@@ -78,8 +78,8 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 
           <template v-if="auth.user">
             <div class="flex shrink-0 items-center gap-1 md:gap-2">
-              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
-              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-white/10 px-3 text-xs font-bold hover:bg-white/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
+              <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
+              <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
               <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
                 <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
               </RouterLink>
@@ -116,7 +116,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
           </template>
           <template v-else-if="auth.loaded">
             <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
-            <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-white/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
+            <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-text/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
           <AgendaPanel v-if="agenda" :kind="agenda" @close="agenda = null" />
         </div>
@@ -142,7 +142,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
         <b class="shrink-0 font-numbers text-lg" dir="ltr">{{ broadcast.score }}</b>
         <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
       </RouterLink>
-      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-white/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
+      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
     </div>
     <!-- [Sprint 21 E7.3] A suspended account: why, and the way to ask the developers. -->
     <RouterLink v-if="auth.user?.suspended" to="/support" class="block bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">
@@ -219,8 +219,8 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   border-radius: 0.9rem;
   color: var(--color-text);
   background: color-mix(in srgb, var(--color-surface-raised) 70%, transparent);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow: 0 6px 18px -10px rgb(0 0 0 / 0.8);
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 .coach-tab { padding: 0.25rem; border-radius: 999px; }
@@ -240,9 +240,9 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   height: 2.25rem;
   padding: 0 0.7rem 0 0.4rem;
   border-radius: 999px;
-  color: #2a1300;
+  color: var(--color-on-gold);
   background: linear-gradient(180deg, var(--color-gold-light), var(--color-gold) 60%, var(--color-gold-dark));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, 0 4px 12px -6px rgb(0 0 0 / 0.6);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset, 0 4px 12px -6px color-mix(in srgb, var(--color-shade) 60%, transparent);
 }
 /* [Sprint 20 W2] The club's money: an emerald pill beside the coins; the timers', to-do and messages' icons. */
 .pill-money {
@@ -264,9 +264,9 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.1);
+  background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
-.bar-icon:hover { background: rgb(255 255 255 / 0.2); }
+.bar-icon:hover { background: color-mix(in srgb, var(--color-text) 20%, transparent); }
 .bar-badge {
   position: absolute;
   top: -0.15rem;
@@ -289,7 +289,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   overflow-y: auto;
   padding: 1rem 0.75rem;
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
-  border-inline-end: 1px solid rgb(255 255 255 / 0.06);
+  border-inline-end: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
 }
 /* [UP7] A portal's list: a sheet above the phone's bottom bar, a panel under the portals on the computer. */
 .portal-list {
@@ -302,7 +302,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   border-radius: 1rem;
   background: var(--color-surface);
   border: 1px solid color-mix(in srgb, var(--color-brand-light) 30%, transparent);
-  box-shadow: 0 12px 28px -14px rgb(0 0 0 / 0.8);
+  box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
 .portal-item {
   display: flex;
@@ -318,7 +318,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   background: var(--color-surface-sunk);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.7); color: var(--color-text); }
+.portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--color-shade) 70%, transparent); color: var(--color-text); }
 .portal-item.is-active { color: #fff; background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
 .side-item {
   display: flex;
@@ -331,7 +331,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
   font-weight: 600;
   color: var(--color-text-soft);
 }
-.side-item:hover { background: rgb(255 255 255 / 0.07); color: var(--color-text); }
+.side-item:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
 .side-item.is-active { color: #fff; background: var(--color-brand); }
 /* [X41] The broadcast's bar: a strip in the emerald of the shell, under the header. */
 .on-air {

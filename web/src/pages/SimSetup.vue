@@ -13,7 +13,7 @@
       </button>
     </div>
 
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(error) }}</p>
 
     <div class="grid gap-4 md:grid-cols-2">
       <section v-for="side in sides" :key="side" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :aria-label="side === 'home' ? $t('الفريق الأول') : $t('الفريق الثاني')">

@@ -23,7 +23,7 @@ const MOOD: Record<string, [string, string, string]> = {
   calm: ['هادئة', 'تنتظر بداية الموسم', 'bg-surface-raised text-text-soft'],
   happy: ['مسرورة', 'أنت في الهدف أو أعلى', 'bg-success/20 text-success'],
   worried: ['قلقة', 'أنت تحت الهدف بقليل', 'bg-warning/20 text-warning'],
-  angry: ['غاضبة', 'أنت بعيد عن الهدف', 'bg-live/20 text-[#FF8A8A]'],
+  angry: ['غاضبة', 'أنت بعيد عن الهدف', 'bg-live/20 text-danger'],
 }
 const training = computed(() => b.value?.timers.filter((t) => t.kind === 'training') ?? [])
 const stadium = computed(() => b.value?.timers.find((t) => t.kind === 'stadium') ?? null)
@@ -99,7 +99,7 @@ const leagueId = computed(() => store.league)
           <table class="w-full text-sm">
             <caption class="sr-only">{{ $t('الترتيب المصغر') }}</caption>
             <tbody>
-              <tr v-for="r in b.standings.top" :key="r.id" class="border-t border-white/5" :class="r.mine ? 'text-gold' : ''">
+              <tr v-for="r in b.standings.top" :key="r.id" class="border-t border-text/5" :class="r.mine ? 'text-gold' : ''">
                 <td class="w-6 py-1 font-numbers text-text-muted">{{ r.position }}</td><td class="py-1"><bdi>{{ $nm(r.name) }}</bdi></td><td class="py-1 text-end font-numbers text-base">{{ r.points }}</td>
               </tr>
             </tbody>
@@ -169,7 +169,7 @@ const leagueId = computed(() => store.league)
   padding: 0.85rem;
   border-radius: 0.85rem;
   background: var(--color-surface);
-  border: 1px solid rgb(255 255 255 / 0.07);
+  border: 1px solid color-mix(in srgb, var(--color-text) 7%, transparent);
   transition: border-color 0.15s ease;
 }
 a.card:hover { border-color: color-mix(in srgb, var(--color-gold) 45%, transparent); }

@@ -71,7 +71,7 @@ const played = (f: Fixture) => f.status === 'finished' && f.home_goals !== null 
         </select>
       </label>
     </header>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-else-if="loaded && !leagueId" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('انضم إلى دوري واستلم فريقاً لترى مبارياته.') }}</p>
     <div v-else-if="!loaded" class="flex flex-col gap-3" aria-hidden="true">
       <div v-for="i in 4" :key="i" class="h-40 animate-pulse rounded-xl bg-surface" />

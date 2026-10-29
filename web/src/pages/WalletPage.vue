@@ -28,7 +28,7 @@ onMounted(() => wallet.load())
 <template>
   <div class="flex flex-col gap-4">
     <h1 class="font-display text-3xl font-extrabold">{{ $t('المحفظة والمتجر') }}</h1>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="!wallet.view" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <template v-else>
       <section :aria-label="$t('الرصيد')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/30 bg-surface p-5">
@@ -72,7 +72,7 @@ onMounted(() => wallet.load())
         <div v-for="(t, i) in wallet.view.transactions" :key="i" class="flex min-h-touch items-center gap-2 border-b border-text/5 text-sm last:border-0">
           <span class="flex-1">{{ $t(t.label) }}</span>
           <span class="text-xs text-text-muted">{{ when(t.at) }}</span>
-          <b class="w-14 text-end font-numbers" :class="t.amount > 0 ? 'text-success' : 'text-[#FF8A8A]'" dir="ltr">{{ t.amount > 0 ? '+' : '' }}{{ t.amount }}</b>
+          <b class="w-14 text-end font-numbers" :class="t.amount > 0 ? 'text-success' : 'text-danger'" dir="ltr">{{ t.amount > 0 ? '+' : '' }}{{ t.amount }}</b>
         </div>
       </section>
     </template>

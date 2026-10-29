@@ -1796,4 +1796,8 @@ export const EN: Record<string, string> = {
   'متقدم': 'High',
   'متأخر': 'Deep',
   'الشكل الدفاعي يصنعه الضغط والأسلوب ومصيدة التسلل وتمركز الخطوط. وخطة خصمك تظهر لك بعد القفل، وشكله الدفاعي لا يظهر: اقرأه من مبارياته.': 'The defensive shape comes from the press, the style, the offside trap and the lines\' positions. Your opponent\'s plan shows after the lock; their shape does not: read it from their matches.',
+  'المظهر': 'Look',
+  'ليلي': 'Night',
+  'نهاري': 'Day',
+  'كما في إعدادات جهازك': 'As your device is set',
 }

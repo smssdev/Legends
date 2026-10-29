@@ -49,9 +49,9 @@ const SLIDERS = [
   { key: 'tempo', label: 'إيقاع اللعب', low: 'هادئ', high: 'سريع' },
 ] as const
 const LINES = [
-  { key: 'att', label: 'الهجوم', color: 'bg-[#F08A3C]', options: { back: 'ارتداد', support: 'مساندة الوسط', only: 'هجوم فقط' } },
-  { key: 'mid', label: 'الوسط', color: 'bg-[#22A35A]', options: { def: 'مساندة الدفاع', stay: 'بقاء', push: 'اندفاع' } },
-  { key: 'def', label: 'الدفاع', color: 'bg-[#3B82F6]', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
+  { key: 'att', label: 'الهجوم', color: 'bg-line-att', options: { back: 'ارتداد', support: 'مساندة الوسط', only: 'هجوم فقط' } },
+  { key: 'mid', label: 'الوسط', color: 'bg-line-mid', options: { def: 'مساندة الدفاع', stay: 'بقاء', push: 'اندفاع' } },
+  { key: 'def', label: 'الدفاع', color: 'bg-line-def', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
 ] as const
 const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
 // [UP16] The quick presets of the spec (10): each sets the knobs the engine plays with.
@@ -289,7 +289,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
             <li v-for="sh in book.shapes" :key="sh.shape" class="flex flex-col gap-1 rounded-lg bg-surface-sunk p-3 text-sm">
               <b>{{ $t('ضد {v0}', { v0: $t(SHAPES[sh.shape]) }) }}</b>
               <span v-if="sh.beaten_by.length" class="text-success">{{ $t('العب: {v0}', { v0: sh.beaten_by.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
-              <span v-if="sh.stops.length" class="text-[#FF8A8A]">{{ $t('تجنّب: {v0}', { v0: sh.stops.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
+              <span v-if="sh.stops.length" class="text-danger">{{ $t('تجنّب: {v0}', { v0: sh.stops.map((p) => $t(PLANS[p])).join('، ') }) }}</span>
             </li>
           </ul>
           <div class="overflow-x-auto">
@@ -303,7 +303,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
                   <th scope="row" class="py-2 text-start font-bold">{{ $t(PLANS[p.plan]) }}</th>
                   <td v-for="(_, k) in SHAPES" :key="k" class="py-2 text-center">
                     <span v-if="p.edge[k] > 0" class="font-bold text-success" :title="$t('تتفوق')">▲</span>
-                    <span v-else-if="p.edge[k] < 0" class="font-bold text-[#FF8A8A]" :title="$t('تتعثر')">▼</span>
+                    <span v-else-if="p.edge[k] < 0" class="font-bold text-danger" :title="$t('تتعثر')">▼</span>
                     <span v-else class="text-text-muted" :title="$t('متعادلة')">●</span>
                   </td>
                 </tr>

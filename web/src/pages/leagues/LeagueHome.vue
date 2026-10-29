@@ -168,7 +168,7 @@ onMounted(load)
     <p v-if="route.query.welcome && mine" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">
       {{ $t('أهلاً بك مدرباً لـ{v0}. {v1}', { v0: $nm(mine.name), v1: league?.is_owner ? $t('شارك الكود مع أصحابك ليختاروا فرقهم.') : $t('بالتوفيق في الموسم!') }) }}
     </p>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <!-- [Sprint 21 E3.5] Until the league comes, its outline holds the page. -->
     <div v-if="!league && !error" class="flex flex-col gap-5" aria-hidden="true">
@@ -264,7 +264,7 @@ onMounted(load)
         </form>
         <p v-else-if="league.me.vacation_used && !league.me.on_holiday" class="text-sm text-text-muted">{{ $t('استخدمت إجازة هذا الموسم.') }}</p>
         <div v-if="!league.is_owner" class="flex flex-col gap-2 border-t border-text/10 pt-3">
-          <p v-if="resignError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-[#FF8A8A]" role="alert">{{ $t(resignError) }}</p>
+          <p v-if="resignError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(resignError) }}</p>
           <UiButton v-if="!confirmResign" variant="quiet" @click="confirmResign = true">{{ $t('الاستقالة من الدوري') }}</UiButton>
           <template v-else>
             <p class="rounded-lg bg-live/15 px-3 py-2 text-sm">{{ $t('يعود فريقك للحاسوب بحالته، ولا تعود لهذا الدوري قبل الموسم الجديد. متأكد؟') }}</p>
@@ -300,7 +300,7 @@ onMounted(load)
                 <span class="text-sm font-bold">{{ $t('سبب الطرد (يراه كل أعضاء الدوري)') }}</span>
                 <textarea v-model="reason" rows="2" maxlength="200" class="rounded-lg border border-text/10 bg-surface p-3" :aria-invalid="!!reasonError" />
               </label>
-              <p v-if="reasonError" class="text-sm text-[#FF8A8A]" role="alert">{{ $t(reasonError) }}</p>
+              <p v-if="reasonError" class="text-sm text-danger" role="alert">{{ $t(reasonError) }}</p>
               <p class="text-xs text-text-muted">{{ $t('يعود فريقه للحاسوب بحالته، ولا يعود للدوري هذا الموسم.') }}</p>
               <div class="flex gap-2">
                 <UiButton type="submit" variant="danger">{{ $t('اطرد {v0}', { v0: m.user.name }) }}</UiButton>

@@ -1,9 +1,9 @@
 <template>
-  <svg :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" class="h-full w-full" role="img" :aria-label="label">
-    <line :x1="0" :y1="H / 2" :x2="W" :y2="H / 2" stroke="rgba(247,244,234,0.18)" />
-    <line :x1="W / 2" y1="2" :x2="W / 2" :y2="H - 2" stroke="rgba(247,244,234,0.12)" stroke-dasharray="3 4" />
+  <svg :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" class="h-full w-full text-text" role="img" :aria-label="label">
+    <line :x1="0" :y1="H / 2" :x2="W" :y2="H / 2" stroke="currentColor" stroke-opacity="0.18" />
+    <line :x1="W / 2" y1="2" :x2="W / 2" :y2="H - 2" stroke="currentColor" stroke-opacity="0.12" stroke-dasharray="3 4" />
     <path :d="paths.up" :fill="homeColor" fill-opacity="0.85" />
-    <path :d="paths.down" fill="#F7F4EA" fill-opacity="0.75" />
+    <path :d="paths.down" fill="currentColor" fill-opacity="0.75" />
   </svg>
 </template>
 

@@ -50,11 +50,11 @@ const best = computed(() => [...(team.value?.players ?? [])].sort((a, b) => b.ov
 const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
 
 function status(p: SquadPlayer) {
-  if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-[#FF8A8A]' }
-  if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-[#FF8A8A]' }
+  if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-danger' }
+  if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-danger' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
   // The fatigue lines [X21]: from 75% full, from 55% slower, under 55% a sharp drop and three times the injuries.
-  if (p.fitness < 55) return { text: 'مرهق: خطر إصابة', tone: 'text-[#FF8A8A]' }
+  if (p.fitness < 55) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
   if (p.fitness < 75) return { text: 'متعب', tone: 'text-warning' }
   return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
 }
@@ -62,7 +62,7 @@ function status(p: SquadPlayer) {
 
 <template>
   <div class="flex flex-col gap-4">
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <div v-else-if="loaded && !team" class="flex flex-col items-center gap-3 rounded-xl bg-surface p-8 text-center">
       <h1 class="font-display text-2xl font-extrabold">{{ $t('ليس لديك فريق بعد') }}</h1>
       <p class="text-text-muted">{{ $t('انضم لدوري أو أنشئ دورياً واختر فريقك.') }}</p>
@@ -105,7 +105,7 @@ function status(p: SquadPlayer) {
           <span class="block h-full rounded-full" :style="{ width: `${team.morale.value}%`, background: moraleColor(team.morale.value) }" />
         </span>
         <b class="font-numbers text-lg" :style="{ color: moraleColor(team.morale.value) }">{{ team.morale.value }}</b>
-        <span v-if="team.morale.winless_run >= 2" class="text-xs text-[#FF8A8A]">{{ $t('{v0} بلا فوز', { v0: team.morale.winless_run }) }}</span>
+        <span v-if="team.morale.winless_run >= 2" class="text-xs text-danger">{{ $t('{v0} بلا فوز', { v0: team.morale.winless_run }) }}</span>
       </section>
 
       <div class="flex items-center gap-2">

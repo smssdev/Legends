@@ -251,7 +251,7 @@ onMounted(load)
 <template>
   <div class="flex flex-col gap-4">
     <h1 class="font-display text-3xl font-extrabold">{{ $t('لوحة الإدارة') }}</h1>
-    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-[#FF8A8A]" role="alert">{{ $t(error) }}</p>
+    <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ notice }}</p>
     <p v-if="!state && !error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
@@ -378,11 +378,11 @@ onMounted(load)
               <span class="rounded-md bg-surface-sunk px-2 py-1 font-numbers text-sm tracking-wider" dir="ltr">#{{ u.account_no }}</span>
               <b class="font-display">{{ u.name }}</b><OfficialBadge v-if="u.official" /><VerifiedBadge v-else-if="u.verified" />
               <span class="text-xs text-text-muted" dir="ltr">@{{ u.username }}</span>
-              <span v-if="u.suspended" class="rounded-pill bg-live/20 px-2 text-xs text-[#FF8A8A]">{{ $t('معلّق') }}</span>
+              <span v-if="u.suspended" class="rounded-pill bg-live/20 px-2 text-xs text-danger">{{ $t('معلّق') }}</span>
               <span class="ms-auto text-xs text-text-muted">{{ $t('انضم {v0} · آخر يوم {v1} · {v2} مباراة حية', { v0: day(u.joined), v1: u.last_day ?? '-', v2: u.matches_watched }) }}</span>
             </div>
             <p v-if="u.email" class="text-xs text-text-muted" dir="ltr">{{ u.email }}</p>
-            <p v-if="u.suspended?.reason" class="text-xs text-[#FF8A8A]">{{ $t('السبب: {v0}', { v0: u.suspended.reason }) }}</p>
+            <p v-if="u.suspended?.reason" class="text-xs text-danger">{{ $t('السبب: {v0}', { v0: u.suspended.reason }) }}</p>
             <div class="flex flex-wrap items-center gap-2">
               <template v-if="!u.verified">
                 <b v-if="codes[u.id]" dir="ltr" class="font-numbers text-lg text-gold">{{ codes[u.id] }}</b>
@@ -396,7 +396,7 @@ onMounted(load)
               <template v-if="u.role !== 'admin'">
                 <button v-if="u.suspended" type="button" class="h-10 rounded-md bg-success/20 px-3 text-xs font-bold text-success" @click="unsuspend(u)">{{ $t('ارفع التعليق') }}</button>
                 <button v-else type="button" class="h-10 rounded-md bg-warning/15 px-3 text-xs font-bold text-warning" @click="acting = { id: u.id, kind: 'suspend', text: '' }">{{ $t('علّق الحساب') }}</button>
-                <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-[#FF8A8A]" @click="acting = { id: u.id, kind: 'delete', text: '' }">{{ $t('احذف الحساب') }}</button>
+                <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" @click="acting = { id: u.id, kind: 'delete', text: '' }">{{ $t('احذف الحساب') }}</button>
               </template>
             </div>
             <form v-if="acting?.id === u.id" class="flex flex-wrap items-end gap-2 rounded-lg bg-surface-sunk p-3" @submit.prevent="acting.kind === 'suspend' ? suspend(u) : remove(u)">
@@ -486,7 +486,7 @@ onMounted(load)
             <p v-if="a.cta_url" class="truncate text-xs text-ring" dir="ltr">{{ a.cta_label ? a.cta_label + ' · ' : '' }}{{ a.cta_url }}</p>
             <div class="flex gap-2">
               <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="toggleHouseAd(a)">{{ a.active ? $t('أوقفه') : $t('فعّله') }}</button>
-              <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-[#FF8A8A]" :disabled="busy" @click="deleteHouseAd(a)">{{ $t('احذف') }}</button>
+              <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="deleteHouseAd(a)">{{ $t('احذف') }}</button>
             </div>
           </article>
         </template>
@@ -514,7 +514,7 @@ onMounted(load)
             <div class="flex items-start gap-2">
               <template v-if="v.status === 'pending'">
                 <button type="button" class="h-touch rounded-md bg-success/20 px-4 font-bold text-success" @click="decide(v.id, true)">{{ $t('موافقة') }}</button>
-                <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-[#FF8A8A]" @click="decide(v.id, false)">{{ $t('رفض') }}</button>
+                <button type="button" class="h-touch rounded-md bg-live/15 px-4 font-bold text-danger" @click="decide(v.id, false)">{{ $t('رفض') }}</button>
               </template>
               <span v-else class="rounded-pill px-3 py-1 text-sm font-bold" :class="v.status === 'approved' ? 'bg-success/15 text-success' : 'bg-surface-sunk text-text-muted'">{{ v.status === 'approved' ? $t('وُوفق عليها') : $t('رُفضت') }}</span>
             </div>
