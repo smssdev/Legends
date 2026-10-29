@@ -67,6 +67,7 @@ section { display: grid; gap: 14px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 15px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
 .stage { background: radial-gradient(circle at 50% 70%, var(--raised), var(--stage) 70%); display: grid; place-items: center; padding-block: 8px 0; }
 .stage svg { width: min(100%, 230px); height: auto; display: block; }
+.stage img { width: min(100%, 230px); height: auto; display: block; }
 .card .info { padding: 14px 16px 16px; display: grid; gap: 6px; align-content: start; }
 .card .title { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .code { font-family: var(--f-num); font-weight: 700; font-size: 1rem; color: var(--on-accent); background: var(--gold); border-radius: 6px; padding: 0 7px; }
@@ -158,6 +159,9 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
 @keyframes foR { from { transform: rotate(-8deg); } to { transform: rotate(-35deg); } }
 @keyframes clapFoL { from { transform: rotate(-60deg); } to { transform: rotate(-84deg); } }
 @keyframes clapFoR { from { transform: rotate(60deg); } to { transform: rotate(84deg); } }
+.lvl3 .char .head, .lvl3 .char .arm, .lvl3 .char .up { filter: url(#f-soft); }
+.lvl3 .char .cloth { filter: url(#f-cloth); }
+.lvl2 .char .rich { display: none; }
 @keyframes breathe { 50% { transform: scale(1.012, 1.025); } }
 @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
 @keyframes bounce { to { transform: translateY(-12px); } }
@@ -184,15 +188,16 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
 }
 </style>
 
-<main dir="rtl" lang="ar">
+<main dir="rtl" lang="ar" class="lvl3" id="main">
   <header class="hero">
-    <span class="eyebrow">مسودة للاعتماد · النسخة 2 · 2026-10-29</span>
+    <span class="eyebrow">مسودة للاعتماد · النسخة 3 · 2026-10-29</span>
     <h1>شخصيات الأسطورة</h1>
     <p class="muted">تسعة نماذج في ثلاث مجموعات: التميمة، ووجه المدرب المساعد، والمدرب على الخط. ولكل نموذج تسعة مشاعر. اختر شعوراً من الشريط، فتتغير كل الشخصيات معاً لتقارن بينها. وكل الرسم من عندنا بألوان <span dir="ltr">tokens.json</span>، وكل شخصية ملف SVG صغير يتحرك مثل GIF.</p>
   </header>
 
   <div class="bar" role="toolbar" aria-label="المشاعر">
     <div class="chips" id="chips"></div>
+    <div class="chips" role="group" aria-label="مستوى الرسم"><button class="chip" id="lvl2" aria-pressed="false">رسم: مستوى 2</button><button class="chip" id="lvl3" aria-pressed="true">رسم: مستوى 3</button></div>
     <p class="when" id="when" aria-live="polite"></p>
   </div>
 
@@ -222,6 +227,15 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
       <p class="muted">شخصيتك أنت في زاوية المباراة المباشرة والكرتونية، ويتفاعل مع أحداثها. ويختار كل مدرب شكله من هذه النماذج في حسابه.</p>
     </div>
     <div class="grid" id="gC"></div>
+  </section>
+
+  <section aria-labelledby="s3">
+    <div class="sec-head">
+      <span class="eyebrow">المجموعة C بالأبعاد الثلاثة</span>
+      <h2 id="s3">المدربون كما في Unity</h2>
+      <p class="muted">النماذج نفسها مجسّمة، بالوجوه والمشاعر نفسها، ومن جدول الحركات نفسه الذي يقرؤه Unity. تُصنع بسكربت Blender مجاني وتُصدَّر إلى Unity لدكة البدلاء، وتُصوَّر صوراً متحركة للويب والتطبيق.</p>
+    </div>
+    <div class="grid" id="g3"></div>
   </section>
 
   <section aria-labelledby="sD">
@@ -284,7 +298,7 @@ ol.steps { margin: 0; padding-inline-start: 1.3em; display: grid; gap: 6px; max-
         <thead><tr><th scope="col">المستوى</th><th scope="col">كيف</th><th scope="col">الكلفة</th></tr></thead>
         <tbody>
           <tr><td>رسم متجهات مظلل (هذه الصفحة)</td><td>أرسمه أنا بالكود، ملف SVG صغير بحركة CSS</td><td>مجاني، وجاهز الآن</td></tr>
-          <tr><td>ثلاثي الأبعاد واقعي</td><td>الشخصيات نفسها في Unity مثل لاعبي المشهد، وتُصدَّر حركاتها إلى WebP متحرك للويب والتطبيق</td><td>مجاني، على جهاز سليمان بعد سبرنتات Unity</td></tr>
+          <tr><td>ثلاثي الأبعاد (أعلاه)</td><td>سكربت Blender يبني المدربين ويصدّرهم إلى Unity، ويصوّر كل شعور صورة WebP متحركة</td><td>مجاني، وجاهز الآن</td></tr>
           <tr><td>رسم يدوي احترافي</td><td>رسام يرسم النماذج المعتمدة بأسلوبه، ونحرّكها نحن</td><td>بأجر، ويحتاج قرارك</td></tr>
         </tbody>
       </table>
@@ -319,7 +333,11 @@ const MOODS = [
 /* Volume: every cloth and skin colour is a soft radial gradient (light from the top left), and its outline is a darker shade of itself. */
 const SHADED = ['gold', 'goldD', 'goldL', 'em', 'emD', 'navy', 'navyD', 'chrome', 'chromeD', 'skin', 'bronze', 'orange', 'white', 'silver', 'night'];
 document.body.insertAdjacentHTML('afterbegin', `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>${SHADED.map(c => `<radialGradient id="g-${c}" cx=".38" cy=".3" r=".85" fx=".32" fy=".22">
-  <stop offset="0" style="stop-color:color-mix(in srgb, var(--${c}) 62%, #fff)"/><stop offset=".5" style="stop-color:var(--${c})"/><stop offset="1" style="stop-color:color-mix(in srgb, var(--${c}) 68%, var(--k))"/></radialGradient>`).join('')}</defs></svg>`);
+  <stop offset="0" style="stop-color:color-mix(in srgb, var(--${c}) 62%, #fff)"/><stop offset=".5" style="stop-color:var(--${c})"/><stop offset="1" style="stop-color:color-mix(in srgb, var(--${c}) 68%, var(--k))"/></radialGradient>`).join('')}
+  <filter id="f-soft" x="-25%" y="-20%" width="150%" height="150%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.3" flood-color="#06111E" flood-opacity=".3"/></filter>
+  <filter id="f-cloth" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .24 0" result="a"/><feComposite in="a" in2="SourceGraphic" operator="in" result="t"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="t"/></feMerge></filter></defs></svg>`);
 const st = (c, o = true, w = 3) => `style="fill:${SHADED.includes(c) ? `url(#g-${c})` : `var(--${c})`}${o ? `;stroke:color-mix(in srgb, var(--${c}) 38%, var(--k));stroke-width:${(w * .8).toFixed(1)};stroke-linejoin:round` : ''}"`;
 const ln = (c, w = 3) => `style="fill:none;stroke:var(--${c});stroke-width:${w};stroke-linecap:round;stroke-linejoin:round"`;
 
@@ -421,6 +439,7 @@ const coachArm = (side, x, y, o) => {
   const s = side === 'L' ? 'L' : 'R';
   const stripe = o.stripe ? (yy, h) => `<rect x="${x - 1.2}" y="${yy}" width="2.4" height="${h}" ${st(o.stripe, false)}/>` : () => '';
   return `<g class="up up${s}" style="transform-origin:${x}px ${y}px"><rect x="${x - 7}" y="${y - 3}" width="14" height="31" rx="7" ${st(o.sleeve)}/>${stripe(y, 24)}
+    <path class="rich" d="M${x - 5} ${y + 20} q5 3 10 0" style="fill:none;stroke:var(--k);stroke-opacity:.22;stroke-width:1.2;stroke-linecap:round"/>
     <g class="fo fo${s}" style="transform-origin:${x}px ${y + 26}px"><rect x="${x - 6}" y="${y + 22}" width="12" height="28" rx="6" ${st(o.sleeve)}/>${stripe(y + 26, 20)}
     ${o.cuff ? `<rect x="${x - 6}" y="${y + 45}" width="12" height="4" ${st(o.cuff, false)}/>` : ''}
     <ellipse cx="${x}" cy="${y + 54}" rx="6" ry="7" ${st(o.skin, true, 2.4)}/><ellipse cx="${x + (s === 'L' ? 4 : -4)}" cy="${y + 51}" rx="2.4" ry="3.6" ${st(o.skin, true, 1.8)}/></g></g>`;
@@ -429,14 +448,18 @@ function coach(o) {
   const shoe = (d) => `<path d="${d}" ${st(o.shoe, o.shoeO !== undefined ? o.shoeO : false)}/>`;
   return {
     group: 'C', name: o.name, desc: o.desc, tags: o.tags, neck: '100px 92px', f: o.face || [100, 63, .62], fo: { iris: o.iris }, shadow: 40,
-    body: () => `<path d="M75 150 H99 L97 199 H83 Z" ${st(o.legs)}/><path d="M101 150 H125 L117 199 H103 Z" ${st(o.legs)}/>
+    body: () => `<g class="cloth"><path d="M75 150 H99 L97 199 H83 Z" ${st(o.legs)}/><path d="M101 150 H125 L117 199 H103 Z" ${st(o.legs)}/>
       ${o.legStripe ? `<path d="M77 154 L84 198 M123 154 L116 198" ${ln(o.legStripe, 2)}/>` : ''}
       ${shoe('M81 197 H98 Q100 206 94 206 H75 Q70 206 73 201 Q75 197 81 197Z')}${shoe('M102 197 H119 Q125 197 127 201 Q130 206 125 206 H106 Q100 206 102 197Z')}
-      <rect x="93" y="80" width="14" height="18" rx="4" ${st(o.skin)}/>${o.torso}`,
+      <path class="rich" d="M87 156 L89 196 M113 156 L111 196 M99 150 q1 6 0 12" style="fill:none;stroke:var(--k);stroke-opacity:.24;stroke-width:1.4;stroke-linecap:round"/>
+      <ellipse class="rich" cx="80" cy="200" rx="4" ry="1.4" style="fill:#fff;opacity:.45"/><ellipse class="rich" cx="120" cy="200" rx="4" ry="1.4" style="fill:#fff;opacity:.45"/>
+      <rect x="93" y="80" width="14" height="18" rx="4" ${st(o.skin)}/>${o.torso}
+      <path class="rich" d="M80 140 q6 3 12 1 M108 141 q6 2 12 -1 M78 118 q3 7 2 15 M122 118 q-3 7 -2 15 M84 152 q16 -3 32 0" style="fill:none;stroke:var(--k);stroke-opacity:.24;stroke-width:1.4;stroke-linecap:round"/></g>`,
     head: `${o.hijab || ''}${o.hijab ? '' : `<ellipse cx="79" cy="64" rx="4.5" ry="6.5" ${st(o.skin, true, 2.4)}/><ellipse cx="121" cy="64" rx="4.5" ry="6.5" ${st(o.skin, true, 2.4)}/>`}
       <ellipse cx="100" cy="${o.hijab ? 64 : 62}" rx="${o.hijab ? 17 : 21}" ry="${o.hijab ? 21 : 25}" ${st(o.skin, true, 2.6)}/>
       <ellipse cx="100" cy="${o.hijab ? 82 : 84}" rx="9" ry="3" style="fill:var(--k);opacity:.12"/>
-      ${o.hair || ''}${o.hijabFront || ''}<path d="M101 ${o.hijab ? 64 : 63} q-3 5 0 6.5" style="fill:none;stroke:color-mix(in srgb, var(--${o.skin}) 50%, var(--k));stroke-width:1.6;stroke-linecap:round"/>`,
+      ${o.hair || ''}${o.strands ? `<path class="rich" d="${o.strands}" style="fill:none;stroke:#fff;stroke-opacity:.28;stroke-width:1.2;stroke-linecap:round"/>` : ''}${o.hijabFront || ''}
+      <path class="rich" d="M${o.hijab ? 110 : 113} ${o.hijab ? 48 : 42} Q${o.hijab ? 118 : 122} ${o.hijab ? 58 : 52} ${o.hijab ? 116 : 120} ${o.hijab ? 74 : 70}" style="fill:none;stroke:#fff;stroke-opacity:.45;stroke-width:1.6;stroke-linecap:round"/><path d="M101 ${o.hijab ? 64 : 63} q-3 5 0 6.5" style="fill:none;stroke:color-mix(in srgb, var(--${o.skin}) 50%, var(--k));stroke-width:1.6;stroke-linecap:round"/>`,
     arms: coachArm('L', 72, 104, o) + coachArm('R', 128, 104, o),
   };
 }
@@ -513,7 +536,7 @@ const CHARS = {
   },
   C1: coach({
     name: 'مدرب ببدلة', desc: 'بدلة كحلية وربطة ذهبية، وشعر مسرّح جانباً. المدرب الكلاسيكي في المباريات الكبيرة.',
-    tags: ['المباراة المباشرة', 'المؤتمر الصحفي'], skin: 'skin', iris: 'bronze', sleeve: 'navy', cuff: 'white',
+    tags: ['المباراة المباشرة', 'المؤتمر الصحفي'], skin: 'skin', iris: 'bronze', sleeve: 'navy', cuff: 'white', strands: 'M86 44 q8 -6 18 -4 M92 39 q10 -3 20 1 M80 54 q2 -8 7 -11',
     legs: 'navyD', shoe: 'k',
     torso: `<path d="M72 100 Q100 90 128 100 Q136 106 133 120 L126 154 L74 154 L67 120 Q64 106 72 100Z" ${st('navy')}/>
       <path d="M90 96 L100 121 L110 96Z" ${st('white', false)}/><path d="M98 99 h4 l2.5 22 l-4.5 5 l-4.5 -5z" ${st('gold', true, 2)}/>
@@ -524,7 +547,7 @@ const CHARS = {
   }),
   C2: coach({
     name: 'مدرب بالتراك سوت', desc: 'بدلة تدريب خضراء بخطوط ذهبية، ولحية خفيفة وصافرة. مدرب الملعب والتدريب.',
-    tags: ['المباراة المباشرة', 'التدريب'], skin: 'bronze', iris: 'k', sleeve: 'em', stripe: 'gold',
+    tags: ['المباراة المباشرة', 'التدريب'], skin: 'bronze', iris: 'k', sleeve: 'em', stripe: 'gold', strands: 'M88 40 q12 -4 24 0',
     legs: 'em', legStripe: 'gold', shoe: 'white', shoeO: true,
     torso: `<path d="M72 100 Q100 90 128 100 Q136 106 133 120 L127 154 L73 154 L67 120 Q64 106 72 100Z" ${st('em')}/>
       <path d="M100 100 V154" ${ln('emD', 2.4)}/><path d="M88 94 Q100 100 112 94 L112 100 Q100 106 88 100Z" ${st('emD')}/>
@@ -541,7 +564,7 @@ const CHARS = {
       <path d="M100 112 V154" ${ln('chromeD', 2)}/><circle cx="105" cy="126" r="2.2" ${st('goldD', false)}/><circle cx="105" cy="140" r="2.2" ${st('goldD', false)}/>
       <path d="M88 100 L112 128" ${ln('em', 2)}/><rect x="108" y="126" width="12" height="15" rx="2" ${st('gold', true, 2)}/>`,
     hijab: `<path d="M76 68 Q72 28 100 28 Q128 28 124 68 L130 106 Q100 118 70 106Z" ${st('em')}/>`,
-    hijabFront: `<path d="M82 56 Q85 40 100 40 Q115 40 118 56" ${ln('emD', 3)}/><circle cx="121" cy="92" r="2.6" ${st('gold', false)}/>`,
+    hijabFront: `<path class="rich" d="M76 90 Q77 102 84 110 M124 90 Q123 102 116 110" style="fill:none;stroke:var(--k);stroke-opacity:.2;stroke-width:1.4;stroke-linecap:round"/><path d="M82 56 Q85 40 100 40 Q115 40 118 56" ${ln('emD', 3)}/><circle cx="121" cy="92" r="2.6" ${st('gold', false)}/>`,
   }),
 };
 
@@ -566,6 +589,15 @@ for (const [code, c] of Object.entries(CHARS)) {
   document.getElementById('g' + c.group).append(card);
   live.push({ code, el: card.querySelector('svg') });
 }
+const THREE_D = { C1: 'c1', C2: 'c2', C3: 'c3' };
+for (const [code, file] of Object.entries(THREE_D)) {
+  const c = CHARS[code];
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `<div class="stage"><img class="r3d" data-file="${file}" src="characters/${file}-joy.webp" width="340" height="442" alt="${code} ${c.name} بالأبعاد الثلاثة"></div>
+    <div class="info"><div class="title"><span class="code">${code}·3D</span><h3>${c.name}</h3></div><p class="muted">من Blender إلى Unity، بالحركة نفسها.</p></div>`;
+  document.getElementById('g3').append(card);
+}
 const fixed = { ctxA: ['A2', 'joy'], ctxB0: ['B3', 'idle'], ctxB: ['B1', 'think'], ctxC: ['C2', 'cheer'] };
 for (const [id, [code, mood]] of Object.entries(fixed)) document.getElementById(id).innerHTML = svg(code, mood);
 
@@ -575,6 +607,7 @@ function setMood(m) {
     el.querySelector('.face').innerHTML = face(m, CHARS[code].fo);
   }
   for (const b of document.querySelectorAll('.chip[data-m]')) b.setAttribute('aria-pressed', String(b.dataset.m === m));
+  for (const img of document.querySelectorAll('img.r3d')) img.src = `characters/${img.dataset.file}-${m}.webp`;
   const md = MOODS.find(x => x.id === m);
   document.getElementById('when').textContent = `${md.ar}: ${md.when}`;
 }
@@ -598,5 +631,9 @@ MOODS.forEach((md, i) => {
 });
 chips.append(autoBtn);
 document.getElementById('moodRows').innerHTML = MOODS.map(md => `<tr><td>${md.ar}</td><td>${md.when}</td><td><code>mood: "${md.ev}"</code></td></tr>`).join('');
+for (const n of [2, 3]) document.getElementById('lvl' + n).onclick = () => {
+  document.getElementById('main').className = 'lvl' + n;
+  for (const k of [2, 3]) document.getElementById('lvl' + k).setAttribute('aria-pressed', String(k === n));
+};
 idx = 1; setMood('joy');
 </script>
