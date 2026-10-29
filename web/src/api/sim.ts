@@ -88,6 +88,9 @@ export interface Tick {
   window?: boolean
   /** Live matches: when this minute starts, on the server clock (ms). */
   at?: number
+  /** League [E8.3]: the minute's start on the match's own clock (ms), and when the server made it (ms). */
+  match_time?: number
+  server_ts?: number
   teams?: Record<Side, TeamSnapshot>
   debug?: { initiative?: { rate: number; home_share: number } }
 }
@@ -101,6 +104,10 @@ export interface LiveSync {
   gap: boolean
   /** League (Sprint 20 W2): after a gap, the events of the minutes in between. */
   missed?: { tick: number; minute: number; events: MatchEvent[] }[]
+  /** League [E8.5]: after a gap, how many minutes were missed and their goals and red cards. */
+  summary?: LiveSummary | null
+  /** League [E8.7]: a server under load asks the screens to poll this seldom (ms); null for their own pace. */
+  poll_ms?: number | null
   ticks: Tick[]
   /** League: the assistant's notes to this coach (ENGINE 8.2). */
   readings?: Reading[]
@@ -109,6 +116,14 @@ export interface LiveSync {
   chat?: ChatLine[]
   /** League [UP17]: the break under way: its end, the coaches ready, and each side's injured player waiting. */
   pause?: { until: number; ready: Side[]; window: boolean; injured: Partial<Record<Side, number>> } | null
+}
+
+export interface LiveSummary {
+  from_tick: number
+  to_tick: number
+  minutes: number
+  goals: { minute: number; team: Side; scorer: number | null }[]
+  reds: { minute: number; team: Side; player: number | null }[]
 }
 
 export interface Reading { id: number; tick: number; minute: number; kind: string; text: string }

@@ -211,6 +211,9 @@ class MatchRunner
                 : MatchOrders::forMinute($id, $live['state'], MatchOrders::managers($id, $live['control']));
             [$state, $ball, $tick] = self::minute($live['state'], $live['ball'], $actions);
             $tick['at'] = $live['next_at'];
+            // [E8.3] L1: the minute's place on the match's own clock, and when the server made it.
+            $tick['match_time'] = MatchMinute::matchTime($tick['tick']);
+            $tick['server_ts'] = GameClock::nowMs();
             $live['state'] = $state;
             $live['ball'] = $ball;
             $live['events'] = [...$live['events'], ...self::tagged($tick)];

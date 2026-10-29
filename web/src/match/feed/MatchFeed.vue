@@ -93,6 +93,7 @@ import { t as tr } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, player as cartoon, setKits, setSmooth } from './art'
 import { noteFrame, smooth } from '../perf'
+import { segment } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
@@ -316,7 +317,7 @@ const lerp = (a, b, u) => a + (b - a) * u
 function drawTop(tick, u) {
   const f = tick?.frames
   if (!pitchSvg || !f?.length) return
-  const x = u * (f.length - 1), i = Math.min(f.length - 2, Math.floor(x)), k = f.length > 1 ? x - i : 0
+  const { i, k } = segment(f.length, u)
   const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
   const seen = new Set()
   for (const id in A.p) {
@@ -382,7 +383,7 @@ function tvFor(id, side) {
 function drawTv(tick, u) {
   const f = tick?.frames
   if (!pitchSvg || !f?.length) return
-  const x = u * (f.length - 1), i = Math.min(f.length - 2, Math.floor(x)), k = f.length > 1 ? x - i : 0
+  const { i, k } = segment(f.length, u)
   const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
   const bx = lerp(A.b[0], B.b[0], k), by = lerp(A.b[1], B.b[1], k), bz = lerp(A.b[2] ?? 0, B.b[2] ?? 0, k)
   // The camera pans after the ball, gently, and never past the ends of the pitch.

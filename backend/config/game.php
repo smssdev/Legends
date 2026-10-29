@@ -187,6 +187,18 @@ return [
         // time for every point beyond (at the potential ×3, one above ×5...), up to the ceiling.
         'over_potential_factor' => 2, 'ceiling' => 99],
     // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
+    // The live broadcast's server side [Sprint 21 E8], outside game.match so it never enters a match's snapshot.
+    'live' => [
+        // [E8.6] Back after a gap: the events of at most this many missed minutes in one reply (the summary covers the rest).
+        'missed_max_minutes' => 30,
+        // [E8.7] The degradation ladder under load (App\League\LiveDegrade): 1 drops the catch-up summary, 2 the
+        // commentator's voice, 3 tells the screens to poll every poll_ms. Also `php artisan matches:degrade`.
+        'degrade' => ['level' => (int) env('GAME_DEGRADE_LEVEL', 0), 'poll_ms' => 3000],
+    ],
+    // [Sprint 21 E8.7] logs:trim (hourly): a log over this size is kept as NAME.log.1 and starts again.
+    'logs' => ['max_mb' => 20],
+    // [Sprint 21 E8.1] sim:perf: one MatchMinute through simulateTick may take this long at p99 (one core). Tools only.
+    'perf' => ['tick_budget_ms' => 20],
     // Calibration targets for sim:balance (docs/ENGINE.md 9.1). Read by the tools only, never by the engine,
     // so they are not in a match's config_snapshot. Each is [min, max] per match (percentages as 0..100).
     'balance' => [

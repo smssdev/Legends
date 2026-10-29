@@ -4603,8 +4603,13 @@ export interface paths {
          * @description The server keeps the clock (each minute carries `at`, its start in server ms); minutes are announced on the private
          *     channel `match.{id}` (event `minute`) and fetched here. No hidden tactics of either side, except your own. Every
          *     event carries its Arabic commentary line in `text` (the same for everyone). After a gap (the last 20 minutes are
-         *     kept whole), `missed` gives the events of the minutes in between, so nothing is lost. `readings` is the
-         *     assistant's notes to you, the coach (also sent on `club.{id}`, event `reading`); other members get none.
+         *     kept whole), `missed` gives the events of the minutes in between, at most `game.live.missed_max_minutes` of
+         *     them (the latest), and `summary` the whole gap: one path for a hidden tab, a lost connection and joining late,
+         *     which jump to now [Sprint 21 E8.5, E8.6]. Each live minute (here and on the channel, L1 [E8.3]) carries
+         *     `match_time`, its start on the match's own clock in ms ((tick - 1) × 60000, so it only grows), and `server_ts`,
+         *     when the server made it. `readings` is the assistant's notes to you, the coach (also sent on `club.{id}`,
+         *     event `reading`); other members get none. Members only (404 for anyone else), rate limited. Under load the
+         *     server gives up, in order, the summary, the voice, then the pace (`poll_ms`) [E8.7].
          */
         get: {
             parameters: {
@@ -4640,9 +4645,30 @@ export interface paths {
                                     [key: string]: unknown;
                                 }[];
                             }[];
+                            /** @description [E8.5] After a gap: the minutes missed and their goals and red cards (null without a gap) */
+                            summary?: {
+                                from_tick: number;
+                                to_tick: number;
+                                minutes: number;
+                                goals: {
+                                    minute: number;
+                                    /** @enum {string} */
+                                    team: "home" | "away";
+                                    scorer: number | null;
+                                }[];
+                                reds: {
+                                    minute: number;
+                                    /** @enum {string} */
+                                    team: "home" | "away";
+                                    player: number | null;
+                                }[];
+                            } | null;
+                            /** @description Each with at, match_time and server_ts [E8.3] */
                             ticks: {
                                 [key: string]: unknown;
                             }[];
+                            /** @description [E8.7] Under load (degradation level 3): poll no more often than this (ms). Null otherwise */
+                            poll_ms?: number | null;
                             readings: components["schemas"]["MatchReading"][];
                             /** @description The latest reactions [X24] */
                             reactions?: components["schemas"]["BroadcastReaction"][];

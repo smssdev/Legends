@@ -83,6 +83,14 @@
           </div>
 
           <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" @done="replayTick = null" />
+          <!-- [E8.5] Back after a gap (a hidden tab, a lost connection, joining late): now, with what was missed. -->
+          <button v-if="caught" type="button" class="absolute inset-x-3 top-24 z-30 flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg bg-surface-raised/95 px-3 py-2 text-center text-sm font-bold" role="status" @click="caught = null">
+            <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
+            <span v-if="caught.goals.length || caught.reds.length" class="text-xs text-text-muted">
+              <span v-for="(g, i) in caught.goals" :key="'g' + i" class="me-2">⚽ {{ g.minute }}' {{ $nm(clubName(g.team)) }}</span>
+              <span v-for="(r, i) in caught.reds" :key="'r' + i" class="me-2">🟥 {{ r.minute }}' {{ $nm(clubName(r.team)) }}</span>
+            </span>
+          </button>
           <p v-if="offline" class="absolute inset-x-3 top-24 z-30 rounded-lg bg-warning/90 px-3 py-2 text-center text-sm font-bold text-bg-deep" role="status">{{ $t('انقطع الاتصال، نعيد المحاولة... ولن يفوتك شيء') }}</p>
         </section>
 
@@ -238,7 +246,7 @@ import MatchFeed from '../match/feed/MatchFeed.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
-import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
+import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
 import { Commentator, type Lang } from '../match/voice'
@@ -411,6 +419,9 @@ const playersById = computed(() => {
 // The assistant's notes to this coach (league), newest first.
 const readings = ref<Reading[]>([])
 const offline = ref(false)
+// [E8.5] What a gap missed, shown for a few seconds after the jump to now.
+const caught = ref<LiveSummary | null>(null)
+let caughtTimer = 0
 const nameOf = (side: Side, id?: number) => teams.value[side]?.players.find((p) => p.id === id)?.name ?? ''
 const clubName = (side: Side) => view.value?.clubs[side].name ?? ''
 
@@ -784,6 +795,12 @@ function handleSync(r: LiveSync): number {
   pause.value = r.pause ?? null
   if (r.pause) resumeAt = r.pause.until
   // Back after a gap: the minutes missed tell their events in the feed, then the latest minutes play on.
+  // One path for a hidden tab, a lost connection and joining late [E8.5]: jump to now, with a summary of the gap.
+  if (r.gap && r.summary && r.summary.minutes > 0 && r.summary.to_tick > seen) {
+    caught.value = r.summary
+    clearTimeout(caughtTimer)
+    caughtTimer = window.setTimeout(() => (caught.value = null), 8000)
+  }
   for (const m of r.missed ?? []) {
     if (m.tick <= seen) continue
     seen = m.tick
@@ -816,7 +833,8 @@ function handleSync(r: LiveSync): number {
   for (const x of r.reactions ?? []) receive(x)
   for (const c of r.chat ?? []) hear(c)
   const left = r.next_at === null ? 1500 : r.next_at - r.server_now - 1100
-  return Math.min(1000, Math.max(250, left))
+  // [E8.7] A server under load asks for fewer polls.
+  return Math.max(r.poll_ms ?? 0, Math.min(1000, Math.max(250, left)))
 }
 
 // Countdown to the kick-off and to the second half, on the shared clock.
@@ -999,6 +1017,7 @@ onBeforeUnmount(() => {
   window.clearInterval(othersTimer)
   window.clearInterval(cheerTimer)
   clearTimeout(timer)
+  clearTimeout(caughtTimer)
   clearTimeout(pollTimer)
   clearInterval(clockTimer)
   playTimers.forEach((_, id) => clearTimeout(id))

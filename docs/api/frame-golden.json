@@ -1,0 +1,27 @@
+{
+  "about": "Golden vectors for turning a MatchMinute's Keyframes into RenderFrames [Sprint 21 E8.4]. u is the minute's progress on the match clock (0..1), clamped: past the end the last Keyframe holds, no extrapolation. Between Keyframe i and i + 1 the position is linear in k; a player missing from Keyframe i + 1 stays where he was in i. The cartoon player checks them in every build (web/scripts/frames.mjs); Unity's MatchScene.Segment must give the same.",
+  "segments": [
+    { "count": 6, "u": 0, "i": 0, "k": 0 },
+    { "count": 6, "u": 0.1, "i": 0, "k": 0.5 },
+    { "count": 6, "u": 0.5, "i": 2, "k": 0.5 },
+    { "count": 6, "u": 0.9, "i": 4, "k": 0.5 },
+    { "count": 6, "u": 1, "i": 4, "k": 1 },
+    { "count": 6, "u": 1.7, "i": 4, "k": 1 },
+    { "count": 6, "u": -0.3, "i": 0, "k": 0 },
+    { "count": 2, "u": 0.25, "i": 0, "k": 0.25 },
+    { "count": 1, "u": 0.6, "i": 0, "k": 0 },
+    { "count": 0, "u": 0.6, "i": 0, "k": 0 }
+  ],
+  "frames": [
+    { "b": [525, 340, 0], "p": { "7": [500, 300], "9": [600, 400] } },
+    { "b": [625, 340, 40], "p": { "7": [520, 320], "9": [580, 380] } },
+    { "b": [725, 300], "p": { "7": [540, 340] } }
+  ],
+  "samples": [
+    { "u": 0, "ball": [525, 340, 0], "players": { "7": [500, 300], "9": [600, 400] } },
+    { "u": 0.25, "ball": [575, 340, 20], "players": { "7": [510, 310], "9": [590, 390] } },
+    { "u": 0.75, "ball": [675, 320, 20], "players": { "7": [530, 330], "9": [580, 380] } },
+    { "u": 1, "ball": [725, 300, 0], "players": { "7": [540, 340], "9": [580, 380] } },
+    { "u": 2, "ball": [725, 300, 0], "players": { "7": [540, 340], "9": [580, 380] } }
+  ]
+}

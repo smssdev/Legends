@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
+use App\League\LiveDegrade;
 use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\Models\User;
@@ -158,5 +159,75 @@ class MatchCommentaryTest extends TestCase
         }
         // The half-time events are kept in the database, the rest in the cache: both come back.
         $this->assertGreaterThan(0, DB::table('match_events')->where('match_id', $match->id)->count());
+    }
+
+    public function test_each_minute_carries_its_match_time_and_server_time_built_once_for_everyone(): void
+    {
+        Event::fake([MatchMinute::class]);
+        $match = $this->kickOff();
+        $this->playTo($match->id, 50);
+
+        // [E8.3] L1: the match's own clock only grows (stoppage minutes too), and the server made each minute before it starts.
+        $sent = Event::dispatched(MatchMinute::class)->map(fn ($e) => $e[0]->broadcastWith())->where('match_id', $match->id)->values();
+        $this->assertGreaterThanOrEqual(50, $sent->count());
+        foreach ($sent as $i => $p) {
+            $this->assertSame(($p['tick'] - 1) * 60_000, $p['match_time']);
+            $this->assertIsInt($p['server_ts']);
+            $this->assertLessThanOrEqual($p['at'], $p['server_ts']);
+            if ($i > 0) {
+                $this->assertGreaterThan($sent[$i - 1]['match_time'], $p['match_time']);
+            }
+        }
+        // One payload for the channel: the same bytes whoever receives it, with no side's tactics.
+        $e = Event::dispatched(MatchMinute::class)->first()[0];
+        $this->assertSame(json_encode($e->broadcastWith()), json_encode($e->broadcastWith()));
+        $this->assertSame('private-match.'.$match->id, $e->broadcastOn()->name);
+        // The poll gives the same two fields on its minutes.
+        $r = $this->getJson("/api/v1/matches/{$match->id}/live?since=45")->assertOk()->json();
+        $this->assertSame(($r['ticks'][0]['tick'] - 1) * 60_000, $r['ticks'][0]['match_time']);
+        $this->assertArrayHasKey('server_ts', $r['ticks'][0]);
+    }
+
+    public function test_a_late_join_jumps_to_now_with_a_summary_and_a_capped_catch_up(): void
+    {
+        Event::fake([MatchMinute::class, ClubReading::class]);
+        $match = $this->kickOff();
+        $this->playTo($match->id, 70);
+        config(['game.live.missed_max_minutes' => 5]);
+        [, $all] = MatchReplay::run(DB::table('matches')->where('id', $match->id)->first());
+
+        // [E8.5] Joining late (since 0), like a hidden tab or a lost connection: the latest minutes whole, the summary
+        // of every missed one (each goal and red card), and the events of no more than the cap [E8.6].
+        $r = $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk()->json();
+        $first = $r['ticks'][0]['tick'];
+        $this->assertTrue($r['gap']);
+        $this->assertSame(['from_tick' => 1, 'to_tick' => $first - 1, 'minutes' => $first - 1], array_slice($r['summary'], 0, 3));
+        $goals = collect($all)->filter(fn ($t) => $t['tick'] < $first)->flatMap(fn ($t) => array_filter($t['events'], fn ($e) => $e['type'] === 'goal'))->values();
+        $this->assertSame($goals->pluck('team')->all(), array_column($r['summary']['goals'], 'team'));
+        // The latest missed minutes that had events, just before the whole ones.
+        $latest = collect($all)->filter(fn ($t) => $t['tick'] < $first && $t['events'])->pluck('tick')->slice(-5)->values()->all();
+        $this->assertSame($latest, array_column($r['missed'], 'tick'));
+        // No gap, no summary.
+        $this->assertNull($this->getJson("/api/v1/matches/{$match->id}/live?since=".($first - 1))->json('summary'));
+        // A nonsense cursor is read as the start, not an error.
+        $this->getJson("/api/v1/matches/{$match->id}/live?since=-5")->assertOk()->assertJsonPath('gap', true);
+        // [E8.7] Under load the summary is the first thing given up: still a jump to now, the latest minutes whole.
+        LiveDegrade::set(1);
+        $r = $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk()->json();
+        $this->assertSame([true, null, []], [$r['gap'], $r['summary'], $r['missed']]);
+        $this->assertNotEmpty($r['ticks']);
+        LiveDegrade::set(null);
+    }
+
+    public function test_catching_up_is_for_members_only_and_rate_limited(): void
+    {
+        $match = $this->kickOff();
+        $this->playTo($match->id, 5);
+        // [E8.6] An outsider learns nothing, not even that the match exists.
+        $this->actingAs(User::factory()->create())->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertNotFound();
+        $this->actingAs(User::factory()->create())->getJson("/api/v1/matches/{$match->id}/replay")->assertNotFound();
+        $limits = collect(app('router')->getRoutes()->getRoutes())->filter(fn ($r) => in_array($r->uri(), ['api/v1/matches/{match}/live', 'api/v1/matches/{match}/replay'], true))
+            ->map(fn ($r) => collect($r->gatherMiddleware())->first(fn ($m) => str_starts_with($m, 'throttle:')));
+        $this->assertCount(2, $limits->filter());
     }
 }
