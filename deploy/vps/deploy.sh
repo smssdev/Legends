@@ -8,6 +8,15 @@ HOST="${LEGENDS_HOST:-root@2.24.47.100}"
 KEY="${LEGENDS_KEY:-$HOME/.ssh/legends_vps}"
 ssh_() { ssh -i "$KEY" -o BatchMode=yes "$HOST" "$@"; }
 
+# The admin panel's "safe to deploy" [X33], asked of the running game: no match live now or kicking off within 30
+# minutes (a rebuild restarts the game). LEGENDS_FORCE=1 deploys anyway. A first deploy (no game yet) goes on.
+busy=$(ssh_ 'docker exec legends-app-1 php artisan matches:live --soon=30 2>/dev/null || echo 0' | tail -n 1)
+if [ "${busy:-0}" -gt 0 ] 2>/dev/null && [ "${LEGENDS_FORCE:-0}" != "1" ]; then
+  echo "Not safe to deploy: ${busy} match(es) live or kicking off within 30 minutes. Try again after them (or LEGENDS_FORCE=1)."
+  exit 2
+fi
+echo "Safe to deploy: no match live or due within 30 minutes."
+
 # [Sprint 21 E8.7] The disk first: a build needs room, and a full disk stops the database. Under 2 GB free, stop here.
 ssh_ 'free=$(df -Pm / | awk "NR==2 {print \$4}"); echo "Disk: ${free} MB free"; [ "$free" -ge 2048 ] || {
   echo "Under 2 GB free: clean up first (docker image prune -a, docker builder prune). The pgdata volume is never touched."; exit 1; }'

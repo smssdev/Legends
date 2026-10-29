@@ -27,7 +27,7 @@
 | 4 | **حساب حمزة** | حمزة | يسجل بـ `darkelmasry@gmail.com` (أو بجوجل)، فيصير Owner-Hamza مديراً تلقائياً |
 | 5 | **التجربة الكاملة** | سليمان وحمزة والأصدقاء | دوري حقيقي على السيرفر: القفل، والمباريات المباشرة، والتقارير، والسوق، والتدريب. وكل خطأ يُرسل لـ Claude مع لقطة شاشة |
 | 6 | **مراجعة تقييمات لاعبي الدوريات العربية** (X34) | سليمان وحمزة | `data/arab/arab_players_review.csv`: عمود `overallRating`، ويُرسل الملف المعدّل لـ Claude |
-| 7 | **اختبار Sprint 21 وحذف فرعه الباقي** | حمزة وسليمان | حمزة يختبر حسب «ما يختبره حمزة» في [ملف السبرنت](sprints/21-owner-updates2.md). وسليمان يحذف الفرع البعيد `claude/sprint21-e8` (GitHub ← Branches)، ثم ينشر حين تقول اللوحة «آمن للنشر» |
+| 7 | **اختبار Sprint 21 وحذف فرعه الباقي** | حمزة وسليمان | حمزة يختبر حسب «ما يختبره حمزة» في [ملف السبرنت](sprints/21-owner-updates2.md). وسليمان يحذف الفروع البعيدة `claude/*` المدموجة (GitHub ← Branches)، ثم **ينشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd`** (يرفض وحده إن كانت مباراة حية) |
 
 ## 0. القرارات الثابتة (صاحب المشروع)
 
@@ -442,7 +442,7 @@ unity/
 | **اللعبة** | صورة واحدة (`Dockerfile` و`deploy/docker/start.sh`) بجانب **PostgreSQL 17** في حاوية، وبياناته في volume `pgdata` لا يُمس عند النشر (`deploy/vps/compose.yml`). وفي الحاوية: الموقع، والطابور، والمجدول، و`matches:run`، وReverb |
 | **CloudPanel** | موقع Reverse Proxy يستقبل HTTPS ويمرره إلى `127.0.0.1:8000`، و`/app` و`/apps` إلى Reverb على 8080 (في ملف الموقع وقالب CloudPanel) |
 | **الدخول** | مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان، مضاف في hPanel ← VPS ← Settings ← SSH keys. لا كلمات مرور |
-| **النشر** | من جذر المستودع على جهاز سليمان: `sh deploy/vps/deploy.sh`. يرسل الكود المحفوظ في git (HEAD) عبر SSH، ثم يبني ويعيد التشغيل، والقاعدة باقية. وقبل الترحيلات نسخة في volume `backups`. **يُنشر حين تقول لوحة الإدارة «آمن للنشر»** |
+| **النشر** | **بنقرة مزدوجة على جهاز سليمان:** `deploy\vps\Deploy-GLM.cmd` (X53). يأخذ آخر `main` من GitHub، ثم يشغّل `deploy/vps/deploy.sh`، ثم يسأل `/api/v1/health` ويقول إن كانت اللعبة تجيب. و`deploy.sh` نفسه يرفض النشر حين تكون مباراة حية أو تبدأ خلال 30 دقيقة (كـ «آمن للنشر» في لوحة الإدارة، و`-Force` يتجاوزه)، ثم يرسل الكود عبر SSH ويبني ويعيد التشغيل، والقاعدة باقية. وقبل الترحيلات نسخة في volume `backups` |
 | **النسخ اليومي** | `legends-backup` الساعة 03:00 بتوقيت القاهرة: القاعدة كاملة في `/opt/legends/backups` (آخر 14)، وفي B2 (`vps-backups/`، آخر 30 يوماً) حين توجد مفاتيحه |
 | **السجلات** | `ssh -i ~/.ssh/legends_vps root@2.24.47.100 docker logs --tail 50 legends-app-1`. ومخرجات الحاويتين خمسة ملفات من 10 ميجا على الأكثر، وسجلات اللعبة (`storage/logs`) تُدوَّر كل ساعة فوق 20 ميجا (`logs:trim`) (Sprint 21 E8.7) |
 | **الحماية** (E8.7) | **سلم التدهور** للبث المباشر تحت الضغط، بالترتيب: (1) بلا ملخص العودة، (2) وبلا صوت المعلق، (3) وتطلب الشاشات كل 3 ثوانٍ. والمباراة نفسها لا تتدهور أبداً. يدوي: `docker exec legends-app-1 php artisan matches:degrade 2` (و`--reset`)، أو `GAME_DEGRADE_LEVEL`. **والقرص:** النشر يتوقف تحت 2 جيجا فارغة، وفحص الصحة كل 5 دقائق ينبه الجوال (ntfy) تحت 1 جيجا. **والإعادات** لا تُخزن مشاهد: تُعاد من لقطة البداية والأوامر (بضعة كيلوبايت للمباراة)، وتُحفظ كلها ولا يُحذف منها شيء (القسم 11) |
@@ -596,6 +596,6 @@ unity/
   - البيانات: `data:import --version=2026` و`data:summary` و`data:value`.
   - التشغيل: `matches:run` و`matches:live` و`matches:load-test` و`db:backup` و`db:restore` و`push:keys`، و`matches:degrade` (سلم التدهور) و`logs:trim` (تدوير السجلات).
 - **من `web/`:** `npm run dev`، و`npm run build` (يولّد `tokens.css`)، و`npm run api` (بعد أي تغيير في العقد).
-- **السيرفر (من جذر المستودع على جهاز سليمان):** `sh deploy/vps/deploy.sh` للنشر. وعلى السيرفر: `legends-set الاسم` لمفتاح، و`legends-backup` لنسخة الآن.
+- **السيرفر (على جهاز سليمان):** نقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` للنشر (أو `sh deploy/vps/deploy.sh` من جذر المستودع). وعلى السيرفر: `legends-set الاسم` لمفتاح، و`legends-backup` لنسخة الآن.
 - **الصوت:** `python3 tools/commentary/generate.py` (المعلق الإنجليزي).
 - **Unity (على جهاز سليمان):** `unity/build.ps1 install | setup | demo | capture | test | webgl | android`، و`python3 tools/unity/crowd_textures.py` (خامات الجمهور).
