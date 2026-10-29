@@ -180,14 +180,15 @@ class MarketController extends Controller
         $hours = fn (int $price, object $p) => intdiv(intdiv(Buyer::wait($price, (int) $p->value, $league->id, $scale, (int) $p->age, (int) $p->overall + (int) $p->training_bonus) * 10000, $mad) + 1800, 3600);
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
-            ->orderByDesc('players.value')->get(['players.id', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'players.overall', 'players.training_bonus', 'players.value'])
+            ->orderByDesc('players.value')->get(['players.id', 'players.club_id', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'players.overall', 'players.training_bonus', 'players.value', 'players.base_value', 'players.bought_for'])
             ->map(function ($p) use ($club, $league, $cfg, $listed, $bought, $room, $fair, $mad, $hours) {
-                $cap = Buyer::cap($p, $club->id, isset($bought[$p->id]), $room);
+                $cap = Buyer::cap($p, $club->id, $room, $bought);
                 $l = $listed[$p->id] ?? null;
 
                 return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'overall' => (int) $p->overall + (int) $p->training_bonus,
-                    'value' => (int) $p->value, 'floor' => Buyer::floor($p), 'cap' => $cap,
-                    'quick' => ['pays' => (int) $p->value, 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000), fair: $fair)],
+                    // [Sprint 23] His cost (what the club paid, or his value at the season's start): the profit is counted from it.
+                    'value' => (int) $p->value, 'cost' => Buyer::basis($p, $bought), 'floor' => Buyer::floor($p, $cap), 'cap' => $cap,
+                    'quick' => ['pays' => Buyer::quickPays($p, $club->id, $room, $bought), 'fee' => Price::quote($league->id, 'quick_sale', intdiv((int) $p->value * $cfg['quick_sale_fee_bp'], 10000), fair: $fair)],
                     // About how long the outside buyer takes, at his value and at his cap (his age and rating, and a madness, counted).
                     'wait_hours' => ['value' => $hours((int) $p->value, $p), 'cap' => $hours($cap, $p)],
                     'listed' => $l ? ['price' => (int) $l->price, 'sells_at' => $l->sells_at ? Buyer::effectiveAt($l, $mad)->toIso8601ZuluString() : null] : null,
@@ -202,7 +203,8 @@ class MarketController extends Controller
         $data = $request->validate(['player_id' => 'required|integer', 'price' => 'required|integer|min:1']);
         $p = DB::table('players')->where('id', $data['player_id'])->where('club_id', $club->id)->first();
         abort_unless($p, 404, 'اللاعب ليس في فريقك.');
-        [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $club->id)];
+        $cap = Buyer::cap($p, $club->id);
+        $floor = Buyer::floor($p, $cap);
         $age = (int) DB::table('master_players')->where('id', $p->master_player_id)->value('age');
         $wait = Buyer::wait(min($cap, max($floor, $data['price'])), (int) $p->value, $league->id, null, $age, (int) $p->overall + (int) $p->training_bonus);
 

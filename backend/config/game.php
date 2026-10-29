@@ -141,11 +141,13 @@ return [
             // age (up to) => wait bp, and rating (up to) => wait bp
             'demand_age' => [21 => 7000, 23 => 8000, 27 => 10000, 30 => 12500, 99 => 16000],
             'demand_overall' => [64 => 14000, 69 => 11000, 85 => 8500, 99 => 10000]],
-        // [Sprint 23] What keeps the economy whole at 250%: a club lists at most max_listings players at a time, and
-        // what outside buyers pay above the value in a season (with what its other listings already ask above it)
-        // stays under this share of the league's money scale, about half a season's income; the cap shrinks to fit.
+        // [Sprint 23] What keeps the economy whole at 250%, with age in training and the events: a club lists at most
+        // max_listings players at a time, and its profit selling outside the league in a season (over what it paid,
+        // or the value at the season's start for its own; with what its listings already ask over it) stays under
+        // this share of the league's money scale, about a season's gate and sponsors (sim:economy). The cap of a
+        // listing and the instant sale's pay shrink to fit (App\Market\Buyer).
         'max_listings' => 4,
-        'outside_premium_bp_per_season' => 400,
+        'sale_profit_bp_per_season' => 500,
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
         // Wages: this share of the squad's value over a season, paid each league round.

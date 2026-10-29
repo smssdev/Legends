@@ -42,21 +42,7 @@ class SeasonSim
             $book[$to]['balance'] += $moved;
         }
 
-        $trader = $scenario['trader'] ?? null;
-        $half = intdiv($nRounds, 2);
         foreach ($rounds as $r => $round) {
-            // The trader buys half his money's worth from the pool at the start of each window, trains him all
-            // the way (his value rises; the pool ignores it), and sells him back to the pool before the next one.
-            if ($trader && ($r === 0 || $r === $half)) {
-                if ($r === $half) {
-                    $this->traderSells($trader, $clubs, $book);
-                }
-                $v = intdiv(max(0, $book[$trader]['balance']), 2);
-                $clubs[$trader]['players'][] = $v;
-                $clubs[$trader]['traded'] = $v;
-                $book[$trader]['balance'] -= $v;
-                $book[$trader]['bought'] += $v;
-            }
             foreach ($round['matches'] as [$home, $away]) {
                 $score = $play($home, $away, $r + 1);
                 $won = $score['home'] > $score['away'];
@@ -90,13 +76,10 @@ class SeasonSim
             }
         }
 
-        if ($trader) {
-            $this->traderSells($trader, $clubs, $book);
-        }
-        // [Sprint 23] The lister sells his own players to outside buyers at up to 250% all season, and buys their
-        // like back from the pool at their value: at most the season's room above the value is his gain.
-        if ($lister = $scenario['lister'] ?? null) {
-            $premium = intdiv($scale * (int) ($this->cfg['outside_premium_bp_per_season'] ?? 0), 10000);
+        // [Sprint 23] The dealer makes every profit selling outside there is: his own players at up to 250%, young
+        // ones bought, trained and sold, the events' discounts. At most the season's profit room is his gain.
+        if ($lister = $scenario['dealer'] ?? null) {
+            $premium = intdiv($scale * (int) ($this->cfg['sale_profit_bp_per_season'] ?? 0), 10000);
             $book[$lister]['balance'] += $premium;
             $book[$lister]['income'] += $premium;
             $book[$lister]['premium'] = $premium;
@@ -112,22 +95,6 @@ class SeasonSim
 
         return ['scale' => $scale, 'rounds' => $nRounds, 'budget' => $budget, 'moved' => $moved, 'clubs' => $book,
             'squad' => array_map(fn ($c) => array_sum($c['players']), $clubs), 'size' => array_map(fn ($c) => count($c['players']), $clubs)];
-    }
-
-    /** The trader's player goes back to the pool: 70% of his base value, whatever his training added. */
-    private function traderSells(int $id, array &$clubs, array &$book): void
-    {
-        $v = $clubs[$id]['traded'] ?? null;
-        if ($v === null) {
-            return;
-        }
-        $at = array_search($v, $clubs[$id]['players'], true);
-        if ($at !== false) {
-            array_splice($clubs[$id]['players'], $at, 1);
-            $book[$id]['balance'] += $this->money->poolPays($v);
-            $book[$id]['traded'] = ($book[$id]['traded'] ?? 0) + $this->money->poolPays($v) - $v;
-        }
-        unset($clubs[$id]['traded']);
     }
 
     /** As Economy: below zero for the limit of league rounds, the dearest players go to the pool. */

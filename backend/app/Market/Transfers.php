@@ -43,7 +43,8 @@ class Transfers
         if (DB::table('transfer_listings')->where('club_id', $clubId)->where('player_id', '!=', $playerId)->count() >= $max) {
             throw new HttpException(422, sprintf(__('تعرض %d لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.'), $max));
         }
-        [$floor, $cap] = [Buyer::floor($p), Buyer::cap($p, $clubId)];
+        $cap = Buyer::cap($p, $clubId);
+        $floor = Buyer::floor($p, $cap);
         if ($price < $floor || $price > $cap) {
             throw new HttpException(422, sprintf('سعر البيع من %s إلى سقف هذا اللاعب %s.', number_format($floor), number_format($cap)));
         }
@@ -115,7 +116,8 @@ class Transfers
             $now = GameClock::now();
             foreach ([[$in, $to->id, $from->id], [$out, $from->id, $to->id]] as [$players, $was, $goes]) {
                 foreach ($players as $p) {
-                    if (DB::table('players')->where('id', $p)->where('club_id', $was)->update(['club_id' => $goes, 'updated_at' => $now]) !== 1) {
+                    // [Sprint 23] His cost to his new club: his value now (a trade's money is not split by player).
+                    if (DB::table('players')->where('id', $p)->where('club_id', $was)->update(['club_id' => $goes, 'bought_for' => DB::raw('value'), 'updated_at' => $now]) !== 1) {
                         throw new HttpException(409, 'أحد لاعبي العرض لم يعد متاحاً.');
                     }
                 }

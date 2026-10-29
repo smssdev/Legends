@@ -3581,7 +3581,7 @@ export interface paths {
         put?: never;
         /**
          * List one of my players at my price (50% of his value to his sale cap)
-         * @description [Sprint 23] The cap is 250% of his value, or his value for a player the club bought, and never more than the season's room above the value for outside buyers (outside_premium_bp_per_season of the money scale, less what they paid and what the club's other listings ask above it). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: what is above the value as its own line (listing_premium).
+         * @description [Sprint 23] The cap is 250% of his value, and never more than his cost (what the club paid, or his value at the season's start) plus the season's profit room (sale_profit_bp_per_season of the money scale, less the profit made selling outside and what the club's other listings ask over their cost). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: the profit over his cost as its own line (sale_profit), as for the instant sale.
          */
         post: {
             parameters: {
@@ -8971,12 +8971,15 @@ export interface components {
                 overall: number;
                 /** @description His value now */
                 value: number;
+                /** @description [Sprint 23] His cost to the club (what it paid, or his value at the season's start): the profit of selling him outside is counted from it */
+                cost?: number;
                 /** @description The least a listing asks */
                 floor: number;
-                /** @description The most a listing asks (his sale cap) */
+                /** @description The most a listing asks: 250% of his value, within the season's profit room [Sprint 23] */
                 cap: number;
                 /** @description The instant sale */
                 quick: {
+                    /** @description His value, within the season's profit room [Sprint 23] */
                     pays: number;
                     fee: {
                         /** @enum {string} */
@@ -8995,11 +8998,11 @@ export interface components {
                     sells_at: string | null;
                 } | null;
             }[];
-            /** @description [Sprint 23] Listing: how many at once, how many now, and the season's room above the value for outside buyers */
+            /** @description [Sprint 23] Listing: how many at once, how many now, and the season's profit room selling outside the league */
             selling?: {
                 max_listings: number;
                 listed: number;
-                /** @description What is left of the allowance */
+                /** @description What is left of the season's profit room, less what the listings ask over their cost */
                 room: number;
                 allowance: number;
             };

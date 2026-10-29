@@ -162,7 +162,7 @@ class Market
             // The player is this buyer's only if nobody took him first.
             $taken = DB::table('players')->where('id', $playerId)
                 ->where(fn ($q) => $from === null ? $q->whereNull('club_id')->where(fn ($q) => $q->where('in_pool', true)->orWhere('scouted_by', $clubId)) : $q->where('club_id', $from))
-                ->update(['club_id' => $clubId, 'in_pool' => false, 'scouted_by' => null, 'pool_kind' => null, 'pool_price_bp' => null, 'updated_at' => GameClock::now()]);
+                ->update(['club_id' => $clubId, 'in_pool' => false, 'scouted_by' => null, 'pool_kind' => null, 'pool_price_bp' => null, 'bought_for' => $price, 'updated_at' => GameClock::now()]);
             if ($taken !== 1) {
                 throw new HttpException(409, 'سبقك مدرب آخر إلى هذا اللاعب.');
             }
@@ -200,7 +200,8 @@ class Market
         MatchPrep::assertFree([$playerId]);
 
         return DB::transaction(function () use ($clubId, $playerId, $key) {
-            $done = DB::table('club_transactions')->where('idempotency_key', $key)->first();
+            // Done already: the balance after its last line (the profit's, when it made one) [Sprint 23].
+            $done = DB::table('club_transactions')->whereIn('idempotency_key', [$key, "{$key}:profit"])->orderByDesc('id')->first();
             if ($done) {
                 return (int) $done->balance_after;
             }
@@ -209,6 +210,8 @@ class Market
             $p = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->first();
             abort_unless($p, 404, __('اللاعب ليس في فريقك.'));
             self::assertKeeps($clubId, $p, (int) config('game.economy.min_squad'), __('لا يمكن أن ينزل فريقك عن %d لاعباً.'));
+            // [Sprint 23] His value, within the season's profit room.
+            $pays = Buyer::quickPays($p, $clubId);
             $fee = intdiv((int) $p->value * (int) config('game.economy.quick_sale_fee_bp'), 10000);
             Price::charge($clubId, 'quick_sale', $fee, "{$key}:fee", "player:{$playerId}");
             $sold = DB::table('players')->where('id', $playerId)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
@@ -217,7 +220,7 @@ class Market
             }
             Transfers::left($playerId, $clubId);
 
-            return ClubLedger::post($clubId, 'pool_sale', (int) $p->value, $key, "player:{$playerId}");
+            return Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
         });
     }
 

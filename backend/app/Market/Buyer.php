@@ -11,55 +11,93 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Selling a player [X6, 2026-10-24]. Every player has a sale cap: 250% of his value [Sprint 23], or his value alone
- * when the club bought him (so buying and selling on never makes money from nothing; his training gains still
- * count, since training raises his value). A coach lists up to max_listings players at any price from half the
- * value to the cap, and a buyer from outside the league takes each at that price after a wait: an hour at half
- * his value, six at his value, eight days at the cap, moved by his age and rating (the buyer's demand), scaled by
- * the season's length, a little random, and shorter in a transfer madness. Every listed player is sold in the
- * end; another coach may still buy him first. What the outside buyers pay a club above the value in a season is
- * capped (outside_premium_bp_per_season of the league's money scale), so the cap shrinks once it is spent.
+ * Selling a player [X6, 2026-10-24]. A coach lists up to max_listings players at any price from half the value to
+ * the cap, and a buyer from outside the league takes each at that price after a wait: an hour at half his value, six
+ * at his value, eight days at the cap, moved by his age and rating (the buyer's demand), scaled by the season's
+ * length, a little random, and shorter in a transfer madness. Every listed player is sold in the end; another coach
+ * may still buy him first.
+ * The economy [Sprint 23, the owner's decision 2026-10-29]: what a club makes selling outside the league (to the
+ * outside buyers and the instant sale) is its profit over the player's cost: what it paid for him (bought_for), or
+ * his value when the season began for one of its own. That profit, from training, from a discount, or from asking up
+ * to 250%, is capped in a season (sale_profit_bp_per_season of the league's money scale): the cap of a listing and
+ * the instant sale's pay shrink to fit what is left of it.
  */
 class Buyer
 {
-    /** The most a player listed by this club may ask: within the season's room above the value too. */
-    public static function cap(object $player, int $clubId, ?bool $bought = null, ?array $room = null): int
+    /**
+     * What this player cost his club: what it paid, his value when it bought him before Sprint 23 (not kept then), or
+     * for one of its own his value when the season began.
+     */
+    public static function basis(object $player, ?array $bought = null): int
     {
-        $bought ??= DB::table('club_transactions')->where('club_id', $clubId)->where('reference', "player:{$player->id}")
-            ->whereIn('type', ['pool_buy', 'bot_buy'])->exists()
-            || DB::table('player_moves')->where('player_id', $player->id)->where('to_club_id', $clubId)->exists();
-        $value = (int) $player->value;
-        if ($bought) {
-            return $value;
+        if (($player->bought_for ?? null) !== null) {
+            return (int) $player->bought_for;
         }
-        $room ??= self::room($clubId);
-        // His own listing's ask does not count against him.
-        $left = $room['left'] + ($room['reserved'][$player->id] ?? 0);
+        $bought ??= self::boughtIds((int) $player->club_id);
 
-        return max($value, min(intdiv($value * (int) config('game.economy.sale_cap_bp'), 10000), $value + $left));
+        return isset($bought[$player->id]) ? (int) $player->value : (int) ($player->base_value ?? $player->value);
+    }
+
+    /** The most a player listed by this club may ask: up to 250% of his value, within the season's profit room. */
+    public static function cap(object $player, int $clubId, ?array $room = null, ?array $bought = null): int
+    {
+        $value = (int) $player->value;
+        $room ??= self::room($clubId);
+
+        return max(1, min(intdiv($value * (int) config('game.economy.sale_cap_bp'), 10000), self::basis($player, $bought) + self::leftFor($room, (int) $player->id)));
+    }
+
+    /** What the instant sale pays now: his value, within the season's profit room. */
+    public static function quickPays(object $player, int $clubId, ?array $room = null, ?array $bought = null): int
+    {
+        $room ??= self::room($clubId);
+
+        return min((int) $player->value, self::basis($player, $bought) + self::leftFor($room, (int) $player->id));
+    }
+
+    /** The room left for this player: his own listing's ask does not count against him. */
+    private static function leftFor(array $room, int $playerId): int
+    {
+        return $room['left'] + ($room['reserved'][$playerId] ?? 0);
     }
 
     /**
-     * The room above the value outside buyers may still pay this club this season: the allowance, less what they
-     * paid above it already, less what its listings ask above it (reserved, by player).
+     * The profit room this club still has this season: the allowance, less the profit it made selling outside
+     * already, less what its listings ask over their players' cost (reserved, by player).
      *
      * @return array{allowance: int, used: int, reserved: array<int, int>, left: int}
      */
     public static function room(int $clubId): array
     {
         $club = DB::table('clubs')->where('id', $clubId)->first(['league_id']);
-        $allowance = intdiv(Economy::scale((int) $club->league_id) * (int) config('game.economy.outside_premium_bp_per_season'), 10000);
+        $allowance = intdiv(Economy::scale((int) $club->league_id) * (int) config('game.economy.sale_profit_bp_per_season'), 10000);
         $since = DB::table('seasons')->where('league_id', $club->league_id)->orderByDesc('number')->value('starts_at');
-        $used = (int) DB::table('club_transactions')->where('club_id', $clubId)->where('type', 'listing_premium')
+        $used = (int) DB::table('club_transactions')->where('club_id', $clubId)->where('type', 'sale_profit')
             ->when($since, fn ($q) => $q->where('created_at', '>=', $since))->sum('amount');
-        $reserved = DB::table('transfer_listings')->join('players', 'players.id', '=', 'transfer_listings.player_id')
-            ->where('transfer_listings.club_id', $clubId)->get(['transfer_listings.player_id', 'transfer_listings.price', 'players.value'])
-            ->mapWithKeys(fn ($l) => [(int) $l->player_id => max(0, (int) $l->price - (int) $l->value)])->all();
+        $listed = DB::table('transfer_listings')->join('players', 'players.id', '=', 'transfer_listings.player_id')
+            ->where('transfer_listings.club_id', $clubId)->get(['transfer_listings.price', 'players.id', 'players.club_id', 'players.value', 'players.base_value', 'players.bought_for']);
+        $bought = $listed->isEmpty() ? [] : self::boughtIds($clubId);
+        $reserved = $listed->mapWithKeys(fn ($l) => [(int) $l->id => max(0, (int) $l->price - self::basis($l, $bought))])->all();
 
         return ['allowance' => $allowance, 'used' => $used, 'reserved' => $reserved, 'left' => max(0, $allowance - $used - array_sum($reserved))];
     }
 
-    /** The players of this club it bought (from the pool, a bot or another coach), for cap() over a whole squad in two queries. */
+    /**
+     * Post a sale outside the league: its cost back as $type, and what is over it as sale_profit (counted against
+     * the room). Returns the balance after.
+     */
+    public static function post(int $clubId, string $type, int $price, int $basis, string $key, string $reference): int
+    {
+        $profit = max(0, $price - $basis);
+        $balance = ClubLedger::post($clubId, $type, $price - $profit, $key, $reference);
+        if ($profit > 0) {
+            $balance = ClubLedger::post($clubId, 'sale_profit', $profit, "{$key}:profit", $reference);
+        }
+
+        return $balance;
+    }
+
+    /** The players of this club it bought before their price was kept (from the pool, a bot or another coach). */
     public static function boughtIds(int $clubId): array
     {
         $refs = DB::table('club_transactions')->where('club_id', $clubId)->whereIn('type', ['pool_buy', 'bot_buy'])->whereLike('reference', 'player:%')->pluck('reference')
@@ -68,10 +106,12 @@ class Buyer
         return array_flip($refs->merge(DB::table('player_moves')->where('to_club_id', $clubId)->pluck('player_id'))->map(fn ($id) => (int) $id)->all());
     }
 
-    /** The least a listing may ask: the floor of a fair price between coaches. */
-    public static function floor(object $player): int
+    /** The least a listing may ask: the floor of a fair price between coaches, never above the cap. */
+    public static function floor(object $player, ?int $cap = null): int
     {
-        return intdiv((int) $player->value * (int) config('game.economy.human_trade_min_bp'), 10000);
+        $floor = intdiv((int) $player->value * (int) config('game.economy.human_trade_min_bp'), 10000);
+
+        return $cap === null ? $floor : min($floor, $cap);
     }
 
     /**
@@ -195,12 +235,8 @@ class Buyer
                 return false;
             }
             Transfers::left((int) $p->id, (int) $l->club_id);
-            // What he brings above his value counts against the season's room [Sprint 23].
-            $premium = max(0, (int) $l->price - (int) $p->value);
-            ClubLedger::post((int) $l->club_id, 'listing_sale', (int) $l->price - $premium, "listing:{$l->id}:{$p->id}", "player:{$p->id}");
-            if ($premium > 0) {
-                ClubLedger::post((int) $l->club_id, 'listing_premium', $premium, "listing:{$l->id}:{$p->id}:premium", "player:{$p->id}");
-            }
+            // What he brings over his cost counts against the season's room [Sprint 23].
+            self::post((int) $l->club_id, 'listing_sale', (int) $l->price, self::basis($p), "listing:{$l->id}:{$p->id}", "player:{$p->id}");
             Inbox::send($l->user_id ? (int) $l->user_id : null, 'listing_sold', ['player' => $p->name, 'price' => (int) $l->price,
                 'league_id' => $l->league_id], (int) $l->league_id, (int) $l->club_id);
 

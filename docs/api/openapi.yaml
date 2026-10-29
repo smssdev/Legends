@@ -1450,7 +1450,7 @@ paths:
     post:
       tags: [market]
       summary: List one of my players at my price (50% of his value to his sale cap)
-      description: '[Sprint 23] The cap is 250% of his value, or his value for a player the club bought, and never more than the season''s room above the value for outside buyers (outside_premium_bp_per_season of the money scale, less what they paid and what the club''s other listings ask above it). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: what is above the value as its own line (listing_premium).'
+      description: '[Sprint 23] The cap is 250% of his value, and never more than his cost (what the club paid, or his value at the season''s start) plus the season''s profit room (sale_profit_bp_per_season of the money scale, less the profit made selling outside and what the club''s other listings ask over their cost). At most 4 listed at a time (422 beyond; a new price for one listed already is fine). Other coaches may buy him meanwhile; otherwise a buyer from outside the league takes him at that price after a wait (longer the nearer to the cap, shorter for the young and the good, and in a transfer madness), and the money comes to the club: the profit over his cost as its own line (sale_profit), as for the instant sale.'
       requestBody:
         required: true
         content:
@@ -3873,25 +3873,26 @@ components:
               line: { type: string }
               overall: { type: integer }
               value: { type: integer, description: His value now, training counted }
+              cost: { type: integer, description: '[Sprint 23] His cost to the club (what it paid, or his value at the season''s start): the profit of selling him outside is counted from it' }
               floor: { type: integer, description: The least a listing asks }
-              cap: { type: integer, description: The most a listing asks (his sale cap) }
+              cap: { type: integer, description: 'The most a listing asks: 250% of his value, within the season''s profit room [Sprint 23]' }
               quick:
                 type: object
                 required: [pays, fee]
                 description: The instant sale
                 properties:
-                  pays: { type: integer }
+                  pays: { type: integer, description: 'His value, within the season''s profit room [Sprint 23]' }
                   fee: { type: object, required: [currency, amount], properties: { currency: { type: string, enum: [coins, money] }, amount: { type: integer } } }
               wait_hours: { type: object, required: [value, cap], properties: { value: { type: integer }, cap: { type: integer } }, description: 'About how long the outside buyer takes at his value and at his cap (his age and rating, and a transfer madness, counted) [Sprint 23]' }
               listed: { type: object, nullable: true, required: [price, sells_at], properties: { price: { type: integer }, sells_at: { type: string, format: date-time, nullable: true } } }
         selling:
           type: object
-          description: '[Sprint 23] Listing: how many at once, how many now, and the season''s room above the value for outside buyers'
+          description: '[Sprint 23] Listing: how many at once, how many now, and the season''s profit room selling outside the league'
           required: [max_listings, listed, room, allowance]
           properties:
             max_listings: { type: integer }
             listed: { type: integer }
-            room: { type: integer, description: What is left of the allowance, less what the listings ask above the value }
+            room: { type: integer, description: 'What is left of the season''s profit room, less what the listings ask over their cost' }
             allowance: { type: integer }
     ClubFinance:
       type: object

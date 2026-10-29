@@ -309,7 +309,7 @@ onBeforeUnmount(() => clearInterval(clock))
         <!-- [Sprint 23] How many may be listed at once, and what outside buyers may still pay above the value this season. -->
         <p v-if="m.selling" class="flex flex-wrap gap-x-4 gap-y-1 px-2 pt-1 text-xs text-text-muted">
           <span>{{ $t('المعروضون: {v0} من {v1}', { v0: m.selling.listed, v1: m.selling.max_listings }) }}</span>
-          <span>{{ $t('المتاح فوق القيمة هذا الموسم:') }} <b dir="ltr" class="font-numbers text-text">{{ money(m.selling.room) }}</b></span>
+          <span>{{ $t('ربح البيع المتاح هذا الموسم:') }} <b dir="ltr" class="font-numbers text-text">{{ money(m.selling.room) }}</b></span>
         </p>
         <ul class="flex flex-col">
           <li v-for="p in m.mine" :key="p.id" class="flex flex-col border-t border-text/5 px-2 py-2">
@@ -317,7 +317,7 @@ onBeforeUnmount(() => clearInterval(clock))
               <LineBadge :line="p.line as Line" />
               <span class="min-w-0 flex-1">
                 <b class="block truncate" dir="auto">{{ $nm(p.name) }}</b>
-                <span class="text-xs text-text-muted">{{ $t('{v0} · قيمته {v1} · سقفه {v2}', { v0: p.position, v1: money(p.value), v2: money(p.cap) }) }}</span>
+                <span class="text-xs text-text-muted">{{ $t('{v0} · قيمته {v1} · كلفته {v2} · سقفه {v3}', { v0: p.position, v1: money(p.value), v2: money(p.cost ?? p.value), v3: money(p.cap) }) }}</span>
                 <span v-if="p.listed" class="mt-1 block w-fit rounded-pill bg-gold/15 px-2 text-xs text-gold">{{ $t('معروض بـ') }} <b dir="ltr" class="font-numbers">{{ money(p.listed.price) }}</b></span>
               </span>
               <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
@@ -332,7 +332,8 @@ onBeforeUnmount(() => clearInterval(clock))
                 <span class="inline-flex flex-wrap items-center"><b>{{ $t('بيع فوري') }}</b></span><span>{{ $t(': تحصل الآن على') }} <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> {{ $t('مقابل {v0}.', { v0: fee(p) }) }}</span>
                 <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : $t('بع الآن') }}</button>
               </div>
-              <div class="flex flex-wrap items-center justify-between gap-2">
+              <!-- [Sprint 23] At his value, while the season's profit room allows it. -->
+              <div v-if="p.value <= p.cap" class="flex flex-wrap items-center justify-between gap-2">
                 <span><b>{{ $t('بقيمته') }}</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> {{ $t('بلا رسوم، ويُباع خلال {v0}.', { v0: hours(p.wait_hours.value) }) }}</span>
                 <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">{{ $t('اعرضه بقيمته') }}</button>
               </div>
