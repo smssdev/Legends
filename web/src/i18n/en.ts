@@ -1811,7 +1811,6 @@ export const EN: Record<string, string> = {
   'اكتب سؤالك...': 'Type your question...',
   'يُعقد المؤتمر الساعة {v0}': 'The press conference is at {v0}',
   'الدعم': 'Support',
-<<<<<<< HEAD
   // [Sprint 23] The timed events, the market's limits and age in training.
   'جنون الانتقالات: البيع وتجديد السوق أسرع {v0} مرة': 'Transfer madness: selling and the market renewal {v0} times as fast',
   'التقدم الفائق: كل جلسة تدريب أكبر {v0} مرة': 'Extreme progression: every training session {v0} times as big',
@@ -1855,11 +1854,9 @@ export const EN: Record<string, string> = {
   'في كل تجديد للسوق: هذا العدد من اللاعبين بخصم بهذه النسبة حتى التجديد التالي. يبدأ بتجديد السوق فوراً.': 'At each market renewal: this many players at this discount until the next renewal. It starts by renewing the market at once.',
   'في كل تجديد: هذا العدد من اللاعبين في قمة مستواهم، بزيادة بهذه النقاط تبقى معهم. يبدأ بتجديد السوق فوراً.': 'At each renewal: this many players in top form, with these extra points that stay with them. It starts by renewing the market at once.',
   'في كل تجديد: هذا العدد من اللاعبين أقوى من أفضل لاعبي الدوري حتى هذه النقاط، بسعر أعلى. يبدأ بتجديد السوق فوراً.': 'At each renewal: this many players stronger than the league\'s best by up to these points, at a higher price. It starts by renewing the market at once.',
-=======
   // [X56] The look switch.
   'المظهر': 'Look',
   'ليلي': 'Night',
   'نهاري': 'Day',
   'كما في إعدادات جهازك': 'As your device is set',
->>>>>>> origin/main
 }
