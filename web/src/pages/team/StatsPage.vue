@@ -11,6 +11,7 @@ import { t } from '../../lib/i18n'
 import { useSlot } from '../../stores/slot'
 import { money } from '../../lib/format'
 import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
+import AdSlot from '../../components/ads/AdSlot.vue'
 
 type Stats = components['schemas']['LeagueStats']
 type Club = components['schemas']['StatsClub']
@@ -162,5 +163,7 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
 
     <!-- A rival's squad: what anyone in the league may see. -->
     <ClubSquadDialog v-if="squadOf && leagueId" :league-id="leagueId" :club-id="squadOf" @close="squadOf = null" />
+    <!-- [X57] One Google ad at the page's foot. -->
+    <AdSlot />
   </div>
 </template>

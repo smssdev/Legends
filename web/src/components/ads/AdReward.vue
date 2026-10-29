@@ -2,9 +2,12 @@
 // [Sprint 20 S4] «شاهد إعلاناً»: one of the game's own ads in a window with its countdown; at its end the server
 // (which timed the watch itself) cuts the task's time and the page reloads. The button shows the minutes a watch cuts
 // and how many of the most are used. No outside network and nothing to install.
+// [X57] With Google's rewarded videos on (the owner's AdSense, lib/adsense.ts), Google's video is tried first: the
+// server times its watch too and pays the same minutes; when Google has none, our own ad shows as before.
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
+import { adsense, rewarded } from '../../lib/adsense'
 
 const props = defineProps<{ leagueId: number; item: 'training' | 'stadium'; line?: 'gk' | 'def' | 'mid' | 'att'; ads: components['schemas']['AdStatus'] }>()
 const emit = defineEmits<{ done: [] }>()
@@ -22,7 +25,8 @@ async function open() {
   busy.value = true
   try {
     await ensureCsrf()
-    const { data } = await api.POST('/ads/start')
+    if ((await adsense())?.rewarded && (await google())) return
+    const { data } = await api.POST('/ads/start', { body: {} })
     watch.value = data as Watch
     tick()
     timer = setInterval(tick, 250)
@@ -31,6 +35,34 @@ async function open() {
   } finally {
     busy.value = false
   }
+}
+/** Google's video, when it has one: true once it is settled (paid or closed early), false to show our own ad. */
+async function google(): Promise<boolean> {
+  let started: { token: string; ends_at: string } | null = null
+  const result = await rewarded(async () => {
+    try {
+      started = (await api.POST('/ads/start', { body: { provider: 'adsense' } })).data as { token: string; ends_at: string }
+      return true
+    } catch {
+      return false
+    }
+  })
+  if (result === 'none' || !started) return false
+  if (result === 'dismissed') {
+    message.value = 'أُغلق الإعلان قبل نهايته، فلم يُقلَّص الوقت.'
+    return true
+  }
+  const s = started as { token: string; ends_at: string }
+  // The server's own count is short; a video ends after it, but never claim early.
+  const wait = new Date(s.ends_at).getTime() - Date.now()
+  if (wait > 0) await new Promise((r) => setTimeout(r, wait + 300))
+  try {
+    await api.POST('/leagues/{league}/ads/reward', { params: { path: { league: props.leagueId } }, body: { item: props.item, ...(props.line ? { line: props.line } : {}), token: s.token } })
+    emit('done')
+  } catch (e) {
+    message.value = asApiError(e).message
+  }
+  return true
 }
 function tick() {
   if (!watch.value) return
@@ -66,7 +98,7 @@ onBeforeUnmount(() => clearInterval(timer))
   <Teleport to="body">
     <div v-if="watch" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/85 p-4" role="dialog" aria-modal="true" :aria-label="$t('إعلان')">
       <div class="flex w-full max-w-md flex-col gap-4 overflow-hidden rounded-2xl border border-gold/40 bg-surface p-6 text-center shadow-2xl">
-        <span class="self-center rounded-pill bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{ $t('إعلان من GLM') }}</span>
+        <span class="self-center rounded-pill bg-surface-sunk px-3 py-1 text-xs text-text-muted">{{ $t('إعلان من المدرب الأسطورة') }}</span>
         <h2 class="font-display text-2xl font-extrabold text-gold">{{ watch.ad.title }}</h2>
         <p class="text-base leading-relaxed">{{ watch.ad.body }}</p>
         <a v-if="watch.ad.cta_url" :href="watch.ad.cta_url" target="_blank" rel="noopener noreferrer nofollow" class="self-center font-bold text-ring underline">{{ watch.ad.cta_label || watch.ad.cta_url }}</a>

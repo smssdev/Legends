@@ -100,6 +100,29 @@ class AdRewardTest extends TestCase
         $this->actingAs($this->owner)->getJson('/api/v1/admin/house-ads')->assertForbidden();
     }
 
+    public function test_google_adsense_is_off_until_the_account_is_set_then_its_video_is_timed_too(): void
+    {
+        // [X57] No account (or a wrong one): no ads.txt, nothing in /health, and no Google watch.
+        config(['game.adsense.client' => 'pub-123']);
+        $this->get('/ads.txt')->assertNotFound();
+        $this->getJson('/api/v1/health')->assertOk()->assertJsonPath('adsense', null);
+        $this->actingAs($this->owner)->postJson('/api/v1/ads/start', ['provider' => 'adsense'])->assertStatus(503);
+
+        config(['game.adsense.client' => 'ca-pub-1234567890123456', 'game.adsense.slot' => '9876543210', 'game.adsense.rewarded' => true]);
+        $this->get('/ads.txt')->assertOk()->assertSee('google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0');
+        $this->getJson('/api/v1/health')->assertJsonPath('adsense.client', 'ca-pub-1234567890123456')->assertJsonPath('adsense.slot', '9876543210')
+            ->assertJsonPath('adsense.rewarded', true)->assertJsonPath('adsense.test', false);
+
+        // Google's video: no ad of ours, and the reward only after its seconds, once, within the same 5 a task.
+        $this->postJson("/api/v1/leagues/{$this->league['id']}/stadium", ['section' => 'seats', 'idempotency_key' => 'k1'])->assertOk();
+        $watch = $this->postJson('/api/v1/ads/start', ['provider' => 'adsense'])->assertCreated()->assertJsonPath('ad', null)->json();
+        $this->assertSame('adsense', DB::table('ad_watches')->value('provider'));
+        $this->reward(['item' => 'stadium', 'token' => $watch['token']])->assertStatus(422);
+        Carbon::setTestNow(Carbon::now()->addSeconds(10));
+        $this->reward(['item' => 'stadium', 'token' => $watch['token']])->assertOk()->assertJsonPath('used', 1);
+        $this->postJson('/api/v1/ads/start', ['provider' => 'other'])->assertStatus(422);
+    }
+
     public function test_each_verified_video_cuts_thirty_minutes_once_and_five_at_most(): void
     {
         $this->provider();

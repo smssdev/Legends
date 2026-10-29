@@ -526,6 +526,16 @@ paths:
                     properties:
                       whatsapp: { type: string, nullable: true, example: 'https://wa.me/201000000000?text=...' }
                       telegram: { type: string, nullable: true, example: 'https://t.me/legends_support' }
+                  adsense:
+                    type: object
+                    nullable: true
+                    description: '[X57] Google AdSense for the web: null until the owner''s account (ADSENSE_CLIENT) is set on the server'
+                    required: [client, slot, rewarded, test]
+                    properties:
+                      client: { type: string, example: ca-pub-1234567890123456 }
+                      slot: { type: string, nullable: true, description: The display unit's id, null for none }
+                      rewarded: { type: boolean, description: 'Google''s rewarded video (H5 Games Ads) is tried before the game''s own ad' }
+                      test: { type: boolean, description: Google's test ads, until H5 Games Ads approves the site }
   /health/ping:
     post:
       tags: [system]
@@ -2572,7 +2582,15 @@ paths:
     post:
       tags: [team]
       summary: '[Sprint 20 S4] Watch one of the game''s own ads: the ad, and the token that claims the reward once its seconds have passed'
-      description: The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429).
+      description: The developers' active ads at random, else a built-in one in the account's language. At most 5 open watches per account in 10 minutes (429). [X57] provider=adsense times a watch of Google's rewarded video instead (ad is null), when the owner turned them on.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider: { type: string, enum: [house, adsense], default: house }
       responses:
         '201':
           description: The watch
@@ -2585,13 +2603,30 @@ paths:
                   token: { type: string, description: 'Sent to POST /leagues/{league}/ads/reward at the end' }
                   ends_at: { type: string, format: date-time, description: When the reward can be claimed }
                   ad:
-                    type: object
+                    type: [object, 'null']
+                    description: null for Google's video (provider=adsense)
                     required: [id, title, body, cta_label, cta_url, seconds]
                     properties:
                       { id: { type: [integer, 'null'], description: null for a built-in ad }, title: { type: string }, body: { type: string },
                         cta_label: { type: [string, 'null'] }, cta_url: { type: [string, 'null'] }, seconds: { type: integer } }
         '429': { $ref: '#/components/responses/Error' }
         '503': { $ref: '#/components/responses/Error' }
+  /guide:
+    get:
+      tags: [assistant]
+      summary: '[X59] The game''s guide for everyone: the public "how to play" page'
+      description: The Assistant Coach's explanations in sections, in the request's language (Accept-Language). No sign-in. 60 a minute.
+      security: []
+      responses:
+        '200':
+          description: The guide
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sections]
+                properties:
+                  sections: { type: array, items: { $ref: '#/components/schemas/GuideSection' } }
   /assistant/start:
     get:
       tags: [assistant]
@@ -3020,9 +3055,9 @@ paths:
   /rankings/coaches:
     get:
       tags: [leagues]
-      summary: The coaches' global ranking, top 50 and the coach's own place [X18]
+      summary: The coaches' global ranking, top 50 and the coach's own place [X18]; by the rating's points [Sprint 25]
       parameters:
-        - { name: by, in: query, required: false, schema: { type: string, enum: [trophies, level] } }
+        - { name: by, in: query, required: false, schema: { type: string, enum: [trophies, level, rating] } }
       responses:
         '200':
           description: The ranking
@@ -3032,7 +3067,7 @@ paths:
                 type: object
                 required: [by, coaches, me]
                 properties:
-                  by: { type: string, enum: [trophies, level] }
+                  by: { type: string, enum: [trophies, level, rating] }
                   coaches: { type: array, items: { $ref: '#/components/schemas/RankedCoach' } }
                   me: { allOf: [{ $ref: '#/components/schemas/RankedCoach' }], nullable: true }
         '422': { $ref: '#/components/responses/ValidationError' }
@@ -4437,6 +4472,19 @@ components:
         cta: { type: [object, 'null'], required: [label, url], properties: { label: { type: string }, url: { type: string } } }
         sender: { type: [object, 'null'], required: [name, username, official], properties: { name: { type: string }, username: { type: string }, official: { type: boolean } } }
         at: { type: string, format: date-time }
+    GuideSection:
+      type: object
+      description: '[X59] A section of the public guide'
+      required: [id, title, topics]
+      properties:
+        id: { type: string, example: tactics }
+        title: { type: string }
+        topics:
+          type: array
+          items:
+            type: object
+            required: [id, q, a]
+            properties: { id: { type: string }, q: { type: string }, a: { type: string } }
     AdStatus:
       type: object
       description: '[Sprint 20 S4] The rewarded ads beside a task: on or off, the minutes a watch cuts, the most for one task, and how many so far'
@@ -4816,9 +4864,46 @@ components:
         from: { type: integer, description: The points where this level began }
         next: { type: integer, description: The points the next level needs }
         progress_bp: { type: integer, description: The way to the next level, out of 10000 }
+    RatingTierKey: { type: string, enum: [prospect, tactician, professional, elite, mastermind, icon, legend] }
+    RatingTier:
+      type: object
+      description: '[Sprint 25] Where the points stand: the tier, its division, and the way to the next division or tier'
+      required: [key, rank, division, min, from, next, progress_bp]
+      properties:
+        key: { $ref: '#/components/schemas/RatingTierKey' }
+        rank: { type: integer, description: The tier's place, 1 (prospect) to 7 (legend) }
+        division: { type: integer, nullable: true, description: '3 = III (the first) to 1 = I; none for the legend' }
+        min: { type: integer, description: The points the tier starts at; the points never fall below it once reached }
+        from: { type: integer, description: The points this division starts at }
+        next: { type: integer, nullable: true, description: The points the next division or tier starts at; none for the legend }
+        progress_bp: { type: integer, description: The way to the next, out of 10000 }
+    CoachRating:
+      type: object
+      description: '[Sprint 25] The coach''s rating: points that rise and fall with every league or cup match by the opponent''s strength, and trophies (config game.rating)'
+      required: [points, peak, tier, recent]
+      properties:
+        points: { type: integer }
+        peak: { type: integer, description: The highest points ever }
+        tier: { $ref: '#/components/schemas/RatingTier' }
+        recent:
+          type: array
+          description: The latest changes, newest first
+          items:
+            type: object
+            required: [kind, competition, delta, at, result, for, against, opponent, position]
+            properties:
+              kind: { type: string, enum: [match, trophy] }
+              competition: { type: string, enum: [league, cup] }
+              delta: { type: integer, description: What the change truly moved (a kept tier may hold a loss back) }
+              at: { type: string, format: date-time }
+              result: { type: string, enum: [win, draw, loss], nullable: true }
+              for: { type: integer, nullable: true }
+              against: { type: integer, nullable: true }
+              opponent: { type: string, nullable: true }
+              position: { type: integer, nullable: true, description: A trophy's place }
     RankedCoach:
       type: object
-      required: [position, coach, trophies, won, played, level]
+      required: [position, coach, trophies, won, played, level, rating]
       properties:
         position: { type: integer }
         coach: { type: object, required: [id, name, username, avatar_url, official], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, avatar_url: { type: string, nullable: true }, official: { type: boolean }, verified: { type: boolean } } }
@@ -4826,13 +4911,20 @@ components:
         won: { type: integer }
         played: { type: integer }
         level: { type: integer }
+        rating:
+          type: object
+          required: [points, tier, division]
+          properties:
+            points: { type: integer }
+            tier: { $ref: '#/components/schemas/RatingTierKey' }
+            division: { type: integer, nullable: true }
     HomeScreen:
       type: object
-      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements]
+      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers]
       properties:
         coach:
           type: object
-          required: [id, name, username, avatar_url, official, level, record, coins]
+          required: [id, name, username, avatar_url, official, level, record, coins, rating]
           properties:
             id: { type: integer }
             name: { type: string }
@@ -4843,9 +4935,14 @@ components:
             verified: { type: boolean, description: '[Sprint 21 E2.5] A verified account (the lighter badge)' }
             coins: { type: integer, description: 'The coach''s coins balance [UP7]' }
             level: { $ref: '#/components/schemas/CoachLevel' }
+            rating: { $ref: '#/components/schemas/CoachRating' }
             record: { type: object, required: [seasons, played, won, drawn, lost], properties: { seasons: { type: integer }, played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer } } }
         trophies: { $ref: '#/components/schemas/Trophies' }
         colleagues: { type: integer, description: The other coaches met in the coach's leagues }
+        rating_tiers:
+          type: array
+          description: '[Sprint 25] The rating''s tiers in order, with the points each starts at'
+          items: { type: object, required: [key, rank, min], properties: { key: { $ref: '#/components/schemas/RatingTierKey' }, rank: { type: integer }, min: { type: integer } } }
         announcements: { type: array, items: { $ref: '#/components/schemas/Message' } }
         slots_open: { type: integer, description: '[Sprint 24 B3] The slots open for the account''s age' }
         next_slot_at: { type: [string, 'null'], format: date-time, description: When the next slot opens (null when all are open) }

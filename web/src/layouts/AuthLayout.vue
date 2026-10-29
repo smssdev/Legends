@@ -3,12 +3,15 @@
 // on the computer the brand on one side and the form on the other; on the phone the form alone.
 // [X32] In Legends' signature: our blurred stadium under an emerald glow and the star lattice, the form on a panel.
 // [X56] The stadium side is a night poster in both looks (theme-night); the form follows the coach's look.
+// [X57] The privacy policy and the terms under every form.
+import LegalLinks from '../components/LegalLinks.vue'
+import { emblemSrc } from '../lib/i18n'
 </script>
 
 <template>
   <div class="grid min-h-dvh md:grid-cols-2">
     <aside class="auth-art theme-night relative hidden overflow-hidden md:flex md:flex-col md:justify-center md:gap-6 md:p-14">
-      <img src="/brand/emblem.svg" alt="GLM" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" />
+      <img :src="emblemSrc" :alt="$t('المدرب الأسطورة')" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" />
       <h2 class="relative font-display text-5xl font-extrabold leading-tight">{{ $t('دوريك. فريقك.') }}<br /><span class="text-gold">{{ $t('أسطورتك.') }}</span></h2>
       <p class="relative text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك، وعِش كل مباراة لحظة بلحظة.') }}</p>
       <ul class="relative flex flex-col gap-3 text-text-soft">
@@ -25,6 +28,7 @@
           <BrandMark />
         </RouterLink>
         <RouterView />
+        <LegalLinks />
       </div>
     </main>
   </div>

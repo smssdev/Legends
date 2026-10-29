@@ -36,6 +36,7 @@ console.log(OUT.map((o) => o[2]).join(', '))
 const WEB = join(root, 'web', 'public')
 for (const [from, to] of [
   ['emblem.svg', 'brand/emblem.svg'], ['emblem-loader.svg', 'brand/emblem-loader.svg'], ['coin.svg', 'brand/coin.svg'],
+  ['emblem-ar.svg', 'brand/emblem-ar.svg'], ['emblem-loader-ar.svg', 'brand/emblem-loader-ar.svg'],
   ['og-invite.png', 'brand/og-invite.png'], ['favicon.svg', 'favicon.svg'], ['favicon-32.png', 'favicon.png'],
   ['icon-192.png', 'icon-192.png'], ['icon-512.png', 'icon-512.png'], ['apple-touch-icon.png', 'apple-touch-icon.png'],
 ]) copyFileSync(join(brand, from), join(WEB, to))
