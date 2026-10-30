@@ -20,7 +20,7 @@ class Guide
     /** The pages the assistant knows, by the web's route names (others fall back to "home"). */
     public const PAGES = ['home', 'club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium',
         'finance', 'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet',
-        'profile', 'leagues', 'support'];
+        'profile', 'leagues', 'support', 'ideas'];
 
     /** A route of the web that is a page of another name here. */
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
@@ -30,7 +30,7 @@ class Guide
     /** The pages an answer may open, by the web's section names. */
     public const GO = ['club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium', 'finance',
         'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet', 'profile',
-        'leagues', 'support'];
+        'leagues', 'support', 'ideas'];
 
     /**
      * Each page's quick questions: a topic's id is answered from the guide at once; text after "?" goes to the
@@ -60,7 +60,8 @@ class Guide
         'wallet' => ['coins', 'referral', 'verification'],
         'profile' => ['verification', 'referral', 'vacation_account'],
         'leagues' => ['leagues_create', 'leagues_join', 'invite'],
-        'support' => ['support'],
+        'support' => ['support', 'ideas'],
+        'ideas' => ['ideas', 'polls', 'honour_roll'],
     ];
 
     public static function page(?string $route): string
@@ -349,6 +350,16 @@ class Guide
             $t('support', ['support'], 'support',
                 ['كيف أراسل فريق التطوير؟', 'دعم مشكلة شكوى اقتراح المطورين تواصل', 'من صفحة الدعم: رسائلك تصل لحسابات المطورين الرسمية، وردودهم تصلك هناك وفي صندوق رسائلك.'],
                 ['How do I contact the development team?', 'support problem complaint suggestion developers contact', 'From the support page: your messages reach the developers\' official accounts, and their replies reach you there and in your inbox.']),
+            // [Sprint 28] The development ideas: suggestions, polls and the honour roll.
+            $t('ideas', ['ideas', 'support', 'profile'], 'ideas',
+                ['كيف أرسل اقتراحاً لتطوير اللعبة؟', 'اقتراح اقتراحات فكرة افكار ميزة جديدة تطوير تحسين اقترح مكافأة ذهب كوينز', sprintf('من «اقتراحات التطوير» (في حسابك وفي القائمة): اكتب عنواناً قصيراً وشرح فكرتك، فتصل لفريق التطوير (حتى %d اقتراحات في 24 ساعة). يرد الفريق على كل اقتراح: «أعجبنا» أو «نُفّذ في اللعبة» أو «لم يُعتمد» مع كلمة منه، ويصلك الرد في رسائلك. والاقتراح الذي يعجب الفريق قد يأخذ مكافأة كوينز (حتى %d) تصل محفظتك، ويضع اسمك في قائمة الشرف.', $c('ideas.per_day'), $c('ideas.reward_max'))],
+                ['How do I send a suggestion to improve the game?', 'suggestion suggest idea ideas new feature improve reward coins gold', sprintf('From «Development ideas» (in your account and the menu): write a short title and explain your idea, and it reaches the development team (up to %d suggestions in 24 hours). The team answers each one: «We liked it», «Built into the game» or «Not taken», with a word from them, and the answer reaches your inbox. A suggestion the team likes may earn a coins reward (up to %d) in your wallet, and puts your name on the honour roll.', $c('ideas.per_day'), $c('ideas.reward_max'))]),
+            $t('polls', ['ideas', 'home'], 'ideas',
+                ['ما هو تصويت التطوير؟', 'تصويت تصويتات استفتاء صوت اصوت خيارات اولوية الميزة القادمة', sprintf('فريق التطوير يفتح تصويتاً لمدة محددة (حتى %d يوماً) بخيارات من الميزات المقترحة. لكل حساب صوت واحد يغيّره ما دام التصويت مفتوحاً، وترى النتائج بعد أن تصوّت، ويراها الجميع حين ينتهي. والخيار الأعلى أصواتاً يُضاف للعبة أو يأخذ أولوية التطوير.', $c('ideas.poll_max_days'))],
+                ['What is a development poll?', 'poll polls vote voting options priority next feature', sprintf('The development team opens a poll for a set time (up to %d days) with options from the suggested features. Each account has one vote it can change while the poll is open; you see the results after you vote, and everyone sees them when it ends. The option with the most votes is added to the game or goes first in the work.', $c('ideas.poll_max_days'))]),
+            $t('honour_roll', ['ideas'], 'ideas',
+                ['ما هي قائمة الشرف للمساهمين؟', 'قائمة الشرف المساهمين ساهموا في تطوير اللعبة شكر اسمي', 'كل مدرب أعجب فريقَ التطوير اقتراحٌ منه يدخل قائمة الشرف في «اقتراحات التطوير»: اسمه، وعدد اقتراحاته المقبولة، والكوينز التي كسبها بها، وآخر اقتراح له. الأكثر مساهمة أولاً.'],
+                ['What is the contributors\' honour roll?', 'honour roll honor contributors helped improve game thanks my name', 'Every coach with a suggestion the development team liked joins the honour roll in «Development ideas»: their name, how many suggestions were accepted, the coins they earned with them, and their latest one. The biggest contributors come first.']),
 
             // [X61] What the fixes and the new features added.
             $t('basic_coach', ['training', 'specialists'], 'training',

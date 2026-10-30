@@ -378,5 +378,19 @@
   "لا يتغير موعد مباراة قُفلت أو بدأت.": "A match that is locked or has started cannot be moved.",
   "%s حارس مرمى: مكانه في المرمى أو على الدكة.": "%s is a goalkeeper: he plays in goal or sits on the bench.",
   "المنفذ يجب أن يكون من فريقك.": "The taker must be from your squad.",
-  "لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.": "You played this club in a friendly today: one friendly a day against each club."
+  "لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.": "You played this club in a friendly today: one friendly a day against each club.",
+  "مكافأة اقتراح أعجب فريق التطوير": "Reward for a suggestion the team liked",
+  "أرسلت %d اقتراحات في آخر 24 ساعة، وهذا الحد. أرسل غيرها غداً.": "You sent %d suggestions in the last 24 hours, which is the limit. Send more tomorrow.",
+  "الاقتراح غير موجود.": "The suggestion does not exist.",
+  "المكافأة لاقتراح أعجب الفريق فقط.": "A reward is only for a suggestion the team liked.",
+  "أخذ هذا الاقتراح مكافأته من قبل.": "This suggestion already got its reward.",
+  "هذا الاقتراح مقبول، ولا يُرفض بعد ذلك.": "This suggestion is accepted and cannot be turned down now.",
+  "تغيّر هذا الاقتراح الآن. افتحه من جديد.": "This suggestion just changed. Open it again.",
+  "التصويت غير موجود.": "The poll does not exist.",
+  "هذا التصويت ليس مفتوحاً الآن.": "This poll is not open now.",
+  "اختر أحد خيارات هذا التصويت.": "Choose one of this poll's options.",
+  "مدة التصويت من ساعة إلى %d يوماً.": "A poll runs from one hour to %d days.",
+  "خياران بالاسم نفسه.": "Two options have the same name.",
+  "انتهى هذا التصويت.": "This poll has ended.",
+  "نُفّذ هذا الاقتراح في اللعبة.": "This suggestion is already built into the game."
 }

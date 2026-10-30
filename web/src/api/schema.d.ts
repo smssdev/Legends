@@ -7105,6 +7105,235 @@ export interface paths {
         };
         trace?: never;
     };
+    "/admin/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] The coaches' suggestions, newest first (one status or all), with the counts of each and the reward's default and most */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "pending" | "accepted" | "built" | "rejected";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The suggestions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestions: components["schemas"]["PanelSuggestion"][];
+                            counts: {
+                                pending: number;
+                                accepted: number;
+                                built: number;
+                                rejected: number;
+                            };
+                            reward_default: number;
+                            reward_max: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/ideas/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 28] Answer a suggestion: accepted, built or not taken, with a word; a liked one may carry a coins reward, given once
+         * @description The coach hears of it in the inbox (suggestion_answer). An accepted or built suggestion puts its coach on the honour roll and is not turned down after (409). A reward on a rejected one is 422, a second reward 409.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        status: "accepted" | "built" | "rejected";
+                        /** @description Up to game.ideas.reward_max */
+                        coins?: number | null;
+                        reply?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Answered */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestion: components["schemas"]["Suggestion"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/polls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] Every poll, the latest first, with its counts at any time */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The polls */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            polls: components["schemas"]["Poll"][];
+                            max_days: number;
+                            options_min: number;
+                            options_max: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 28] Open a poll on what to build next: its options, its start (now by default) and how many hours it runs */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        question: string;
+                        body?: string | null;
+                        /** Format: date-time */
+                        starts_at?: string | null;
+                        /** @description Up to game.ideas.poll_max_days days */
+                        hours: number;
+                        options: {
+                            label: string;
+                            suggestion_id?: number | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            poll: components["schemas"]["Poll"];
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/polls/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 28] One not started (or with no votes) is deleted; one running ends now and stays as the record */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                            deleted: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/announcements": {
         parameters: {
             query?: never;
@@ -8370,6 +8599,147 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] The development ideas: my suggestions and the team's answers, the polls (open, then ended in the last 30 days), and the honour roll */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The page */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestions: components["schemas"]["Suggestion"][];
+                            per_day: number;
+                            /** @description The suggestions left in the last 24 hours */
+                            left_today: number;
+                            polls: components["schemas"]["Poll"][];
+                            honours: components["schemas"]["HonourContributor"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas/suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 28] Send a suggestion to the developers (game.ideas.per_day in 24 hours, else 429) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestion: components["schemas"]["Suggestion"];
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas/polls/{poll}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                poll: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 28] Vote in an open poll: one vote an account, changed freely while it is open */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    poll: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        option_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The poll with its counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            poll: components["schemas"]["Poll"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -10969,6 +11339,73 @@ export interface components {
             /** Format: date-time */
             ends_at: string;
         };
+        Suggestion: {
+            id: number;
+            title: string;
+            body: string;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "built" | "rejected";
+            /** @description The reward given (0 for none) */
+            coins: number;
+            /** @description The team's word */
+            reply: string | null;
+            /** Format: date-time */
+            at: string;
+            /** Format: date-time */
+            decided_at: string | null;
+        };
+        PanelSuggestion: components["schemas"]["Suggestion"] & {
+            user: {
+                id: number;
+                name: string;
+                username: string | null;
+                account_no: number | null;
+            };
+        };
+        Poll: {
+            id: number;
+            question: string;
+            body: string | null;
+            /** @enum {string} */
+            state: "upcoming" | "open" | "ended";
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            options: {
+                id: number;
+                label: string;
+                suggestion_id: number | null;
+                /** @description Null for a coach who has not voted while it is open */
+                votes: number | null;
+            }[];
+            total: number | null;
+            /** @description The option this account chose */
+            my_vote: number | null;
+            /** @description The options with the most votes, once it ended */
+            winners: number[];
+        };
+        HonourContributor: {
+            rank: number;
+            user: {
+                id: number;
+                name: string;
+                username: string | null;
+                official: boolean;
+                avatar_url: string | null;
+            };
+            /** @description Their suggestions the team liked */
+            count: number;
+            /** @description The coins they earned with them */
+            coins: number;
+            latest: {
+                title: string;
+                /** @enum {string} */
+                status: "accepted" | "built";
+                /** Format: date-time */
+                at: string | null;
+            };
+        };
         TimedEvent: {
             id: number;
             /** @enum {string} */
@@ -11594,6 +12031,8 @@ export interface components {
             };
         };
         HomeScreen: {
+            /** @description [Sprint 28] The open polls this coach has not voted in yet */
+            polls_waiting: number;
             coach: {
                 id: number;
                 name: string;

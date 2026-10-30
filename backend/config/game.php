@@ -492,6 +492,11 @@ return [
     'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
         'coins_max' => 100000],
+    // [Sprint 28] The coaches' suggestions to the developers and the polls on what to build next: how many
+    // suggestions an account sends a day (the last 24 hours), the reward for one the team likes (the default the
+    // panel offers, and the most), and a poll's options and longest run.
+    'ideas' => ['per_day' => 3, 'reward_default' => 50, 'reward_max' => 1000,
+        'poll_options_min' => 2, 'poll_options_max' => 6, 'poll_max_days' => 30],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [
@@ -501,7 +506,7 @@ return [
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
-            'news' => ['announcement', 'official_message', 'coins_gift'],
+            'news' => ['announcement', 'official_message', 'coins_gift', 'suggestion_answer'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).

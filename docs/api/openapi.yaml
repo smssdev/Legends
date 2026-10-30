@@ -2715,6 +2715,95 @@ paths:
       responses:
         '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok, deleted], properties: { ok: { type: boolean }, deleted: { type: boolean } } } } } }
         '409': { $ref: '#/components/responses/Error' }
+  /admin/ideas:
+    get:
+      tags: [admin]
+      summary: '[Sprint 28] The coaches'' suggestions, newest first (one status or all), with the counts of each and the reward''s default and most'
+      parameters:
+        - { name: status, in: query, required: false, schema: { type: string, enum: [pending, accepted, built, rejected] } }
+      responses:
+        '200':
+          description: The suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [suggestions, counts, reward_default, reward_max]
+                properties:
+                  suggestions: { type: array, items: { $ref: '#/components/schemas/PanelSuggestion' } }
+                  counts: { type: object, required: [pending, accepted, built, rejected], properties: { pending: { type: integer }, accepted: { type: integer }, built: { type: integer }, rejected: { type: integer } } }
+                  reward_default: { type: integer }
+                  reward_max: { type: integer }
+  /admin/ideas/{id}/decide:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 28] Answer a suggestion: accepted, built or not taken, with a word; a liked one may carry a coins reward, given once'
+      description: The coach hears of it in the inbox (suggestion_answer). An accepted or built suggestion puts its coach on the honour roll and is not turned down after (409). A reward on a rejected one is 422, a second reward 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [accepted, built, rejected] }
+                coins: { type: [integer, 'null'], minimum: 0, description: Up to game.ideas.reward_max }
+                reply: { type: [string, 'null'], maxLength: 500 }
+      responses:
+        '200': { description: Answered, content: { application/json: { schema: { type: object, required: [suggestion], properties: { suggestion: { $ref: '#/components/schemas/Suggestion' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/polls:
+    get:
+      tags: [admin]
+      summary: '[Sprint 28] Every poll, the latest first, with its counts at any time'
+      responses:
+        '200':
+          description: The polls
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [polls, max_days, options_min, options_max]
+                properties:
+                  polls: { type: array, items: { $ref: '#/components/schemas/Poll' } }
+                  max_days: { type: integer }
+                  options_min: { type: integer }
+                  options_max: { type: integer }
+    post:
+      tags: [admin]
+      summary: '[Sprint 28] Open a poll on what to build next: its options, its start (now by default) and how many hours it runs'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question, hours, options]
+              properties:
+                question: { type: string, minLength: 4, maxLength: 160 }
+                body: { type: [string, 'null'], maxLength: 1000 }
+                starts_at: { type: [string, 'null'], format: date-time }
+                hours: { type: integer, minimum: 1, description: Up to game.ideas.poll_max_days days }
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 6
+                  items: { type: object, required: [label], properties: { label: { type: string, maxLength: 120 }, suggestion_id: { type: [integer, 'null'] } } }
+      responses:
+        '201': { description: Opened, content: { application/json: { schema: { type: object, required: [poll], properties: { poll: { $ref: '#/components/schemas/Poll' } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/polls/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [admin]
+      summary: '[Sprint 28] One not started (or with no votes) is deleted; one running ends now and stays as the record'
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok, deleted], properties: { ok: { type: boolean }, deleted: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
   /announcements:
     get:
       tags: [account]
@@ -3139,6 +3228,48 @@ paths:
                         key: { type: string }
                         count: { type: integer }
                         lines: { type: array, items: { type: string } }
+  /ideas:
+    get:
+      tags: [account]
+      summary: '[Sprint 28] The development ideas: my suggestions and the team''s answers, the polls (open, then ended in the last 30 days), and the honour roll'
+      responses:
+        '200':
+          description: The page
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [suggestions, per_day, left_today, polls, honours]
+                properties:
+                  suggestions: { type: array, items: { $ref: '#/components/schemas/Suggestion' } }
+                  per_day: { type: integer }
+                  left_today: { type: integer, description: The suggestions left in the last 24 hours }
+                  polls: { type: array, items: { $ref: '#/components/schemas/Poll' } }
+                  honours: { type: array, items: { $ref: '#/components/schemas/HonourContributor' } }
+  /ideas/suggestions:
+    post:
+      tags: [account]
+      summary: '[Sprint 28] Send a suggestion to the developers (game.ideas.per_day in 24 hours, else 429)'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [title, body], properties: { title: { type: string, minLength: 4, maxLength: 120 }, body: { type: string, minLength: 10, maxLength: 2000 } } } } }
+      responses:
+        '201': { description: Sent, content: { application/json: { schema: { type: object, required: [suggestion], properties: { suggestion: { $ref: '#/components/schemas/Suggestion' } } } } } }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/Error' }
+  /ideas/polls/{poll}/vote:
+    parameters: [{ name: poll, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [account]
+      summary: '[Sprint 28] Vote in an open poll: one vote an account, changed freely while it is open'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [option_id], properties: { option_id: { type: integer } } } } }
+      responses:
+        '200': { description: The poll with its counts, content: { application/json: { schema: { type: object, required: [poll], properties: { poll: { $ref: '#/components/schemas/Poll' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /notifications:
     get:
       tags: [notifications]
@@ -4800,6 +4931,57 @@ components:
         kind: { type: string, enum: [madness, progression, discount, offers, in_form, legends] }
         power: { type: integer, description: 'madness and progression: times as fast (bp); discount and offers: off the price (bp); in_form: points; legends: points over the league''s best' }
         ends_at: { type: string, format: date-time }
+    Suggestion:
+      type: object
+      required: [id, title, body, status, coins, reply, at, decided_at]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        body: { type: string }
+        status: { type: string, enum: [pending, accepted, built, rejected] }
+        coins: { type: integer, description: The reward given (0 for none) }
+        reply: { type: [string, 'null'], description: The team's word }
+        at: { type: string, format: date-time }
+        decided_at: { type: [string, 'null'], format: date-time }
+    PanelSuggestion:
+      allOf:
+        - { $ref: '#/components/schemas/Suggestion' }
+        - type: object
+          required: [user]
+          properties:
+            user: { type: object, required: [id, name, username, account_no], properties: { id: { type: integer }, name: { type: string }, username: { type: [string, 'null'] }, account_no: { type: [integer, 'null'] } } }
+    Poll:
+      type: object
+      required: [id, question, body, state, starts_at, ends_at, options, total, my_vote, winners]
+      properties:
+        id: { type: integer }
+        question: { type: string }
+        body: { type: [string, 'null'] }
+        state: { type: string, enum: [upcoming, open, ended] }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+        options:
+          type: array
+          items:
+            type: object
+            required: [id, label, suggestion_id, votes]
+            properties:
+              id: { type: integer }
+              label: { type: string }
+              suggestion_id: { type: [integer, 'null'] }
+              votes: { type: [integer, 'null'], description: 'Null for a coach who has not voted while it is open' }
+        total: { type: [integer, 'null'] }
+        my_vote: { type: [integer, 'null'], description: The option this account chose }
+        winners: { type: array, items: { type: integer }, description: 'The options with the most votes, once it ended' }
+    HonourContributor:
+      type: object
+      required: [rank, user, count, coins, latest]
+      properties:
+        rank: { type: integer }
+        user: { type: object, required: [id, name, username, official, avatar_url], properties: { id: { type: integer }, name: { type: string }, username: { type: [string, 'null'] }, official: { type: boolean }, avatar_url: { type: [string, 'null'] } } }
+        count: { type: integer, description: Their suggestions the team liked }
+        coins: { type: integer, description: The coins they earned with them }
+        latest: { type: object, required: [title, status, at], properties: { title: { type: string }, status: { type: string, enum: [accepted, built] }, at: { type: [string, 'null'], format: date-time } } }
     TimedEvent:
       type: object
       required: [id, kind, league, starts_at, ends_at, power, count, state]
@@ -5335,8 +5517,9 @@ components:
             division: { type: integer, nullable: true }
     HomeScreen:
       type: object
-      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers]
+      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers, polls_waiting]
       properties:
+        polls_waiting: { type: integer, description: '[Sprint 28] The open polls this coach has not voted in yet' }
         coach:
           type: object
           required: [id, name, username, avatar_url, official, level, record, coins, rating]

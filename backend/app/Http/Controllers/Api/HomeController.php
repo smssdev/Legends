@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\Ideas\Polls;
 use App\League\ClubAgenda;
 use App\League\CoachSlots;
 use App\League\Standings;
@@ -44,6 +45,8 @@ class HomeController extends Controller
             'colleagues' => $this->colleagues($user->id),
             'announcements' => DB::table('messages')->where('user_id', $user->id)->where('type', 'announcement')->orderByDesc('id')->limit(5)->get()
                 ->map(fn ($m) => Inbox::view($m))->values(),
+            // [Sprint 28] The open polls this coach has not voted in yet.
+            'polls_waiting' => Polls::waiting($user->id),
         ]);
     }
 
