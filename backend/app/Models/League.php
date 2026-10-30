@@ -27,6 +27,7 @@ class League extends Model
     {
         return [
             'round_times' => 'array',
+            'rest_days' => 'array',
             'starts_at' => 'datetime',
             'settings_locked_at' => 'datetime',
             'fair_league' => 'boolean',

@@ -99,7 +99,7 @@ class LeagueController extends Controller
                 DB::table('seasons')->where('league_id', $league->id)->where('number', 1)->update(['starts_at' => $data['starts_at']]);
             }
             // New times make the calendar again (nothing has been played before the start).
-            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times', 'second_slot_minutes']))) {
+            if (array_intersect_key($data, array_flip(['starts_at', 'prep_days', 'rounds_per_day', 'round_times', 'second_slot_minutes', 'rest_days']))) {
                 $fresh = $league->fresh();
                 SeasonScheduler::build($fresh, $fresh->season);
             }
@@ -443,6 +443,9 @@ class LeagueController extends Controller
             // A round in two slots [X31]: minutes from the round's time to its second slot, or none.
             'second_slot_minutes' => ['sometimes', 'nullable', 'integer', 'between:'.config('game.staggered.min_minutes').','.config('game.staggered.max_minutes')],
             'starting_budget' => ['sometimes', 'integer', 'between:'.$e['starting_budget_min'].','.$e['starting_budget_max']],
+            // [Sprint 27 B1] The days off with no matches (ISO weekdays in Cairo, 1 Monday to 7 Sunday), free to choose.
+            'rest_days' => ['sometimes', 'array', 'max:'.(int) $c['rest_days_max']],
+            'rest_days.*' => ['integer', 'between:1,7', 'distinct'],
         ];
         if ($creating) {
             $rules += [
@@ -455,6 +458,10 @@ class LeagueController extends Controller
             ];
         }
         $data = $request->validate($rules);
+        if (isset($data['rest_days'])) {
+            $data['rest_days'] = array_map('intval', $data['rest_days']);
+            sort($data['rest_days']);
+        }
         if (isset($data['round_times']) && ! isset($data['rounds_per_day'])) {
             $data['rounds_per_day'] = count($data['round_times']);
         }
@@ -582,6 +589,7 @@ class LeagueController extends Controller
             // The code is shared by the owner and its coaches; a coach still waiting does not need it.
             'code' => $approved ? $l->code : null,
             'team_count' => $l->team_count, 'rounds_per_day' => $l->rounds_per_day, 'round_times' => $l->round_times,
+            'rest_days' => array_values($l->rest_days ?? []),
             'prep_days' => $l->prep_days, 'season_end_mode' => $l->season_end_mode,
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'starting_budget' => (int) $l->starting_budget,
             // The live draw [X26]: when, and whether it has been drawn.

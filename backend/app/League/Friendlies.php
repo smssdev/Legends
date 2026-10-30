@@ -19,7 +19,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * table or the money. For each of the coach's players who played: game.friendlies.fitness more fitness (up to 100),
  * game.friendlies.training_progress on his bar (never past it: the +1 itself comes from a training session), and a
  * match played together for the chemistry. The coins and the match in one write, once by the request's key.
- * Not in the last game.friendlies.block_minutes before the club's next match, nor while it is live.
+ * Not in the last game.friendlies.block_minutes before the club's next match, nor while it is live. [Sprint 27 X1] One a
+ * day against each club (the Cairo day): another club, or the same one tomorrow.
  */
 class Friendlies
 {
@@ -31,12 +32,16 @@ class Friendlies
             ->get(['clubs.id', 'clubs.name', 'clubs.code', 'clubs.master_club_id', 'clubs.strength_snapshot', 'users.name as coach']);
         // Recommended: the closest in strength.
         $closest = $opponents->sortBy(fn ($o) => abs($o->strength_snapshot - $club->strength_snapshot))->first()?->id;
+        // [Sprint 27 X1] One friendly a day against each club (the Cairo day).
+        $today = DB::table('friendlies')->where('club_id', $club->id)->where('day', self::cairoDay())->pluck('opponent_id')->map(fn ($v) => (int) $v)->all();
 
-        return ['coins' => (int) $cfg['coins'], 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
+        return ['club' => ['name' => $club->name, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
+            'coins' => (int) $cfg['coins'], 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
             'fitness' => (int) $cfg['fitness'],
             'training_progress_pct' => intdiv((int) $cfg['training_progress'] * 100, (int) config('game.training.progress_scale')),
             'opponents' => $opponents->sortByDesc('strength_snapshot')->values()->map(fn ($o) => ['id' => (int) $o->id, 'name' => $o->name, 'code' => $o->code,
-                'crest_url' => url("/api/v1/data/clubs/{$o->master_club_id}/crest.svg"), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest])->all(),
+                'crest_url' => url("/api/v1/data/clubs/{$o->master_club_id}/crest.svg"), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest,
+                'played_today' => in_array((int) $o->id, $today, true)])->all(),
             'recent' => DB::table('friendlies')->where('club_id', $club->id)->orderByDesc('id')->limit(5)->get()->map(fn ($f) => self::row($f))->all()];
     }
 
@@ -66,6 +71,10 @@ class Friendlies
         if (! $opponent) {
             throw new HttpException(404, 'هذا النادي ليس في دوريك.');
         }
+        // [Sprint 27 X1, the owner's request 2026-10-30] The same opponent once a day, not again until tomorrow (Cairo).
+        if (DB::table('friendlies')->where('club_id', $club->id)->where('opponent_id', $opponent->id)->where('day', self::cairoDay())->exists()) {
+            throw new HttpException(409, 'لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.');
+        }
         if (self::blocked($club)) {
             throw new HttpException(409, 'لا وديات قبل مباراتك بساعة ولا أثناءها.');
         }
@@ -77,23 +86,30 @@ class Friendlies
         $seed = random_int(1, 2_000_000_000);
         $state = LeagueMatch::friendly($club, $opponent, $seed);
         $goals = [];
+        $timeline = [];
         while (! $state['finished']) {
             $state = Runner::tick($state);
+            $minute = is_array($state['out']['minute'] ?? null) ? array_sum($state['out']['minute']) : (int) ($state['out']['minute'] ?? $state['out']['tick']);
             foreach ($state['out']['events'] ?? [] as $e) {
                 if ($e['type'] === 'goal') {
-                    $goals[] = ['minute' => is_array($state['out']['minute'] ?? null) ? array_sum($state['out']['minute']) : (int) ($state['out']['minute'] ?? $state['out']['tick']),
-                        'side' => $e['team'], 'scorer' => $e['scorer'] ?? null];
+                    $goals[] = ['minute' => $minute, 'side' => $e['team'], 'scorer' => $e['scorer'] ?? null];
                 }
             }
+            $at = $state['out']['minute'] ?? $state['out']['tick'];
+            $timeline[] = self::moment(is_array($at) ? (int) $at[0] : (int) $at, $state['out']['events'] ?? [], $state['score'], is_array($at) ? (int) ($at[1] ?? 0) : 0);
         }
         $mine = $state['teams']['home']['players'];
         $played = array_values(array_filter($mine, fn ($p) => $p['on'] || $p['out'] !== ''));
         $names = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
             ->whereIn('players.id', array_merge(array_column($state['teams']['home']['players'], 'id'), array_column($state['teams']['away']['players'], 'id')))->pluck('master_players.name', 'players.id');
         usort($played, fn ($a, $b) => $b['st']['r'] <=> $a['st']['r']);
+        $stats = fn (string $side) => array_intersect_key($state['teams'][$side]['stats'], array_flip(['shots', 'on_target', 'corners', 'fouls', 'yellow', 'red']));
         $report = ['goals' => array_map(fn ($g) => $g + ['name' => $g['scorer'] ? ($names[$g['scorer']] ?? null) : null], $goals),
             'best' => array_map(fn ($p) => ['id' => (int) $p['id'], 'name' => $names[$p['id']] ?? null, 'rating' => (int) $p['st']['r']], array_slice($played, 0, 3)),
-            'played' => count($played), 'coins' => $coins];
+            'played' => count($played), 'coins' => $coins,
+            // [Sprint 27 B3] The quick simulation the screen plays before the result: one moment a minute, and the numbers.
+            'timeline' => array_map(fn ($m) => $m + ['name' => isset($m['p']) ? ($names[$m['p']] ?? null) : null], $timeline),
+            'stats' => ['home' => $stats('home'), 'away' => $stats('away')]];
 
         try {
             return DB::transaction(function () use ($club, $opponent, $userId, $seed, $state, $played, $report, $coins, $key) {
@@ -117,6 +133,32 @@ class Friendlies
             // The same key twice at once: the other request played it.
             return [self::row(DB::table('friendlies')->where('idempotency_key', $key)->first()), false];
         }
+    }
+
+    /**
+     * [Sprint 27 B3] A minute in one moment, for the quick simulation: the biggest of what happened (a goal, a red card,
+     * a penalty, a chance saved or missed, a yellow, a corner, an attack, or nothing), whose it was, who did it, and
+     * the score after it; x the minute of stoppage time (45+2: m 45, x 2). The screen only draws it.
+     */
+    public static function moment(int $minute, array $events, array $score, int $extra = 0): array
+    {
+        $rank = ['goal' => 8, 'red' => 7, 'penalty' => 6, 'saved' => 5, 'missed' => 4, 'blocked' => 4, 'yellow' => 3, 'corner' => 2, 'attack' => 1];
+        $best = ['k' => 'quiet', 's' => null, 'p' => null];
+        $top = 0;
+        foreach ($events as $e) {
+            [$kind, $who] = match ($e['type']) {
+                'goal' => ['goal', $e['scorer'] ?? null],
+                'card' => [($e['color'] ?? 'yellow') === 'red' ? 'red' : 'yellow', $e['player'] ?? null],
+                'attack' => [in_array($e['result'] ?? '', ['saved', 'missed', 'blocked', 'penalty', 'corner'], true) ? $e['result'] : 'attack', $e['shooter'] ?? $e['carrier'] ?? null],
+                default => [null, null],
+            };
+            if ($kind && $rank[$kind] > $top) {
+                $top = $rank[$kind];
+                $best = ['k' => $kind, 's' => $e['team'], 'p' => $who ? (int) $who : null];
+            }
+        }
+
+        return ['m' => $minute] + ($extra ? ['x' => $extra] : []) + array_filter($best, fn ($v) => $v !== null) + ['score' => [(int) $score['home'], (int) $score['away']]];
     }
 
     private static function row(object $f): array

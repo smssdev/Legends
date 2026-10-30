@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB;
  * inside the lock zone and before the last league round, and one day with no matches after mid-season
  * (the winter window). Then the calendar puts each day on a date: the preparation days from the start,
  * then the round times in Cairo (they stay at their local hour across a clock change). A development
- * league plays one slot a minute instead [Sprint 15 B4].
+ * league plays one slot a minute instead [Sprint 15 B4]. [Sprint 27 B1] The league's days off (ISO weekdays in
+ * Cairo, e.g. Friday) have no matches: the calendar steps over them.
  */
 class SeasonScheduler
 {
@@ -72,7 +73,7 @@ class SeasonScheduler
      *
      * @return array{slots: array<int, list<CarbonImmutable>>, rest: ?CarbonImmutable}
      */
-    public static function calendar(array $days, CarbonImmutable $startsAt, int $prepDays, array $roundTimes, bool $dev = false): array
+    public static function calendar(array $days, CarbonImmutable $startsAt, int $prepDays, array $roundTimes, bool $dev = false, array $restDays = []): array
     {
         $slots = [];
         $rest = null;
@@ -101,7 +102,12 @@ class SeasonScheduler
         if (self::at($date, $roundTimes[0])->lt($prepEnd)) {
             $date = $date->addDay();
         }
+        // Six days off a week at most (the settings allow fewer): a week always has a day to play.
+        $off = array_flip(array_slice(array_values(array_unique(array_map('intval', $restDays))), 0, 6));
         foreach ($days as $i => $d) {
+            while (isset($off[$date->dayOfWeekIso])) {
+                $date = $date->addDay();
+            }
             $slots[$i] = match ($d['type']) {
                 'league' => array_map(fn ($k) => self::at($date, $roundTimes[$k]), array_keys($d['rounds'])),
                 'cup' => [self::at($date, $roundTimes[0])],
@@ -145,7 +151,7 @@ class SeasonScheduler
             // After a live draw, its slots [X26].
             $clubs = LiveDraw::slots($league, $season, $clubs);
             $days = self::plan(count($clubs), $league->rounds_per_day);
-            $cal = self::calendar($days, CarbonImmutable::parse($season->starts_at), $league->prep_days, $league->round_times, $league->is_dev);
+            $cal = self::calendar($days, CarbonImmutable::parse($season->starts_at), $league->prep_days, $league->round_times, $league->is_dev, $league->rest_days ?? []);
             $now = GameClock::now();
 
             // League: the rounds in order, each at its slot.

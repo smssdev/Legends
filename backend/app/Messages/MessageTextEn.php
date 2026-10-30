@@ -192,6 +192,16 @@ class MessageTextEn
                 'body' => sprintf('%s asks for %s for %d rounds for %s.', $p['from'] ?? '', $p['player'] ?? '', (int) ($p['rounds'] ?? 1), number_format((int) ($p['money'] ?? 0))),
                 'link' => '/market?tab=offers',
             ],
+            // [Sprint 27 B2]
+            'match_move' => [
+                'title' => ['asked' => 'A request to move a match', 'accepted' => 'Your match has a new time', 'declined' => 'The new time was turned down'][$p['what'] ?? 'asked'] ?? 'Match time',
+                'body' => match ($p['what'] ?? 'asked') {
+                    'accepted' => sprintf('Your match against %s in %s now kicks off at %s Cairo time.', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                    'declined' => sprintf('%s turned down moving your match in %s to %s, so it stays at its time.', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                    default => sprintf('%s asks to move your match in %s to %s Cairo time, the same day. Accept or decline it from Next match.', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                },
+                'link' => '/match',
+            ],
             'slot_opened' => [
                 'title' => sprintf('Congratulations! Coach slot %s is open', $p['slot'] ?? ''),
                 'body' => sprintf('You now have %s of %s slots open: join a new league or create your own.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' The next one opens in %d days.', (int) config('game.league.slots.every_days')) : ' That is the last of your slots.'),

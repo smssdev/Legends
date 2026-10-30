@@ -52,7 +52,7 @@ class LeagueMatch
             $lineup = $club->isBot() ? TeamSheet::best($club, Bot::restBelow($club)) : MatchPrep::fixed($club)[0];
 
             return (object) ['formation' => $lineup['formation'], 'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']),
-                'bench' => json_encode($lineup['bench']), 'takers' => json_encode(TeamSheet::takers($club, $lineup)),
+                'bench' => json_encode($lineup['bench']), 'takers' => json_encode(TeamSheet::sheetTakers($club, $lineup)),
                 'tactics' => json_encode($club->isBot() ? MatchSetup::DEFAULT_TACTICS : Tactics::of($club)), 'squad' => null];
         };
         $side = fn (Club $c) => self::side($c, $sheet($c)) + ['morale' => (int) $c->morale, 'bribed' => false];

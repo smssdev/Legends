@@ -31,6 +31,11 @@ export function surname(full: string) {
  * A commentary line from story.ts as the commentator says it: names become clips of the player's (or club's) pack.
  * vars: {p, q} player ids, A the side the moment belongs to, n a number.
  */
+// [Sprint 27 S1] The English commentator never says a word in another script: a name written in Arabic (a club the
+// coach named, a player without a Latin name) is left out of what is said, and the line goes on without it.
+const LATIN = /^[\p{Script=Latin}\p{M}\p{N}\p{P}\p{S}\s]+$/u
+export const sayable = (name: string | undefined | null) => !!name && LATIN.test(name.trim())
+
 export function voiceLine(lang: Lang, l: { en: string | null; x: boolean; vars: any; m?: string; s?: string }, players: Record<string, { name: string; side: string }>, clubs: Record<string, string>): Line | null {
   if (!l.en) return null
   const v = l.vars, other = v.A === 'home' ? 'away' : 'home'
@@ -40,11 +45,12 @@ export function voiceLine(lang: Lang, l: { en: string | null; x: boolean; vars: 
     const m = piece.match(/^\{([pqAB])\}$/)
     if (m && (m[1] === 'A' || m[1] === 'B')) {
       const club = clubs[m[1] === 'A' ? v.A : other]
+      if (!sayable(club)) continue
       parts.push({ club: slug(club), key: '@club' })
       text += club
     } else if (m) {
       const p = players[v[m[1]]]
-      if (!p) continue
+      if (!p || !sayable(p.name)) continue
       parts.push({ club: slug(clubs[p.side]), key: surname(p.name) })
       text += surname(p.name)
     } else {
@@ -205,7 +211,8 @@ export class Commentator {
 
   private speak(line: Line): void {
     const v = this.synthVoice
-    if (!this.synth) return this.next()
+    // [Sprint 27 S1] Only an English voice says a line: a phone without one would read it in its own (Arabic) voice.
+    if (!this.synth || !v || !sayable(line.text)) return this.next()
     // Kept referenced: Chrome stops speech whose utterance gets garbage collected.
     const u = new SpeechSynthesisUtterance(line.text)
     if (v) u.voice = v

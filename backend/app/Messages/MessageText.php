@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -202,6 +202,16 @@ class MessageText
                 'title' => ['asked' => 'طلب إعارة', 'accepted' => 'قُبلت الإعارة', 'rejected' => 'رُفضت الإعارة'][$p['what'] ?? 'asked'] ?? 'إعارة',
                 'body' => sprintf('%s يطلب %s لمدة %d جولات مقابل %s.', $p['from'] ?? '', $p['player'] ?? '', (int) ($p['rounds'] ?? 1), number_format((int) ($p['money'] ?? 0))),
                 'link' => '/market?tab=offers',
+            ],
+            // [Sprint 27 B2] A match moved on its own day: asked, accepted or turned down. at: the new time in Cairo.
+            'match_move' => [
+                'title' => ['asked' => 'طلب تغيير موعد مباراة', 'accepted' => 'تغيّر موعد مباراتك', 'declined' => 'رُفض تغيير الموعد'][$p['what'] ?? 'asked'] ?? 'موعد مباراة',
+                'body' => match ($p['what'] ?? 'asked') {
+                    'accepted' => sprintf('مباراتك أمام %s في %s صارت الساعة %s بتوقيت القاهرة.', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                    'declined' => sprintf('رفض %s نقل مباراتكما في %s إلى الساعة %s، فبقيت في موعدها.', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                    default => sprintf('%s يطلب نقل مباراتكما في %s إلى الساعة %s بتوقيت القاهرة في اليوم نفسه. وافق أو ارفض من «المباراة القادمة».', $p['opponent'] ?? '', $league, $p['at'] ?? ''),
+                },
+                'link' => '/match',
             ],
             'slot_opened' => [
                 'title' => sprintf('مبروك! فُتحت فتحة المدرب رقم %s', $p['slot'] ?? ''),

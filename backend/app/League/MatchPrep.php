@@ -189,7 +189,7 @@ class MatchPrep
                 DB::table('fixture_sheets')->insert([
                     'fixture_id' => $fixtureId, 'club_id' => $clubId, 'formation' => $lineup['formation'],
                     'slots' => json_encode($lineup['slots']), 'starters' => json_encode($lineup['starters']), 'bench' => json_encode($lineup['bench']),
-                    'takers' => json_encode(TeamSheet::takers($club, $lineup)),
+                    'takers' => json_encode(TeamSheet::sheetTakers($club, $lineup)),
                     'tactics' => json_encode($club->isBot() ? Bot::tacticsFor($club, $fixture) : ($assistant ? MatchSetup::DEFAULT_TACTICS : Tactics::of($club))),
                     'fixes' => json_encode($fixes), 'locked_at' => $now,
                     // The coach's pre-match scenarios [X23], frozen like the rest.

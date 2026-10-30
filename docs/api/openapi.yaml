@@ -484,7 +484,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [formations, limits, bands, across]
+                required: [formations, limits, bands, across, off_line_bp]
                 properties:
                   formations: { type: array, items: { $ref: '#/components/schemas/Formation' } }
                   limits: { type: object, additionalProperties: { type: array, items: { type: integer } } }
@@ -494,6 +494,7 @@ paths:
                     description: The depth (x) a player of each line may be dragged to, [from, to]
                     additionalProperties: { type: array, items: { type: integer } }
                   across: { type: array, items: { type: integer }, description: 'The width (y) a player may be dragged to, [from, to]' }
+                  off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives out of his lines (bp of his ability), as the engine plays him' }
   /health:
     get:
       tags: [system]
@@ -595,6 +596,7 @@ paths:
                 team_count: { type: integer, minimum: 4, maximum: 20, description: 'From half the template''s clubs to all of them [UP9]' }
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1, description: 'One round a day [UP17]' }
                 round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM, Cairo time }
+                rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free' }
                 prep_days: { type: integer, enum: [2, 4, 6] }
                 timezone: { type: string, nullable: true, description: 'The creator''s IANA zone: the free league plays at 21:00 there' }
                 press_conferences: { type: boolean, default: true, description: '[UP12] The press conference before each match' }
@@ -655,6 +657,7 @@ paths:
                 name: { type: string, maxLength: 60, nullable: true }
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1 }
                 round_times: { type: array, items: { type: string } }
+                rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] The calendar is made again' }
                 prep_days: { type: integer, enum: [2, 4, 6] }
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
@@ -1039,7 +1042,7 @@ paths:
     put:
       tags: [team]
       summary: Choose the captain and set-piece takers
-      description: Starters only; null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.
+      description: 'Anyone in my squad [Sprint 27 W5]: out of the eleven, the automatic one takes the role until he is back. Null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.'
       requestBody:
         required: true
         content:
@@ -2002,6 +2005,59 @@ paths:
       responses:
         '200': { description: The quests after it, content: { application/json: { schema: { $ref: '#/components/schemas/Quests' } } } }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/moves:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: Ask to move my match by whole hours on its own day
+      description: '[Sprint 27 B2] The other coach accepts or declines (a bot''s club agrees at once). Both times at least an hour away, the new one an hour from either club''s other matches, two moves a match at most.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fixture_id, hours]
+              properties:
+                fixture_id: { type: integer }
+                hours: { type: integer, minimum: -23, maximum: 23, description: 'Not 0; one of next-match''s move.hours' }
+      responses:
+        '201':
+          description: Asked (or agreed at once by a bot's club)
+          content: { application/json: { schema: { type: object, required: [move], properties: { move: { $ref: '#/components/schemas/MatchMove' } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/moves/{move}/accept:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: move, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: The other coach accepts, and the match moves
+      responses:
+        '200':
+          description: Accepted
+          content: { application/json: { schema: { type: object, required: [move], properties: { move: { $ref: '#/components/schemas/MatchMove' } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/moves/{move}/decline:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: move, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: The other coach declines, and the match stays
+      responses:
+        '200':
+          description: Declined
+          content: { application/json: { schema: { type: object, required: [move], properties: { move: { $ref: '#/components/schemas/MatchMove' } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/moves/{move}:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: move, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [team]
+      summary: The coach who asked takes it back
+      responses:
+        '204': { description: Taken back }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/next-match:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2037,6 +2093,7 @@ paths:
                       morale: { type: integer, description: 'My morale for this match with my crowd and the tickets cheering me [X25]' }
                       slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
                       match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
+                      move: { $ref: '#/components/schemas/MatchMoveView' }
                       club:
                         type: object
                         description: 'My club, for the VS card [X29]'
@@ -3889,8 +3946,13 @@ components:
                   type: object
                   required: [auto]
                   properties:
-                    player_id: { type: integer, nullable: true }
+                    player_id: { type: integer, nullable: true, description: Who takes it in the next match }
                     auto: { type: boolean }
+                    chosen_id: { type: integer, nullable: true, description: '[Sprint 27 W5] The coach''s choice, playing or not' }
+                    candidates:
+                      type: array
+                      description: '[Sprint 27 W5] The squad ranked by the role''s skill (no goalkeeper but for captain)'
+                      items: { type: object, required: [id, skill, on], properties: { id: { type: integer }, skill: { type: integer }, on: { type: boolean, description: In the eleven } } }
               custom_formations:
                 type: array
                 items:
@@ -4241,6 +4303,7 @@ components:
         team_count: { type: integer }
         rounds_per_day: { type: integer }
         round_times: { type: array, items: { type: string } }
+        rest_days: { type: array, items: { type: integer }, description: '[Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo' }
         prep_days: { type: integer }
         season_end_mode: { type: string, enum: [renew, end] }
         starts_at: { type: string, format: date-time }
@@ -4626,16 +4689,60 @@ components:
             best: { type: array, items: { type: object, required: [id, name, rating], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer } } } }
             played: { type: integer }
             coins: { type: integer, description: '[Sprint 24 B2] The coins it cost (0 before Sprint 24)' }
+            timeline:
+              type: array
+              description: '[Sprint 27 B3] The quick simulation: one moment a minute (none before Sprint 27)'
+              items:
+                type: object
+                required: [m, k, score]
+                properties:
+                  m: { type: integer, description: The minute }
+                  x: { type: integer, description: 'Stoppage time: 45+2 is m 45, x 2' }
+                  k: { type: string, enum: [goal, red, penalty, saved, missed, blocked, yellow, corner, attack, quiet] }
+                  s: { type: string, enum: [home, away], description: Whose it was (home is my club) }
+                  p: { type: integer }
+                  name: { type: [string, 'null'] }
+                  score: { type: array, items: { type: integer }, description: '[mine, theirs] after the minute' }
+            stats:
+              type: object
+              properties:
+                home: { type: object, additionalProperties: { type: integer } }
+                away: { type: object, additionalProperties: { type: integer } }
+    MatchMoveView:
+      type: object
+      description: '[Sprint 27 B2] Moving the match by whole hours on its own day (Cairo), with the other coach''s yes'
+      required: [pending, moves_left, hours]
+      properties:
+        pending:
+          type: [object, 'null']
+          required: [id, to_at, mine, expires_at]
+          properties:
+            id: { type: integer }
+            to_at: { type: string, format: date-time }
+            mine: { type: boolean, description: I asked (else the other coach asks me) }
+            expires_at: { type: string, format: date-time }
+        moves_left: { type: integer }
+        hours: { type: array, items: { type: integer }, description: 'The hours I may ask for now (negative: earlier)' }
+    MatchMove:
+      type: object
+      required: [id, fixture_id, from_at, to_at, status]
+      properties:
+        id: { type: integer }
+        fixture_id: { type: integer }
+        from_at: { type: string, format: date-time }
+        to_at: { type: string, format: date-time }
+        status: { type: string, enum: [pending, accepted, declined, cancelled, expired] }
     Friendlies:
       type: object
-      required: [coins, balance, fitness, blocked, training_progress_pct, opponents, recent]
+      required: [club, coins, balance, fitness, blocked, training_progress_pct, opponents, recent]
       properties:
+        club: { type: object, required: [name, crest_url], properties: { name: { type: string }, crest_url: { type: string } }, description: '[Sprint 27 B3] My club, for the quick simulation' }
         coins: { type: integer, description: '[Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit' }
         balance: { type: integer, description: The coach's coins }
         fitness: { type: integer, description: '[Sprint 24 B2] The fitness each player who plays gains (up to 100)' }
         blocked: { type: [object, 'null'], required: [reason], properties: { reason: { type: string, enum: [live, before_match] }, until: { type: string, format: date-time } } }
         training_progress_pct: { type: integer }
-        opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean } } } }
+        opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended, played_today], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean }, played_today: { type: boolean, description: '[Sprint 27 X1] Already played today: one friendly a day against each club (Cairo day)' } } } }
         recent: { type: array, items: { $ref: '#/components/schemas/Friendly' } }
     Quests:
       type: object
@@ -4868,8 +4975,13 @@ components:
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
       type: object
-      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
+      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role, place_bp]
       properties:
+        place_bp:
+          type: object
+          description: '[Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000'
+          required: [gk, def, mid, att]
+          properties: { gk: { type: integer }, def: { type: integer }, mid: { type: integer }, att: { type: integer } }
         id: { type: integer }
         name: { type: string }
         position: { type: string }

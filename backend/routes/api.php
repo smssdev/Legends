@@ -127,6 +127,11 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::put('tactics', 'saveTactics');
         Route::put('scenarios', 'saveScenarios');
         Route::get('next-match', 'nextMatch');
+        // [Sprint 27 B2] Moving a match on its own day, with the other coach's answer.
+        Route::post('moves', 'proposeMove')->middleware('throttle:20,1,moves');
+        Route::post('moves/{move}/accept', 'acceptMove')->whereNumber('move')->middleware('throttle:20,1,moves');
+        Route::post('moves/{move}/decline', 'declineMove')->whereNumber('move')->middleware('throttle:20,1,moves');
+        Route::delete('moves/{move}', 'cancelMove')->whereNumber('move')->middleware('throttle:20,1,moves');
         // [Sprint 20 B1, B3] The club board in one request, and the matches the coach missed.
         Route::get('summary', [ClubBoardController::class, 'summary']);
         Route::get('missed', [ClubBoardController::class, 'missed']);
