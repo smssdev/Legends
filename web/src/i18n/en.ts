@@ -2348,4 +2348,12 @@ export const EN: Record<string, string> = {
   'حُفظت إعدادات الجروبات.': 'The group settings were saved.',
   'حُذفت {v0} رسالة قديمة.': '{v0} old messages were deleted.',
   'احذف القديمة الآن': 'Delete the old ones now',
+  // [X66] The live draw's chat and reactions.
+  'دردشة القرعة': 'Draw chat',
+  'كن أول من يعلّق على القرعة!': 'Be the first to comment on the draw!',
+  'لا تعليقات.': 'No comments.',
+  'تفاعل': 'React',
+  'تفاعل {v0}': 'React {v0}',
+  'علّق على القرعة…': 'Comment on the draw…',
+  'تُفتح الدردشة قبل القرعة بساعة وتُغلق بعدها بنصف ساعة.': 'The chat opens an hour before the draw and closes half an hour after it.',
 }

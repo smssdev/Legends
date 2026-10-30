@@ -11,6 +11,7 @@ import { intlLocale, t } from '../../lib/i18n'
 import { nm } from '../../lib/names'
 import { announce, drumRoll, reveal, soundOff, soundOn } from '../../lib/drawSound'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
+import DrawChatPanel from './DrawChatPanel.vue'
 import { STAGES } from './labels'
 
 type Draw = paths['/tournaments/{league}/draw']['get']['responses']['200']['content']['application/json']
@@ -118,6 +119,8 @@ const countdown = computed(() => {
   return (d ? `${d}d ` : '') + (h || d ? `${String(h).padStart(2, '0')}:` : '') + `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
 })
 const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })
+// [X66] A replay shows the chat as it was at the moment it has reached (the server's time then); live, all of it.
+const chatCutoff = computed(() => (replayFrom.value !== null && !done.value && draw.value?.drawn_at ? new Date(draw.value.drawn_at).getTime() + Math.max(0, elapsed.value) : null))
 const liveNow = computed(() => !!draw.value?.drawn_at && replayFrom.value === null && !done.value && !skipped.value)
 const confetti = Array.from({ length: 14 }, (_, i) => ({ x: Math.cos((i / 14) * Math.PI * 2) * (90 + (i % 3) * 30), y: Math.sin((i / 14) * Math.PI * 2) * (70 + (i % 4) * 20), r: i * 37 }))
 
@@ -222,6 +225,7 @@ async function schedule() {
         </section>
       </template>
     </template>
+    <DrawChatPanel v-if="draw" :id="id" :cutoff="chatCutoff" />
   </main>
 </template>
 

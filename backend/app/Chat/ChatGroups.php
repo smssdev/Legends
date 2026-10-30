@@ -239,7 +239,8 @@ class ChatGroups
             }
         } while (count($ids) === 500);
 
-        return $n;
+        // [X66] And the live draws' chat with them.
+        return $n + DrawChat::prune($days);
     }
 
     private static function post(int $groupId, User $user, string $kind, string $body, ?int $replyTo, ?callable $then = null): array

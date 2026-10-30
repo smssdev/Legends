@@ -4004,6 +4004,49 @@ paths:
                             stage: { type: string }
                             side: { type: string }
         '404': { $ref: '#/components/responses/Error' }
+  /tournaments/{league}/draw/chat:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [tournaments]
+      summary: '[X66] The live draw''s chat - its lines and reactions so far (or after an id), and whether it is open now'
+      parameters: [{ name: after, in: query, schema: { type: integer } }]
+      responses:
+        '200':
+          description: The chat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [open, opens_at, closes_at, reactions, can_moderate, messages]
+                properties:
+                  open: { type: boolean, description: From an hour before the draw to half an hour after its last ball }
+                  opens_at: { type: string, format: date-time }
+                  closes_at: { type: string, format: date-time }
+                  reactions: { type: array, items: { type: string } }
+                  can_moderate: { type: boolean, description: The tournament's maker or an admin }
+                  messages: { type: array, items: { $ref: '#/components/schemas/DrawChatLine' } }
+        '404': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [tournaments]
+      summary: 'Say a line or send a reaction (sent at once on channel draw.{league}, event "draw-chat"), for anyone signed in while it is open'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [kind, body], properties: { kind: { type: string, enum: [text, emoji] }, body: { type: string } } } } }
+      responses:
+        '201':
+          description: The line
+          content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/DrawChatLine' } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /tournaments/{league}/draw/chat/{message}:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: message, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [tournaments]
+      summary: Delete a line (one's own; the tournament's maker or an admin any)
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
   /groups:
     get:
       tags: [groups]
@@ -4563,6 +4606,16 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    DrawChatLine:
+      type: object
+      required: [id, kind, deleted, body, user, at]
+      properties:
+        id: { type: integer }
+        kind: { type: string, enum: [text, emoji] }
+        deleted: { type: boolean }
+        body: { type: string }
+        user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        at: { type: integer, description: When it was said, in milliseconds on the server's clock (a replay shows it then) }
     Tournament:
       type: object
       required: [id, name, code, template, format, group_count, advance_per_group, legs, team_count, status, owner, starts_at, draw_at, drawn_at, coaches]

@@ -21,3 +21,6 @@ Broadcast::channel('club.{club}', fn ($user, int $club) => DB::table('clubs')->w
 
 // [Sprint 29] A chat group: its members only.
 Broadcast::channel('chat.{group}', fn ($user, int $group) => DB::table('chat_group_members')->where('chat_group_id', $group)->where('user_id', $user->id)->exists());
+
+// [X66] A tournament's live draw: anyone signed in may watch it, and its chat with it.
+Broadcast::channel('draw.{league}', fn ($user, int $league) => DB::table('leagues')->where('id', $league)->where('kind', 'tournament')->exists());
