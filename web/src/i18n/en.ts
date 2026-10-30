@@ -1976,4 +1976,8 @@ export const EN: Record<string, string> = {
   'الأسماء لأغراض اللعب فقط، والمدرب الأسطورة لعبة مستقلة غير تابعة لأي نادٍ أو دوري أو اتحاد.': 'The names are for play only, and GLM is an independent game, not affiliated with any club, league or federation.',
   'بأي لغة اللعبة؟': 'What language is the game in?',
   'بالعربية والإنجليزية، وتبدّل بينهما متى شئت.': 'Arabic and English, and you switch between them whenever you like.',
+  // [X61]
+  'الصفحة غير موجودة': 'Page not found',
+  'ربما تغيّر الرابط أو كُتب خطأ.': 'The link may have changed or been mistyped.',
+  'العودة للرئيسية': 'Back to home',
 }

@@ -120,7 +120,9 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
             <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
             <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-text/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
-          <AgendaPanel v-if="agenda" :kind="agenda" @close="agenda = null" />
+          <Transition name="drop">
+            <AgendaPanel v-if="agenda" :kind="agenda" @close="agenda = null" />
+          </Transition>
         </div>
       </div>
 
@@ -172,7 +174,11 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
       </nav>
       <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
-        <RouterView />
+        <RouterView v-slot="{ Component, route: r }">
+          <Transition name="page">
+            <component :is="Component" :key="r.path" />
+          </Transition>
+        </RouterView>
       </main>
     </div>
 

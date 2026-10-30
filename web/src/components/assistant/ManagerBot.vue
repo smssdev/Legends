@@ -197,10 +197,16 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 .bot-go { display: flex; align-items: center; margin-top: 0.4rem; min-height: 2.75rem; padding: 0 0.75rem; border-radius: 0.6rem; font-weight: 800; font-size: 0.8rem; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-qs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .bot-q { min-height: 2.75rem; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-align: start; color: var(--color-ring); background: color-mix(in srgb, var(--color-brand) 18%, transparent); border: 1px solid color-mix(in srgb, var(--color-ring) 30%, transparent); }
-.bot-ask { display: flex; gap: 0.5rem; padding: 0.6rem 0.75rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
-.bot-input { flex: 1; min-height: 2.75rem; max-height: 8rem; resize: none; padding: 0.6rem 0.75rem; border-radius: 0.75rem; font: inherit; color: var(--color-text); background: var(--color-surface-sunk); }
-.bot-send { width: 2.75rem; height: 2.75rem; flex: none; border-radius: 0.75rem; font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
+.bot-ask { position: relative; display: flex; padding: 0.6rem 0.75rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
+.bot-input { flex: 1; min-height: 2.75rem; max-height: 8rem; resize: none; padding: 0.6rem 0.75rem; padding-inline-end: 3.25rem; border-radius: 0.75rem; font: inherit; color: var(--color-text); background: var(--color-surface-sunk); }
+/* [X61] The send button inside the field, at its end, so it never covers what is typed. */
+.bot-send { position: absolute; bottom: max(0.75rem, env(safe-area-inset-bottom)); inset-inline-end: 0.75rem; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform var(--duration-fast) var(--ease-soft); font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-send:disabled { opacity: 0.5; }
 .bot-dots { display: inline-flex; gap: 0.25rem; }
-.bot-dots i { width: 0.4rem; height: 0.4rem; border-radius: 999px; background: var(--color-text-muted); opacity: 0.6; }
+.bot-dots i { width: 0.4rem; height: 0.4rem; border-radius: 999px; background: var(--color-text-muted); opacity: 0.6; animation: bot-dot 1.2s var(--ease-soft) infinite; }
+/* [X61] The three dots bounce one after the other while he writes; a message rises in. */
+.bot-dots i:nth-child(2) { animation-delay: 0.15s; }
+.bot-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bot-dot { 0%, 60%, 100% { transform: none; opacity: 0.6; } 30% { transform: translateY(-0.25rem); opacity: 1; } }
+.bot-msg { animation: fade-up var(--duration-base) var(--ease-soft); }
 </style>

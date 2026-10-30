@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // [Sprint 20 W3, W4] The top bar's two windows: the timers (everything on a clock, counting down live) or what waits
-// for the coach (the most urgent first). A sheet from the bottom on the phone, a panel under its icon on the computer.
+// for the coach (the most urgent first). [X61] Under the top bar on the phone too (it was a sheet from the bottom, under
+// the bot and the bottom bar), and a panel under its icon on the computer.
 // Each line opens its screen and closes the window.
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -24,9 +25,9 @@ const go = (to: string) => {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 bg-black/55 md:bg-transparent" @click="emit('close')" />
+  <div class="contents">
+  <div class="agenda-veil fixed inset-0 z-40 bg-black/55 md:bg-transparent" @click="emit('close')" />
   <section class="agenda" role="dialog" :aria-label="$t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك')" @keydown.esc="emit('close')">
-    <span class="mx-auto mb-2 block h-1 w-10 rounded-full bg-surface-raised md:hidden" aria-hidden="true" />
     <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold">
       <Icon :name="kind === 'timers' ? 'clock' : 'todo'" :size="18" />{{ $t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك') }}
     </h2>
@@ -74,24 +75,28 @@ const go = (to: string) => {
       </ul>
     </template>
   </section>
+  </div>
 </template>
 
 <style scoped>
 .agenda {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
+  position: absolute;
+  top: 100%;
+  inset-inline: 0.5rem;
   z-index: 45;
-  max-height: 80dvh;
+  max-height: 70dvh;
   overflow-y: auto;
-  padding: 0.6rem 0.85rem calc(1rem + env(safe-area-inset-bottom, 0px));
-  border-radius: 1.25rem 1.25rem 0 0;
+  overscroll-behavior: contain;
+  margin-top: 0.4rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 1rem;
   background: var(--color-surface);
-  border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
-  box-shadow: 0 -12px 40px color-mix(in srgb, var(--color-shade) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--color-shade) 60%, transparent);
+  transform-origin: top;
 }
 @media (min-width: 768px) {
-  .agenda { position: absolute; top: 100%; bottom: auto; inset-inline-start: auto; inset-inline-end: 1rem; width: 24rem; margin-top: 0.4rem; border-radius: 1rem; border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+  .agenda { inset-inline-start: auto; inset-inline-end: 1rem; width: 24rem; }
 }
 .agenda-row {
   display: flex;
