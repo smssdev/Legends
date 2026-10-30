@@ -2,13 +2,15 @@
 // [Sprint 20 W7, B3] The matches the coach missed since his last visit, in one window: the score, the goals, the man
 // of the match, the coins, and what changed in his squad; «شاهد الإعادة» and «التقرير» (each marks it seen), the
 // next one, or «تخطَّ الكل». Once skipped, a match does not come back. [Sprint 24 W1] «الملخص السريع» first: the
-// match's big moments fast, then the numbers (MatchRecap), and it counts as seen.
+// match's big moments fast, then the numbers (MatchRecap), and it counts as seen. [Sprint 26 W2] The lion mascot (A2)
+// feels the result as the server says (joy, surprise, calm, sad or angry).
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { useBoard } from '../../stores/board'
 import MatchRecap from './MatchRecap.vue'
+import Character from '../characters/Character.vue'
 
 const props = defineProps<{ leagueId: number }>()
 const router = useRouter()
@@ -47,6 +49,7 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
   <MatchRecap v-if="recap" :match-id="recap" @close="recapClosed" />
   <div v-else-if="m" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فاتتك مباراة')">
     <div class="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-gold/40 bg-surface p-5 shadow-2xl">
+      <Character model="A2" :mood="m.mood" class="-mb-2 -mt-2 w-24 self-center" />
       <div class="flex items-center text-xs text-text-muted">
         <span class="flex-1">{{ $t(m.competition === 'league' ? 'فاتتك مباراة · الجولة {v0}' : 'فاتتك مباراة · الكأس', { v0: m.round }) }}</span>
         <span v-if="matches.length > 1" class="font-numbers" dir="ltr">{{ at + 1 }} / {{ matches.length }}</span>

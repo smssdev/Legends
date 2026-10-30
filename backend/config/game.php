@@ -385,6 +385,9 @@ return [
     // after vacation_rest_days from its end; the picture's largest upload (kilobytes) and its side (pixels).
     // How the coach watches [X10]: the two simulators. Unity opens only once its web build is deployed. The Arabic
     // commentators were deleted (2026-10-27); their setting stays accepted in the API (its contract), and is unused.
+    // [Sprint 26] The characters (README section 0, 2026-10-30): the coach's look on the touchline (C1 to C3 of the
+    // draft), a goal against from late_minute on angers instead of saddening, and a win by big_margin surprises.
+    'characters' => ['looks' => ['C1', 'C2', 'C3'], 'default_look' => 'C1', 'late_minute' => 85, 'big_margin' => 3],
     'viewing' => ['commentators' => ['base', 'voice-1', 'voice-2', 'voice-3', 'voice-4', 'voice-5', 'voice-6', 'voice-7'], 'default_commentator' => 'voice-6',
         'match_views' => ['cartoon', 'unity'], 'unity_ready' => (bool) env('UNITY_BUILD', false)],
     // [UP6] The welcome coins, paid once the account is verified by a WhatsApp code, which lasts verify_code_days.

@@ -11,6 +11,8 @@ namespace Legends
     {
         public ClubKit Home, Away;
         public readonly List<PlayerInfo> Players = new List<PlayerInfo>();
+        /// <summary>[Sprint 26 U1] Each human coach's look on the bench (C1 to C3); empty for a club with no coach.</summary>
+        public string HomeLook = "", AwayLook = "";
         public int TickMs = 3000;
 
         /// <summary>
@@ -24,6 +26,9 @@ namespace Legends
             setup.Home = ClubKit.From(MiniJson.Obj(clubs, "home"));
             setup.Away = ClubKit.From(MiniJson.Obj(clubs, "away"));
             setup.TickMs = (int)MiniJson.Int(json, "tick_ms", 3000);
+            var looks = MiniJson.Obj(json, "coach_looks");
+            setup.HomeLook = MiniJson.Str(looks, "home");
+            setup.AwayLook = MiniJson.Str(looks, "away");
             var players = MiniJson.Obj(json, "players");
             foreach (var side in new[] { "home", "away" })
             {
@@ -68,6 +73,8 @@ namespace Legends
     {
         public int Tick, Period, Minute, Added, HomeGoals, AwayGoals, Ms;
         public string Moment = "quiet";
+        /// <summary>[Sprint 26 U1] How each coach feels after the minute, as the server says (App\Characters\Mood).</summary>
+        public string HomeMood = "idle", AwayMood = "idle";
         public bool Finished;
         public readonly List<Frame> Frames = new List<Frame>();
 
@@ -90,6 +97,9 @@ namespace Legends
             m.AwayGoals = (int)MiniJson.Int(score, "away");
             var moment = MiniJson.Obj(json, "moment");
             m.Moment = MiniJson.Str(moment, "kind", "quiet");
+            var moods = MiniJson.Obj(json, "moods");
+            m.HomeMood = MiniJson.Str(moods, "home", "idle");
+            m.AwayMood = MiniJson.Str(moods, "away", "idle");
             m.Ms = (int)MiniJson.Int(moment, "ms", tickMs);
             if (m.Ms <= 0) m.Ms = tickMs;
             foreach (var fr in MiniJson.Arr(json, "frames") ?? new List<object>())

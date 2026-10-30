@@ -11,6 +11,7 @@ import { useBot, type BotMessage } from '../../stores/bot'
 import { useSlot } from '../../stores/slot'
 import { t } from '../../lib/i18n'
 import BotClosing from './BotClosing.vue'
+import Character from '../characters/Character.vue'
 
 // Raised above the phone's bottom bar inside a slot.
 const props = defineProps<{ raised?: boolean }>()
@@ -98,12 +99,10 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   <div class="bot-root" :class="props.raised ? 'raised' : ''">
     <!-- W1: the button, and the day's greeting beside it. -->
     <div v-if="!bot.open" class="bot-fab-row">
-      <!-- [X62] The owner's decision (2026-10-30): the button comes alive, two eyes that look around and blink
-           (Sprint 22's still button replaced); still with reduced motion. -->
-      <button type="button" class="bot-fab" :aria-label="$t('افتح المدرب المساعد')" @click="show">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 5h20a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
-          <g class="bot-eyes"><ellipse cx="11.5" cy="13.5" rx="2.6" ry="3" fill="currentColor" /><ellipse cx="20.5" cy="13.5" rx="2.6" ry="3" fill="currentColor" />
-            <g class="bot-pupils"><circle cx="12.2" cy="12.8" r="0.9" fill="var(--color-gold-light)" /><circle cx="21.2" cy="12.8" r="0.9" fill="var(--color-gold-light)" /></g></g></svg>
+      <!-- [Sprint 26 W5] The owner's decision (2026-10-30): the button is the gold face B3 of the characters, calm, and
+           glad on the day's greeting (X62's eyes replaced); still with reduced motion. -->
+      <button type="button" class="bot-fab face" :aria-label="$t('افتح المدرب المساعد')" @click="show">
+        <Character model="B3" :mood="hello ? 'joy' : 'idle'" class="bot-face" />
         <span class="bot-on" />
       </button>
       <div v-if="hello" class="bot-hello">
@@ -118,9 +117,8 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
     <!-- W2: the window. -->
     <section v-else class="bot-panel" role="dialog" :aria-label="bot.name || $t('المدرب المساعد')" @keydown.esc="bot.open = false">
       <header class="bot-head">
-        <span class="bot-fab small" aria-hidden="true">
-          <svg viewBox="0 0 32 32"><path d="M6 5h20a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" /><path d="M16 6v16" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="1.3" fill="currentColor" /></svg>
-        </span>
+        <!-- [Sprint 26 W5] The robot B1 in the window: thinking while he writes, calm otherwise. -->
+        <span class="bot-fab small robot" aria-hidden="true"><Character model="B1" :mood="bot.thinking ? 'think' : 'idle'" class="w-full" /></span>
         <div class="min-w-0 flex-1">
           <b class="block truncate">{{ bot.name || $t('المدرب المساعد') }}</b>
           <small v-if="status === 'on'" class="text-ring">● {{ leagueId ? $t('متصل · يعرف ناديك') : $t('متصل') }}</small>
@@ -191,6 +189,11 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 .bot-fab svg { width: 1.9rem; height: 1.9rem; }
 .bot-fab.small { width: 2.75rem; height: 2.75rem; box-shadow: none; }
 .bot-fab.small svg { width: 1.5rem; height: 1.5rem; }
+/* [Sprint 26 W5] The faces: B3 is the gold button itself, B1 sits on the window's dark disc. */
+.bot-fab.face { width: 4.25rem; height: 4.25rem; background: none; box-shadow: none; overflow: visible; }
+.bot-fab.face .bot-face { width: 4.25rem; filter: drop-shadow(0 6px 12px color-mix(in srgb, var(--color-shade) 45%, transparent)); }
+.bot-fab.face .bot-face svg, .bot-fab.small.robot svg { width: 100%; height: auto; }
+.bot-fab.small.robot { overflow: hidden; background: var(--color-surface-raised); padding: 0.1rem; }
 .bot-on { position: absolute; top: 0.15rem; inset-inline-end: 0.15rem; width: 0.8rem; height: 0.8rem; border-radius: 999px; background: var(--color-ring); border: 2px solid var(--color-bg); }
 .bot-hello {
   position: relative;
@@ -231,10 +234,6 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 /* [X61] The send button inside the field, at its end, so it never covers what is typed. */
 .bot-send { position: absolute; bottom: max(0.75rem, env(safe-area-inset-bottom)); inset-inline-end: 0.75rem; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform var(--duration-fast) var(--ease-soft); font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-send:disabled { opacity: 0.5; }
-.bot-eyes { transform-origin: 16px 13.5px; animation: bot-blink 4.5s infinite; }
-.bot-pupils { animation: bot-look 6s var(--ease-soft) infinite; }
-@keyframes bot-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-@keyframes bot-look { 0%, 30% { transform: none; } 40%, 55% { transform: translateX(-1.4px); } 65%, 80% { transform: translateX(1.4px); } 90%, 100% { transform: none; } }
 .bot-dots { display: inline-flex; gap: 0.25rem; }
 .bot-dots i { width: 0.4rem; height: 0.4rem; border-radius: 999px; background: var(--color-text-muted); opacity: 0.6; animation: bot-dot 1.2s var(--ease-soft) infinite; }
 /* [X61] The three dots bounce one after the other while he writes; a message rises in. */

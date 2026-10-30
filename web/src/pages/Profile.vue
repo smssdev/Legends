@@ -14,7 +14,8 @@ import VerifiedBadge from '../components/VerifiedBadge.vue'
 import SupportLinks from '../components/SupportLinks.vue'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
-import { MATCH_VIEWS, useViewing, type MatchView } from '../match/viewing'
+import { COACH_LOOKS, MATCH_VIEWS, useViewing, type CoachLook, type MatchView } from '../match/viewing'
+import Character from '../components/characters/Character.vue'
 import { namesLang, setNamesLang } from '../lib/names'
 import { intlLocale, locale, t } from '../lib/i18n'
 import LanguageSwitch from '../components/LanguageSwitch.vue'
@@ -35,7 +36,7 @@ const welcome = computed(() =>
 const viewing = useViewing()
 const viewMsg = ref('')
 const viewErr = ref(false)
-async function saveViewing(body: { match_view?: MatchView }) {
+async function saveViewing(body: { match_view?: MatchView; coach_look?: CoachLook }) {
   viewMsg.value = ''
   try {
     await viewing.save(body)
@@ -359,6 +360,17 @@ async function remove() {
 
     <section class="flex flex-col gap-4 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-viewing">
       <h2 id="h-viewing" class="font-display text-xl font-extrabold">{{ $t('مشاهدة المباريات') }}</h2>
+      <!-- [Sprint 26 W7] How the coach looks on the touchline: the live match, the bench in Unity, his profile. -->
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 text-sm font-bold">{{ $t('شكلك على الخط') }}</legend>
+        <div class="grid grid-cols-3 gap-2">
+          <label v-for="c in COACH_LOOKS" :key="c.id" class="flex cursor-pointer flex-col items-center gap-1 rounded-lg border p-2 text-center" :class="viewing.coachLook.value === c.id ? 'border-gold bg-gold/10' : 'border-text/10'">
+            <input type="radio" name="coach-look" class="sr-only" :value="c.id" :checked="viewing.coachLook.value === c.id" @change="saveViewing({ coach_look: c.id })" />
+            <Character :model="c.id" :mood="viewing.coachLook.value === c.id ? 'joy' : 'idle'" three class="w-20" />
+            <span class="text-xs font-bold">{{ $t(c.name) }}</span>
+          </label>
+        </div>
+      </fieldset>
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-1 text-sm font-bold">{{ $t('المحاكي') }}</legend>
         <label v-for="v in MATCH_VIEWS" :key="v.id" class="flex min-h-touch cursor-pointer items-center gap-3 rounded-lg border px-3 py-2" :class="viewing.chosenView.value === v.id ? 'border-gold bg-gold/10' : 'border-text/10'">

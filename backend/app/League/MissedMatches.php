@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Characters\Mood;
 use App\Models\Club;
 use App\Support\GameClock;
 use Illuminate\Support\Carbon;
@@ -63,8 +64,10 @@ class MissedMatches
                 'man_of_the_match' => $best,
                 'coins' => (int) ($coins["fixture:{$r->fixture_id}"] ?? 0),
                 // What changed in my squad: my injured and sent-off players.
-                'changes' => $own->filter(fn ($e) => (int) $e->club_id === $club->id && ($e->type === 'injury' || ($e->type === 'card' && (json_decode($e->payload, true)['color'] ?? null) === 'red')))
-                    ->map(fn ($e) => ['kind' => $e->type === 'injury' ? 'injury' : 'red', 'player' => $names[$e->player_id] ?? null])->values()->all()];
+                'changes' => $changes = $own->filter(fn ($e) => (int) $e->club_id === $club->id && ($e->type === 'injury' || ($e->type === 'card' && (json_decode($e->payload, true)['color'] ?? null) === 'red')))
+                    ->map(fn ($e) => ['kind' => $e->type === 'injury' ? 'injury' : 'red', 'player' => $names[$e->player_id] ?? null])->values()->all(),
+                // [Sprint 26 B2] The mascot's mood in the window.
+                'mood' => Mood::forResult($for, $against, in_array('red', array_column($changes, 'kind'), true), (int) config('game.characters.big_margin'))];
         })->all();
     }
 

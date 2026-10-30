@@ -53,6 +53,8 @@ namespace Legends
             {
                 ["clubs"] = MiniJson.Obj(match, "clubs"),
                 ["tick_ms"] = MiniJson.Int(MiniJson.Obj(match, "timing"), "tick_ms", 3000),
+                // [Sprint 26 U1] The recording is older than the coaches' looks: two of them, to see the bench.
+                ["coach_looks"] = (object)MiniJson.Obj(match, "coach_looks") ?? new Dictionary<string, object> { ["home"] = "C1", ["away"] = "C2" },
                 ["players"] = new Dictionary<string, object>
                 {
                     ["home"] = MiniJson.Arr(MiniJson.Obj(teams, "home"), "players"),

@@ -73,6 +73,8 @@ export interface MatchEvent {
 }
 
 export interface Tick {
+  /** [Sprint 26 B1] How each side's coach feels after the minute (App\Characters\Mood). */
+  moods?: Record<Side, string>
   tick: number
   period: number
   minute: [number, number]
@@ -152,6 +154,8 @@ export interface MatchView {
   timing: { tick_ms: number; extra_time_tick_ms: number; halftime_seconds: number; windows?: number[]; window_seconds?: number }
   clubs: Record<Side, Club>
   coaches?: Partial<Record<Side, string>>
+  /** [Sprint 26] Each human coach's look on the touchline. */
+  coach_looks?: Partial<Record<Side, 'C1' | 'C2' | 'C3'>>
   teams: Record<Side, TeamSnapshot>
 }
 

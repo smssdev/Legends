@@ -96,6 +96,8 @@ class ClubBoardTest extends TestCase
         $missed = $this->getJson($this->url('missed'))->assertOk()->assertJsonCount(1, 'matches')->json('matches.0');
         $this->assertSame($match, $missed['match_id']);
         $this->assertSame(1, $missed['result']);
+        // [Sprint 26 B2] A 2-0 win: the mascot is happy.
+        $this->assertSame('joy', $missed['mood']);
         $this->assertCount(2, $missed['goals']);
         $this->assertSame($home ? 'home' : 'away', $missed['goals'][0]['side']);
         $this->assertSame(1, $this->getJson($this->url('summary'))->json('missed'));

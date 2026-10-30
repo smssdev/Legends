@@ -2104,4 +2104,10 @@ export const EN: Record<string, string> = {
   'رقم النادي': 'Club number',
   'اللون الأول': 'First colour',
   'اللون الثاني': 'Second colour',
+  // [Sprint 26] The characters.
+  'المدربان على الخط': 'The coaches on the touchline',
+  'شكلك على الخط': 'Your look on the touchline',
+  'مدرب ببدلة': 'Coach in a suit',
+  'مدرب بالتراك سوت': 'Coach in a tracksuit',
+  'مدربة بحجاب': 'Coach in a hijab',
 }

@@ -16,7 +16,7 @@ class ViewingPreferencesTest extends TestCase
     {
         Sanctum::actingAs(User::factory()->create());
         $this->getJson('/api/v1/auth/me')->assertOk()
-            ->assertJsonPath('user.viewing', ['commentator' => 'voice-6', 'match_view' => 'cartoon', 'unity_ready' => false]);
+            ->assertJsonPath('user.viewing', ['commentator' => 'voice-6', 'match_view' => 'cartoon', 'coach_look' => 'C1', 'unity_ready' => false]);
     }
 
     public function test_the_coach_picks_another_voice_and_unity_alone(): void

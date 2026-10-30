@@ -93,6 +93,16 @@ class AuthTest extends TestCase
         $this->patchJson('/api/v1/auth/me', ['username' => 'Pharaoh'])->assertOk()->assertJsonPath('user.username', 'pharaoh')->assertJsonPath('user.name', 'سليمان');
     }
 
+    public function test_the_coach_picks_his_look_on_the_touchline(): void
+    {
+        // [Sprint 26 B3] C1 until he picks; only the three approved looks.
+        Sanctum::actingAs($this->user(['username' => 'sliman']));
+        $this->getJson('/api/v1/auth/me')->assertOk()->assertJsonPath('user.viewing.coach_look', 'C1');
+        $this->patchJson('/api/v1/auth/me', ['coach_look' => 'C2'])->assertOk()->assertJsonPath('user.viewing.coach_look', 'C2');
+        $this->patchJson('/api/v1/auth/me', ['coach_look' => 'C9'])->assertStatus(422);
+        $this->getJson('/api/v1/auth/me')->assertJsonPath('user.viewing.coach_look', 'C2');
+    }
+
     public function test_the_web_signs_in_with_the_username_too(): void
     {
         $this->user(['username' => 'sliman']);

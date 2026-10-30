@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLES = ['user', 'admin'];
 
     /** @var list<string> */
-    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale', 'coach_look'];
 
     /** @var list<string> */
     protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
@@ -126,6 +126,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'viewing' => [
                 'commentator' => $this->commentator ?? config('game.viewing.default_commentator'),
                 'match_view' => $this->match_view ?? 'cartoon',
+                // [Sprint 26 B3] How the coach looks on the touchline: C1 to C3 of the characters.
+                'coach_look' => $this->coach_look ?? config('game.characters.default_look'),
                 'unity_ready' => (bool) config('game.viewing.unity_ready'),
             ],
             'vacation' => [

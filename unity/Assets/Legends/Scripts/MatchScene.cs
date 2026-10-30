@@ -17,6 +17,8 @@ namespace Legends
 
         public MatchSetup Setup { get; private set; }
         public MatchMinute Current { get; private set; }
+        /// <summary>[Sprint 26 U1] The coaches on the bench, if the scene has them.</summary>
+        public BenchCoaches bench;
         public Transform Ball { get; private set; }
 
         readonly Queue<MatchMinute> queue = new Queue<MatchMinute>();
@@ -30,6 +32,7 @@ namespace Legends
             queue.Clear();
             Current = null;
             Setup = setup;
+            if (bench != null) bench.Setup(setup.HomeLook, setup.AwayLook);
 
             var home = Kit(setup.Home.Primary);
             // The away side changes to its second colour when the first is too close to the home kit.
@@ -71,6 +74,7 @@ namespace Legends
                 if (queue.Count == 0) return;
                 Current = queue.Dequeue();
                 elapsedMs = 0;
+                if (bench != null) bench.Feel(Current.HomeMood, Current.AwayMood);
             }
             elapsedMs += Time.deltaTime * 1000f;
             Draw(Current, Mathf.Clamp01(elapsedMs / Current.Ms));

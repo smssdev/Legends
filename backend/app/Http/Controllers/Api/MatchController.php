@@ -47,6 +47,9 @@ class MatchController extends Controller
             'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']), 'away' => ClubLogo::with($state['teams']['away']['club'])],
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
+            // [Sprint 26 B3] Each human coach's look on the touchline (C1 to C3); a club without a coach has none.
+            'coach_looks' => DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
+                ->pluck('users.coach_look', 'clubs.id')->mapWithKeys(fn ($l, $id) => [$id === $f->home_id ? 'home' : 'away' => $l ?: config('game.characters.default_look')]),
             'teams' => Simulator::redact(['teams' => Simulator::teams($state)], $you)['teams'],
             'slots' => ['home' => MatchSetup::slots($state['teams']['home']), 'away' => MatchSetup::slots($state['teams']['away'])],
             // The simulator's shape: the side you manage is "me" (the viewer shows its coach panel).
