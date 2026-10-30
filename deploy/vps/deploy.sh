@@ -7,10 +7,14 @@ set -e
 HOST="${LEGENDS_HOST:-root@2.24.47.100}"
 KEY="${LEGENDS_KEY:-$HOME/.ssh/legends_vps}"
 ssh_() { ssh -i "$KEY" -o BatchMode=yes "$HOST" "$@"; }
+# [X64] LEGENDS_HOST=local: run on the server itself (legends-deploy), the same steps without SSH.
+[ "$HOST" = local ] && ssh_() { sh -c "$1"; }
 
 # The admin panel's "safe to deploy" [X33], asked of the running game: no match live now or kicking off within 30
 # minutes (a rebuild restarts the game). LEGENDS_FORCE=1 deploys anyway. A first deploy (no game yet) goes on.
 busy=$(ssh_ 'docker exec legends-app-1 php artisan matches:live --soon=30 2>/dev/null || echo 0' | tail -n 1)
+# No answer at all is no way to the server (the key, SSH), not a safe one.
+[ -n "$busy" ] || { echo "Cannot reach the server (${HOST})."; exit 1; }
 if [ "${busy:-0}" -gt 0 ] 2>/dev/null && [ "${LEGENDS_FORCE:-0}" != "1" ]; then
   echo "Not safe to deploy: ${busy} match(es) live or kicking off within 30 minutes. Try again after them (or LEGENDS_FORCE=1)."
   exit 2
