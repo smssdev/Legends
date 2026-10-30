@@ -197,20 +197,28 @@ class MatchController extends Controller
     /**
      * [Sprint 24 B1] The quick recap for a coach who missed his match: its big moments with the score after each,
      * then the final numbers, from his own report (MatchRecap). Read, like the report, so the after-round window
-     * no longer offers it.
+     * no longer offers it. [X69] Any member may see any match of his league: the recap holds no tactics, so a member
+     * who coaches neither side gets it from either side's report, with no side and the result as the home side's.
      */
     public function recap(Request $request, int $match): JsonResponse
     {
         [$m, $f, $you] = $this->load($request, $match);
-        abort_unless($you, 403, 'الملخص لمدربي الفريقين فقط.');
-        $row = DB::table('match_reports')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)->first();
+        $row = DB::table('match_reports')->where('match_id', $m->id)
+            ->when($you, fn ($q) => $q->where('club_id', $you === 'home' ? $f->home_id : $f->away_id))->orderBy('id')->first();
         abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
-        MissedMatches::seen($request->user()->id, [$m->id]);
+        if ($you) {
+            MissedMatches::seen($request->user()->id, [$m->id]);
+        }
         $clubs = DB::table('clubs')->whereIn('id', [$f->home_id, $f->away_id])->get(['id', 'name', 'code', 'master_club_id'])->keyBy('id');
         $card = fn ($id) => ['id' => (int) $id, 'name' => $clubs[$id]->name, 'code' => $clubs[$id]->code, 'crest_url' => url("/api/v1/data/clubs/{$clubs[$id]->master_club_id}/crest.svg")];
+        $recap = MatchRecap::build(['side' => $you] + json_decode($row->report, true));
+        if (! $you) {
+            $so = $recap['shootout'] ?? ['home' => 0, 'away' => 0];
+            $recap['result'] = ['loss', 'draw', 'win'][1 + (($recap['score']['home'] <=> $recap['score']['away']) ?: ((int) $so['home'] <=> (int) $so['away']))];
+        }
 
         return response()->json(['match_id' => (int) $m->id, 'competition' => $f->competition, 'round' => (int) $f->round,
-            'home' => $card($f->home_id), 'away' => $card($f->away_id)] + MatchRecap::build(['side' => $you] + json_decode($row->report, true)));
+            'home' => $card($f->home_id), 'away' => $card($f->away_id)] + $recap);
     }
 
     /**
@@ -266,12 +274,16 @@ class MatchController extends Controller
 
     /**
      * A played match again [Sprint 19 B3]: every minute with its frames from the seed and the orders, while
-     * the engine is the same version; an older one gives its stored events only.
+     * the engine is the same version; an older one gives its stored events only. [X69] Any member watches any
+     * finished match of his league in full (the viewer plays it); for its coach it counts as seen.
      */
     public function replay(Request $request, int $match): JsonResponse
     {
         [$m, , $you] = $this->load($request, $match);
         abort_unless($m->status === 'finished', 409, 'المباراة لم تنتهِ بعد.');
+        if ($you) {
+            MissedMatches::seen($request->user()->id, [$m->id]);
+        }
         if (! MatchReplay::replayable($m)) {
             return response()->json(['replayable' => false, 'ticks' => null, 'events' => array_map(fn ($e) => Simulator::redact(['events' => [$e]], $you)['events'][0], MatchReplay::events($m->id))]);
         }

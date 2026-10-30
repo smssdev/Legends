@@ -5,6 +5,7 @@
         <BrandMark size="sm" />
       </RouterLink>
       <span v-if="!league" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('المحاكي · بذرة') }} <span class="font-numbers">{{ view?.seed }}</span></span>
+      <span v-if="rerun" class="rounded-pill bg-gold/15 px-3 py-1 text-xs font-bold text-gold">{{ $t('إعادة المباراة كاملة') }}</span>
       <div class="flex-1" />
       <template v-if="live">
         <span class="flex h-touch items-center gap-2 rounded-md bg-live/15 px-3 text-sm font-bold text-danger"><span class="size-2 rounded-full bg-live" />{{ $t('مباشر · {v0}', { v0: mine ? $t('تدير ') + view?.clubs[mine].name : $t('مشاهدة') }) }}</span>
@@ -23,7 +24,7 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" @click="toggleCommentary">{{ $t('التعليق: {v0}', { v0: commentary === 'off' ? $t('متوقف') : 'English' }) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (smooth ? $t(' (سلس)') : $t(' (كامل)')) : '' }) }}</button>
-      <a v-if="mine" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
+      <a v-if="mine && !rerun" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
       <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
     </header>
 
@@ -33,6 +34,10 @@
     </nav>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
+    <p v-if="oldEngine" class="flex flex-wrap items-center gap-2 rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
+      <span class="flex-1">{{ $t('لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.') }}</span>
+      <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="recapOpen = true">⚡ {{ $t('الملخص السريع') }}</button>
+    </p>
     <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
 
     <div v-if="view" class="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -84,7 +89,10 @@
               <button v-if="halftime && !live" type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold" @click="endHalftime">{{ $t('ابدأ الشوط الثاني') }} <span class="font-numbers">({{ halftimeLeft }})</span></button>
               <button v-if="finished && keyTicks.length" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="highlights">{{ $t('ملخص المباراة · {v0} لقطة', { v0: keyTicks.length }) }}</button>
               <RouterLink v-if="finished && !league" :to="{ name: 'sim-report', params: { id }, query: mine ? { side: mine } : {} }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
+              <button v-if="finished && league" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="recapOpen = true">⚡ {{ $t('الملخص السريع') }}</button>
+              <button v-if="finished && rerun" type="button" class="h-12 rounded-md bg-surface-raised px-5 font-display font-bold" @click="watchAgain">{{ $t('شاهدها من جديد') }}</button>
               <RouterLink v-if="finished && league && mine" :to="{ name: 'league-report', params: { id } }" class="flex h-12 items-center rounded-md bg-gold px-6 font-display font-bold text-on-gold">{{ $t('تقرير المباراة') }}</RouterLink>
+              <RouterLink v-if="finished && league" to="/fixtures" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('مباريات الدوري') }}</RouterLink>
               <RouterLink v-if="finished && league" to="/match" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('المباراة القادمة') }}</RouterLink>
               <RouterLink v-if="finished && !league" to="/sim" class="flex h-12 items-center rounded-md bg-surface-raised px-5">{{ $t('مباراة جديدة') }}</RouterLink>
             </div>
@@ -141,7 +149,7 @@
       </div>
 
       <aside class="row-start-2 flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-        <section id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" :aria-label="$t('لوحة المدرب')">
+        <section v-if="!rerun" id="coach" class="flex scroll-mt-3 flex-col gap-3 rounded-xl bg-surface p-3" :aria-label="$t('لوحة المدرب')">
           <div class="flex items-center gap-2">
             <h2 class="flex-1 font-display text-base font-bold">{{ $t('لوحة المدرب') }}<span v-if="mine"> · {{ $nm(view.clubs[mine].name) }}</span></h2>
             <span v-if="live && mine" class="rounded-pill bg-surface-sunk px-2 py-1 text-xs text-text-muted">{{ $t('تكتيك {v0} سري', { v0: $nm(view.clubs[other].name) }) }}</span>
@@ -210,7 +218,7 @@
           </template>
         </section>
 
-        <section v-if="league && mine" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('قراءة المساعد')" aria-live="polite">
+        <section v-if="league && mine && !rerun" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('قراءة المساعد')" aria-live="polite">
           <h2 class="flex items-center gap-2 font-display text-base font-bold"><Character model="B2" :mood="mine ? moods[mine] : 'idle'" class="w-10" />{{ $t('قراءة المساعد') }}</h2>
           <p v-if="!readings.length" class="text-sm text-text-muted">{{ $t('يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.') }}</p>
           <div v-for="r in readings" :key="r.id" class="flex gap-3 rounded-md bg-surface-sunk px-3 py-2 text-sm" :class="r.kind.startsWith('goal') || r.kind.startsWith('red') ? 'border-s-2 border-gold' : ''">
@@ -219,7 +227,7 @@
           </div>
         </section>
 
-        <section v-if="league" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('دردشة المشاهدين')">
+        <section v-if="league && !rerun" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('دردشة المشاهدين')">
           <h2 class="font-display text-base font-bold">{{ $t('دردشة المشاهدين') }}</h2>
           <div ref="chatBox" class="flex max-h-[240px] min-h-[64px] flex-col gap-1.5 overflow-y-auto" aria-live="polite">
             <p v-if="!chat.length" class="text-sm text-text-muted">{{ $t('مدربو الدوري الذين يتابعون يتكلمون هنا.') }}</p>
@@ -243,6 +251,7 @@
         </section>
       </aside>
     </div>
+    <MatchRecap v-if="recapOpen" :match-id="Number(id)" :watch="false" @close="recapOpen = false" />
   </main>
 </template>
 
@@ -257,6 +266,7 @@ import Character from '../components/characters/Character.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
+import MatchRecap from '../components/shell/MatchRecap.vue'
 import { clubColors, leagueMatch, seats, sim, type ChatLine, type LiveSync, type LiveSummary, type Reaction, type MatchEvent, type Reading, type MatchView, type Side, type TeamPlayer, type TeamSnapshot, type Tick, type Tactics } from '../api/sim'
 import { line } from '../match/commentary'
 import { MatchSound } from '../match/sound'
@@ -315,6 +325,32 @@ async function emergencySub(inId: number) {
 }
 const nextWindow = computed(() => [...windows.value, 45].sort((a, b) => a - b).find((w) => w > minute.value[0]) ?? null)
 const finished = ref(false)
+// [X69] A finished league match played again in full, from the server's replay (every minute with its frames):
+// the viewer plays it like the simulator, at its own pace, with no orders. An older engine's match has its recap only.
+const rerun = ref(false)
+const oldEngine = ref(false)
+const recapOpen = ref(false)
+let rerunTicks: Tick[] = []
+function startRerun() {
+  clearTimeout(timer)
+  buffer.length = 0
+  buffer.push(...rerunTicks)
+  keyTicks.length = 0
+  feed.value = []
+  momentum.value = []
+  score.value = { home: 0, away: 0 }
+  shootout.value = null
+  minute.value = [0, 0]
+  teams.value = view.value!.teams
+  finished.value = false
+  halftime.value = false
+  playing.value = true
+}
+function watchAgain() {
+  startRerun()
+  intro.value = false
+  schedule(300)
+}
 const skipping = ref(false)
 const dev = ref(false)
 const soundOn = ref(false)
@@ -520,7 +556,7 @@ function applyDraft() {
 // ---------------------------------------------------------------- clock
 
 async function fetchNext(count = 1) {
-  if (fetching || finished.value) return
+  if (fetching || finished.value || rerun.value) return
   fetching = true
   try {
     const res = await sim.ticks(props.id, count)
@@ -665,6 +701,11 @@ async function skip() {
   clearTimeout(timer)
   halftime.value = false
   clearInterval(htTimer)
+  if (rerun.value) {
+    while (buffer.length) show(buffer.shift()!, false)
+    skipping.value = false
+    return
+  }
   try {
     while (!finished.value) {
       const res = await sim.ticks(props.id, 200)
@@ -684,7 +725,7 @@ async function skip() {
 // with its start time (tick.at). Each screen knows the server's time (offset
 // below) and plays every minute at that instant: both screens show the same
 // scene together, neither ahead nor behind.
-const live = computed(() => view.value?.mode === 'live')
+const live = computed(() => view.value?.mode === 'live' && !rerun.value)
 const started = ref(true)
 const starting = ref(false)
 const countdown = ref(0)
@@ -988,6 +1029,16 @@ onMounted(async () => {
       initial.value = { ...own }
     }
     finished.value = view.value.finished
+    if (props.league && finished.value) {
+      const r = await leagueMatch.replay(props.id)
+      if (r.replayable && r.ticks?.length) {
+        rerun.value = true
+        rerunTicks = r.ticks
+        startRerun()
+      } else {
+        oldEngine.value = true
+      }
+    }
     if (live.value) {
       intro.value = !view.value.started || view.value.tick === 0
       started.value = view.value.started
@@ -997,7 +1048,7 @@ onMounted(async () => {
       return poll()
     }
     await fetchNext()
-    if (view.value.tick > 0 || finished.value) { intro.value = false; schedule(300) }
+    if (!rerun.value && (view.value.tick > 0 || finished.value)) { intro.value = false; schedule(300) }
     else introTimer = window.setTimeout(endIntro, 11000)
   } catch (e: any) {
     error.value = e.message
