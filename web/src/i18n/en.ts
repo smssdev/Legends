@@ -2356,4 +2356,5 @@ export const EN: Record<string, string> = {
   'تفاعل {v0}': 'React {v0}',
   'علّق على القرعة…': 'Comment on the draw…',
   'تُفتح الدردشة قبل القرعة بساعة وتُغلق بعدها بنصف ساعة.': 'The chat opens an hour before the draw and closes half an hour after it.',
+  'تواصل مع دعم المنصة': 'Contact platform support',
 }
