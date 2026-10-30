@@ -1307,7 +1307,7 @@ paths:
       - { name: fixture, in: path, required: true, schema: { type: integer } }
     get:
       tags: [media]
-      summary: '[UP12] The press conference before a match: the chances, a reading of each side, the statements'
+      summary: '[UP12] The press conference before a match: the chances, a reading of each side, the statements (each with its morale stakes on a win, a draw and a defeat [X61 E9])'
       responses:
         '200':
           description: The conference (enabled false when the league switched them off)
@@ -3071,6 +3071,19 @@ paths:
         '200': { description: Done }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/awards:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: '[X61 E5] The running season''s awards: best player, best young player, player of the last round, top scorer and assister, longest winning run'
+      responses:
+        '200':
+          description: The awards (null where nobody qualifies yet)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Awards' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/honours:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -4857,7 +4870,7 @@ components:
         red: { type: integer }
     LeagueStats:
       type: object
-      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks]
+      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks, split]
       properties:
         season: { $ref: '#/components/schemas/SeasonCalendar' }
         matches: { type: integer, description: Finished matches this season, every competition }
@@ -4915,6 +4928,44 @@ components:
               current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
               best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
               form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
+        split:
+          type: array
+          description: '[X61 E12] Each club at home and away in the league'
+          items:
+            type: object
+            required: [club, home, away]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              home: { $ref: '#/components/schemas/SplitRow' }
+              away: { $ref: '#/components/schemas/SplitRow' }
+    SplitRow:
+      type: object
+      required: [played, won, drawn, lost, goals_for, goals_against, points]
+      properties: { played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer }, goals_for: { type: integer }, goals_against: { type: integer }, points: { type: integer } }
+    AwardCard:
+      type: object
+      nullable: true
+      required: [player, club, matches, average_x10]
+      properties:
+        player: { type: object, required: [id, name, age, position], properties: { id: { type: integer }, name: { type: string }, age: { type: integer }, position: { type: string } } }
+        club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        matches: { type: integer }
+        average_x10: { type: integer, description: The average rating times ten (72 = 7.2) }
+        round: { type: integer }
+        rating_x10: { type: integer }
+        goals: { type: integer }
+        assists: { type: integer }
+    Awards:
+      type: object
+      required: [matches, mvp, young, of_the_round, scorer, assister, run]
+      properties:
+        matches: { type: integer }
+        mvp: { $ref: '#/components/schemas/AwardCard' }
+        young: { $ref: '#/components/schemas/AwardCard' }
+        of_the_round: { $ref: '#/components/schemas/AwardCard' }
+        scorer: { $ref: '#/components/schemas/AwardCard' }
+        assister: { $ref: '#/components/schemas/AwardCard' }
+        run: { type: object, nullable: true, required: [club, wins], properties: { club: { $ref: '#/components/schemas/StatsClub' }, wins: { type: integer } } }
     Trophies:
       type: object
       required: [total, league, cup]

@@ -3087,7 +3087,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** [UP12] The press conference before a match: the chances, a reading of each side, the statements */
+        /** [UP12] The press conference before a match: the chances, a reading of each side, the statements (each with its morale stakes on a win, a draw and a defeat [X61 E9]) */
         get: {
             parameters: {
                 query?: never;
@@ -7882,6 +7882,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/awards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X61 E5] The running season's awards: best player, best young player, player of the last round, top scorer and assister, longest winning run */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The awards (null where nobody qualifies yet) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Awards"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/honours": {
         parameters: {
             query?: never;
@@ -10426,6 +10468,52 @@ export interface components {
                 /** @description The last five */
                 form: ("W" | "D" | "L")[];
             }[];
+            /** @description [X61 E12] Each club at home and away in the league */
+            split: {
+                club: components["schemas"]["StatsClub"];
+                home: components["schemas"]["SplitRow"];
+                away: components["schemas"]["SplitRow"];
+            }[];
+        };
+        SplitRow: {
+            played: number;
+            won: number;
+            drawn: number;
+            lost: number;
+            goals_for: number;
+            goals_against: number;
+            points: number;
+        };
+        AwardCard: {
+            player: {
+                id: number;
+                name: string;
+                age: number;
+                position: string;
+            };
+            club: {
+                id: number;
+                name: string;
+            } | null;
+            matches: number;
+            /** @description The average rating times ten (72 = 7.2) */
+            average_x10: number;
+            round?: number;
+            rating_x10?: number;
+            goals?: number;
+            assists?: number;
+        } | null;
+        Awards: {
+            matches: number;
+            mvp: components["schemas"]["AwardCard"];
+            young: components["schemas"]["AwardCard"];
+            of_the_round: components["schemas"]["AwardCard"];
+            scorer: components["schemas"]["AwardCard"];
+            assister: components["schemas"]["AwardCard"];
+            run: {
+                club: components["schemas"]["StatsClub"];
+                wins: number;
+            } | null;
         };
         Trophies: {
             total: number;

@@ -64,6 +64,26 @@ class SeasonStatsTest extends TestCase
             $this->assertLessThanOrEqual(5, count($r['form']));
         }
         $this->assertCount(4, $s['finance']);
+        // [X61 E12] Home and away add up to the table.
+        foreach ($s['split'] as $r) {
+            $row = collect($s['table'])->firstWhere('club.id', $r['club']['id']);
+            $this->assertSame($row['played'], $r['home']['played'] + $r['away']['played']);
+            $this->assertSame($row['goals_for'], $r['home']['goals_for'] + $r['away']['goals_for']);
+        }
+        // [X61 E5] The awards: the best player played enough, the young one is young, the run is a club's best.
+        $a = $this->getJson("/api/v1/leagues/{$league['id']}/awards")->assertOk()->json();
+        $this->assertNotNull($a['mvp']);
+        $this->assertGreaterThanOrEqual(3, $a['mvp']['matches']);
+        $this->assertGreaterThanOrEqual(30, $a['mvp']['average_x10']);
+        if ($a['young']) {
+            $this->assertLessThanOrEqual(21, $a['young']['player']['age']);
+        }
+        $this->assertSame((int) $league_fixtures->max('round'), $a['of_the_round']['round']);
+        if ($a['scorer']) {
+            $this->assertSame($s['scorers'][0]['goals'] >= $a['scorer']['goals'], true);
+        }
+        $this->actingAs(User::factory()->create())->getJson("/api/v1/leagues/{$league['id']}/awards")->assertForbidden();
+        $this->actingAs($owner);
         // No tactic in it.
         $text = json_encode($s);
         foreach (['pressing', 'tempo', 'style', 'positioning', 'marking'] as $hidden) {

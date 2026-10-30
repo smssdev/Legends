@@ -70,7 +70,7 @@ class ManagerBotTest extends TestCase
 
         $en = $this->getJson('/api/v1/assistant/start?page=league-newspaper', ['Accept-Language' => 'en'])->assertOk()->json();
         $this->assertSame('Manager Bot', $en['name']);
-        $this->assertSame('newspaper', $en['questions'][0]['topic']);
+        $this->assertSame(['now', 'week', 'newspaper'], array_slice(array_column($en['questions'], 'topic'), 0, 3));
         $this->assertStringContainsString('Manager Bot', $en['intro']);
     }
 
@@ -148,6 +148,21 @@ class ManagerBotTest extends TestCase
         $row = DB::table('assistant_feedback')->first();
         $this->assertSame([$this->owner->id, false, 'training', 'الرقم كان خطأ'], [(int) $row->user_id, (bool) $row->helpful, $row->page, $row->note]);
         $this->assertSame(1, DB::table('assistant_feedback')->count());
+    }
+
+    public function test_what_to_do_now_and_the_week_come_from_the_club_without_the_ai(): void
+    {
+        // [X61 E11] Three numbered priorities and a page; the week's summary; and no club, no answer about one.
+        Http::fake();
+        $now = $this->actingAs($this->owner)->ask('ماذا أفعل الآن؟', ['topic' => 'now']);
+        $this->assertStringStartsWith('أولوياتك الثلاث الآن:', $now['answer']);
+        $this->assertStringContainsString("\n3. ", $now['answer']);
+        $this->assertNotNull($now['go']);
+        $week = $this->ask('ملخص أسبوعي', ['topic' => 'week']);
+        $this->assertStringContainsString('هذا الأسبوع', $week['answer']);
+        Http::assertNothingSent();
+        $none = $this->actingAs(User::factory()->create())->postJson('/api/v1/assistant/ask', ['question' => 'x', 'topic' => 'now'])->assertOk()->json();
+        $this->assertStringContainsString('افتح أحد أنديتك', $none['answer']);
     }
 
     public function test_the_day_used_up_or_google_unable_falls_back_to_the_guide(): void

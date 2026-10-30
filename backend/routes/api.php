@@ -113,6 +113,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
     // The hall of fame [Sprint 33].
     Route::get('{league}/honours', [HonoursController::class, 'league'])->whereNumber('league');
+    Route::get('{league}/awards', [HonoursController::class, 'awards'])->whereNumber('league');
     // My club: the squad, the lineup and the set-piece takers [Sprint 16].
     Route::controller(TeamController::class)->prefix('{league}/team')->whereNumber('league')->group(function () {
         Route::get('/', 'show');

@@ -3,7 +3,7 @@
 // buying and selling, the squads' value and the runs of results. A club's name opens its squad (what anyone in the
 // league may see: no tactic). No draft of its own: the design system's cards and the league table's look.
 import EmptyState from '../../components/ui/EmptyState.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
@@ -17,12 +17,18 @@ import UiTabs from '../../components/ui/UiTabs.vue'
 
 type Stats = components['schemas']['LeagueStats']
 type Club = components['schemas']['StatsClub']
-const TABS = { table: 'الترتيب', scorers: 'الهدافون', assists: 'صناع اللعب', cards: 'الانضباط', money: 'المالية', value: 'القيمة السوقية', runs: 'السلاسل' } as const
+const TABS = { table: 'الترتيب', scorers: 'الهدافون', assists: 'صناع اللعب', cards: 'الانضباط', money: 'المالية', value: 'القيمة السوقية', runs: 'السلاسل', split: 'أرض وخارج', awards: 'الأوسمة' } as const
 type Tab = keyof typeof TABS
 
 const leagueId = ref<number | null>(null)
 const s = ref<Stats | null>(null)
 const tab = ref<Tab>('table')
+// [X61 E5] The season's awards, loaded when their tab opens.
+const awards = ref<components['schemas']['Awards'] | null>(null)
+watch(tab, async (t) => {
+  if (t === 'awards' && !awards.value && leagueId.value) awards.value = (await api.GET('/leagues/{league}/awards', { params: { path: { league: leagueId.value } } })).data ?? null
+})
+const rating = (x10: number) => (x10 / 10).toFixed(1)
 const error = ref('')
 const loaded = ref(false)
 const squadOf = ref<number | null>(null)
@@ -175,6 +181,47 @@ function exportCsv() {
           <span class="text-xs text-text-muted">{{ $t('{v0} لاعباً', { v0: r.players }) }}</span>
           <b class="font-numbers text-gold" dir="ltr">{{ money(r.value) }}</b>
         </div>
+      </section>
+
+      <!-- [X61 E12] Each club at home and away. -->
+      <section v-if="tab === 'split'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('أرض وخارج')">
+        <table class="w-full min-w-[520px] text-sm">
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th colspan="3">{{ $t('على أرضه') }}</th><th colspan="3">{{ $t('خارج أرضه') }}</th></tr>
+            <tr class="text-xs"><th /><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
+          <tbody class="font-numbers">
+            <tr v-for="r in s.split" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
+              <td class="py-2 text-start font-sans font-bold"><span class="flex items-center gap-2"><img :src="r.club.crest_url" alt="" class="size-5" />{{ $nm(r.club.name) }}</span></td>
+              <td>{{ r.home.played }}</td><td dir="ltr">{{ r.home.goals_for - r.home.goals_against }}</td><td class="font-bold text-gold">{{ r.home.points }}</td>
+              <td>{{ r.away.played }}</td><td dir="ltr">{{ r.away.goals_for - r.away.goals_against }}</td><td class="font-bold text-gold">{{ r.away.points }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- [X61 E5] The season's awards so far. -->
+      <section v-if="tab === 'awards'" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" :aria-label="$t('الأوسمة')">
+        <p v-if="!awards" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+        <template v-else>
+          <article v-for="[key, title, icon] in ([['mvp', 'أفضل لاعب', '🏆'], ['young', 'أفضل لاعب شاب', '🌱'], ['of_the_round', 'نجم الجولة', '⭐'], ['scorer', 'الهداف', '⚽'], ['assister', 'صانع الألعاب', '🎯']] as const)" :key="key"
+            class="flex animate-pop-in items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">{{ icon }}</span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-xs text-text-muted">{{ $t(title) }}<template v-if="key === 'of_the_round' && awards.of_the_round"> · {{ $t('الجولة {v0}', { v0: awards.of_the_round.round }) }}</template></span>
+              <template v-if="awards[key]">
+                <b class="block truncate"><bdi>{{ $nm(awards[key]!.player.name) }}</bdi></b>
+                <span class="block truncate text-xs text-text-muted">{{ $nm(awards[key]!.club?.name) }}</span>
+              </template>
+              <span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span>
+            </span>
+            <b v-if="awards[key]" class="font-numbers text-xl text-gold" dir="ltr">{{ key === 'scorer' ? awards.scorer!.goals : key === 'assister' ? awards.assister!.assists : key === 'of_the_round' ? rating(awards.of_the_round!.rating_x10 ?? 0) : rating(awards[key]!.average_x10) }}</b>
+          </article>
+          <article class="flex items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">🔥</span>
+            <span class="min-w-0 flex-1"><span class="block text-xs text-text-muted">{{ $t('أطول سلسلة انتصارات') }}</span>
+              <b v-if="awards.run" class="block truncate">{{ $nm(awards.run.club.name) }}</b><span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span></span>
+            <b v-if="awards.run" class="font-numbers text-xl text-gold">{{ awards.run.wins }}</b>
+          </article>
+        </template>
       </section>
 
       <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('سلاسل النتائج')">

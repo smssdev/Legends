@@ -61,6 +61,8 @@ class MatchResult
             self::players($club[$side], $team, $m->seed, $matchId);
             // Morale after the result [X25].
             Morale::after($club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
+            // [X61 E9] And the press statement, judged by the result.
+            PressRoom::judge($f, $club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
             // Coins for the coach: a win or a draw [docs/features/premium.md].
             $for = $state['score'][$side];
             $against = $state['score'][$side === 'home' ? 'away' : 'home'];

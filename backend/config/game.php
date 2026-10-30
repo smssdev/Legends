@@ -551,7 +551,10 @@ return [
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
-    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000,
+    // [X61 E9] stakes: what each statement does to the morale after the match, by its result (a bold promise pays on
+    // a win and costs on a defeat; the calm one is safe; the rallying one in between).
+    'press' => ['open_minutes' => 30, 'morale' => 1,
+        'stakes' => ['attack' => ['win' => 3, 'draw' => -1, 'loss' => -3], 'calm' => ['win' => 1, 'draw' => 1, 'loss' => 0], 'rally' => ['win' => 2, 'draw' => 0, 'loss' => -1]], 'prediction_cash_bp' => 3, 'article_max' => 2000,
         // [Sprint 21 E4.6, final formulas Sprint 20 S3] The league's news (App\League\NewsFormulas). upset_gap: strength
         // points that make one side clearly stronger on paper.
         // A match: goal for each goal, draw for a draw with goals or one_goal for a one-goal game, upset when the winner
@@ -600,4 +603,7 @@ return [
     // season's length, and five players that match every criterion (the position, the age, the rating, the price).
     // [X61] cost_bp 30 to 7 (the owner, 2026-10-30): a report cost about two rounds of wages, now under half of one.
     'scout' => ['cost_bp' => 7, 'hours' => 15, 'results' => 5],
+    // [X61 E5] The season's awards: the best player needs min_matches at least (or half the most played), the young
+    // one is young_age or under.
+    'awards' => ['min_matches' => 3, 'young_age' => 21],
 ];

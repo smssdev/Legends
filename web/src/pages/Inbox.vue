@@ -4,7 +4,8 @@
 import EmptyState from '../components/ui/EmptyState.vue'
 import { stamp } from '../lib/dates'
 import OfficialBadge from '../components/OfficialBadge.vue'
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import UiTabs from '../components/ui/UiTabs.vue'
 import { useRouter } from 'vue-router'
 import UiButton from '../components/ui/UiButton.vue'
 import { useInbox, type Message } from '../stores/inbox'
@@ -15,6 +16,21 @@ const ICON: Record<string, string> = {
   referee: '🟨', absence_warning: '⏰', left_absent: '🚪', kicked: '⛔', join_request: '✋', join_approved: '✅', join_rejected: '✖️', match_report: '📊',
 }
 const when = stamp   // [X61] the same on every list
+
+// [X61 E7] The inbox as a notification centre: its kinds in five groups, each a tab with its unread count.
+type Group = 'all' | 'league' | 'market' | 'team' | 'alerts'
+const GROUPS: Record<Exclude<Group, 'all'>, string[]> = {
+  league: ['match_report', 'match_of_day', 'season_end', 'join_request', 'join_approved', 'join_rejected', 'article_pending', 'referee', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
+  market: ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'listing_sold', 'scout_report', 'forced_sale'],
+  team: ['training_done', 'camp_back', 'stadium_part', 'staff_left', 'assistant_led'],
+  alerts: ['absence_warning', 'left_absent', 'kicked', 'in_debt', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'announcement', 'official_message', 'coins_gift', 'referral_reward', 'slot_opened'],
+}
+const group = ref<Group>('all')
+const groupOf = (type: string): Group => (Object.keys(GROUPS) as Exclude<Group, 'all'>[]).find((g) => GROUPS[g].includes(type)) ?? 'alerts'
+const shown = computed(() => (group.value === 'all' ? inbox.messages : inbox.messages.filter((m) => groupOf(m.type) === group.value)))
+const unreadIn = (g: Group) => inbox.messages.filter((m) => !m.read && (g === 'all' || groupOf(m.type) === g)).length || null
+const tabs = computed(() => ([['all', 'الكل'], ['league', 'الدوري'], ['market', 'العروض والسوق'], ['team', 'الفريق'], ['alerts', 'التنبيهات']] as const)
+  .map(([key, label]) => ({ key, label, n: unreadIn(key) })))
 
 function open(m: Message) {
   inbox.read(m)
@@ -38,8 +54,10 @@ onMounted(() => inbox.load())
     <p v-else-if="!inbox.loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <EmptyState v-else-if="!inbox.messages.length" icon="inbox" title="لا رسائل بعد" text="تصلك هنا نتائج مبارياتك وعروض السوق وأخبار دورياتك." :cta="{ label: 'إلى ناديك', to: '/club' }" />
 
-    <ul v-else class="flex flex-col gap-2" :aria-label="$t('الرسائل')">
-      <li v-for="m in inbox.messages" :key="m.id">
+    <UiTabs v-if="inbox.loaded && inbox.messages.length" v-model="group" :items="tabs" label="أنواع الرسائل" size="sm" />
+    <p v-if="inbox.loaded && inbox.messages.length && !shown.length" class="rounded-xl bg-surface p-4 text-sm text-text-muted">{{ $t('لا رسائل من هذا النوع.') }}</p>
+    <ul v-else-if="inbox.messages.length" class="flex flex-col gap-2" :aria-label="$t('الرسائل')">
+      <li v-for="m in shown" :key="m.id">
         <button
           type="button"
           class="flex w-full items-start gap-3 rounded-xl p-4 text-start transition hover:bg-surface-raised"
