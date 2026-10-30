@@ -16,6 +16,7 @@ import UiCard from '../../components/ui/UiCard.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import { money, strength } from '../../lib/format'
 import AdSlot from '../../components/ads/AdSlot.vue'
+import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -161,6 +162,19 @@ async function startNow() {
   }
 }
 
+// [Sprint 27 B1] The days off: shown, and the owner changes them until the start (the calendar is made again).
+const DAY_NAMES: Record<number, string> = { 1: 'الاثنين', 2: 'الثلاثاء', 3: 'الأربعاء', 4: 'الخميس', 5: 'الجمعة', 6: 'السبت', 7: 'الأحد' }
+const restEdit = ref<number[] | null>(null)
+async function saveRest() {
+  try {
+    await ensureCsrf()
+    league.value = (await api.PATCH('/leagues/{league}', { params: { path: { league: leagueId.value } }, body: { rest_days: restEdit.value ?? [] } })).data!.league
+    restEdit.value = null
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+}
+
 onMounted(load)
 // [X61] Whole days until the league starts (0 once it has).
 const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000))
@@ -235,7 +249,16 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الميزانية') }}</dt><dd class="font-bold">{{ budget(league.starting_budget) }}</dd></div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('المدربون') }}</dt><dd class="font-bold"><span class="font-numbers">{{ league.coaches }}</span> {{ $t('من') }} <span class="font-numbers">{{ league.team_count }}</span></dd></div>
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('نهاية الموسم') }}</dt><dd class="font-bold">{{ $t(END_MODES[league.season_end_mode]) }}</dd></div>
+            <div class="col-span-2 flex items-center gap-2 rounded-lg bg-surface-sunk p-3">
+              <span class="flex-1"><dt class="text-text-muted">{{ $t('أيام الإجازة') }}</dt>
+                <dd class="font-bold">{{ league.rest_days?.length ? league.rest_days.map((d) => $t(DAY_NAMES[d])).join('، ') : $t('لا إجازة: مباراة كل يوم') }}</dd></span>
+              <button v-if="league.is_owner && !league.locked && !restEdit" type="button" class="h-10 rounded-lg bg-surface-raised px-3 text-sm font-bold" @click="restEdit = [...(league.rest_days ?? [])]">{{ $t('تعديل') }}</button>
+            </div>
           </dl>
+          <div v-if="restEdit" class="flex flex-col gap-2">
+            <RestDaysPicker v-model="restEdit" />
+            <div class="flex gap-2"><UiButton @click="saveRest">{{ $t('حفظ') }}</UiButton><UiButton variant="quiet" @click="restEdit = null">{{ $t('إلغاء') }}</UiButton></div>
+          </div>
           <p class="text-xs text-text-muted">{{ $t('{v0} ساعات الجولات بتوقيت القاهرة.', { v0: league.locked ? $t('الإعدادات مقفلة منذ بداية الموسم.') : $t('الإعدادات تُقفل عند بداية الموسم.') }) }}</p>
           <UiButton v-if="isDev && league.is_owner && !league.locked" variant="quiet" @click="startNow">{{ $t('ابدأ الآن (للتطوير)') }}</UiButton>
         </UiCard>

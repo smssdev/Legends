@@ -2,8 +2,10 @@
 // [Sprint 20 B4] Friendlies (the owner's approved draft): a match now against any club of the league, played whole by
 // the engine with no effect on the table, money, fitness or injuries, and a little training for those who played.
 // The closest in strength recommended; the report at once. [Sprint 24 B2] Five coins each, with no limit, in every
-// league: the first tap asks to confirm with the price, and the coins go with the match.
+// league: the first tap asks to confirm with the price, and the coins go with the match. [Sprint 27 B3] Then the quick
+// simulation plays in the page (QuickMatch, from the server's timeline) before the result shows.
 import { computed, onMounted, ref } from 'vue'
+import QuickMatch from '../../components/match/QuickMatch.vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
@@ -14,6 +16,9 @@ type View = components['schemas']['Friendlies']
 const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const last = ref<components['schemas']['Friendly'] | null>(null)
+// The friendly being watched (its quick simulation), before its result shows.
+const watching = ref(false)
+
 const message = ref('')
 const busy = ref(false)
 const loaded = ref(false)
@@ -40,6 +45,7 @@ async function play(opponent: number) {
     await ensureCsrf()
     const { data } = await api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: crypto.randomUUID() } })
     last.value = data!.friendly
+    watching.value = !!data!.friendly.report.timeline?.length
     v.value = data!
     useWallet().load()
   } catch (e) {
@@ -69,8 +75,16 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       {{ v.blocked.reason === 'live' ? $t('مباراتك تُلعب الآن: الوديات بعدها.') : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) }) }}
     </p>
 
+    <!-- [Sprint 27 B3] The quick simulation first. -->
+    <QuickMatch
+      v-if="last && watching"
+      :timeline="last.report.timeline ?? []"
+      :home="{ name: v?.club.name ?? '', crest: v?.club.crest_url ?? '' }"
+      :away="{ name: last.opponent.name, crest: last.opponent.crest_url }"
+      @done="watching = false"
+    />
     <!-- The friendly just played. -->
-    <section v-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 bg-surface p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
+    <section v-else-if="last" class="flex flex-col gap-3 rounded-xl border border-gold/40 bg-surface p-4" :aria-label="$t('نتيجة الودية')" aria-live="polite">
       <div class="flex items-center gap-3">
         <img :src="last.opponent.crest_url" alt="" class="size-10" />
         <span class="min-w-0 flex-1"><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span>
@@ -92,7 +106,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
           <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
         </span>
         <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
-        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || !canPay || !!v.blocked" @click="play(o.id)">
+        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || watching || !canPay || !!v.blocked" @click="play(o.id)">
           {{ confirming === o.id ? $t('أكّد: {v0} كوينز', { v0: v.coins }) : $t('العب') }}
         </button>
       </li>

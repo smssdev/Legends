@@ -15,6 +15,7 @@ import UiChip from '../../components/ui/UiChip.vue'
 import TicketsPanel from './TicketsPanel.vue'
 import PressPanel from './PressPanel.vue'
 import IntegrityPanel from './IntegrityPanel.vue'
+import MovePanel from './MovePanel.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 
@@ -52,6 +53,11 @@ async function sendSpy() {
     error.value = asApiError(e).message
   }
   spying.value = false
+}
+
+// [Sprint 27 B2] After a move is asked, answered or taken back: the match again, with its time.
+async function reload() {
+  if (leagueId.value) match.value = (await api.GET('/leagues/{league}/team/next-match', { params: { path: { league: leagueId.value } } })).data!.match ?? null
 }
 
 let timer = 0
@@ -133,6 +139,8 @@ const ACTIONS = [
             : $t('قبل المباراة بخمس دقائق تُقفل التشكيلة والتكتيك، ويُستبدل أي مصاب أو موقوف تلقائياً بأفضل بديل.') }}</p>
         </div>
       </section>
+
+      <MovePanel v-if="leagueId && match.move && (match.move.pending || match.move.hours.length)" :league-id="leagueId" :fixture-id="match.fixture_id" :scheduled-at="match.scheduled_at" :move="match.move" @changed="reload" />
 
       <section v-if="match.mine?.fixes?.length" class="rounded-xl bg-warning/15 p-4 text-sm">
         <h2 class="mb-1 font-bold">{{ $t('تصحيح تلقائي عند القفل') }}</h2>

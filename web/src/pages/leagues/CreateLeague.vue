@@ -4,6 +4,7 @@
 // ready, one round a day at the owner's evening, the integrity system and the press conferences on, one season).
 // Changing anything makes it a customized league, paid once: the clubs × 20 coins, shown with the coin, never as a "price".
 import UiToggle from '../../components/ui/UiToggle.vue'
+import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf, type ApiError } from '../../api/client'
@@ -40,6 +41,8 @@ const press = ref(true)
 const staggered = ref(false)
 const slotGap = ref(240)
 const endMode = ref<'renew' | 'end'>(FREE.end)
+// [Sprint 27 B1] The days off, free in any league.
+const restDays = ref<number[]>([])
 
 const step = ref<'settings' | 'club'>('settings')
 const clubs = ref<Club[]>([])
@@ -129,6 +132,7 @@ async function create() {
         // The free league plays at this owner's evening, in their own time zone.
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         ...changes.value,
+        rest_days: restDays.value,
         is_dev: import.meta.env.DEV,
         club_id: club.value.id,
       },
@@ -184,6 +188,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
               <span v-if="field('starts_at')" class="text-sm text-danger">{{ field('starts_at') }}</span>
             </label>
           </div>
+          <RestDaysPicker v-model="restDays" :error="field('rest_days')" />
         </section>
 
         <!-- The free league, as it comes. -->

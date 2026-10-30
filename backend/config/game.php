@@ -78,9 +78,15 @@ return [
         // [UP9] A league with the free settings costs nothing; a customized one this many coins per club, once. Its
         // rounds start at default_kickoff in the creator's own time zone unless the owner picks the hour (customized).
         'custom_coins_per_club' => 20, 'default_kickoff' => '21:00',
+        // [Sprint 27 B1] Days off a week with no matches (e.g. Friday), chosen before the start, free.
+        'rest_days_max' => 3,
         // Tries at a league code per account each minute [PLAN 2.1]
         'join_attempts_per_minute' => 10,
     ],
+    // [Sprint 27 B2] A match moved by whole hours on its own day when both coaches agree: both times at least
+    // lead_minutes away (the referee comes 30 minutes before), the new one gap_minutes from either club's other matches,
+    // and at most max_hours either way.
+    'match_moves' => ['lead_minutes' => 60, 'gap_minutes' => 60, 'max_per_fixture' => 2, 'max_hours' => 6],
     // League matches [PLAN 2.8, 2.12] (read by App\League, not by the engine).
     'matches' => [
         'missed_live_minutes' => 10,      // up to this late a match still starts live; later it is simulated at once
@@ -491,7 +497,7 @@ return [
     'notifications' => [
         'kinds' => [
             'referee' => ['referee'],
-            'match_soon' => ['match_soon'],
+            'match_soon' => ['match_soon', 'match_move'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.

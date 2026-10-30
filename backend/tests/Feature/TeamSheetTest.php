@@ -109,13 +109,19 @@ class TeamSheetTest extends TestCase
         $other = DB::table('players')->where('club_id', '!=', $this->league['my_club_id'])->value('id');
         $bad(['formation' => '3-5-2B', 'bench' => [$other]])->assertJsonPath('errors.starters.0', 'كل اللاعبين يجب أن يكونوا من فريقك.');
 
-        // A striker stays in attack: never in midfield or defence [X5].
+        // [Sprint 27 W4] As flexible as OSM: a striker may play in midfield (at the engine's out-of-position share)...
         $wrong = $starters;
         $mid = array_search('mid', array_column(FormationBook::slots('3-5-2B'), 'line'), true);
         $striker = $ids->first(fn ($p) => $p['line'] === 'att' && ! str_contains((string) $p['alt_positions'], 'M') && ! in_array($p['id'], $starters, true));
         $wrong[$mid] = $striker['id'];
-        $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $wrong, 'bench' => []])->assertUnprocessable()
-            ->assertJsonPath('errors.starters.0', "{$striker['name']} ({$striker['position']}) لا يلعب في الوسط: ضع كل لاعب في خطه، ويتبادل المراكز داخله.");
+        $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $wrong, 'bench' => []])->assertOk()
+            ->assertJsonPath("lineup.starters.{$mid}", $striker['id']);
+        // ...but a goalkeeper stays in goal.
+        $keeperOut = $starters;
+        $keeperOut[$mid] = $keepers[0];
+        $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $keeperOut, 'bench' => []])->assertUnprocessable()
+            ->assertJsonPath('errors.starters.0', DB::table('master_players')->join('players', 'players.master_player_id', '=', 'master_players.id')->where('players.id', $keepers[0])->value('master_players.name').' حارس مرمى: مكانه في المرمى أو على الدكة.');
+        $this->getJson('/api/v1/data/formations')->assertOk()->assertJsonPath('off_line_bp', 8800);
 
         // Back to automatic.
         $this->deleteJson("{$this->url}/lineup")->assertOk()->assertJsonPath('lineup.auto', true);
@@ -187,7 +193,7 @@ class TeamSheetTest extends TestCase
         return $out;
     }
 
-    public function test_the_coach_picks_the_takers_among_the_starters(): void
+    public function test_the_coach_picks_the_takers_from_the_whole_squad(): void
     {
         $this->actingAs($this->owner);
         $team = $this->getJson($this->url)->json();
@@ -195,12 +201,20 @@ class TeamSheetTest extends TestCase
         $reserve = collect($team['players'])->firstWhere('role', 'reserve') ?? collect($team['players'])->firstWhere('role', 'bench');
 
         $this->putJson("{$this->url}/takers", ['captain' => $starters[5], 'penalty' => $starters[9]])->assertOk()
-            ->assertJsonPath('takers.captain', ['player_id' => $starters[5], 'auto' => false])
-            ->assertJsonPath('takers.penalty', ['player_id' => $starters[9], 'auto' => false])
+            ->assertJsonPath('takers.captain.player_id', $starters[5])->assertJsonPath('takers.captain.auto', false)
+            ->assertJsonPath('takers.penalty.player_id', $starters[9])->assertJsonPath('takers.penalty.auto', false)
             ->assertJsonPath('takers.corner.auto', true);
-        $this->putJson("{$this->url}/takers", ['captain' => $reserve['id']])->assertUnprocessable()->assertJsonPath('errors.captain.0', 'المنفذ يجب أن يكون من الأساسيين.');
+        // [Sprint 27 W5] Anyone in the squad: out of the eleven, the automatic one takes the role until he is back.
+        $res = $this->putJson("{$this->url}/takers", ['captain' => $reserve['id']])->assertOk()
+            ->assertJsonPath('takers.captain.chosen_id', $reserve['id'])->assertJsonPath('takers.captain.auto', true);
+        $this->assertNotSame($reserve['id'], $res->json('takers.captain.player_id'));
+        // The candidates, best first by the role's skill, with whether each plays.
+        $pens = $res->json('takers.penalty.candidates');
+        $this->assertSame(collect($pens)->sortByDesc('skill')->pluck('skill')->values()->all(), array_column($pens, 'skill'));
+        $other = DB::table('players')->where('club_id', '!=', $this->league['my_club_id'])->value('id');
+        $this->putJson("{$this->url}/takers", ['captain' => $other])->assertUnprocessable()->assertJsonPath('errors.captain.0', 'المنفذ يجب أن يكون من فريقك.');
         // "تحسين": all back to automatic.
-        $this->putJson("{$this->url}/takers", [])->assertOk()->assertJsonPath('takers.captain.auto', true);
+        $this->putJson("{$this->url}/takers", [])->assertOk()->assertJsonPath('takers.captain.auto', true)->assertJsonPath('takers.captain.chosen_id', null);
     }
 
     public function test_a_bot_club_always_has_a_full_automatic_lineup(): void

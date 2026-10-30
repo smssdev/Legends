@@ -51,7 +51,7 @@ class LeagueFactory
                 'round_times' => array_values($settings['round_times']), 'prep_days' => $settings['prep_days'],
                 'starts_at' => $settings['starts_at'], 'season_end_mode' => $settings['season_end_mode'],
                 'starting_budget' => $settings['starting_budget'], 'fair_league' => $settings['fair_league'], 'integrity' => $settings['integrity'] ?? false, 'second_slot_minutes' => $settings['second_slot_minutes'] ?? null,
-                'is_dev' => $settings['is_dev'] ?? false,
+                'is_dev' => $settings['is_dev'] ?? false, 'rest_days' => array_values($settings['rest_days'] ?? []),
                 'press_conferences' => $settings['press_conferences'] ?? true, 'custom_coins' => $settings['custom_coins'] ?? 0,
             ]);
             // [UP9] A customized league is paid in coins as it is made: not enough, and nothing is made.

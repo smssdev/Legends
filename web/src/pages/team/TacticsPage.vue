@@ -4,8 +4,9 @@
 // sliders with their word and number, the trap and the marking on the right; the plan on its pitch, the tackling, and
 // the three lines' positions on theirs on the left; each choice between two arrows. Then the expected effect, quick
 // presets, the tactics book and the scenarios. Tips explain how the engine plays them; they change no number
-// [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent.
-import { computed, onMounted, ref } from 'vue'
+// [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent. [Sprint 27 W6, the owner asked
+// for OSM's ease] Every change saves itself a moment later: no «حفظ» to remember.
+import { computed, onMounted, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
 import TacticIcon from '../../components/tactics/TacticIcon.vue'
@@ -13,7 +14,6 @@ import TacticCycler from '../../components/tactics/TacticCycler.vue'
 import PlanPitch from '../../components/tactics/PlanPitch.vue'
 import LinesPitch from '../../components/tactics/LinesPitch.vue'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
-import UiButton from '../../components/ui/UiButton.vue'
 import ScenariosPanel from './ScenariosPanel.vue'
 import { currentLeague } from '../../lib/currentLeague'
 
@@ -106,16 +106,28 @@ function apply(d: { tactics: components['schemas']['TacticsSet']; tips: string[]
 async function save() {
   if (!leagueId.value || !t.value) return
   message.value = ''
+  saving.value = true
+  const sent = { ...t.value }
   try {
     await ensureCsrf()
-    const { data } = await api.PUT('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } }, body: t.value })
-    apply(data!)
+    const { data } = await api.PUT('/leagues/{league}/team/tactics', { params: { path: { league: leagueId.value } }, body: sent })
+    // A change made while saving keeps its place on the screen and saves next.
+    const mine = JSON.stringify(t.value)
+    if (mine === JSON.stringify(sent)) apply(data!)
+    else saved.value = JSON.stringify(data!.tactics)
     book.value = data!.book
-    message.value = 'حُفظ التكتيك.'
   } catch (e) {
     message.value = asApiError(e).message
   }
+  saving.value = false
 }
+const saving = ref(false)
+let timer = 0
+watch(t, () => {
+  if (!dirty.value) return
+  window.clearTimeout(timer)
+  timer = window.setTimeout(save, 700)
+}, { deep: true })
 onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (loaded.value = true))))
 </script>
 
@@ -131,7 +143,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
           <h1 class="flex flex-wrap items-center gap-2 font-display text-3xl font-extrabold">{{ $t('التكتيك') }}<!-- [Sprint 20 W12] --><RouterLink :to="{ name: 'lineup' }" class="flex h-9 items-center rounded-pill bg-surface px-3 font-body text-xs font-bold text-brand-light">{{ $t('التشكيلة ›') }}</RouterLink></h1>
           <p class="text-sm text-text-muted">{{ $t('الحكم: {v0}', { v0: referee ? REFEREE[referee] : $t('يُعيَّن قبل المباراة بنصف ساعة') }) }}</p>
         </div>
-        <UiButton :disabled="!dirty" @click="save">{{ $t('حفظ') }}</UiButton>
+        <span class="text-xs text-text-muted" role="status">{{ saving || dirty ? $t('يحفظ…') : $t('محفوظ ✓') }}</span>
       </header>
       <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 

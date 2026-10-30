@@ -6,9 +6,11 @@ use App\Economy\Contracts;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\Economy\Tickets;
+use App\Engine\Ability;
 use App\Http\Controllers\Controller;
 use App\League\Chemistry;
 use App\League\ClubLedger;
+use App\League\FixtureMoves;
 use App\League\FormationBook;
 use App\League\MatchPrep;
 use App\League\Morale;
@@ -45,6 +47,8 @@ class TeamController extends Controller
             // Where a player may be dragged [X5]: his line's depth band, and across from touchline to touchline.
             'bands' => FormationBook::BANDS,
             'across' => FormationBook::ACROSS,
+            // [Sprint 27 W4] What an outfield player gives out of his lines (bp), as the engine plays him.
+            'off_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'att']),
         ]);
     }
 
@@ -204,6 +208,8 @@ class TeamController extends Controller
             // A round in two slots [X31]: mine, and whether it is the night's big match.
             'slot' => (int) $f->slot, 'match_of_day' => (bool) $f->match_of_day,
             'lock_at' => MatchPrep::lockAt($f)->toIso8601ZuluString(),
+            // [Sprint 27 B2] Moving it on its own day: the request waiting, and the hours that may be asked for now.
+            'move' => FixtureMoves::view($f, $club),
             'referee' => $f->referee_strictness,
             // My morale for this match with my crowd and the tickets cheering me [X25] (the opponent's is not shown).
             'morale' => Morale::forMatch($f, $home ? 'home' : 'away'),
@@ -228,6 +234,32 @@ class TeamController extends Controller
                 'fixes' => collect(json_decode($mine->fixes, true))->map(fn ($x) => $x + ['out_name' => $names[$x['out']] ?? null, 'in_name' => $names[$x['in']] ?? null])->all(),
             ] : null,
         ]]);
+    }
+
+    /** [Sprint 27 B2] Ask to move my next match by whole hours on its own day. */
+    public function proposeMove(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $data = $request->validate(['fixture_id' => ['required', 'integer'], 'hours' => ['required', 'integer', 'between:-23,23', 'not_in:0']]);
+
+        return response()->json(['move' => FixtureMoves::propose($club, $request->user()->id, (int) $data['fixture_id'], (int) $data['hours'])], 201);
+    }
+
+    public function acceptMove(Request $request, League $league, int $move): JsonResponse
+    {
+        return response()->json(['move' => FixtureMoves::answer($this->club($request->user(), $league), $request->user()->id, $move, true)]);
+    }
+
+    public function declineMove(Request $request, League $league, int $move): JsonResponse
+    {
+        return response()->json(['move' => FixtureMoves::answer($this->club($request->user(), $league), $request->user()->id, $move, false)]);
+    }
+
+    public function cancelMove(Request $request, League $league, int $move): JsonResponse
+    {
+        FixtureMoves::cancel($this->club($request->user(), $league), $move);
+
+        return response()->json(null, 204);
     }
 
     private function nextFixture(Club $club): ?object
