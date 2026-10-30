@@ -31,7 +31,7 @@ class LeagueFactory
     {
         Joining::assertCanTakeAnother($owner);
         $version = DataController::version();
-        $masters = DB::table('master_clubs')->where('data_version', $version)->where('league_name', $settings['template'])
+        $masters = DB::table('master_clubs')->where('data_version', $version)->where('league_name', $settings['template'])->where('source', '!=', 'nation')
             ->orderByDesc('strength_cp')->orderBy('id')->limit($settings['team_count'])->get();
         if ($masters->count() < $settings['team_count']) {
             throw new HttpException(422, 'عدد الفرق أكبر من عدد أندية هذا الدوري.');
@@ -108,7 +108,7 @@ class LeagueFactory
         return $rounds - $locked + 1;
     }
 
-    private static function code(): string
+    public static function code(): string
     {
         $length = config('game.league.code_length');
         do {

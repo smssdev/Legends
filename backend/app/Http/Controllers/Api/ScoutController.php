@@ -29,7 +29,7 @@ class ScoutController extends Controller
             'hours' => intdiv((int) config('game.scout.hours') * max(1, (int) $league->timer_scale), 10000),
             'balance' => (int) $club->balance,
             'options' => [
-                'leagues' => DB::table('master_clubs')->where('data_version', $version)->distinct()->orderBy('league_name')->pluck('league_name'),
+                'leagues' => DB::table('master_clubs')->where('data_version', $version)->where('source', '!=', 'nation')->distinct()->orderBy('league_name')->pluck('league_name'),
                 'nationalities' => DB::table('master_players')->where('data_version', $version)->whereNotNull('nationality')
                     ->groupBy('nationality')->orderByRaw('count(*) desc')->limit(80)->pluck('nationality')
                     ->map(fn ($n) => Nation::name($n))->unique()->sort()->values(),

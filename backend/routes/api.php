@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\DataEditorController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TimedEventController;
+use App\Http\Controllers\Api\TournamentController;
 use App\Http\Controllers\Api\TrainingController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\WalletController;
@@ -85,6 +87,35 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
     Route::get('glossary', 'glossary');
 });
 Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1,data');
+
+// [Sprint 27] Tournaments: the catalog (templates, national teams, clubs), making one, its page and its draw, which
+// anyone signed in may watch live or replay. Coaches join it by its code as a league (/leagues/join).
+Route::prefix('tournaments')->middleware(['auth:sanctum', 'throttle:120,1,tournaments'])->controller(TournamentController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('catalog', 'catalog');
+    Route::get('clubs', 'clubs');
+    Route::post('/', 'store')->middleware('throttle:league-create');
+    Route::get('{league}', 'show')->whereNumber('league');
+    Route::get('{league}/draw', 'draw')->whereNumber('league');
+});
+
+// [Sprint 27] Chat groups, as in WhatsApp: any coaches, and every league's own.
+Route::prefix('groups')->middleware(['auth:sanctum', 'throttle:240,1,groups'])->controller(ChatController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store')->middleware('throttle:10,1,group-create');
+    Route::post('join/{code}', 'join')->where('code', '[a-z0-9]{10}')->middleware('throttle:20,1,group-join');
+    Route::get('league/{league}', 'league')->whereNumber('league');
+    Route::get('{group}', 'show')->whereNumber('group');
+    Route::patch('{group}', 'update')->whereNumber('group');
+    Route::get('{group}/messages', 'messages')->whereNumber('group');
+    Route::post('{group}/messages', 'send')->whereNumber('group')->middleware('throttle:60,1,group-send');
+    Route::delete('{group}/messages/{message}', 'destroyMessage')->whereNumber(['group', 'message']);
+    Route::post('{group}/read', 'read')->whereNumber('group');
+    Route::post('{group}/members', 'addMembers')->whereNumber('group');
+    Route::delete('{group}/members/{user}', 'removeMember')->whereNumber(['group', 'user']);
+    Route::put('{group}/members/{user}/admin', 'admin')->whereNumber(['group', 'user']);
+    Route::post('{group}/leave', 'leave')->whereNumber('group');
+});
 
 // Private leagues [PLAN 2.1, 2.3]: make one, ask to join by its code, the owner approves, take a club.
 Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 'league.activity'])->controller(LeagueController::class)->group(function () {

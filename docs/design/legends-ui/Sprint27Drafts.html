@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مسودات Sprint 27</title>
+<!-- [Sprint 27] Drafts of the five new screens: the chat groups, a group's talk, making a tournament, its page, and the
+     live draw. Colours from docs/design/tokens.json only; the game's font (Amin) stands in by the system's. -->
+<style>
+:root { --bg:#0B1A2C; --deep:#06111E; --surface:#102538; --sunk:#0B1D2E; --raised:#183349; --gold:#F5B82E; --goldL:#FFD36B;
+  --text:#F7F4EA; --muted:#A9B6CC; --brand:#12A07E; --brandL:#4FE0B5; --live:#EF4444; --chrome:#F6EEDB; --onGold:#0B1A2C; --panel:#0D2133; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--deep); color: var(--text); font-family: system-ui, 'Segoe UI', Tahoma, sans-serif; padding: 24px 16px; }
+h1 { font-size: 28px; margin: 0 0 6px; } p.lead { color: var(--muted); margin: 0 0 24px; max-width: 760px; }
+.row { display: flex; flex-wrap: wrap; gap: 28px; }
+.shot { width: 330px; } .shot h2 { font-size: 16px; color: var(--gold); margin: 0 0 8px; } .shot p { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+.phone { width: 330px; height: 660px; border-radius: 34px; background: var(--bg); border: 8px solid #1b2b3c; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.top { padding: 14px 16px; display: flex; align-items: center; gap: 10px; background: var(--panel); border-bottom: 1px solid #1e3a52; }
+.top b { font-size: 17px; } .top small { color: var(--muted); display: block; font-size: 12px; }
+.av { width: 40px; height: 40px; border-radius: 50%; background: var(--brand); display: grid; place-items: center; font-weight: 800; flex: none; }
+.body { flex: 1; overflow: hidden; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 14px; background: var(--surface); min-height: 60px; }
+.item .t { flex: 1; min-width: 0; } .item .t b { display: block; } .item .t span { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.badge { background: var(--gold); color: var(--onGold); border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 800; }
+.fab { position: absolute; bottom: 18px; left: 18px; width: 56px; height: 56px; border-radius: 50%; background: var(--gold); color: var(--onGold); display: grid; place-items: center; font-size: 30px; font-weight: 800; }
+.chip { display: inline-block; padding: 6px 12px; border-radius: 999px; background: var(--sunk); color: var(--muted); font-size: 13px; }
+.chip.on { background: var(--brand); color: var(--text); }
+.bubble { max-width: 78%; padding: 8px 12px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+.me { align-self: flex-start; background: var(--brand); border-bottom-right-radius: 4px; } .them { align-self: flex-end; background: var(--raised); border-bottom-left-radius: 4px; }
+.them i { display: block; color: var(--goldL); font-style: normal; font-size: 12px; font-weight: 700; }
+.note { align-self: center; font-size: 12px; color: var(--muted); background: var(--sunk); padding: 4px 10px; border-radius: 999px; }
+.quote { border-inline-start: 3px solid var(--goldL); padding-inline-start: 6px; font-size: 12px; opacity: .8; margin-bottom: 4px; }
+.composer { display: flex; gap: 8px; padding: 10px; background: var(--panel); }
+.composer div { flex: 1; background: var(--sunk); border-radius: 999px; padding: 12px 14px; color: var(--muted); font-size: 14px; }
+.send { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); color: var(--onGold); display: grid; place-items: center; font-weight: 900; }
+.tpl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tpl div { background: var(--surface); border-radius: 14px; padding: 10px; font-size: 13px; min-height: 64px; border: 2px solid transparent; }
+.tpl div.on { border-color: var(--gold); } .tpl b { display: block; font-size: 14px; }
+.btn { background: var(--gold); color: var(--onGold); font-weight: 800; text-align: center; border-radius: 14px; padding: 14px; }
+.teams { display: flex; flex-wrap: wrap; gap: 6px; } .teams span { background: var(--raised); border-radius: 10px; padding: 6px 8px; font-size: 12px; }
+.grp { background: var(--surface); border-radius: 14px; padding: 8px 10px; } .grp h4 { margin: 0 0 6px; color: var(--gold); font-size: 14px; }
+.grp table { width: 100%; font-size: 12px; border-collapse: collapse; } .grp td { padding: 3px 2px; } .grp td.n { text-align: center; width: 24px; color: var(--muted); }
+.grp tr.q td:first-child { border-inline-start: 3px solid var(--brandL); }
+.bracket { display: flex; gap: 8px; font-size: 12px; } .bracket .col { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 6px; }
+.bracket .tie { background: var(--surface); border-radius: 10px; padding: 6px; } .bracket .tie div { display: flex; justify-content: space-between; }
+.draw { background: radial-gradient(circle at 50% 30%, #1d4a6b 0%, var(--deep) 70%); }
+.stage { height: 220px; display: grid; place-items: center; position: relative; }
+.bowl { width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffffff33, #ffffff08 60%); border: 2px solid #ffffff30; position: relative; }
+.ball { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, var(--goldL) 45%, var(--gold)); box-shadow: 0 4px 10px #0008; }
+.reveal { text-align: center; } .reveal .crest { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 8px; background: linear-gradient(135deg, #009739 50%, #FEDD00 50%); box-shadow: 0 0 40px var(--gold); }
+.reveal b { font-size: 26px; display: block; } .reveal span { color: var(--goldL); font-weight: 800; letter-spacing: .5px; }
+.groups { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 11px; }
+.groups div { background: #0d2133cc; border-radius: 10px; padding: 6px; min-height: 92px; } .groups h5 { margin: 0 0 4px; color: var(--gold); font-size: 12px; }
+.groups p { margin: 2px 0; } .groups p.new { color: var(--goldL); font-weight: 800; }
+.live { display: inline-flex; gap: 6px; align-items: center; background: var(--live); padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.ctr { display: flex; justify-content: space-between; align-items: center; padding: 0 12px; }
+.notes { margin-top: 32px; max-width: 980px; color: var(--muted); font-size: 14px; line-height: 1.9; }
+.notes b { color: var(--text); }
+@media (prefers-reduced-motion: no-preference) { .ball.spin { animation: spin 1.4s linear infinite; } @keyframes spin { to { transform: rotate(360deg) translateX(30px) rotate(-360deg); } } }
+</style>
+</head>
+<body>
+<h1>مسودات Sprint 27: الجروبات والبطولات والقرعة</h1>
+<p class="lead">خمس شاشات جديدة داخل <code>AppShell</code> (والقرعة تملأ الشاشة مثل المباراة). الموبايل أولاً، واللمس 44px، والألوان من tokens.json فقط.</p>
+
+<div class="row">
+  <section class="shot">
+    <h2>1. الجروبات</h2>
+    <div class="phone">
+      <div class="top"><b style="flex:1">الجروبات</b><span class="chip on">الكل</span><span class="chip">الدوريات</span></div>
+      <div class="body">
+        <div class="item"><div class="av">ش</div><div class="t"><b>شلة الكورة</b><span>عمر: مين جاهز للقرعة؟ 🔥</span></div><span class="badge">3</span></div>
+        <div class="item"><div class="av" style="background:#C08A0C">🏆</div><div class="t"><b>كأس العالم للأصدقاء</b><span>القرعة الليلة 9:00</span></div><span class="badge">12</span></div>
+        <div class="item"><div class="av" style="background:#183349">د</div><div class="t"><b>دوري الأبطال #K7Q2</b><span>سارة: مبروك الفوز 👏</span></div></div>
+        <div class="item"><div class="av">ع</div><div class="t"><b>عائلة المدربين</b><span>أضافك أحمد</span></div></div>
+      </div>
+      <div class="fab">+</div>
+    </div>
+    <p>كل جروب بآخر رسالة وعدد غير المقروء، وجروبات الدوريات والبطولات تظهر وحدها. «+» يفتح: الاسم، والأعضاء بأسماء المستخدمين، أو رابط دعوة.</p>
+  </section>
+
+  <section class="shot">
+    <h2>2. داخل الجروب</h2>
+    <div class="phone">
+      <div class="top"><div class="av">ش</div><div style="flex:1"><b>شلة الكورة</b><small>5 أعضاء · سارة، عمر، أحمد…</small></div><span class="chip">⋮</span></div>
+      <div class="body">
+        <span class="note">أنشأت سارة الجروب</span>
+        <span class="note">أضافت سارة عمر</span>
+        <div class="bubble them"><i>عمر</i>مين جاهز للقرعة؟ 🔥</div>
+        <div class="bubble me"><div class="quote">مين جاهز للقرعة؟ 🔥</div>أنا! البرازيل في المجموعة الأولى إن شاء الله ⚽</div>
+        <div class="bubble them"><i>أحمد</i>هذه الرسالة حُذفت</div>
+      </div>
+      <div class="composer"><div>اكتب رسالة…</div><span class="send">➤</span></div>
+    </div>
+    <p>رسائلي في جهة، والآخرون في الأخرى بأسمائهم. ضغطة مطولة: رد أو حذف. «⋮»: الأعضاء، والإضافة، والمشرفون، والرابط، والمغادرة.</p>
+  </section>
+
+  <section class="shot">
+    <h2>3. أنشئ بطولة</h2>
+    <div class="phone">
+      <div class="top"><b>بطولة جديدة</b></div>
+      <div class="body">
+        <div class="tpl">
+          <div class="on"><b>كأس العالم</b>32 منتخباً · 8 مجموعات</div>
+          <div><b>كأس العالم للأندية</b>32 نادياً</div>
+          <div><b>أمم أفريقيا</b>منتخبات أفريقيا</div>
+          <div><b>أمم أوروبا</b>منتخبات أوروبا</div>
+          <div><b>كأس آسيا</b>منتخبات آسيا</div>
+          <div><b>بطولة مخصصة</b>منتخبات وأندية، من فريقين</div>
+        </div>
+        <div><span class="chip">دوري</span> <span class="chip on">مجموعات ثم إقصاء</span> <span class="chip">إقصاء</span></div>
+        <div class="teams"><span>🇧🇷 البرازيل ✕</span><span>فرنسا ✕</span><span>مصر ✕</span><span>ريال مدريد ✕</span><span>+ أضف فريقاً</span></div>
+        <div class="item" style="min-height:48px"><div class="t"><b>القرعة المباشرة</b><span>الخميس 9:00 م · يشاهدها الجميع</span></div></div>
+        <div class="btn">أنشئ البطولة</div>
+      </div>
+    </div>
+    <p>القالب يملأ الفرق والشكل، وكل شيء قابل للتعديل: الفرق (بحث في المنتخبات والأندية)، والنظام، وعدد المجموعات، وموعد القرعة، وفريقك.</p>
+  </section>
+
+  <section class="shot">
+    <h2>4. صفحة البطولة</h2>
+    <div class="phone">
+      <div class="top"><div style="flex:1"><b>كأس العالم للأصدقاء</b><small>32 فريقاً · مجموعات ثم إقصاء</small></div><span class="chip on">الجروب</span></div>
+      <div class="body">
+        <div><span class="chip on">المجموعات</span> <span class="chip">الأدوار الإقصائية</span> <span class="chip">القرعة</span></div>
+        <div class="grp"><h4>المجموعة A</h4><table>
+          <tr class="q"><td>البرازيل</td><td class="n">3</td><td class="n">+5</td><td class="n"><b>9</b></td></tr>
+          <tr class="q"><td>المغرب</td><td class="n">3</td><td class="n">+2</td><td class="n"><b>6</b></td></tr>
+          <tr><td>اليابان</td><td class="n">3</td><td class="n">-2</td><td class="n"><b>3</b></td></tr>
+          <tr><td>كندا</td><td class="n">3</td><td class="n">-5</td><td class="n"><b>0</b></td></tr></table></div>
+        <div class="bracket">
+          <div class="col"><div class="tie"><div><span>A1</span><b>2</b></div><div><span>B2</span><b>1</b></div></div><div class="tie"><div><span>C1</span></div><div><span>D2</span></div></div></div>
+          <div class="col"><div class="tie"><div><span>البرازيل</span></div><div><span>؟</span></div></div></div>
+          <div class="col"><div class="tie" style="border:1px solid var(--gold)"><div><span>🏆 النهائي</span></div></div></div>
+        </div>
+      </div>
+    </div>
+    <p>المتأهلون بخط أخضر. وقبل نهاية المجموعات تظهر الشجرة بمصادرها (A1 ضد B2)، وتمتلئ وحدها حين تنتهي.</p>
+  </section>
+
+  <section class="shot">
+    <h2>5. القرعة المباشرة</h2>
+    <div class="phone draw">
+      <div class="ctr" style="padding-top:14px"><span class="live">● مباشر</span><span class="chip">🔊 الصوت</span></div>
+      <div class="stage">
+        <div class="bowl"><span class="ball spin" style="top:40px;left:60px"></span><span class="ball" style="top:90px;left:30px"></span><span class="ball" style="top:100px;left:100px"></span><span class="ball" style="top:60px;left:110px"></span></div>
+      </div>
+      <div class="reveal"><div class="crest"></div><b>البرازيل</b><span>← المجموعة A · الوعاء 1</span></div>
+      <div class="body"><div class="groups">
+        <div><h5>A</h5><p class="new">البرازيل</p><p>المغرب</p></div><div><h5>B</h5><p>فرنسا</p></div><div><h5>C</h5><p>الأرجنتين</p></div><div><h5>D</h5><p>إسبانيا</p></div>
+      </div></div>
+    </div>
+    <p>عد تنازلي قبلها ببصمتها، ثم كرة تخرج من الوعاء، وتوقف وطبول، ثم يظهر الشعار ويُنطق الاسم ويطير إلى مجموعته. ومن فاته يشاهدها كما كانت بالضبط من أولها.</p>
+  </section>
+</div>
+
+<div class="notes">
+  <p><b>الحركة والصوت في القرعة:</b> الكرات تدور في الوعاء، ثم تخرج كرة واحدة وتكبر (0.8 ثانية)، فتوقف وقرع طبول يتصاعد (1.2 ثانية)، ثم تنفتح الكرة عن شعار الفريق بوهج ذهبي وقصاصات، ويُنطق اسمه بلغة الواجهة (صوت المتصفح المجاني)، ثم تطير بطاقته إلى مجموعتها (أو خانتها أو مواجهتها). المؤثرات من صنعنا بـ Web Audio بلا ملفات. وزر لكتم الصوت، و«تخطَّ إلى النهاية» لمن يعيد المشاهدة.</p>
+  <p><b>الحركة المخففة:</b> من اختار «تقليل الحركة» في جهازه يرى الشعار والمجموعة بلا دوران ولا طيران.</p>
+  <p><b>جروب لكل دوري وبطولة</b> يُفتح من صفحتهما، وأعضاؤه مدربوه، ولا يُغادر ولا يُضاف إليه يدوياً.</p>
+</div>
+</body>
+</html>

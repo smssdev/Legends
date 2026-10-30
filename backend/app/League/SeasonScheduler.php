@@ -5,6 +5,7 @@ namespace App\League;
 use App\Models\League;
 use App\Models\Season;
 use App\Support\GameClock;
+use App\Tournament\TournamentScheduler;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
@@ -137,6 +138,12 @@ class SeasonScheduler
 
     public static function build(League $league, Season $season): void
     {
+        // [Sprint 27] A tournament has its own shape.
+        if ($league->kind === 'tournament') {
+            TournamentScheduler::build($league, $season);
+
+            return;
+        }
         DB::transaction(function () use ($league, $season) {
             foreach (['transfer_windows', 'cup_ties', 'fixtures'] as $table) {
                 DB::table($table)->where('season_id', $season->id)->delete();
@@ -188,20 +195,7 @@ class SeasonScheduler
 
             // Cup: the drawn bracket, each tie with its fixture on its stage's day (teams filled as they win).
             $stages = CupBracket::stages(count($clubs));
-            $ids = [];
-            foreach (CupBracket::draw($clubs, LiveDraw::cupSeed($league, $season)) as $tie) {
-                $stage = array_search($tie['stage'], $stages, true);
-                $fixture = DB::table('fixtures')->insertGetId(['season_id' => $season->id, 'competition' => 'cup', 'round' => $stage + 1,
-                    'scheduled_at' => $cupTimes[$stage], 'home_id' => $tie['home'], 'away_id' => $tie['away'], 'created_at' => $now, 'updated_at' => $now]);
-                $ids[$tie['stage'].':'.$tie['slot']] = DB::table('cup_ties')->insertGetId(['season_id' => $season->id, 'stage' => $tie['stage'], 'slot' => $tie['slot'],
-                    'home_id' => $tie['home'], 'away_id' => $tie['away'], 'fixture_id' => $fixture, 'created_at' => $now, 'updated_at' => $now]);
-                $next[$tie['stage'].':'.$tie['slot']] = $tie['next'];
-            }
-            foreach ($next ?? [] as $key => $to) {
-                if ($to) {
-                    DB::table('cup_ties')->where('id', $ids[$key])->update(['next_tie_id' => $ids[$to[0].':'.$to[1]], 'next_side' => $to[2]]);
-                }
-            }
+            self::bracket($season->id, CupBracket::draw($clubs, LiveDraw::cupSeed($league, $season)), $stages, $cupTimes);
 
             // The two windows that renew the market pool [PLAN 2.4]: the preparation, and the winter day.
             $first = min($leagueTimes);
@@ -223,5 +217,34 @@ class SeasonScheduler
                 'timer_scale' => max(1, intdiv($seconds * 10000, config('game.league.reference_season_days') * 86400)),
             ]);
         });
+    }
+
+    /**
+     * A knockout's ties with their fixtures, each on its stage's time (sides filled as they win) [PLAN 2.5]; a tie may
+     * say where its sides come from (home_from, away_from: a tournament's groups, Sprint 27).
+     *
+     * @param  list<array{stage: string, slot: int, home: ?int, away: ?int, next: ?array}>  $ties
+     * @param  list<string>  $stages  in the order they are played
+     * @param  array<int, \DateTimeInterface>  $times  stage index => kick-off
+     */
+    public static function bracket(int $seasonId, array $ties, array $stages, array $times): void
+    {
+        $now = GameClock::now();
+        $ids = [];
+        $next = [];
+        foreach ($ties as $tie) {
+            $stage = array_search($tie['stage'], $stages, true);
+            $fixture = DB::table('fixtures')->insertGetId(['season_id' => $seasonId, 'competition' => 'cup', 'round' => $stage + 1,
+                'scheduled_at' => $times[$stage], 'home_id' => $tie['home'], 'away_id' => $tie['away'], 'created_at' => $now, 'updated_at' => $now]);
+            $ids[$tie['stage'].':'.$tie['slot']] = DB::table('cup_ties')->insertGetId(['season_id' => $seasonId, 'stage' => $tie['stage'], 'slot' => $tie['slot'],
+                'home_id' => $tie['home'], 'away_id' => $tie['away'], 'fixture_id' => $fixture, 'created_at' => $now, 'updated_at' => $now,
+                'home_from' => $tie['home_from'] ?? null, 'away_from' => $tie['away_from'] ?? null]);
+            $next[$tie['stage'].':'.$tie['slot']] = $tie['next'];
+        }
+        foreach ($next as $key => $to) {
+            if ($to) {
+                DB::table('cup_ties')->where('id', $ids[$key])->update(['next_tie_id' => $ids[$to[0].':'.$to[1]], 'next_side' => $to[2]]);
+            }
+        }
     }
 }

@@ -22,7 +22,7 @@ class LeagueTiers
     /** How many clubs the real league has (the most a league of it can have, up to the game's max). */
     public static function clubsOf(string $template): int
     {
-        $n = DB::table('master_clubs')->where('data_version', DataController::version())->where('league_name', $template)->count();
+        $n = DB::table('master_clubs')->where('data_version', DataController::version())->where('league_name', $template)->where('source', '!=', 'nation')->count();
 
         return min($n, (int) config('game.league.max_teams'));
     }

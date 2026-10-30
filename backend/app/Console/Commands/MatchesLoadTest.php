@@ -87,7 +87,7 @@ class MatchesLoadTest extends Command
     /** Leagues of 20 clubs, each club with its own coach, starting now. */
     private function leagues(string $run, int $count)
     {
-        $template = DB::table('master_clubs')->select('league_name')->groupBy('league_name')->havingRaw('count(*) >= 20')->value('league_name');
+        $template = DB::table('master_clubs')->where('source', '!=', 'nation')->select('league_name')->groupBy('league_name')->havingRaw('count(*) >= 20')->value('league_name');
         abort_unless($template, 1, 'No template with 20 clubs.');
 
         return collect(range(1, $count))->map(function ($n) use ($run, $template) {

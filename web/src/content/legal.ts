@@ -17,7 +17,8 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'ما نجمعه منك', p: [
         'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك، وشكل مدربك على الخط الذي تختاره (يراه مدربو دوريك في المباريات).',
         'الدخول بحساب Google: نأخذ من Google اسمك وبريدك ومعرّف حسابك فقط، لتسجيل دخولك، ولا نصل إلى أي شيء آخر في حسابك.',
-        'بيانات اللعب: أنديتك ودورياتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
+        'بيانات اللعب: أنديتك ودورياتك وبطولاتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
+        'رسائل الجروبات: ما تكتبه في جروب يراه أعضاؤه كلهم ويُحفظ على خادمنا معهم. تحذف رسالتك متى شئت فتظهر لهم «حُذفت».',
         'تقييمك لردود المدرب المساعد: إن ضغطت «أفادني» أو «لم يفدني» نحفظ اختيارك والصفحة التي كنت فيها وملاحظتك إن كتبتها، لنحسّن ردوده. ولا نحفظ معها المحادثة نفسها.',
         'بيانات تقنية: عنوان IP ونوع المتصفح والجهاز وأوقات الدخول، لحماية الحسابات من الاختراق والإساءة ولإصلاح الأعطال.',
       ] },
@@ -47,7 +48,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'البريد: خدمة إرسال البريد التي توصل رسائل التوثيق واستعادة كلمة المرور.',
       ] },
       { h: 'مدة الاحتفاظ', p: [
-        'نحتفظ ببيانات حسابك ما دام قائماً. وحين تحذفه يُحذف معه كل ما هو خاص بك (المحفظة والرسائل والأجهزة والنشاط)، وتعود أنديتك للبوتات، وتبقى نتائج المباريات والألقاب في سجل الدوري بلا اسمك.',
+        'نحتفظ ببيانات حسابك ما دام قائماً. وحين تحذفه يُحذف معه كل ما هو خاص بك (المحفظة والرسائل والأجهزة والنشاط)، وتعود أنديتك للبوتات، وتبقى نتائج المباريات والألقاب في سجل الدوري بلا اسمك، ورسائلك في الجروبات لأعضائها بلا اسمك (احذفها قبل حذف الحساب إن شئت).',
         'والسجلات التقنية تُحذف تلقائياً بعد مدة قصيرة، والنسخ الاحتياطية تتجدد دورياً.',
       ] },
       { h: 'حقوقك', p: [
@@ -68,7 +69,8 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'What we collect', p: [
         'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, your language, and the look you pick for your coach on the touchline (the coaches of your leagues see it in matches).',
         'Google sign-in: we receive only your name, email and account id from Google, to sign you in, and nothing else in your Google account.',
-        'Game data: your clubs, leagues, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
+        'Game data: your clubs, leagues, tournaments, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
+        'Group messages: what you write in a group is seen by all its members and kept on our server for them. You can delete a message at any time, and they then see it as deleted.',
         'Your rating of the Assistant Coach\'s answers: if you tap "helpful" or "not helpful" we keep your choice, the page you were on and your note if you wrote one, to improve his answers. The conversation itself is not kept with it.',
         'Technical data: IP address, browser and device type, and sign-in times, to protect accounts from abuse and to fix problems.',
       ] },
@@ -98,7 +100,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'Email: the sending service that delivers verification and password reset emails.',
       ] },
       { h: 'How long we keep it', p: [
-        'We keep your account data while your account exists. When you delete it, everything that is only yours goes with it (wallet, messages, devices, activity), your clubs return to the bots, and match results and titles stay in the league\'s history without your name.',
+        'We keep your account data while your account exists. When you delete it, everything that is only yours goes with it (wallet, messages, devices, activity), your clubs return to the bots, match results and titles stay in the league\'s history without your name, and your group messages stay for their members without your name (delete them before deleting the account if you wish).',
         'Technical logs are deleted automatically after a short time, and backups are rotated.',
       ] },
       { h: 'Your rights', p: [

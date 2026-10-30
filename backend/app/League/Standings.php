@@ -27,12 +27,30 @@ class Standings
 
     private static function compute(int $seasonId): array
     {
+        return array_column(self::table($seasonId), 'id');
+    }
+
+    /**
+     * The table's rows in order: points, goal difference, goals scored, strength; of every club, or of one group's
+     * clubs in a tournament [Sprint 27].
+     *
+     * @param  list<int>|null  $clubIds
+     * @return list<array{id: int, pts: int, gd: int, gf: int, st: int, p: int, w: int, d: int, l: int, ga: int}>
+     */
+    public static function table(int $seasonId, ?array $clubIds = null): array
+    {
         $leagueId = (int) DB::table('seasons')->where('id', $seasonId)->value('league_id');
-        $rows = DB::table('clubs')->where('league_id', $leagueId)->get(['id', 'strength_snapshot'])
-            ->mapWithKeys(fn ($c) => [$c->id => ['id' => $c->id, 'pts' => 0, 'gd' => 0, 'gf' => 0, 'st' => (int) $c->strength_snapshot]])->all();
+        $rows = DB::table('clubs')->where('league_id', $leagueId)->when($clubIds !== null, fn ($q) => $q->whereIn('id', $clubIds))->get(['id', 'strength_snapshot'])
+            ->mapWithKeys(fn ($c) => [$c->id => ['id' => (int) $c->id, 'pts' => 0, 'gd' => 0, 'gf' => 0, 'st' => (int) $c->strength_snapshot, 'p' => 0, 'w' => 0, 'd' => 0, 'l' => 0, 'ga' => 0]])->all();
         $done = DB::table('fixtures')->where('season_id', $seasonId)->where('competition', 'league')->where('is_bye', false)->where('status', 'finished')->get();
         foreach ($done as $f) {
             foreach ([[$f->home_id, $f->home_goals, $f->away_goals], [$f->away_id, $f->away_goals, $f->home_goals]] as [$id, $for, $against]) {
+                if (! isset($rows[$id])) {
+                    continue;
+                }
+                $rows[$id]['p']++;
+                $rows[$id][$for > $against ? 'w' : ($for === $against ? 'd' : 'l')]++;
+                $rows[$id]['ga'] += $against;
                 $rows[$id]['pts'] += $for > $against ? 3 : ($for === $against ? 1 : 0);
                 $rows[$id]['gd'] += $for - $against;
                 $rows[$id]['gf'] += $for;
@@ -46,6 +64,6 @@ class Standings
         }
         usort($rows, fn ($a, $b) => [$b['pts'], $b['gd'], $b['gf'], $b['st']] <=> [$a['pts'], $a['gd'], $a['gf'], $a['st']]);
 
-        return array_column($rows, 'id');
+        return $rows;
     }
 }

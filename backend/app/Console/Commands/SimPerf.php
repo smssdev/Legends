@@ -24,7 +24,7 @@ class SimPerf extends Command
 
     public function handle(): int
     {
-        $clubs = MasterClub::orderByDesc('strength_cp')->orderBy('id')->limit(20)->get()->values();
+        $clubs = MasterClub::where('source', '!=', 'nation')->orderByDesc('strength_cp')->orderBy('id')->limit(20)->get()->values();
         if ($clubs->count() < 2) {
             $this->error('No clubs: run the seeders first.');
 

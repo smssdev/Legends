@@ -35,6 +35,17 @@ class LiveDraw
         ]);
     }
 
+    /** [Sprint 27] A draw this minute: its seed and hash set, then drawn. */
+    public static function now(League $league): bool
+    {
+        $seed = $league->draw_seed ?? random_int(1, 2_147_483_647);
+        DB::table('leagues')->where('id', $league->id)->whereNull('drawn_at')->update([
+            'draw_at' => GameClock::now(), 'draw_seed' => $seed, 'draw_commit' => self::commit($league->id, $seed), 'updated_at' => GameClock::now(),
+        ]);
+
+        return self::draw($league->fresh());
+    }
+
     public static function commit(int $leagueId, int $seed): string
     {
         return hash('sha256', "legends-draw:{$leagueId}:{$seed}");
