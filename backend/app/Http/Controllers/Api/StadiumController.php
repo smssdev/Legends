@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Ads\AdReward;
 use App\Economy\Economy;
 use App\Economy\Money;
+use App\Economy\Tickets;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\League;
@@ -36,7 +37,7 @@ class StadiumController extends Controller
         $per = (int) $cfg['parts_per_stage'];
         // What each stage gives, from stage 0 to 3.
         $effects = [
-            'seats' => array_map(fn ($c) => $money->tickets($scale, $rounds, $attendance, $c), $cfg['capacity_by_stage']),
+            'seats' => array_map(fn ($c) => $money->tickets($scale, $rounds, $attendance, $c, Tickets::level($club->id)), $cfg['capacity_by_stage']),
             'pitch' => array_map(fn ($bp) => (int) $bp, config('game.match.home_pitch_bp')),
             'training' => array_map(fn ($r) => (int) $r[1], $cfg['training_speed_bp']),
         ];
@@ -50,6 +51,8 @@ class StadiumController extends Controller
                 'capacity' => Stadium::capacity($club->id),
                 'home_bp' => (int) config('game.match.home_base_bp') + $effects['pitch'][$stages['pitch']],
                 'tickets_per_match' => $effects['seats'][$stages['seats']],
+                // [X61] The ticket price levels, set here or in the finance screen.
+                'tickets' => Tickets::view($league, $club),
                 'parts_done' => array_sum(array_map(fn ($s) => $stages[$s] * $per + (int) ($parts[$s] ?? 0), Stadium::SECTIONS)),
             ],
             'sections' => array_map(function ($s) use ($club, $league, $stages, $parts, $per, $effects) {

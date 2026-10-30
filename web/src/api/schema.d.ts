@@ -4533,6 +4533,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [X61] Set the ticket price level for the home matches to come */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        level: "popular" | "normal" | "high" | "premium";
+                    };
+                };
+            };
+            responses: {
+                /** @description The levels after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TicketLevels"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/summary": {
         parameters: {
             query?: never;
@@ -6737,6 +6786,53 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/assistant/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X61] The coach rates the conversation at its end: helpful or not, the page, and an optional note */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        helpful: boolean;
+                        page?: string | null;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Thanks */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -9225,6 +9321,7 @@ export interface components {
                 ticket_price: number;
                 tickets_per_match: number;
             };
+            tickets: components["schemas"]["TicketLevels"];
             sponsors: {
                 sector: string;
                 name: string;
@@ -9964,6 +10061,7 @@ export interface components {
                 /** @description The home advantage with the pitch (basis points) */
                 home_bp: number;
                 tickets_per_match: number;
+                tickets: components["schemas"]["TicketLevels"];
                 parts_done: number;
             };
             sections: {
@@ -10016,6 +10114,21 @@ export interface components {
             /** @description At or past his potential: training goes on, much slower [X16] */
             over_potential?: boolean;
         };
+        /** @description [X61] The ticket price level the coach set and what each of the four brings at the next home match */
+        TicketLevels: {
+            /** @enum {string} */
+            level: "popular" | "normal" | "high" | "premium";
+            per_match: number;
+            levels: {
+                /** @enum {string} */
+                level: "popular" | "normal" | "high" | "premium";
+                name: string;
+                /** @description One seat */
+                price: number;
+                attendance_bp: number;
+                per_match: number;
+            }[];
+        };
         TrainingView: {
             /** @description One session's price */
             cost: number;
@@ -10035,11 +10148,13 @@ export interface components {
                 sessions_done: number;
                 /** Format: date-time */
                 next_at: string | null;
-                /** @description [Sprint 21 E6] The line's coach: no training without him */
+                /** @description [Sprint 21 E6] The line's coach; [X61] without one (hired false) the free basic coach trains the line at bonus_bp */
                 coach: {
                     type: string;
                     name: string;
                     hired: boolean;
+                    stars: number;
+                    bonus_bp: number;
                 };
                 ads: components["schemas"]["AdStatus"];
             }[];

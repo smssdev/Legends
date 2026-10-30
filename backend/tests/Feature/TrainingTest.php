@@ -6,6 +6,7 @@ use App\League\ClubLedger;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Models\User;
+use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Training\Gain;
 use App\Training\Training;
@@ -62,11 +63,15 @@ class TrainingTest extends TestCase
         return Training::interval($this->league['id']);
     }
 
-    public function test_no_training_without_the_lines_coach_and_a_session_is_six_hours_everywhere(): void
+    public function test_without_the_lines_coach_the_free_basic_coach_trains_it_and_a_session_is_six_hours_everywhere(): void
     {
+        // [X61] No coach signed: the basic one, a one-star coach's speed, and the page says so.
         DB::table('staff_specialists')->where('club_id', $this->mine)->where('type', 'mid_coach')->delete();
-        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $this->trainee('mid')->id])->assertStatus(422)
-            ->assertJsonPath('message', 'لا تدريب بلا مدرب: تعاقد مع مدرب الوسط من الجهاز الفني أولاً.');
+        $page = $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $this->trainee('mid')->id])->assertOk();
+        $mid = collect($page->json('slots'))->firstWhere('line', 'mid');
+        $this->assertFalse($mid['coach']['hired']);
+        $this->assertSame(1000, $mid['coach']['bonus_bp']);
+        $this->assertSame(11000, Specialists::trainingStep($this->mine, 'mid', 10000));
         $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $this->trainee('def')->id])->assertOk();
         $this->assertSame(6 * 3600, Training::interval($this->league['id']));
         DB::table('leagues')->where('id', $this->league['id'])->update(['timer_scale' => 5000]);

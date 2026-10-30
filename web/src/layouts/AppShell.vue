@@ -12,6 +12,7 @@ import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
+import ToastHost from '../components/shell/ToastHost.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import { money } from '../lib/format'
@@ -70,6 +71,7 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
 
 <template>
   <div class="min-h-dvh">
+    <ToastHost />
     <header class="sticky top-0 z-30">
       <div class="shell-top relative border-b border-shade/30">
         <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">

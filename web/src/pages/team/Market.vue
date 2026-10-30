@@ -12,6 +12,7 @@ import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import EventsBar from '../../components/ui/EventsBar.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 import Trades from './Trades.vue'
 import ScoutPage from './ScoutPage.vue'
 import { useWallet } from '../../stores/wallet'
@@ -220,11 +221,7 @@ onBeforeUnmount(() => clearInterval(clock))
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
     <template v-else-if="m">
-      <div role="tablist" :aria-label="$t('مصادر اللاعبين')" class="flex flex-wrap gap-1 self-start rounded-xl bg-surface p-1">
-        <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="tab === t.id" class="flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold" :class="tab === t.id ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="tab = t.id">
-          {{ $t(t.label) }}<span v-if="t.n !== null" class="min-w-6 rounded-pill px-1.5 font-numbers" :class="tab === t.id ? 'bg-on-gold/15' : 'bg-text/10'">{{ t.n }}</span>
-        </button>
-      </div>
+      <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" class="self-start max-w-full" />
 
       <Trades v-if="tab === 'offers'" :league-id="leagueId" view="offers" :mine="m.mine" @changed="load" />
       <ScoutPage v-else-if="tab === 'scout'" />
@@ -242,9 +239,7 @@ onBeforeUnmount(() => clearInterval(clock))
 
       <template v-else-if="tab === 'list'">
         <div class="flex flex-wrap items-center gap-2">
-          <div role="tablist" :aria-label="$t('المراكز')" class="grid flex-1 grid-cols-4 gap-1 rounded-xl bg-surface p-1">
-            <button v-for="l in LINES" :key="l.id" type="button" role="tab" :aria-selected="line === l.id" class="min-h-touch rounded-lg px-2 text-xs font-bold sm:text-sm" :class="line === l.id ? 'bg-brand text-white' : 'text-text-soft'" @click="line = l.id">{{ $t(l.label) }}</button>
-          </div>
+          <UiTabs v-model="line" :items="LINES.map((l) => ({ key: l.id, label: l.label }))" label="المراكز" tone="brand" size="sm" fill class="flex-1" />
           <span v-if="list?.renews_at" class="flex h-11 items-center gap-2 rounded-lg border border-gold/40 bg-surface px-3 text-sm">{{ $t('الصفقات التالية بعد') }} <b class="font-numbers text-lg text-gold" dir="ltr">{{ renewsIn }}</b></span>
         </div>
         <!-- [Sprint 23] The admin's events running in this league. -->
@@ -305,7 +300,8 @@ onBeforeUnmount(() => clearInterval(clock))
         </div>
       </div>
 
-      <section v-else :aria-label="$t('بيع لاعبيّ')" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
+      <!-- [X61] Its own tab only (it hung off the celebration's v-else, so it showed under every tab). -->
+      <section v-if="tab === 'sell'" :aria-label="$t('بيع لاعبيّ')" class="flex flex-col gap-2 rounded-xl bg-surface p-2">
         <!-- [Sprint 23] How many may be listed at once, and what outside buyers may still pay above the value this season. -->
         <p v-if="m.selling" class="flex flex-wrap gap-x-4 gap-y-1 px-2 pt-1 text-xs text-text-muted">
           <span>{{ $t('المعروضون: {v0} من {v1}', { v0: m.selling.listed, v1: m.selling.max_listings }) }}</span>

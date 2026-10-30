@@ -21,8 +21,10 @@ use App\Models\League;
 use App\Models\LeagueJoinRequest;
 use App\Models\LeagueMembership;
 use App\Models\User;
+use App\Rules\NotJunk;
 use App\Season\Objectives;
 use App\Support\GameClock;
+use App\Support\Nation;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -301,7 +303,7 @@ class LeagueController extends Controller
         return response()->json($this->clubData($club) + [
             'players' => $players->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->master->name, 'position' => $p->master->position, 'line' => $p->master->line,
-                'age' => $p->master->age, 'nationality' => $p->master->nationality,
+                'age' => $p->master->age, 'nationality' => Nation::name($p->master->nationality),
                 'overall' => $p->overall, 'potential' => $p->master->potential, 'value' => (int) $p->value,
                 'fitness' => $p->fitness, 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
             ]),
@@ -426,7 +428,7 @@ class LeagueController extends Controller
         $prep = $dev ? ['between:1,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
         // [UP9] Every setting may be left out: the free league's own value takes its place (LeagueTiers).
         $rules = [
-            'name' => ['nullable', 'string', 'max:60'],
+            'name' => ['nullable', 'string', 'max:60', new NotJunk],
             'rounds_per_day' => ['sometimes', 'integer', 'between:'.$c['rounds_per_day'][0].','.($dev ? 2 : $c['rounds_per_day'][1])],
             'round_times' => ['sometimes', 'array', 'size:'.(int) $request->input('rounds_per_day', 1)],
             'round_times.*' => ['date_format:H:i', 'distinct'],

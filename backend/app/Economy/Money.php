@@ -54,9 +54,19 @@ class Money
     }
 
     /** The gate of one home match: the seats filled at the price. More seats (the stadium's seats section) sell more. */
-    public function tickets(int $scale, int $rounds, int $attendanceBp, ?int $capacity = null): int
+    public function tickets(int $scale, int $rounds, int $attendanceBp, ?int $capacity = null, string $level = 'normal'): int
     {
-        return intdiv(($capacity ?? $this->cfg['stadium']['capacity']) * $attendanceBp, 10000) * $this->ticketPrice($scale, $rounds);
+        [$attendanceBp, $priceBp] = $this->priced($attendanceBp, $level);
+
+        return intdiv(intdiv(($capacity ?? $this->cfg['stadium']['capacity']) * $attendanceBp, 10000) * $this->ticketPrice($scale, $rounds) * $priceBp, 10000);
+    }
+
+    /** [X61] The crowd and the price at a ticket level: the attendance moved (between 10% and full) and the price's bp. */
+    public function priced(int $attendanceBp, string $level): array
+    {
+        $l = $this->cfg['ticket_levels'][$level] ?? $this->cfg['ticket_levels']['normal'];
+
+        return [max(1000, min(10000, $attendanceBp + $l['attendance_bp'])), $l['price_bp']];
     }
 
     /** A league match's result in money: a bonus for a win, a smaller one for a draw, a deduction (below zero) for a loss [X14]. */

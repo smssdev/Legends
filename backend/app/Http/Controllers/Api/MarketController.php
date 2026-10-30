@@ -9,6 +9,7 @@ use App\Market\Market;
 use App\Market\Pool;
 use App\Models\Club;
 use App\Models\League;
+use App\Support\Nation;
 use App\TimedEvents\TimedEvents;
 use App\Wallet\Price;
 use Illuminate\Http\JsonResponse;
@@ -73,7 +74,7 @@ class MarketController extends Controller
                 ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'code' => $c->code, 'players' => (int) ($squads[$c->id] ?? 0)]),
             'players' => $rows->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
-                'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
+                'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => Nation::name($p->nationality),
                 'value' => (int) $p->value, 'price' => $source === 'pool' ? Market::poolPrice($p) : intdiv((int) $p->value * $bp, 10000),
                 'club' => $p->club_id ? ['id' => $p->club_id, 'name' => $clubs[$p->club_id] ?? ''] : null,
                 // For the player's card in the market [X29].
@@ -118,7 +119,7 @@ class MarketController extends Controller
         $logo = fn ($id) => isset($masters[$id]) ? ClubLogo::path($masters[$id]->league_name, $masters[$id]->name) : null;
         $row = fn ($p, int $price, array $seller) => [
             'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
-            'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => $p->nationality,
+            'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => Nation::name($p->nationality),
             'value' => (int) $p->value, 'price' => $price, 'seller' => $seller, 'star' => (bool) ($p->pool_star ?? false),
             // [Sprint 23] An event's special player (offer, in_form, legend), and the price before a discount.
             'special' => $p->pool_kind ?? null, 'was_price' => $seller['kind'] === 'world' && $price < (int) $p->value ? (int) $p->value : null,

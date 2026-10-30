@@ -62,8 +62,10 @@ class TrainingController extends Controller
                     'next_at' => $s ? Carbon::parse($s->next_at, 'UTC')->toIso8601ZuluString() : null,
                     // [Sprint 20 S4] The rewarded ads for this slot's player.
                     'ads' => AdReward::status('training', $s ? (int) $s->id : null),
-                    // [Sprint 21 E6] The line trains only with its coach.
-                    'coach' => ['type' => $coach, 'name' => __(MessageText::STAFF[$coach]), 'hired' => Specialists::has($club->id, $coach)]];
+                    // [Sprint 21 E6] The line's coach; [X61] without one the free basic coach trains it, slower.
+                    'coach' => ['type' => $coach, 'name' => __(MessageText::STAFF[$coach]), 'hired' => Specialists::has($club->id, $coach),
+                        'stars' => Specialists::stars($club->id, $coach),
+                        'bonus_bp' => Specialists::effect($club->id, $coach, 'coach_training_bp', (int) config('game.specialists.basic_coach_bp'))]];
             }, Training::LINES),
             'players' => $players->values(),
         ]);

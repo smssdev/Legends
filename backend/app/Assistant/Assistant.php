@@ -100,7 +100,9 @@ class Assistant
     {
         $language = $l === 'en' ? 'English' : 'Arabic (plain, friendly; answer in the coach\'s own dialect when he writes in one)';
         $club = $reader
-            ? "The coach manages {$reader->clubName()} in this league. Read his club with read_club before any answer about his team, players, results, money or choices; never guess a number."
+            ? "The coach manages {$reader->clubName()} in this league. Read his club with read_club before any answer about his team, players, results, money or choices; never guess a number.\n"
+                .'His club right now (exact, quote these numbers as they are; squad_value is what his players are worth, club_money the cash he can spend: never give one for the other): '
+                .json_encode($reader->snapshot(), JSON_UNESCAPED_UNICODE)
             : 'The coach has no club open now: answer about the game, and for questions about his team tell him to open one of his clubs first.';
 
         return implode("\n", [

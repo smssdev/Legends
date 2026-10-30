@@ -12,6 +12,7 @@ import { useSlot } from '../../stores/slot'
 import { money } from '../../lib/format'
 import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import AdSlot from '../../components/ads/AdSlot.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 
 type Stats = components['schemas']['LeagueStats']
 type Club = components['schemas']['StatsClub']
@@ -56,6 +57,18 @@ const openSquad = (c: Club) => (squadOf.value = c.id)
 // The coach's own club in gold in every table [X32].
 const slot = useSlot()
 const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
+// [X61] The table as a CSV file (opens in any spreadsheet), with a byte-order mark so Arabic names read right.
+function exportCsv() {
+  if (!s.value) return
+  const head = ['#', t('النادي'), t('لعب'), t('فاز'), t('تعادل'), t('خسر'), t('له'), t('عليه'), t('الفارق'), t('النقاط')]
+  const rows = s.value.table.map((r) => [r.position, nm(r.club.name), r.played, r.won, r.drawn, r.lost, r.goals_for, r.goals_against, r.goal_difference, r.points])
+  const csv = [head, ...rows].map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }))
+  a.download = 'standings.csv'
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
 </script>
 
 <template>
@@ -68,9 +81,7 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
     <template v-if="s">
-      <div class="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1" role="tablist" :aria-label="$t('أقسام الإحصائيات')">
-        <button v-for="(label, key) in TABS" :key="key" type="button" role="tab" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-selected="tab === key" @click="tab = key">{{ $t(label) }}</button>
-      </div>
+      <UiTabs v-model="tab" :items="(Object.keys(TABS) as Tab[]).map((key) => ({ key, label: TABS[key] }))" label="أقسام الإحصائيات" />
       <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لم تُلعب مباريات في هذا الموسم بعد.') }}</p>
       <!-- [Sprint 21 E4.2] The season's leaders at a glance. -->
       <section v-else-if="tab === 'table'" class="grid grid-cols-2 gap-2 lg:grid-cols-4" :aria-label="$t('المتصدرون')">
@@ -81,7 +92,24 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
         </div>
       </section>
 
-      <section v-if="tab === 'table'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('الترتيب المفصل')">
+      <!-- [X61] On the phone each club is a card (place, points, played, difference, for and against), no sideways scroll;
+           the full table on a wider screen. A change of place slides the rows (FLIP). -->
+      <div v-if="tab === 'table'" class="flex justify-end">
+        <button type="button" class="flex min-h-touch items-center gap-1.5 rounded-lg px-3 text-sm font-bold text-brand-light hover:bg-surface" @click="exportCsv">{{ $t('تصدير CSV') }}</button>
+      </div>
+      <TransitionGroup v-if="tab === 'table'" tag="ol" name="flip" class="flex flex-col gap-1.5 md:hidden" :aria-label="$t('الترتيب المفصل')">
+        <li v-for="r in s.table" :key="r.club.id" class="flex items-center gap-3 rounded-xl bg-surface p-2.5" :class="mine(r.club.id)">
+          <span class="w-6 text-center font-numbers text-lg text-text-muted">{{ r.position }}</span>
+          <button type="button" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 text-start font-bold" @click="openSquad(r.club)">
+            <img :src="r.club.crest_url" alt="" class="size-7 shrink-0" />
+            <span class="min-w-0"><span class="block truncate">{{ $nm(r.club.name) }}</span>
+              <span class="block font-numbers text-xs font-normal text-text-muted">{{ $t('لعب {v0} · له {v1} · عليه {v2}', { v0: r.played, v1: r.goals_for, v2: r.goals_against }) }}</span></span>
+          </button>
+          <span class="font-numbers text-sm text-text-muted" dir="ltr">{{ r.goal_difference > 0 ? '+' : '' }}{{ r.goal_difference }}</span>
+          <b class="w-9 text-center font-numbers text-xl text-gold">{{ r.points }}</b>
+        </li>
+      </TransitionGroup>
+      <section v-if="tab === 'table'" class="hidden overflow-x-auto rounded-xl bg-surface p-3 md:block" :aria-label="$t('الترتيب المفصل')">
         <table class="w-full min-w-[640px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">{{ $t('النادي') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('فاز') }}</th><th>{{ $t('تعادل') }}</th><th>{{ $t('خسر') }}</th><th>{{ $t('له') }}</th><th>{{ $t('عليه') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('معدل التسجيل') }}</th><th>{{ $t('معدل الاستقبال') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
           <tbody class="font-numbers">

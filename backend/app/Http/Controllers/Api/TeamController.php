@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Economy\Economy;
 use App\Economy\Money;
+use App\Economy\Tickets;
 use App\Http\Controllers\Controller;
 use App\League\Chemistry;
 use App\League\ClubLedger;
@@ -19,6 +20,7 @@ use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
 use App\Stadium\Stadium;
+use App\Support\Nation;
 use App\Training\Training;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -283,7 +285,9 @@ class TeamController extends Controller
                 'amount' => (int) $t->amount, 'balance_after' => (int) $t->balance_after, 'created_at' => Carbon::parse($t->created_at, 'UTC')->toIso8601ZuluString()]
                 + $roundOf($t->reference)),
             'stadium' => ['capacity' => Stadium::capacity($club->id), 'attendance_bp' => $attendance, 'ticket_price' => $money->ticketPrice($scale, $season->rounds),
-                'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance, Stadium::capacity($club->id))],
+                'tickets_per_match' => $money->tickets($scale, $season->rounds, $attendance, Stadium::capacity($club->id), Tickets::level($club->id))],
+            // [X61] The ticket price levels and what each brings at the next home match.
+            'tickets' => Tickets::view($league, $club),
             'sponsors' => collect($cfg['sectors'])->map(fn ($share, $sector) => [
                 'sector' => $sector, 'name' => __(self::SECTORS[$sector]), 'chosen' => $chosen[$sector] ?? null,
                 'offers' => collect($cfg['sponsor_offers'])->map(fn ($o, $key) => ['offer' => $key, 'name' => __(self::OFFERS[$key]),
@@ -311,6 +315,16 @@ class TeamController extends Controller
     private const OFFERS = ['steady' => 'ثابت', 'bonus' => 'متوازن مع مكافأة فوز', 'ambitious' => 'طموح: أقل ثابتاً وأكثر عند الفوز'];
 
     /** My club in this league; 403 without one. */
+    /** [X61] The coach sets the ticket price level for the home matches to come. */
+    public function setTickets(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        $data = $request->validate(['level' => ['required', Rule::in(array_keys(Tickets::NAMES))]]);
+        Tickets::set($club->id, $data['level']);
+
+        return response()->json(Tickets::view($league, $club->refresh()));
+    }
+
     private function club(User $user, League $league): Club
     {
         $club = Club::where('league_id', $league->id)->where('user_id', $user->id)->first();
@@ -332,7 +346,7 @@ class TeamController extends Controller
             ->map(fn ($r) => (object) (Training::boosted((array) $r)))
             ->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'alt_positions' => $p->alt_positions, 'line' => $p->line,
-                'age' => $p->age, 'nationality' => $p->nationality, 'foot' => $p->preferred_foot,
+                'age' => $p->age, 'nationality' => Nation::name($p->nationality), 'foot' => $p->preferred_foot,
                 'overall' => $p->overall, 'training_bonus' => (int) $p->training_bonus, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
                 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
                 'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,

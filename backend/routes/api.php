@@ -132,6 +132,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
+        Route::put('tickets', 'setTickets')->middleware('throttle:30,1,tickets');
     });
     // The market: the pool and the bot clubs [Sprint 24].
     Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
@@ -326,6 +327,7 @@ Route::get('guide', [AssistantController::class, 'guide'])->middleware('throttle
 Route::prefix('assistant')->middleware(['auth:sanctum'])->controller(AssistantController::class)->group(function () {
     Route::get('start', 'start')->middleware('throttle:60,1,assistant-start');
     Route::post('ask', 'ask')->middleware('throttle:20,1,assistant-ask');
+    Route::post('feedback', 'feedback')->middleware('throttle:10,1,assistant-feedback');
 });
 
 // The coins wallet [Sprint 34].

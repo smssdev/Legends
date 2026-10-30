@@ -11,6 +11,7 @@ import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
 import Landing from './Landing.vue'
+import OnboardingChecklist from '../components/OnboardingChecklist.vue'
 import AdSlot from '../components/ads/AdSlot.vue'
 import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
@@ -151,6 +152,9 @@ async function openRanking(by: By) {
           </span>
         </div>
       </section>
+
+      <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
+      <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" />
 
       <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">

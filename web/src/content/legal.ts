@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-10-29'
+export const UPDATED = '2026-10-30'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -18,6 +18,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك.',
         'الدخول بحساب Google: نأخذ من Google اسمك وبريدك ومعرّف حسابك فقط، لتسجيل دخولك، ولا نصل إلى أي شيء آخر في حسابك.',
         'بيانات اللعب: أنديتك ودورياتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
+        'تقييمك لردود المدرب المساعد: إن ضغطت «أفادني» أو «لم يفدني» نحفظ اختيارك والصفحة التي كنت فيها وملاحظتك إن كتبتها، لنحسّن ردوده. ولا نحفظ معها المحادثة نفسها.',
         'بيانات تقنية: عنوان IP ونوع المتصفح والجهاز وأوقات الدخول، لحماية الحسابات من الاختراق والإساءة ولإصلاح الأعطال.',
       ] },
       { h: 'لماذا نستخدمها', p: [
@@ -67,6 +68,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, and your language.',
         'Google sign-in: we receive only your name, email and account id from Google, to sign you in, and nothing else in your Google account.',
         'Game data: your clubs, leagues, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
+        'Your rating of the Assistant Coach\'s answers: if you tap "helpful" or "not helpful" we keep your choice, the page you were on and your note if you wrote one, to improve his answers. The conversation itself is not kept with it.',
         'Technical data: IP address, browser and device type, and sign-in times, to protect accounts from abuse and to fix problems.',
       ] },
       { h: 'Why we use it', p: [

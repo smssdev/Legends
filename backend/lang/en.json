@@ -345,5 +345,11 @@
   "فتحاتك المفتوحة كلها مشغولة (%d). تُفتح فتحتك التالية بعد %d يوماً.": "All your open slots are taken (%d). Your next slot opens in %d days.",
   "وصلت للحد: %d فرق نشطة في وقت واحد.": "You reached the limit: %d active teams at once.",
   "هذه الفتحة مفتوحة أو ليست فتحة تُشترى.": "This slot is open already, or it is not one to buy.",
-  "فتح فتحة مدرب فوراً": "Coach slot opened at once"
+  "فتح فتحة مدرب فوراً": "Coach slot opened at once",
+  "شعبي": "Popular",
+  "عادي": "Usual",
+  "مرتفع": "High",
+  "مميز": "Premium",
+  "اختر اسماً حقيقياً، لا اسم تجربة.": "Choose a real name, not a test one.",
+  "شكراً، سنحسّن الردود.": "Thank you, we will make the answers better."
 }

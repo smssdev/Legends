@@ -55,7 +55,7 @@ async function claim(quest: View['quests'][number]['quest']) {
         <h1 class="font-display text-3xl font-extrabold">{{ $t('المهام الأسبوعية') }}</h1>
         <p v-if="v" class="text-sm text-text-muted">{{ $t('تتجدد بعد') }} <span class="font-numbers text-text-soft" dir="ltr">{{ countdown(v.renews_at, now) }}</span></p>
       </div>
-      <span v-if="v" class="rounded-pill bg-gold px-3 py-1 font-numbers text-sm font-bold text-on-gold" dir="ltr">+{{ coins }}</span>
+      <span v-if="v" class="flex items-center gap-1 rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold"><img src="/brand/coin.svg" alt="" class="size-4" /><span class="font-numbers" dir="ltr">+{{ coins }}</span> {{ $t('كوينز') }}</span>
     </header>
     <p v-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm text-warning" role="status">{{ $t(message) }}</p>
@@ -69,8 +69,9 @@ async function claim(quest: View['quests'][number]['quest']) {
           <span class="text-xs text-text-muted" dir="ltr">{{ q.progress }} / {{ q.target }}</span>
         </span>
         <span class="flex flex-col items-end gap-1">
-          <span v-if="q.reward.coins" class="rounded-pill bg-gold px-2 font-numbers text-xs font-bold text-on-gold" dir="ltr">{{ q.reward.coins }}</span>
-          <span v-else class="rounded-pill bg-success/20 px-2 font-numbers text-xs font-bold text-success" dir="ltr">{{ money(q.reward.money ?? 0) }}</span>
+          <!-- [X61] Each reward says its currency: coins (the wallet) or the club's money. -->
+          <span v-if="q.reward.coins" class="flex items-center gap-1 rounded-pill bg-gold px-2 text-xs font-bold text-on-gold"><img src="/brand/coin.svg" alt="" class="size-3.5" /><span class="font-numbers" dir="ltr">{{ q.reward.coins }}</span> {{ $t('كوينز') }}</span>
+          <span v-else class="flex items-center gap-1 rounded-pill bg-success/20 px-2 text-xs font-bold text-success"><span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(q.reward.money ?? 0) }}</span> {{ $t('أموال النادي') }}</span>
           <button v-if="q.complete && !q.claimed" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="claim(q.quest)">{{ $t('خذها') }}</button>
           <span v-else-if="q.claimed" class="text-xs text-success">{{ $t('أُخذت') }}</span>
         </span>

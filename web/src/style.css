@@ -360,3 +360,20 @@ input[type="radio"] {
   content-visibility: auto;
   contain-intrinsic-size: auto 14rem;
 }
+
+/* [X61] A list whose order changes (a league table after a round) slides each row to its new place: Vue's
+   TransitionGroup measures before and after (FLIP), and this moves it by transform only. */
+.flip-move { transition: transform var(--duration-slow) var(--ease-soft); }
+.flip-enter-active { transition: opacity var(--duration-base) var(--ease-soft); }
+.flip-enter-from { opacity: 0; }
+
+/* [X61] Lists come in one after the other (up to 12 rows, 40ms apart): style="--i: n" on each, then .stagger. */
+.stagger > * { animation: fade-up var(--duration-base) var(--ease-soft) both; animation-delay: calc(min(var(--i, 0), 12) * 40ms); }
+
+/* [X61] A place held while it loads: a soft light passing over it. */
+.skeleton {
+  border-radius: 0.75rem;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 5%, transparent), color-mix(in srgb, var(--color-text) 11%, transparent), color-mix(in srgb, var(--color-text) 5%, transparent));
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}

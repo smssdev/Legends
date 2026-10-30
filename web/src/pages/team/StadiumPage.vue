@@ -2,6 +2,7 @@
 // The stadium (Sprint 29 W1, PLAN 2.9), per the WebStadium and MobileStadium drafts: the facts on top, then the
 // three sections with their 3 × 5 parts (done gold, building green), each stage's effect, and the next part's
 // start with its price. One part at a time; the countdown runs on the server's clock.
+import TicketPrices from '../../components/TicketPrices.vue'
 import AdReward from '../../components/ads/AdReward.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -27,7 +28,7 @@ let tick = 0
 const INFO: Record<string, { title: string; effect: string; icon: string }> = {
   seats: { title: 'التذاكر والمقاعد', effect: 'مقاعد أكثر ودخل أعلى من كل مباراة على أرضك', icon: 'M4 18V9l8-5 8 5v9M8 18v-5h8v5M4 18h16' },
   pitch: { title: 'أرضية الملعب', effect: 'فوق ميزة الأرض الأساسية لكل مباراة على أرضك', icon: 'M3 6h18v12H3zM12 6v12M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5' },
-  training: { title: 'منشأة التدريب', effect: 'كل جلسة تدريب أسرع بنسبة عشوائية', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
+  training: { title: 'منشأة التدريب', effect: 'حتى +10% لكل مرحلة في سرعة كل جلسة تدريب', icon: 'M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12' },
 }
 const pct = (bp: number) => `+${(bp / 100).toLocaleString(intlLocale(), { maximumFractionDigits: 1 })}%`
 function effect(s: Section, stage: number) {
@@ -125,6 +126,10 @@ onBeforeUnmount(() => clearInterval(tick))
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('ميزة الأرض') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ pct(v.facts.home_bp) }}</b></div>
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('دخل التذاكر للمباراة') }}</span><b class="font-numbers text-2xl" dir="ltr">{{ money(v.facts.tickets_per_match) }}</b></div>
         <div class="rounded-xl bg-surface p-3"><span class="block text-xs text-text-muted">{{ $t('الأجزاء المكتملة') }}</span><b class="font-numbers text-2xl text-gold" dir="ltr">{{ v.facts.parts_done }} / {{ v.parts_total }}</b></div>
+      </section>
+      <!-- [X61] The ticket price, here as in the finance screen. -->
+      <section :aria-label="$t('التذاكر')" class="rounded-xl bg-surface p-4">
+        <TicketPrices :league-id="leagueId" :tickets="v.facts.tickets" @changed="(t) => { v!.facts.tickets = t; v!.facts.tickets_per_match = t.per_match }" />
       </section>
 
       <section v-if="v.building" :aria-label="$t('يُبنى الآن')" class="flex flex-wrap items-center gap-3 rounded-xl border border-success/40 bg-surface p-4">

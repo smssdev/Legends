@@ -1827,6 +1827,28 @@ paths:
               schema: { $ref: '#/components/schemas/ClubFinance' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/tickets:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: '[X61] Set the ticket price level for the home matches to come'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [level]
+              properties:
+                level: { type: string, enum: [popular, normal, high, premium] }
+      responses:
+        '200':
+          description: The levels after the change
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TicketLevels' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/summary:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2635,6 +2657,28 @@ paths:
         - { name: page, in: query, required: false, schema: { type: string, maxLength: 40 }, description: 'The web''s route name (others fall back to the home page''s questions)' }
       responses:
         '200': { description: The opening, content: { application/json: { schema: { $ref: '#/components/schemas/AssistantStart' } } } }
+  /assistant/feedback:
+    post:
+      tags: [assistant]
+      summary: '[X61] The coach rates the conversation at its end: helpful or not, the page, and an optional note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [helpful]
+              properties:
+                helpful: { type: boolean }
+                page: { type: string, maxLength: 40, nullable: true }
+                note: { type: string, maxLength: 300, nullable: true }
+      responses:
+        '200':
+          description: Thanks
+          content:
+            application/json:
+              schema: { type: object, required: [message], properties: { message: { type: string } } }
+        '422': { $ref: '#/components/responses/Error' }
   /assistant/ask:
     post:
       tags: [assistant]
@@ -3965,7 +4009,7 @@ components:
             allowance: { type: integer }
     ClubFinance:
       type: object
-      required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]
+      required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, tickets, sponsors]
       properties:
         balance: { type: integer }
         can_spend: { type: boolean }
@@ -3994,6 +4038,7 @@ components:
           type: object
           required: [capacity, attendance_bp, ticket_price, tickets_per_match]
           properties: { capacity: { type: integer }, attendance_bp: { type: integer }, ticket_price: { type: integer }, tickets_per_match: { type: integer } }
+        tickets: { $ref: '#/components/schemas/TicketLevels' }
         sponsors:
           type: array
           items:
@@ -4526,11 +4571,12 @@ components:
         parts_total: { type: integer }
         facts:
           type: object
-          required: [capacity, home_bp, tickets_per_match, parts_done]
+          required: [capacity, home_bp, tickets_per_match, tickets, parts_done]
           properties:
             capacity: { type: integer }
             home_bp: { type: integer, description: The home advantage with the pitch (basis points) }
             tickets_per_match: { type: integer }
+            tickets: { $ref: '#/components/schemas/TicketLevels' }
             parts_done: { type: integer }
         sections:
           type: array
@@ -4579,6 +4625,24 @@ components:
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
+    TicketLevels:
+      type: object
+      description: '[X61] The ticket price level the coach set and what each of the four brings at the next home match'
+      required: [level, per_match, levels]
+      properties:
+        level: { type: string, enum: [popular, normal, high, premium] }
+        per_match: { type: integer }
+        levels:
+          type: array
+          items:
+            type: object
+            required: [level, name, price, attendance_bp, per_match]
+            properties:
+              level: { type: string, enum: [popular, normal, high, premium] }
+              name: { type: string }
+              price: { type: integer, description: One seat }
+              attendance_bp: { type: integer }
+              per_match: { type: integer }
     TrainingView:
       type: object
       required: [cost, balance, interval_minutes, now, slots, players]
@@ -4598,7 +4662,7 @@ components:
               player: { allOf: [{ $ref: '#/components/schemas/TrainingPlayer' }], nullable: true }
               sessions_done: { type: integer }
               next_at: { type: string, format: date-time, nullable: true }
-              coach: { type: object, required: [type, name, hired], description: '[Sprint 21 E6] The line''s coach: no training without him', properties: { type: { type: string }, name: { type: string }, hired: { type: boolean } } }
+              coach: { type: object, required: [type, name, hired, stars, bonus_bp], description: '[Sprint 21 E6] The line''s coach; [X61] without one (hired false) the free basic coach trains the line at bonus_bp', properties: { type: { type: string }, name: { type: string }, hired: { type: boolean }, stars: { type: integer }, bonus_bp: { type: integer } } }
               ads: { $ref: '#/components/schemas/AdStatus' }
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:

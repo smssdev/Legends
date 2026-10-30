@@ -9,6 +9,7 @@ import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
 import EventsBar from '../../components/ui/EventsBar.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
@@ -34,7 +35,6 @@ const candidates = computed(() => {
 // [UP8] One player per line in training: while the line's slot is taken, the others of that line wait.
 const lineBusy = computed(() => !!v.value?.slots.find((s) => s.line === line.value)?.player)
 // [Sprint 21 E6] The chosen line's coach, without whom it does not train.
-const lineCoach = computed(() => !!v.value?.slots.find((s) => s.line === line.value)?.coach.hired)
 function left(at: string | null | undefined) {
   if (!at) return ''
   const s = Math.max(0, Math.floor((new Date(at).getTime() - now.value) / 1000))
@@ -149,17 +149,22 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
               <AdReward :league-id="leagueId" item="training" :line="s.line as Line" :ads="s.ads" @done="load" />
             </div>
           </template>
-          <!-- [Sprint 21 E6] No coach for the line, no training: the way to hire him. -->
-          <template v-else-if="!s.coach.hired">
-            <p class="text-sm text-warning">{{ $t('لا تدريب بلا {v0}.', { v0: s.coach.name }) }}</p>
-            <RouterLink :to="{ name: 'specialists' }" class="flex h-touch items-center justify-center rounded-md bg-gold px-4 font-bold text-on-gold">{{ $t('تعاقد معه من الجهاز الفني') }}</RouterLink>
-          </template>
           <template v-else>
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm text-text-muted">{{ $t('الخانة فارغة.') }}</p>
               <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="line = s.line as Line">{{ $t('اختر لاعباً') }}</button>
             </div>
           </template>
+          <!-- [X61] Who trains the line: the free basic coach until one is signed, and the way straight to the staff. -->
+          <div class="mt-auto flex items-center gap-2 border-t border-text/5 pt-2 text-xs">
+            <span class="min-w-0 flex-1 truncate" :class="s.coach.hired ? 'text-text-soft' : 'text-text-muted'">
+              {{ s.coach.hired ? $t('{v0} · {v1} نجوم', { v0: s.coach.name, v1: s.coach.stars }) : $t('المدرب الأساسي (مجاني)') }}
+              · <b class="font-numbers text-success" dir="ltr">+{{ Math.round(s.coach.bonus_bp / 100) }}%</b>
+            </span>
+            <RouterLink :to="{ name: 'specialists', query: { line: s.line } }" class="flex min-h-touch shrink-0 items-center rounded-md px-2 font-bold text-gold hover:bg-gold/10">
+              {{ s.coach.hired ? $t('طاقم الخط') : $t('تعاقد مع مدرب الآن') }} <span aria-hidden="true" class="ms-1 inline-block rtl:rotate-180">→</span>
+            </RouterLink>
+          </div>
         </article>
       </section>
 
@@ -167,10 +172,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
         <div class="flex flex-wrap items-center gap-2 px-1">
           <span class="flex flex-wrap items-center gap-1"><h2 class="font-display text-lg font-bold">{{ $t('مرشحون للتدريب') }}</h2></span>
           <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
-          <div class="ms-auto flex gap-1" role="tablist" :aria-label="$t('الخط')">
-            <button v-for="(n, k) in LINE_NAMES" :key="k" type="button" role="tab" :aria-selected="line === k" class="h-touch rounded-md px-3 text-sm font-bold"
-              :class="line === k ? 'bg-gold text-on-gold' : 'bg-surface-sunk text-text-muted'" @click="line = k as Line">{{ $t(n) }}</button>
-          </div>
+          <UiTabs v-model="line" :items="(Object.keys(LINE_NAMES) as Line[]).map((key) => ({ key, label: LINE_NAMES[key] }))" label="الخط" size="sm" class="ms-auto max-w-full" />
         </div>
         <div class="hidden grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem] gap-2 px-2 text-xs text-text-muted sm:grid">
           <span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('السن') }}</span><span class="text-center">{{ $t('القوة') }}</span><span class="text-center">{{ $t('السقف') }}</span><span class="text-center">{{ $t('جلسات للـ +1') }}</span><span />
@@ -184,7 +186,6 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
           <span v-if="!p.maxed && lineBusy" class="text-center text-xs text-text-muted" :title="$t('لاعب واحد من كل خط في التدريب')">{{ $t('الخانة مشغولة') }}</span>
-          <RouterLink v-else-if="!p.maxed && !lineCoach" :to="{ name: 'specialists' }" class="text-center text-xs font-bold text-warning">{{ $t('يلزم مدرب') }}</RouterLink>
           <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-brand px-3 text-sm font-bold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">{{ $t('درّب') }}</button>
           <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>

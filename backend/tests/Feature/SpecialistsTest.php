@@ -182,7 +182,9 @@ class SpecialistsTest extends TestCase
         // The line coach speeds his line's training only.
         $this->postJson($this->url(), ['type' => 'mid_coach', 'stars' => 4, 'idempotency_key' => 'm4'])->assertOk();
         $this->assertSame(14500, Specialists::trainingStep($this->mine, 'mid', 10000));
-        $this->assertSame(10000, Specialists::trainingStep($this->mine, 'att', 10000));
+        // Another line without its coach trains with the free basic one [X61].
+        DB::table('staff_specialists')->where('club_id', $this->mine)->where('type', 'att_coach')->delete();
+        $this->assertSame(11000, Specialists::trainingStep($this->mine, 'att', 10000));
 
         // Renewal: refused until the last day, then it waits for the current contract to end.
         $seconds = Specialists::seconds($this->league['id']);

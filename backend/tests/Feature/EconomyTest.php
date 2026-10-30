@@ -170,6 +170,40 @@ class EconomyTest extends TestCase
         $this->actingAs(User::factory()->create())->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertForbidden();
     }
 
+    public function test_the_ticket_price_level_moves_the_crowd_and_the_gate_and_keeps_the_economy_closed(): void
+    {
+        // [X61] Four levels: cheap fills the stands, dear empties them; none brings much more than the usual one.
+        $m = Money::fromConfig();
+        foreach ([6000, 8000, 10000] as $att) {
+            $usual = $m->tickets(5_000_000, 18, $att, 20000);
+            foreach (['popular', 'high', 'premium'] as $level) {
+                $this->assertLessThanOrEqual(intdiv($usual * 10700, 10000), $m->tickets(5_000_000, 18, $att, 20000, $level), "{$level} at {$att}");
+            }
+        }
+        $this->assertSame([10000, 7500], $m->priced(9000, 'popular'));
+        $this->assertSame([1000, 15000], $m->priced(2000, 'premium'));
+
+        $url = "/api/v1/leagues/{$this->league['id']}/team/tickets";
+        $this->actingAs($this->owner)->putJson($url, ['level' => 'free'])->assertJsonValidationErrors('level');
+        $view = $this->putJson($url, ['level' => 'popular'])->assertOk()->assertJsonPath('level', 'popular')->json();
+        $this->assertCount(4, $view['levels']);
+        $levels = collect($view['levels'])->keyBy('level');
+        $this->assertLessThan($levels['normal']['price'], $levels['popular']['price']);
+        $this->assertGreaterThanOrEqual($levels['normal']['attendance_bp'], $levels['popular']['attendance_bp']);
+        $this->assertLessThan($levels['normal']['attendance_bp'], $levels['premium']['attendance_bp']);
+        $this->assertSame($levels['popular']['per_match'], $view['per_match']);
+        $this->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertOk()->assertJsonPath('tickets.level', 'popular')
+            ->assertJsonPath('stadium.tickets_per_match', $view['per_match']);
+        $this->getJson("/api/v1/leagues/{$this->league['id']}/stadium")->assertOk()->assertJsonPath('facts.tickets.level', 'popular');
+
+        // The gate after a home match is the chosen level's.
+        $f = $this->fixtures()->firstWhere('home_id', $this->mine);
+        Economy::afterMatch($f, ['home' => 0, 'away' => 0]);
+        $this->assertSame($view['per_match'], (int) DB::table('club_transactions')->where('club_id', $this->mine)->where('type', 'tickets')->value('amount'));
+        $this->assertBooksBalance();
+        $this->actingAs(User::factory()->create())->putJson($url, ['level' => 'high'])->assertForbidden();
+    }
+
     public function test_the_numbers_scale_with_the_league(): void
     {
         $m = Money::fromConfig();
