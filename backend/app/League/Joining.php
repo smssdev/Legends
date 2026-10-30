@@ -73,6 +73,11 @@ class Joining
             throw new HttpException(403, 'ينتظر طلبك موافقة منشئ الدوري.');
         }
 
+        // [X68] A tournament whose teams the draw shares out: none is taken by hand before the draw.
+        if ($league->kind === 'tournament' && $league->entry_mode === 'draw' && ! $league->drawn_at) {
+            throw new HttpException(409, __('الفرق في هذه البطولة توزعها القرعة على المشاركين. شارك من صفحة البطولة.'));
+        }
+
         return DB::transaction(function () use ($user, $league, $clubId) {
             // Read again inside the transaction: it holds the write lock, so nothing moves under us.
             $league = $league->fresh();

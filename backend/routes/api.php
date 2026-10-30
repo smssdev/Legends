@@ -98,6 +98,10 @@ Route::prefix('tournaments')->middleware(['auth:sanctum', 'throttle:120,1,tourna
     Route::post('/', 'store')->middleware('throttle:league-create');
     Route::get('{league}', 'show')->whereNumber('league');
     Route::get('{league}/draw', 'draw')->whereNumber('league');
+    // [X68] Entering a tournament whose teams the draw shares out, and the organizer naming teams' coaches.
+    Route::post('{league}/entry', 'enter')->whereNumber('league')->middleware('throttle:20,1,tournament-entry');
+    Route::delete('{league}/entry', 'leave')->whereNumber('league');
+    Route::put('{league}/owners', 'owners')->whereNumber('league');
     // [X66] The live draw's chat and reactions.
     Route::get('{league}/draw/chat', 'chat')->whereNumber('league');
     Route::post('{league}/draw/chat', 'say')->whereNumber('league')->middleware('throttle:60,1,draw-chat');

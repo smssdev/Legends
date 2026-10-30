@@ -422,5 +422,16 @@
   "البطولة غير موجودة.": "The tournament does not exist.",
   "الدردشة مفتوحة قبل القرعة بساعة حتى نصف ساعة بعدها.": "The chat is open from an hour before the draw to half an hour after it.",
   "اختر تفاعلاً من القائمة.": "Choose a reaction from the list.",
-  "الرسالة فارغة أو أطول من المسموح.": "The message is empty or longer than allowed."
+  "الرسالة فارغة أو أطول من المسموح.": "The message is empty or longer than allowed.",
+  "اكتمل عدد المشاركين في البطولة.": "The tournament is full.",
+  "أنت مشارك في هذه البطولة.": "You have entered this tournament.",
+  "هذا لمنظم البطولة.": "This is for the tournament's organizer.",
+  "سُحبت القرعة، ولا انسحاب منها.": "The draw has been made; there is no withdrawing now.",
+  "لم تأخذ فريقاً في قرعة :name: :why": "You did not get a team in the draw of :name: :why",
+  "أصحاب الفرق في هذه البطولة لا يحددهم المنظم.": "In this tournament the organizer does not name the teams' coaches.",
+  "لا يوجد مدرب باسم المستخدم :name.": "There is no coach with the username :name.",
+  "المشاركة في هذه البطولة بطلب فريق من منظمها.": "In this tournament you ask its organizer for a team.",
+  "سُحبت القرعة، وأُغلقت المشاركة.": "The draw has been made, and entries are closed.",
+  "الفرق في هذه البطولة توزعها القرعة على المشاركين. شارك من صفحة البطولة.": "In this tournament the draw shares the teams among the entrants. Enter from the tournament's page.",
+  "خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.": "A knockout takes up to %d teams; for more, choose groups."
 }

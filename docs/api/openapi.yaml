@@ -3858,6 +3858,8 @@ paths:
                 draw_at: { type: string, format: date-time, nullable: true }
                 starting_budget: { type: integer }
                 club_id: { type: integer, nullable: true, description: The maker's own team (a master club id of the tournament), or none }
+                entry_mode: { type: string, nullable: true, enum: [pick, draw, assign, null] }
+                owners: { type: object, nullable: true, additionalProperties: { type: string }, description: '[X68] assign - master club id => the coach''s username' }
                 timezone: { type: string, nullable: true }
                 is_dev: { type: boolean }
       responses:
@@ -3922,48 +3924,37 @@ paths:
       tags: [tournaments]
       summary: The tournament's page - its teams, the groups' tables (after the draw), the league table and the bracket
       responses:
-        '200':
-          description: The tournament
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [tournament]
-                properties:
-                  tournament:
-                    allOf:
-                      - { $ref: '#/components/schemas/Tournament' }
-                      - type: object
-                        required: [teams, groups, table, bracket]
-                        properties:
-                          teams: { type: array, items: { type: object, additionalProperties: true } }
-                          groups:
-                            type: array
-                            items: { type: object, required: [group, rows], properties: { group: { type: string }, rows: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } } } }
-                          table: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } }
-                          bracket:
-                            type: array
-                            items:
-                              type: object
-                              required: [stage, ties]
-                              properties:
-                                stage: { type: string }
-                                ties:
-                                  type: array
-                                  items:
-                                    type: object
-                                    required: [slot, home, away, home_from, away_from, winner_id, score, at, fixture_id]
-                                    properties:
-                                      slot: { type: integer }
-                                      home: { type: object, nullable: true, additionalProperties: true }
-                                      away: { type: object, nullable: true, additionalProperties: true }
-                                      home_from: { type: string, nullable: true }
-                                      away_from: { type: string, nullable: true }
-                                      winner_id: { type: integer, nullable: true }
-                                      score: { type: array, nullable: true, items: { type: integer } }
-                                      at: { type: string, format: date-time }
-                                      fixture_id: { type: integer }
+        '200': { $ref: '#/components/responses/TournamentPage' }
         '404': { $ref: '#/components/responses/Error' }
+  /tournaments/{league}/entry:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [tournaments]
+      summary: '[X68] Enter a tournament whose teams the draw shares out; the last place sets the draw in 10 minutes (unless its time is set)'
+      responses:
+        '200': { $ref: '#/components/responses/TournamentPage' }
+        '409': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [tournaments]
+      summary: Leave before the draw (the organizer removes an entrant with user_id)
+      parameters: [{ name: user_id, in: query, schema: { type: integer } }]
+      responses:
+        '200': { $ref: '#/components/responses/TournamentPage' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /tournaments/{league}/owners:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [tournaments]
+      summary: '[X68] The organizer names teams'' coaches (club id => username) in a tournament of mode assign'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [owners], properties: { owners: { type: object, additionalProperties: { type: string } } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/TournamentPage' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /tournaments/{league}/draw:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -3995,7 +3986,8 @@ paths:
                           type: object
                           required: [type, club]
                           properties:
-                            type: { type: string, enum: [group, slot, tie] }
+                            type: { type: string, enum: [owner, group, slot, tie], description: 'owner - a team given to a player (X68), before the shape''s balls' }
+                            user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
                             club: { type: object, nullable: true, additionalProperties: true }
                             pot: { type: integer }
                             group: { type: integer }
@@ -4273,6 +4265,58 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    TournamentPage:
+      description: The tournament
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tournament]
+            properties:
+              tournament:
+                allOf:
+                  - { $ref: '#/components/schemas/Tournament' }
+                  - type: object
+                    required: [entry, teams, groups, table, bracket]
+                    properties:
+                      entry:
+                        type: object
+                        required: [mode, entrants, is_entrant, can_enter, is_owner, my_club_id, is_member]
+                        properties:
+                          mode: { type: string, enum: [pick, draw, assign] }
+                          entrants: { type: array, items: { type: object, required: [id, name, username, club_id], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, club_id: { type: integer, nullable: true } } } }
+                          is_entrant: { type: boolean }
+                          can_enter: { type: boolean }
+                          is_owner: { type: boolean }
+                          my_club_id: { type: integer, nullable: true }
+                          is_member: { type: boolean, description: May open the tournament's group }
+                      teams: { type: array, items: { type: object, additionalProperties: true } }
+                      groups:
+                        type: array
+                        items: { type: object, required: [group, rows], properties: { group: { type: string }, rows: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } } } }
+                      table: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } }
+                      bracket:
+                        type: array
+                        items:
+                          type: object
+                          required: [stage, ties]
+                          properties:
+                            stage: { type: string }
+                            ties:
+                              type: array
+                              items:
+                                type: object
+                                required: [slot, home, away, home_from, away_from, winner_id, score, at, fixture_id]
+                                properties:
+                                  slot: { type: integer }
+                                  home: { type: object, nullable: true, additionalProperties: true }
+                                  away: { type: object, nullable: true, additionalProperties: true }
+                                  home_from: { type: string, nullable: true }
+                                  away_from: { type: string, nullable: true }
+                                  winner_id: { type: integer, nullable: true }
+                                  score: { type: array, nullable: true, items: { type: integer } }
+                                  at: { type: string, format: date-time }
+                                  fixture_id: { type: integer }
     AdminChat:
       description: The chat settings
       content:
@@ -4618,7 +4662,7 @@ components:
         at: { type: integer, description: When it was said, in milliseconds on the server's clock (a replay shows it then) }
     Tournament:
       type: object
-      required: [id, name, code, template, format, group_count, advance_per_group, legs, team_count, status, owner, starts_at, draw_at, drawn_at, coaches]
+      required: [id, name, code, template, format, group_count, advance_per_group, legs, team_count, status, owner, starts_at, draw_at, drawn_at, coaches, entry_mode, entrants]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -4635,6 +4679,8 @@ components:
         draw_at: { type: string, format: date-time, nullable: true }
         drawn_at: { type: string, format: date-time, nullable: true }
         coaches: { type: integer }
+        entry_mode: { type: string, enum: [pick, draw, assign], description: '[X68] pick - each coach asks and takes a team; draw - the live draw shares the teams among the players who entered; assign - the organizer names each coach' }
+        entrants: { type: integer, description: Players who entered (draw) }
     TeamCard:
       type: object
       required: [id, name, code, league, strength_cp, colors, crest_url, logo, nation, confederation]

@@ -6,11 +6,13 @@ use App\Chat\DrawChat;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
 use App\League\LeagueTiers;
+use App\League\Members;
 use App\League\Standings;
 use App\Models\Club;
 use App\Models\League;
 use App\Rules\NotJunk;
 use App\Support\GameClock;
+use App\Tournament\Entries;
 use App\Tournament\NationSquad;
 use App\Tournament\TournamentCatalog;
 use App\Tournament\TournamentFactory;
@@ -87,6 +89,10 @@ class TournamentController extends Controller
             'draw_at' => ['nullable', 'date'],
             'starting_budget' => ['sometimes', 'integer', 'between:'.config('game.economy.starting_budget_min').','.config('game.economy.starting_budget_max')],
             'club_id' => ['nullable', 'integer'],
+            // [X68] How the teams find their coaches, and in "assign" each team's coach (master club id => username).
+            'entry_mode' => ['nullable', Rule::in(config('game.tournaments.entry_modes'))],
+            'owners' => ['nullable', 'array'],
+            'owners.*' => ['nullable', 'string', 'max:40'],
             'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
             'is_dev' => ['sometimes', 'boolean'],
         ]);
@@ -125,11 +131,19 @@ class TournamentController extends Controller
             ->orderBy('fixtures.round')->orderBy('cup_ties.slot')
             ->get(['cup_ties.*', 'fixtures.scheduled_at', 'fixtures.status', 'fixtures.home_goals', 'fixtures.away_goals', 'fixtures.round']);
 
+        $user = $request->user();
+
         return response()->json(['tournament' => $this->summary($league->load('owner')) + [
+            // [X68] Who entered and whether this player may (draw), or which team is his.
+            'entry' => ['mode' => Entries::mode($league), 'entrants' => Entries::list($league), 'is_entrant' => Entries::isEntrant($league->id, $user->id),
+                'can_enter' => Entries::mode($league) === 'draw' && ! $league->drawn_at && $league->status === 'waiting',
+                'is_owner' => $league->isOwner($user), 'my_club_id' => Club::where('league_id', $league->id)->where('user_id', $user->id)->value('id'),
+                'is_member' => Members::isMember($user->id, $league->id) || Entries::isEntrant($league->id, $user->id)],
             'teams' => array_values($cards),
             'groups' => $groups,
             'table' => $league->format === 'league' ? array_map($row, Standings::table($season->id)) : [],
-            'bracket' => $ties->groupBy('stage')->map(fn ($list, $stage) => ['stage' => $stage, 'ties' => $list->map(fn ($t) => [
+            // The bracket's teams only once drawn: before it they are provisional.
+            'bracket' => ! $league->drawn_at ? [] : $ties->groupBy('stage')->map(fn ($list, $stage) => ['stage' => $stage, 'ties' => $list->map(fn ($t) => [
                 'slot' => (int) $t->slot, 'home' => $cards[$t->home_id] ?? null, 'away' => $cards[$t->away_id] ?? null,
                 'home_from' => $t->home_from, 'away_from' => $t->away_from, 'winner_id' => $t->winner_id,
                 'score' => $t->status === 'finished' ? [(int) $t->home_goals, (int) $t->away_goals] : null,
@@ -146,7 +160,9 @@ class TournamentController extends Controller
     {
         abort_unless($league->kind === 'tournament', 404);
         $cards = $league->drawn_at ? $this->cards($league) : [];
-        $steps = $league->drawn_at ? array_map(fn ($s) => ['club' => $cards[$s['club']] ?? null] + $s, TournamentScheduler::plan($league)['steps']) : [];
+        // [X68] First the balls that gave the teams to their players, then the draw of the tournament's shape.
+        $steps = $league->drawn_at ? array_map(fn ($s) => ['club' => $cards[$s['club']] ?? null] + $s,
+            [...Entries::steps($league), ...TournamentScheduler::plan($league)['steps']]) : [];
         $user = $request->user();
 
         return response()->json($this->summary($league->load('owner')) + [
@@ -160,6 +176,30 @@ class TournamentController extends Controller
             'stages' => $league->format === 'knockout' ? CupBracket::stages((int) $league->team_count) : [],
             'steps' => $steps,
         ]);
+    }
+
+    /** [X68] A player enters a tournament whose teams the draw shares out; or leaves it before the draw. */
+    public function enter(Request $request, League $league): JsonResponse
+    {
+        Entries::enter($league, $request->user());
+
+        return $this->show($request, $league->fresh());
+    }
+
+    public function leave(Request $request, League $league): JsonResponse
+    {
+        Entries::leave($league, $request->user(), $request->integer('user_id') ?: null);
+
+        return $this->show($request, $league->fresh());
+    }
+
+    /** The organizer names teams' coaches (league club id => username). */
+    public function owners(Request $request, League $league): JsonResponse
+    {
+        $data = $request->validate(['owners' => ['required', 'array'], 'owners.*' => ['nullable', 'string', 'max:40']]);
+        Entries::name($league, $request->user(), $data['owners']);
+
+        return $this->show($request, $league->fresh());
     }
 
     /** [X66] The live draw's chat: what was said so far (or after an id), and whether it is open now. */
@@ -193,6 +233,7 @@ class TournamentController extends Controller
         return ['id' => $l->id, 'name' => $l->name, 'code' => $l->code, 'template' => $l->tournament_template, 'format' => $l->format,
             'group_count' => $l->group_count ? (int) $l->group_count : null, 'advance_per_group' => $l->advance_per_group ? (int) $l->advance_per_group : null,
             'legs' => $l->legs ? (int) $l->legs : null, 'team_count' => (int) $l->team_count, 'status' => $l->status,
+            'entry_mode' => Entries::mode($l), 'entrants' => DB::table('tournament_entries')->where('league_id', $l->id)->count(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,
             'starts_at' => $l->starts_at->toIso8601ZuluString(), 'draw_at' => $l->draw_at?->toIso8601ZuluString(),
             'drawn_at' => $l->drawn_at?->toIso8601ZuluString(), 'coaches' => Club::where('league_id', $l->id)->whereNotNull('user_id')->count()];

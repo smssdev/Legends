@@ -27,8 +27,17 @@ const advance = ref(2)
 const legs = ref(1)
 const picked = ref<Card[]>([])
 const myTeam = ref<number | null>(null)
+// [X68] How the teams find their coaches: each picks his (you approve), the draw shares them among the players who
+// enter, or you name each team's coach.
+const entryMode = ref<'pick' | 'draw' | 'assign'>('draw')
+const owners = ref<Record<number, string>>({})
+const ENTRY: Record<string, [string, string]> = {
+  draw: ['قرعة على المشاركين', 'يشارك من يريد حتى يكتمل العدد، ثم توزع القرعة المباشرة الفرق عليهم'],
+  pick: ['كل مدرب يختار فريقه', 'يطلب المدرب الانضمام بالكود، وتوافق أنت، ثم يختار فريقاً'],
+  assign: ['أحدد صاحب كل فريق', 'تكتب اسم المستخدم لمدرب كل فريق'],
+}
 const startsAt = ref(local(addDays(2, 21)))
-const liveDraw = ref(true)
+const liveDraw = ref(false)
 const drawAt = ref(local(addDays(1, 21)))
 const time = ref('21:00')
 
@@ -116,7 +125,9 @@ async function create() {
       group_count: format.value === 'groups' ? groupCount.value as 1 : null, advance_per_group: format.value === 'groups' ? advance.value as 1 : null,
       legs: format.value === 'knockout' ? null : legs.value as 1, round_times: [time.value], rounds_per_day: 1,
       starts_at: new Date(startsAt.value).toISOString(), draw_at: liveDraw.value ? new Date(drawAt.value).toISOString() : null,
-      club_id: myTeam.value, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      club_id: entryMode.value === 'draw' ? null : myTeam.value, entry_mode: entryMode.value,
+      owners: entryMode.value === 'assign' ? Object.fromEntries(Object.entries(owners.value).filter(([, u]) => u.trim())) : null,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     } })
     await router.push({ name: 'tournament', params: { id: data!.tournament.id } })
   } catch (e) {
@@ -207,10 +218,24 @@ async function create() {
         <input v-model="startsAt" type="datetime-local" required dir="ltr" class="h-touch rounded-lg bg-surface-sunk px-3" /></label>
       <label class="flex flex-col gap-1"><span class="font-bold">{{ $t('موعد المباريات يومياً (توقيت القاهرة)') }}</span>
         <input v-model="time" type="time" required dir="ltr" class="h-touch rounded-lg bg-surface-sunk px-3" /></label>
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 font-bold">{{ $t('من يدرب الفرق؟') }}</legend>
+        <label v-for="(v, k) in ENTRY" :key="k" class="flex min-h-touch cursor-pointer items-start gap-3 rounded-xl p-2" :class="entryMode === k ? 'bg-brand/20 ring-1 ring-brand' : 'bg-surface-sunk'">
+          <input v-model="entryMode" type="radio" :value="k" class="mt-1 size-5" />
+          <span><b class="block">{{ $t(v[0]) }}</b><span class="text-xs text-text-muted">{{ $t(v[1]) }}</span></span>
+        </label>
+      </fieldset>
+      <ul v-if="entryMode === 'assign'" class="flex flex-col gap-1">
+        <li v-for="c in picked" :key="c.id" class="flex items-center gap-2">
+          <ClubCrest :url="c.crest_url" :code="c.code" :size="24" /><span class="w-28 truncate text-sm">{{ $nm(c.name) }}</span>
+          <input v-model="owners[c.id]" dir="ltr" :placeholder="$t('اسم المستخدم')" :aria-label="$t('مدرب {v0}', { v0: $nm(c.name) })" class="h-touch min-w-0 flex-1 rounded-lg bg-surface-sunk px-3" />
+        </li>
+      </ul>
       <label class="flex min-h-touch items-center gap-3"><input v-model="liveDraw" type="checkbox" class="size-5" />
-        <span><b>{{ $t('قرعة مباشرة يشاهدها الجميع') }}</b><span class="block text-xs text-text-muted">{{ $t('بدونها تُسحب القرعة عند البداية، ويستطيع الجميع مشاهدتها بعدها.') }}</span></span></label>
+        <span><b>{{ $t('قرعة مباشرة يشاهدها الجميع') }}</b><span class="block text-xs text-text-muted">{{ entryMode === 'draw'
+          ? $t('بدون موعد تُسحب بعد اكتمال المشاركين بعشر دقائق، أو عند البداية بمن شارك.') : $t('بدونها تُسحب القرعة عند البداية، ويستطيع الجميع مشاهدتها بعدها.') }}</span></span></label>
       <input v-if="liveDraw" v-model="drawAt" type="datetime-local" dir="ltr" :aria-label="$t('موعد القرعة')" class="h-touch rounded-lg bg-surface-sunk px-3" />
-      <label class="flex flex-col gap-1"><span class="font-bold">{{ $t('فريقك') }}</span>
+      <label v-if="entryMode !== 'draw'" class="flex flex-col gap-1"><span class="font-bold">{{ $t('فريقك') }}</span>
         <select v-model="myTeam" class="h-touch rounded-lg bg-surface-sunk px-3">
           <option :value="null">{{ $t('منظم فقط، بلا فريق') }}</option>
           <option v-for="c in picked" :key="c.id" :value="c.id">{{ $nm(c.name) }}</option>

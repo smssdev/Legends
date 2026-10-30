@@ -48,6 +48,10 @@ const drawLive = (x: Tournament) => !!x.draw_at && !x.drawn_at && new Date(x.dra
           <template v-else-if="x.draw_at">{{ $t('القرعة {v0}', { v0: when(x.draw_at) }) }}</template>
           <template v-else>{{ $t('تُسحب القرعة عند البداية {v0}', { v0: when(x.starts_at) }) }}</template>
         </p>
+        <!-- [X68] The places left when the draw shares the teams among the players who enter. -->
+        <RouterLink v-if="x.entry_mode === 'draw' && !x.drawn_at" :to="{ name: 'tournament', params: { id: x.id } }"
+          class="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-gold font-extrabold text-on-gold">
+          {{ $t('شارك') }} <span class="font-numbers" dir="ltr">{{ x.entrants }} / {{ x.team_count }}</span></RouterLink>
         <RouterLink :to="{ name: 'tournament-draw', params: { id: x.id } }" class="flex min-h-touch items-center justify-center rounded-xl bg-surface-sunk font-bold text-gold">
           {{ x.drawn_at ? $t('شاهد القرعة كما كانت') : $t('شاهد القرعة') }}</RouterLink>
       </li>

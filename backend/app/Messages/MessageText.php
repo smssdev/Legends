@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -224,6 +224,17 @@ class MessageText
                 'title' => ($p['through'] ?? false) ? sprintf('تأهلت إلى الأدوار الإقصائية في %s', $p['tournament'] ?? '') : sprintf('ودّعت %s من دور المجموعات', $p['tournament'] ?? ''),
                 'body' => ($p['through'] ?? false) ? 'انتهى دور المجموعات وفريقك بين المتأهلين. شاهد خصمك في شجرة البطولة.' : 'انتهى دور المجموعات ولم يتأهل فريقك. تابع البطولة حتى نهائيها.',
                 'link' => '/leagues/'.($p['league_id'] ?? ''),
+            ],
+            // [X68] A tournament's places are all taken (its draw is coming), and a team the organizer gave.
+            'tournament_full' => [
+                'title' => sprintf('اكتمل المشاركون في %s', $p['tournament'] ?? ''),
+                'body' => 'تُسحب القرعة بعد قليل وتوزع الفرق على المشاركين. تعال شاهدها مباشرة وتفاعل مع الجميع.',
+                'link' => '/tournaments/'.($p['league_id'] ?? '').'/draw',
+            ],
+            'tournament_team' => [
+                'title' => sprintf('صرت مدرب %s في %s', $p['team'] ?? '', $p['tournament'] ?? ''),
+                'body' => sprintf('اختارك %s مدرباً لهذا الفريق. جهّز تشكيلتك قبل البداية.', $p['by'] ?? ''),
+                'link' => '/tournaments/'.($p['league_id'] ?? ''),
             ],
             'chat_invite' => [
                 'title' => sprintf('أضافك %s إلى جروب %s', $p['by'] ?? '', $p['group'] ?? ''),

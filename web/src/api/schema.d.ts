@@ -10396,6 +10396,12 @@ export interface paths {
                         starting_budget?: number;
                         /** @description The maker's own team (a master club id of the tournament) */
                         club_id?: number | null;
+                        /** @enum {string|null} */
+                        entry_mode?: "pick" | "draw" | "assign" | null;
+                        /** @description [X68] assign - master club id => the coach's username */
+                        owners?: {
+                            [key: string]: string;
+                        } | null;
                         timezone?: string | null;
                         is_dev?: boolean;
                     };
@@ -10549,49 +10555,105 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The tournament */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            tournament: components["schemas"]["Tournament"] & {
-                                teams: {
-                                    [key: string]: unknown;
-                                }[];
-                                groups: {
-                                    group: string;
-                                    rows: components["schemas"]["TournamentRow"][];
-                                }[];
-                                table: components["schemas"]["TournamentRow"][];
-                                bracket: {
-                                    stage: string;
-                                    ties: {
-                                        slot: number;
-                                        home: {
-                                            [key: string]: unknown;
-                                        } | null;
-                                        away: {
-                                            [key: string]: unknown;
-                                        } | null;
-                                        home_from: string | null;
-                                        away_from: string | null;
-                                        winner_id: number | null;
-                                        score: number[] | null;
-                                        /** Format: date-time */
-                                        at: string;
-                                        fixture_id: number;
-                                    }[];
-                                }[];
-                            };
-                        };
-                    };
-                };
+                200: components["responses"]["TournamentPage"];
                 404: components["responses"]["Error"];
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{league}/entry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X68] Enter a tournament whose teams the draw shares out; the last place sets the draw in 10 minutes (unless its time is set) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["TournamentPage"];
+                409: components["responses"]["Error"];
+            };
+        };
+        /** Leave before the draw (the organizer removes an entrant with user_id) */
+        delete: {
+            parameters: {
+                query?: {
+                    user_id?: number;
+                };
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["TournamentPage"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{league}/owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [X68] The organizer names teams' coaches (club id => username) in a tournament of mode assign */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        owners: {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["TournamentPage"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -10639,8 +10701,15 @@ export interface paths {
                             pots: number;
                             stages: string[];
                             steps: {
-                                /** @enum {string} */
-                                type: "group" | "slot" | "tie";
+                                /**
+                                 * @description owner - a team given to a player (X68), before the shape's balls
+                                 * @enum {string}
+                                 */
+                                type: "owner" | "group" | "slot" | "tie";
+                                user?: {
+                                    id: number;
+                                    name: string;
+                                };
                                 club: {
                                     [key: string]: unknown;
                                 } | null;
@@ -11544,6 +11613,13 @@ export interface components {
             /** Format: date-time */
             drawn_at: string | null;
             coaches: number;
+            /**
+             * @description [X68] pick - each coach asks and takes a team; draw - the live draw shares the teams among the players who entered; assign - the organizer names each coach
+             * @enum {string}
+             */
+            entry_mode: "pick" | "draw" | "assign";
+            /** @description Players who entered (draw) */
+            entrants: number;
         };
         TeamCard: {
             id: number;
@@ -13826,6 +13902,61 @@ export interface components {
         };
     };
     responses: {
+        /** @description The tournament */
+        TournamentPage: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    tournament: components["schemas"]["Tournament"] & {
+                        entry: {
+                            /** @enum {string} */
+                            mode: "pick" | "draw" | "assign";
+                            entrants: {
+                                id: number;
+                                name: string;
+                                username: string;
+                                club_id: number | null;
+                            }[];
+                            is_entrant: boolean;
+                            can_enter: boolean;
+                            is_owner: boolean;
+                            my_club_id: number | null;
+                            /** @description May open the tournament's group */
+                            is_member: boolean;
+                        };
+                        teams: {
+                            [key: string]: unknown;
+                        }[];
+                        groups: {
+                            group: string;
+                            rows: components["schemas"]["TournamentRow"][];
+                        }[];
+                        table: components["schemas"]["TournamentRow"][];
+                        bracket: {
+                            stage: string;
+                            ties: {
+                                slot: number;
+                                home: {
+                                    [key: string]: unknown;
+                                } | null;
+                                away: {
+                                    [key: string]: unknown;
+                                } | null;
+                                home_from: string | null;
+                                away_from: string | null;
+                                winner_id: number | null;
+                                score: number[] | null;
+                                /** Format: date-time */
+                                at: string;
+                                fixture_id: number;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+        };
         /** @description The chat settings */
         AdminChat: {
             headers: {
