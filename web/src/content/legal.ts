@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-10-29'
+export const UPDATED = '2026-10-30'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -18,6 +18,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك.',
         'الدخول بحساب Google: نأخذ من Google اسمك وبريدك ومعرّف حسابك فقط، لتسجيل دخولك، ولا نصل إلى أي شيء آخر في حسابك.',
         'بيانات اللعب: أنديتك ودورياتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
+        'تقييمك لردود المدرب المساعد: إن ضغطت «أفادني» أو «لم يفدني» نحفظ اختيارك والصفحة التي كنت فيها وملاحظتك إن كتبتها، لنحسّن ردوده. ولا نحفظ معها المحادثة نفسها.',
         'بيانات تقنية: عنوان IP ونوع المتصفح والجهاز وأوقات الدخول، لحماية الحسابات من الاختراق والإساءة ولإصلاح الأعطال.',
       ] },
       { h: 'لماذا نستخدمها', p: [
@@ -37,6 +38,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'الكوكيز والتخزين في المتصفح', p: [
         'نستخدم كوكيز ضرورية لتسجيل دخولك وحماية النماذج (الجلسة وXSRF)، ولا تعمل اللعبة بدونها.',
         'ونحفظ في متصفحك اختياراتك (اللغة والمظهر والصوت) ليبقى شكل اللعبة كما تحب.',
+        'وإن ضغطت «احفظ وتابع لاحقاً» في المدرب المساعد تبقى آخر محادثة معه في متصفحك وحده، لا عندنا، حتى تبدأ من جديد.',
         'وكوكيز الإعلانات من Google كما في القسم السابق.',
       ] },
       { h: 'من يعالج البيانات معنا', p: [
@@ -67,6 +69,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, and your language.',
         'Google sign-in: we receive only your name, email and account id from Google, to sign you in, and nothing else in your Google account.',
         'Game data: your clubs, leagues, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
+        'Your rating of the Assistant Coach\'s answers: if you tap "helpful" or "not helpful" we keep your choice, the page you were on and your note if you wrote one, to improve his answers. The conversation itself is not kept with it.',
         'Technical data: IP address, browser and device type, and sign-in times, to protect accounts from abuse and to fix problems.',
       ] },
       { h: 'Why we use it', p: [
@@ -86,6 +89,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'Cookies and browser storage', p: [
         'We use essential cookies to keep you signed in and to protect forms (session and XSRF); the game cannot work without them.',
         'We keep your choices (language, look and sound) in your browser so the game stays the way you like it.',
+        'If you tap "Save and continue later" in the Assistant Coach, your last conversation with him stays in your browser only, not with us, until you start again.',
         'And Google\'s advertising cookies, as in the previous section.',
       ] },
       { h: 'Who processes data with us', p: [

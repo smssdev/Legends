@@ -6,7 +6,6 @@ use App\Data\PlayerValuation;
 use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
-use App\Messages\MessageText;
 use App\Stadium\Stadium;
 use App\Staff\Specialists;
 use App\Support\GameClock;
@@ -63,10 +62,7 @@ class Training
             if ($busy !== null) {
                 throw new HttpException(409, "لاعب واحد من كل خط في التدريب: {$busy} يتدرب الآن، ويُتاح غيره حين ينهي تدريبه أو تسرّعه.");
             }
-            // [Sprint 21 E6] No training without the line's coach in the technical staff.
-            if (! Specialists::has($clubId, Specialists::LINE_COACH[$p->line])) {
-                throw new HttpException(422, sprintf(__('لا تدريب بلا مدرب: تعاقد مع %s من الجهاز الفني أولاً.'), __(MessageText::STAFF[Specialists::LINE_COACH[$p->line]])));
-            }
+            // [X61] Without the line's coach in the staff the free basic coach trains it (it was refused [Sprint 21 E6]).
             $club = DB::table('clubs')->where('id', $clubId)->first();
             $now = GameClock::now();
             DB::table('training_slots')->insert(['club_id' => $clubId, 'line' => $p->line, 'player_id' => $playerId, 'sessions' => 0,

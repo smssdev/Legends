@@ -5,7 +5,7 @@
     <div class="sb">
       <div class="sb-in">
         <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></span></div>
-        <div class="mid"><span class="score" :class="{ pop }" dir="ltr">{{ score.away }} - {{ score.home }}</span><span class="live" dir="ltr"><i />{{ clock || minute }}</span></div>
+        <div class="mid"><span class="score" :class="{ pop }" dir="ltr"><FlipNumber :value="score.away" /> - <FlipNumber :value="score.home" /></span><span class="live" dir="ltr"><i />{{ clock || minute }}</span></div>
         <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></span></div>
       </div>
       <div class="mom" dir="ltr"><i :style="{ width: 100 - mom + '%', background: kits.away.kit }" /><i :style="{ width: mom + '%', background: kits.home.kit }" /></div>
@@ -90,6 +90,7 @@
 // bar. The parent calls play(tick) per minute; the minute's length is the
 // server's (tick.moment.ms).
 import { t as tr } from '../../lib/i18n'
+import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, player as cartoon, setKits, setSmooth } from './art'
 import { noteFrame, smooth } from '../perf'

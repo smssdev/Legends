@@ -2,6 +2,7 @@
 // Trades between coaches (Sprint 25 W1), inside the market: the transfer list, my offers in and out, and the
 // composer for a new offer or a counter. Every rule (the fair range, the season limits) is checked by the API,
 // which answers in Arabic; the screen only gathers the terms.
+import UiDialog from '../../components/ui/UiDialog.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -54,10 +55,10 @@ const unlist = (p: Mine) => run(`سُحب ${p.name} من القائمة.`, () =>
 
 // ---------------------------------------------------------------- the composer
 type Squad = { id: number; name: string; position: string; line: string; overall: number; value: number }
-const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, in: [] as number[], out: [] as number[] })
+const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, sellOn: 0, in: [] as number[], out: [] as number[] })
 const theirs = ref<Squad[]>([])
 async function compose(to: number, toName: string, opts: { in?: number[]; out?: number[]; money?: number; counterOf?: number } = {}) {
-  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, in: opts.in ?? [], out: opts.out ?? [] })
+  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, sellOn: 0, in: opts.in ?? [], out: opts.out ?? [] })
   theirs.value = []
   try {
     const { data } = await api.GET('/leagues/{league}/clubs/{club}', { params: { path: { league: props.leagueId, club: to } } })
@@ -74,7 +75,7 @@ function send() {
   const label = draft.counterOf ? `أُرسل ردك إلى ${draft.toName}.` : `أُرسل عرضك إلى ${draft.toName}.`
   run(label, () => draft.counterOf
     ? api.POST('/leagues/{league}/transfers/offers/{offer}/counter', { params: { path: { league: props.leagueId, offer: draft.counterOf } }, body })
-    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to } })).then(() => { if (!error.value) draft.open = false })
+    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to, sell_on_bp: draft.sellOn * 100 } })).then(() => { if (!error.value) draft.open = false })
 }
 // A counter: I want what he offered of his, and I give what he asked of mine.
 const counter = (o: Offer) => compose(o.from.id, o.from.name, { counterOf: o.id, in: o.out.map((p) => p.id), out: o.in.map((p) => p.id), money: 0 })
@@ -166,8 +167,8 @@ onMounted(load)
       </article>
     </template>
 
-    <div v-if="draft.open" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-center" @click.self="draft.open = false">
-      <section role="dialog" aria-modal="true" :aria-label="draft.counterOf ? $t('رد بعرض') : $t('عرض جديد')" class="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-t-xxl bg-surface p-4 md:rounded-xxl">
+    <UiDialog :open="draft.open" bare @close="draft.open = false"><template v-if="draft.open">
+      <section :aria-label="draft.counterOf ? $t('رد بعرض') : $t('عرض جديد')" class="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-t-xxl bg-surface p-4 md:rounded-xxl">
         <h2 class="font-display text-xl font-extrabold">{{ draft.counterOf ? $t('ردك على') : $t('عرض إلى') }} {{ draft.toName }}</h2>
         <div>
           <h3 class="mb-1 text-sm font-bold">{{ $t('تريد من فريقه (حتى 5)') }}</h3>
@@ -188,12 +189,16 @@ onMounted(load)
         <label class="flex flex-col gap-1 text-sm font-bold">{{ $t('والمال من أموال النادي') }}
           <input v-model.number="draft.money" type="number" min="0" inputmode="numeric" class="h-touch rounded-md bg-surface-sunk px-3 font-numbers" dir="ltr" />
         </label>
+        <!-- [X62] The sell-on clause: a share of the next sale promised to the other coach (a new offer only). -->
+        <label v-if="!draft.counterOf" class="flex flex-col gap-1 text-sm font-bold">{{ $t('نسبة له من بيعك القادم لهم (اختياري)') }}
+          <span class="flex items-center gap-2"><input v-model.number="draft.sellOn" type="range" min="0" max="20" step="5" class="h-11 flex-1 accent-gold" :aria-valuetext="`${draft.sellOn}%`" /><b class="w-12 text-center font-numbers" dir="ltr">{{ draft.sellOn }}%</b></span>
+        </label>
         <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}. المسموح: من 50% إلى 200% من قيمة ما تطلب.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
         <div class="flex gap-2">
           <button type="button" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || !draft.in.length" @click="send">{{ draft.counterOf ? $t('أرسل الرد') : $t('أرسل العرض') }}</button>
           <button type="button" class="h-12 rounded-md bg-surface-raised px-5" @click="draft.open = false">{{ $t('إلغاء') }}</button>
         </div>
       </section>
-    </div>
+    </template></UiDialog>
   </div>
 </template>

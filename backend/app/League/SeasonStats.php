@@ -30,7 +30,34 @@ class SeasonStats
             'finance' => self::finance($seasonId, $clubs->keys()->all(), $card),
             'value' => self::value($leagueId, $card),
             'streaks' => self::streaks($matches, $clubs->keys()->all(), $card),
+            'split' => self::split($matches->where('competition', 'league'), $clubs->keys()->all(), $card),
         ];
+    }
+
+    /** [X61 E12] Each club at home and away (league matches): played, won, drawn, lost, for, against and points. */
+    private static function split($matches, array $ids, \Closure $card): array
+    {
+        $zero = ['played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0];
+        $rows = array_fill_keys($ids, ['home' => $zero, 'away' => $zero]);
+        foreach ($matches as $m) {
+            foreach ([['home', $m->home_id, $m->home_goals, $m->away_goals], ['away', $m->away_id, $m->away_goals, $m->home_goals]] as [$side, $id, $for, $against]) {
+                if (! isset($rows[$id])) {
+                    continue;
+                }
+                $r = &$rows[$id][$side];
+                $r['played']++;
+                $r['goals_for'] += (int) $for;
+                $r['goals_against'] += (int) $against;
+                $k = $for > $against ? 'won' : ($for === $against ? 'drawn' : 'lost');
+                $r[$k]++;
+                $r['points'] += ['won' => 3, 'drawn' => 1, 'lost' => 0][$k];
+                unset($r);
+            }
+        }
+        $out = array_map(fn ($id) => ['club' => $card($id)] + $rows[$id], $ids);
+        usort($out, fn ($a, $b) => $b['home']['points'] + $b['away']['points'] <=> $a['home']['points'] + $a['away']['points']);
+
+        return $out;
     }
 
     /** The table with the goals per match (in hundredths, integers only). */

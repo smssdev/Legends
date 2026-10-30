@@ -2,6 +2,7 @@
 
 namespace App\Market;
 
+use App\Economy\Contracts;
 use App\League\ClubLedger;
 use App\League\Integrity;
 use App\League\MatchPrep;
@@ -151,6 +152,8 @@ class Market
             if ($p->club_id !== null && DB::table('clubs')->where('id', $p->club_id)->whereNotNull('user_id')->exists()) {
                 throw new HttpException(409, 'اللاعب في فريق مدرب آخر.');
             }
+            // [X61 E1] The wage cap.
+            Contracts::assertRoom($clubId, (int) $p->value);
             $price = self::price($p, $clubId);
             if ($price === null) {
                 throw new HttpException(409, 'هذا اللاعب ليس للبيع هنا.');
@@ -220,7 +223,9 @@ class Market
             }
             Transfers::left($playerId, $clubId);
 
-            return Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
+            $balance = Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
+
+            return SellOn::settle($clubId, $playerId, $pays, $key) ? ClubLedger::sum($clubId) : $balance;   // [X62]
         });
     }
 
@@ -231,7 +236,7 @@ class Market
         self::assertKeeps($botId, $player, (int) config('game.economy.bot_min_squad'), __('نادي الحاسوب لا يبيع إن نزل عن %d لاعباً.'));
     }
 
-    private static function assertKeeps(int $clubId, object $player, int $min, string $message): void
+    public static function assertKeeps(int $clubId, object $player, int $min, string $message): void
     {
         $count = DB::table('players')->where('club_id', $clubId)->count();
         if ($count - 1 < $min) {

@@ -3087,7 +3087,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        /** [UP12] The press conference before a match: the chances, a reading of each side, the statements */
+        /** [UP12] The press conference before a match: the chances, a reading of each side, the statements (each with its morale stakes on a win, a draw and a defeat [X61 E9]) */
         get: {
             parameters: {
                 query?: never;
@@ -4533,6 +4533,383 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/contracts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X61 E1] The squad's contracts this season: each wage a round and what ending it costs, the wages, the cap and the room left */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contracts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Contracts"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/contracts/{player}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X61 E1] End a contract early: the player goes to the market, the club pays half the wages left in the season */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contracts after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Contracts"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/contracts/{player}/renew": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E1] Renew a contract for 1 to max_seasons more seasons: the player stays with the club into them, for a signing fee */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        seasons: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The contracts after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Contracts"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/market/academy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X61 E3] The youth academy: this period's prospects (their potential a range), when they change, and the season's signings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The academy */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Academy"];
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** [X61 E3] Sign one of the prospects */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        master_player_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The academy after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Academy"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/loans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X61 E2] My loans this season, asked and running */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The loans */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Loans"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [X61 E2] Ask another coach's player on loan for some rounds and a fee */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        player_id: number;
+                        rounds: number;
+                        fee: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The loans after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Loans"];
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/transfers/loans/{loan}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                loan: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X61 E2] The owner accepts (the fee is paid, the player moves until the loan's round) or turns it down */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    loan: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        accept: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The loans after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Loans"];
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [X61] Set the ticket price level for the home matches to come */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        level: "popular" | "normal" | "high" | "premium";
+                    };
+                };
+            };
+            responses: {
+                /** @description The levels after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TicketLevels"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/summary": {
         parameters: {
             query?: never;
@@ -5246,6 +5623,18 @@ export interface paths {
                         "application/json": {
                             /** @enum {string} */
                             side: "home" | "away";
+                            /** @description [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal */
+                            shots?: {
+                                /** @enum {string} */
+                                team: "home" | "away";
+                                minute: number;
+                                /** @enum {string} */
+                                result: "goal" | "saved" | "blocked" | "missed";
+                                quality: string;
+                                shooter?: number | null;
+                                x: number;
+                                y: number;
+                            }[];
                             /** @enum {string} */
                             result: "win" | "draw" | "loss";
                             score: {
@@ -6743,6 +7132,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/assistant/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X61] The coach rates the conversation at its end: helpful or not, the page, and an optional note */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        helpful: boolean;
+                        page?: string | null;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Thanks */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/assistant/ask": {
         parameters: {
             query?: never;
@@ -7342,6 +7778,306 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X62 E8] The data editor: search the latest data's players or clubs */
+        get: {
+            parameters: {
+                query: {
+                    kind: "players" | "clubs";
+                    q?: string;
+                    club_id?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Up to 40 rows */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            rows: {
+                                [key: string]: unknown;
+                            }[];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/leagues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X62 E8] The data's leagues with their clubs, those under six flagged */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The leagues */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            leagues: {
+                                name: string;
+                                clubs: number;
+                                too_small: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/players": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E8] A new player in a club (his attributes start at his rating) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditPlayer"];
+                };
+            };
+            responses: {
+                /** @description The player */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/players/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [X62 E8] Remove a player no league has taken */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            deleted: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        /** [X62 E8] Correct a player (only the fields sent), logged with what it was */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditPlayer"];
+                };
+            };
+            responses: {
+                /** @description The player */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
+    "/admin/data/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E8] A new club in a data league */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditClub"];
+                };
+            };
+            responses: {
+                /** @description The club */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/clubs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** [X62 E8] Correct a club (only the fields sent), logged with what it was */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditClub"];
+                };
+            };
+            responses: {
+                /** @description The club */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
     "/admin/coins": {
         parameters: {
             query?: never;
@@ -7780,6 +8516,48 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/awards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X61 E5] The running season's awards: best player, best young player, player of the last round, top scorer and assister, longest winning run */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The awards (null where nobody qualifies yet) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Awards"];
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -9058,6 +9836,8 @@ export interface components {
             /** @description The offering club's players given */
             out?: number[];
             idempotency_key: string;
+            /** @description [X62] The share of the next sale of the players taken promised to the other club (basis points, up to economy.sell_on_max_bp) */
+            sell_on_bp?: number;
         };
         TradePlayer: {
             id: number;
@@ -9073,6 +9853,8 @@ export interface components {
             /** @enum {string} */
             status: "pending" | "accepted" | "rejected" | "countered" | "cancelled" | "expired";
             money: number;
+            /** @description [X62] The sell-on share promised with it */
+            sell_on_bp?: number;
             from: {
                 id: number;
                 name: string;
@@ -9225,6 +10007,7 @@ export interface components {
                 ticket_price: number;
                 tickets_per_match: number;
             };
+            tickets: components["schemas"]["TicketLevels"];
             sponsors: {
                 sector: string;
                 name: string;
@@ -9964,6 +10747,7 @@ export interface components {
                 /** @description The home advantage with the pitch (basis points) */
                 home_bp: number;
                 tickets_per_match: number;
+                tickets: components["schemas"]["TicketLevels"];
                 parts_done: number;
             };
             sections: {
@@ -10016,6 +10800,102 @@ export interface components {
             /** @description At or past his potential: training goes on, much slower [X16] */
             over_potential?: boolean;
         };
+        EditPlayer: {
+            name?: string;
+            position?: string;
+            /** @enum {string} */
+            line?: "gk" | "def" | "mid" | "att";
+            age?: number;
+            nationality?: string | null;
+            overall?: number;
+            potential?: number;
+            value?: number;
+            master_club_id?: number;
+        };
+        EditClub: {
+            name?: string;
+            code?: string;
+            league_name?: string;
+            color_primary?: string;
+            color_secondary?: string;
+        };
+        Contracts: {
+            players: {
+                id: number;
+                name: string;
+                position: string;
+                age: number;
+                value: number;
+                wage: number;
+                release: number;
+                /** @description [X62] The last season under contract */
+                until: number;
+                /** @description [X62] The fee to renew one more season */
+                renew_one: number;
+            }[];
+            season: number;
+            max_seasons: number;
+            wages_per_round: number;
+            cap_per_round: number;
+            /** @description The squad value the club may still add */
+            room: number;
+            rounds_left: number;
+        };
+        Academy: {
+            prospects: {
+                id: number;
+                name: string;
+                position: string;
+                line: string;
+                age: number;
+                nationality: string | null;
+                overall: number;
+                potential_from: number;
+                potential_to: number;
+                price: number;
+            }[];
+            /** Format: date-time */
+            renews_at: string;
+            signed: number;
+            per_season: number;
+            balance: number;
+        };
+        Loans: {
+            loans: {
+                id: number;
+                /** @enum {string} */
+                status: "pending" | "active";
+                /** @description The player is this coach's (he lends) */
+                mine: boolean;
+                player: {
+                    id: number;
+                    name: string;
+                    position: string;
+                };
+                owner: string;
+                borrower: string;
+                rounds: number;
+                fee: number;
+                until_round: number | null;
+            }[];
+            max_rounds: number;
+            max_fee_bp: number;
+        };
+        /** @description [X61] The ticket price level the coach set and what each of the four brings at the next home match */
+        TicketLevels: {
+            /** @enum {string} */
+            level: "popular" | "normal" | "high" | "premium";
+            per_match: number;
+            levels: {
+                /** @enum {string} */
+                level: "popular" | "normal" | "high" | "premium";
+                name: string;
+                /** @description One seat */
+                price: number;
+                attendance_bp: number;
+                per_match: number;
+            }[];
+        };
         TrainingView: {
             /** @description One session's price */
             cost: number;
@@ -10035,11 +10915,13 @@ export interface components {
                 sessions_done: number;
                 /** Format: date-time */
                 next_at: string | null;
-                /** @description [Sprint 21 E6] The line's coach: no training without him */
+                /** @description [Sprint 21 E6] The line's coach; [X61] without one (hired false) the free basic coach trains the line at bonus_bp */
                 coach: {
                     type: string;
                     name: string;
                     hired: boolean;
+                    stars: number;
+                    bonus_bp: number;
                 };
                 ads: components["schemas"]["AdStatus"];
             }[];
@@ -10311,6 +11193,52 @@ export interface components {
                 /** @description The last five */
                 form: ("W" | "D" | "L")[];
             }[];
+            /** @description [X61 E12] Each club at home and away in the league */
+            split: {
+                club: components["schemas"]["StatsClub"];
+                home: components["schemas"]["SplitRow"];
+                away: components["schemas"]["SplitRow"];
+            }[];
+        };
+        SplitRow: {
+            played: number;
+            won: number;
+            drawn: number;
+            lost: number;
+            goals_for: number;
+            goals_against: number;
+            points: number;
+        };
+        AwardCard: {
+            player: {
+                id: number;
+                name: string;
+                age: number;
+                position: string;
+            };
+            club: {
+                id: number;
+                name: string;
+            } | null;
+            matches: number;
+            /** @description The average rating times ten (72 = 7.2) */
+            average_x10: number;
+            round?: number;
+            rating_x10?: number;
+            goals?: number;
+            assists?: number;
+        } | null;
+        Awards: {
+            matches: number;
+            mvp: components["schemas"]["AwardCard"];
+            young: components["schemas"]["AwardCard"];
+            of_the_round: components["schemas"]["AwardCard"];
+            scorer: components["schemas"]["AwardCard"];
+            assister: components["schemas"]["AwardCard"];
+            run: {
+                club: components["schemas"]["StatsClub"];
+                wins: number;
+            } | null;
         };
         Trophies: {
             total: number;

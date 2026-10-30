@@ -2,7 +2,8 @@
 // The league table and its statistics [X17; «جدول الدوري» since Sprint 21 E4.2, with the leaders on top]: the season's table in detail, the scorers and the assists, the cards, each club's
 // buying and selling, the squads' value and the runs of results. A club's name opens its squad (what anyone in the
 // league may see: no tactic). No draft of its own: the design system's cards and the league table's look.
-import { computed, onMounted, ref } from 'vue'
+import EmptyState from '../../components/ui/EmptyState.vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
@@ -12,15 +13,22 @@ import { useSlot } from '../../stores/slot'
 import { money } from '../../lib/format'
 import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import AdSlot from '../../components/ads/AdSlot.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 
 type Stats = components['schemas']['LeagueStats']
 type Club = components['schemas']['StatsClub']
-const TABS = { table: 'الترتيب', scorers: 'الهدافون', assists: 'صناع اللعب', cards: 'الانضباط', money: 'المالية', value: 'القيمة السوقية', runs: 'السلاسل' } as const
+const TABS = { table: 'الترتيب', scorers: 'الهدافون', assists: 'صناع اللعب', cards: 'الانضباط', money: 'المالية', value: 'القيمة السوقية', runs: 'السلاسل', split: 'أرض وخارج', awards: 'الأوسمة' } as const
 type Tab = keyof typeof TABS
 
 const leagueId = ref<number | null>(null)
 const s = ref<Stats | null>(null)
 const tab = ref<Tab>('table')
+// [X61 E5] The season's awards, loaded when their tab opens.
+const awards = ref<components['schemas']['Awards'] | null>(null)
+watch(tab, async (t) => {
+  if (t === 'awards' && !awards.value && leagueId.value) awards.value = (await api.GET('/leagues/{league}/awards', { params: { path: { league: leagueId.value } } })).data ?? null
+})
+const rating = (x10: number) => (x10 / 10).toFixed(1)
 const error = ref('')
 const loaded = ref(false)
 const squadOf = ref<number | null>(null)
@@ -56,6 +64,18 @@ const openSquad = (c: Club) => (squadOf.value = c.id)
 // The coach's own club in gold in every table [X32].
 const slot = useSlot()
 const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
+// [X61] The table as a CSV file (opens in any spreadsheet), with a byte-order mark so Arabic names read right.
+function exportCsv() {
+  if (!s.value) return
+  const head = ['#', t('النادي'), t('لعب'), t('فاز'), t('تعادل'), t('خسر'), t('له'), t('عليه'), t('الفارق'), t('النقاط')]
+  const rows = s.value.table.map((r) => [r.position, nm(r.club.name), r.played, r.won, r.drawn, r.lost, r.goals_for, r.goals_against, r.goal_difference, r.points])
+  const csv = [head, ...rows].map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }))
+  a.download = 'standings.csv'
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
 </script>
 
 <template>
@@ -68,10 +88,8 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
     <p v-else-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
 
     <template v-if="s">
-      <div class="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1" role="tablist" :aria-label="$t('أقسام الإحصائيات')">
-        <button v-for="(label, key) in TABS" :key="key" type="button" role="tab" class="h-touch shrink-0 rounded-lg px-4 font-bold" :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-selected="tab === key" @click="tab = key">{{ $t(label) }}</button>
-      </div>
-      <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لم تُلعب مباريات في هذا الموسم بعد.') }}</p>
+      <UiTabs v-model="tab" :items="(Object.keys(TABS) as Tab[]).map((key) => ({ key, label: TABS[key] }))" label="أقسام الإحصائيات" />
+      <EmptyState v-if="empty && tab !== 'value'" icon="league" title="لم تُلعب مباريات في هذا الموسم بعد." text="تمتلئ الأرقام بعد أول جولة." :cta="{ label: 'المباراة القادمة', to: '/match' }" />
       <!-- [Sprint 21 E4.2] The season's leaders at a glance. -->
       <section v-else-if="tab === 'table'" class="grid grid-cols-2 gap-2 lg:grid-cols-4" :aria-label="$t('المتصدرون')">
         <div v-for="card in leaders" :key="card.label" class="flex flex-col gap-0.5 rounded-xl bg-surface p-3">
@@ -81,7 +99,24 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
         </div>
       </section>
 
-      <section v-if="tab === 'table'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('الترتيب المفصل')">
+      <!-- [X61] On the phone each club is a card (place, points, played, difference, for and against), no sideways scroll;
+           the full table on a wider screen. A change of place slides the rows (FLIP). -->
+      <div v-if="tab === 'table'" class="flex justify-end">
+        <button type="button" class="flex min-h-touch items-center gap-1.5 rounded-lg px-3 text-sm font-bold text-brand-light hover:bg-surface" @click="exportCsv">{{ $t('تصدير CSV') }}</button>
+      </div>
+      <TransitionGroup v-if="tab === 'table'" tag="ol" name="flip" class="flex flex-col gap-1.5 md:hidden" :aria-label="$t('الترتيب المفصل')">
+        <li v-for="r in s.table" :key="r.club.id" class="flex items-center gap-3 rounded-xl bg-surface p-2.5" :class="mine(r.club.id)">
+          <span class="w-6 text-center font-numbers text-lg text-text-muted">{{ r.position }}</span>
+          <button type="button" class="flex min-h-touch min-w-0 flex-1 items-center gap-2 text-start font-bold" @click="openSquad(r.club)">
+            <img :src="r.club.crest_url" alt="" class="size-7 shrink-0" />
+            <span class="min-w-0"><span class="block truncate">{{ $nm(r.club.name) }}</span>
+              <span class="block font-numbers text-xs font-normal text-text-muted">{{ $t('لعب {v0} · له {v1} · عليه {v2}', { v0: r.played, v1: r.goals_for, v2: r.goals_against }) }}</span></span>
+          </button>
+          <span class="font-numbers text-sm text-text-muted" dir="ltr">{{ r.goal_difference > 0 ? '+' : '' }}{{ r.goal_difference }}</span>
+          <b class="w-9 text-center font-numbers text-xl text-gold">{{ r.points }}</b>
+        </li>
+      </TransitionGroup>
+      <section v-if="tab === 'table'" class="hidden overflow-x-auto rounded-xl bg-surface p-3 md:block" :aria-label="$t('الترتيب المفصل')">
         <table class="w-full min-w-[640px] text-sm">
           <thead class="text-text-muted"><tr><th class="py-2">#</th><th class="text-start">{{ $t('النادي') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('فاز') }}</th><th>{{ $t('تعادل') }}</th><th>{{ $t('خسر') }}</th><th>{{ $t('له') }}</th><th>{{ $t('عليه') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('معدل التسجيل') }}</th><th>{{ $t('معدل الاستقبال') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
           <tbody class="font-numbers">
@@ -146,6 +181,47 @@ const mine = (id: number) => (id === slot.current?.club?.id ? 'is-mine' : '')
           <span class="text-xs text-text-muted">{{ $t('{v0} لاعباً', { v0: r.players }) }}</span>
           <b class="font-numbers text-gold" dir="ltr">{{ money(r.value) }}</b>
         </div>
+      </section>
+
+      <!-- [X61 E12] Each club at home and away. -->
+      <section v-if="tab === 'split'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('أرض وخارج')">
+        <table class="w-full min-w-[520px] text-sm">
+          <thead class="text-text-muted"><tr><th class="py-2 text-start">{{ $t('النادي') }}</th><th colspan="3">{{ $t('على أرضه') }}</th><th colspan="3">{{ $t('خارج أرضه') }}</th></tr>
+            <tr class="text-xs"><th /><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th><th>{{ $t('لعب') }}</th><th>{{ $t('الفارق') }}</th><th>{{ $t('النقاط') }}</th></tr></thead>
+          <tbody class="font-numbers">
+            <tr v-for="r in s.split" :key="r.club.id" class="border-t border-text/5 text-center" :class="mine(r.club.id)">
+              <td class="py-2 text-start font-sans font-bold"><span class="flex items-center gap-2"><img :src="r.club.crest_url" alt="" class="size-5" />{{ $nm(r.club.name) }}</span></td>
+              <td>{{ r.home.played }}</td><td dir="ltr">{{ r.home.goals_for - r.home.goals_against }}</td><td class="font-bold text-gold">{{ r.home.points }}</td>
+              <td>{{ r.away.played }}</td><td dir="ltr">{{ r.away.goals_for - r.away.goals_against }}</td><td class="font-bold text-gold">{{ r.away.points }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- [X61 E5] The season's awards so far. -->
+      <section v-if="tab === 'awards'" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" :aria-label="$t('الأوسمة')">
+        <p v-if="!awards" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
+        <template v-else>
+          <article v-for="[key, title, icon] in ([['mvp', 'أفضل لاعب', '🏆'], ['young', 'أفضل لاعب شاب', '🌱'], ['of_the_round', 'نجم الجولة', '⭐'], ['scorer', 'الهداف', '⚽'], ['assister', 'صانع الألعاب', '🎯']] as const)" :key="key"
+            class="flex animate-pop-in items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">{{ icon }}</span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-xs text-text-muted">{{ $t(title) }}<template v-if="key === 'of_the_round' && awards.of_the_round"> · {{ $t('الجولة {v0}', { v0: awards.of_the_round.round }) }}</template></span>
+              <template v-if="awards[key]">
+                <b class="block truncate"><bdi>{{ $nm(awards[key]!.player.name) }}</bdi></b>
+                <span class="block truncate text-xs text-text-muted">{{ $nm(awards[key]!.club?.name) }}</span>
+              </template>
+              <span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span>
+            </span>
+            <b v-if="awards[key]" class="font-numbers text-xl text-gold" dir="ltr">{{ key === 'scorer' ? awards.scorer!.goals : key === 'assister' ? awards.assister!.assists : key === 'of_the_round' ? rating(awards.of_the_round!.rating_x10 ?? 0) : rating(awards[key]!.average_x10) }}</b>
+          </article>
+          <article class="flex items-center gap-3 rounded-xl border border-gold/25 bg-surface p-3">
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-gold/15 text-2xl" aria-hidden="true">🔥</span>
+            <span class="min-w-0 flex-1"><span class="block text-xs text-text-muted">{{ $t('أطول سلسلة انتصارات') }}</span>
+              <b v-if="awards.run" class="block truncate">{{ $nm(awards.run.club.name) }}</b><span v-else class="text-sm text-text-muted">{{ $t('لم يُحسم بعد') }}</span></span>
+            <b v-if="awards.run" class="font-numbers text-xl text-gold">{{ awards.run.wins }}</b>
+          </article>
+        </template>
       </section>
 
       <section v-if="tab === 'runs'" class="overflow-x-auto rounded-xl bg-surface p-3" :aria-label="$t('سلاسل النتائج')">

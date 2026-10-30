@@ -2,12 +2,13 @@
 // The league's three tabs (Sprint 15 W1), after the draft MobileLeague: the table (with "played" and
 // "rests" when the count is odd), the calendar in the device's own time, and the cup's bracket.
 import { intlLocale } from '../../lib/i18n'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import UiChip from '../../components/ui/UiChip.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 
 type Fixture = components['schemas']['Fixture']
 type Season = components['schemas']['SeasonCalendar']
@@ -20,8 +21,8 @@ const tab = ref<'table' | 'fixtures' | 'cup' | 'honours'>('table')
 // The hall of fame (Sprint 33): loaded when its tab is opened.
 type Honours = components['schemas']['Honours']
 const honours = ref<Honours | null>(null)
+watch(tab, (t) => t === 'honours' && openHonours())
 async function openHonours() {
-  tab.value = 'honours'
   if (honours.value) return
   try {
     honours.value = (await api.GET('/leagues/{league}/honours', { params: { path: { league: props.leagueId } } })).data!
@@ -76,20 +77,7 @@ const zone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 <template>
   <section class="flex flex-col gap-3 rounded-xl bg-surface p-3 md:p-5" :aria-label="$t('الدوري')">
-    <div class="grid grid-cols-4 gap-1 rounded-xl bg-surface-sunk p-1" role="tablist">
-      <button
-        v-for="(label, key) in { table: 'الترتيب', fixtures: 'المباريات', cup: 'الكأس' }"
-        :key="key"
-        type="button"
-        role="tab"
-        class="h-12 rounded-lg font-display text-base font-extrabold md:text-lg"
-        :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft'"
-        :aria-selected="tab === key"
-        @click="tab = key"
-      >{{ $t(label) }}</button>
-      <button type="button" role="tab" class="h-12 rounded-lg font-display text-base font-extrabold md:text-lg" :class="tab === 'honours' ? 'bg-gold text-on-gold' : 'text-text-soft'"
-        :aria-selected="tab === 'honours'" @click="openHonours">{{ $t('الشرف') }}</button>
-    </div>
+    <UiTabs v-model="tab" :items="[{ key: 'table', label: 'الترتيب' }, { key: 'fixtures', label: 'المباريات' }, { key: 'cup', label: 'الكأس' }, { key: 'honours', label: 'الشرف' }]" label="الدوري" fill class="bg-surface-sunk" />
     <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <!-- [Sprint 21 E3.5] Until the table comes, a row per club holds its place, so the page does not jump. -->

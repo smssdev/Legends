@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Assistant\ClubReader;
+use App\Economy\Economy;
 use App\League\ClubAgenda;
 use App\League\Tactics;
 use App\Models\Club;
@@ -10,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request as HttpRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
@@ -68,7 +70,7 @@ class ManagerBotTest extends TestCase
 
         $en = $this->getJson('/api/v1/assistant/start?page=league-newspaper', ['Accept-Language' => 'en'])->assertOk()->json();
         $this->assertSame('Manager Bot', $en['name']);
-        $this->assertSame('newspaper', $en['questions'][0]['topic']);
+        $this->assertSame(['now', 'week', 'newspaper'], array_slice(array_column($en['questions'], 'topic'), 0, 3));
         $this->assertStringContainsString('Manager Bot', $en['intro']);
     }
 
@@ -121,6 +123,46 @@ class ManagerBotTest extends TestCase
         $read = json_encode($second['contents'][count($second['contents']) - 1], JSON_UNESCAPED_UNICODE);
         $this->assertStringContainsString($club->name, $read);
         $this->assertStringNotContainsString($this->owner->email, json_encode($second->data(), JSON_UNESCAPED_UNICODE));
+    }
+
+    public function test_every_question_carries_the_clubs_exact_numbers_so_its_value_is_never_its_budget(): void
+    {
+        // [X61] «كم قيمة فريقي؟»: the squad's value and the club's cash are both in the prompt, each by its own name.
+        $this->gemini([['text' => 'قيمة فريقك كما هي.']]);
+        $this->actingAs($this->owner)->ask('كم قيمة فريقي؟');
+        $club = Club::find($this->league['my_club_id']);
+        $system = Http::recorded()[0][0]['systemInstruction']['parts'][0]['text'];
+        $value = Economy::squadValue($club->id);
+        $this->assertNotSame($value, (int) $club->balance);
+        $this->assertStringContainsString('"squad_value":'.$value, $system);
+        $this->assertStringContainsString('"club_money":'.(int) $club->balance, $system);
+        $this->assertStringContainsString('never give one for the other', $system);
+    }
+
+    public function test_the_coach_rates_the_conversation_and_only_his_choice_page_and_note_are_kept(): void
+    {
+        // [X61] The closing card's 👍/👎.
+        $this->actingAs($this->owner)->postJson('/api/v1/assistant/feedback', ['helpful' => false, 'page' => 'training', 'note' => '  الرقم كان خطأ  '])
+            ->assertOk()->assertJsonPath('message', 'شكراً، سنحسّن الردود.');
+        $this->postJson('/api/v1/assistant/feedback', ['note' => 'x'])->assertJsonValidationErrors('helpful');
+        $row = DB::table('assistant_feedback')->first();
+        $this->assertSame([$this->owner->id, false, 'training', 'الرقم كان خطأ'], [(int) $row->user_id, (bool) $row->helpful, $row->page, $row->note]);
+        $this->assertSame(1, DB::table('assistant_feedback')->count());
+    }
+
+    public function test_what_to_do_now_and_the_week_come_from_the_club_without_the_ai(): void
+    {
+        // [X61 E11] Three numbered priorities and a page; the week's summary; and no club, no answer about one.
+        Http::fake();
+        $now = $this->actingAs($this->owner)->ask('ماذا أفعل الآن؟', ['topic' => 'now']);
+        $this->assertStringStartsWith('أولوياتك الثلاث الآن:', $now['answer']);
+        $this->assertStringContainsString("\n3. ", $now['answer']);
+        $this->assertNotNull($now['go']);
+        $week = $this->ask('ملخص أسبوعي', ['topic' => 'week']);
+        $this->assertStringContainsString('هذا الأسبوع', $week['answer']);
+        Http::assertNothingSent();
+        $none = $this->actingAs(User::factory()->create())->postJson('/api/v1/assistant/ask', ['question' => 'x', 'topic' => 'now'])->assertOk()->json();
+        $this->assertStringContainsString('افتح أحد أنديتك', $none['answer']);
     }
 
     public function test_the_day_used_up_or_google_unable_falls_back_to_the_guide(): void

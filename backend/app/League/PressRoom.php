@@ -41,7 +41,8 @@ class PressRoom
             'chances' => self::chances((int) $home->strength_snapshot, (int) $away->strength_snapshot),
             'reading' => ['home' => self::reading($h, $a), 'away' => self::reading($a, $h)],
             'lines' => ['home' => $h, 'away' => $a],
-            'statements' => array_map(fn ($k, $t) => ['kind' => $k, 'text' => __($t)], array_keys(self::STATEMENTS), self::STATEMENTS),
+            // [X61 E9] Each statement with what it stakes on the result.
+            'statements' => array_map(fn ($k, $t) => ['kind' => $k, 'text' => __($t), 'stakes' => array_map('intval', config("game.press.stakes.{$k}"))], array_keys(self::STATEMENTS), self::STATEMENTS),
             'said' => ['home' => $said[$home->id] ?? null, 'away' => $said[$away->id] ?? null],
             'mine' => $clubId === $home->id ? 'home' : ($clubId === $away->id ? 'away' : null),
             'morale' => (int) config('game.press.morale'),
@@ -69,6 +70,29 @@ class PressRoom
         if ($new !== 1) {
             throw new HttpException(409, 'أدليت بتصريحك لهذه المباراة.');
         }
+    }
+
+    /**
+     * [X61 E9] After the match, the statement is judged by the result: the morale moves by its stake (within the
+     * morale's bounds), once per fixture and club. Returns the change.
+     */
+    public static function judge(object $fixture, int $clubId, int $for, int $against): int
+    {
+        $kind = DB::table('press_statements')->where('fixture_id', $fixture->id)->where('club_id', $clubId)->value('kind');
+        if ($kind === null) {
+            return 0;
+        }
+        $change = (int) config('game.press.stakes.'.$kind.'.'.($for > $against ? 'win' : ($for === $against ? 'draw' : 'loss')), 0);
+        if ($change !== 0 && DB::table('press_statements')->where('fixture_id', $fixture->id)->where('club_id', $clubId)->whereNull('judged_at')
+            ->update(['judged_at' => GameClock::now()]) === 1) {
+            $c = config('game.morale');
+            $morale = (int) DB::table('clubs')->where('id', $clubId)->value('morale');
+            DB::table('clubs')->where('id', $clubId)->update(['morale' => max((int) $c['min'], min((int) $c['max'], $morale + $change))]);
+
+            return $change;
+        }
+
+        return 0;
     }
 
     /** Each side's chance (per cent, adding up to 100), from the strength gap and the home ground. */

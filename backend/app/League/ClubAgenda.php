@@ -84,9 +84,9 @@ class ClubAgenda
         if ($league->owner_id === $userId && ($requests = DB::table('league_join_requests')->where('league_id', $league->id)->where('status', 'pending')->count())) {
             $out[] = ['kind' => 'requests', 'severity' => 'mid', 'count' => $requests];
         }
-        // A training slot left empty while its line's coach is hired.
+        // A training slot left empty: every line trains, with the basic coach at least [X61].
         $busy = DB::table('training_slots')->where('club_id', $club->id)->pluck('line')->all();
-        $empty = array_values(array_filter(array_keys(Specialists::LINE_COACH), fn ($line) => ! in_array($line, $busy, true) && Specialists::has($club->id, Specialists::LINE_COACH[$line])));
+        $empty = array_values(array_filter(array_keys(Specialists::LINE_COACH), fn ($line) => ! in_array($line, $busy, true)));
         if ($empty) {
             $out[] = ['kind' => 'training_empty', 'severity' => 'low', 'lines' => $empty];
         }

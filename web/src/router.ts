@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { SECTIONS } from './layouts/nav'
+import { currentLeague } from './lib/currentLeague'
 import { useAuth } from './stores/auth'
 
 export const router = createRouter({
@@ -70,6 +71,18 @@ export const router = createRouter({
         // Sprint 11: the component library on a real club
         { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },
         { path: 'dev/status', name: 'dev-status', component: () => import('./pages/DevStatus.vue') },
+        // [X61] The league's media without a league in the address (an old link): into my current league's, or the leagues.
+        ...(['newspaper', 'predictions'] as const).map((page) => ({
+          path: page,
+          component: () => import('./pages/NotFound.vue'),
+          meta: { auth: true },
+          beforeEnter: async () => {
+            const league = await currentLeague()
+            return league ? `/leagues/${league}/${page}` : '/leagues'
+          },
+        })),
+        // [X61] Any other address: «الصفحة غير موجودة» inside the shell, never a white screen.
+        { path: ':pathMatch(.*)*', name: 'not-found', component: () => import('./pages/NotFound.vue') },
       ],
     },
     // Signing in (Sprint 10), outside the navigation

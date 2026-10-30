@@ -71,10 +71,10 @@ class Specialists
         return $stars ? (int) config("game.specialists.{$table}.{$stars}") : $none;
     }
 
-    /** A training session's step with the line's coach: faster by the coach's stars [X20]. */
+    /** A training session's step with the line's coach: faster by the coach's stars [X20], or the free basic coach's [X61]. */
     public static function trainingStep(int $clubId, string $line, int $step): int
     {
-        $bp = self::effect($clubId, self::LINE_COACH[$line] ?? '', 'coach_training_bp');
+        $bp = self::effect($clubId, self::LINE_COACH[$line] ?? '', 'coach_training_bp', (int) config('game.specialists.basic_coach_bp'));
 
         return intdiv($step * (10000 + $bp), 10000);
     }

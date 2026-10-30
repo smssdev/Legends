@@ -1307,7 +1307,7 @@ paths:
       - { name: fixture, in: path, required: true, schema: { type: integer } }
     get:
       tags: [media]
-      summary: '[UP12] The press conference before a match: the chances, a reading of each side, the statements'
+      summary: '[UP12] The press conference before a match: the chances, a reading of each side, the statements (each with its morale stakes on a win, a draw and a defeat [X61 E9])'
       responses:
         '200':
           description: The conference (enabled false when the league switched them off)
@@ -1827,6 +1827,96 @@ paths:
               schema: { $ref: '#/components/schemas/ClubFinance' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[X61 E1] The squad''s contracts this season: each wage a round and what ending it costs, the wages, the cap and the room left'
+      responses:
+        '200': { description: The contracts, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts/{player}/release:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: '[X61 E1] End a contract early: the player goes to the market, the club pays half the wages left in the season'
+      responses:
+        '200': { description: The contracts after it, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts/{player}/renew:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: '[X62 E1] Renew a contract for 1 to max_seasons more seasons: the player stays with the club into them, for a signing fee'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [seasons], properties: { seasons: { type: integer } } } } } }
+      responses:
+        '200': { description: The contracts after it, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/academy:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[X61 E3] The youth academy: this period''s prospects (their potential a range), when they change, and the season''s signings'
+      responses:
+        '200': { description: The academy, content: { application/json: { schema: { $ref: '#/components/schemas/Academy' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [market]
+      summary: '[X61 E3] Sign one of the prospects'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [master_player_id], properties: { master_player_id: { type: integer } } } } } }
+      responses:
+        '200': { description: The academy after it, content: { application/json: { schema: { $ref: '#/components/schemas/Academy' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/loans:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[X61 E2] My loans this season, asked and running'
+      responses:
+        '200': { description: The loans, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+    post:
+      tags: [market]
+      summary: '[X61 E2] Ask another coach''s player on loan for some rounds and a fee'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [player_id, rounds, fee], properties: { player_id: { type: integer }, rounds: { type: integer }, fee: { type: integer } } } } } }
+      responses:
+        '200': { description: The loans after it, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/loans/{loan}/answer:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: loan, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: '[X61 E2] The owner accepts (the fee is paid, the player moves until the loan''s round) or turns it down'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [accept], properties: { accept: { type: boolean } } } } } }
+      responses:
+        '200': { description: The loans after it, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/tickets:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    put:
+      tags: [team]
+      summary: '[X61] Set the ticket price level for the home matches to come'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [level]
+              properties:
+                level: { type: string, enum: [popular, normal, high, premium] }
+      responses:
+        '200':
+          description: The levels after the change
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TicketLevels' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/summary:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2110,6 +2200,10 @@ paths:
                 required: [side, result, score, reasons, verdict, ratings, stats, timeline, readings]
                 properties:
                   side: { type: string, enum: [home, away] }
+                  shots:
+                    type: array
+                    description: '[X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal'
+                    items: { type: object, required: [team, minute, result, quality, x, y], properties: { team: { type: string, enum: [home, away] }, minute: { type: integer }, result: { type: string, enum: [goal, saved, blocked, missed] }, quality: { type: string }, shooter: { type: integer, nullable: true }, x: { type: integer }, y: { type: integer } } }
                   result: { type: string, enum: [win, draw, loss] }
                   score: { type: object, additionalProperties: { type: integer } }
                   shootout: { type: object, nullable: true, additionalProperties: { type: integer } }
@@ -2635,6 +2729,28 @@ paths:
         - { name: page, in: query, required: false, schema: { type: string, maxLength: 40 }, description: 'The web''s route name (others fall back to the home page''s questions)' }
       responses:
         '200': { description: The opening, content: { application/json: { schema: { $ref: '#/components/schemas/AssistantStart' } } } }
+  /assistant/feedback:
+    post:
+      tags: [assistant]
+      summary: '[X61] The coach rates the conversation at its end: helpful or not, the page, and an optional note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [helpful]
+              properties:
+                helpful: { type: boolean }
+                page: { type: string, maxLength: 40, nullable: true }
+                note: { type: string, maxLength: 300, nullable: true }
+      responses:
+        '200':
+          description: Thanks
+          content:
+            application/json:
+              schema: { type: object, required: [message], properties: { message: { type: string } } }
+        '422': { $ref: '#/components/responses/Error' }
   /assistant/ask:
     post:
       tags: [assistant]
@@ -2862,6 +2978,63 @@ paths:
               schema: { type: object, required: [sent, announcement], properties: { sent: { type: integer }, announcement: { $ref: '#/components/schemas/AnnouncementCard' } } }
         '403': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/data:
+    get:
+      tags: [admin]
+      summary: '[X62 E8] The data editor: search the latest data''s players or clubs'
+      parameters:
+        - { name: kind, in: query, required: true, schema: { type: string, enum: [players, clubs] } }
+        - { name: q, in: query, required: false, schema: { type: string, maxLength: 60 } }
+        - { name: club_id, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200': { description: Up to 40 rows, content: { application/json: { schema: { type: object, required: [rows], properties: { rows: { type: array, items: { type: object, additionalProperties: true } } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/data/leagues:
+    get:
+      tags: [admin]
+      summary: '[X62 E8] The data''s leagues with their clubs, those under six flagged'
+      responses:
+        '200': { description: The leagues, content: { application/json: { schema: { type: object, required: [leagues], properties: { leagues: { type: array, items: { type: object, required: [name, clubs, too_small], properties: { name: { type: string }, clubs: { type: integer }, too_small: { type: boolean } } } } } } } } }
+  /admin/data/players:
+    post:
+      tags: [admin]
+      summary: '[X62 E8] A new player in a club (his attributes start at his rating)'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditPlayer' } } } }
+      responses:
+        '201': { description: The player, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/data/players/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      tags: [admin]
+      summary: '[X62 E8] Correct a player (only the fields sent), logged with what it was'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditPlayer' } } } }
+      responses:
+        '200': { description: The player, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [admin]
+      summary: '[X62 E8] Remove a player no league has taken'
+      responses:
+        '200': { description: Removed, content: { application/json: { schema: { type: object, required: [deleted], properties: { deleted: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/data/clubs:
+    post:
+      tags: [admin]
+      summary: '[X62 E8] A new club in a data league'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditClub' } } } }
+      responses:
+        '201': { description: The club, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/data/clubs/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      tags: [admin]
+      summary: '[X62 E8] Correct a club (only the fields sent), logged with what it was'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditClub' } } } }
+      responses:
+        '200': { description: The club, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
   /admin/coins:
     post:
       tags: [admin]
@@ -3027,6 +3200,19 @@ paths:
         '200': { description: Done }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/awards:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [leagues]
+      summary: '[X61 E5] The running season''s awards: best player, best young player, player of the last round, top scorer and assister, longest winning run'
+      responses:
+        '200':
+          description: The awards (null where nobody qualifies yet)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Awards' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/honours:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -3866,6 +4052,7 @@ components:
         in: { type: array, items: { type: integer }, minItems: 1, maxItems: 5, description: The other club's players wanted }
         out: { type: array, items: { type: integer }, maxItems: 5, description: The offering club's players given }
         idempotency_key: { type: string, maxLength: 64 }
+        sell_on_bp: { type: integer, minimum: 0, description: '[X62] The share of the next sale of the players taken promised to the other club (basis points, up to economy.sell_on_max_bp)' }
     TradePlayer:
       type: object
       required: [id, name, position, line, age, overall, value]
@@ -3877,6 +4064,7 @@ components:
         id: { type: integer }
         status: { type: string, enum: [pending, accepted, rejected, countered, cancelled, expired] }
         money: { type: integer }
+        sell_on_bp: { type: integer, description: '[X62] The sell-on share promised with it' }
         from: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         to: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         incoming: { type: boolean, description: True when it is mine to answer }
@@ -3965,7 +4153,7 @@ components:
             allowance: { type: integer }
     ClubFinance:
       type: object
-      required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, sponsors]
+      required: [balance, can_spend, debt_rounds, debt_limit, wages_per_round, season_totals, season_income, season_expenses, rounds, transactions, stadium, tickets, sponsors]
       properties:
         balance: { type: integer }
         can_spend: { type: boolean }
@@ -3994,6 +4182,7 @@ components:
           type: object
           required: [capacity, attendance_bp, ticket_price, tickets_per_match]
           properties: { capacity: { type: integer }, attendance_bp: { type: integer }, ticket_price: { type: integer }, tickets_per_match: { type: integer } }
+        tickets: { $ref: '#/components/schemas/TicketLevels' }
         sponsors:
           type: array
           items:
@@ -4526,11 +4715,12 @@ components:
         parts_total: { type: integer }
         facts:
           type: object
-          required: [capacity, home_bp, tickets_per_match, parts_done]
+          required: [capacity, home_bp, tickets_per_match, tickets, parts_done]
           properties:
             capacity: { type: integer }
             home_bp: { type: integer, description: The home advantage with the pitch (basis points) }
             tickets_per_match: { type: integer }
+            tickets: { $ref: '#/components/schemas/TicketLevels' }
             parts_done: { type: integer }
         sections:
           type: array
@@ -4579,6 +4769,75 @@ components:
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
+    EditPlayer:
+      type: object
+      properties: { name: { type: string }, position: { type: string }, line: { type: string, enum: [gk, def, mid, att] }, age: { type: integer }, nationality: { type: string, nullable: true }, overall: { type: integer }, potential: { type: integer }, value: { type: integer }, master_club_id: { type: integer } }
+    EditClub:
+      type: object
+      properties: { name: { type: string }, code: { type: string }, league_name: { type: string }, color_primary: { type: string }, color_secondary: { type: string } }
+    Contracts:
+      type: object
+      required: [players, wages_per_round, cap_per_round, room, rounds_left, season, max_seasons]
+      properties:
+        players:
+          type: array
+          items: { type: object, required: [id, name, position, age, value, wage, release, until, renew_one], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, age: { type: integer }, value: { type: integer }, wage: { type: integer }, release: { type: integer }, until: { type: integer, description: '[X62] The last season under contract' }, renew_one: { type: integer, description: '[X62] The fee to renew one more season' } } }
+        season: { type: integer }
+        max_seasons: { type: integer }
+        wages_per_round: { type: integer }
+        cap_per_round: { type: integer }
+        room: { type: integer, description: The squad value the club may still add }
+        rounds_left: { type: integer }
+    Academy:
+      type: object
+      required: [prospects, renews_at, signed, per_season, balance]
+      properties:
+        prospects:
+          type: array
+          items: { type: object, required: [id, name, position, line, age, nationality, overall, potential_from, potential_to, price], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, line: { type: string }, age: { type: integer }, nationality: { type: string, nullable: true }, overall: { type: integer }, potential_from: { type: integer }, potential_to: { type: integer }, price: { type: integer } } }
+        renews_at: { type: string, format: date-time }
+        signed: { type: integer }
+        per_season: { type: integer }
+        balance: { type: integer }
+    Loans:
+      type: object
+      required: [loans, max_rounds, max_fee_bp]
+      properties:
+        loans:
+          type: array
+          items:
+            type: object
+            required: [id, status, mine, player, owner, borrower, rounds, fee, until_round]
+            properties:
+              id: { type: integer }
+              status: { type: string, enum: [pending, active] }
+              mine: { type: boolean, description: The player is this coach's (he lends) }
+              player: { type: object, required: [id, name, position], properties: { id: { type: integer }, name: { type: string }, position: { type: string } } }
+              owner: { type: string }
+              borrower: { type: string }
+              rounds: { type: integer }
+              fee: { type: integer }
+              until_round: { type: integer, nullable: true }
+        max_rounds: { type: integer }
+        max_fee_bp: { type: integer }
+    TicketLevels:
+      type: object
+      description: '[X61] The ticket price level the coach set and what each of the four brings at the next home match'
+      required: [level, per_match, levels]
+      properties:
+        level: { type: string, enum: [popular, normal, high, premium] }
+        per_match: { type: integer }
+        levels:
+          type: array
+          items:
+            type: object
+            required: [level, name, price, attendance_bp, per_match]
+            properties:
+              level: { type: string, enum: [popular, normal, high, premium] }
+              name: { type: string }
+              price: { type: integer, description: One seat }
+              attendance_bp: { type: integer }
+              per_match: { type: integer }
     TrainingView:
       type: object
       required: [cost, balance, interval_minutes, now, slots, players]
@@ -4598,7 +4857,7 @@ components:
               player: { allOf: [{ $ref: '#/components/schemas/TrainingPlayer' }], nullable: true }
               sessions_done: { type: integer }
               next_at: { type: string, format: date-time, nullable: true }
-              coach: { type: object, required: [type, name, hired], description: '[Sprint 21 E6] The line''s coach: no training without him', properties: { type: { type: string }, name: { type: string }, hired: { type: boolean } } }
+              coach: { type: object, required: [type, name, hired, stars, bonus_bp], description: '[Sprint 21 E6] The line''s coach; [X61] without one (hired false) the free basic coach trains the line at bonus_bp', properties: { type: { type: string }, name: { type: string }, hired: { type: boolean }, stars: { type: integer }, bonus_bp: { type: integer } } }
               ads: { $ref: '#/components/schemas/AdStatus' }
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
@@ -4793,7 +5052,7 @@ components:
         red: { type: integer }
     LeagueStats:
       type: object
-      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks]
+      required: [season, matches, table, scorers, assists, discipline, finance, value, streaks, split]
       properties:
         season: { $ref: '#/components/schemas/SeasonCalendar' }
         matches: { type: integer, description: Finished matches this season, every competition }
@@ -4851,6 +5110,44 @@ components:
               current: { type: object, nullable: true, required: [kind, length], properties: { kind: { type: string, enum: [W, D, L] }, length: { type: integer } } }
               best: { type: object, required: [W, D, L], properties: { W: { type: integer }, D: { type: integer }, L: { type: integer } } }
               form: { type: array, items: { type: string, enum: [W, D, L] }, description: The last five, oldest first }
+        split:
+          type: array
+          description: '[X61 E12] Each club at home and away in the league'
+          items:
+            type: object
+            required: [club, home, away]
+            properties:
+              club: { $ref: '#/components/schemas/StatsClub' }
+              home: { $ref: '#/components/schemas/SplitRow' }
+              away: { $ref: '#/components/schemas/SplitRow' }
+    SplitRow:
+      type: object
+      required: [played, won, drawn, lost, goals_for, goals_against, points]
+      properties: { played: { type: integer }, won: { type: integer }, drawn: { type: integer }, lost: { type: integer }, goals_for: { type: integer }, goals_against: { type: integer }, points: { type: integer } }
+    AwardCard:
+      type: object
+      nullable: true
+      required: [player, club, matches, average_x10]
+      properties:
+        player: { type: object, required: [id, name, age, position], properties: { id: { type: integer }, name: { type: string }, age: { type: integer }, position: { type: string } } }
+        club: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        matches: { type: integer }
+        average_x10: { type: integer, description: The average rating times ten (72 = 7.2) }
+        round: { type: integer }
+        rating_x10: { type: integer }
+        goals: { type: integer }
+        assists: { type: integer }
+    Awards:
+      type: object
+      required: [matches, mvp, young, of_the_round, scorer, assister, run]
+      properties:
+        matches: { type: integer }
+        mvp: { $ref: '#/components/schemas/AwardCard' }
+        young: { $ref: '#/components/schemas/AwardCard' }
+        of_the_round: { $ref: '#/components/schemas/AwardCard' }
+        scorer: { $ref: '#/components/schemas/AwardCard' }
+        assister: { $ref: '#/components/schemas/AwardCard' }
+        run: { type: object, nullable: true, required: [club, wins], properties: { club: { $ref: '#/components/schemas/StatsClub' }, wins: { type: integer } } }
     Trophies:
       type: object
       required: [total, league, cup]

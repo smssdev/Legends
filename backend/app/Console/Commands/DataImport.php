@@ -6,6 +6,7 @@ use App\Data\ClubIdentity;
 use App\Data\PlayerValuation;
 use App\Data\Potential;
 use App\Support\GameClock;
+use App\Support\Nation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -163,7 +164,7 @@ class DataImport extends Command
             'line' => self::LINES[$r['position']] ?? 'mid',
             'alt_positions' => $r['alternatePositions'] ?: null,
             'age' => (int) $r['age'],
-            'nationality' => $r['nationality'] ?: null,
+            'nationality' => Nation::name($r['nationality'] ?: null),   // [X61] one spelling per country
             'preferred_foot' => $r['preferredFoot'] ?: null,
             'overall' => (int) $r['overallRating'],
             'potential' => $potential = Potential::for((int) $r['overallRating'], (int) $r['age']),

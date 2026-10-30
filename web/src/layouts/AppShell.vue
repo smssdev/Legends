@@ -12,6 +12,9 @@ import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
+import ToastHost from '../components/shell/ToastHost.vue'
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+import CountUp from '../components/ui/CountUp.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import { money } from '../lib/format'
@@ -29,7 +32,6 @@ const auth = useAuth()
 const initial = computed(() => auth.user?.name.trim().charAt(0) ?? '')
 // The portal whose list is open (phone), and the top bar's open window.
 const portal = ref<Group | null>(null)
-const agenda = ref<'timers' | 'pending' | null>(null)
 // The unread messages on the inbox's entry [Sprint 22].
 const inbox = useInbox()
 watch(() => auth.user?.id ?? null, (id) => inbox.follow(id), { immediate: true })
@@ -65,11 +67,12 @@ const board = useBoard()
 watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as const, ([inside, league]) => inside && board.load(league ?? null), { immediate: true })
 const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
-watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
+watch(() => route.fullPath, () => { portal.value = null })
 </script>
 
 <template>
   <div class="min-h-dvh">
+    <ToastHost />
     <header class="sticky top-0 z-30">
       <div class="shell-top relative border-b border-shade/30">
         <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
@@ -83,19 +86,26 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
               <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
               <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
               <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
-                <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
+                <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr"><CountUp :value="wallet.view?.balance ?? 0" /></b>
               </RouterLink>
               <!-- [W2] The club's money beside the coins, always in sight inside a slot. -->
               <RouterLink v-if="inSlot && board.board" to="/finance" class="pill-money" :aria-label="$t('أموال النادي: {v0}', { v0: money(board.board.money.cash) })">
-                <b class="font-numbers text-base" dir="ltr">{{ money(board.board.money.cash) }}</b>
+                <b class="font-numbers text-base" dir="ltr"><CountUp :value="board.board.money.cash" :format="money" /></b>
               </RouterLink>
               <template v-if="inSlot">
-                <button type="button" class="bar-icon" :aria-label="$t('المؤقتات')" :aria-expanded="agenda === 'timers'" @click="agenda = agenda === 'timers' ? null : 'timers'">
-                  <Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span>
-                </button>
-                <button type="button" class="bar-icon" :aria-label="waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" :aria-expanded="agenda === 'pending'" @click="agenda = agenda === 'pending' ? null : 'pending'">
-                  <Icon name="todo" /><span v-if="waiting" class="bar-badge bg-live text-white">{{ waiting }}</span>
-                </button>
+                <!-- [X61] Headless UI's Popover: the panel drops from the top bar under its button (Esc and the tap
+                     outside close it); not relative itself, so the panel spans the bar on a phone. -->
+                <Popover v-for="k in (['timers', 'pending'] as const)" :key="k">
+                  <PopoverButton class="bar-icon" :aria-label="k === 'timers' ? $t('المؤقتات') : waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')">
+                    <template v-if="k === 'timers'"><Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span></template>
+                    <template v-else><Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span></template>
+                  </PopoverButton>
+                  <Transition name="drop">
+                    <PopoverPanel v-slot="{ close }" class="contents">
+                      <AgendaPanel :kind="k" @close="close()" />
+                    </PopoverPanel>
+                  </Transition>
+                </Popover>
               </template>
               <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->
               <RouterLink to="/inbox" class="bar-icon" :class="inSlot ? 'max-sm:hidden' : ''" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
@@ -120,7 +130,6 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
             <RouterLink to="/login" class="flex h-touch items-center rounded-lg bg-gold px-4 font-bold text-on-gold">{{ $t('دخول') }}</RouterLink>
             <RouterLink to="/register" class="hidden h-touch items-center rounded-lg border border-text/25 px-4 font-bold sm:flex">{{ $t('إنشاء حساب') }}</RouterLink>
           </template>
-          <AgendaPanel v-if="agenda" :kind="agenda" @close="agenda = null" />
         </div>
       </div>
 
@@ -172,7 +181,11 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
       </nav>
       <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
-        <RouterView />
+        <RouterView v-slot="{ Component, route: r }">
+          <Transition name="page">
+            <component :is="Component" :key="r.path" />
+          </Transition>
+        </RouterView>
       </main>
     </div>
 

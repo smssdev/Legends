@@ -19,7 +19,11 @@ class Assistant
     /** What opens the conversation on a page: who he is, the page's quick questions, and the smart answers left. */
     public function start(User $user, string $page, string $l): array
     {
-        return ['name' => self::name($l), 'intro' => Guide::intro($l), 'questions' => Guide::quick($page, $l),
+        // [X61 E11] The two answers from the club itself come first.
+        $own = [['question' => $l === 'en' ? 'What should I do now?' : 'ماذا أفعل الآن؟', 'topic' => 'now'],
+            ['question' => $l === 'en' ? 'My week in short' : 'ملخص أسبوعي', 'topic' => 'week']];
+
+        return ['name' => self::name($l), 'intro' => Guide::intro($l), 'questions' => [...$own, ...Guide::quick($page, $l)],
             'ai' => GeminiBrain::available(), 'remaining' => GeminiBrain::available() ? $this->remaining($user) : null];
     }
 
@@ -28,6 +32,12 @@ class Assistant
      */
     public function ask(User $user, string $question, array $history, ?int $leagueId, string $page, ?string $topic, string $l): array
     {
+        if ($topic !== null && in_array($topic, Priorities::TOPICS, true)) {
+            $own = Priorities::answer($topic, $user->id, $leagueId, $l);
+
+            return ['answer' => $own['answer'] ?? ($l === 'en' ? 'Open one of your clubs first, and ask me again.' : 'افتح أحد أنديتك أولاً، ثم اسألني مجدداً.'),
+                'source' => 'guide', 'go' => $own['go'] ?? 'leagues', 'related' => [], 'remaining' => GeminiBrain::available() ? $this->remaining($user) : null, 'notice' => null];
+        }
         if ($topic !== null) {
             $t = Guide::find($topic, $l);
             if ($t) {
@@ -100,7 +110,9 @@ class Assistant
     {
         $language = $l === 'en' ? 'English' : 'Arabic (plain, friendly; answer in the coach\'s own dialect when he writes in one)';
         $club = $reader
-            ? "The coach manages {$reader->clubName()} in this league. Read his club with read_club before any answer about his team, players, results, money or choices; never guess a number."
+            ? "The coach manages {$reader->clubName()} in this league. Read his club with read_club before any answer about his team, players, results, money or choices; never guess a number.\n"
+                .'His club right now (exact, quote these numbers as they are; squad_value is what his players are worth, club_money the cash he can spend: never give one for the other): '
+                .json_encode($reader->snapshot(), JSON_UNESCAPED_UNICODE)
             : 'The coach has no club open now: answer about the game, and for questions about his team tell him to open one of his clubs first.';
 
         return implode("\n", [

@@ -93,7 +93,8 @@ onMounted(async () => {
   void wallet.load()
   try {
     const { data } = await api.GET('/data/templates')
-    templates.value = (data as { templates: Template[] }).templates.filter((t) => t.clubs >= 4)
+    // [X61] A league of fewer than six clubs is not offered (the data has some of 1 to 4): the scout and the simulator keep them.
+    templates.value = (data as { templates: Template[] }).templates.filter((t) => t.clubs >= 6)
     template.value = templates.value[0]?.name ?? ''
   } catch (e) {
     loadError.value = asApiError(e).message

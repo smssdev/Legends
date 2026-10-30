@@ -12,7 +12,53 @@
   --text-2xl: 1.25rem;
   --text-3xl: 1.5rem;
   --text-4xl: 1.75rem;
+
+  /* [X61] One motion system: two curves and three durations (a press, an appearance, a number or a big change), and
+     the ready animations as utilities (animate-pop-in, animate-fade-up, animate-shimmer...). Transform and opacity only. */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+  --animate-pop-in: pop-in var(--duration-base) var(--ease-spring);
+  --animate-fade-up: fade-up var(--duration-base) var(--ease-soft);
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-draw: draw 900ms var(--ease-soft) forwards;
+  --animate-pulse-ring: pulse-ring 1.8s var(--ease-soft) infinite;
 }
+
+@keyframes pop-in { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-gold) 45%, transparent); }
+  50% { box-shadow: 0 0 0 10px transparent; }
+}
+
+/* [X61] What opens from the top bar (the club's list, the timers, what waits) drops from the top, under its button. */
+.drop-enter-active,
+.drop-leave-active,
+.drop-enter-active .agenda,
+.drop-leave-active .agenda,
+.drop-enter-active .agenda-veil,
+.drop-leave-active .agenda-veil {
+  transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft);
+}
+.drop-enter-from,
+.drop-leave-to,
+.drop-enter-from .agenda,
+.drop-leave-to .agenda {
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.97);
+}
+.drop-enter-from .agenda-veil,
+.drop-leave-to .agenda-veil { opacity: 0; }
+.drop-panel { transform-origin: top; }
+
+/* [X61] Between screens: the new one rises in softly (the old one leaves at once, so nothing waits). */
+.page-enter-active { transition: opacity var(--duration-base) var(--ease-soft), transform var(--duration-base) var(--ease-soft); }
+.page-enter-from { opacity: 0; transform: translateY(8px); }
 
 /* [Sprint 20 S2] The game's font, Amin (Mostafa Amin), in its three weights from our own files: Arabic and Latin
    alike. Each face also covers the weights near it, so a font-bold or font-black never falls back to a fake bold. */
@@ -56,6 +102,7 @@
   body {
     min-height: 100dvh;
   }
+  /* [X61] A darker band at the top: the floodlights under the top bar read as a white blur (D5). */
   body::after {
     content: "";
     position: fixed;
@@ -64,14 +111,14 @@
     pointer-events: none;
     will-change: transform;
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
       url("/art/stadium-blur.jpg") center top / cover no-repeat,
       var(--color-bg-deep);
   }
   @media (max-width: 767px) {
     body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 75%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 40%, transparent) 22%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
         url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
         var(--color-bg-deep);
     }
@@ -313,4 +360,33 @@ input[type="radio"] {
 .v-card {
   content-visibility: auto;
   contain-intrinsic-size: auto 14rem;
+}
+
+/* [X61] A list whose order changes (a league table after a round) slides each row to its new place: Vue's
+   TransitionGroup measures before and after (FLIP), and this moves it by transform only. */
+.flip-move { transition: transform var(--duration-slow) var(--ease-soft); }
+.flip-enter-active { transition: opacity var(--duration-base) var(--ease-soft); }
+.flip-enter-from { opacity: 0; }
+
+/* [X61] Lists come in one after the other: the children of .stagger, 40ms apart, the twelfth and after together. */
+.stagger > * { animation: fade-up var(--duration-base) var(--ease-soft) both; animation-delay: 480ms; }
+.stagger > :nth-child(1) { animation-delay: 0ms; }
+.stagger > :nth-child(2) { animation-delay: 40ms; }
+.stagger > :nth-child(3) { animation-delay: 80ms; }
+.stagger > :nth-child(4) { animation-delay: 120ms; }
+.stagger > :nth-child(5) { animation-delay: 160ms; }
+.stagger > :nth-child(6) { animation-delay: 200ms; }
+.stagger > :nth-child(7) { animation-delay: 240ms; }
+.stagger > :nth-child(8) { animation-delay: 280ms; }
+.stagger > :nth-child(9) { animation-delay: 320ms; }
+.stagger > :nth-child(10) { animation-delay: 360ms; }
+.stagger > :nth-child(11) { animation-delay: 400ms; }
+.stagger > :nth-child(12) { animation-delay: 440ms; }
+
+/* [X61] A place held while it loads: a soft light passing over it. */
+.skeleton {
+  border-radius: 0.75rem;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 5%, transparent), color-mix(in srgb, var(--color-text) 11%, transparent), color-mix(in srgb, var(--color-text) 5%, transparent));
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }

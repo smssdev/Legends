@@ -2,7 +2,8 @@
 // The staff (Sprint 31 W1, docs/features/specialists.md, X20): the line coaches, then the medical and the admin staff,
 // each with 1 to 5 stars to choose (the price and the effect from the server), the contract working now with a countdown
 // on the server's clock, and the renewal in its last day. No draft of its own: the stadium's cards.
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import PriceTag from '../../components/ui/PriceTag.vue'
@@ -80,8 +81,18 @@ async function hire(s: Spec) {
   busy.value = false
 }
 
-onMounted(() => {
-  load()
+// [X61] From training («تعاقد مع مدرب الآن»): ?line=gk|def|mid|att opens on that line's coach, lit for a moment.
+const route = useRoute()
+const LINE_COACH: Record<string, string> = { gk: 'keeper_coach', def: 'def_coach', mid: 'mid_coach', att: 'att_coach' }
+const focus = ref(LINE_COACH[String(route.query.line)] ?? '')
+
+onMounted(async () => {
+  await load()
+  if (focus.value) {
+    await nextTick()
+    document.getElementById(`spec-${focus.value}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setTimeout(() => (focus.value = ''), 2400)
+  }
   tick = window.setInterval(() => {
     now.value = Date.now() + skew
     if (v.value?.specialists.some((s) => s.ends_at && new Date(s.ends_at).getTime() <= now.value - 2000)) load()
@@ -110,7 +121,7 @@ onBeforeUnmount(() => clearInterval(tick))
       <section v-for="grp in GROUPS" :key="grp.title" :aria-label="grp.title" class="flex flex-col gap-3">
         <div class="flex items-baseline gap-2"><h2 class="font-display text-xl font-extrabold">{{ $t(grp.title) }}</h2><span class="text-sm text-text-muted">{{ $t(grp.hint) }}</span></div>
         <div class="grid gap-3 sm:grid-cols-2">
-          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :key="s.type" class="flex flex-col gap-3 rounded-xl bg-surface p-4" :class="s.ends_at ? 'ring-1 ring-success/50' : ''">
+          <article v-for="s in v.specialists.filter((x) => grp.types.includes(x.type))" :id="`spec-${s.type}`" :key="s.type" class="flex flex-col gap-3 rounded-xl bg-surface p-4 transition-shadow duration-500" :class="focus === s.type ? 'ring-2 ring-gold animate-pulse-ring' : s.ends_at ? 'ring-1 ring-success/50' : ''">
             <div class="flex items-start gap-3">
               <span class="grid size-12 shrink-0 place-items-center rounded-xl" :class="s.ends_at ? 'bg-success/20 text-success' : 'bg-gold/15 text-gold'">
                 <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="ICON[s.type]" /></svg>

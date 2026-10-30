@@ -44,10 +44,12 @@ onMounted(() => wallet.load())
 
       <section v-if="wallet.view.leagues.length" :aria-label="$t('الصرف في كل دوري')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('الصرف هذا الموسم') }}</h2>
+        <!-- [X61] The cap said in words, not a bare number. -->
+        <p class="text-xs text-text-muted">{{ $t('سقف الصرف: {v0} كوينز في كل دوري هذا الموسم', { v0: wallet.view.cap }) }}</p>
         <div v-for="l in wallet.view.leagues" :key="l.id" class="flex flex-col gap-1">
           <div class="flex items-center justify-between text-sm"><span class="font-bold">{{ $nm(l.name) }}</span>
             <span v-if="l.fair" class="text-text-muted">{{ $t('دوري نزيه: لا كوينز فيه') }}</span>
-            <span v-else class="font-numbers text-text-muted" dir="ltr">{{ l.spent }} / {{ wallet.view.cap }}</span></div>
+            <span v-else class="text-text-muted">{{ $t('صرفت {v0} من {v1} كوينز', { v0: l.spent, v1: wallet.view.cap }) }}</span></div>
           <div v-if="!l.fair" class="h-2 overflow-hidden rounded-full bg-surface-sunk"><div class="h-full rounded-full bg-gold" :style="{ width: Math.min(100, (l.spent * 100) / wallet.view.cap) + '%' }" /></div>
         </div>
       </section>

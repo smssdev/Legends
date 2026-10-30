@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\DataEditorController;
 use App\Http\Controllers\Api\FriendlyController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
@@ -113,6 +114,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::get('{league}/clubs', 'clubs')->whereNumber('league');
     // The hall of fame [Sprint 33].
     Route::get('{league}/honours', [HonoursController::class, 'league'])->whereNumber('league');
+    Route::get('{league}/awards', [HonoursController::class, 'awards'])->whereNumber('league');
     // My club: the squad, the lineup and the set-piece takers [Sprint 16].
     Route::controller(TeamController::class)->prefix('{league}/team')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
@@ -132,11 +134,19 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         // Club money [Sprint 23].
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
+        Route::put('tickets', 'setTickets')->middleware('throttle:30,1,tickets');
+        // [X61 E1] The contracts.
+        Route::get('contracts', 'contracts');
+        Route::post('contracts/{player}/release', 'release')->whereNumber('player')->middleware('throttle:20,1,release');
+        Route::post('contracts/{player}/renew', 'renew')->whereNumber('player')->middleware('throttle:20,1,renew');
     });
     // The market: the pool and the bot clubs [Sprint 24].
     Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('buy', 'buy')->middleware('throttle:30,1,market');
+        // [X61 E3] The youth academy.
+        Route::get('academy', 'academy');
+        Route::post('academy', 'signAcademy')->middleware('throttle:20,1,academy');
         Route::post('sell', 'sell')->middleware('throttle:30,1,market');
         Route::get('quote', 'quote')->middleware('throttle:120,1,market-quote');
         // [UP11] The deal before it is made, and the transfers made.
@@ -162,6 +172,10 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('offers/{offer}/accept', 'accept')->whereNumber('offer');
         Route::post('offers/{offer}/reject', 'reject')->whereNumber('offer');
         Route::post('offers/{offer}/cancel', 'cancel')->whereNumber('offer');
+        // [X61 E2] Loans between coaches.
+        Route::get('loans', 'loans');
+        Route::post('loans', 'askLoan')->middleware('throttle:20,1,loans');
+        Route::post('loans/{loan}/answer', 'answerLoan')->whereNumber('loan');
         Route::post('offers/{offer}/counter', 'counter')->whereNumber('offer')->middleware('throttle:30,1,transfers');
     });
     // The scout [Sprint 26].
@@ -282,6 +296,16 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('conversations', 'conversations');
         Route::get('conversations/{user}', 'conversation')->whereNumber('user');
         Route::post('conversations/{user}', 'writeTo')->whereNumber('user')->middleware('throttle:30,1,admin-write');
+        // [X62 E8] The game's data editor.
+        Route::controller(DataEditorController::class)->prefix('data')->group(function () {
+            Route::get('/', 'search');
+            Route::get('leagues', 'leagues');
+            Route::post('players', 'createPlayer')->middleware('throttle:30,1,data-edit');
+            Route::patch('players/{id}', 'updatePlayer')->whereNumber('id')->middleware('throttle:60,1,data-edit');
+            Route::delete('players/{id}', 'deletePlayer')->whereNumber('id');
+            Route::post('clubs', 'createClub')->middleware('throttle:30,1,data-edit');
+            Route::patch('clubs/{id}', 'updateClub')->whereNumber('id')->middleware('throttle:60,1,data-edit');
+        });
         // [X54] Coins to any account by its number.
         Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
         // [Sprint 20 S4] The game's own rewarded ads.
@@ -326,6 +350,7 @@ Route::get('guide', [AssistantController::class, 'guide'])->middleware('throttle
 Route::prefix('assistant')->middleware(['auth:sanctum'])->controller(AssistantController::class)->group(function () {
     Route::get('start', 'start')->middleware('throttle:60,1,assistant-start');
     Route::post('ask', 'ask')->middleware('throttle:20,1,assistant-ask');
+    Route::post('feedback', 'feedback')->middleware('throttle:10,1,assistant-feedback');
 });
 
 // The coins wallet [Sprint 34].

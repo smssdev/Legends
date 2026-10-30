@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Economy\Contracts;
 use App\League\ClubLedger;
 use App\League\MatchRunner;
 use App\Models\User;
@@ -73,8 +74,20 @@ class SeasonEndTest extends TestCase
         $p = DB::table('players')->where('club_id', $mine)->orderBy('id')->first();
         DB::table('players')->where('id', $p->id)->update(['training_bonus' => 3]);
         DB::table('stadium_sections')->insert(['club_id' => $mine, 'section' => 'seats', 'stage' => 2, 'parts' => 1]);
+        // [X62 E1] Two players from another club: one renewed into next season (he stays, with his training), one not.
+        $other = (int) DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $mine)->value('id');
+        [$kept, $back] = DB::table('players')->where('club_id', $other)->orderBy('id')->limit(2)->pluck('id')->all();
+        DB::table('players')->whereIn('id', [$kept, $back])->update(['club_id' => $mine, 'training_bonus' => 2]);
+        $fee = Contracts::renewal((int) DB::table('players')->where('id', $kept)->value('value'), (int) DB::table('seasons')->where('league_id', $this->league['id'])->value('rounds'), 1);
+        $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$this->league['id']}/team/contracts/{$kept}/renew", ['seasons' => 9])->assertStatus(422);
+        $c = $this->postJson("/api/v1/leagues/{$this->league['id']}/team/contracts/{$kept}/renew", ['seasons' => 1])->assertOk()->json();
+        $this->assertSame(2, collect($c['players'])->firstWhere('id', $kept)['until']);
+        $this->assertSame(-$fee, (int) DB::table('club_transactions')->where('club_id', $mine)->where('type', 'contract_renewal')->value('amount'));
 
         $this->playSeason(1);
+        $this->assertSame($mine, (int) DB::table('players')->where('id', $kept)->value('club_id'));
+        $this->assertSame(2, (int) DB::table('players')->where('id', $kept)->value('training_bonus'));
+        $this->assertSame($other, (int) DB::table('players')->where('id', $back)->value('club_id'));
 
         $old = DB::table('seasons')->where('league_id', $this->league['id'])->where('number', 1)->first();
         $this->assertSame('finished', $old->status);

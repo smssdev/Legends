@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\League\Morale;
 use App\League\Predictions;
+use App\League\PressRoom;
 use App\Models\User;
 use App\Season\Career;
 use App\Support\GameClock;
@@ -73,6 +74,14 @@ class PressTest extends TestCase
         $other = DB::table('fixtures')->where('competition', 'league')->where('is_bye', false)->where('home_id', '!=', $this->league['my_club_id'])
             ->where('away_id', '!=', $this->league['my_club_id'])->first();
         $this->postJson($this->url("/press/{$other->id}"), ['kind' => 'calm'])->assertForbidden();
+
+        // [X61 E9] The statement shows its stakes, and after the match the result judges it, once.
+        $this->assertSame(['win' => 2, 'draw' => 0, 'loss' => -1], collect($press['statements'])->firstWhere('kind', 'rally')['stakes']);
+        $club = $this->league['my_club_id'];
+        $morale = (int) DB::table('clubs')->where('id', $club)->value('morale');
+        $this->assertSame(-1, PressRoom::judge($f, $club, 0, 2));
+        $this->assertSame(0, PressRoom::judge($f, $club, 0, 2));
+        $this->assertSame($morale - 1, (int) DB::table('clubs')->where('id', $club)->value('morale'));
     }
 
     public function test_a_right_prediction_pays_the_club_and_counts_on_the_career(): void

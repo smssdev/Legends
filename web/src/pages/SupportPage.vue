@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // The coach's conversation with the game's developers [Sprint 21 E7.7]: their messages come from their official
 // accounts (with the badge), and the coach answers here. Open to a suspended account too, to ask why.
+import { stamp } from '../lib/dates'
 import { nextTick, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
-import { intlLocale } from '../lib/i18n'
 import OfficialBadge from '../components/OfficialBadge.vue'
 
 type Message = components['schemas']['SupportMessage']
@@ -14,7 +14,7 @@ const body = ref('')
 const busy = ref(false)
 const error = ref('')
 const list = ref<HTMLElement | null>(null)
-const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+const when = stamp   // [X61] the same on every list
 const toEnd = () => nextTick(() => list.value?.scrollTo({ top: list.value.scrollHeight }))
 
 onMounted(async () => {

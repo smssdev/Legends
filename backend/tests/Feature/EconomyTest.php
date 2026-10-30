@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Economy\Contracts;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\League\ClubLedger;
@@ -168,6 +169,66 @@ class EconomyTest extends TestCase
         $this->assertLessThan(0, $page['season_expenses']);
 
         $this->actingAs(User::factory()->create())->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertForbidden();
+    }
+
+    public function test_the_ticket_price_level_moves_the_crowd_and_the_gate_and_keeps_the_economy_closed(): void
+    {
+        // [X61] Four levels: cheap fills the stands, dear empties them; none brings much more than the usual one.
+        $m = Money::fromConfig();
+        foreach ([6000, 8000, 10000] as $att) {
+            $usual = $m->tickets(5_000_000, 18, $att, 20000);
+            foreach (['popular', 'high', 'premium'] as $level) {
+                $this->assertLessThanOrEqual(intdiv($usual * 10700, 10000), $m->tickets(5_000_000, 18, $att, 20000, $level), "{$level} at {$att}");
+            }
+        }
+        $this->assertSame([10000, 7500], $m->priced(9000, 'popular'));
+        $this->assertSame([1000, 15000], $m->priced(2000, 'premium'));
+
+        $url = "/api/v1/leagues/{$this->league['id']}/team/tickets";
+        $this->actingAs($this->owner)->putJson($url, ['level' => 'free'])->assertJsonValidationErrors('level');
+        $view = $this->putJson($url, ['level' => 'popular'])->assertOk()->assertJsonPath('level', 'popular')->json();
+        $this->assertCount(4, $view['levels']);
+        $levels = collect($view['levels'])->keyBy('level');
+        $this->assertLessThan($levels['normal']['price'], $levels['popular']['price']);
+        $this->assertGreaterThanOrEqual($levels['normal']['attendance_bp'], $levels['popular']['attendance_bp']);
+        $this->assertLessThan($levels['normal']['attendance_bp'], $levels['premium']['attendance_bp']);
+        $this->assertSame($levels['popular']['per_match'], $view['per_match']);
+        $this->getJson("/api/v1/leagues/{$this->league['id']}/team/finance")->assertOk()->assertJsonPath('tickets.level', 'popular')
+            ->assertJsonPath('stadium.tickets_per_match', $view['per_match']);
+        $this->getJson("/api/v1/leagues/{$this->league['id']}/stadium")->assertOk()->assertJsonPath('facts.tickets.level', 'popular');
+
+        // The gate after a home match is the chosen level's.
+        $f = $this->fixtures()->firstWhere('home_id', $this->mine);
+        Economy::afterMatch($f, ['home' => 0, 'away' => 0]);
+        $this->assertSame($view['per_match'], (int) DB::table('club_transactions')->where('club_id', $this->mine)->where('type', 'tickets')->value('amount'));
+        $this->assertBooksBalance();
+        $this->actingAs(User::factory()->create())->putJson($url, ['level' => 'high'])->assertForbidden();
+    }
+
+    public function test_contracts_show_the_wages_keep_a_cap_and_end_early_for_a_compensation(): void
+    {
+        // [X61 E1] Each wage is the player's share of the club's wages; the cap stops a buy; ending a contract pays half
+        // of the wages left and sends the player to the market.
+        $url = "/api/v1/leagues/{$this->league['id']}/team/contracts";
+        $c = $this->actingAs($this->owner)->getJson($url)->assertOk()->json();
+        $rounds = (int) DB::table('seasons')->where('league_id', $this->league['id'])->value('rounds');
+        $this->assertSame(Money::fromConfig()->wages(Economy::squadValue($this->mine), $rounds), $c['wages_per_round']);
+        $this->assertGreaterThanOrEqual($c['wages_per_round'], $c['cap_per_round']);
+        $this->assertGreaterThan(0, $c['room']);
+        $p = end($c['players']);
+        $this->assertSame(intdiv($p['wage'] * $c['rounds_left'] * 5000, 10000), $p['release']);
+
+        $balance = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        $this->postJson("{$url}/{$p['id']}/release")->assertOk();
+        $this->assertNull(DB::table('players')->where('id', $p['id'])->value('club_id'));
+        $this->assertSame($balance - $p['release'], (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertBooksBalance();
+        $this->postJson("{$url}/{$p['id']}/release")->assertNotFound();
+
+        // No room left: a buy is refused by the cap.
+        DB::table('players')->where('club_id', $this->mine)->update(['value' => DB::raw('value * 3')]);
+        $this->expectException(HttpException::class);
+        Contracts::assertRoom($this->mine, 1);
     }
 
     public function test_the_numbers_scale_with_the_league(): void

@@ -85,6 +85,7 @@
         </p>
       </section>
 
+      <ShotMap v-if="report.shots?.length" :shots="report.shots" :names="{ home: view.clubs.home.name, away: view.clubs.away.name }" />
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="stats">
         <h2 id="stats" class="font-display text-xl font-extrabold">{{ $t('الإحصائيات') }}</h2>
         <StatsGrid :home="report.stats.home" :away="report.stats.away" :home-color="color('home')" />
@@ -147,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import ShotMap from '../components/match/ShotMap.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Crest from '../components/Crest.vue'

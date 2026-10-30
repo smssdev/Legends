@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Database\Sql;
 use App\Economy\Economy;
+use App\Market\Loans;
 use App\Market\Market;
 use App\Staff\Specialists;
 use App\Support\GameClock;
@@ -61,6 +62,8 @@ class MatchResult
             self::players($club[$side], $team, $m->seed, $matchId);
             // Morale after the result [X25].
             Morale::after($club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
+            // [X61 E9] And the press statement, judged by the result.
+            PressRoom::judge($f, $club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
             // Coins for the coach: a win or a draw [docs/features/premium.md].
             $for = $state['score'][$side];
             $against = $state['score'][$side === 'home' ? 'away' : 'home'];
@@ -122,6 +125,8 @@ class MatchResult
             ->where('status', '!=', 'finished')->min('round');
         $rounds = (int) DB::table('seasons')->where('id', $seasonId)->value('rounds');
         DB::table('seasons')->where('id', $seasonId)->update(['rounds_played' => $open ? $open - 1 : $rounds]);
+        // [X61 E2] Loans whose last round is played send their players home.
+        Loans::returnDue($seasonId);
         // The last league match is in: the prizes by final place (each paid once, by its key).
         if (! $open) {
             Economy::leaguePrizes($seasonId, Standings::order($seasonId));

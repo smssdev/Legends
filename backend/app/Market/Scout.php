@@ -6,6 +6,7 @@ use App\Economy\Economy;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
 use App\Support\GameClock;
+use App\Support\Nation;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -83,7 +84,7 @@ class Scout
                 ->when($c['line'] ?? null, fn ($q, $v) => $q->where('master_players.line', $v))
                 ->when($c['position'] ?? null, fn ($q, $v) => $q->where('master_players.position', $v))
                 ->when($c['max_age'] ?? null, fn ($q, $v) => $q->where('master_players.age', '<=', $v))
-                ->when($c['nationality'] ?? null, fn ($q, $v) => $q->where('master_players.nationality', $v))
+                ->when($c['nationality'] ?? null, fn ($q, $v) => $q->whereRaw('lower(master_players.nationality) = ?', [Nation::key($v)]))
                 ->when($c['league'] ?? null, fn ($q, $v) => $q->where('master_clubs.league_name', $v))
                 ->when($c['max_value'] ?? null, fn ($q, $v) => $q->where('master_players.value', '<=', $v))
                 ->orderByDesc('master_players.overall')->limit(300)->get(['master_players.id', 'master_players.overall', 'master_players.value', 'master_players.name']);

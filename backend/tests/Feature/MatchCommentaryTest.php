@@ -109,6 +109,13 @@ class MatchCommentaryTest extends TestCase
         $this->assertNotEmpty($report['reasons']);
         $this->assertCount($readings->count(), $report['readings']);
         $this->assertSame(2, DB::table('match_reports')->where('match_id', $match->id)->count());
+        // [X62 E10] The shot map: every shot of the match, on the half pitch, its goals the match's goals.
+        $shots = collect($report['shots']);
+        $this->assertLessThanOrEqual((int) $report['score']['home'] + (int) $report['score']['away'], $shots->where('result', 'goal')->count());
+        $this->assertGreaterThanOrEqual($shots->where('result', 'goal')->count(), $shots->count());
+        foreach ($shots as $sh) {
+            $this->assertTrue($sh['x'] >= 50 && $sh['x'] <= 100 && $sh['y'] >= 0 && $sh['y'] <= 100);
+        }
         // And a message tells the coach it is ready [Sprint 22].
         $links = collect($this->getJson('/api/v1/messages')->json('messages'))->where('type', 'match_report')->pluck('link');
         $this->assertContains("/live/{$match->id}/report", $links);

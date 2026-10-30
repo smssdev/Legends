@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -197,6 +197,12 @@ class MessageText
                 'link' => isset($p['league_id']) ? "/leagues/{$p['league_id']}" : '/leagues',
             ],
             // [Sprint 24 B3] A slot opened with the account's age.
+            // [X61 E2] A loan asked, accepted or turned down.
+            'loan' => [
+                'title' => ['asked' => 'طلب إعارة', 'accepted' => 'قُبلت الإعارة', 'rejected' => 'رُفضت الإعارة'][$p['what'] ?? 'asked'] ?? 'إعارة',
+                'body' => sprintf('%s يطلب %s لمدة %d جولات مقابل %s.', $p['from'] ?? '', $p['player'] ?? '', (int) ($p['rounds'] ?? 1), number_format((int) ($p['money'] ?? 0))),
+                'link' => '/market?tab=offers',
+            ],
             'slot_opened' => [
                 'title' => sprintf('مبروك! فُتحت فتحة المدرب رقم %s', $p['slot'] ?? ''),
                 'body' => sprintf('صار لك %s فتحات من %s: انضم إلى دوري جديد أو أنشئ دوريك.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' والفتحة التالية بعد %d أيام.', (int) config('game.league.slots.every_days')) : ' وهذه آخر فتحاتك.'),

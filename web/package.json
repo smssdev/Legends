@@ -17,6 +17,7 @@
     "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.23",
     "laravel-echo": "^2.6.1",
     "openapi-fetch": "^0.13.8",
     "pinia": "^3.0.4",

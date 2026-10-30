@@ -27,7 +27,7 @@ class Glossary
         $e = config('game.economy');
 
         return [
-            'training' => sprintf('لاعب واحد من كل خط يتدرب، بشرط مدرب ذلك الخط في الجهاز الفني، وجلسة كل %d ساعات ولو كنت غائباً. حين يمتلئ شريطه إلى 100%% ترتفع قوته وخصائصه نقطة، وكلما كان أقوى احتاج جلسات أكثر. والعمر أقوى عامل: حتى 19 سنة كل جلسة أكبر بـ %d%%، ومن 29 تصغر حتى %d%% فقط بعد 32.', $t['tick_hours'], intdiv(reset($t['age_step_bp']), 100) - 100, intdiv(end($t['age_step_bp']), 100)),
+            'training' => sprintf('لاعب واحد من كل خط يتدرب، بمدرب ذلك الخط من الجهاز الفني أو بالمدرب الأساسي المجاني، وجلسة كل %d ساعات ولو كنت غائباً. حين يمتلئ شريطه إلى 100%% ترتفع قوته وخصائصه نقطة، وكلما كان أقوى احتاج جلسات أكثر. والعمر أقوى عامل: حتى 19 سنة كل جلسة أكبر بـ %d%%، ومن 29 تصغر حتى %d%% فقط بعد 32.', $t['tick_hours'], intdiv(reset($t['age_step_bp']), 100) - 100, intdiv(end($t['age_step_bp']), 100)),
             'potential' => 'الإمكانية: القوة التي يصلها اللاعب بالتدريب العادي. التدريب مفتوح، فيتجاوزها، لكن كل نقطة بعدها تأخذ جلسات أكثر بكثير، حتى 99.',
             'progress' => 'التقدم: شريط التدريب الحالي. كل جلسة تضيف إليه، وعند 100% نقطة قوة جديدة ويبدأ الشريط من جديد.',
             'stadium' => 'الملعب ثلاثة أقسام: المقاعد (دخل التذاكر)، وأرضية الملعب (أفضلية الأرض وتقليل الإصابات)، ومنشأة التدريب (تسرّع التدريب). كل قسم ثلاث مراحل، وكل مرحلة خمسة أجزاء تُبنى جزءاً جزءاً.',
@@ -54,7 +54,7 @@ class Glossary
         $e = config('game.economy');
 
         return [
-            'training' => sprintf('One player from each line trains, as long as that line\'s coach is in the technical staff, with a session every %d hours even while you are away. When their bar fills to 100%% their strength and attributes rise by a point, and the stronger they are the more sessions they need. Age is the strongest factor: up to 19 every session is %d%% bigger, and from 29 it shrinks, down to only %d%% after 32.', $t['tick_hours'], intdiv(reset($t['age_step_bp']), 100) - 100, intdiv(end($t['age_step_bp']), 100)),
+            'training' => sprintf('One player from each line trains, with that line\'s coach from the technical staff or the free basic coach, with a session every %d hours even while you are away. When their bar fills to 100%% their strength and attributes rise by a point, and the stronger they are the more sessions they need. Age is the strongest factor: up to 19 every session is %d%% bigger, and from 29 it shrinks, down to only %d%% after 32.', $t['tick_hours'], intdiv(reset($t['age_step_bp']), 100) - 100, intdiv(end($t['age_step_bp']), 100)),
             'potential' => 'Potential: the strength a player reaches with normal training. Training stays open, so they can pass it, but every point after it takes many more sessions, up to 99.',
             'progress' => 'Progress: the current training bar. Every session adds to it, and at 100% comes a new strength point and the bar starts again.',
             'stadium' => 'The stadium has three sections: the seats (ticket income), the pitch (home advantage and fewer injuries), and the training facility (faster training). Each section has three stages, and each stage five parts built one by one.',

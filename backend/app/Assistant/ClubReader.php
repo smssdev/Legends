@@ -2,6 +2,7 @@
 
 namespace App\Assistant;
 
+use App\Economy\Economy;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\SpecialistController;
@@ -73,6 +74,40 @@ class ClubReader
         }
 
         return self::clean($data);
+    }
+
+    /**
+     * [X61] The club's key numbers, given with every question so the answer never guesses them: it once quoted the
+     * opening budget as the squad's value. Each one named for what it is (club_money is cash, squad_value the players).
+     */
+    public function snapshot(): array
+    {
+        try {
+            $board = $this->call(ClubBoardController::class, 'summary');
+            $training = $this->call(TrainingController::class, 'show');
+        } catch (HttpException) {
+            return [];
+        }
+        $players = DB::table('players')->where('club_id', $this->club->id);
+        $club = DB::table('clubs')->where('id', $this->club->id)->first(['strength_snapshot', 'morale']);
+        $slots = collect($training['slots'] ?? []);
+
+        return self::clean([
+            'club_name' => $this->club->name,
+            'strength' => (int) $club->strength_snapshot,
+            'squad_value' => Economy::squadValue($this->club->id),
+            'club_money' => (int) ($board['money']['cash'] ?? 0),
+            'coins' => (int) ($board['money']['coins'] ?? 0),
+            'morale' => (int) $club->morale,
+            'formation' => $board['lineup']['formation'] ?? null,
+            'next_match' => $board['match'] ?? null,
+            'league' => ['name' => $this->league->name, 'position' => $board['standings']['position'] ?? null, 'teams' => $board['standings']['teams'] ?? null,
+                'played' => $board['standings']['played'] ?? null, 'points' => collect($board['standings']['top'] ?? [])->firstWhere('mine', true)['points'] ?? null],
+            'training' => ['assigned' => $slots->filter(fn ($s) => $s['player'])->pluck('line')->values()->all(),
+                'lines_on_the_free_basic_coach' => $slots->filter(fn ($s) => ! $s['coach']['hired'])->pluck('line')->values()->all()],
+            'injured' => (clone $players)->where('injured_matches', '>', 0)->count(),
+            'suspended' => (clone $players)->where('suspended_matches', '>', 0)->count(),
+        ]);
     }
 
     /** The squad, each player in a few numbers (not his every attribute). */

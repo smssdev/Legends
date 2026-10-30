@@ -7,6 +7,7 @@ use App\Market\Market;
 use App\Market\Scout;
 use App\Models\Club;
 use App\Models\League;
+use App\Support\Nation;
 use App\Wallet\Finish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,7 +31,8 @@ class ScoutController extends Controller
             'options' => [
                 'leagues' => DB::table('master_clubs')->where('data_version', $version)->distinct()->orderBy('league_name')->pluck('league_name'),
                 'nationalities' => DB::table('master_players')->where('data_version', $version)->whereNotNull('nationality')
-                    ->groupBy('nationality')->orderByRaw('count(*) desc')->limit(80)->pluck('nationality')->sort()->values(),
+                    ->groupBy('nationality')->orderByRaw('count(*) desc')->limit(80)->pluck('nationality')
+                    ->map(fn ($n) => Nation::name($n))->unique()->sort()->values(),
                 'positions' => DB::table('master_players')->where('data_version', $version)->distinct()->orderBy('position')->pluck('position'),
             ],
             'requests' => $requests->map(fn ($r) => [
@@ -79,7 +81,7 @@ class ScoutController extends Controller
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->whereIn('players.id', $ids)
             ->get(['players.*', 'master_players.name', 'master_players.position', 'master_players.line', 'master_players.age', 'master_players.nationality', 'master_players.potential'])
             ->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
-                'nationality' => $p->nationality, 'overall' => (int) $p->overall, 'potential' => (int) $p->potential, 'value' => (int) $p->value,
+                'nationality' => Nation::name($p->nationality), 'overall' => (int) $p->overall, 'potential' => (int) $p->potential, 'value' => (int) $p->value,
                 'price' => Market::price($p, $clubId),
                 'state' => $p->club_id === $clubId ? 'mine' : ($p->club_id === null && $p->scouted_by === $clubId ? 'available' : 'gone')])->all();
     }

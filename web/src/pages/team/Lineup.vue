@@ -5,6 +5,8 @@
 // Dropped on open grass, a starter stays where he is dropped, inside his line's band, like PES [X5].
 // The server checks every rule and answers in Arabic; this screen only arranges.
 // [Sprint 21 E5.2] Locked until «تعديل»: then the moves, and «حفظ» saves and locks again (or «إلغاء» puts it back).
+import UiDialog from '../../components/ui/UiDialog.vue'
+import UiSelect from '../../components/ui/UiSelect.vue'
 import { computed, onMounted, ref } from 'vue'
 import { nm } from '../../lib/names'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -510,17 +512,16 @@ async function saveCustom() {
 
       <section class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-takers">
         <h2 id="h-takers" class="font-display text-xl font-extrabold">{{ $t('القائد ومنفذو الكرات الثابتة') }}</h2>
-        <label v-for="(label, role) in ROLES" :key="role" class="flex items-center justify-between gap-3">
+        <div v-for="(label, role) in ROLES" :key="role" class="flex items-center justify-between gap-3">
           <span class="font-bold">{{ $t(label) }}</span>
-          <select
-            class="h-11 min-w-44 rounded-lg border border-text/10 bg-surface-sunk px-3"
-            :value="team.takers[role]?.auto ? '' : team.takers[role]?.player_id"
-            @change="setTaker(role, ($event.target as HTMLSelectElement).value)"
-          >
-            <option value="">{{ $t('تلقائي ({v0})', { v0: players.get(team.takers[role]?.player_id ?? 0)?.name ?? '—' }) }}</option>
-            <option v-for="id in team.lineup.starters.filter((x) => x)" :key="id!" :value="id">{{ $nm(players.get(id!)?.name) }}</option>
-          </select>
-        </label>
+          <UiSelect
+            class="min-w-44"
+            :label="label"
+            :model-value="team.takers[role]?.auto ? '' : String(team.takers[role]?.player_id ?? '')"
+            :options="[{ value: '', label: $t('تلقائي ({v0})', { v0: $nm(players.get(team.takers[role]?.player_id ?? 0)?.name) || '—' }) }, ...team.lineup.starters.filter((x) => x).map((id) => ({ value: String(id), label: $nm(players.get(id!)?.name) }))]"
+            @update:model-value="(v) => setTaker(role, v)"
+          />
+        </div>
       </section>
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
@@ -533,14 +534,12 @@ async function saveCustom() {
 
     <PlayerCard v-if="card" :player="card" @close="card = null" />
 
-    <div v-if="customOpen" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-center" @click.self="customOpen = false">
-      <form class="flex w-full max-w-md flex-col gap-3 rounded-t-xxl bg-bg p-4 md:rounded-xxl" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة مخصصة')" @submit.prevent="saveCustom">
-        <h2 class="font-display text-2xl font-extrabold">{{ $t('تشكيلة مخصصة') }}</h2>
+    <!-- [X61] Headless UI's Dialog, from the top (it was a sheet from the bottom). -->
+    <UiDialog :open="customOpen" title="تشكيلة مخصصة" @close="customOpen = false">
+      <form class="flex flex-col gap-3" @submit.prevent="saveCustom">
         <div class="flex gap-2">
           <input v-model="customName" maxlength="30" class="h-12 flex-1 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('الاسم')" />
-          <select v-model.number="customNumber" class="h-12 w-20 rounded-lg border border-text/10 bg-surface-sunk px-3" :aria-label="$t('الرقم')">
-            <option v-for="n in 3" :key="n" :value="n">{{ n }}</option>
-          </select>
+          <UiSelect :model-value="String(customNumber)" label="الرقم" class="w-20" :options="[1, 2, 3].map((n) => ({ value: String(n), label: String(n) }))" @update:model-value="(v) => (customNumber = Number(v))" />
         </div>
         <div class="flex gap-2 text-sm">
           <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="rounded-lg px-2 py-1" :class="within(l) ? 'bg-success/15 text-success' : 'bg-live/15 text-danger'">
@@ -571,7 +570,7 @@ async function saveCustom() {
           <UiButton variant="quiet" @click="customOpen = false">{{ $t('إلغاء') }}</UiButton>
         </div>
       </form>
-    </div>
+    </UiDialog>
   </div>
 </template>
 

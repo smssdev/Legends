@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Support\Nation;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,7 +25,7 @@ class Chemistry
             ->join('master_clubs', 'master_clubs.id', '=', 'master_players.master_club_id')
             ->whereIn('players.id', $ids)
             ->get(['players.id', 'master_players.nationality', 'master_players.master_club_id', 'master_clubs.league_name'])
-            ->mapWithKeys(fn ($r) => [(int) $r->id => ['nat' => (string) $r->nationality, 'club' => (int) $r->master_club_id, 'league' => (string) $r->league_name]])
+            ->mapWithKeys(fn ($r) => [(int) $r->id => ['nat' => Nation::key($r->nationality), 'club' => (int) $r->master_club_id, 'league' => (string) $r->league_name]])
             ->all();
 
         return self::score($starters, $slots, $info, self::together($clubId, $ids));

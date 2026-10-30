@@ -7,6 +7,7 @@ use App\Data\Crest;
 use App\Http\Controllers\Controller;
 use App\Models\MasterClub;
 use App\Support\Glossary;
+use App\Support\Nation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -54,7 +55,7 @@ class DataController extends Controller
             'squad_value' => (int) $players->sum('value'),
             'players' => $players->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => $p->age,
-                'nationality' => $p->nationality, 'foot' => $p->preferred_foot,
+                'nationality' => Nation::name($p->nationality), 'foot' => $p->preferred_foot,
                 'overall' => $p->overall, 'potential' => $p->potential, 'value' => (int) $p->value,
                 'attributes' => $p->line === 'gk'
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]

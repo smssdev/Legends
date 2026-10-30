@@ -2,6 +2,7 @@
 // The scout (Sprint 26 W1, docs/features/scout.md): the criteria with the cost and the time, the search under
 // way with its countdown, and the reports with their players to buy. No draft of its own: the market's table
 // and the design system's cards; the market's header links here ("اطلب تقرير الكشاف").
+import UiSelect from '../../components/ui/UiSelect.vue'
 import { t } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -127,24 +128,25 @@ onBeforeUnmount(() => clearInterval(tick))
       <section v-else :aria-label="$t('طلب جديد')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
         <h2 class="font-display text-lg font-bold">{{ $t('طلب جديد') }}</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الخط') }}
-            <select v-model="form.line" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">{{ $t('أي خط') }}</option><option v-for="(n, k) in LINE_NAMES" :key="k" :value="k">{{ $t(n) }}</option></select>
-          </label>
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('المركز') }}
-            <select v-model="form.position" class="h-touch rounded-md bg-surface-sunk px-2 text-text" dir="ltr"><option value="">{{ $t('أي مركز') }}</option><option v-for="p in v.options.positions" :key="p" :value="p">{{ p }}</option></select>
-          </label>
+          <!-- [X61] Headless UI's Listbox and Combobox in place of the browser's selects. -->
+          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الخط') }}
+            <UiSelect v-model="form.line" label="الخط" none="أي خط" :options="Object.entries(LINE_NAMES).map(([k, n]) => ({ value: k, label: $t(n) }))" />
+          </div>
+          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('المركز') }}
+            <UiSelect v-model="form.position" label="المركز" none="أي مركز" ltr :options="v.options.positions.map((p) => ({ value: p, label: p }))" />
+          </div>
           <div class="flex gap-2">
             <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted">{{ $t('القوة من') }}<input v-model.number="form.min_overall" type="number" min="40" max="99" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
             <label class="flex flex-1 flex-col gap-1 text-sm text-text-muted">{{ $t('إلى') }}<input v-model.number="form.max_overall" type="number" min="40" max="99" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           </div>
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أكبر عمر') }}<input v-model.number="form.max_age" type="number" min="16" max="45" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أعلى سعر (اختياري)') }}<input v-model.number="form.max_value" type="number" min="1" step="100000" :placeholder="$t('بلا حد')" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الجنسية') }}
-            <select v-model="form.nationality" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">{{ $t('أي جنسية') }}</option><option v-for="n in v.options.nationalities" :key="n" :value="n">{{ n }}</option></select>
-          </label>
-          <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('من دوري') }}
-            <select v-model="form.league" class="h-touch rounded-md bg-surface-sunk px-2 text-text"><option value="">{{ $t('أي دوري') }}</option><option v-for="l in v.options.leagues" :key="l" :value="l">{{ l }}</option></select>
-          </label>
+          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الجنسية') }}
+            <UiSelect v-model="form.nationality" label="الجنسية" none="أي جنسية" searchable :options="v.options.nationalities.map((n) => ({ value: n, label: n }))" />
+          </div>
+          <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('من دوري') }}
+            <UiSelect v-model="form.league" label="من دوري" none="أي دوري" searchable :options="v.options.leagues.map((l) => ({ value: l, label: l }))" />
+          </div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || v.balance < v.cost" @click="ask">{{ $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></button>

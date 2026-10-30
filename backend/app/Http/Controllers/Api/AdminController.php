@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\Messages\Inbox;
 use App\Models\User;
+use App\Rules\NotJunk;
 use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\Avatar;
@@ -262,7 +263,7 @@ class AdminController extends Controller
         $from = $request->user();
         abort_unless(Username::official($from->username), 403, 'الإعلانات من حسابات المطورين الرسمية فقط (Owner-Sizar أو Owner-Sliman).');
         // [X54] A card: an optional wide picture, and an optional button to a page of the game (/...) or a site (https).
-        $data = $request->validate(['title' => ['required', 'string', 'max:120'], 'body' => ['required', 'string', 'max:2000'],
+        $data = $request->validate(['title' => ['required', 'string', 'max:120', new NotJunk], 'body' => ['required', 'string', 'max:2000', new NotJunk],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:'.config('game.announcements.image_max_kb')],
             'cta_label' => ['nullable', 'required_with:cta_url', 'string', 'max:40'],
             'cta_url' => ['nullable', 'required_with:cta_label', 'string', 'max:300', 'regex:#^(https?://[^\s]+|/[A-Za-z0-9/_\-?=&%.]*)$#']]);

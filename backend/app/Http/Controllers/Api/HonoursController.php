@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
 use App\Http\Controllers\Controller;
+use App\League\Awards;
 use App\Models\League;
 use App\Models\User;
 use App\Season\Career;
@@ -17,6 +18,17 @@ use Illuminate\Support\Facades\DB;
  */
 class HonoursController extends Controller
 {
+    /** [X61 E5] The running season's awards, for the league's members. */
+    public function awards(Request $request, League $league): JsonResponse
+    {
+        $member = DB::table('league_memberships')->where('league_id', $league->id)->where('user_id', $request->user()->id)->exists()
+            || $league->owner_id === $request->user()->id;
+        abort_unless($member, 403, 'الأوسمة لأعضاء الدوري.');
+        abort_unless($league->season, 404, 'لا موسم في هذا الدوري بعد.');
+
+        return response()->json(Awards::of($league->id, $league->season->id));
+    }
+
     public function league(Request $request, League $league): JsonResponse
     {
         $member = DB::table('league_memberships')->where('league_id', $league->id)->where('user_id', $request->user()->id)->exists()

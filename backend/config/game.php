@@ -150,6 +150,8 @@ return [
         // this share of the league's money scale, about a season's gate and sponsors (sim:economy). The cap of a
         // listing and the instant sale's pay shrink to fit (App\Market\Buyer).
         'max_listings' => 4,
+        // [X62] The sell-on clause a buyer may promise the selling coach: up to this share of the player's next sale.
+        'sell_on_max_bp' => 2000,
         'sale_profit_bp_per_season' => 500,
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
@@ -169,6 +171,15 @@ return [
         ],
         // The stadium at stage 0 (Sprint 29 builds on it): seats, and attendance from the club's strength in its league.
         'stadium' => ['capacity' => 20000, 'attendance_min_bp' => 6000, 'attendance_max_bp' => 10000],
+        // [X61] The ticket price the coach sets, four levels: the seat's price (bp of the usual) and the crowd it
+        // moves (bp of the seats, up to full). Cheap fills the stands, dear empties them, so the best level earns about
+        // 5% more than the usual one, and only for a club that fills its stadium: the economy stays closed.
+        'ticket_levels' => [
+            'popular' => ['price_bp' => 7500, 'attendance_bp' => 1500],
+            'normal' => ['price_bp' => 10000, 'attendance_bp' => 0],
+            'high' => ['price_bp' => 12500, 'attendance_bp' => -1500],
+            'premium' => ['price_bp' => 15000, 'attendance_bp' => -3000],
+        ],
         // A league match's result, as a share of the scale: a bonus for a win, a smaller one for a draw, and a
         // deduction for a loss [X14].
         'win_bonus_bp' => 8, 'draw_bonus_bp' => 3, 'loss_penalty_bp' => 2,
@@ -351,7 +362,9 @@ return [
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
     // The game's names (owner's decision, 2026-10-26, X44): لعبة المدرب الأسطورة (GLM, Game Legend Manager), and its premium currency الكوينز.
     'brand' => ['name' => 'لعبة المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
-    'app' => ['min_version' => '1.0.0', 'token_ttl_days' => 30],
+    // [X61] The oldest app still served comes from the same source as the game's version (APP_VERSION), not a number of
+    // its own: the server said 0.1.0 and asked for apps from 1.0.0 at once. MIN_APP_VERSION raises it when an app ships.
+    'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.
@@ -476,7 +489,7 @@ return [
         'kinds' => [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
-            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
+            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
             'news' => ['announcement', 'official_message', 'coins_gift'],
@@ -493,7 +506,7 @@ return [
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
         'price' => ['spy' => 20, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,
-            'bribe' => 40, 'security_check' => 10, 'double_agent' => 15],
+            'bribe' => 15, 'security_check' => 10, 'double_agent' => 15],
         'shop' => [['coins' => 100, 'label' => 'حزمة صغيرة'], ['coins' => 300, 'label' => 'حزمة متوسطة'], ['coins' => 1000, 'label' => 'حزمة كبيرة']],
     ],
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
@@ -523,7 +536,9 @@ return [
     // lawyer of lawyer_stars or a security check shows the spies, and a spy is turned for double_agent's price; the
     // FA confiscates fine_bp of the money, bans from the market for market_ban_hours, takes `points`, and the scandal
     // takes scandal_morale off and scandal_attendance_bp of the next home crowd; the headline shows headline_hours.
-    'integrity' => ['bribe_cost_bp' => 40, 'var_bp' => 2000, 'var_morale' => 10, 'lawyer_stars' => 4,
+    // [X61] The bribe down to about a round or two of wages (bribe_cost_bp 40 to 24, and 40 coins to 15), its
+    // consequences (the VAR, the fine, the points, the scandal) as they were.
+    'integrity' => ['bribe_cost_bp' => 24, 'var_bp' => 2000, 'var_morale' => 10, 'lawyer_stars' => 4,
         'security_check_cost_bp' => 8, 'double_agent_cost_bp' => 10, 'fine_bp' => 3000, 'market_ban_hours' => 24, 'points' => 3,
         'scandal_morale' => 15, 'scandal_attendance_bp' => 2500, 'headline_hours' => 24],
     // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
@@ -538,7 +553,10 @@ return [
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.
-    'press' => ['open_minutes' => 30, 'morale' => 1, 'prediction_cash_bp' => 3, 'article_max' => 2000,
+    // [X61 E9] stakes: what each statement does to the morale after the match, by its result (a bold promise pays on
+    // a win and costs on a defeat; the calm one is safe; the rallying one in between).
+    'press' => ['open_minutes' => 30, 'morale' => 1,
+        'stakes' => ['attack' => ['win' => 3, 'draw' => -1, 'loss' => -3], 'calm' => ['win' => 1, 'draw' => 1, 'loss' => 0], 'rally' => ['win' => 2, 'draw' => 0, 'loss' => -1]], 'prediction_cash_bp' => 3, 'article_max' => 2000,
         // [Sprint 21 E4.6, final formulas Sprint 20 S3] The league's news (App\League\NewsFormulas). upset_gap: strength
         // points that make one side clearly stronger on paper.
         // A match: goal for each goal, draw for a draw with goals or one_goal for a one-goal game, upset when the winner
@@ -576,11 +594,27 @@ return [
         'keeper_coach_boost' => [1 => 1, 2 => 1, 3 => 2, 4 => 2, 5 => 3],       // on the keeper's rating and attributes in a match
         'physio_rest_bonus' => [1 => 5, 2 => 10, 3 => 15, 4 => 20, 5 => 25],     // fitness on top of rest_recovery for a player who rests
         'mental_coach_boost' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5],    // morale back after a draw or a defeat [X25]
-        'coach_training_bp' => [1 => 1000, 2 => 2000, 3 => 3000, 4 => 4500, 5 => 6000]],  // faster training for the coach's line
+        'coach_training_bp' => [1 => 1000, 2 => 2000, 3 => 3000, 4 => 4500, 5 => 6000],  // faster training for the coach's line
+        // [X61] The basic coach every club has for free, one per line, until it signs one from the staff: its line
+        // trains from the first day, this much faster (a one-star coach's own), so a new coach is never stuck.
+        'basic_coach_bp' => 1000],
     // Spying on the next opponent [docs/features/spy.md, Sprint 30]: a share of the league's money scale (club
     // money until the premium coins come, Sprint 34).
     'spy' => ['cost_bp' => 15],
     // The scout [docs/features/scout.md, X15]: a share of the league's money scale, a 15-hour trip scaled by the
     // season's length, and five players that match every criterion (the position, the age, the rating, the price).
-    'scout' => ['cost_bp' => 30, 'hours' => 15, 'results' => 5],
+    // [X61] cost_bp 30 to 7 (the owner, 2026-10-30): a report cost about two rounds of wages, now under half of one.
+    'scout' => ['cost_bp' => 7, 'hours' => 15, 'results' => 5],
+    // [X61 E5] The season's awards: the best player needs min_matches at least (or half the most played), the young
+    // one is young_age or under.
+    'awards' => ['min_matches' => 3, 'young_age' => 21],
+    // [X61 E3] The youth academy: `offers` prospects of max_age or under every `days` days, the potential hidden within
+    // `range`, at price_bp of the value, per_season signings at most.
+    // [X61 E2] Loans between coaches: up to max_rounds league rounds, for a fee up to max_fee_bp of the player's value.
+    'loans' => ['max_rounds' => 6, 'max_fee_bp' => 2000],
+    // [X61 E1] The contracts within a season: the squad's value up to wage_cap_bp of the larger of the league's scale
+    // and the club's own squad in the data; ending one early costs release_bp of the wages left in the season.
+    // [X62] Renewing for up to max_seasons more seasons costs renew_fee_bp of his wages over them as a signing fee.
+    'contracts' => ['wage_cap_bp' => 16000, 'release_bp' => 5000, 'renew_fee_bp' => 2000, 'max_seasons' => 3],
+    'academy' => ['days' => 3, 'offers' => 3, 'max_age' => 19, 'range' => 4, 'price_bp' => 6000, 'per_season' => 2],
 ];

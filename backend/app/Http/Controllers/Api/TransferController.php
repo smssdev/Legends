@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Market\Loans;
 use App\Market\Market;
 use App\Market\Transfers;
 use App\Models\Club;
@@ -63,7 +64,7 @@ class TransferController extends Controller
     {
         $club = $this->club($request, $league);
         $data = $this->terms($request, true);
-        $id = Transfers::offer($club->id, $data['to_club_id'], $data['money'] ?? 0, $data['in'], $data['out'] ?? [], "offer:{$club->id}:{$data['idempotency_key']}");
+        $id = Transfers::offer($club->id, $data['to_club_id'], $data['money'] ?? 0, $data['in'], $data['out'] ?? [], "offer:{$club->id}:{$data['idempotency_key']}", null, (int) ($data['sell_on_bp'] ?? 0));
 
         return response()->json(['offer' => $this->view(DB::table('transfer_offers')->find($id), $club->id)], 201);
     }
@@ -110,6 +111,7 @@ class TransferController extends Controller
             'in' => 'required|array|min:1|max:5', 'in.*' => 'integer',
             'out' => 'nullable|array|max:5', 'out.*' => 'integer',
             'idempotency_key' => 'required|string|max:64',
+            'sell_on_bp' => 'nullable|integer|min:0',   // [X62] the sell-on share promised to the seller
         ]);
     }
 
@@ -123,7 +125,7 @@ class TransferController extends Controller
         $clubs = DB::table('clubs')->whereIn('id', [$o->from_club_id, $o->to_club_id])->pluck('name', 'id');
 
         return [
-            'id' => $o->id, 'status' => $o->status, 'money' => (int) $o->money,
+            'id' => $o->id, 'status' => $o->status, 'money' => (int) $o->money, 'sell_on_bp' => (int) ($o->sell_on_bp ?? 0),
             'from' => ['id' => $o->from_club_id, 'name' => $clubs[$o->from_club_id] ?? ''],
             'to' => ['id' => $o->to_club_id, 'name' => $clubs[$o->to_club_id] ?? ''],
             'incoming' => $o->to_club_id === $me, 'counter_of' => $o->counter_of,
@@ -137,6 +139,30 @@ class TransferController extends Controller
     {
         return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'value' => (int) $p->value];
+    }
+
+    /** [X61 E2] My loans this season, asked and running. */
+    public function loans(Request $request, League $league): JsonResponse
+    {
+        $cfg = config('game.loans');
+
+        return response()->json(['loans' => Loans::of($this->club($request, $league)), 'max_rounds' => (int) $cfg['max_rounds'], 'max_fee_bp' => (int) $cfg['max_fee_bp']]);
+    }
+
+    public function askLoan(Request $request, League $league): JsonResponse
+    {
+        $data = $request->validate(['player_id' => 'required|integer', 'rounds' => 'required|integer|min:1', 'fee' => 'required|integer|min:0']);
+        Loans::ask($this->club($request, $league), (int) $data['player_id'], (int) $data['rounds'], (int) $data['fee']);
+
+        return $this->loans($request, $league);
+    }
+
+    public function answerLoan(Request $request, League $league, int $loan): JsonResponse
+    {
+        $data = $request->validate(['accept' => 'required|boolean']);
+        Loans::answer($this->club($request, $league), $loan, (bool) $data['accept']);
+
+        return $this->loans($request, $league);
     }
 
     private function club(Request $request, League $league): Club
