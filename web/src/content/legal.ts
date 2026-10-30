@@ -38,6 +38,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'الكوكيز والتخزين في المتصفح', p: [
         'نستخدم كوكيز ضرورية لتسجيل دخولك وحماية النماذج (الجلسة وXSRF)، ولا تعمل اللعبة بدونها.',
         'ونحفظ في متصفحك اختياراتك (اللغة والمظهر والصوت) ليبقى شكل اللعبة كما تحب.',
+        'وإن ضغطت «احفظ وتابع لاحقاً» في المدرب المساعد تبقى آخر محادثة معه في متصفحك وحده، لا عندنا، حتى تبدأ من جديد.',
         'وكوكيز الإعلانات من Google كما في القسم السابق.',
       ] },
       { h: 'من يعالج البيانات معنا', p: [
@@ -88,6 +89,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'Cookies and browser storage', p: [
         'We use essential cookies to keep you signed in and to protect forms (session and XSRF); the game cannot work without them.',
         'We keep your choices (language, look and sound) in your browser so the game stays the way you like it.',
+        'If you tap "Save and continue later" in the Assistant Coach, your last conversation with him stays in your browser only, not with us, until you start again.',
         'And Google\'s advertising cookies, as in the previous section.',
       ] },
       { h: 'Who processes data with us', p: [

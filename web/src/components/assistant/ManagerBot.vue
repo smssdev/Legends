@@ -9,6 +9,8 @@ import { SECTIONS } from '../../layouts/nav'
 import { locale } from '../../lib/i18n'
 import { useBot, type BotMessage } from '../../stores/bot'
 import { useSlot } from '../../stores/slot'
+import { t } from '../../lib/i18n'
+import BotClosing from './BotClosing.vue'
 
 // Raised above the phone's bottom bar inside a slot.
 const props = defineProps<{ raised?: boolean }>()
@@ -35,6 +37,8 @@ function quiet() {
 async function show() {
   quiet()
   bot.open = true
+  // [X61] Back after following an answer's page on the phone: the task is done, and the card says so.
+  if (bot.followed) bot.closing = 'done'
   await bot.start(page.value)
   await nextTick()
   input.value?.focus()
@@ -71,7 +75,14 @@ function pathFor(go: string): string {
 const labelOf = (go: string) => SECTIONS.find((x) => x.name === go)?.label ?? ({ wallet: 'المحفظة', profile: 'حسابي', support: 'الدعم' } as Record<string, string>)[go] ?? go
 function goTo(go: string) {
   void router.push(pathFor(go))
+  // [X61] A recommendation followed ends the task: on the computer the closing card at once, on the phone (whose
+  // window closes on the page) the next time it opens.
+  bot.followed = go
   if (window.matchMedia('(max-width: 767px)').matches) bot.open = false
+  else bot.closing = 'done'
+}
+function end() {
+  bot.end(t('على راحتك يا كوتش. هذه خلاصة ما دار بيننا.'))
 }
 
 // The answer as text: bold (**) and lists (lines starting with * or -) from the AI, nothing else; escaped first.
@@ -79,6 +90,7 @@ function rich(m: BotMessage): string {
   const esc = m.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   return esc.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^\s*[*-]\s+/gm, '• ')
 }
+const isPhone = () => window.matchMedia('(max-width: 767px)').matches
 const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining === 0 ? 'limit' : 'on'))
 </script>
 
@@ -111,10 +123,20 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
           <small v-else-if="status === 'limit'" class="text-warning">● {{ $t('من دليل اللعبة حتى الغد') }}</small>
           <small v-else class="text-text-muted">● {{ $t('من دليل اللعبة') }}</small>
         </div>
+        <button v-if="bot.messages.length > 1" type="button" class="bot-end" @click="end">{{ $t('إنهاء') }}</button>
         <button type="button" class="bot-close" :aria-label="$t('إغلاق')" @click="bot.open = false">✕</button>
       </header>
 
       <div ref="list" class="bot-body" aria-live="polite">
+        <!-- [X61] A conversation kept for later: pick it up, or start again. -->
+        <div v-if="bot.saved && bot.messages.length <= 1" class="bot-resume">
+          <b class="text-sm">{{ $t('تابع من حيث توقفت') }}</b>
+          <p class="line-clamp-2 text-xs text-text-muted" dir="auto">{{ bot.saved.messages.filter((m) => m.from === 'bot').slice(-1)[0]?.text }}</p>
+          <div class="flex gap-2">
+            <button type="button" class="bot-go mt-0 flex-1 justify-center" @click="bot.resume(); scroll()">{{ $t('تابع') }}</button>
+            <button type="button" class="bot-q flex-1" @click="bot.forget()">{{ $t('ابدأ من جديد') }}</button>
+          </div>
+        </div>
         <template v-for="(m, i) in bot.messages" :key="i">
           <div class="bot-msg" :class="m.from" dir="auto">
             <span class="whitespace-pre-line" v-html="rich(m)" />
@@ -136,10 +158,11 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
       </div>
 
       <form class="bot-ask" @submit.prevent="send()">
-        <textarea ref="input" v-model="draft" rows="1" maxlength="500" class="bot-input" dir="auto" :placeholder="$t('اكتب سؤالك...')" :aria-label="$t('اكتب سؤالك...')" @keydown="key" />
+        <textarea ref="input" v-model="draft" rows="1" maxlength="500" class="bot-input" dir="auto" :disabled="!!bot.closing" :placeholder="$t('اكتب سؤالك...')" :aria-label="$t('اكتب سؤالك...')" @keydown="key" />
         <button type="submit" class="bot-send" :disabled="!draft.trim() || bot.thinking" :aria-label="$t('أرسل')">↑</button>
       </form>
     </section>
+    <BotClosing :page="page" :league-id="leagueId" :label-of="labelOf" :path-for="pathFor" @go="(p) => { router.push(p); if (isPhone()) bot.open = false }" />
   </div>
 </template>
 
@@ -189,6 +212,8 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   .bot-panel { inset-inline-start: auto; width: 23rem; border-inline-start: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); box-shadow: -20px 0 50px color-mix(in srgb, var(--color-shade) 50%, transparent); }
 }
 .bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; padding-top: max(0.6rem, env(safe-area-inset-top)); background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
+.bot-end { min-height: 2.75rem; padding: 0 0.85rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.8rem; color: var(--color-gold); border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent); }
+.bot-resume { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem; border-radius: 0.9rem; background: color-mix(in srgb, var(--color-gold) 10%, var(--color-surface)); border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent); animation: fade-up var(--duration-base) var(--ease-soft); }
 .bot-close { display: grid; width: 2.75rem; height: 2.75rem; flex: none; place-items: center; border-radius: 0.75rem; background: var(--color-surface-raised); }
 .bot-body { display: flex; flex-direction: column; gap: 0.6rem; overflow-y: auto; padding: 0.75rem; overscroll-behavior: contain; }
 .bot-msg { max-width: 88%; padding: 0.5rem 0.7rem; border-radius: 0.9rem; font-size: 0.875rem; line-height: 1.75; overflow-wrap: anywhere; }

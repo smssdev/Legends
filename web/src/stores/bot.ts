@@ -1,6 +1,8 @@
 // [Sprint 22] The Assistant Coach's conversation (Manager Bot in English): kept while the coach moves between screens,
 // and gone with the visit (the server never keeps it either). Each question carries the last messages, so he
 // remembers what was said.
+// [X61] Its end: «إنهاء» (or a recommendation followed) closes on a card; «احفظ وتابع لاحقاً» keeps the last
+// conversation on this device only, and the next opening offers «تابع من حيث توقفت».
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '../api/client'
@@ -19,6 +21,34 @@ export const useBot = defineStore('bot', () => {
   const limited = ref(false)
   const thinking = ref(false)
   let page = ''
+  // The closing card: shown, and why (the coach ended it, or followed an answer's page).
+  const closing = ref<null | 'ended' | 'done'>(null)
+  const followed = ref<string | null>(null)
+  const SAVED = 'glm.bot.saved'
+  type Saved = { at: string; messages: BotMessage[] }
+  const saved = ref<Saved | null>(read())
+  function read(): Saved | null {
+    try { return JSON.parse(localStorage.getItem(SAVED) ?? 'null') } catch { return null }
+  }
+
+  /** «إنهاء»: a short goodbye from him, then the card. */
+  function end(goodbye: string) {
+    if (messages.value.length > 1) messages.value.push({ from: 'bot', text: goodbye })
+    closing.value = 'ended'
+  }
+  function save() {
+    const kept: Saved = { at: new Date().toISOString(), messages: messages.value.slice(-12).map(({ from, text, go }) => ({ from, text, go })) }
+    try { localStorage.setItem(SAVED, JSON.stringify(kept)) } catch {}
+    saved.value = kept
+  }
+  /** Back to the saved conversation; it stays saved until a new one is. */
+  function resume() {
+    if (saved.value) messages.value = [...saved.value.messages]
+  }
+  function forget() {
+    try { localStorage.removeItem(SAVED) } catch {}
+    saved.value = null
+  }
 
   /** The page's quick questions (and, the first time, who he is). */
   async function start(at: string) {
@@ -53,5 +83,5 @@ export const useBot = defineStore('bot', () => {
     }
   }
 
-  return { open, name, messages, questions, ai, remaining, limited, thinking, start, ask }
+  return { open, name, messages, questions, ai, remaining, limited, thinking, start, ask, closing, followed, saved, end, save, resume, forget }
 })
