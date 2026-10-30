@@ -42,7 +42,7 @@ class TournamentFactory
         if (isset($s['club_id']) && ! in_array((int) $s['club_id'], $ids, true)) {
             throw new HttpException(422, 'اختر فريقك من فرق البطولة.');
         }
-        if (isset($s['club_id'])) {
+        if (isset($s['club_id']) && ($s['entry_mode'] ?? 'pick') !== 'draw') {
             Joining::assertCanTakeAnother($owner);
         }
 
@@ -59,6 +59,7 @@ class TournamentFactory
                 'group_count' => $s['format'] === 'groups' ? (int) $s['group_count'] : null,
                 'advance_per_group' => $s['format'] === 'groups' ? (int) ($s['advance_per_group'] ?? 2) : null,
                 'legs' => $s['format'] === 'knockout' ? null : (int) ($s['legs'] ?? 1),
+                'entry_mode' => $s['entry_mode'] ?? 'pick',
             ]);
             // [X65] Paid in coins as it is made, as a customized league (the owner's decision 2026-10-30): not enough, nothing is made.
             if ($league->custom_coins > 0) {
@@ -108,8 +109,18 @@ class TournamentFactory
             if (! empty($s['draw_at'])) {
                 LiveDraw::schedule($league, $s['draw_at']);
             }
-            if (isset($s['club_id'])) {
+            if (isset($s['club_id']) && ($s['entry_mode'] ?? 'pick') !== 'draw') {
                 Joining::claim($owner, $league->fresh(), $made[(int) $s['club_id']]);
+            }
+            // [X68] The organizer names each team's coach (master club id => username).
+            if (($s['entry_mode'] ?? 'pick') === 'assign' && ! empty($s['owners'])) {
+                $owners = [];
+                foreach ($s['owners'] as $master => $username) {
+                    if (isset($made[(int) $master])) {
+                        $owners[$made[(int) $master]] = $username;
+                    }
+                }
+                Entries::name($league->fresh(), $owner, $owners);
             }
 
             return $league->fresh();
@@ -131,6 +142,9 @@ class TournamentFactory
         }
         if (! in_array($s['format'], TournamentPlan::FORMATS, true)) {
             throw new HttpException(422, __('اختر نظام البطولة.'));
+        }
+        if ($s['format'] === 'knockout' && $teams > $c['knockout_max_teams']) {
+            throw new HttpException(422, sprintf(__('خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.'), $c['knockout_max_teams']));
         }
         if ($s['format'] === 'groups') {
             $g = (int) ($s['group_count'] ?? 0);

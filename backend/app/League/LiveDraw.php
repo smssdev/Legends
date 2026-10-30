@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Models\League;
 use App\Support\GameClock;
+use App\Tournament\Entries;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Random\Engine\Mt19937;
@@ -81,6 +82,10 @@ class LiveDraw
             }
             $fresh = $league->fresh();
             SeasonScheduler::build($fresh, $fresh->season);
+            // [X68] A tournament whose teams the draw shares among its entrants: each gets his team now.
+            if ($fresh->kind === 'tournament') {
+                Entries::assign($fresh);
+            }
 
             return true;
         });

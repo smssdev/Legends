@@ -75,6 +75,8 @@ const letter = (g?: number) => (g ? String.fromCharCode(64 + g) : '')
 const where = (s: Step) => {
   if (s.type === 'group') return t('المجموعة {v0}', { v0: letter(s.group) })
   if (s.type === 'slot') return t('الخانة {v0}', { v0: s.slot ?? '' })
+  // [X68] A team given to a player who entered.
+  if (s.type === 'owner') return t('فريق {v0}', { v0: s.user?.name ?? '' })
   return t(STAGES[s.stage ?? ''] ?? '') + ' · ' + t('المواجهة {v0}', { v0: s.slot ?? '' })
 }
 
@@ -110,6 +112,8 @@ const boardTies = computed(() => {
   }
   return [...map.values()]
 })
+const boardOwners = computed(() => placed.value.filter((s) => s.type === 'owner'))
+const hasOwners = computed(() => (draw.value?.steps ?? []).some((s) => s.type === 'owner'))
 const isNew = (s: Step) => opened.value && current.value === s
 
 const countdown = computed(() => {
@@ -196,6 +200,15 @@ async function schedule() {
         </section>
 
         <section class="z-10 flex-1 rounded-t-3xl bg-panel/90 px-3 pb-6 pt-4 backdrop-blur">
+          <!-- [X68] First the teams going to their players. -->
+          <div v-if="hasOwners" class="mb-3 rounded-xl bg-surface-sunk p-2">
+            <h3 class="mb-1 text-sm font-extrabold text-gold">{{ $t('الفرق وأصحابها') }}</h3>
+            <ul class="grid grid-cols-1 gap-1 sm:grid-cols-2">
+              <li v-for="o in boardOwners" :key="card(o)!.id" class="flex min-h-[32px] items-center gap-2 text-sm" :class="isNew(o) ? 'land font-extrabold text-gold-light' : ''">
+                <ClubCrest :url="card(o)!.crest_url" :code="card(o)!.code" :size="22" /><span class="truncate">{{ $nm(card(o)!.name) }}</span>
+                <span class="text-text-muted">←</span><b class="truncate">{{ o.user?.name }}</b></li>
+            </ul>
+          </div>
           <div v-if="draw.format === 'groups'" class="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <div v-for="g in boardGroups" :key="g.letter" class="rounded-xl bg-surface-sunk p-2">
               <h3 class="mb-1 text-sm font-extrabold text-gold">{{ $t('المجموعة {v0}', { v0: g.letter }) }}</h3>

@@ -53,8 +53,10 @@ class ChatGroups
                     'invite_code' => self::code(), 'created_at' => $now, 'updated_at' => $now]);
                 $id = DB::table('chat_groups')->where('league_id', $league->id)->value('id');
             }
+            // [X68] And a tournament's entrants, before the draw gives them their teams.
             $members = DB::table('clubs')->where('league_id', $league->id)->whereNotNull('user_id')->pluck('user_id')
-                ->push($league->owner_id)->filter()->unique()->map(fn ($v) => (int) $v)->all();
+                ->merge(DB::table('tournament_entries')->where('league_id', $league->id)->pluck('user_id'))
+                ->push($league->owner_id)->filter()->unique()->map(fn ($v) => (int) $v)->values()->all();
             foreach ($members as $u) {
                 self::join($id, $u, $u === (int) $league->owner_id);
             }

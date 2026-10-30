@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // [Sprint 22 W1, W2] The Assistant Coach (Manager Bot in English), on every screen of the game: the owner's approved
 // draft (docs/design/legends-ui/ManagerBotDraft.html). A gold button fixed on the left in Arabic and on the right in
-// English (the owner, 2026-10-29), still, never dragged; once a day a greeting beside it. Its window fills the phone and is a side panel on the computer: who he is,
-// the page's quick questions, and the conversation. Every explanation of the game lives here, not on the screens.
+// English (the owner, 2026-10-29), still, never dragged; once a day a greeting beside it. Its window is a chat card above
+// the button, never the page's whole height, on the phone and the computer (the owner, 2026-10-30): who he is, the page's
+// quick questions, the conversation, and a line to the platform's support. Every explanation of the game lives here, not on the screens.
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SECTIONS } from '../../layouts/nav'
@@ -82,6 +83,11 @@ function goTo(go: string) {
   if (window.matchMedia('(max-width: 767px)').matches) bot.open = false
   else bot.closing = 'done'
 }
+// [X67] The platform's support from inside the bot: the support page, where messages reach the developers.
+function support() {
+  void router.push({ name: 'support' })
+  if (isPhone()) bot.open = false
+}
 function end() {
   bot.end(t('على راحتك يا كوتش. هذه خلاصة ما دار بيننا.'))
 }
@@ -115,7 +121,8 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
     </div>
 
     <!-- W2: the window. -->
-    <section v-else class="bot-panel" role="dialog" :aria-label="bot.name || $t('المدرب المساعد')" @keydown.esc="bot.open = false">
+    <div v-else class="bot-open">
+    <section class="bot-panel" role="dialog" :aria-label="bot.name || $t('المدرب المساعد')" @keydown.esc="bot.open = false">
       <header class="bot-head">
         <!-- [Sprint 26 W5] The robot B1 in the window: thinking while he writes, calm otherwise. -->
         <span class="bot-fab small robot" aria-hidden="true"><Character model="B1" :mood="bot.thinking ? 'think' : 'idle'" class="w-full" /></span>
@@ -163,7 +170,15 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
         <textarea ref="input" v-model="draft" rows="1" maxlength="500" class="bot-input" dir="auto" :disabled="!!bot.closing" :placeholder="$t('اكتب سؤالك...')" :aria-label="$t('اكتب سؤالك...')" @keydown="key" />
         <button type="submit" class="bot-send" :disabled="!draft.trim() || bot.thinking" :aria-label="$t('أرسل')">↑</button>
       </form>
+      <!-- [X67] The platform's support, at the card's foot. -->
+      <button type="button" class="bot-support" @click="support">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14a2 2 0 0 1 2-2h1v6H6a2 2 0 0 1-2-2zM20 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2zM18 18a4 4 0 0 1-4 3h-2" /></svg>
+        {{ $t('تواصل مع دعم المنصة') }}
+      </button>
     </section>
+    <!-- The round close button where the face was, as in the owner's picture. -->
+    <button type="button" class="bot-x" :aria-label="$t('إغلاق')" @click="bot.open = false">✕</button>
+    </div>
     <BotClosing :page="page" :league-id="leagueId" :label-of="labelOf" :path-for="pathFor" @go="(p) => { router.push(p); if (isPhone()) bot.open = false }" />
   </div>
 </template>
@@ -206,19 +221,26 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 45%, transparent);
 }
 .bot-hello-x { position: absolute; top: -0.6rem; inset-inline-start: -0.6rem; display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border-radius: 999px; font-size: 0.7rem; color: var(--color-text); background: var(--color-surface-raised); }
-/* The window: the whole phone, a side panel on the computer (opposite the side menu). */
+/* [X67] The window: a chat card above the round close button, never the page's whole height (the owner's picture,
+   2026-10-30), the same on the phone and the computer. */
+.bot-open { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }
 .bot-panel {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr auto auto;
+  width: min(23rem, calc(100vw - 2rem));
+  height: min(36rem, calc(100dvh - 7.5rem));
+  overflow: hidden;
+  border-radius: 1.1rem;
   background: var(--color-bg);
+  border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--color-shade) 55%, transparent);
+  animation: fade-up var(--duration-base) var(--ease-soft);
 }
-@media (min-width: 768px) {
-  .bot-panel { inset-inline-start: auto; width: 23rem; border-inline-start: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); box-shadow: -20px 0 50px color-mix(in srgb, var(--color-shade) 50%, transparent); }
-}
-.bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; padding-top: max(0.6rem, env(safe-area-inset-top)); background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
+.bot-root.raised .bot-panel { height: min(36rem, calc(100dvh - 12rem)); }
+.bot-x { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; border-radius: 999px; font-size: 1.1rem; font-weight: 800; color: var(--color-gold); background: var(--color-panel); border: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent); box-shadow: 0 8px 22px color-mix(in srgb, var(--color-shade) 50%, transparent); }
+.bot-support { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--color-ring); background: var(--color-panel); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
+.bot-support svg { width: 1.1rem; height: 1.1rem; }
+.bot-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand) 18%, var(--color-panel)), var(--color-panel)); border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); }
 .bot-end { min-height: 2.75rem; padding: 0 0.85rem; border-radius: 0.75rem; font-weight: 800; font-size: 0.8rem; color: var(--color-gold); border: 1px solid color-mix(in srgb, var(--color-gold) 45%, transparent); }
 .bot-resume { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem; border-radius: 0.9rem; background: color-mix(in srgb, var(--color-gold) 10%, var(--color-surface)); border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent); animation: fade-up var(--duration-base) var(--ease-soft); }
 .bot-close { display: grid; width: 2.75rem; height: 2.75rem; flex: none; place-items: center; border-radius: 0.75rem; background: var(--color-surface-raised); }
@@ -229,10 +251,10 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 .bot-go { display: flex; align-items: center; margin-top: 0.4rem; min-height: 2.75rem; padding: 0 0.75rem; border-radius: 0.6rem; font-weight: 800; font-size: 0.8rem; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-qs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .bot-q { min-height: 2.75rem; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-align: start; color: var(--color-ring); background: color-mix(in srgb, var(--color-brand) 18%, transparent); border: 1px solid color-mix(in srgb, var(--color-ring) 30%, transparent); }
-.bot-ask { position: relative; display: flex; padding: 0.6rem 0.75rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
+.bot-ask { position: relative; display: flex; padding: 0.6rem 0.75rem; border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); background: var(--color-panel); }
 .bot-input { flex: 1; min-height: 2.75rem; max-height: 8rem; resize: none; padding: 0.6rem 0.75rem; padding-inline-end: 3.25rem; border-radius: 0.75rem; font: inherit; color: var(--color-text); background: var(--color-surface-sunk); }
 /* [X61] The send button inside the field, at its end, so it never covers what is typed. */
-.bot-send { position: absolute; bottom: max(0.75rem, env(safe-area-inset-bottom)); inset-inline-end: 0.75rem; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform var(--duration-fast) var(--ease-soft); font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
+.bot-send { position: absolute; bottom: 0.6rem; inset-inline-end: 0.75rem; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform var(--duration-fast) var(--ease-soft); font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-send:disabled { opacity: 0.5; }
 .bot-dots { display: inline-flex; gap: 0.25rem; }
 .bot-dots i { width: 0.4rem; height: 0.4rem; border-radius: 999px; background: var(--color-text-muted); opacity: 0.6; animation: bot-dot 1.2s var(--ease-soft) infinite; }

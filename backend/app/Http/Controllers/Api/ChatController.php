@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\League\Members;
 use App\Models\League;
 use App\Rules\NotJunk;
+use App\Tournament\Entries;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,7 +31,7 @@ class ChatController extends Controller
     /** A league's or tournament's own group, for its owner and coaches. */
     public function league(Request $request, League $league): JsonResponse
     {
-        abort_unless(Members::isMember($request->user()->id, $league->id), 404);
+        abort_unless(Members::isMember($request->user()->id, $league->id) || Entries::isEntrant($league->id, $request->user()->id), 404);
 
         return response()->json(['group' => ChatGroups::show(ChatGroups::forLeague($league), $request->user())]);
     }

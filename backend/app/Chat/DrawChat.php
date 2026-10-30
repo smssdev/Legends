@@ -22,7 +22,8 @@ class DrawChat
     {
         $c = config('game.draw_chat');
         $at = $league->drawn_at ?? $league->draw_at ?? $league->starts_at;
-        $length = (int) $league->team_count * (int) config('game.tournaments.reveal_ms');
+        $balls = (int) $league->team_count + DB::table('tournament_entries')->where('league_id', $league->id)->count();
+        $length = $balls * (int) config('game.tournaments.reveal_ms');
         $from = Carbon::parse($at)->subMinutes($c['open_before']);
         $until = Carbon::parse($league->drawn_at ?? $at)->addMilliseconds($length)->addMinutes($c['open_after']);
 

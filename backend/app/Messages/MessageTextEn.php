@@ -213,6 +213,17 @@ class MessageTextEn
                 'body' => ($p['through'] ?? false) ? 'The group stage is over and your team is through. See your opponent in the bracket.' : 'The group stage is over and your team is out. Follow the tournament to its final.',
                 'link' => '/leagues/'.($p['league_id'] ?? ''),
             ],
+            // [X68] A tournament's places are all taken (its draw is coming), and a team the organizer gave.
+            'tournament_full' => [
+                'title' => sprintf('%s is full', $p['tournament'] ?? ''),
+                'body' => 'The draw is about to share the teams among the players. Come and watch it live and react with everyone.',
+                'link' => '/tournaments/'.($p['league_id'] ?? '').'/draw',
+            ],
+            'tournament_team' => [
+                'title' => sprintf('You coach %s in %s', $p['team'] ?? '', $p['tournament'] ?? ''),
+                'body' => sprintf('%s chose you to coach this team. Get your lineup ready before the start.', $p['by'] ?? ''),
+                'link' => '/tournaments/'.($p['league_id'] ?? ''),
+            ],
             'chat_invite' => [
                 'title' => sprintf('%s added you to the group %s', $p['by'] ?? '', $p['group'] ?? ''),
                 'body' => 'Open the group to read its messages and join in.',

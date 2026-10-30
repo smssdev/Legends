@@ -570,7 +570,9 @@ return [
     // ball every reveal_ms. Each template: who it takes (nations of a confederation, all nations, or the strongest
     // clubs, at most per_league from one league), how many, and its shape.
     'tournaments' => [
-        'min_teams' => 2, 'max_teams' => 32, 'nation_min_players' => 14, 'nation_squad' => 23, 'nation_keepers' => 3,
+        // [X68] Up to 64 teams (a knockout alone up to 32); a draw that shares the teams among the players who entered
+        // starts auto_draw_minutes after the last place is taken, unless the organizer set its time.
+        'min_teams' => 2, 'max_teams' => 64, 'knockout_max_teams' => 32, 'auto_draw_minutes' => 10, 'entry_modes' => ['pick', 'draw', 'assign'], 'nation_min_players' => 14, 'nation_squad' => 23, 'nation_keepers' => 3,
         'group_counts' => [1, 2, 4, 8], 'advance' => [1, 2], 'reveal_ms' => 3500,
         'templates' => [
             'world_cup' => ['pool' => 'nations', 'teams' => 32, 'format' => 'groups', 'groups' => 8],
