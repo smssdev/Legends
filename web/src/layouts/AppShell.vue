@@ -13,6 +13,7 @@ import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
 import AgendaPanel from '../components/shell/AgendaPanel.vue'
 import ToastHost from '../components/shell/ToastHost.vue'
+import CountUp from '../components/ui/CountUp.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import { money } from '../lib/format'
@@ -85,18 +86,18 @@ watch(() => route.fullPath, () => { portal.value = null; agenda.value = null })
               <RouterLink v-if="auth.user.role === 'admin'" to="/admin" class="hidden h-9 items-center rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 xl:flex">{{ $t('لوحة الإدارة') }}</RouterLink>
               <RouterLink v-if="!inSlot" to="/leagues" class="hidden h-9 items-center gap-1.5 rounded-pill bg-text/10 px-3 text-xs font-bold hover:bg-text/20 lg:flex"><Icon name="leagues" :size="16" />{{ $t('دورياتي') }}</RouterLink>
               <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
-                <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr">{{ wallet.view?.balance ?? 0 }}</b>
+                <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr"><CountUp :value="wallet.view?.balance ?? 0" /></b>
               </RouterLink>
               <!-- [W2] The club's money beside the coins, always in sight inside a slot. -->
               <RouterLink v-if="inSlot && board.board" to="/finance" class="pill-money" :aria-label="$t('أموال النادي: {v0}', { v0: money(board.board.money.cash) })">
-                <b class="font-numbers text-base" dir="ltr">{{ money(board.board.money.cash) }}</b>
+                <b class="font-numbers text-base" dir="ltr"><CountUp :value="board.board.money.cash" :format="money" /></b>
               </RouterLink>
               <template v-if="inSlot">
                 <button type="button" class="bar-icon" :aria-label="$t('المؤقتات')" :aria-expanded="agenda === 'timers'" @click="agenda = agenda === 'timers' ? null : 'timers'">
                   <Icon name="clock" /><span v-if="running" class="bar-badge bg-gold text-on-gold">{{ running }}</span>
                 </button>
                 <button type="button" class="bar-icon" :aria-label="waiting ? $t('ما ينتظرك: {n}', { n: waiting }) : $t('ما ينتظرك')" :aria-expanded="agenda === 'pending'" @click="agenda = agenda === 'pending' ? null : 'pending'">
-                  <Icon name="todo" /><span v-if="waiting" class="bar-badge bg-live text-white">{{ waiting }}</span>
+                  <Icon name="todo" /><span v-if="waiting" class="bar-badge animate-pulse-ring bg-live text-white">{{ waiting }}</span>
                 </button>
               </template>
               <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->

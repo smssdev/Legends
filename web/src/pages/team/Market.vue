@@ -4,6 +4,8 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import UiDialog from '../../components/ui/UiDialog.vue'
+import EmptyState from '../../components/ui/EmptyState.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -49,6 +51,11 @@ type ListView = { closed: string | null; line: Line; balance: number; renews_at:
 const SPECIAL = { offer: '🎁 عرض خاص', in_form: '🔥 نجم الأسبوع', legend: '👑 أسطورة' } as const
 type Quote = { price: number; cash: number; doc_coins: number; short: number; compensate: { cash: number; coins: number } | null; can: boolean; why: string | null }
 const list = ref<ListView | null>(null)
+// [X61] The transfer list a page at a time, back to the first page with each line or renewal.
+const PAGE = 30
+const page = ref(0)
+const pages = computed(() => Math.ceil((list.value?.players.length ?? 0) / PAGE))
+watch([line, () => list.value?.players.length], () => (page.value = 0))
 const now = ref(Date.now())
 const renewsIn = computed(() => {
   const s = list.value?.renews_at ? Math.max(0, Math.floor((new Date(list.value.renews_at).getTime() - now.value) / 1000)) : 0
@@ -227,7 +234,7 @@ onBeforeUnmount(() => clearInterval(clock))
       <ScoutPage v-else-if="tab === 'scout'" />
 
       <section v-else-if="tab === 'done'" :aria-label="$t('الانتقالات التي تمت')" class="rounded-xl bg-surface p-2">
-        <p v-if="!done.length" class="p-4 text-sm text-text-muted">{{ $t('لا انتقالات بعد هذا الموسم.') }}</p>
+        <EmptyState v-if="!done.length" icon="market" title="لا انتقالات بعد هذا الموسم." text="كل صفقة تتم في دوريك تظهر هنا." />
         <ul class="flex flex-col">
           <li v-for="(t, i) in done" :key="i" class="v-row flex flex-wrap items-center gap-2 border-t border-text/5 px-2 py-2 text-sm first:border-0">
             <b class="min-w-0 flex-1 truncate"><bdi>{{ $nm(t.player) }}</bdi></b>
@@ -248,7 +255,7 @@ onBeforeUnmount(() => clearInterval(clock))
           <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
           <ul v-else class="flex flex-col">
-            <li v-for="p in list.players" :key="p.id" class="v-row">
+            <li v-for="p in list.players.slice(page * PAGE, (page + 1) * PAGE)" :key="p.id" class="v-row">
               <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
@@ -263,11 +270,17 @@ onBeforeUnmount(() => clearInterval(clock))
               </button>
             </li>
           </ul>
+          <!-- [X61] Thirty a page: a long line stays quick on a phone. -->
+          <nav v-if="list && pages > 1" class="flex items-center justify-center gap-2 border-t border-text/5 pt-2" :aria-label="$t('الصفحات')">
+            <button type="button" class="grid size-11 place-items-center rounded-lg bg-surface-sunk disabled:opacity-40" :disabled="page === 0" :aria-label="$t('السابق')" @click="page--"><span aria-hidden="true" class="rtl:rotate-180">←</span></button>
+            <span class="font-numbers text-sm" dir="ltr">{{ page + 1 }} / {{ pages }}</span>
+            <button type="button" class="grid size-11 place-items-center rounded-lg bg-surface-sunk disabled:opacity-40" :disabled="page >= pages - 1" :aria-label="$t('التالي')" @click="page++"><span aria-hidden="true" class="rtl:rotate-180">→</span></button>
+          </nav>
         </section>
       </template>
 
       <!-- The player's card and the deal. -->
-      <div v-if="picked" class="fixed inset-0 z-40 flex items-end justify-center bg-bg-deep/80 p-3 sm:items-center" role="dialog" aria-modal="true" :aria-label="$t('شراء {v0}', { v0: picked.name })" @click.self="picked = null">
+      <UiDialog :open="!!picked" bare @close="picked = null"><template v-if="picked">
         <div class="flex w-full max-w-md flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4">
           <PlayerTile :name="picked.name" :line="picked.line as Line" :position="picked.position" :overall="picked.overall" :value="picked.value" :price="picked.price"
             :attributes="picked.attributes" :status="$t('{v0} سنة · {v1}{v2}', { v0: picked.age, v1: picked.seller.club ? $nm(picked.seller.club) : '', v2: picked.seller.coach ? ' · ' + picked.seller.coach : '' })" status-tone="text-text-muted" />
@@ -288,7 +301,7 @@ onBeforeUnmount(() => clearInterval(clock))
           </template>
           <button type="button" class="h-11 rounded-lg bg-surface-raised font-bold" @click="picked = null">{{ $t('إغلاق') }}</button>
         </div>
-      </div>
+      </template></UiDialog>
 
       <!-- The celebration. -->
       <div v-if="celebrate" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-deep/85 p-4" role="alertdialog" :aria-label="$t('تمت الصفقة')" @click="celebrate = ''">

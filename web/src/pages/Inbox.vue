@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // The inbox (Sprint 22 W1): the game's messages, newest first, the unread ones marked, each one leading to
 // its screen. No draft of its own: the design system's cards and the "الرسائل" section of WebHome's side bar.
-import { intlLocale } from '../lib/i18n'
+import EmptyState from '../components/ui/EmptyState.vue'
+import { stamp } from '../lib/dates'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -13,7 +14,7 @@ const router = useRouter()
 const ICON: Record<string, string> = {
   referee: '🟨', absence_warning: '⏰', left_absent: '🚪', kicked: '⛔', join_request: '✋', join_approved: '✅', join_rejected: '✖️', match_report: '📊',
 }
-const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
+const when = stamp   // [X61] the same on every list
 
 function open(m: Message) {
   inbox.read(m)
@@ -35,10 +36,7 @@ onMounted(() => inbox.load())
 
     <p v-if="inbox.error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger">{{ $t(inbox.error) }}</p>
     <p v-else-if="!inbox.loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-    <section v-else-if="!inbox.messages.length" class="flex flex-col items-center gap-2 rounded-xl bg-surface p-8 text-center">
-      <span class="text-4xl" aria-hidden="true">📭</span>
-      <h2 class="font-display text-xl font-extrabold">{{ $t('لا رسائل بعد') }}</h2>
-    </section>
+    <EmptyState v-else-if="!inbox.messages.length" icon="inbox" title="لا رسائل بعد" text="تصلك هنا نتائج مبارياتك وعروض السوق وأخبار دورياتك." :cta="{ label: 'إلى ناديك', to: '/club' }" />
 
     <ul v-else class="flex flex-col gap-2" :aria-label="$t('الرسائل')">
       <li v-for="m in inbox.messages" :key="m.id">

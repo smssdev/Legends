@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import UiDialog from '../components/ui/UiDialog.vue'
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -159,7 +160,8 @@ async function openRanking(by: By) {
       <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">
         <h2 class="flex items-center gap-2 text-sm font-bold text-text-muted">{{ $t('فتحات المدرب') }}<span class="font-numbers text-xs" dir="ltr">{{ home.slots_open }}/{{ home.slots.length }}</span></h2>
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:gap-3">
+        <!-- [X61] The slots come in one after the other. -->
+        <div class="stagger grid grid-cols-2 gap-2 sm:grid-cols-4 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
           <template v-for="s in home.slots" :key="s.slot">
@@ -268,7 +270,7 @@ async function openRanking(by: By) {
     <AdSlot v-if="home" class="relative mt-4" />
 
     <!-- The global ranking [X18]. -->
-    <div v-if="ranking || rankingBusy" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('لوحة شرف المدربين')" @click.self="ranking = null">
+    <UiDialog :open="!!(ranking || rankingBusy)" bare @close="ranking = null"><template v-if="ranking || rankingBusy">
       <div class="flex max-h-[85dvh] w-full max-w-lg flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
         <div class="flex items-center gap-2">
           <h2 class="flex-1 font-display text-xl font-extrabold">{{ ranking?.by === 'level' ? $t('ترتيب المستويات') : ranking?.by === 'rating' ? $t('ترتيب النقاط') : $t('لوحة شرف المدربين') }}</h2>
@@ -295,11 +297,11 @@ async function openRanking(by: By) {
           <p v-if="!ranking.coaches.length" class="text-text-muted">{{ $t('لا مدربين بعد.') }}</p>
         </template>
       </div>
-    </div>
+    </template></UiDialog>
 
     <!-- [Sprint 25] The rating's sheet: the emblem and the points, the way to the next division, the seven tiers, and
          the latest changes. How the points are counted is in the assistant's guide. -->
-    <div v-if="ratingOpen && rating && home" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('نقاط المدرب ودرجته')" @click.self="ratingOpen = false">
+    <UiDialog :open="!!(ratingOpen && rating && home)" bare @close="ratingOpen = false"><template v-if="ratingOpen && rating && home">
       <div class="flex max-h-[88dvh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-surface p-4">
         <div class="flex items-center gap-2">
           <h2 class="flex-1 font-display text-xl font-extrabold">{{ $t('نقاط المدرب ودرجته') }}</h2>
@@ -345,7 +347,7 @@ async function openRanking(by: By) {
           </div>
         </div>
       </div>
-    </div>
+    </template></UiDialog>
 
     <!-- [Sprint 24 B3] The confirmation before the coins go, or the way to more coins when they are short. -->
     <div v-if="buying && home" class="fixed inset-0 z-50 grid place-items-center bg-bg-deep/80 p-4" role="dialog" aria-modal="true" :aria-label="$t('فتح فوري')">

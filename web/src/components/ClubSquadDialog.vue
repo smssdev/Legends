@@ -2,6 +2,7 @@
 // Any club's squad in the league [X17; Sprint 21 E4.1]: what every member may see (the players, their age, rating,
 // value and availability), never its tactics or its next lineup. Opened from a club's name in the table, the
 // statistics, the fixtures and the news.
+import UiDialog from './ui/UiDialog.vue'
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../api/client'
 import { count, money } from '../lib/format'
@@ -20,7 +21,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 p-3 md:items-center" role="dialog" aria-modal="true" :aria-label="$t('تشكيلة النادي')" @click.self="emit('close')" @keydown.esc="emit('close')">
+  <UiDialog :open="true" bare @close="emit('close')">
     <div class="flex max-h-[85dvh] w-full max-w-xl flex-col gap-3 overflow-y-auto rounded-xl bg-surface p-4">
       <p v-if="error" class="text-sm text-danger" role="alert">{{ $t(error) }}</p>
       <p v-else-if="!squad" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
@@ -38,5 +39,5 @@ onMounted(async () => {
         </div>
       </template>
     </div>
-  </div>
+  </UiDialog>
 </template>

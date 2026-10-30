@@ -102,6 +102,7 @@
   body {
     min-height: 100dvh;
   }
+  /* [X61] A darker band at the top: the floodlights under the top bar read as a white blur (D5). */
   body::after {
     content: "";
     position: fixed;
@@ -110,14 +111,14 @@
     pointer-events: none;
     will-change: transform;
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 70%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 35%, transparent) 22%, color-mix(in srgb, var(--color-bg) 55%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
       url("/art/stadium-blur.jpg") center top / cover no-repeat,
       var(--color-bg-deep);
   }
   @media (max-width: 767px) {
     body::after {
       background:
-        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 15%, transparent) 0%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
+        linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 75%, transparent) 0%, color-mix(in srgb, var(--color-bg-deep) 40%, transparent) 22%, color-mix(in srgb, var(--color-bg) 60%, transparent) 50%, color-mix(in srgb, var(--color-bg-deep) 92%, transparent) 100%),
         url("/art/stadium-blur-m.jpg") center top / cover no-repeat,
         var(--color-bg-deep);
     }
@@ -367,8 +368,20 @@ input[type="radio"] {
 .flip-enter-active { transition: opacity var(--duration-base) var(--ease-soft); }
 .flip-enter-from { opacity: 0; }
 
-/* [X61] Lists come in one after the other (up to 12 rows, 40ms apart): style="--i: n" on each, then .stagger. */
-.stagger > * { animation: fade-up var(--duration-base) var(--ease-soft) both; animation-delay: calc(min(var(--i, 0), 12) * 40ms); }
+/* [X61] Lists come in one after the other: the children of .stagger, 40ms apart, the twelfth and after together. */
+.stagger > * { animation: fade-up var(--duration-base) var(--ease-soft) both; animation-delay: 480ms; }
+.stagger > :nth-child(1) { animation-delay: 0ms; }
+.stagger > :nth-child(2) { animation-delay: 40ms; }
+.stagger > :nth-child(3) { animation-delay: 80ms; }
+.stagger > :nth-child(4) { animation-delay: 120ms; }
+.stagger > :nth-child(5) { animation-delay: 160ms; }
+.stagger > :nth-child(6) { animation-delay: 200ms; }
+.stagger > :nth-child(7) { animation-delay: 240ms; }
+.stagger > :nth-child(8) { animation-delay: 280ms; }
+.stagger > :nth-child(9) { animation-delay: 320ms; }
+.stagger > :nth-child(10) { animation-delay: 360ms; }
+.stagger > :nth-child(11) { animation-delay: 400ms; }
+.stagger > :nth-child(12) { animation-delay: 440ms; }
 
 /* [X61] A place held while it loads: a soft light passing over it. */
 .skeleton {

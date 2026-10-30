@@ -2022,4 +2022,12 @@ export const EN: Record<string, string> = {
   'ما الذي كان ينقص؟ (اختياري)': 'What was missing? (optional)',
   'العودة للمحادثة': 'Back to the conversation',
   'سؤال واحد: «{v0}»': 'One question: «{v0}»',
+  'اليوم {v0}': 'Today {v0}',
+  'أمس {v0}': 'Yesterday {v0}',
+  'تصلك هنا نتائج مبارياتك وعروض السوق وأخبار دورياتك.': 'Your results, market offers and league news arrive here.',
+  'إلى ناديك': 'To your club',
+  'كل صفقة تتم في دوريك تظهر هنا.': 'Every deal done in your league shows here.',
+  'تمتلئ الأرقام بعد أول جولة.': 'The numbers fill in after the first round.',
+  'الصفحات': 'Pages',
+  'لا نتائج': 'No results',
 }

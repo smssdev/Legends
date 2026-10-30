@@ -2,6 +2,7 @@
 // Trades between coaches (Sprint 25 W1), inside the market: the transfer list, my offers in and out, and the
 // composer for a new offer or a counter. Every rule (the fair range, the season limits) is checked by the API,
 // which answers in Arabic; the screen only gathers the terms.
+import UiDialog from '../../components/ui/UiDialog.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -166,8 +167,8 @@ onMounted(load)
       </article>
     </template>
 
-    <div v-if="draft.open" class="fixed inset-0 z-40 flex items-end justify-center bg-black/60 md:items-center" @click.self="draft.open = false">
-      <section role="dialog" aria-modal="true" :aria-label="draft.counterOf ? $t('رد بعرض') : $t('عرض جديد')" class="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-t-xxl bg-surface p-4 md:rounded-xxl">
+    <UiDialog :open="draft.open" bare @close="draft.open = false"><template v-if="draft.open">
+      <section :aria-label="draft.counterOf ? $t('رد بعرض') : $t('عرض جديد')" class="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-t-xxl bg-surface p-4 md:rounded-xxl">
         <h2 class="font-display text-xl font-extrabold">{{ draft.counterOf ? $t('ردك على') : $t('عرض إلى') }} {{ draft.toName }}</h2>
         <div>
           <h3 class="mb-1 text-sm font-bold">{{ $t('تريد من فريقه (حتى 5)') }}</h3>
@@ -194,6 +195,6 @@ onMounted(load)
           <button type="button" class="h-12 rounded-md bg-surface-raised px-5" @click="draft.open = false">{{ $t('إلغاء') }}</button>
         </div>
       </section>
-    </div>
+    </template></UiDialog>
   </div>
 </template>

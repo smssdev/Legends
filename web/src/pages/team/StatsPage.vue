@@ -2,6 +2,7 @@
 // The league table and its statistics [X17; «جدول الدوري» since Sprint 21 E4.2, with the leaders on top]: the season's table in detail, the scorers and the assists, the cards, each club's
 // buying and selling, the squads' value and the runs of results. A club's name opens its squad (what anyone in the
 // league may see: no tactic). No draft of its own: the design system's cards and the league table's look.
+import EmptyState from '../../components/ui/EmptyState.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -82,7 +83,7 @@ function exportCsv() {
 
     <template v-if="s">
       <UiTabs v-model="tab" :items="(Object.keys(TABS) as Tab[]).map((key) => ({ key, label: TABS[key] }))" label="أقسام الإحصائيات" />
-      <p v-if="empty && tab !== 'value'" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لم تُلعب مباريات في هذا الموسم بعد.') }}</p>
+      <EmptyState v-if="empty && tab !== 'value'" icon="league" title="لم تُلعب مباريات في هذا الموسم بعد." text="تمتلئ الأرقام بعد أول جولة." :cta="{ label: 'المباراة القادمة', to: '/match' }" />
       <!-- [Sprint 21 E4.2] The season's leaders at a glance. -->
       <section v-else-if="tab === 'table'" class="grid grid-cols-2 gap-2 lg:grid-cols-4" :aria-label="$t('المتصدرون')">
         <div v-for="card in leaders" :key="card.label" class="flex flex-col gap-0.5 rounded-xl bg-surface p-3">
