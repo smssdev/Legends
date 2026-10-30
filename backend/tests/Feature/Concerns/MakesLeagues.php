@@ -72,6 +72,18 @@ trait MakesLeagues
         return $coach;
     }
 
+    /** [X69] A member of the league who coaches a club other than these (a bot club taken over). */
+    protected function memberOutside(array $league, array $clubs): User
+    {
+        $u = User::factory()->create();
+        $club = DB::table('clubs')->where('league_id', $league['id'])->whereNull('user_id')->whereNotIn('id', $clubs)->orderBy('id')->value('id');
+        DB::table('clubs')->where('id', $club)->update(['user_id' => $u->id]);
+        DB::table('league_memberships')->insert(['league_id' => $league['id'], 'season_id' => DB::table('seasons')->where('league_id', $league['id'])->value('id'),
+            'user_id' => $u->id, 'club_id' => $club, 'joined_at' => GameClock::now(), 'last_active_at' => GameClock::now(), 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+
+        return $u;
+    }
+
     /** [Sprint 21 E6] A line trains only with its coach: the club gets all four, for a year. */
     protected function lineCoaches(int $clubId, int $stars = 1): void
     {

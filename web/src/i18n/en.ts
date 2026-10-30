@@ -2377,4 +2377,15 @@ export const EN: Record<string, string> = {
   'فريق {v0}': '{v0}’s team',
   'الفرق وأصحابها': 'The teams and their coaches',
   'تظهر المواجهات بعد القرعة.': 'The ties show after the draw.',
+  // [X69] Watching the league's finished matches again
+  'إعادة المباراة كاملة': 'Full match replay',
+  'لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.': 'This match was played on an older engine, so it cannot be replayed. Watch its quick recap.',
+  'شاهدها من جديد': 'Watch it again',
+  'مباريات الدوري': 'League matches',
+  'شاهد المحاكاة كاملة': 'Watch the full match',
+  'شاهد المباريات': 'Watch the matches',
+  'آخر مباراة لك': 'Your last match',
+  'ملخص': 'Recap',
+  'شاهد المحاكاة': 'Watch',
+  'الجولة الأخيرة · {v0}': 'Last round · {v0}',
 }

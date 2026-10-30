@@ -3,12 +3,14 @@
 // one after another, fast (the goals, the cards, the substitutions, the injuries), with the score as it moved, then
 // the final score and the numbers (possession, shots, the best ratings). «تخطَّ إلى النتيجة» jumps to the end, and
 // «التقرير الكامل» opens the report. The server picks the moments and counts the numbers; this only shows them.
+// [X69] For any match of the league: a member who coaches neither side gets no result badge and no report, and
+// «شاهد المحاكاة كاملة» plays the whole match again (watch: false where it already plays).
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 
-const props = defineProps<{ matchId: number }>()
+const props = withDefaults(defineProps<{ matchId: number; watch?: boolean }>(), { watch: true })
 const emit = defineEmits<{ close: [] }>()
 const router = useRouter()
 type Recap = components['schemas']['MatchRecap']
@@ -48,9 +50,9 @@ const ICON = { goal: '⚽', card: '', sub: '🔁', injury: '✚', penalty: '◎'
 const STATS = [['shots', 'التسديدات'], ['on_target', 'على المرمى'], ['big_chances', 'فرص محققة'], ['corners', 'الركنيات'], ['yellow', 'البطاقات الصفراء'], ['red', 'البطاقات الحمراء']] as const
 const mine = (team: string | null) => team === r.value?.side
 const rating = (n: number) => (n / 100).toFixed(1)
-function report() {
+function go(to: string) {
   emit('close')
-  router.push(`/live/${props.matchId}/report`)
+  router.push(to)
 }
 </script>
 
@@ -72,7 +74,7 @@ function report() {
             <!-- Each number beside its own crest, in the page's direction (home on the right in Arabic). -->
             <b class="flex gap-2 font-numbers text-5xl leading-none" aria-live="polite"><span>{{ score.home }}</span><span>-</span><span>{{ score.away }}</span></b>
             <span v-if="ended && r.shootout" class="text-xs text-text-soft">{{ $t('ركلات الترجيح') }} <b class="inline-flex gap-1 font-numbers"><span>{{ r.shootout.home }}</span><span>-</span><span>{{ r.shootout.away }}</span></b></span>
-            <span v-if="ended" class="rounded-pill px-2 py-0.5 text-xs font-bold" :class="RESULT[r.result][1]">{{ $t(RESULT[r.result][0]) }}</span>
+            <span v-if="ended && r.side" class="rounded-pill px-2 py-0.5 text-xs font-bold" :class="RESULT[r.result][1]">{{ $t(RESULT[r.result][0]) }}</span>
             <span v-else class="font-numbers text-xs text-text-muted" dir="ltr">{{ seen.length ? seen[seen.length - 1].minute + "'" : "0'" }}</span>
           </span>
           <span class="flex min-w-0 flex-col items-center gap-1"><img :src="r.away.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(r.away.name) }}</b></span>
@@ -117,9 +119,10 @@ function report() {
           <p v-if="r.man_of_the_match" class="text-center text-sm">⭐ {{ $t('رجل المباراة') }}: <b><bdi>{{ $nm(r.man_of_the_match.name ?? '') }}</bdi></b> <span class="font-numbers text-gold">{{ rating(r.man_of_the_match.rating ?? 0) }}</span></p>
         </template>
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button v-if="!ended" type="button" class="h-touch flex-1 rounded-lg bg-surface-raised font-bold" @click="finish">{{ $t('تخطَّ إلى النتيجة') }}</button>
-          <button type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended ? 'bg-gold text-on-gold' : 'text-text-muted'" @click="report">{{ $t('التقرير الكامل') }}</button>
+          <button v-if="props.watch" type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" @click="go(`/live/${props.matchId}`)">▶ {{ $t('شاهد المحاكاة كاملة') }}</button>
+          <button v-if="r.side" type="button" class="h-touch flex-1 rounded-lg font-bold" :class="ended && !props.watch ? 'bg-gold text-on-gold' : 'text-text-muted'" @click="go(`/live/${props.matchId}/report`)">{{ $t('التقرير الكامل') }}</button>
         </div>
       </template>
     </div>

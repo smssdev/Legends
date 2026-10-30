@@ -108,7 +108,7 @@ class ClubBoardTest extends TestCase
         $this->assertSame(0, $this->getJson($this->url('summary'))->json('missed'));
     }
 
-    /** [Sprint 24 B1] The quick recap of a missed match: for its coaches only, once it is over, and it counts as seen. */
+    /** [Sprint 24 B1] The quick recap of a missed match: once it is over, it counts as seen. [X69] For every member of the league. */
     public function test_the_quick_recap_of_a_missed_match(): void
     {
         $f = DB::table('fixtures')->where('season_id', DB::table('seasons')->where('league_id', $this->league['id'])->value('id'))
@@ -137,7 +137,10 @@ class ClubBoardTest extends TestCase
         $this->assertSame(['Scorer'], array_column($recap['best']['home'], 'name'));
         // Seen: the after-round window no longer offers it.
         $this->getJson($this->url('missed'))->assertJsonCount(0, 'matches');
-        // Another league's member never sees it; a member who coaches neither side may not either.
+        // [X69] A member who coaches neither side sees it too, with no side and the home side's result; an outsider never does.
+        $member = $this->memberOutside($this->league, [$f->home_id, $f->away_id]);
+        $this->actingAs($member)->getJson("/api/v1/matches/{$match}/recap")->assertOk()
+            ->assertJsonPath('side', null)->assertJsonPath('result', 'win')->assertJsonPath('moments.0.player', 'Scorer');
         $this->actingAs(User::factory()->create())->getJson("/api/v1/matches/{$match}/recap")->assertNotFound();
     }
 }

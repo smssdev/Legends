@@ -266,6 +266,8 @@ export const leagueMatch = {
       throw asApiError(e)
     }
   },
+  /** [X69] A finished match again, for any member: every minute with its frames (an older engine's: its events only). */
+  replay: (id: string) => leagueCall<{ replayable: boolean; ticks: Tick[] | null; events: MatchEvent[] | null }>(`/${id}/replay`),
   /** "Why you won or lost", for a coach of either side (Sprint 20 B2). */
   report: (id: string) => leagueCall<any>(`/${id}/report`),
   /** My live matches, for the switcher. */

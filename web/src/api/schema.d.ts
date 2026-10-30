@@ -5751,10 +5751,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * [Sprint 24 B1] The quick recap of a finished match, for a coach of either side who missed it
+         * [Sprint 24 B1, X69] The quick recap of a finished match, for any member of its league
          * @description From the coach's own report: the big moments in order (goals, cards, substitutions, injuries, penalties), each
          *     with the score after it, then the final score, the main numbers (possession as each side's share of the attacks)
-         *     and the three best ratings of each side. Opening it marks the match seen, like the report.
+         *     and the three best ratings of each side. For a coach of either side opening it marks the match seen, like the
+         *     report. [X69] A member who coaches neither side gets it too (it holds no tactics), with side null.
          */
         get: {
             parameters: {
@@ -6130,8 +6131,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * A finished match again
-         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side.
+         * A finished match again, for any member of its league
+         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
          */
         get: {
             parameters: {
@@ -12456,9 +12457,15 @@ export interface components {
             round: number;
             home: components["schemas"]["RecapClub"];
             away: components["schemas"]["RecapClub"];
-            /** @enum {string} */
-            side: "home" | "away";
-            /** @enum {string} */
+            /**
+             * @description [X69] null for a member who coaches neither side
+             * @enum {string|null}
+             */
+            side: "home" | "away" | null;
+            /**
+             * @description The viewer's side's result; the home side's when side is null
+             * @enum {string}
+             */
             result: "win" | "draw" | "loss";
             score: {
                 home: number;

@@ -142,6 +142,12 @@ class MatchOrdersTest extends TestCase
         $this->assertTrue($replay['replayable']);
         $this->assertCount(count($ticks), $replay['ticks']);
         $this->assertArrayHasKey('frames', $replay['ticks'][0]);
+        // [X69] A member who coaches neither side watches it in full too, with neither side's tactics.
+        $member = $this->memberOutside($this->league, [$this->fixture->home_id, $this->fixture->away_id]);
+        $theirs = $this->actingAs($member)->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->json();
+        $this->assertCount(count($ticks), $theirs['ticks']);
+        $this->assertNull($theirs['ticks'][0]['teams']['home']['tactics'] ?? null);
+        $this->assertNull($theirs['ticks'][0]['teams']['away']['tactics'] ?? null);
     }
 
     public function test_play_stops_after_minute_15_for_the_coachs_window(): void
