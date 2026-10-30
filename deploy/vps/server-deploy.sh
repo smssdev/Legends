@@ -16,6 +16,6 @@ cd /opt/legends
 cd repo && git fetch -q --depth 1 origin main && git checkout -q -B main FETCH_HEAD
 echo "Deploying: $(git log --oneline -1)"
 grep -qF "$(cat "$KEY.pub")" "$HOME/.ssh/authorized_keys" 2>/dev/null || cat "$KEY.pub" >> "$HOME/.ssh/authorized_keys"
-ssh-keygen -F 127.0.0.1 > /dev/null || ssh-keyscan -q 127.0.0.1 >> "$HOME/.ssh/known_hosts"
+ssh-keygen -F 127.0.0.1 > /dev/null || ssh-keyscan 127.0.0.1 2> /dev/null >> "$HOME/.ssh/known_hosts"
 # exec: deploy.sh reinstalls this file, and sh must not read on in a file being replaced.
 LEGENDS_HOST=root@127.0.0.1 LEGENDS_KEY="$KEY" exec sh deploy/vps/deploy.sh
