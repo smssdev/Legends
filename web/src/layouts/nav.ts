@@ -34,6 +34,9 @@ export const SECTIONS: Section[] = [
   { name: 'newspaper', path: '/newspaper', label: 'أخبار الدوري', icon: 'news', club: true, group: 'media', inLeague: true },
   { name: 'predictions', path: '/predictions', label: 'التوقعات', icon: 'predict', club: true, group: 'media', inLeague: true },
   { name: 'inbox', path: '/inbox', label: 'الرسائل', icon: 'inbox' },
+  // [Sprint 29] The chat groups and the tournaments, outside a slot as the inbox.
+  { name: 'groups', path: '/groups', label: 'الجروبات', icon: 'chat' },
+  { name: 'tournaments', path: '/tournaments', label: 'البطولات', icon: 'trophy' },
   { name: 'sim', path: '/sim', label: 'المحاكي', icon: 'sim', dev: true },
 ]
 

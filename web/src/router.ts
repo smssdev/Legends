@@ -66,6 +66,13 @@ export const router = createRouter({
         { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true } },
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
+        // [Sprint 29] The chat groups and the tournaments (the draw fills the screen, below).
+        { path: 'groups', name: 'groups', component: () => import('./pages/groups/GroupsPage.vue'), meta: { auth: true } },
+        { path: 'groups/join/:code', name: 'group-join', component: () => import('./pages/groups/JoinGroup.vue'), props: true, meta: { auth: true } },
+        { path: 'groups/:id(\\d+)', name: 'group', component: () => import('./pages/groups/GroupChat.vue'), props: true, meta: { auth: true } },
+        { path: 'tournaments', name: 'tournaments', component: () => import('./pages/tournaments/TournamentsPage.vue'), meta: { auth: true } },
+        { path: 'tournaments/new', name: 'create-tournament', component: () => import('./pages/tournaments/CreateTournament.vue'), meta: { auth: true } },
+        { path: 'tournaments/:id(\\d+)', name: 'tournament', component: () => import('./pages/tournaments/TournamentPage.vue'), props: true, meta: { auth: true } },
         { path: 'inbox', name: 'inbox', component: () => import('./pages/Inbox.vue'), meta: { auth: true } },
         // [X54] The developers' announcements as cards.
         { path: 'announcements', name: 'announcements', component: () => import('./pages/AnnouncementsPage.vue'), meta: { auth: true } },
@@ -106,6 +113,7 @@ export const router = createRouter({
     { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
     // The match and its report fill the screen
     // A league match, live from the server (Sprint 18): the simulator's viewer on the league's match
+    { path: '/tournaments/:id(\\d+)/draw', name: 'tournament-draw', component: () => import('./pages/tournaments/TournamentDraw.vue'), props: true, meta: { auth: true } },
     { path: '/live/:id(\\d+)', name: 'league-match', component: () => import('./pages/SimMatch.vue'), props: (r) => ({ id: String(r.params.id), league: true }), meta: { auth: true } },
     // Its report, "why you won or lost", for the coach (Sprint 20)
     { path: '/live/:id(\\d+)/report', name: 'league-report', component: () => import('./pages/SimReport.vue'), props: { league: true }, meta: { auth: true } },

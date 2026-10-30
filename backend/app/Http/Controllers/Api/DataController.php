@@ -28,7 +28,7 @@ class DataController extends Controller
     /** The leagues a new league can copy, strongest first. */
     public function templates(): JsonResponse
     {
-        $rows = DB::table('master_clubs')->where('data_version', self::version())
+        $rows = DB::table('master_clubs')->where('data_version', self::version())->where('source', '!=', 'nation')   // [Sprint 29] not the national teams
             ->select('league_name as name', DB::raw('count(*) as clubs'), DB::raw('max(strength_cp) as top_strength_cp'), DB::raw('avg(strength_cp) as avg_strength_cp'))
             ->groupBy('league_name')->orderByDesc('top_strength_cp')->get()
             ->map(fn ($r) => ['name' => $r->name, 'clubs' => (int) $r->clubs, 'top_strength_cp' => (int) $r->top_strength_cp, 'avg_strength_cp' => (int) round($r->avg_strength_cp)]);

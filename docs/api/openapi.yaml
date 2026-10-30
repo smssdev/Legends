@@ -8,6 +8,10 @@ info:
 servers:
   - url: /api/v1
 tags:
+  - name: tournaments
+    description: 'Tournaments of clubs and national teams, and their live draw (Sprint 29)'
+  - name: groups
+    description: 'Chat groups, as in WhatsApp, and every league''s own (Sprint 29)'
   - name: assistant
     description: The Assistant Coach, Manager Bot in English (Sprint 22)
   - name: admin
@@ -3821,8 +3825,377 @@ paths:
       responses:
         '200': { description: The room with match_id (the guest manages away), content: { application/json: { schema: { $ref: '#/components/schemas/Room' } } } }
         '422': { description: Same club as the host, or someone already joined, content: { application/json: { schema: { type: object } } } }
+  /tournaments:
+    get:
+      tags: [tournaments]
+      summary: The tournaments on the game, those waiting for their draw first
+      responses:
+        '200':
+          description: The tournaments
+          content: { application/json: { schema: { type: object, required: [tournaments], properties: { tournaments: { type: array, items: { $ref: '#/components/schemas/Tournament' } } } } } }
+    post:
+      tags: [tournaments]
+      summary: Make a tournament of clubs and national teams (2 to 32), its shape and optionally a live draw's time
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template, teams, format, starts_at]
+              properties:
+                name: { type: string, nullable: true }
+                template: { type: string, enum: [world_cup, club_world_cup, afcon, euro, asian_cup, custom] }
+                teams: { type: array, items: { type: integer }, description: Master club ids, clubs and national teams together }
+                format: { type: string, enum: [league, groups, knockout] }
+                group_count: { type: integer, nullable: true, enum: [1, 2, 4, 8, null] }
+                advance_per_group: { type: integer, nullable: true, enum: [1, 2, null] }
+                legs: { type: integer, nullable: true, enum: [1, 2, null] }
+                rounds_per_day: { type: integer }
+                round_times: { type: array, items: { type: string } }
+                prep_days: { type: integer }
+                starts_at: { type: string, format: date-time }
+                draw_at: { type: string, format: date-time, nullable: true }
+                starting_budget: { type: integer }
+                club_id: { type: integer, nullable: true, description: The maker's own team (a master club id of the tournament), or none }
+                timezone: { type: string, nullable: true }
+                is_dev: { type: boolean }
+      responses:
+        '201':
+          description: The tournament
+          content: { application/json: { schema: { type: object, required: [tournament], properties: { tournament: { $ref: '#/components/schemas/Tournament' } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /tournaments/catalog:
+    get:
+      tags: [tournaments]
+      summary: What a tournament is made from - the templates with their suggested teams, the national teams, the countries not playable yet
+      responses:
+        '200':
+          description: The catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [templates, nations, missing, limits]
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      type: object
+                      required: [key, pool, confederation, format, group_count, advance_per_group, legs, teams]
+                      properties:
+                        key: { type: string }
+                        pool: { type: string, enum: [nations, clubs, any] }
+                        confederation: { type: string, nullable: true }
+                        format: { type: string }
+                        group_count: { type: integer }
+                        advance_per_group: { type: integer }
+                        legs: { type: integer }
+                        teams: { type: array, items: { type: integer } }
+                  nations: { type: array, items: { $ref: '#/components/schemas/TeamCard' } }
+                  missing: { type: array, items: { type: object, required: [name, players, keepers], properties: { name: { type: string }, players: { type: integer }, keepers: { type: integer } } } }
+                  limits:
+                    type: object
+                    required: [min_teams, max_teams, group_counts, advance, coins_per_team]
+                    properties:
+                      min_teams: { type: integer }
+                      max_teams: { type: integer }
+                      group_counts: { type: array, items: { type: integer } }
+                      advance: { type: array, items: { type: integer } }
+                      coins_per_team: { type: integer, description: '[X65] The tournament''s price: this many coins for each team' }
+  /tournaments/clubs:
+    get:
+      tags: [tournaments]
+      summary: Clubs to add to a tournament, by name, by league or by ids
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: league, in: query, schema: { type: string } }
+        - { name: ids, in: query, schema: { type: string }, description: Comma-separated master club ids }
+      responses:
+        '200':
+          description: The clubs
+          content: { application/json: { schema: { type: object, required: [clubs], properties: { clubs: { type: array, items: { $ref: '#/components/schemas/TeamCard' } } } } } }
+  /tournaments/{league}:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [tournaments]
+      summary: The tournament's page - its teams, the groups' tables (after the draw), the league table and the bracket
+      responses:
+        '200':
+          description: The tournament
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tournament]
+                properties:
+                  tournament:
+                    allOf:
+                      - { $ref: '#/components/schemas/Tournament' }
+                      - type: object
+                        required: [teams, groups, table, bracket]
+                        properties:
+                          teams: { type: array, items: { type: object, additionalProperties: true } }
+                          groups:
+                            type: array
+                            items: { type: object, required: [group, rows], properties: { group: { type: string }, rows: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } } } }
+                          table: { type: array, items: { $ref: '#/components/schemas/TournamentRow' } }
+                          bracket:
+                            type: array
+                            items:
+                              type: object
+                              required: [stage, ties]
+                              properties:
+                                stage: { type: string }
+                                ties:
+                                  type: array
+                                  items:
+                                    type: object
+                                    required: [slot, home, away, home_from, away_from, winner_id, score, at, fixture_id]
+                                    properties:
+                                      slot: { type: integer }
+                                      home: { type: object, nullable: true, additionalProperties: true }
+                                      away: { type: object, nullable: true, additionalProperties: true }
+                                      home_from: { type: string, nullable: true }
+                                      away_from: { type: string, nullable: true }
+                                      winner_id: { type: integer, nullable: true }
+                                      score: { type: array, nullable: true, items: { type: integer } }
+                                      at: { type: string, format: date-time }
+                                      fixture_id: { type: integer }
+        '404': { $ref: '#/components/responses/Error' }
+  /tournaments/{league}/draw:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [tournaments]
+      summary: 'The draw, for anyone signed in: its time and hash before; every ball in order after, replayed on the shared clock'
+      description: One ball every `reveal_ms` from `drawn_at`, the same for every screen; a late viewer replays it from the first ball. The owner sets its time with PUT /leagues/{league}/draw.
+      responses:
+        '200':
+          description: The draw
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Tournament' }
+                  - type: object
+                    required: [commit, seed, reveal_ms, server_now, is_owner, can_schedule, pots, stages, steps]
+                    properties:
+                      commit: { type: string, nullable: true }
+                      seed: { type: integer, nullable: true }
+                      reveal_ms: { type: integer }
+                      server_now: { type: integer }
+                      is_owner: { type: boolean }
+                      can_schedule: { type: boolean }
+                      pots: { type: integer }
+                      stages: { type: array, items: { type: string } }
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          required: [type, club]
+                          properties:
+                            type: { type: string, enum: [group, slot, tie] }
+                            club: { type: object, nullable: true, additionalProperties: true }
+                            pot: { type: integer }
+                            group: { type: integer }
+                            position: { type: integer }
+                            slot: { type: integer }
+                            stage: { type: string }
+                            side: { type: string }
+        '404': { $ref: '#/components/responses/Error' }
+  /groups:
+    get:
+      tags: [groups]
+      summary: The account's chat groups, the latest talk first, with the last message and the unread count
+      responses:
+        '200':
+          description: The groups
+          content: { application/json: { schema: { type: object, required: [groups], properties: { groups: { type: array, items: { $ref: '#/components/schemas/ChatGroupItem' } } } } } }
+    post:
+      tags: [groups]
+      summary: Make a group and add coaches by username
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [name], properties: { name: { type: string }, usernames: { type: array, items: { type: string } } } }
+      responses:
+        '201': { $ref: '#/components/responses/ChatGroup' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /groups/join/{code}:
+    parameters: [{ name: code, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [groups]
+      summary: Join a group by its link
+      responses:
+        '200': { $ref: '#/components/responses/ChatGroup' }
+        '404': { $ref: '#/components/responses/Error' }
+  /groups/league/{league}:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [groups]
+      summary: A league's or tournament's own group, kept in step with its owner and coaches
+      responses:
+        '200': { $ref: '#/components/responses/ChatGroup' }
+        '404': { $ref: '#/components/responses/Error' }
+  /groups/{group}:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    get:
+      tags: [groups]
+      summary: The group, its members and its latest messages (reading them marks them read)
+      responses:
+        '200':
+          description: The group
+          content: { application/json: { schema: { type: object, required: [group, messages], properties: { group: { $ref: '#/components/schemas/ChatGroup' }, messages: { type: array, items: { $ref: '#/components/schemas/ChatMessage' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+    patch:
+      tags: [groups]
+      summary: An admin renames the group
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [name], properties: { name: { type: string } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/ChatGroup' }
+        '403': { $ref: '#/components/responses/Error' }
+  /groups/{group}/messages:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    get:
+      tags: [groups]
+      summary: A page of messages before a message id, oldest first
+      parameters: [{ name: before, in: query, schema: { type: integer } }]
+      responses:
+        '200':
+          description: The messages
+          content: { application/json: { schema: { type: object, required: [messages], properties: { messages: { type: array, items: { $ref: '#/components/schemas/ChatMessage' } } } } } }
+    post:
+      tags: [groups]
+      summary: Send a message (sent at once on the group's channel chat.{group}, event "chat")
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [body], properties: { body: { type: string }, reply_to: { type: integer, nullable: true } } } } }
+      responses:
+        '201':
+          description: The message
+          content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/ChatMessage' } } } } }
+        '429': { $ref: '#/components/responses/Error' }
+  /groups/{group}/media:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    post:
+      tags: [groups]
+      summary: '[X65] Send a picture (kept as a JPEG of at most 1280 pixels) or a voice note (webm, ogg, mp4 or mpeg, up to two minutes), with an optional caption'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [kind, file]
+              properties:
+                kind: { type: string, enum: [image, audio] }
+                file: { type: string, format: binary }
+                caption: { type: string, nullable: true }
+                seconds: { type: integer, nullable: true }
+                reply_to: { type: integer, nullable: true }
+      responses:
+        '201':
+          description: The message
+          content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/ChatMessage' } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /groups/{group}/media/{message}:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [groups]
+      summary: A picture's or voice note's bytes, for the group's members only
+      responses:
+        '200': { description: The file, content: { image/jpeg: { schema: { type: string, format: binary } }, audio/webm: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /groups/{group}/messages/{message}:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [groups]
+      summary: Delete a message (one's own; an admin any)
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /groups/{group}/read:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    post:
+      tags: [groups]
+      summary: Mark read up to a message
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [last_id], properties: { last_id: { type: integer } } } } }
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /groups/{group}/members:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    post:
+      tags: [groups]
+      summary: An admin adds coaches by username
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [usernames], properties: { usernames: { type: array, items: { type: string } } } } } }
+      responses:
+        '200':
+          description: The group
+          content: { application/json: { schema: { type: object, required: [added, group], properties: { added: { type: integer }, group: { $ref: '#/components/schemas/ChatGroup' } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /groups/{group}/members/{user}:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: user, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [groups]
+      summary: An admin removes a member
+      responses:
+        '200': { $ref: '#/components/responses/ChatGroup' }
+        '403': { $ref: '#/components/responses/Error' }
+  /groups/{group}/members/{user}/admin:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: user, in: path, required: true, schema: { type: integer } }]
+    put:
+      tags: [groups]
+      summary: An admin makes a member an admin, or not
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [admin], properties: { admin: { type: boolean } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/ChatGroup' }
+        '403': { $ref: '#/components/responses/Error' }
+  /groups/{group}/leave:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    post:
+      tags: [groups]
+      summary: Leave the group (not a league's)
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/chat:
+    get:
+      tags: [admin]
+      summary: '[X65] The chat groups'' settings - the retention in days (0 keeps everything), whether media may be sent - and their size'
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
+        '403': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [admin]
+      summary: Set the retention (messages older than it are deleted every hour) and whether media may be sent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [retention_days, media], properties: { retention_days: { type: integer, minimum: 0, maximum: 365 }, media: { type: boolean } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/chat/prune:
+    post:
+      tags: [admin]
+      summary: Apply the retention now
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
 components:
   parameters:
+    Group: { name: group, in: path, required: true, schema: { type: integer } }
     League:
       name: league
       in: path
@@ -3857,6 +4230,25 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    AdminChat:
+      description: The chat settings
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [retention_days, media, groups, messages, media_count, media_kb, oldest]
+            properties:
+              retention_days: { type: integer }
+              media: { type: boolean }
+              groups: { type: integer }
+              messages: { type: integer }
+              media_count: { type: integer }
+              media_kb: { type: integer }
+              oldest: { type: string, format: date-time, nullable: true }
+              deleted: { type: integer, description: Messages the prune just deleted }
+    ChatGroup:
+      description: The group
+      content: { application/json: { schema: { type: object, required: [group], properties: { group: { $ref: '#/components/schemas/ChatGroup' } } } } }
     Tactics:
       description: My tactics, the tips, and the next referee once drawn
       content:
@@ -4171,6 +4563,85 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
   schemas:
+    Tournament:
+      type: object
+      required: [id, name, code, template, format, group_count, advance_per_group, legs, team_count, status, owner, starts_at, draw_at, drawn_at, coaches]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        template: { type: string, nullable: true }
+        format: { type: string, nullable: true }
+        group_count: { type: integer, nullable: true }
+        advance_per_group: { type: integer, nullable: true }
+        legs: { type: integer, nullable: true }
+        team_count: { type: integer }
+        status: { type: string }
+        owner: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
+        starts_at: { type: string, format: date-time }
+        draw_at: { type: string, format: date-time, nullable: true }
+        drawn_at: { type: string, format: date-time, nullable: true }
+        coaches: { type: integer }
+    TeamCard:
+      type: object
+      required: [id, name, code, league, strength_cp, colors, crest_url, logo, nation, confederation]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        league: { type: string }
+        strength_cp: { type: integer }
+        colors: { type: array, items: { type: string } }
+        crest_url: { type: string }
+        logo: { type: string, nullable: true }
+        nation: { type: boolean }
+        confederation: { type: string, nullable: true }
+    TournamentRow:
+      type: object
+      required: [club, played, won, drawn, lost, goals_for, goals_against, points]
+      properties:
+        club: { type: object, nullable: true, additionalProperties: true }
+        played: { type: integer }
+        won: { type: integer }
+        drawn: { type: integer }
+        lost: { type: integer }
+        goals_for: { type: integer }
+        goals_against: { type: integer }
+        points: { type: integer }
+    ChatGroup:
+      type: object
+      required: [id, name, league_id, is_admin, invite_url, members_count]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        league_id: { type: integer, nullable: true }
+        is_admin: { type: boolean }
+        invite_url: { type: string, nullable: true, description: For the admins of a group that is not a league's }
+        members_count: { type: integer }
+        members:
+          type: array
+          items: { type: object, required: [id, name, username, is_admin, avatar_url], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, is_admin: { type: boolean }, avatar_url: { type: string } } }
+    ChatGroupItem:
+      allOf:
+        - { $ref: '#/components/schemas/ChatGroup' }
+        - type: object
+          required: [last, unread]
+          properties:
+            last: { allOf: [{ $ref: '#/components/schemas/ChatMessage' }], nullable: true }
+            unread: { type: integer }
+    ChatMessage:
+      type: object
+      required: [id, kind, deleted, body, user, reply_to, created_at]
+      properties:
+        id: { type: integer }
+        kind: { type: string, enum: [text, image, audio, note], description: 'A note is the group''s own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}. A picture or voice note has its caption as body [X65]' }
+        deleted: { type: boolean }
+        body: { type: string }
+        user: { type: object, nullable: true, required: [id, name, username], properties: { id: { type: integer }, name: { type: string }, username: { type: string } } }
+        reply_to: { type: object, nullable: true, required: [id, kind, body], properties: { id: { type: integer }, kind: { type: string }, body: { type: string } } }
+        media_url: { type: string, nullable: true, description: 'A picture''s or voice note''s address, for the members only [X65]' }
+        seconds: { type: integer, nullable: true, description: A voice note's length }
+        created_at: { type: string, format: date-time }
     AssistantQuestion:
       type: object
       required: [question, topic]
@@ -4430,6 +4901,9 @@ components:
         id: { type: integer }
         name: { type: string }
         template: { type: string }
+        kind: { type: string, enum: [league, tournament], description: '[Sprint 29] A tournament is a league of its own kind' }
+        format: { type: string, nullable: true, enum: [league, groups, knockout, null] }
+        tournament_template: { type: string, nullable: true }
         code: { type: string, nullable: true, description: For the owner and approved coaches only }
         team_count: { type: integer }
         rounds_per_day: { type: integer }

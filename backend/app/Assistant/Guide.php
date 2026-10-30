@@ -20,17 +20,19 @@ class Guide
     /** The pages the assistant knows, by the web's route names (others fall back to "home"). */
     public const PAGES = ['home', 'club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium',
         'finance', 'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet',
-        'profile', 'leagues', 'support', 'ideas'];
+        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments'];
 
     /** A route of the web that is a page of another name here. */
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
         'league-alliance' => 'league', 'league-draw' => 'league', 'create-league' => 'leagues', 'join' => 'leagues',
-        'pick-team' => 'leagues', 'coach' => 'home', 'announcements' => 'home', 'league-report' => 'match'];
+        'pick-team' => 'leagues', 'coach' => 'home', 'announcements' => 'home', 'league-report' => 'match',
+        // [Sprint 29] The chat groups and the tournaments.
+        'group' => 'groups', 'group-join' => 'groups', 'create-tournament' => 'tournaments', 'tournament' => 'tournaments', 'tournament-draw' => 'tournaments'];
 
     /** The pages an answer may open, by the web's section names. */
     public const GO = ['club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium', 'finance',
         'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet', 'profile',
-        'leagues', 'support', 'ideas'];
+        'leagues', 'support', 'ideas', 'groups', 'tournaments'];
 
     /**
      * Each page's quick questions: a topic's id is answered from the guide at once; text after "?" goes to the
@@ -62,6 +64,8 @@ class Guide
         'leagues' => ['leagues_create', 'leagues_join', 'invite'],
         'support' => ['support', 'ideas'],
         'ideas' => ['ideas', 'polls', 'honour_roll'],
+        'groups' => ['groups', 'league_group'],
+        'tournaments' => ['tournaments', 'national_teams', 'tournament_draw'],
     ];
 
     public static function page(?string $route): string
@@ -324,6 +328,22 @@ class Guide
             $t('alliance', ['league'], 'league',
                 ['ما هي بطولة التحالفات؟', 'تحالف تحالفات بطولة فرق', 'تحالفان من مدربي الدوري، والباقون يُوزعون عشوائياً. تُرسل للمطورين للاعتماد قبل أن تبدأ. والزميلان لا يلتقيان، ويختار قائدهما من يتأهل إن استحال غير ذلك. ينشئها منشئ الدوري.'],
                 ['What is the alliance tournament?', 'alliance tournament teams', 'Two alliances of the league\'s coaches, with the rest spread at random. It goes to the developers for approval before it starts. Teammates never meet, and their leader picks who goes through if nothing else is possible. The league\'s creator sets it up.']),
+            // [Sprint 29] The chat groups, the tournaments, the national teams and their draw.
+            $t('groups', ['groups', 'home'], 'groups',
+                ['ما هي الجروبات؟', 'جروب جروبات دردشة شات واتساب رسائل اصدقاء', 'الجروبات دردشة جماعية مثل واتساب داخل اللعبة. أنشئ جروباً وأضف أصدقاءك بأسماء المستخدمين، أو شارك رابطه فينضم من يفتحه. منشئ الجروب مشرف يضيف ويُخرج ويغيّر الاسم ويجعل غيره مشرفاً. اضغط أي رسالة لترد عليها أو تحذفها. وترسل صورة بزر الكاميرا، ورسالة صوتية بزر الميكروفون حين يكون مربع الكتابة فارغاً (حتى دقيقتين). وقد تحذف الإدارة الرسائل القديمة تلقائياً بعد أيام تحددها.'],
+                ['What are the groups?', 'group groups chat whatsapp messages friends', 'Groups are group chats, like WhatsApp, inside the game. Make one and add your friends by their usernames, or share its link and whoever opens it joins. Its maker is an admin who adds, removes, renames and makes others admins. Tap any message to reply to it or delete it. Send a photo with the camera button, and a voice note with the microphone button while the text box is empty (up to two minutes). The admins may delete old messages automatically after some days.']),
+            $t('league_group', ['groups', 'league'], 'groups',
+                ['ما هو جروب الدوري؟', 'جروب الدوري البطولة مدربين دردشة', 'كل دوري وكل بطولة لهما جروب، أعضاؤه منشئه ومدربوه، ويتغيرون معه: من ينضم يدخل ومن يغادر يخرج. افتحه من صفحة الدوري.'],
+                ['What is the league group?', 'league group tournament coaches chat', 'Every league and tournament has a group of its maker and its coaches, changing with them: whoever joins comes in, whoever leaves goes out. Open it from the league page.']),
+            $t('tournaments', ['tournaments', 'leagues'], 'tournaments',
+                ['كيف أنشئ بطولة؟', 'بطولة بطولات كاس العالم امم افريقيا اوروبا اسيا اندية مخصصة مجموعات خروج المغلوب', 'من «البطولات» ← «بطولة جديدة»: اختر قالباً (كأس العالم، أو كأس العالم للأندية، أو أمم أفريقيا أو أوروبا أو آسيا، أو بطولة مخصصة) فتُملأ الفرق والشكل، وعدّل ما تشاء: من فريقين حتى 32 من المنتخبات والأندية معاً. والنظام: دوري، أو مجموعات ثم إقصاء (1 أو 2 أو 4 أو 8 مجموعات، ويتأهل الأول أو الأولان)، أو خروج المغلوب. ينضم المدربون بكودها ويطلبون فريقاً كالدوري، ولا سوق فيها: كل فريق يلعب بقائمته. وتُدفع بالكوينز عند إنشائها: 20 لكل فريق.'],
+                ['How do I make a tournament?', 'tournament world cup nations africa europe asia clubs custom groups knockout', 'From Tournaments, New tournament: pick a template (World Cup, Club World Cup, Africa, Europe or Asia, or custom) and the teams and shape fill in, then change what you like: two to 32 teams, national teams and clubs together. The format: a league, groups then a knockout (1, 2, 4 or 8 groups, the first one or two through), or a knockout. Coaches join with its code and ask for a team as in a league, and there is no market: every team plays with its squad. It is paid in coins when made: 20 for each team.']),
+            $t('national_teams', ['tournaments'], 'tournaments',
+                ['من أين جاءت المنتخبات؟', 'منتخب منتخبات دولة جنسية لاعبين قائمة', 'كل منتخب من لاعبي جنسيته في البيانات: أفضل 23 (منهم 3 حراس). ويلعب المنتخب إن كان له 14 لاعباً وحارس على الأقل، والباقي يكمّله الأدمن من محرر البيانات. ولو اخترت نادياً ومنتخباً معاً بقي لاعب النادي مع ناديه وأخذ المنتخب من بعده.'],
+                ['Where do the national teams come from?', 'national team nation country nationality players squad', 'Each national team is made from the players of its nationality in the data: its best 23 (three of them keepers). A country plays when it has at least 14 players and a keeper; the admin completes the rest in the data editor. If you pick a club and a national team together, the club keeps its players and the nation takes the next best.']),
+            $t('tournament_draw', ['tournaments'], 'tournaments',
+                ['كيف تعمل قرعة البطولة؟', 'قرعة البطولة مباشرة وعاء اعادة صوت', 'يحدد المنظم موعد قرعة مباشرة يشاهدها كل اللاعبين في نفس اللحظة: كرة تخرج من الوعاء، ثم يُكشف الفريق ويُنطق اسمه ويذهب إلى مجموعته. وفي المجموعات تُقسم الفرق أوعية بقوتها، وفي كل مجموعة فريق من كل وعاء. وبلا موعد تُسحب عند البداية، ومن فاتته يعيد مشاهدتها كما كانت بالضبط، ويتحقق منها ببصمتها المعلنة قبلها.'],
+                ['How does the tournament draw work?', 'tournament draw live pot replay sound', 'The organizer sets a live draw every player watches at the same moment: a ball leaves the bowl, the team is revealed, its name is said aloud, and it goes to its group. In groups the teams are split into pots by strength, one from each pot in every group. With no time set it is drawn at the start; whoever missed it replays it exactly as it was, and checks it against its fingerprint announced beforehand.']),
             $t('draw', ['league'], 'league',
                 ['ما هي القرعة المباشرة؟', 'قرعة القرعه البصمة ترتيب', 'منشئ الدوري يحدد موعد قرعة مباشرة قبل البداية، وتُعلن بصمتها مسبقاً فلا يستطيع أحد تغيير النتيجة. وبدونها تُرتّب الأندية بقوتها عند البداية.'],
                 ['What is the live draw?', 'draw fingerprint order', 'The league\'s creator schedules a live draw before the start, and its fingerprint is announced beforehand so nobody can change the result. Without one, the clubs are ordered by their strength at the start.']),

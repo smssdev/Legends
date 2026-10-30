@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite'];
 
     private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
 
@@ -218,6 +218,17 @@ class MessageText
                 'title' => ['accepted' => 'أعجب اقتراحك فريق التطوير', 'built' => 'نُفّذ اقتراحك في اللعبة', 'rejected' => 'رد فريق التطوير على اقتراحك'][$p['status'] ?? ''] ?? 'رد على اقتراحك',
                 'body' => trim(sprintf('«%s»', $p['title'] ?? '').(($p['coins'] ?? 0) > 0 ? sprintf(' مكافأتك %s كوينز، واسمك في قائمة الشرف.', $p['coins']) : (($p['status'] ?? '') === 'rejected' ? '' : ' واسمك في قائمة الشرف.')).(($p['reply'] ?? '') !== '' ? ' '.$p['reply'] : '')),
                 'link' => '/ideas',
+            ],
+            // [Sprint 29] The end of a tournament's groups, and an invitation to a chat group.
+            'tournament_groups' => [
+                'title' => ($p['through'] ?? false) ? sprintf('تأهلت إلى الأدوار الإقصائية في %s', $p['tournament'] ?? '') : sprintf('ودّعت %s من دور المجموعات', $p['tournament'] ?? ''),
+                'body' => ($p['through'] ?? false) ? 'انتهى دور المجموعات وفريقك بين المتأهلين. شاهد خصمك في شجرة البطولة.' : 'انتهى دور المجموعات ولم يتأهل فريقك. تابع البطولة حتى نهائيها.',
+                'link' => '/leagues/'.($p['league_id'] ?? ''),
+            ],
+            'chat_invite' => [
+                'title' => sprintf('أضافك %s إلى جروب %s', $p['by'] ?? '', $p['group'] ?? ''),
+                'body' => 'افتح الجروب لتقرأ الرسائل وتشارك فيها.',
+                'link' => '/groups/'.($p['group_id'] ?? ''),
             ],
             'slot_opened' => [
                 'title' => sprintf('مبروك! فُتحت فتحة المدرب رقم %s', $p['slot'] ?? ''),

@@ -10,6 +10,7 @@ use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
 use App\Auth\Sessions;
 use App\Auth\Username;
+use App\Chat\ChatGroups;
 use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
@@ -20,6 +21,7 @@ use App\Simulator\Commentary;
 use App\Support\Activity;
 use App\Support\Avatar;
 use App\Support\GameClock;
+use App\Support\GameSettings;
 use App\Support\Mailer;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -301,6 +303,35 @@ class AdminController extends Controller
      * [X54, the owner's request 2026-10-29] Coins to any account, by its five-digit number: an amount, the reason the
      * coach reads, logged; once per idempotency key, so a double tap gives once.
      */
+    /** [X65] The chat groups' settings: how many days their messages are kept (0: always), whether media may be sent, and their size. */
+    public function chat(): JsonResponse
+    {
+        return response()->json([
+            'retention_days' => (int) GameSettings::get('chat.retention_days'),
+            'media' => (bool) GameSettings::get('chat.media'),
+            'groups' => DB::table('chat_groups')->count(),
+            'messages' => DB::table('chat_group_messages')->count(),
+            'media_count' => DB::table('chat_media')->count(),
+            'media_kb' => intdiv((int) DB::table('chat_media')->sum('bytes'), 1024),
+            'oldest' => ($at = DB::table('chat_group_messages')->min('created_at')) ? Carbon::parse($at, 'UTC')->toIso8601ZuluString() : null,
+        ]);
+    }
+
+    public function setChat(Request $request): JsonResponse
+    {
+        $data = $request->validate(['retention_days' => ['required', 'integer', 'between:0,365'], 'media' => ['required', 'boolean']]);
+        GameSettings::set('chat.retention_days', $data['retention_days']);
+        GameSettings::set('chat.media', $data['media']);
+
+        return $this->chat();
+    }
+
+    /** Apply the retention now rather than at the hour. */
+    public function pruneChat(): JsonResponse
+    {
+        return response()->json(['deleted' => ChatGroups::prune()] + $this->chat()->getData(true));
+    }
+
     public function giveCoins(Request $request): JsonResponse
     {
         $data = $request->validate(['account_no' => ['required', 'integer', 'between:10000,99999'], 'amount' => ['required', 'integer', 'min:1', 'max:'.config('game.admin.coins_max')],

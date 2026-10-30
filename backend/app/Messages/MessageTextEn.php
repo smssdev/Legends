@@ -207,6 +207,17 @@ class MessageTextEn
                 'body' => trim(sprintf('«%s»', $p['title'] ?? '').(($p['coins'] ?? 0) > 0 ? sprintf(' Your reward is %s coins, and your name is on the honour roll.', $p['coins']) : (($p['status'] ?? '') === 'rejected' ? '' : ' Your name is on the honour roll.')).(($p['reply'] ?? '') !== '' ? ' '.$p['reply'] : '')),
                 'link' => '/ideas',
             ],
+            // [Sprint 29] The end of a tournament's groups, and an invitation to a chat group.
+            'tournament_groups' => [
+                'title' => ($p['through'] ?? false) ? sprintf('Through to the knockout of %s', $p['tournament'] ?? '') : sprintf('Out of %s in the group stage', $p['tournament'] ?? ''),
+                'body' => ($p['through'] ?? false) ? 'The group stage is over and your team is through. See your opponent in the bracket.' : 'The group stage is over and your team is out. Follow the tournament to its final.',
+                'link' => '/leagues/'.($p['league_id'] ?? ''),
+            ],
+            'chat_invite' => [
+                'title' => sprintf('%s added you to the group %s', $p['by'] ?? '', $p['group'] ?? ''),
+                'body' => 'Open the group to read its messages and join in.',
+                'link' => '/groups/'.($p['group_id'] ?? ''),
+            ],
             'slot_opened' => [
                 'title' => sprintf('Congratulations! Coach slot %s is open', $p['slot'] ?? ''),
                 'body' => sprintf('You now have %s of %s slots open: join a new league or create your own.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' The next one opens in %d days.', (int) config('game.league.slots.every_days')) : ' That is the last of your slots.'),

@@ -564,6 +564,32 @@ return [
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
+    // [Sprint 29] Tournaments: 2 to 32 teams, clubs and national teams together. A national team plays when the data has
+    // nation_min_players of its nationality with a goalkeeper among them, and takes its best nation_squad (with
+    // nation_keepers goalkeepers); a player of a club in the same tournament stays with his club. The draw shows one
+    // ball every reveal_ms. Each template: who it takes (nations of a confederation, all nations, or the strongest
+    // clubs, at most per_league from one league), how many, and its shape.
+    'tournaments' => [
+        'min_teams' => 2, 'max_teams' => 32, 'nation_min_players' => 14, 'nation_squad' => 23, 'nation_keepers' => 3,
+        'group_counts' => [1, 2, 4, 8], 'advance' => [1, 2], 'reveal_ms' => 3500,
+        'templates' => [
+            'world_cup' => ['pool' => 'nations', 'teams' => 32, 'format' => 'groups', 'groups' => 8],
+            'club_world_cup' => ['pool' => 'clubs', 'per_league' => 2, 'teams' => 32, 'format' => 'groups', 'groups' => 8],
+            'afcon' => ['pool' => 'nations', 'confederation' => 'CAF', 'teams' => 16, 'format' => 'groups', 'groups' => 4],
+            'euro' => ['pool' => 'nations', 'confederation' => 'UEFA', 'teams' => 16, 'format' => 'groups', 'groups' => 4],
+            'asian_cup' => ['pool' => 'nations', 'confederation' => 'AFC', 'teams' => 16, 'format' => 'groups', 'groups' => 4],
+            'custom' => ['pool' => 'any', 'teams' => 8, 'format' => 'groups', 'groups' => 2],
+        ],
+    ],
+    // [Sprint 29] Chat groups: members at most, a message's length, how many messages a page brings, and a group's
+    // name. A member sends at most per_minute messages a minute.
+    'chat' => ['max_members' => 256, 'max_length' => 1000, 'page' => 50, 'per_minute' => 20, 'max_groups' => 50,
+        // [X65] A picture is kept at most image_px on its long side (a JPEG); a voice note up to audio_kb and audio_seconds.
+        'image_max_kb' => 8192, 'image_px' => 1280, 'audio_kb' => 1500, 'audio_seconds' => 120,
+        'audio_mimes' => ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/x-m4a', 'video/webm']],
+    // [X65] The settings the admin changes from the panel (App\Support\GameSettings), with their defaults: the chat's
+    // messages older than chat.retention_days are deleted every hour (0: kept), and pictures and voice notes allowed.
+    'settings' => ['chat.retention_days' => 0, 'chat.media' => true],
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.

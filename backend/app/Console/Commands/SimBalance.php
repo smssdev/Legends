@@ -47,7 +47,7 @@ class SimBalance extends Command
         // The favourite: the league's strongest club against the club nearest to it minus the gap, venues alternating.
         $top = $clubs->first();
         $gap = (int) $cfg['favourite_gap_points'] * 100;
-        $weak = MasterClub::where('id', '!=', $top->id)->orderByRaw('abs(strength_cp - ?)', [$top->strength_cp - $gap])->orderBy('id')->first();
+        $weak = MasterClub::where('id', '!=', $top->id)->where('source', '!=', 'nation')->orderByRaw('abs(strength_cp - ?)', [$top->strength_cp - $gap])->orderBy('id')->first();
         $fn = (int) $this->option('favourite');
         $favWins = $this->favouriteWins($top, $weak, $fn, $seed + 1_000_000);
         $summary['favourite_win_%'] = round(100 * $favWins / max(1, $fn), 1);

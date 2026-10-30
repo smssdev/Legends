@@ -10331,10 +10331,1143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tournaments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The tournaments on the game, those waiting for their draw first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The tournaments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            tournaments: components["schemas"]["Tournament"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Make a tournament of clubs and national teams (2 to 32), its shape and optionally a live draw's time */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string | null;
+                        /** @enum {string} */
+                        template: "world_cup" | "club_world_cup" | "afcon" | "euro" | "asian_cup" | "custom";
+                        /** @description Master club ids */
+                        teams: number[];
+                        /** @enum {string} */
+                        format: "league" | "groups" | "knockout";
+                        /** @enum {integer|null} */
+                        group_count?: 1 | 2 | 4 | 8 | null;
+                        /** @enum {integer|null} */
+                        advance_per_group?: 1 | 2 | null;
+                        /** @enum {integer|null} */
+                        legs?: 1 | 2 | null;
+                        rounds_per_day?: number;
+                        round_times?: string[];
+                        prep_days?: number;
+                        /** Format: date-time */
+                        starts_at: string;
+                        /** Format: date-time */
+                        draw_at?: string | null;
+                        starting_budget?: number;
+                        /** @description The maker's own team (a master club id of the tournament) */
+                        club_id?: number | null;
+                        timezone?: string | null;
+                        is_dev?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The tournament */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            tournament: components["schemas"]["Tournament"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What a tournament is made from - the templates with their suggested teams, the national teams, the countries not playable yet */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The catalog */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            templates: {
+                                key: string;
+                                /** @enum {string} */
+                                pool: "nations" | "clubs" | "any";
+                                confederation: string | null;
+                                format: string;
+                                group_count: number;
+                                advance_per_group: number;
+                                legs: number;
+                                teams: number[];
+                            }[];
+                            nations: components["schemas"]["TeamCard"][];
+                            missing: {
+                                name: string;
+                                players: number;
+                                keepers: number;
+                            }[];
+                            limits: {
+                                min_teams: number;
+                                max_teams: number;
+                                group_counts: number[];
+                                advance: number[];
+                                /** @description [X65] The tournament's price: this many coins for each team */
+                                coins_per_team: number;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Clubs to add to a tournament, by name, by league or by ids */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    league?: string;
+                    /** @description Comma-separated master club ids */
+                    ids?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The clubs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            clubs: components["schemas"]["TeamCard"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{league}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** The tournament's page - its teams, the groups' tables (after the draw), the league table and the bracket */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The tournament */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            tournament: components["schemas"]["Tournament"] & {
+                                teams: {
+                                    [key: string]: unknown;
+                                }[];
+                                groups: {
+                                    group: string;
+                                    rows: components["schemas"]["TournamentRow"][];
+                                }[];
+                                table: components["schemas"]["TournamentRow"][];
+                                bracket: {
+                                    stage: string;
+                                    ties: {
+                                        slot: number;
+                                        home: {
+                                            [key: string]: unknown;
+                                        } | null;
+                                        away: {
+                                            [key: string]: unknown;
+                                        } | null;
+                                        home_from: string | null;
+                                        away_from: string | null;
+                                        winner_id: number | null;
+                                        score: number[] | null;
+                                        /** Format: date-time */
+                                        at: string;
+                                        fixture_id: number;
+                                    }[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{league}/draw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The draw, for anyone signed in: its time and hash before; every ball in order after, replayed on the shared clock
+         * @description One ball every `reveal_ms` from `drawn_at`, the same for every screen; a late viewer replays it from the first ball. The owner sets its time with PUT /leagues/{league}/draw.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The draw */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Tournament"] & {
+                            commit: string | null;
+                            seed: number | null;
+                            reveal_ms: number;
+                            server_now: number;
+                            is_owner: boolean;
+                            can_schedule: boolean;
+                            pots: number;
+                            stages: string[];
+                            steps: {
+                                /** @enum {string} */
+                                type: "group" | "slot" | "tie";
+                                club: {
+                                    [key: string]: unknown;
+                                } | null;
+                                pot?: number;
+                                group?: number;
+                                position?: number;
+                                slot?: number;
+                                stage?: string;
+                                side?: string;
+                            }[];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The account's chat groups, the latest talk first, with the last message and the unread count */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The groups */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            groups: components["schemas"]["ChatGroupItem"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Make a group and add coaches by username */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        usernames?: string[];
+                    };
+                };
+            };
+            responses: {
+                201: components["responses"]["ChatGroup"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/join/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Join a group by its link */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    code: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["ChatGroup"];
+                404: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/league/{league}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** A league's or tournament's own group, kept in step with its owner and coaches */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["ChatGroup"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        /** The group, its members and its latest messages (reading them marks them read) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The group */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            group: components["schemas"]["ChatGroup"];
+                            messages: components["schemas"]["ChatMessage"][];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** An admin renames the group */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["ChatGroup"];
+                403: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
+    "/groups/{group}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        /** A page of messages before a message id, oldest first */
+        get: {
+            parameters: {
+                query?: {
+                    before?: number;
+                };
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The messages */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            messages: components["schemas"]["ChatMessage"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Send a message (sent at once on the group's channel chat.{group}, event "chat") */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        body: string;
+                        reply_to?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The message */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: components["schemas"]["ChatMessage"];
+                        };
+                    };
+                };
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X65] Send a picture (kept as a JPEG of at most 1280 pixels) or a voice note (webm, ogg, mp4 or mpeg, up to two minutes), with an optional caption */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @enum {string} */
+                        kind: "image" | "audio";
+                        /** Format: binary */
+                        file: string;
+                        caption?: string | null;
+                        seconds?: number | null;
+                        reply_to?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The message */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: components["schemas"]["ChatMessage"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/media/{message}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                message: number;
+            };
+            cookie?: never;
+        };
+        /** A picture's or voice note's bytes, for the group's members only */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                        "audio/webm": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/messages/{message}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a message (one's own; an admin any) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark read up to a message */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        last_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** An admin adds coaches by username */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        usernames: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The group */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            added: number;
+                            group: components["schemas"]["ChatGroup"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/members/{user}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** An admin removes a member */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["ChatGroup"];
+                403: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/members/{user}/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** An admin makes a member an admin, or not */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        admin: boolean;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["ChatGroup"];
+                403: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Leave the group (not a league's) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X65] The chat groups' settings - the retention in days (0 keeps everything), whether media may be sent - and their size */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminChat"];
+                403: components["responses"]["Error"];
+            };
+        };
+        /** Set the retention (messages older than it are deleted every hour) and whether media may be sent */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        retention_days: number;
+                        media: boolean;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["AdminChat"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/chat/prune": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply the retention now */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminChat"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Tournament: {
+            id: number;
+            name: string;
+            code: string;
+            template: string | null;
+            format: string | null;
+            group_count: number | null;
+            advance_per_group: number | null;
+            legs: number | null;
+            team_count: number;
+            status: string;
+            owner: {
+                id: number;
+                name: string;
+            } | null;
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            draw_at: string | null;
+            /** Format: date-time */
+            drawn_at: string | null;
+            coaches: number;
+        };
+        TeamCard: {
+            id: number;
+            name: string;
+            code: string;
+            league: string;
+            strength_cp: number;
+            colors: string[];
+            crest_url: string;
+            logo: string | null;
+            nation: boolean;
+            confederation: string | null;
+        };
+        TournamentRow: {
+            club: {
+                [key: string]: unknown;
+            } | null;
+            played: number;
+            won: number;
+            drawn: number;
+            lost: number;
+            goals_for: number;
+            goals_against: number;
+            points: number;
+        };
+        ChatGroup: {
+            id: number;
+            name: string;
+            league_id: number | null;
+            is_admin: boolean;
+            /** @description For the admins of a group that is not a league's */
+            invite_url: string | null;
+            members_count: number;
+            members?: {
+                id: number;
+                name: string;
+                username: string;
+                is_admin: boolean;
+                avatar_url: string;
+            }[];
+        };
+        ChatGroupItem: components["schemas"]["ChatGroup"] & {
+            last: components["schemas"]["ChatMessage"] | null;
+            unread: number;
+        };
+        ChatMessage: {
+            id: number;
+            /**
+             * @description A note is the group's own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}. A picture or voice note has its caption as body [X65]
+             * @enum {string}
+             */
+            kind: "text" | "image" | "audio" | "note";
+            deleted: boolean;
+            body: string;
+            user: {
+                id: number;
+                name: string;
+                username: string;
+            } | null;
+            reply_to: {
+                id: number;
+                kind: string;
+                body: string;
+            } | null;
+            /** @description A picture's or voice note's address, for the members only [X65] */
+            media_url?: string | null;
+            /** @description A voice note's length */
+            seconds?: number | null;
+            /** Format: date-time */
+            created_at: string;
+        };
         AssistantQuestion: {
             question: string;
             /** @description Sent back with the question: answered from the guide at once. Null: a question for the AI about the coach's club */
@@ -10628,6 +11761,14 @@ export interface components {
             id: number;
             name: string;
             template: string;
+            /**
+             * @description [Sprint 29] A tournament is a league of its own kind
+             * @enum {string}
+             */
+            kind?: "league" | "tournament";
+            /** @enum {string|null} */
+            format?: "league" | "groups" | "knockout" | null;
+            tournament_template?: string | null;
             /** @description For the owner and approved coaches only */
             code?: string | null;
             team_count: number;
@@ -12538,6 +13679,37 @@ export interface components {
         };
     };
     responses: {
+        /** @description The chat settings */
+        AdminChat: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    retention_days: number;
+                    media: boolean;
+                    groups: number;
+                    messages: number;
+                    media_count: number;
+                    media_kb: number;
+                    /** Format: date-time */
+                    oldest: string | null;
+                    /** @description Messages the prune just deleted */
+                    deleted?: number;
+                };
+            };
+        };
+        /** @description The group */
+        ChatGroup: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    group: components["schemas"]["ChatGroup"];
+                };
+            };
+        };
         /** @description My tactics, the tips, and the next referee once drawn */
         Tactics: {
             headers: {
@@ -12951,6 +14123,7 @@ export interface components {
         };
     };
     parameters: {
+        Group: number;
         League: number;
         JoinRequest: number;
         Club: number;

@@ -8,6 +8,7 @@ use App\Market\Loans;
 use App\Market\Market;
 use App\Staff\Specialists;
 use App\Support\GameClock;
+use App\Tournament\TournamentStage;
 use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 
@@ -129,6 +130,13 @@ class MatchResult
         Loans::returnDue($seasonId);
         // The last league match is in: the prizes by final place (each paid once, by its key).
         if (! $open) {
+            // [Sprint 29] A tournament's groups are over: the knockout is filled from their tables (no league prizes).
+            $league = DB::table('leagues')->join('seasons', 'seasons.league_id', '=', 'leagues.id')->where('seasons.id', $seasonId)->first(['leagues.kind', 'leagues.format']);
+            if ($league?->kind === 'tournament' && $league->format === 'groups') {
+                TournamentStage::groupsDone($seasonId);
+
+                return;
+            }
             Economy::leaguePrizes($seasonId, Standings::order($seasonId));
         }
     }

@@ -21,6 +21,9 @@ const secret = ref<{ secret: string; uri: string } | null>(null)
 const code = ref('')
 const error = ref('')
 const notice = ref('')
+// [X65] The chat groups: how long their messages are kept, and whether pictures and voice notes may be sent.
+type ChatSettings = { retention_days: number; media: boolean; groups: number; messages: number; media_count: number; media_kb: number; oldest: string | null }
+const chat = ref<ChatSettings | null>(null)
 const busy = ref(false)
 
 const SECTIONS = {
@@ -39,6 +42,7 @@ const SECTIONS = {
   backups: { label: 'النسخ', icon: 'finance' },
   commentary: { label: 'قوالب التعليق', icon: 'news' },
   data: { label: 'محرر البيانات', icon: 'team' },
+  chat: { label: 'الجروبات', icon: 'chat' },
 } as const
 type Section = keyof typeof SECTIONS
 const tab = ref<Section>('overview')
@@ -121,6 +125,7 @@ async function show(s: Section) {
   if (s === 'overview') overview.value = (await api.GET('/admin/overview')).data
   if (s === 'activity') { activity.value = (await api.GET('/admin/activity', { params: { query: { days: activityDays.value } } })).data; overview.value ??= (await api.GET('/admin/overview')).data }
   if (s === 'users') await loadUsers()
+  if (s === 'chat') chat.value = (await api.GET('/admin/chat')).data!
   if (s === 'leagues') leagues.value = (await api.GET('/admin/leagues')).data!.leagues
   if (s === 'announcements') announcements.value = (await api.GET('/admin/announcements')).data!.announcements
   if (s === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
@@ -802,6 +807,20 @@ onMounted(load)
 
         <!-- [X62 E8] The game's data editor. -->
         <DataEditor v-if="tab === 'data'" />
+        <!-- [X65] The chat groups' retention and media. -->
+        <section v-if="tab === 'chat' && chat" :aria-label="$t('الجروبات')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
+          <p class="text-sm text-text-muted">{{ $t('{v0} جروب، و{v1} رسالة، و{v2} صورة ورسالة صوتية ({v3} ك.ب).', { v0: chat.groups, v1: chat.messages, v2: chat.media_count, v3: chat.media_kb }) }}</p>
+          <label class="flex flex-wrap items-center gap-2"><b>{{ $t('احذف الرسائل الأقدم من') }}</b>
+            <input v-model.number="chat.retention_days" type="number" min="0" max="365" dir="ltr" class="h-touch w-24 rounded-lg bg-surface-sunk px-3 font-numbers" />
+            <span>{{ $t('يوماً (0: تبقى كلها)') }}</span></label>
+          <label class="flex min-h-touch items-center gap-2"><input v-model="chat.media" type="checkbox" class="size-5" /><b>{{ $t('السماح بالصور والرسائل الصوتية') }}</b></label>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="h-touch rounded-lg bg-gold px-4 font-bold text-on-gold" :disabled="busy"
+              @click="run(async () => { chat = (await api.PUT('/admin/chat', { body: { retention_days: chat!.retention_days, media: chat!.media } })).data!; notice = t('حُفظت إعدادات الجروبات.') })">{{ $t('حفظ') }}</button>
+            <button type="button" class="h-touch rounded-lg bg-surface-sunk px-4 font-bold" :disabled="busy || !chat.retention_days"
+              @click="run(async () => { const d = (await api.POST('/admin/chat/prune')).data!; chat = d; notice = t('حُذفت {v0} رسالة قديمة.', { v0: d.deleted ?? 0 }) })">{{ $t('احذف القديمة الآن') }}</button>
+          </div>
+        </section>
         <template v-if="tab === 'commentary'">
           <details v-for="k in commentary" :key="k.key" class="rounded-xl bg-surface p-4">
             <summary class="flex min-h-touch cursor-pointer items-center justify-between"><span dir="ltr">{{ k.key }}</span><span class="font-numbers text-text-muted">{{ k.count }}</span></summary>

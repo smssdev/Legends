@@ -19,7 +19,7 @@ class SimulatorController extends Controller
 
     public function leagues()
     {
-        return DB::table('master_clubs')->select('league_name as name', DB::raw('count(*) as clubs'), DB::raw('max(strength_cp) as top'))
+        return DB::table('master_clubs')->where('source', '!=', 'nation')->select('league_name as name', DB::raw('count(*) as clubs'), DB::raw('max(strength_cp) as top'))
             ->groupBy('league_name')->orderByDesc('top')->get();
     }
 
@@ -27,7 +27,7 @@ class SimulatorController extends Controller
     {
         $data = $request->validate(['q' => 'nullable|string|max:60', 'league' => 'nullable|string|max:80']);
 
-        return MasterClub::query()
+        return MasterClub::query()->where('source', '!=', 'nation')
             ->when($data['q'] ?? null, fn ($q, $term) => $q->whereLike('name', '%'.$term.'%'))
             ->when($data['league'] ?? null, fn ($q, $league) => $q->where('league_name', $league))
             ->orderByDesc('strength_cp')->limit(60)

@@ -65,6 +65,16 @@ async function decide(r: JoinRequest, approve: boolean) {
 // The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
 const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في لعبة المدرب الأسطورة واختر ناديك: ${league.value.invite_url}` : ''))
 const whatsapp = computed(() => `https://wa.me/?text=${encodeURIComponent(inviteText.value)}`)
+/** [Sprint 29] The league's own group chat, made (and kept in step) as it opens. */
+async function openGroup() {
+  try {
+    const { data } = await api.GET('/groups/league/{league}', { params: { path: { league: Number(props.id) } } })
+    await router.push({ name: 'group', params: { id: data!.group.id } })
+  } catch (e) {
+    error.value = asApiError(e).message
+  }
+}
+
 async function share() {
   if (!league.value?.invite_url) return
   try {
@@ -363,7 +373,18 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </ul>
       </UiCard>
 
-      <RouterLink v-if="league.draw_at || (league.is_owner && league.status === 'waiting')" :to="{ name: 'league-draw', params: { id } }"
+      <!-- [Sprint 29] A tournament's own page and draw; every league's and tournament's group chat. -->
+      <RouterLink v-if="league.kind === 'tournament'" :to="{ name: 'tournament', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
+        <span><b class="block">{{ $t('صفحة البطولة') }}</b><span class="text-sm text-text-muted">{{ $t('المجموعات والأدوار الإقصائية والقرعة') }}</span></span>
+        <span class="font-bold text-gold">←</span>
+      </RouterLink>
+      <button v-if="league.my_club_id || league.is_owner" type="button" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-start" @click="openGroup">
+        <span><b class="block">{{ $t('جروب الدوري') }}</b><span class="text-sm text-text-muted">{{ $t('دردشة مدربي الدوري كلهم') }}</span></span>
+        <span class="font-bold text-gold">←</span>
+      </button>
+
+      <RouterLink v-if="league.kind !== 'tournament' && (league.draw_at || (league.is_owner && league.status === 'waiting'))" :to="{ name: 'league-draw', params: { id } }"
         class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
         <span><b class="block">{{ $t('القرعة المباشرة') }}</b><span class="text-sm text-text-muted">{{ league.drawn_at ? $t('سُحبت: شاهد النتيجة') : league.draw_at ? $t('موعدها محدد: تابعها حية') : $t('حدد موعدها قبل البداية') }}</span></span>
         <span class="font-bold text-gold">←</span>
