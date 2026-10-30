@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\League\ClubLedger;
 use App\Market\Loans;
+use App\Market\SellOn;
 use App\Market\Transfers;
 use App\Models\User;
 use App\Support\GameClock;
@@ -169,6 +170,25 @@ class TransfersTest extends TestCase
         Carbon::setTestNow(GameClock::now()->addHours(49));
         $this->assertSame(1, Transfers::expire());
         $this->assertSame('expired', DB::table('transfer_offers')->where('id', $late)->value('status'));
+    }
+
+    public function test_a_sell_on_clause_pays_the_first_seller_a_share_of_the_next_sale_once(): void
+    {
+        // [X62] The coach buys my player promising me 15% of his next sale; he sells him on, and I get it.
+        $p = $this->players($this->mine)->first();
+        $price = (int) $p->value;
+        $this->actingAs($this->coach)->postJson($this->url('/offers'), ['to_club_id' => $this->mine, 'money' => $price, 'in' => [$p->id], 'sell_on_bp' => 9000, 'idempotency_key' => 'so0'])->assertStatus(422);
+        $id = $this->postJson($this->url('/offers'), ['to_club_id' => $this->mine, 'money' => $price, 'in' => [$p->id], 'sell_on_bp' => 1500, 'idempotency_key' => 'so1'])->assertCreated()->json('offer.id')
+            ?? DB::table('transfer_offers')->where('idempotency_key', "offer:{$this->theirs}:so1")->value('id');
+        $this->actingAs($this->owner)->postJson($this->url("/offers/{$id}/accept"))->assertOk();
+        $this->assertSame(1500, (int) DB::table('players')->where('id', $p->id)->value('sell_on_bp'));
+        $this->assertSame($this->mine, (int) DB::table('players')->where('id', $p->id)->value('sell_on_club_id'));
+
+        $mine = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        $this->assertSame(intdiv(1000000 * 1500, 10000), SellOn::settle($this->theirs, $p->id, 1000000, 'test-sale'));
+        $this->assertSame($mine + 150000, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertSame(0, SellOn::settle($this->theirs, $p->id, 1000000, 'test-sale-2'));
+        $this->assertBooks();
     }
 
     public function test_a_loan_moves_the_player_for_its_rounds_and_sends_him_home(): void

@@ -3,6 +3,7 @@
 namespace App\Economy;
 
 use App\League\ClubLedger;
+use App\Market\SellOn;
 use App\Market\Transfers;
 use App\Messages\Inbox;
 use App\Stadium\Stadium;
@@ -113,6 +114,9 @@ class Economy
             DB::table('players')->where('id', $p->id)->where('club_id', $clubId)->update(['club_id' => null, 'in_pool' => true, 'updated_at' => GameClock::now()]);
             Transfers::left((int) $p->id, $clubId);
             $balance = ClubLedger::post($clubId, 'forced_sale', $money->poolPays((int) $p->base_value), "forced:{$fixtureId}:{$p->id}", "player:{$p->id}");
+            if (SellOn::settle($clubId, (int) $p->id, $money->poolPays((int) $p->base_value), "forced:{$fixtureId}:{$p->id}")) {   // [X62]
+                $balance = ClubLedger::sum($clubId);
+            }
             $sold[] = $p->name;
         }
         DB::table('clubs')->where('id', $clubId)->update(['debt_rounds' => 0]);

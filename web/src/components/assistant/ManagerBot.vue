@@ -98,8 +98,12 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
   <div class="bot-root" :class="props.raised ? 'raised' : ''">
     <!-- W1: the button, and the day's greeting beside it. -->
     <div v-if="!bot.open" class="bot-fab-row">
+      <!-- [X62] The owner's decision (2026-10-30): the button comes alive, two eyes that look around and blink
+           (Sprint 22's still button replaced); still with reduced motion. -->
       <button type="button" class="bot-fab" :aria-label="$t('افتح المدرب المساعد')" @click="show">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 5h20a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" /><path d="M16 6v16" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8" /><circle cx="16" cy="14" r="1.3" fill="currentColor" /></svg>
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 5h20a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 5v-5H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+          <g class="bot-eyes"><ellipse cx="11.5" cy="13.5" rx="2.6" ry="3" fill="currentColor" /><ellipse cx="20.5" cy="13.5" rx="2.6" ry="3" fill="currentColor" />
+            <g class="bot-pupils"><circle cx="12.2" cy="12.8" r="0.9" fill="var(--color-gold-light)" /><circle cx="21.2" cy="12.8" r="0.9" fill="var(--color-gold-light)" /></g></g></svg>
         <span class="bot-on" />
       </button>
       <div v-if="hello" class="bot-hello">
@@ -227,6 +231,10 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 /* [X61] The send button inside the field, at its end, so it never covers what is typed. */
 .bot-send { position: absolute; bottom: max(0.75rem, env(safe-area-inset-bottom)); inset-inline-end: 0.75rem; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform var(--duration-fast) var(--ease-soft); font-weight: 800; color: var(--color-on-gold); background: var(--color-gold); }
 .bot-send:disabled { opacity: 0.5; }
+.bot-eyes { transform-origin: 16px 13.5px; animation: bot-blink 4.5s infinite; }
+.bot-pupils { animation: bot-look 6s var(--ease-soft) infinite; }
+@keyframes bot-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes bot-look { 0%, 30% { transform: none; } 40%, 55% { transform: translateX(-1.4px); } 65%, 80% { transform: translateX(1.4px); } 90%, 100% { transform: none; } }
 .bot-dots { display: inline-flex; gap: 0.25rem; }
 .bot-dots i { width: 0.4rem; height: 0.4rem; border-radius: 999px; background: var(--color-text-muted); opacity: 0.6; animation: bot-dot 1.2s var(--ease-soft) infinite; }
 /* [X61] The three dots bounce one after the other while he writes; a message rises in. */

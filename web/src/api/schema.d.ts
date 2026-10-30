@@ -4618,6 +4618,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/contracts/{player}/renew": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                player: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E1] Renew a contract for 1 to max_seasons more seasons: the player stays with the club into them, for a signing fee */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    player: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        seasons: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The contracts after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Contracts"];
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/market/academy": {
         parameters: {
             query?: never;
@@ -5572,6 +5623,18 @@ export interface paths {
                         "application/json": {
                             /** @enum {string} */
                             side: "home" | "away";
+                            /** @description [X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal */
+                            shots?: {
+                                /** @enum {string} */
+                                team: "home" | "away";
+                                minute: number;
+                                /** @enum {string} */
+                                result: "goal" | "saved" | "blocked" | "missed";
+                                quality: string;
+                                shooter?: number | null;
+                                x: number;
+                                y: number;
+                            }[];
                             /** @enum {string} */
                             result: "win" | "draw" | "loss";
                             score: {
@@ -7715,6 +7778,306 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X62 E8] The data editor: search the latest data's players or clubs */
+        get: {
+            parameters: {
+                query: {
+                    kind: "players" | "clubs";
+                    q?: string;
+                    club_id?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Up to 40 rows */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            rows: {
+                                [key: string]: unknown;
+                            }[];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/leagues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X62 E8] The data's leagues with their clubs, those under six flagged */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The leagues */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            leagues: {
+                                name: string;
+                                clubs: number;
+                                too_small: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/players": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E8] A new player in a club (his attributes start at his rating) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditPlayer"];
+                };
+            };
+            responses: {
+                /** @description The player */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/players/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [X62 E8] Remove a player no league has taken */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            deleted: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        /** [X62 E8] Correct a player (only the fields sent), logged with what it was */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditPlayer"];
+                };
+            };
+            responses: {
+                /** @description The player */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
+    "/admin/data/clubs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X62 E8] A new club in a data league */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditClub"];
+                };
+            };
+            responses: {
+                /** @description The club */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/data/clubs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** [X62 E8] Correct a club (only the fields sent), logged with what it was */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditClub"];
+                };
+            };
+            responses: {
+                /** @description The club */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            row: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        trace?: never;
+    };
     "/admin/coins": {
         parameters: {
             query?: never;
@@ -9473,6 +9836,8 @@ export interface components {
             /** @description The offering club's players given */
             out?: number[];
             idempotency_key: string;
+            /** @description [X62] The share of the next sale of the players taken promised to the other club (basis points, up to economy.sell_on_max_bp) */
+            sell_on_bp?: number;
         };
         TradePlayer: {
             id: number;
@@ -9488,6 +9853,8 @@ export interface components {
             /** @enum {string} */
             status: "pending" | "accepted" | "rejected" | "countered" | "cancelled" | "expired";
             money: number;
+            /** @description [X62] The sell-on share promised with it */
+            sell_on_bp?: number;
             from: {
                 id: number;
                 name: string;
@@ -10433,6 +10800,25 @@ export interface components {
             /** @description At or past his potential: training goes on, much slower [X16] */
             over_potential?: boolean;
         };
+        EditPlayer: {
+            name?: string;
+            position?: string;
+            /** @enum {string} */
+            line?: "gk" | "def" | "mid" | "att";
+            age?: number;
+            nationality?: string | null;
+            overall?: number;
+            potential?: number;
+            value?: number;
+            master_club_id?: number;
+        };
+        EditClub: {
+            name?: string;
+            code?: string;
+            league_name?: string;
+            color_primary?: string;
+            color_secondary?: string;
+        };
         Contracts: {
             players: {
                 id: number;
@@ -10442,7 +10828,13 @@ export interface components {
                 value: number;
                 wage: number;
                 release: number;
+                /** @description [X62] The last season under contract */
+                until: number;
+                /** @description [X62] The fee to renew one more season */
+                renew_one: number;
             }[];
+            season: number;
+            max_seasons: number;
             wages_per_round: number;
             cap_per_round: number;
             /** @description The squad value the club may still add */

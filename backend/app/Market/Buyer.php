@@ -237,6 +237,7 @@ class Buyer
             Transfers::left((int) $p->id, (int) $l->club_id);
             // What he brings over his cost counts against the season's room [Sprint 23].
             self::post((int) $l->club_id, 'listing_sale', (int) $l->price, self::basis($p), "listing:{$l->id}:{$p->id}", "player:{$p->id}");
+            SellOn::settle((int) $l->club_id, (int) $p->id, (int) $l->price, "listing:{$l->id}:{$p->id}");   // [X62]
             Inbox::send($l->user_id ? (int) $l->user_id : null, 'listing_sold', ['player' => $p->name, 'price' => (int) $l->price,
                 'league_id' => $l->league_id], (int) $l->league_id, (int) $l->club_id);
 

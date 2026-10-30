@@ -64,7 +64,7 @@ class TransferController extends Controller
     {
         $club = $this->club($request, $league);
         $data = $this->terms($request, true);
-        $id = Transfers::offer($club->id, $data['to_club_id'], $data['money'] ?? 0, $data['in'], $data['out'] ?? [], "offer:{$club->id}:{$data['idempotency_key']}");
+        $id = Transfers::offer($club->id, $data['to_club_id'], $data['money'] ?? 0, $data['in'], $data['out'] ?? [], "offer:{$club->id}:{$data['idempotency_key']}", null, (int) ($data['sell_on_bp'] ?? 0));
 
         return response()->json(['offer' => $this->view(DB::table('transfer_offers')->find($id), $club->id)], 201);
     }
@@ -111,6 +111,7 @@ class TransferController extends Controller
             'in' => 'required|array|min:1|max:5', 'in.*' => 'integer',
             'out' => 'nullable|array|max:5', 'out.*' => 'integer',
             'idempotency_key' => 'required|string|max:64',
+            'sell_on_bp' => 'nullable|integer|min:0',   // [X62] the sell-on share promised to the seller
         ]);
     }
 
@@ -124,7 +125,7 @@ class TransferController extends Controller
         $clubs = DB::table('clubs')->whereIn('id', [$o->from_club_id, $o->to_club_id])->pluck('name', 'id');
 
         return [
-            'id' => $o->id, 'status' => $o->status, 'money' => (int) $o->money,
+            'id' => $o->id, 'status' => $o->status, 'money' => (int) $o->money, 'sell_on_bp' => (int) ($o->sell_on_bp ?? 0),
             'from' => ['id' => $o->from_club_id, 'name' => $clubs[$o->from_club_id] ?? ''],
             'to' => ['id' => $o->to_club_id, 'name' => $clubs[$o->to_club_id] ?? ''],
             'incoming' => $o->to_club_id === $me, 'counter_of' => $o->counter_of,

@@ -13,6 +13,7 @@ use App\League\MatchRunner;
 use App\League\MatchSocial;
 use App\League\Members;
 use App\League\MissedMatches;
+use App\League\ShotMap;
 use App\League\TeamSheet;
 use App\Models\Club;
 use App\Simulator\CoachWindows;
@@ -186,7 +187,8 @@ class MatchController extends Controller
         $row = DB::table('match_reports')->where('match_id', $m->id)->where('club_id', $you === 'home' ? $f->home_id : $f->away_id)->first();
         abort_unless($m->status === 'finished' && $row, 409, 'المباراة لم تنتهِ بعد.');
 
-        return response()->json(['side' => $you] + json_decode($row->report, true));
+        // [X62 E10] And its shot map.
+        return response()->json(['side' => $you] + json_decode($row->report, true) + ['shots' => ShotMap::of($m->id, (int) $f->home_id)]);
     }
 
     /**

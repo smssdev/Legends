@@ -360,5 +360,10 @@
   "الإعارة من جولة إلى %d جولات، ومقابلها حتى %d%% من قيمة اللاعب.": "A loan is 1 to %d rounds, for up to %d%% of the player's value.",
   "لا طلب إعارة بهذا الرقم ينتظرك.": "No loan request with this number waits for you.",
   "تعويض إنهاء عقد": "Contract release",
-  "سقف الرواتب: هذا اللاعب يتجاوز ما يتحمله ناديك من رواتب هذا الموسم. بِع أو أنهِ عقد لاعب أولاً.": "Wage cap: this player goes over the wages your club can carry this season. Sell or release a player first."
+  "سقف الرواتب: هذا اللاعب يتجاوز ما يتحمله ناديك من رواتب هذا الموسم. بِع أو أنهِ عقد لاعب أولاً.": "Wage cap: this player goes over the wages your club can carry this season. Sell or release a player first.",
+  "نسبة من بيع لاعب": "Sell-on share",
+  "تجديد عقد": "Contract renewal",
+  "نسبة البيع القادم من 0 إلى %d%%، وعلى لاعب تأخذه.": "The sell-on share is 0 to %d%%, on a player you take.",
+  "التجديد من موسم إلى %d مواسم.": "A renewal is 1 to %d seasons.",
+  "لاعب في دوري قائم: صحّح بياناته بدل حذفه.": "A player in a running league: correct his data instead of deleting him."
 }

@@ -110,10 +110,24 @@ class SeasonEnd
         ]);
         $clubs = DB::table('clubs')->where('league_id', $league->id)->get();
         $byMaster = $clubs->pluck('id', 'master_club_id');
+        // [X62] Every loan still running ends with the season: its player goes home first.
+        foreach (DB::table('player_loans')->where('season_id', $old->id)->where('status', 'active')->get() as $l) {
+            DB::table('players')->where('id', $l->player_id)->where('club_id', $l->borrower_club_id)->update(['club_id' => $l->owner_club_id]);
+            DB::table('player_loans')->where('id', $l->id)->update(['status' => 'returned', 'updated_at' => $now]);
+        }
         // The players: each back with his own club as the data has him; the rest leave the league's clubs.
+        // [X62 E1] Except a player whose renewed contract runs into the new season: he stays with his club, with his
+        // rating, training and value; only his fitness, injuries and bans start again.
         foreach (DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
-            ->where('players.league_id', $league->id)->get(['players.id', 'master_players.master_club_id', 'master_players.overall', 'master_players.value']) as $p) {
+            ->where('players.league_id', $league->id)->get(['players.id', 'players.club_id', 'players.contract_until', 'master_players.master_club_id', 'master_players.overall', 'master_players.value']) as $p) {
+            if ($p->club_id && $p->contract_until !== null && (int) $p->contract_until >= $season->number) {
+                DB::table('players')->where('id', $p->id)->update(['fitness' => 100, 'injured_matches' => 0, 'suspended_matches' => 0, 'training_progress' => 0,
+                    'in_pool' => false, 'scouted_by' => null, 'sell_on_club_id' => null, 'sell_on_bp' => null, 'updated_at' => $now]);
+
+                continue;
+            }
             DB::table('players')->where('id', $p->id)->update([
+                'contract_until' => null, 'sell_on_club_id' => null, 'sell_on_bp' => null,
                 'club_id' => $byMaster[$p->master_club_id] ?? null, 'overall' => $p->overall, 'base_value' => $p->value, 'value' => $p->value,
                 'training_bonus' => 0, 'training_progress' => 0, 'fitness' => 100, 'injured_matches' => 0, 'suspended_matches' => 0,
                 'in_pool' => false, 'scouted_by' => null, 'updated_at' => $now,

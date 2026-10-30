@@ -1844,6 +1844,17 @@ paths:
         '200': { description: The contracts after it, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts/{player}/renew:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: '[X62 E1] Renew a contract for 1 to max_seasons more seasons: the player stays with the club into them, for a signing fee'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [seasons], properties: { seasons: { type: integer } } } } } }
+      responses:
+        '200': { description: The contracts after it, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market/academy:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:
@@ -2189,6 +2200,10 @@ paths:
                 required: [side, result, score, reasons, verdict, ratings, stats, timeline, readings]
                 properties:
                   side: { type: string, enum: [home, away] }
+                  shots:
+                    type: array
+                    description: '[X62 E10] The shot map: each shot on a 100 x 100 half pitch, x towards the goal'
+                    items: { type: object, required: [team, minute, result, quality, x, y], properties: { team: { type: string, enum: [home, away] }, minute: { type: integer }, result: { type: string, enum: [goal, saved, blocked, missed] }, quality: { type: string }, shooter: { type: integer, nullable: true }, x: { type: integer }, y: { type: integer } } }
                   result: { type: string, enum: [win, draw, loss] }
                   score: { type: object, additionalProperties: { type: integer } }
                   shootout: { type: object, nullable: true, additionalProperties: { type: integer } }
@@ -2963,6 +2978,63 @@ paths:
               schema: { type: object, required: [sent, announcement], properties: { sent: { type: integer }, announcement: { $ref: '#/components/schemas/AnnouncementCard' } } }
         '403': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/ValidationError' }
+  /admin/data:
+    get:
+      tags: [admin]
+      summary: '[X62 E8] The data editor: search the latest data''s players or clubs'
+      parameters:
+        - { name: kind, in: query, required: true, schema: { type: string, enum: [players, clubs] } }
+        - { name: q, in: query, required: false, schema: { type: string, maxLength: 60 } }
+        - { name: club_id, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200': { description: Up to 40 rows, content: { application/json: { schema: { type: object, required: [rows], properties: { rows: { type: array, items: { type: object, additionalProperties: true } } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /admin/data/leagues:
+    get:
+      tags: [admin]
+      summary: '[X62 E8] The data''s leagues with their clubs, those under six flagged'
+      responses:
+        '200': { description: The leagues, content: { application/json: { schema: { type: object, required: [leagues], properties: { leagues: { type: array, items: { type: object, required: [name, clubs, too_small], properties: { name: { type: string }, clubs: { type: integer }, too_small: { type: boolean } } } } } } } } }
+  /admin/data/players:
+    post:
+      tags: [admin]
+      summary: '[X62 E8] A new player in a club (his attributes start at his rating)'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditPlayer' } } } }
+      responses:
+        '201': { description: The player, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/data/players/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      tags: [admin]
+      summary: '[X62 E8] Correct a player (only the fields sent), logged with what it was'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditPlayer' } } } }
+      responses:
+        '200': { description: The player, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [admin]
+      summary: '[X62 E8] Remove a player no league has taken'
+      responses:
+        '200': { description: Removed, content: { application/json: { schema: { type: object, required: [deleted], properties: { deleted: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/data/clubs:
+    post:
+      tags: [admin]
+      summary: '[X62 E8] A new club in a data league'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditClub' } } } }
+      responses:
+        '201': { description: The club, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/data/clubs/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      tags: [admin]
+      summary: '[X62 E8] Correct a club (only the fields sent), logged with what it was'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EditClub' } } } }
+      responses:
+        '200': { description: The club, content: { application/json: { schema: { type: object, required: [row], properties: { row: { type: object, additionalProperties: true } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
   /admin/coins:
     post:
       tags: [admin]
@@ -3980,6 +4052,7 @@ components:
         in: { type: array, items: { type: integer }, minItems: 1, maxItems: 5, description: The other club's players wanted }
         out: { type: array, items: { type: integer }, maxItems: 5, description: The offering club's players given }
         idempotency_key: { type: string, maxLength: 64 }
+        sell_on_bp: { type: integer, minimum: 0, description: '[X62] The share of the next sale of the players taken promised to the other club (basis points, up to economy.sell_on_max_bp)' }
     TradePlayer:
       type: object
       required: [id, name, position, line, age, overall, value]
@@ -3991,6 +4064,7 @@ components:
         id: { type: integer }
         status: { type: string, enum: [pending, accepted, rejected, countered, cancelled, expired] }
         money: { type: integer }
+        sell_on_bp: { type: integer, description: '[X62] The sell-on share promised with it' }
         from: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         to: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         incoming: { type: boolean, description: True when it is mine to answer }
@@ -4695,13 +4769,21 @@ components:
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
+    EditPlayer:
+      type: object
+      properties: { name: { type: string }, position: { type: string }, line: { type: string, enum: [gk, def, mid, att] }, age: { type: integer }, nationality: { type: string, nullable: true }, overall: { type: integer }, potential: { type: integer }, value: { type: integer }, master_club_id: { type: integer } }
+    EditClub:
+      type: object
+      properties: { name: { type: string }, code: { type: string }, league_name: { type: string }, color_primary: { type: string }, color_secondary: { type: string } }
     Contracts:
       type: object
-      required: [players, wages_per_round, cap_per_round, room, rounds_left]
+      required: [players, wages_per_round, cap_per_round, room, rounds_left, season, max_seasons]
       properties:
         players:
           type: array
-          items: { type: object, required: [id, name, position, age, value, wage, release], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, age: { type: integer }, value: { type: integer }, wage: { type: integer }, release: { type: integer } } }
+          items: { type: object, required: [id, name, position, age, value, wage, release, until, renew_one], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, age: { type: integer }, value: { type: integer }, wage: { type: integer }, release: { type: integer }, until: { type: integer, description: '[X62] The last season under contract' }, renew_one: { type: integer, description: '[X62] The fee to renew one more season' } } }
+        season: { type: integer }
+        max_seasons: { type: integer }
         wages_per_round: { type: integer }
         cap_per_round: { type: integer }
         room: { type: integer, description: The squad value the club may still add }

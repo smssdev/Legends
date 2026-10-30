@@ -6,6 +6,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
+import UiTabs from '../../components/ui/UiTabs.vue'
 import { money } from '../../lib/format'
 import { t } from '../../lib/i18n'
 import { useToast } from '../../stores/toast'
@@ -15,6 +16,23 @@ const props = defineProps<{ leagueId: number }>()
 const emit = defineEmits<{ changed: [] }>()
 const c = ref<C | null>(null)
 const ending = ref<C['players'][number] | null>(null)
+// [X62] Renewing: the player stays into the next seasons, for a signing fee a season.
+const renewing = ref<C['players'][number] | null>(null)
+const seasons = ref(1)
+async function renew() {
+  if (!renewing.value) return
+  busy.value = true
+  try {
+    await ensureCsrf()
+    c.value = (await api.POST('/leagues/{league}/team/contracts/{player}/renew', { params: { path: { league: props.leagueId, player: renewing.value.id } }, body: { seasons: seasons.value } })).data ?? null
+    toast.show(t('جدّدت عقد {v0}.', { v0: renewing.value.name }))
+    renewing.value = null
+    emit('changed')
+  } catch (e) {
+    toast.show(asApiError(e).message, 'error')
+  }
+  busy.value = false
+}
 const busy = ref(false)
 const open = ref(false)
 const toast = useToast()
@@ -55,10 +73,20 @@ onMounted(load)
         <li v-for="p in c.players" :key="p.id" class="flex min-h-touch items-center gap-2 border-t border-text/5 py-1">
           <span class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi> <span class="text-xs text-text-muted" dir="ltr">{{ p.position }}</span></span>
           <span class="font-numbers text-xs text-text-muted" dir="ltr">{{ money(p.wage) }}</span>
+          <span class="text-xs" :class="p.until > c.season ? 'text-success' : 'text-text-muted'">{{ $t('حتى الموسم {v0}', { v0: p.until }) }}</span>
+          <button type="button" class="h-9 rounded-md px-2 text-xs font-bold text-gold hover:bg-gold/10" @click="renewing = p; seasons = 1">{{ $t('جدّد') }}</button>
           <button type="button" class="h-9 rounded-md px-2 text-xs font-bold text-danger hover:bg-live/10" @click="ending = p">{{ $t('إنهاء') }}</button>
         </li>
       </ul>
     </template>
+    <UiDialog :open="!!renewing" title="تجديد عقد" @close="renewing = null">
+      <template v-if="renewing">
+        <p class="mb-3 text-sm">{{ $t('يبقى {v0} مع ناديك في المواسم القادمة بتقييمه وتدريبه، بدل أن يعود إلى ناديه في البيانات.', { v0: renewing.name }) }}</p>
+        <UiTabs :model-value="String(seasons)" :items="Array.from({ length: c?.max_seasons ?? 3 }, (_, i) => ({ key: String(i + 1), label: $t('{v0} موسم', { v0: i + 1 }) }))" @update:model-value="(v) => (seasons = Number(v))" label="المواسم" fill class="mb-3" />
+        <p class="mb-3 text-sm">{{ $t('رسوم التوقيع: {v0}', { v0: money(renewing.renew_one * seasons) }) }}</p>
+        <div class="flex gap-2"><UiButton block :loading="busy" @click="renew">{{ $t('جدّد العقد') }}</UiButton><UiButton variant="quiet" @click="renewing = null">{{ $t('إلغاء') }}</UiButton></div>
+      </template>
+    </UiDialog>
     <UiDialog :open="!!ending" title="إنهاء عقد" @close="ending = null">
       <p v-if="ending" class="mb-3 text-sm">{{ $t('يغادر {v0} إلى السوق، وتدفع تعويضاً {v1} (نصف رواتبه الباقية هذا الموسم).', { v0: ending.name, v1: money(ending.release) }) }}</p>
       <div class="flex gap-2"><UiButton variant="danger" block :loading="busy" @click="end">{{ $t('أنهِ العقد') }}</UiButton><UiButton variant="quiet" @click="ending = null">{{ $t('إلغاء') }}</UiButton></div>

@@ -150,6 +150,8 @@ return [
         // this share of the league's money scale, about a season's gate and sponsors (sim:economy). The cap of a
         // listing and the instant sale's pay shrink to fit (App\Market\Buyer).
         'max_listings' => 4,
+        // [X62] The sell-on clause a buyer may promise the selling coach: up to this share of the player's next sale.
+        'sell_on_max_bp' => 2000,
         'sale_profit_bp_per_season' => 500,
         // Sprint 23 (first numbers, checked by sim:economy; docs/sprints/sprint-23.md). "Scale" is the league's
         // average squad value when it starts, so a small league's money is small like its prices.
@@ -612,6 +614,7 @@ return [
     'loans' => ['max_rounds' => 6, 'max_fee_bp' => 2000],
     // [X61 E1] The contracts within a season: the squad's value up to wage_cap_bp of the larger of the league's scale
     // and the club's own squad in the data; ending one early costs release_bp of the wages left in the season.
-    'contracts' => ['wage_cap_bp' => 16000, 'release_bp' => 5000],
+    // [X62] Renewing for up to max_seasons more seasons costs renew_fee_bp of his wages over them as a signing fee.
+    'contracts' => ['wage_cap_bp' => 16000, 'release_bp' => 5000, 'renew_fee_bp' => 2000, 'max_seasons' => 3],
     'academy' => ['days' => 3, 'offers' => 3, 'max_age' => 19, 'range' => 4, 'price_bp' => 6000, 'per_season' => 2],
 ];

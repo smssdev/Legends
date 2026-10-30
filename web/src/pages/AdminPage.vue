@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import DataEditor from './admin/DataEditor.vue'
 import AnnouncementCard from '../components/AnnouncementCard.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
@@ -35,6 +36,7 @@ const SECTIONS = {
   alliances: { label: 'بطولات التحالفات', icon: 'match' },
   backups: { label: 'النسخ', icon: 'finance' },
   commentary: { label: 'قوالب التعليق', icon: 'news' },
+  data: { label: 'محرر البيانات', icon: 'team' },
 } as const
 type Section = keyof typeof SECTIONS
 const tab = ref<Section>('overview')
@@ -667,6 +669,8 @@ onMounted(load)
           </div>
         </section>
 
+        <!-- [X62 E8] The game's data editor. -->
+        <DataEditor v-if="tab === 'data'" />
         <template v-if="tab === 'commentary'">
           <details v-for="k in commentary" :key="k.key" class="rounded-xl bg-surface p-4">
             <summary class="flex min-h-touch cursor-pointer items-center justify-between"><span dir="ltr">{{ k.key }}</span><span class="font-numbers text-text-muted">{{ k.count }}</span></summary>

@@ -55,10 +55,10 @@ const unlist = (p: Mine) => run(`سُحب ${p.name} من القائمة.`, () =>
 
 // ---------------------------------------------------------------- the composer
 type Squad = { id: number; name: string; position: string; line: string; overall: number; value: number }
-const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, in: [] as number[], out: [] as number[] })
+const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, sellOn: 0, in: [] as number[], out: [] as number[] })
 const theirs = ref<Squad[]>([])
 async function compose(to: number, toName: string, opts: { in?: number[]; out?: number[]; money?: number; counterOf?: number } = {}) {
-  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, in: opts.in ?? [], out: opts.out ?? [] })
+  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, sellOn: 0, in: opts.in ?? [], out: opts.out ?? [] })
   theirs.value = []
   try {
     const { data } = await api.GET('/leagues/{league}/clubs/{club}', { params: { path: { league: props.leagueId, club: to } } })
@@ -75,7 +75,7 @@ function send() {
   const label = draft.counterOf ? `أُرسل ردك إلى ${draft.toName}.` : `أُرسل عرضك إلى ${draft.toName}.`
   run(label, () => draft.counterOf
     ? api.POST('/leagues/{league}/transfers/offers/{offer}/counter', { params: { path: { league: props.leagueId, offer: draft.counterOf } }, body })
-    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to } })).then(() => { if (!error.value) draft.open = false })
+    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to, sell_on_bp: draft.sellOn * 100 } })).then(() => { if (!error.value) draft.open = false })
 }
 // A counter: I want what he offered of his, and I give what he asked of mine.
 const counter = (o: Offer) => compose(o.from.id, o.from.name, { counterOf: o.id, in: o.out.map((p) => p.id), out: o.in.map((p) => p.id), money: 0 })
@@ -188,6 +188,10 @@ onMounted(load)
         </div>
         <label class="flex flex-col gap-1 text-sm font-bold">{{ $t('والمال من أموال النادي') }}
           <input v-model.number="draft.money" type="number" min="0" inputmode="numeric" class="h-touch rounded-md bg-surface-sunk px-3 font-numbers" dir="ltr" />
+        </label>
+        <!-- [X62] The sell-on clause: a share of the next sale promised to the other coach (a new offer only). -->
+        <label v-if="!draft.counterOf" class="flex flex-col gap-1 text-sm font-bold">{{ $t('نسبة له من بيعك القادم لهم (اختياري)') }}
+          <span class="flex items-center gap-2"><input v-model.number="draft.sellOn" type="range" min="0" max="20" step="5" class="h-11 flex-1 accent-gold" :aria-valuetext="`${draft.sellOn}%`" /><b class="w-12 text-center font-numbers" dir="ltr">{{ draft.sellOn }}%</b></span>
         </label>
         <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}. المسموح: من 50% إلى 200% من قيمة ما تطلب.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
         <div class="flex gap-2">

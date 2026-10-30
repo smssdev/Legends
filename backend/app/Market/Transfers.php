@@ -63,11 +63,15 @@ class Transfers
      * A new offer from one coach's club to another's. $in: the other club's players wanted; $out: his own given.
      * Checked now (so the coach hears at once) and again when accepted.
      */
-    public static function offer(int $fromClub, int $toClub, int $money, array $in, array $out, string $key, ?int $counterOf = null): int
+    public static function offer(int $fromClub, int $toClub, int $money, array $in, array $out, string $key, ?int $counterOf = null, int $sellOnBp = 0): int
     {
         Integrity::assertMarket($fromClub);
 
-        return DB::transaction(function () use ($fromClub, $toClub, $money, $in, $out, $key, $counterOf) {
+        if ($sellOnBp < 0 || $sellOnBp > (int) config('game.economy.sell_on_max_bp') || ($sellOnBp > 0 && ! $in)) {
+            throw new HttpException(422, sprintf(__('نسبة البيع القادم من 0 إلى %d%%، وعلى لاعب تأخذه.'), intdiv((int) config('game.economy.sell_on_max_bp'), 100)));
+        }
+
+        return DB::transaction(function () use ($fromClub, $toClub, $money, $in, $out, $key, $counterOf, $sellOnBp) {
             $done = DB::table('transfer_offers')->where('idempotency_key', $key)->value('id');
             if ($done) {
                 return (int) $done;
@@ -83,7 +87,7 @@ class Transfers
             $now = GameClock::now();
             $id = DB::table('transfer_offers')->insertGetId([
                 'league_id' => $from->league_id, 'season_id' => $season, 'from_club_id' => $fromClub, 'to_club_id' => $toClub,
-                'money' => $money, 'status' => 'pending', 'counter_of' => $counterOf, 'idempotency_key' => $key,
+                'money' => $money, 'status' => 'pending', 'counter_of' => $counterOf, 'idempotency_key' => $key, 'sell_on_bp' => $sellOnBp,
                 'expires_at' => $now->copy()->addHours((int) config('game.economy.offer_hours')), 'created_at' => $now, 'updated_at' => $now,
             ]);
             DB::table('offer_items')->insert([
@@ -125,7 +129,14 @@ class Transfers
             if ($o->money > 0) {
                 ClubLedger::post($from->id, 'transfer_buy', -(int) $o->money, "offer:{$offerId}:pay", "offer:{$offerId}", spend: true);
                 ClubLedger::post($to->id, 'transfer_sale', (int) $o->money, "offer:{$offerId}:get", "offer:{$offerId}");
+                // [X62] A clause on a player the seller had bought: its share of this money, split by the players' values.
+                $total = max(1, $value($in));
+                foreach ($in as $p) {
+                    SellOn::settle($to->id, $p, intdiv((int) $o->money * (int) DB::table('players')->where('id', $p)->value('value'), $total), "offer:{$offerId}:{$p}");
+                }
             }
+            // [X62] And this deal's own clause, on the players the buyer took.
+            SellOn::promise($in, $to->id, (int) ($o->sell_on_bp ?? 0));
             // The money goes with the first player the payer receives (the pair cap reads the moves).
             $first = true;
             foreach ([[$in, $to->id, $from->id], [$out, $from->id, $to->id]] as [$players, $was, $goes]) {

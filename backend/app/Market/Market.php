@@ -223,7 +223,9 @@ class Market
             }
             Transfers::left($playerId, $clubId);
 
-            return Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
+            $balance = Buyer::post($clubId, 'pool_sale', $pays, Buyer::basis($p), $key, "player:{$playerId}");
+
+            return SellOn::settle($clubId, $playerId, $pays, $key) ? ClubLedger::sum($clubId) : $balance;   // [X62]
         });
     }
 

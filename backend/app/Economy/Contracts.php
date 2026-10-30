@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * [X61 E1] The players' contracts within a season (every season starts again from the data, so a contract runs to
- * the season's end): each player's wage a round (his share of the wages the club already pays, Money::wages), a wage
+ * [X61 E1] The players' contracts: a contract runs to the season's end (the next season starts again from the
+ * data) unless the coach renews it for more seasons [X62]: then the player stays with the club into those seasons,
+ * for a signing fee of renew_fee_bp of his wages over them. Each player's wage a round (his share of the wages the club already pays, Money::wages), a wage
  * cap (the squad's value may grow to wage_cap_bp of the larger of the league's scale and the club's own squad in the
  * data), and ending a contract early: the player leaves for the market and the club pays release_bp of the wages left
  * in the season.
@@ -62,7 +63,7 @@ class Contracts
             Market::assertKeeps($club->id, $p, (int) config('game.economy.min_squad'), __('لا يمكن أن ينزل فريقك عن %d لاعباً.'));
             $season = League::find($club->league_id)->season;
             $pay = self::release($club, $season, (int) $p->value);
-            if (DB::table('players')->where('id', $playerId)->where('club_id', $club->id)->update(['club_id' => null, 'in_pool' => false, 'updated_at' => GameClock::now()]) !== 1) {
+            if (DB::table('players')->where('id', $playerId)->where('club_id', $club->id)->update(['club_id' => null, 'in_pool' => false, 'contract_until' => null, 'updated_at' => GameClock::now()]) !== 1) {
                 throw new HttpException(409, 'تغير حال اللاعب، حاول مجدداً.');
             }
             DB::table('training_slots')->where('player_id', $playerId)->delete();
@@ -75,18 +76,56 @@ class Contracts
         });
     }
 
+    /** [X62] The signing fee to keep this player `seasons` more seasons. */
+    public static function renewal(int $value, int $rounds, int $seasons): int
+    {
+        return intdiv(self::wage($value, $rounds) * $rounds * $seasons * (int) config('game.contracts.renew_fee_bp'), 10000);
+    }
+
+    /** [X62] Renew a contract: the player stays `seasons` seasons past this one. A loaned player cannot. */
+    public static function renew(object $club, int $playerId, int $seasons): int
+    {
+        $max = (int) config('game.contracts.max_seasons');
+        if ($seasons < 1 || $seasons > $max) {
+            throw new HttpException(422, sprintf(__('التجديد من موسم إلى %d مواسم.'), $max));
+        }
+
+        return DB::transaction(function () use ($club, $playerId, $seasons) {
+            $p = DB::table('players')->where('id', $playerId)->where('club_id', $club->id)->first();
+            abort_unless($p, 404, __('اللاعب ليس في فريقك.'));
+            if (DB::table('player_loans')->where('player_id', $playerId)->where('status', 'active')->exists()) {
+                throw new HttpException(409, 'لا يُجدد عقد لاعب معار.');
+            }
+            $season = League::find($club->league_id)->season;
+            $until = (int) $season->number + $seasons;
+            if ($p->contract_until !== null && (int) $p->contract_until >= $until) {
+                throw new HttpException(409, 'عقده يمتد إلى هذا الموسم أو بعده.');
+            }
+            $fee = self::renewal((int) $p->value, (int) $season->rounds, $seasons);
+            ClubLedger::post($club->id, 'contract_renewal', -$fee, "renew:{$club->id}:{$playerId}:{$until}", "player:{$playerId}", spend: true);
+            DB::table('players')->where('id', $playerId)->update(['contract_until' => $until, 'updated_at' => GameClock::now()]);
+
+            return $fee;
+        });
+    }
+
     /** The squad's contracts: each player's wage and what ending it costs, the wages, the cap and the room left. */
     public static function view(object $club, object $season): array
     {
         $rounds = (int) $season->rounds;
         $players = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
-            ->orderByDesc('players.value')->get(['players.id', 'players.value', 'master_players.name', 'master_players.position', 'master_players.age']);
+            ->orderByDesc('players.value')->get(['players.id', 'players.value', 'players.contract_until', 'master_players.name', 'master_players.position', 'master_players.age']);
         $value = (int) $players->sum('value');
         $cap = self::cap($club);
 
         return [
             'players' => $players->map(fn ($p) => ['id' => (int) $p->id, 'name' => $p->name, 'position' => $p->position, 'age' => (int) $p->age, 'value' => (int) $p->value,
-                'wage' => self::wage((int) $p->value, $rounds), 'release' => self::release($club, $season, (int) $p->value)])->all(),
+                'wage' => self::wage((int) $p->value, $rounds), 'release' => self::release($club, $season, (int) $p->value),
+                // [X62] The last season he is under contract, and the fee to renew him one more.
+                'until' => $p->contract_until !== null ? (int) $p->contract_until : (int) $season->number,
+                'renew_one' => self::renewal((int) $p->value, $rounds, 1)])->all(),
+            'season' => (int) $season->number,
+            'max_seasons' => (int) config('game.contracts.max_seasons'),
             'wages_per_round' => self::wage($value, $rounds),
             'cap_per_round' => self::wage($cap, $rounds),
             'room' => max(0, $cap - $value),

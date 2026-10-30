@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClubBoardController;
 use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\DataEditorController;
 use App\Http\Controllers\Api\FriendlyController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
@@ -137,6 +138,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         // [X61 E1] The contracts.
         Route::get('contracts', 'contracts');
         Route::post('contracts/{player}/release', 'release')->whereNumber('player')->middleware('throttle:20,1,release');
+        Route::post('contracts/{player}/renew', 'renew')->whereNumber('player')->middleware('throttle:20,1,renew');
     });
     // The market: the pool and the bot clubs [Sprint 24].
     Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
@@ -294,6 +296,16 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::get('conversations', 'conversations');
         Route::get('conversations/{user}', 'conversation')->whereNumber('user');
         Route::post('conversations/{user}', 'writeTo')->whereNumber('user')->middleware('throttle:30,1,admin-write');
+        // [X62 E8] The game's data editor.
+        Route::controller(DataEditorController::class)->prefix('data')->group(function () {
+            Route::get('/', 'search');
+            Route::get('leagues', 'leagues');
+            Route::post('players', 'createPlayer')->middleware('throttle:30,1,data-edit');
+            Route::patch('players/{id}', 'updatePlayer')->whereNumber('id')->middleware('throttle:60,1,data-edit');
+            Route::delete('players/{id}', 'deletePlayer')->whereNumber('id');
+            Route::post('clubs', 'createClub')->middleware('throttle:30,1,data-edit');
+            Route::patch('clubs/{id}', 'updateClub')->whereNumber('id')->middleware('throttle:60,1,data-edit');
+        });
         // [X54] Coins to any account by its number.
         Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
         // [Sprint 20 S4] The game's own rewarded ads.
