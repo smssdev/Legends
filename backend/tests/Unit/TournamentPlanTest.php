@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Tournament\TournamentPlan;
 use PHPUnit\Framework\TestCase;
 
-/** [Sprint 27] A tournament's shape from its draw: pots, groups, rounds and the knockout after them. Pure. */
+/** [Sprint 29] A tournament's shape from its draw: pots, groups, rounds and the knockout after them. Pure. */
 class TournamentPlanTest extends TestCase
 {
     public function test_groups_are_drawn_from_pots_and_each_group_gets_one_of_each_pot(): void

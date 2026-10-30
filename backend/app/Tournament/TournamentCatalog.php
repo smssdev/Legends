@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
- * [Sprint 27] What a tournament is made from: the templates (World Cup, Club World Cup, AFCON, EURO, Asian Cup,
+ * [Sprint 29] What a tournament is made from: the templates (World Cup, Club World Cup, AFCON, EURO, Asian Cup,
  * custom) with the teams each suggests, the national teams, and the countries the data cannot field yet (too few
  * players or no goalkeeper; the data editor completes them).
  */

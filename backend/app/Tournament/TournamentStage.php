@@ -8,7 +8,7 @@ use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
 /**
- * [Sprint 27] The end of the groups: each group's table decides who goes on, and the first knockout ties are filled
+ * [Sprint 29] The end of the groups: each group's table decides who goes on, and the first knockout ties are filled
  * from it ("A1" is group A's winner). Once: a tie already filled is left as it is.
  */
 class TournamentStage

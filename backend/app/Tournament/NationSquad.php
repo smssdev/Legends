@@ -7,7 +7,7 @@ use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
 /**
- * [Sprint 27] The national teams. A country is a team when the data has config('game.tournaments.nation_min_players')
+ * [Sprint 29] The national teams. A country is a team when the data has config('game.tournaments.nation_min_players')
  * of its players with a goalkeeper among them; its strength is its best 18's average, as an imported club's. Its squad
  * in a tournament is its best nation_squad players (nation_keepers of them goalkeepers) not already playing for a club
  * of the same tournament.

@@ -64,7 +64,7 @@ export const router = createRouter({
         { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true } },
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
-        // [Sprint 27] The chat groups and the tournaments (the draw fills the screen, below).
+        // [Sprint 29] The chat groups and the tournaments (the draw fills the screen, below).
         { path: 'groups', name: 'groups', component: () => import('./pages/groups/GroupsPage.vue'), meta: { auth: true } },
         { path: 'groups/join/:code', name: 'group-join', component: () => import('./pages/groups/JoinGroup.vue'), props: true, meta: { auth: true } },
         { path: 'groups/:id(\\d+)', name: 'group', component: () => import('./pages/groups/GroupChat.vue'), props: true, meta: { auth: true } },

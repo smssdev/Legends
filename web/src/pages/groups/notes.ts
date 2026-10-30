@@ -1,4 +1,4 @@
-// [Sprint 27] A group's own notes ("Sara added Omar"), sent as JSON by the server (ChatGroups::note), in words.
+// [Sprint 29] A group's own notes ("Sara added Omar"), sent as JSON by the server (ChatGroups::note), in words.
 import { t } from '../../lib/i18n'
 
 export function noteText(body: string): string {

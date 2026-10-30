@@ -10,7 +10,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
- * [Sprint 27] A tournament's calendar: its rounds (the league's, or the groups' with every group's round on the same
+ * [Sprint 29] A tournament's calendar: its rounds (the league's, or the groups' with every group's round on the same
  * day) packed rounds_per_day to a day, then one day for each knockout stage, at the round times in Cairo (one slot a
  * minute in a development tournament), as a league's season (SeasonScheduler::calendar). Made at creation from a
  * provisional seed, and again from the drawn one.

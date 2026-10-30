@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * [Sprint 27] Makes a tournament: a league of kind "tournament" with the teams its maker chose (clubs and national
+ * [Sprint 29] Makes a tournament: a league of kind "tournament" with the teams its maker chose (clubs and national
  * teams together, 2 to 32), its shape (a league, groups then a knockout, or a knockout) and its draw. Each club comes
  * with its own players; each national team takes the best of its nationality who are not already in one of the clubs.
  * Every team starts under a bot; coaches join by its code and take a team as in a league. One season, then it ends.

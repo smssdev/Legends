@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] The tournaments on the game: those waiting for their draw first, with its time, so anyone can watch it
+// [Sprint 29] The tournaments on the game: those waiting for their draw first, with its time, so anyone can watch it
 // live; and "a new tournament".
 import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'

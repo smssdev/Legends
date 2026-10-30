@@ -11196,7 +11196,7 @@ export interface components {
             name: string;
             template: string;
             /**
-             * @description [Sprint 27] A tournament is a league of its own kind
+             * @description [Sprint 29] A tournament is a league of its own kind
              * @enum {string}
              */
             kind?: "league" | "tournament";

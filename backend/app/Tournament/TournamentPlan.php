@@ -9,7 +9,7 @@ use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 /**
- * [Sprint 27] A tournament's shape from its draw, pure: teams and a seed in, the draw's steps, the groups, the rounds
+ * [Sprint 29] A tournament's shape from its draw, pure: teams and a seed in, the draw's steps, the groups, the rounds
  * and the knockout out. The same seed always gives the same tournament, so the draw can be replayed step by step.
  *
  *  - league: the teams drawn into slots, then a round robin (one leg or two).

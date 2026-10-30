@@ -579,7 +579,7 @@ class LeagueController extends Controller
 
         return [
             'id' => $l->id, 'name' => $l->name, 'template' => $l->template,
-            // [Sprint 27] A tournament: its kind, shape and template.
+            // [Sprint 29] A tournament: its kind, shape and template.
             'kind' => $l->kind ?? 'league', 'format' => $l->format, 'tournament_template' => $l->tournament_template,
             // The code is shared by the owner and its coaches; a coach still waiting does not need it.
             'code' => $approved ? $l->code : null,

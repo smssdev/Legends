@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] Make a tournament (docs/design/legends-ui/Sprint27Drafts.html, 3): a template fills the teams and the
+// [Sprint 29] Make a tournament (docs/design/legends-ui/Sprint29Drafts.html, 3): a template fills the teams and the
 // shape (World Cup, Club World Cup, AFCON, EURO, Asian Cup, or custom), and everything stays editable: the teams
 // (national teams by continent and clubs by search, 2 to 32), the format, the groups, the live draw's time, and the
 // maker's own team (or none: the organizer only).

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Event;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
-/** [Sprint 27] Chat groups as in WhatsApp: any coaches, their admins, the live messages, and every league's own group. */
+/** [Sprint 29] Chat groups as in WhatsApp: any coaches, their admins, the live messages, and every league's own group. */
 class ChatGroupTest extends TestCase
 {
     use MakesLeagues, RefreshDatabase;

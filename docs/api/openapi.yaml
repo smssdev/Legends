@@ -9,9 +9,9 @@ servers:
   - url: /api/v1
 tags:
   - name: tournaments
-    description: 'Tournaments of clubs and national teams, and their live draw (Sprint 27)'
+    description: 'Tournaments of clubs and national teams, and their live draw (Sprint 29)'
   - name: groups
-    description: 'Chat groups, as in WhatsApp, and every league''s own (Sprint 27)'
+    description: 'Chat groups, as in WhatsApp, and every league''s own (Sprint 29)'
   - name: assistant
     description: The Assistant Coach, Manager Bot in English (Sprint 22)
   - name: admin
@@ -4708,7 +4708,7 @@ components:
         id: { type: integer }
         name: { type: string }
         template: { type: string }
-        kind: { type: string, enum: [league, tournament], description: '[Sprint 27] A tournament is a league of its own kind' }
+        kind: { type: string, enum: [league, tournament], description: '[Sprint 29] A tournament is a league of its own kind' }
         format: { type: string, nullable: true, enum: [league, groups, knockout, null] }
         tournament_template: { type: string, nullable: true }
         code: { type: string, nullable: true, description: For the owner and approved coaches only }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] The chat groups (docs/design/legends-ui/Sprint27Drafts.html, 1): each with its last message and unread
+// [Sprint 29] The chat groups (docs/design/legends-ui/Sprint29Drafts.html, 1): each with its last message and unread
 // count, the leagues' and tournaments' own on their tab; "+" makes one with friends by their usernames.
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'

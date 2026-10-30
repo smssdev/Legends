@@ -25,7 +25,7 @@ class Guide
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
         'league-alliance' => 'league', 'league-draw' => 'league', 'create-league' => 'leagues', 'join' => 'leagues',
         'pick-team' => 'leagues', 'coach' => 'home', 'announcements' => 'home', 'league-report' => 'match',
-        // [Sprint 27] The chat groups and the tournaments.
+        // [Sprint 29] The chat groups and the tournaments.
         'group' => 'groups', 'group-join' => 'groups', 'create-tournament' => 'tournaments', 'tournament' => 'tournaments', 'tournament-draw' => 'tournaments'];
 
     /** The pages an answer may open, by the web's section names. */
@@ -319,7 +319,7 @@ class Guide
             $t('alliance', ['league'], 'league',
                 ['ما هي بطولة التحالفات؟', 'تحالف تحالفات بطولة فرق', 'تحالفان من مدربي الدوري، والباقون يُوزعون عشوائياً. تُرسل للمطورين للاعتماد قبل أن تبدأ. والزميلان لا يلتقيان، ويختار قائدهما من يتأهل إن استحال غير ذلك. ينشئها منشئ الدوري.'],
                 ['What is the alliance tournament?', 'alliance tournament teams', 'Two alliances of the league\'s coaches, with the rest spread at random. It goes to the developers for approval before it starts. Teammates never meet, and their leader picks who goes through if nothing else is possible. The league\'s creator sets it up.']),
-            // [Sprint 27] The chat groups, the tournaments, the national teams and their draw.
+            // [Sprint 29] The chat groups, the tournaments, the national teams and their draw.
             $t('groups', ['groups', 'home'], 'groups',
                 ['ما هي الجروبات؟', 'جروب جروبات دردشة شات واتساب رسائل اصدقاء', 'الجروبات دردشة جماعية مثل واتساب داخل اللعبة. أنشئ جروباً وأضف أصدقاءك بأسماء المستخدمين، أو شارك رابطه فينضم من يفتحه. منشئ الجروب مشرف يضيف ويُخرج ويغيّر الاسم ويجعل غيره مشرفاً. اضغط أي رسالة لترد عليها أو تحذفها. وترسل صورة بزر الكاميرا، ورسالة صوتية بزر الميكروفون حين يكون مربع الكتابة فارغاً (حتى دقيقتين). وقد تحذف الإدارة الرسائل القديمة تلقائياً بعد أيام تحددها.'],
                 ['What are the groups?', 'group groups chat whatsapp messages friends', 'Groups are group chats, like WhatsApp, inside the game. Make one and add your friends by their usernames, or share its link and whoever opens it joins. Its maker is an admin who adds, removes, renames and makes others admins. Tap any message to reply to it or delete it. Send a photo with the camera button, and a voice note with the microphone button while the text box is empty (up to two minutes). The admins may delete old messages automatically after some days.']),

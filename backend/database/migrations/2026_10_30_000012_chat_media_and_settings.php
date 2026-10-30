@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * [Sprint 27 X65] Pictures and voice notes in the chat groups, kept in the database (with its backups, as the avatars)
+ * [Sprint 29 X65] Pictures and voice notes in the chat groups, kept in the database (with its backups, as the avatars)
  * in base64 so both databases read them alike; and the game's settings the admin changes from the panel (the chat's
  * retention, whether media may be sent).
  */

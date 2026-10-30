@@ -203,7 +203,7 @@ class MessageText
                 'body' => sprintf('%s يطلب %s لمدة %d جولات مقابل %s.', $p['from'] ?? '', $p['player'] ?? '', (int) ($p['rounds'] ?? 1), number_format((int) ($p['money'] ?? 0))),
                 'link' => '/market?tab=offers',
             ],
-            // [Sprint 27] The end of a tournament's groups, and an invitation to a chat group.
+            // [Sprint 29] The end of a tournament's groups, and an invitation to a chat group.
             'tournament_groups' => [
                 'title' => ($p['through'] ?? false) ? sprintf('تأهلت إلى الأدوار الإقصائية في %s', $p['tournament'] ?? '') : sprintf('ودّعت %s من دور المجموعات', $p['tournament'] ?? ''),
                 'body' => ($p['through'] ?? false) ? 'انتهى دور المجموعات وفريقك بين المتأهلين. شاهد خصمك في شجرة البطولة.' : 'انتهى دور المجموعات ولم يتأهل فريقك. تابع البطولة حتى نهائيها.',

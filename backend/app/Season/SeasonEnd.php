@@ -66,7 +66,7 @@ class SeasonEnd
         $now = GameClock::now();
         $coach = fn (int $club) => DB::table('clubs')->where('id', $club)->value('user_id');
         $rows = [];
-        // [Sprint 27] A tournament in groups or a knockout is won in its final: no league places.
+        // [Sprint 29] A tournament in groups or a knockout is won in its final: no league places.
         $places = $league->kind === 'tournament' && $league->format !== 'league' ? [] : array_slice($order, 0, 3);
         foreach ($places as $i => $club) {
             $rows[] = ['league_id' => $league->id, 'season_id' => $season->id, 'user_id' => $coach($club), 'club_id' => $club,

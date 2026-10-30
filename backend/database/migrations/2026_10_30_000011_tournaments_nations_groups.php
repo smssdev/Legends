@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * [Sprint 27] Tournaments, national teams and chat groups.
+ * [Sprint 29] Tournaments, national teams and chat groups.
  *  - A tournament is a league of kind "tournament" (every screen and the live match work in it): its format (a league,
  *    groups then a knockout, or a knockout), the groups' count and how many go on from each, one leg or two, and the
  *    template it came from (World Cup, Club World Cup, AFCON, EURO, Asian Cup, or custom).

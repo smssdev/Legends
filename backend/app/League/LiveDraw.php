@@ -35,7 +35,7 @@ class LiveDraw
         ]);
     }
 
-    /** [Sprint 27] A draw this minute: its seed and hash set, then drawn. */
+    /** [Sprint 29] A draw this minute: its seed and hash set, then drawn. */
     public static function now(League $league): bool
     {
         $seed = $league->draw_seed ?? random_int(1, 2_147_483_647);

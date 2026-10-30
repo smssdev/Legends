@@ -19,5 +19,5 @@ Broadcast::channel('match.{match}', function ($user, int $match) {
 // A club's own channel: its coach only (his live readings, Sprint 20).
 Broadcast::channel('club.{club}', fn ($user, int $club) => DB::table('clubs')->where('id', $club)->where('user_id', $user->id)->exists());
 
-// [Sprint 27] A chat group: its members only.
+// [Sprint 29] A chat group: its members only.
 Broadcast::channel('chat.{group}', fn ($user, int $group) => DB::table('chat_group_members')->where('chat_group_id', $group)->where('user_id', $user->id)->exists());

@@ -65,7 +65,7 @@ else
   php artisan migrate --force
 fi
 php artisan data:import --add
-# [Sprint 27] The national teams from the players' nationalities (adds new countries, refreshes their strength).
+# [Sprint 29] The national teams from the players' nationalities (adds new countries, refreshes their strength).
 php artisan data:nations || echo "National teams: failed, continuing"
 # [X45] The sessions in the server's own SQLite file beside the cache: no database trip on every request. A restart
 # signs nobody out for long: the remember-me cookie (on by default) signs them back in.

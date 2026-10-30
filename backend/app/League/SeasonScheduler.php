@@ -138,7 +138,7 @@ class SeasonScheduler
 
     public static function build(League $league, Season $season): void
     {
-        // [Sprint 27] A tournament has its own shape.
+        // [Sprint 29] A tournament has its own shape.
         if ($league->kind === 'tournament') {
             TournamentScheduler::build($league, $season);
 
@@ -221,7 +221,7 @@ class SeasonScheduler
 
     /**
      * A knockout's ties with their fixtures, each on its stage's time (sides filled as they win) [PLAN 2.5]; a tie may
-     * say where its sides come from (home_from, away_from: a tournament's groups, Sprint 27).
+     * say where its sides come from (home_from, away_from: a tournament's groups, Sprint 29).
      *
      * @param  list<array{stage: string, slot: int, home: ?int, away: ?int, next: ?array}>  $ties
      * @param  list<string>  $stages  in the order they are played

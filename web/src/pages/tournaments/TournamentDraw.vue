@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] The live draw (docs/design/legends-ui/Sprint27Drafts.html, 5), filling the screen. Before it: the
+// [Sprint 29] The live draw (docs/design/legends-ui/Sprint29Drafts.html, 5), filling the screen. Before it: the
 // countdown and the hash announced in advance. At its time every screen plays the same ball at the same moment on the
 // server's clock: a ball leaves the bowl, is held under a drum roll, opens on the team's crest with a crash, its name
 // is said aloud, and its card flies to its group (or slot, or tie). Whoever missed it replays it exactly as it was,

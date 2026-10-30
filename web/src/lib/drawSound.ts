@@ -1,4 +1,4 @@
-// [Sprint 27] The draw's sound, all made here with Web Audio (no files, nothing paid): a drum roll that quickens while
+// [Sprint 29] The draw's sound, all made here with Web Audio (no files, nothing paid): a drum roll that quickens while
 // the ball is held, a cymbal and a brass chord when it opens, and the team's name in the screen's language from the
 // browser's own voice (speechSynthesis). Silent until the viewer turns it on (browsers allow sound only after a tap).
 import { locale } from './i18n'

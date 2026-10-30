@@ -33,7 +33,7 @@ for (const r of rows('names/leagues.csv')) if (arabic(r.ar)) dict.leagues[r.name
 // Wikidata first, then the hand-written table over it.
 for (const r of rows('names/clubs.csv')) if (arabic(r.ar)) dict.clubs[r.name] = r.ar;
 for (const r of rows('names/clubs_manual.csv')) if (arabic(r.ar)) dict.clubs[r.name] = r.ar;
-// [Sprint 27] The national teams (written from App\Data\Nations).
+// [Sprint 29] The national teams (written from App\Data\Nations).
 for (const r of rows('names/nations.csv')) if (arabic(r.ar)) dict.clubs[r.name] = r.ar;
 dict.leagues['National Teams'] = 'المنتخبات';
 for (const r of rows('names/players.csv')) if (r.name && arabic(r.ar)) dict.players[r.name] = r.ar;

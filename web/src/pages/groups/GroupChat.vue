@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] Inside a chat group (docs/design/legends-ui/Sprint27Drafts.html, 2): my messages on one side, the
+// [Sprint 29] Inside a chat group (docs/design/legends-ui/Sprint29Drafts.html, 2): my messages on one side, the
 // others' with their names on the other, the group's notes in the middle. New messages come at once on the group's
 // channel; older ones load on scrolling up. A message can be answered or deleted; "⋮" opens the members, the link,
 // adding, the admins and leaving.

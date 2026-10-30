@@ -64,7 +64,7 @@ async function decide(r: JoinRequest, approve: boolean) {
 // The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
 const inviteText = computed(() => (league.value ? `انضم لدوري «${league.value.name}» في لعبة المدرب الأسطورة واختر ناديك: ${league.value.invite_url}` : ''))
 const whatsapp = computed(() => `https://wa.me/?text=${encodeURIComponent(inviteText.value)}`)
-/** [Sprint 27] The league's own group chat, made (and kept in step) as it opens. */
+/** [Sprint 29] The league's own group chat, made (and kept in step) as it opens. */
 async function openGroup() {
   try {
     const { data } = await api.GET('/groups/league/{league}', { params: { path: { league: Number(props.id) } } })
@@ -350,7 +350,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </ul>
       </UiCard>
 
-      <!-- [Sprint 27] A tournament's own page and draw; every league's and tournament's group chat. -->
+      <!-- [Sprint 29] A tournament's own page and draw; every league's and tournament's group chat. -->
       <RouterLink v-if="league.kind === 'tournament'" :to="{ name: 'tournament', params: { id } }"
         class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
         <span><b class="block">{{ $t('صفحة البطولة') }}</b><span class="text-sm text-text-muted">{{ $t('المجموعات والأدوار الإقصائية والقرعة') }}</span></span>

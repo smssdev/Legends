@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] A group's link: the coach who opens it joins, then lands in the group.
+// [Sprint 29] A group's link: the coach who opens it joins, then lands in the group.
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'

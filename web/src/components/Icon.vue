@@ -34,7 +34,7 @@ export const PATHS = {
   menu: 'M4 6h16M4 12h16M4 18h16',
   news: 'M4 5h13v14H6a2 2 0 0 1-2-2V5Zm13 4h3v8a2 2 0 0 1-2 2M7 8h7M7 12h7M7 16h4',
   predict: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM12 7v5l3 2',
-  // [Sprint 27] The chat groups and the tournaments.
+  // [Sprint 29] The chat groups and the tournaments.
   chat: 'M4 5h16v10H9l-5 4zM8 9h8M8 12h5',
   trophy: 'M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6',
 } as const

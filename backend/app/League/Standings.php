@@ -32,7 +32,7 @@ class Standings
 
     /**
      * The table's rows in order: points, goal difference, goals scored, strength; of every club, or of one group's
-     * clubs in a tournament [Sprint 27].
+     * clubs in a tournament [Sprint 29].
      *
      * @param  list<int>|null  $clubIds
      * @return list<array{id: int, pts: int, gd: int, gf: int, st: int, p: int, w: int, d: int, l: int, ga: int}>

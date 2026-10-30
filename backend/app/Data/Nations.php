@@ -5,7 +5,7 @@ namespace App\Data;
 use App\Support\Nation;
 
 /**
- * [Sprint 27] Every country in the data: its Arabic name, a three-letter code, its colours and its confederation
+ * [Sprint 29] Every country in the data: its Arabic name, a three-letter code, its colours and its confederation
  * (UEFA, CAF, AFC, CONMEBOL, CONCACAF, OFC). A national team is made from the players of one nationality
  * (`data:nations`); two spellings of one country (Holland and Netherlands) are one team.
  */

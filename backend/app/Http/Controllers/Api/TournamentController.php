@@ -24,7 +24,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /**
- * [Sprint 27] Tournaments: the catalog to make one from (templates, national teams, clubs), making it, its page (the
+ * [Sprint 29] Tournaments: the catalog to make one from (templates, national teams, clubs), making it, its page (the
  * groups' tables and the bracket), and its draw, which every signed-in player may watch live or replay.
  */
 class TournamentController extends Controller

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
-/** [Sprint 27] National teams from the players' nationalities, tournaments of clubs and nations, and their draw. */
+/** [Sprint 29] National teams from the players' nationalities, tournaments of clubs and nations, and their draw. */
 class TournamentTest extends TestCase
 {
     use MakesLeagues, RefreshDatabase;

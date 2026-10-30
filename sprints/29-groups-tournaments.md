@@ -1,4 +1,4 @@
-# Sprint 27: الجروبات والبطولات والمنتخبات والقرعة المباشرة
+# Sprint 29: الجروبات والبطولات والمنتخبات والقرعة المباشرة
 
 | | |
 |---|---|
@@ -26,7 +26,7 @@
 | B4 | القرعة: بموعد مع الإنشاء أو بعده (بصمة معلنة قبلها)، وبلا موعد عند البداية. وخطواتها كرة بكرة لأي لاعب مسجل | Claude | `LiveDraw::now`، `LeagueStarter`، `TournamentController::draw` |
 | B5 | الجروبات: إنشاء، وإضافة بأسماء المستخدمين أو برابط، ومشرفون، وإخراج، وتغيير الاسم، ومغادرة، ورسائل حية على قناة `chat.{group}` بالرد والحذف، وغير المقروء. وجروب لكل دوري وبطولة بأعضائه | Claude | `App\Chat\ChatGroups`، `ChatController`، `ChatMessageSent`، `routes/channels.php` |
 | B6 | العقد والرسائل والدليل: `openapi.yaml`، ورسالتا `tournament_groups` و`chat_invite`، وخمسة مواضيع في دليل المدرب المساعد، وسياسة الخصوصية (رسائل الجروبات) | Claude | `docs/api/openapi.yaml`، `MessageText*`، `App\Assistant\Guide`، `web/src/content/legal.ts` |
-| D1 | مسودات الشاشات الخمس | Claude | `docs/design/legends-ui/Sprint27Drafts.html` |
+| D1 | مسودات الشاشات الخمس | Claude | `docs/design/legends-ui/Sprint29Drafts.html` |
 | W1 | الجروبات: القائمة، والمحادثة، والانضمام بالرابط | Claude | `web/src/pages/groups/` |
 | W2 | البطولات: القائمة، والإنشاء، والصفحة (المجموعات والشجرة والفرق) | Claude | `web/src/pages/tournaments/` |
 | W3 | القرعة المباشرة: الوعاء والكرات، وتوقف بطبول، وانكشاف بوهج وقصاصات وصوت، ونطق الاسم بصوت المتصفح، وطيران البطاقة لمجموعتها، والإعادة والتخطي، والحركة المخففة | Claude | `TournamentDraw.vue`، `web/src/lib/drawSound.ts` |

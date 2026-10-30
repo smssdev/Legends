@@ -7,7 +7,7 @@ use App\Tournament\NationSquad;
 use Illuminate\Console\Command;
 
 /**
- * [Sprint 27] The national teams, made from the players' nationalities: every country with enough players (and a
+ * [Sprint 29] The national teams, made from the players' nationalities: every country with enough players (and a
  * goalkeeper) is a master club of source "nation", with its strength from its best players. Run after every import
  * (deploy/docker/start.sh); it adds the new countries and updates the strength of the others, and touches nothing else.
  */

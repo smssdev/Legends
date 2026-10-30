@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 27] A tournament's page (docs/design/legends-ui/Sprint27Drafts.html, 4): the groups' tables (those going
+// [Sprint 29] A tournament's page (docs/design/legends-ui/Sprint29Drafts.html, 4): the groups' tables (those going
 // through marked), the league table, or the bracket whose first ties say where their teams come from (A1 against B2)
 // until the groups end; and the way to its draw, its group chat and joining it.
 import { computed, onMounted, ref } from 'vue'

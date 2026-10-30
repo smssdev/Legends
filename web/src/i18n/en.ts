@@ -2110,7 +2110,7 @@ export const EN: Record<string, string> = {
   'مدرب ببدلة': 'Coach in a suit',
   'مدرب بالتراك سوت': 'Coach in a tracksuit',
   'مدربة بحجاب': 'Coach in a hijab',
-  // [Sprint 27] The chat groups, the tournaments and the draw.
+  // [Sprint 29] The chat groups, the tournaments and the draw.
   'الجروبات': 'Groups',
   'البطولات': 'Tournaments',
   'نُسخ رابط الجروب.': 'The group link was copied.',

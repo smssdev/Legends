@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
- * [Sprint 27 X65] The settings the admin changes from the panel without a deploy, as JSON by key; a key never set reads
+ * [Sprint 29 X65] The settings the admin changes from the panel without a deploy, as JSON by key; a key never set reads
  * its default from config/game.php (game.settings).
  */
 class GameSettings

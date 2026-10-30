@@ -55,7 +55,7 @@ class Market
     public static function closed(int $leagueId): ?string
     {
         $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->first();
-        // [Sprint 27] A tournament plays with the squads it was drawn with: no market.
+        // [Sprint 29] A tournament plays with the squads it was drawn with: no market.
         if (DB::table('leagues')->where('id', $leagueId)->value('kind') === 'tournament') {
             return __('لا سوق في البطولات: كل فريق يلعب بقائمته.');
         }

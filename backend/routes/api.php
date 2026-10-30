@@ -88,7 +88,7 @@ Route::prefix('data')->controller(DataController::class)->middleware('throttle:1
 });
 Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1,data');
 
-// [Sprint 27] Tournaments: the catalog (templates, national teams, clubs), making one, its page and its draw, which
+// [Sprint 29] Tournaments: the catalog (templates, national teams, clubs), making one, its page and its draw, which
 // anyone signed in may watch live or replay. Coaches join it by its code as a league (/leagues/join).
 Route::prefix('tournaments')->middleware(['auth:sanctum', 'throttle:120,1,tournaments'])->controller(TournamentController::class)->group(function () {
     Route::get('/', 'index');
@@ -99,7 +99,7 @@ Route::prefix('tournaments')->middleware(['auth:sanctum', 'throttle:120,1,tourna
     Route::get('{league}/draw', 'draw')->whereNumber('league');
 });
 
-// [Sprint 27] Chat groups, as in WhatsApp: any coaches, and every league's own.
+// [Sprint 29] Chat groups, as in WhatsApp: any coaches, and every league's own.
 Route::prefix('groups')->middleware(['auth:sanctum', 'throttle:240,1,groups'])->controller(ChatController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store')->middleware('throttle:10,1,group-create');

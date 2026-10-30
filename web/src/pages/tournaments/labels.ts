@@ -1,4 +1,4 @@
-// [Sprint 27] The tournaments' words: the templates, the formats and the knockout's stages (in Arabic; the screens pass
+// [Sprint 29] The tournaments' words: the templates, the formats and the knockout's stages (in Arabic; the screens pass
 // them through $t).
 export const TEMPLATES: Record<string, string> = {
   world_cup: 'كأس العالم',

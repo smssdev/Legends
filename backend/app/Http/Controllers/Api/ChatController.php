@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-/** [Sprint 27] Chat groups: the account's groups, one group with its members and messages, and what its admins do. */
+/** [Sprint 29] Chat groups: the account's groups, one group with its members and messages, and what its admins do. */
 class ChatController extends Controller
 {
     public function index(Request $request): JsonResponse

@@ -553,7 +553,7 @@ return [
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],
     // The live draw [X26]: one slot revealed this often on every screen.
     'draw' => ['reveal_ms' => 2500],
-    // [Sprint 27] Tournaments: 2 to 32 teams, clubs and national teams together. A national team plays when the data has
+    // [Sprint 29] Tournaments: 2 to 32 teams, clubs and national teams together. A national team plays when the data has
     // nation_min_players of its nationality with a goalkeeper among them, and takes its best nation_squad (with
     // nation_keepers goalkeepers); a player of a club in the same tournament stays with his club. The draw shows one
     // ball every reveal_ms. Each template: who it takes (nations of a confederation, all nations, or the strongest
@@ -570,7 +570,7 @@ return [
             'custom' => ['pool' => 'any', 'teams' => 8, 'format' => 'groups', 'groups' => 2],
         ],
     ],
-    // [Sprint 27] Chat groups: members at most, a message's length, how many messages a page brings, and a group's
+    // [Sprint 29] Chat groups: members at most, a message's length, how many messages a page brings, and a group's
     // name. A member sends at most per_minute messages a minute.
     'chat' => ['max_members' => 256, 'max_length' => 1000, 'page' => 50, 'per_minute' => 20, 'max_groups' => 50,
         // [X65] A picture is kept at most image_px on its long side (a JPEG); a voice note up to audio_kb and audio_seconds.

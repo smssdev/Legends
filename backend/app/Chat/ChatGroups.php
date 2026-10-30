@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * [Sprint 27] Chat groups, as in WhatsApp: any coach makes one and adds others by their username or a link; its
+ * [Sprint 29] Chat groups, as in WhatsApp: any coach makes one and adds others by their username or a link; its
  * maker is its admin (and may make others admins), who adds, removes and renames. Every league and tournament has its
  * own group, kept in step with its coaches. A message reaches every member's screen at once on the group's channel;
  * a member deletes his own (an admin any), and the group shows "deleted" in its place.
