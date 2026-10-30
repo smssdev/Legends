@@ -10,7 +10,7 @@
 
 ## الحالة الحالية (2026-10-29)
 
-- **اللعبة على سيرفرنا في Hostinger** (`README.md` القسم 8): https://srv2100776.hstgr.cloud، بـ Docker وPostgreSQL على السيرفر نفسه. والنشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` (مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان)، والمفاتيح يكتبها سليمان على السيرفر بـ `legends-set` ولا تُكتب في المحادثة. وRender وSupabase باقيان باللعبة القديمة حتى يقرر صاحب المشروع، ولا شيء لهما في المستودع.
+- **اللعبة على سيرفرنا في Hostinger** (`README.md` القسم 8): https://srv2100776.hstgr.cloud، بـ Docker وPostgreSQL على السيرفر نفسه. والنشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` (مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان)، أو من الجوال بـ `legends-deploy` في Web console على hPanel (X64)، والمفاتيح يكتبها سليمان على السيرفر بـ `legends-set` ولا تُكتب في المحادثة. وRender وSupabase باقيان باللعبة القديمة حتى يقرر صاحب المشروع، ولا شيء لهما في المستودع.
 - **منجز:** Sprint 01 (الأساس)، و03 (التحسينات العاجلة)، و04 (updates1: وثيقة المواصفات واللغتان والهوية)، و05 (سيرفرنا)، و21 (updates2، 2026-10-29).
 - **جارٍ:** Sprint 02 (Unity): المشهد يعمل في المحرر والمتصفح، ويبقى B1 (`/matches/{id}/scene`) والإغلاق.
 - **Sprint 21 منجز (2026-10-29)** (`sprints/21-owner-updates2.md`): الأجزاء E1 إلى E8 وقاعدة الإعلانات E9. وما بقي نُقل إلى Sprint 20 (S1 إلى S6) وأُنجز. وما دام CI معطلاً تُشغَّل الفحوص محلياً قبل الدمج.
@@ -49,7 +49,7 @@
   - `npm run dev`.
   - `npm run build`: يولّد `src/styles/tokens.css` من `docs/design/tokens.json`.
   - `npm run api`: بعد أي تغيير في `docs/api/openapi.yaml`، وCI يفشل إن لم يكن محدّثاً.
-- **السيرفر:** نقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` على جهاز سليمان للنشر (آخر `main` من GitHub، ويرفض وحده إن كانت مباراة حية، ثم يفحص الصحة)، أو `sh deploy/vps/deploy.sh` من جذر المستودع، والسجلات `ssh -i ~/.ssh/legends_vps root@2.24.47.100 docker logs --tail 50 legends-app-1`.
+- **السيرفر:** نقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` على جهاز سليمان للنشر (آخر `main` من GitHub، ويرفض وحده إن كانت مباراة حية، ثم يفحص الصحة)، أو `sh deploy/vps/deploy.sh` من جذر المستودع، أو `legends-deploy` على السيرفر نفسه (Web console في hPanel)، والسجلات `ssh -i ~/.ssh/legends_vps root@2.24.47.100 docker logs --tail 50 legends-app-1`.
 - **ملاحظات التشغيل:**
   - `.env` يحتاج متغيرات Reverb من `.env.example`، وبـ `BROADCAST_CONNECTION=log` يعمل كل شيء إلا البث.
   - PHP 8.4 مستحسن. على 8.3 تفتح المعاملات بـ `BEGIN IMMEDIATE` عبر `App\Database\ImmediatePdo` (اختبار `ImmediateTransactionTest`).
