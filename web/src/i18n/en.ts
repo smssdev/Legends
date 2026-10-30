@@ -2168,4 +2168,5 @@ export const EN: Record<string, string> = {
   'أين يلعب {v0}؟': 'Where does {v0} play?',
   'بدل {v0}': 'Instead of {v0}',
   'إلى الاحتياط': 'To the bench',
+  'تواصل مع دعم المنصة': 'Contact platform support',
 }
