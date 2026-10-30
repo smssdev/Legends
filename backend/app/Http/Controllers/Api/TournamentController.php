@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Chat\DrawChat;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
 use App\League\LeagueTiers;
@@ -159,6 +160,32 @@ class TournamentController extends Controller
             'stages' => $league->format === 'knockout' ? CupBracket::stages((int) $league->team_count) : [],
             'steps' => $steps,
         ]);
+    }
+
+    /** [X66] The live draw's chat: what was said so far (or after an id), and whether it is open now. */
+    public function chat(Request $request, League $league): JsonResponse
+    {
+        abort_unless($league->kind === 'tournament', 404);
+        $data = $request->validate(['after' => ['nullable', 'integer']]);
+        [$from, $until] = DrawChat::window($league);
+
+        return response()->json(['open' => DrawChat::isOpen($league), 'opens_at' => $from->toIso8601ZuluString(), 'closes_at' => $until->toIso8601ZuluString(),
+            'reactions' => config('game.draw_chat.reactions'), 'can_moderate' => $league->isOwner($request->user()) || $request->user()->role === 'admin',
+            'messages' => DrawChat::list($league, $data['after'] ?? null)]);
+    }
+
+    public function say(Request $request, League $league): JsonResponse
+    {
+        $data = $request->validate(['kind' => ['required', 'in:text,emoji'], 'body' => ['required', 'string', 'max:300']]);
+
+        return response()->json(['message' => DrawChat::send($league, $request->user(), $data['kind'], $data['body'])], 201);
+    }
+
+    public function unsay(Request $request, League $league, int $message): JsonResponse
+    {
+        DrawChat::delete($league, $request->user(), $message);
+
+        return response()->json(['ok' => true]);
     }
 
     private function summary(League $l): array

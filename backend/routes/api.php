@@ -98,6 +98,10 @@ Route::prefix('tournaments')->middleware(['auth:sanctum', 'throttle:120,1,tourna
     Route::post('/', 'store')->middleware('throttle:league-create');
     Route::get('{league}', 'show')->whereNumber('league');
     Route::get('{league}/draw', 'draw')->whereNumber('league');
+    // [X66] The live draw's chat and reactions.
+    Route::get('{league}/draw/chat', 'chat')->whereNumber('league');
+    Route::post('{league}/draw/chat', 'say')->whereNumber('league')->middleware('throttle:60,1,draw-chat');
+    Route::delete('{league}/draw/chat/{message}', 'unsay')->whereNumber(['league', 'message']);
 });
 
 // [Sprint 29] Chat groups, as in WhatsApp: any coaches, and every league's own.

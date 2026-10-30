@@ -590,6 +590,10 @@ return [
     // [X65] The settings the admin changes from the panel (App\Support\GameSettings), with their defaults: the chat's
     // messages older than chat.retention_days are deleted every hour (0: kept), and pictures and voice notes allowed.
     'settings' => ['chat.retention_days' => 0, 'chat.media' => true],
+    // [X66] The live draw's chat: open from open_before minutes before the draw to open_after minutes after its last
+    // ball; a line up to max_length, per_minute lines and reactions a viewer, and only these reactions.
+    'draw_chat' => ['open_before' => 60, 'open_after' => 30, 'max_length' => 200, 'per_minute' => 12, 'reactions_per_minute' => 40,
+        'page' => 300, 'reactions' => ['🔥', '👏', '😱', '⚽', '😂', '❤️', '😮', '🏆']],
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.

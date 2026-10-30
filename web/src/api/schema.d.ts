@@ -10665,6 +10665,140 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tournaments/{league}/draw/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /** [X66] The live draw's chat - its lines and reactions so far (or after an id), and whether it is open now */
+        get: {
+            parameters: {
+                query?: {
+                    after?: number;
+                };
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The chat */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description From an hour before the draw to half an hour after its last ball */
+                            open: boolean;
+                            /** Format: date-time */
+                            opens_at: string;
+                            /** Format: date-time */
+                            closes_at: string;
+                            reactions: string[];
+                            /** @description The tournament's maker or an admin */
+                            can_moderate: boolean;
+                            messages: components["schemas"]["DrawChatLine"][];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** Say a line or send a reaction (sent at once on channel draw.{league}, event "draw-chat"), for anyone signed in while it is open */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "text" | "emoji";
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The line */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: components["schemas"]["DrawChatLine"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tournaments/{league}/draw/chat/{message}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a line (one's own; the tournament's maker or an admin any) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups": {
         parameters: {
             query?: never;
@@ -11375,6 +11509,19 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        DrawChatLine: {
+            id: number;
+            /** @enum {string} */
+            kind: "text" | "emoji";
+            deleted: boolean;
+            body: string;
+            user: {
+                id: number;
+                name: string;
+            } | null;
+            /** @description When it was said */
+            at: number;
+        };
         Tournament: {
             id: number;
             name: string;

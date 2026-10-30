@@ -418,5 +418,9 @@
   "اختر موعد البدء من الآن حتى :n أيام.": "Choose a start from now to :n days ahead.",
   "إرسال الصور والصوت متوقف الآن.": "Sending photos and voice notes is off for now.",
   "التسجيل الصوتي غير مقبول أو أطول من المسموح.": "The voice note is not accepted or is longer than allowed.",
-  "الملف غير موجود.": "The file does not exist."
+  "الملف غير موجود.": "The file does not exist.",
+  "البطولة غير موجودة.": "The tournament does not exist.",
+  "الدردشة مفتوحة قبل القرعة بساعة حتى نصف ساعة بعدها.": "The chat is open from an hour before the draw to half an hour after it.",
+  "اختر تفاعلاً من القائمة.": "Choose a reaction from the list.",
+  "الرسالة فارغة أو أطول من المسموح.": "The message is empty or longer than allowed."
 }
