@@ -39,24 +39,29 @@ export class MatchSound {
     this.duckGain = ctx.createGain()
     src.connect(band).connect(this.crowd).connect(this.duckGain).connect(this.master)
     src.start()
-    // [X41] The real crowd of a stadium (public/sfx/crowd-bed.mp3, the pauses of the commentator's recording, made
-    // by tools/commentary/crowd_bed.py) takes the synthesized noise's place once it has loaded; same gains, so it
-    // still rises with danger and steps back under the commentator.
-    void fetch(import.meta.env.BASE_URL + 'sfx/crowd-bed.mp3')
-      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
-      .then((b) => ctx.decodeAudioData(b))
-      .then((buf) => {
-        if (this.ctx !== ctx || !this.crowd) return
-        const real = ctx.createBufferSource()
-        real.buffer = buf
-        real.loop = true
-        const lift = ctx.createGain()
-        lift.gain.value = 3.2
-        real.connect(lift).connect(this.crowd)
-        real.start(0, Math.random() * buf.duration)
-        src.stop(ctx.currentTime + 0.4)
-      })
-      .catch(() => { /* no file: the synthesized crowd stays */ })
+    // [Sprint 27 S1] A second layer of voices far away: white noise in the band of a crowd's chatter, swelling
+    // slowly as stands do. (The recorded crowd of X41 was cut from an Arabic commentator's match and let his words
+    // through; the owner asked for no Arabic voice in the match, so the stands are made here again, all of them.)
+    const hiss = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate)
+    const h = hiss.getChannelData(0)
+    for (let i = 0; i < h.length; i++) h[i] = Math.random() * 2 - 1
+    const chatter = ctx.createBufferSource()
+    chatter.buffer = hiss
+    chatter.loop = true
+    const voices = ctx.createBiquadFilter()
+    voices.type = 'bandpass'
+    voices.frequency.value = 1150
+    voices.Q.value = 0.9
+    const swell = ctx.createGain()
+    swell.gain.value = 0.05
+    const lfo = ctx.createOscillator()
+    lfo.frequency.value = 0.13
+    const depth = ctx.createGain()
+    depth.gain.value = 0.025
+    lfo.connect(depth).connect(swell.gain)
+    chatter.connect(voices).connect(swell).connect(this.crowd)
+    chatter.start()
+    lfo.start()
   }
 
   /** The commentator starts or stops talking: the crowd steps back under his voice. */

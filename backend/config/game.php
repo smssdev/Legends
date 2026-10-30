@@ -78,9 +78,15 @@ return [
         // [UP9] A league with the free settings costs nothing; a customized one this many coins per club, once. Its
         // rounds start at default_kickoff in the creator's own time zone unless the owner picks the hour (customized).
         'custom_coins_per_club' => 20, 'default_kickoff' => '21:00',
+        // [Sprint 27 B1] Days off a week with no matches (e.g. Friday), chosen before the start, free.
+        'rest_days_max' => 3,
         // Tries at a league code per account each minute [PLAN 2.1]
         'join_attempts_per_minute' => 10,
     ],
+    // [Sprint 27 B2] A match moved by whole hours on its own day when both coaches agree: both times at least
+    // lead_minutes away (the referee comes 30 minutes before), the new one gap_minutes from either club's other matches,
+    // and at most max_hours either way.
+    'match_moves' => ['lead_minutes' => 60, 'gap_minutes' => 60, 'max_per_fixture' => 2, 'max_hours' => 6],
     // League matches [PLAN 2.8, 2.12] (read by App\League, not by the engine).
     'matches' => [
         'missed_live_minutes' => 10,      // up to this late a match still starts live; later it is simulated at once
@@ -486,16 +492,21 @@ return [
     'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
         'coins_max' => 100000],
+    // [Sprint 28] The coaches' suggestions to the developers and the polls on what to build next: how many
+    // suggestions an account sends a day (the last 24 hours), the reward for one the team likes (the default the
+    // panel offers, and the most), and a poll's options and longest run.
+    'ideas' => ['per_day' => 3, 'reward_default' => 50, 'reward_max' => 1000,
+        'poll_options_min' => 2, 'poll_options_max' => 6, 'poll_max_days' => 30],
     // Notifications [PLAN 2.13, Sprint 36]: one channel (Web Push now, FCM in Sprint 45). Each kind can be turned off,
     // and the inbox messages that push under each kind. The VAPID keys come from .env (php artisan push:keys).
     'notifications' => [
         'kinds' => [
             'referee' => ['referee'],
-            'match_soon' => ['match_soon'],
+            'match_soon' => ['match_soon', 'match_move'],
             'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
-            'news' => ['announcement', 'official_message', 'coins_gift'],
+            'news' => ['announcement', 'official_message', 'coins_gift', 'suggestion_answer'],
             'absence' => ['absence_warning', 'left_absent', 'kicked', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led'],
         ],
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).

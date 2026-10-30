@@ -2,6 +2,7 @@
 
 namespace App\Assistant;
 
+use App\Engine\Ability;
 use App\League\Tactics;
 use App\Support\Glossary;
 
@@ -19,7 +20,7 @@ class Guide
     /** The pages the assistant knows, by the web's route names (others fall back to "home"). */
     public const PAGES = ['home', 'club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium',
         'finance', 'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet',
-        'profile', 'leagues', 'support', 'groups', 'tournaments'];
+        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments'];
 
     /** A route of the web that is a page of another name here. */
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
@@ -31,7 +32,7 @@ class Guide
     /** The pages an answer may open, by the web's section names. */
     public const GO = ['club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium', 'finance',
         'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet', 'profile',
-        'leagues', 'support', 'groups', 'tournaments'];
+        'leagues', 'support', 'ideas', 'groups', 'tournaments'];
 
     /**
      * Each page's quick questions: a topic's id is answered from the guide at once; text after "?" goes to the
@@ -50,8 +51,8 @@ class Guide
         'stadium' => ['stadium', 'stadium_plan', 'seats', 'pitch', 'training_ground'],
         'finance' => ['finance', 'ticket_price', 'contracts', 'debt', '?analysis_money'],
         'quests' => ['quests', 'coins'],
-        'match' => ['next_match', 'opponent_sees', 'spy', 'live_changes', 'integrity', '?analysis_last'],
-        'league' => ['cup', 'invite', 'vacation_league', 'alliance', 'draw'],
+        'match' => ['next_match', 'match_move', 'opponent_sees', 'spy', 'live_changes', 'integrity', '?analysis_last'],
+        'league' => ['cup', 'rest_days', 'invite', 'vacation_league', 'alliance', 'draw'],
         'fixtures' => ['stats', 'next_match'],
         'stats' => ['stats', 'awards', '?analysis_overview'],
         'friendlies' => ['friendlies'],
@@ -61,7 +62,8 @@ class Guide
         'wallet' => ['coins', 'referral', 'verification'],
         'profile' => ['verification', 'referral', 'vacation_account'],
         'leagues' => ['leagues_create', 'leagues_join', 'invite'],
-        'support' => ['support'],
+        'support' => ['support', 'ideas'],
+        'ideas' => ['ideas', 'polls', 'honour_roll'],
         'groups' => ['groups', 'league_group'],
         'tournaments' => ['tournaments', 'national_teams', 'tournament_draw'],
     ];
@@ -190,8 +192,15 @@ class Guide
                 ['ما هو هدف النادي؟', 'هدف النادي الادارة المطلوب مني المجلس اقالة', 'إدارة النادي تحدد لك هدفاً أول الموسم من قوة ناديك بين أندية دوريك: الأقوى يُطلب منه اللقب، وربع القمة مركزاً قريباً من ترتيب قوته، والباقون أبعد قليلاً، ولا يُطلب من أحد أقل من البقاء خارج المؤخرة. تحقيقه يمنحك كوينز في آخر الموسم.'],
                 ['What is the club objective?', 'objective board target goal season', 'The board sets you an objective at the start of the season from your club\'s strength among its league: the strongest is asked for the title, the top quarter for a place near its strength rank, the others a little further, and nobody for less than staying out of the bottom. Reaching it earns you coins at the end of the season.']),
             $t('friendlies', ['club', 'friendlies'], 'friendlies',
-                ['ما هي المباريات الودية؟', 'ودية وديات ودي تجريبية', sprintf('الودية مباراة الآن تُحاكى كاملة في ثوانٍ، بلا أثر على جدول الدوري وترتيبه ولا على المال: تجرّب بها تكتيكك وتجهّز لاعبيك. كل من يلعب يكسب %d لياقة، و%s%% من تدريبه، وتُحسب مباراة معاً في الانسجام. ثمنها %d كوينز تُخصم حين تؤكد بدء الودية، بلا حد.', $c('friendlies.fitness'), rtrim(rtrim(number_format($c('friendlies.training_progress') / 100, 2), '0'), '.'), $c('friendlies.coins'))],
-                ['What are friendlies?', 'friendly friendlies test match', sprintf('A friendly is a match now, played whole in seconds, with no effect on the league table or the money: you try your tactics and get your players ready. Everyone who plays gains %d fitness and %s%% of their training, and it counts as a match together for the chemistry. It costs %d coins, taken when you confirm it, with no limit.', $c('friendlies.fitness'), rtrim(rtrim(number_format($c('friendlies.training_progress') / 100, 2), '0'), '.'), $c('friendlies.coins'))]),
+                ['ما هي المباريات الودية؟', 'ودية وديات ودي تجريبية', sprintf('الودية مباراة الآن تُحاكى كاملة، وتراها محاكاة سريعة في الصفحة نفسها (دقائقها وفرصها وأهدافها في نحو 15 ثانية، أو «تخطَّ إلى النتيجة»)، بلا أثر على جدول الدوري وترتيبه ولا على المال: تجرّب بها تكتيكك وتجهّز لاعبيك. كل من يلعب يكسب %d لياقة، و%s%% من تدريبه، وتُحسب مباراة معاً في الانسجام. ثمنها %d كوينز تُخصم حين تؤكد بدء الودية، بلا حد، وودية واحدة مع كل نادٍ في اليوم.', $c('friendlies.fitness'), rtrim(rtrim(number_format($c('friendlies.training_progress') / 100, 2), '0'), '.'), $c('friendlies.coins'))],
+                ['What are friendlies?', 'friendly friendlies test match', sprintf('A friendly is a match now, played whole, and you watch it as a quick simulation on the same page (its minutes, chances and goals in about 15 seconds, or «Skip to the result»), with no effect on the league table or the money: you try your tactics and get your players ready. Everyone who plays gains %d fitness and %s%% of their training, and it counts as a match together for the chemistry. It costs %d coins, taken when you confirm it, with no limit, and one friendly a day against each club.', $c('friendlies.fitness'), rtrim(rtrim(number_format($c('friendlies.training_progress') / 100, 2), '0'), '.'), $c('friendlies.coins'))]),
+            // [Sprint 27 B1, B2] Days off and moving a match.
+            $t('rest_days', ['league', 'leagues'], 'league',
+                ['ما هي أيام الإجازة في الدوري؟', 'اجازة اجازه ايام الاجازة راحة الجمعة يوم بلا مباريات عطلة', sprintf('منشئ الدوري يختار قبل بدايته حتى %d أيام في الأسبوع بلا مباريات (الجمعة مثلاً)، مجاناً. فيتخطاها جدول الموسم، وتُلعب الجولات في الأيام الأخرى، فيطول الموسم قليلاً. ويغيّرها من صفحة الدوري حتى يبدأ.', $c('league.rest_days_max'))],
+                ['What are the league\'s days off?', 'days off rest day friday holiday no matches', sprintf('Before the start, the league\'s creator chooses up to %d days a week with no matches (Friday, say), for free. The season\'s calendar steps over them and the rounds are played on the other days, so the season gets a little longer. They can be changed on the league page until it starts.', $c('league.rest_days_max'))]),
+            $t('match_move', ['match'], 'match',
+                ['كيف أقدّم مباراتي أو أؤجلها؟', 'تقديم تأجيل اجل قدم موعد المباراة تغيير الموعد ساعة نقل المباراة', sprintf('من «المباراة القادمة» ← «تقديم المباراة أو تأجيلها»: اختر ساعة أبكر أو أبعد في اليوم نفسه (حتى %d ساعات)، فيصل الطلب للمدرب الآخر ليوافق أو يرفض (ونادي الحاسوب يوافق فوراً). والموعدان يجب أن يكونا بعد ساعة على الأقل من الآن، وبعيدين ساعة عن مباريات الناديين الأخرى، ويُغيّر موعد المباراة الواحدة %d مرات على الأكثر. والطلب الذي لا يُرد عليه ينتهي قبل الموعد بساعة.', $c('match_moves.max_hours'), $c('match_moves.max_per_fixture'))],
+                ['How do I bring my match forward or put it back?', 'move match time earlier later postpone reschedule hour', sprintf('From Next match → «Bring the match forward or put it back»: pick an hour earlier or later the same day (up to %d hours), and the request goes to the other coach to accept or decline (a computer club agrees at once). Both times must be at least an hour from now and an hour from either club\'s other matches, and a match moves %d times at most. A request with no answer lapses an hour before the match.', $c('match_moves.max_hours'), $c('match_moves.max_per_fixture'))]),
             $t('quests', ['club', 'quests'], 'quests',
                 ['ما هي المهام الأسبوعية؟', 'مهام مهمة اسبوعية تحديات كوينز', sprintf('كل أسبوع (من الاثنين للاثنين بتوقيت القاهرة) مهام: ودية (%d كوينز)، وفوزان (%d)، وجزء ملعب (%d)، وجلسة تدريب (%d). والكبرى: مباراتان بلا هزيمة، وجائزتها أموال لناديك. تستلم كل جائزة من صفحة المهام.', $c('quests.friendly.coins'), $c('quests.wins.coins'), $c('quests.stadium.coins'), $c('quests.training.coins'))],
                 ['What are the weekly quests?', 'quests quest weekly challenges', sprintf('Each week (Monday to Monday, Cairo time) there are quests: a friendly (%d coins), two wins (%d), a stadium part (%d) and a training session (%d). The big one: two matches unbeaten, rewarded with money for your club. Claim each reward on the quests page.', $c('quests.friendly.coins'), $c('quests.wins.coins'), $c('quests.stadium.coins'), $c('quests.training.coins'))]),
@@ -204,11 +213,11 @@ class Guide
             $t('progress', ['training'], 'training', ['ما هو شريط التقدم؟', 'تقدم الشريط النسبة', $g['progress']], ['What is the progress bar?', 'progress bar percent', $g['progress']]),
             $t('chemistry', ['lineup'], 'lineup', ['ما هي الكيمياء؟', 'كيمياء الكيميا الروابط انسجام تفاهم', $g['chemistry']], ['What is chemistry?', 'chemistry links understanding', $g['chemistry']]),
             $t('lineup_edit', ['lineup'], 'lineup',
-                ['كيف أعدّل التشكيلة؟', 'تشكيلة تشكيله تعديل اسحب تبديل الاحتياط ابدل لاعب', 'التشكيلة مقفلة حتى تضغط «تعديل». بعدها اسحب أي لاعب أساسي إلى أي مكان داخل منطقة خطه ليقف فيه، أو على لاعب آخر من نفس الخط ليتبادلا، أو بدّله بالاحتياط وبباقي الفريق، ثم اضغط «حفظ». وبعد الحفظ تُحسب الكيمياء وروابطها من جديد.'],
-                ['How do I edit the lineup?', 'lineup edit drag swap bench substitute', 'The lineup is locked until you tap «Edit». Then drag any starter anywhere inside their line\'s area to place them, or onto another player of the same line to swap them, or swap them with the bench and the rest of the squad, then tap «Save». After saving, the chemistry and its links are worked out again.']),
+                ['كيف أعدّل التشكيلة؟', 'تشكيلة تشكيله تعديل اسحب تبديل الاحتياط ابدل لاعب', sprintf('اضغط أي مكان في الملعب فتظهر قائمة «من يلعب هنا؟» بقوة كل لاعب في هذا المكان، الأنسب أولاً، ويمكن تصفيتها بالخط، فاختر واحداً (ومن في الملعب يتبادل معه). أو اضغط لاعباً في الاحتياط أو باقي الفريق فتظهر «أين يلعب؟» بكل الأماكن وقوته في كل منها. أو اسحب اللاعب إلى لاعب آخر ليتبادلا، أو إلى أي مكان داخل منطقة خطه ليقف فيه. كل تغيير يُحفظ وحده بعد لحظة، و«تراجع» يعيد آخر تغيير. ويمكن أن تضع أي لاعب ميدان في أي خط، لكنه خارج مركزه يلعب بـ %d%% من مستواه، وتظهر النسبة على بطاقته. وخانة الحارس لحارس مرمى فقط. وبعد الحفظ تُحسب الكيمياء وروابطها من جديد.', intdiv(Ability::position(['line' => 'def', 'slot_line' => 'att']), 100))],
+                ['How do I edit the lineup?', 'lineup edit drag swap bench substitute', sprintf('Tap any place on the pitch and «Who plays here?» lists each player with his rating in that place, the best first, filtered by line if you like: pick one (a player on the pitch swaps with him). Or tap a player on the bench or in the squad and «Where does he play?» shows every place with his rating there. Or drag a player onto another to swap them, or anywhere inside their line\'s area to place them. Every change saves itself a moment later, and «Undo» takes the last one back. Any outfield player can stand in any line, but out of position they play at %d%% of their level, shown on their card. The goal is for a goalkeeper only. After saving, the chemistry and its links are worked out again.', intdiv(Ability::position(['line' => 'def', 'slot_line' => 'att']), 100))]),
             $t('takers', ['lineup'], 'lineup',
-                ['من ينفذ الكرات الثابتة؟', 'منفذ ركلات جزاء ضربة حرة ركنية كورنر كابتن ثابتة', 'المنفذون من الأساسيين المحفوظين: ركلات الجزاء والحرة والركنيات. «تلقائي» يختار الأنسب، ولو خرج المنفذ من الملعب يختار المحرك بديله.'],
-                ['Who takes the set pieces?', 'takers penalty free kick corner set piece captain', 'The takers come from the saved starters: penalties, free kicks and corners. «Auto» picks the best fit, and if the taker leaves the pitch the engine picks a replacement.']),
+                ['من ينفذ الكرات الثابتة؟', 'منفذ ركلات جزاء ضربة حرة ركنية كورنر كابتن ثابتة', 'المتخصصون أربعة: القائد، وركلات الجزاء، والضربات الحرة، والركنيات. اضغط بطاقة أحدهم فتظهر قائمة الفريق كله مرتبة بمهارة هذا الدور، فاختر من تريد. وإن لم يكن من الأساسيين في مباراة ينفذها الأنسب منهم حتى يعود. و«تلقائي» يترك الاختيار للعبة، ولو خرج المنفذ من الملعب يختار المحرك بديله.'],
+                ['Who takes the set pieces?', 'takers penalty free kick corner set piece captain', 'There are four specialists: the captain, penalties, free kicks and corners. Tap a card and your whole squad shows, ranked by that role\'s skill: pick whoever you want. If they are not in the eleven for a match, the best of the starters takes it until they are back. «Auto» leaves the choice to the game, and if the taker leaves the pitch the engine picks a replacement.']),
 
             // Tactics.
             $t('plan', ['tactics'], 'tactics', ['ما هي خطة اللعب؟', 'خطة اللعب مرتد مرتدات كرات طويلة تمريرات اجنحة تسديد بعيد', $help['plan']], ['What is the game plan?', 'plan counter long balls passes wings long shots', $help['plan']]),
@@ -361,6 +370,16 @@ class Guide
             $t('support', ['support'], 'support',
                 ['كيف أراسل فريق التطوير؟', 'دعم مشكلة شكوى اقتراح المطورين تواصل', 'من صفحة الدعم: رسائلك تصل لحسابات المطورين الرسمية، وردودهم تصلك هناك وفي صندوق رسائلك.'],
                 ['How do I contact the development team?', 'support problem complaint suggestion developers contact', 'From the support page: your messages reach the developers\' official accounts, and their replies reach you there and in your inbox.']),
+            // [Sprint 28] The development ideas: suggestions, polls and the honour roll.
+            $t('ideas', ['ideas', 'support', 'profile'], 'ideas',
+                ['كيف أرسل اقتراحاً لتطوير اللعبة؟', 'اقتراح اقتراحات فكرة افكار ميزة جديدة تطوير تحسين اقترح مكافأة ذهب كوينز', sprintf('من «اقتراحات التطوير» (في حسابك وفي القائمة): اكتب عنواناً قصيراً وشرح فكرتك، فتصل لفريق التطوير (حتى %d اقتراحات في 24 ساعة). يرد الفريق على كل اقتراح: «أعجبنا» أو «نُفّذ في اللعبة» أو «لم يُعتمد» مع كلمة منه، ويصلك الرد في رسائلك. والاقتراح الذي يعجب الفريق قد يأخذ مكافأة كوينز (حتى %d) تصل محفظتك، ويضع اسمك في قائمة الشرف.', $c('ideas.per_day'), $c('ideas.reward_max'))],
+                ['How do I send a suggestion to improve the game?', 'suggestion suggest idea ideas new feature improve reward coins gold', sprintf('From «Development ideas» (in your account and the menu): write a short title and explain your idea, and it reaches the development team (up to %d suggestions in 24 hours). The team answers each one: «We liked it», «Built into the game» or «Not taken», with a word from them, and the answer reaches your inbox. A suggestion the team likes may earn a coins reward (up to %d) in your wallet, and puts your name on the honour roll.', $c('ideas.per_day'), $c('ideas.reward_max'))]),
+            $t('polls', ['ideas', 'home'], 'ideas',
+                ['ما هو تصويت التطوير؟', 'تصويت تصويتات استفتاء صوت اصوت خيارات اولوية الميزة القادمة', sprintf('فريق التطوير يفتح تصويتاً لمدة محددة (حتى %d يوماً) بخيارات من الميزات المقترحة. لكل حساب صوت واحد يغيّره ما دام التصويت مفتوحاً، وترى النتائج بعد أن تصوّت، ويراها الجميع حين ينتهي. والخيار الأعلى أصواتاً يُضاف للعبة أو يأخذ أولوية التطوير.', $c('ideas.poll_max_days'))],
+                ['What is a development poll?', 'poll polls vote voting options priority next feature', sprintf('The development team opens a poll for a set time (up to %d days) with options from the suggested features. Each account has one vote it can change while the poll is open; you see the results after you vote, and everyone sees them when it ends. The option with the most votes is added to the game or goes first in the work.', $c('ideas.poll_max_days'))]),
+            $t('honour_roll', ['ideas'], 'ideas',
+                ['ما هي قائمة الشرف للمساهمين؟', 'قائمة الشرف المساهمين ساهموا في تطوير اللعبة شكر اسمي', 'كل مدرب أعجب فريقَ التطوير اقتراحٌ منه يدخل قائمة الشرف في «اقتراحات التطوير»: اسمه، وعدد اقتراحاته المقبولة، والكوينز التي كسبها بها، وآخر اقتراح له. الأكثر مساهمة أولاً.'],
+                ['What is the contributors\' honour roll?', 'honour roll honor contributors helped improve game thanks my name', 'Every coach with a suggestion the development team liked joins the honour roll in «Development ideas»: their name, how many suggestions were accepted, the coins they earned with them, and their latest one. The biggest contributors come first.']),
 
             // [X61] What the fixes and the new features added.
             $t('basic_coach', ['training', 'specialists'], 'training',

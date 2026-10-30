@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Engine\Ability;
 use App\Engine\AutoPick;
 use App\Engine\MatchSetup;
 use App\Models\Club;
@@ -21,6 +22,9 @@ class TeamSheet
     public const BENCH = 7;
 
     public const CUSTOM_MAX = 3;
+
+    /** The captain and the set-piece takers. */
+    public const ROLES = ['captain', 'penalty', 'free_kick', 'corner'];
 
     /** The line of each position [X5]: a player plays in his own line, or in one his other positions belong to. */
     public const POSITION_LINE = [
@@ -42,6 +46,22 @@ class TeamSheet
         }
 
         return array_keys($lines);
+    }
+
+    /**
+     * [Sprint 27 X2] What a player of this line gives in each line (bp of his ability), from the engine itself
+     * (App\Engine\Ability::position: his own line in full, another outfield line less, the goal far less).
+     *
+     * @return array{gk: int, def: int, mid: int, att: int}
+     */
+    public static function placeBp(string $line): array
+    {
+        $out = [];
+        foreach (['gk', 'def', 'mid', 'att'] as $at) {
+            $out[$at] = Ability::position(['line' => $line, 'slot_line' => $at]);
+        }
+
+        return $out;
     }
 
     /** Out of his lines: so far out that "تحسين" puts him there only when nobody else is left. */
@@ -205,8 +225,8 @@ class TeamSheet
 
     /**
      * Save the coach's lineup: a formation, eleven players in its slots, and up to seven on the bench. The coach may
-     * drag the ten outfield places anywhere inside their lines' bands ($positions) [X5], and every player stands in
-     * his own line: a striker on the wing, never in midfield or defence.
+     * drag the ten outfield places anywhere inside their lines' bands ($positions) [X5]. [Sprint 27] An outfield
+     * player may stand in any line, out of his own at a lower share.
      */
     public static function save(Club $club, string $formation, array $starters, array $bench, ?array $positions = null): void
     {
@@ -242,10 +262,12 @@ class TeamSheet
         if ($squad[$starters[0]]['line'] !== 'gk') {
             throw ValidationException::withMessages(['starters' => __('خانة الحارس لحارس مرمى.')]);
         }
+        // [Sprint 27 W4, the owner's request 2026-10-30: as flexible as OSM] Any outfield player in any outfield place:
+        // out of his lines he plays at the engine's own out-of-position share (App\Engine\Ability::position), and the
+        // screen says so. Only the goal is kept for a goalkeeper, and a goalkeeper for the goal.
         foreach ($starters as $i => $id) {
-            if ($i > 0 && ! in_array($slots[$i]['line'], self::linesOf($squad[$id]), true)) {
-                throw ValidationException::withMessages(['starters' => sprintf(__('%s (%s) لا يلعب في %s: ضع كل لاعب في خطه، ويتبادل المراكز داخله.'),
-                    $squad[$id]['name'], $squad[$id]['pos'], __(self::LINE_NAME[$slots[$i]['line']]))]);
+            if ($i > 0 && $squad[$id]['line'] === 'gk') {
+                throw ValidationException::withMessages(['starters' => sprintf(__('%s حارس مرمى: مكانه في المرمى أو على الدكة.'), $squad[$id]['name'])]);
             }
         }
         $moved = $positions === null ? null : json_encode(array_map(fn ($s) => [$s['x'], $s['y']], array_slice($slots, 1)));
@@ -282,7 +304,10 @@ class TeamSheet
 
     /**
      * The captain and set-piece takers [PLAN 2.16]: the coach's choice when still a starter, else the
-     * automatic one among the starters (as AutoPick::takers chooses for the engine).
+     * automatic one among the starters (as AutoPick::takers chooses for the engine). [Sprint 27 W5] The coach may
+     * choose anyone in the squad (chosen_id): out of the eleven, the automatic one takes the role until he is back.
+     * Each role's candidates come ranked by its skill (captain: experience and rating; the others: penalties,
+     * free kicks, crossing), for the specialists' cards.
      */
     public static function takers(Club $club, ?array $lineup = null): array
     {
@@ -292,27 +317,49 @@ class TeamSheet
         $auto = AutoPick::takers($squad);
         $set = DB::table('set_piece_takers')->where('club_id', $club->id)->first();
         $out = [];
-        foreach (['captain', 'penalty', 'free_kick', 'corner'] as $role) {
+        foreach (self::ROLES as $role) {
+            $skill = fn ($p) => self::skill($role, $p);
             $chosen = $set?->{$role.'_id'};
-            $out[$role] = ['player_id' => $chosen && isset($on[$chosen]) ? (int) $chosen : $auto[$role], 'auto' => ! ($chosen && isset($on[$chosen]))];
+            $field = array_filter($squad, fn ($p) => $p['line'] !== 'gk' || $role === 'captain');
+            usort($field, fn ($a, $b) => $skill($b) <=> $skill($a) ?: $a['id'] <=> $b['id']);
+            $out[$role] = ['player_id' => $chosen && isset($on[$chosen]) ? (int) $chosen : $auto[$role], 'auto' => ! ($chosen && isset($on[$chosen])),
+                'chosen_id' => $chosen ? (int) $chosen : null,
+                'candidates' => array_map(fn ($p) => ['id' => (int) $p['id'], 'skill' => $skill($p), 'on' => $p['on']], array_values($field))];
         }
 
         return $out;
+    }
+
+    /** The takers as a locked sheet keeps them: each role's player and whether he is automatic. */
+    public static function sheetTakers(Club $club, ?array $lineup = null): array
+    {
+        return array_map(fn ($t) => ['player_id' => $t['player_id'], 'auto' => $t['auto']], self::takers($club, $lineup));
+    }
+
+    /** A role's skill, 0 to 99: the captain's is the rating, a little more with age; the others the engine's own. */
+    public static function skill(string $role, array $p): int
+    {
+        return match ($role) {
+            'captain' => min(99, (int) $p['a']['ovr'] + intdiv(max(0, (int) $p['age'] - 22), 2)),
+            'penalty' => (int) ($p['a']['pen'] ?? 0),
+            'free_kick' => (int) ($p['a']['fk'] ?? 0),
+            default => (int) ($p['a']['cross'] ?? 0),
+        };
     }
 
     /** The coach's takers; null for a role leaves it automatic ("تحسين" clears them all). */
     public static function saveTakers(Club $club, array $takers): void
     {
         MatchPrep::assertOpen($club);
-        $on = array_flip(array_filter(self::current($club)['starters']));
+        $mine = array_flip(array_column(self::squad($club), 'id'));
         foreach ($takers as $role => $id) {
-            if ($id !== null && ! isset($on[$id])) {
-                throw ValidationException::withMessages([$role => __('المنفذ يجب أن يكون من الأساسيين.')]);
+            if ($id !== null && ! isset($mine[$id])) {
+                throw ValidationException::withMessages([$role => __('المنفذ يجب أن يكون من فريقك.')]);
             }
         }
         $now = GameClock::now();
         $row = ['club_id' => $club->id, 'created_at' => $now, 'updated_at' => $now];
-        foreach (['captain', 'penalty', 'free_kick', 'corner'] as $role) {
+        foreach (self::ROLES as $role) {
             $row[$role.'_id'] = $takers[$role] ?? null;
         }
         DB::table('set_piece_takers')->upsert([$row], ['club_id'], ['captain_id', 'penalty_id', 'free_kick_id', 'corner_id', 'updated_at']);

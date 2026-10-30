@@ -1067,6 +1067,8 @@ export interface paths {
                             };
                             /** @description The width (y) a player may be dragged to, [from, to] */
                             across: number[];
+                            /** @description [Sprint 27 W4] What an outfield player gives out of his lines (bp of his ability), as the engine plays him */
+                            off_line_bp: number;
                         };
                     };
                 };
@@ -1282,6 +1284,8 @@ export interface paths {
                         rounds_per_day?: number;
                         /** @description One HH:MM */
                         round_times?: string[];
+                        /** @description [Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free */
+                        rest_days?: number[];
                         /** @enum {integer} */
                         prep_days?: 2 | 4 | 6;
                         /** @description The creator's IANA zone: the free league plays at 21:00 there */
@@ -1427,6 +1431,8 @@ export interface paths {
                         name?: string | null;
                         rounds_per_day?: number;
                         round_times?: string[];
+                        /** @description [Sprint 27 B1] The calendar is made again */
+                        rest_days?: number[];
                         /** @enum {integer} */
                         prep_days?: 2 | 4 | 6;
                         /** @enum {string} */
@@ -2354,7 +2360,7 @@ export interface paths {
         get?: never;
         /**
          * Choose the captain and set-piece takers
-         * @description Starters only; null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.
+         * @description Anyone in my squad [Sprint 27 W5]: out of the eleven, the automatic one takes the role until he is back. Null (or left out) keeps a role automatic. An empty body is "تحسين" for all four.
          */
         put: {
             parameters: {
@@ -5227,6 +5233,195 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/moves": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask to move my match by whole hours on its own day
+         * @description [Sprint 27 B2] The other coach accepts or declines (a bot's club agrees at once). Both times at least an hour away, the new one an hour from either club's other matches, two moves a match at most.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        fixture_id: number;
+                        /** @description Not 0; one of next-match's move.hours */
+                        hours: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Asked (or agreed at once by a bot's club) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            move: components["schemas"]["MatchMove"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/moves/{move}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                move: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The other coach accepts, and the match moves */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    move: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            move: components["schemas"]["MatchMove"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/moves/{move}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                move: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The other coach declines, and the match stays */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    move: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Declined */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            move: components["schemas"]["MatchMove"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/team/moves/{move}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                move: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** The coach who asked takes it back */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    move: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Taken back */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/next-match": {
         parameters: {
             query?: never;
@@ -5288,6 +5483,7 @@ export interface paths {
                                 slot?: 1 | 2;
                                 /** @description The night's big match of the round [X31] */
                                 match_of_day?: boolean;
+                                move?: components["schemas"]["MatchMoveView"];
                                 /** @description My club, for the VS card [X29] */
                                 club: {
                                     id: number;
@@ -6909,6 +7105,235 @@ export interface paths {
         };
         trace?: never;
     };
+    "/admin/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] The coaches' suggestions, newest first (one status or all), with the counts of each and the reward's default and most */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "pending" | "accepted" | "built" | "rejected";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The suggestions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestions: components["schemas"]["PanelSuggestion"][];
+                            counts: {
+                                pending: number;
+                                accepted: number;
+                                built: number;
+                                rejected: number;
+                            };
+                            reward_default: number;
+                            reward_max: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/ideas/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * [Sprint 28] Answer a suggestion: accepted, built or not taken, with a word; a liked one may carry a coins reward, given once
+         * @description The coach hears of it in the inbox (suggestion_answer). An accepted or built suggestion puts its coach on the honour roll and is not turned down after (409). A reward on a rejected one is 422, a second reward 409.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        status: "accepted" | "built" | "rejected";
+                        /** @description Up to game.ideas.reward_max */
+                        coins?: number | null;
+                        reply?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Answered */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestion: components["schemas"]["Suggestion"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/polls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] Every poll, the latest first, with its counts at any time */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The polls */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            polls: components["schemas"]["Poll"][];
+                            max_days: number;
+                            options_min: number;
+                            options_max: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 28] Open a poll on what to build next: its options, its start (now by default) and how many hours it runs */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        question: string;
+                        body?: string | null;
+                        /** Format: date-time */
+                        starts_at?: string | null;
+                        /** @description Up to game.ideas.poll_max_days days */
+                        hours: number;
+                        options: {
+                            label: string;
+                            suggestion_id?: number | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            poll: components["schemas"]["Poll"];
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/polls/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 28] One not started (or with no votes) is deleted; one running ends now and stays as the record */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                            deleted: boolean;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/announcements": {
         parameters: {
             query?: never;
@@ -8174,6 +8599,147 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 28] The development ideas: my suggestions and the team's answers, the polls (open, then ended in the last 30 days), and the honour roll */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The page */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestions: components["schemas"]["Suggestion"][];
+                            per_day: number;
+                            /** @description The suggestions left in the last 24 hours */
+                            left_today: number;
+                            polls: components["schemas"]["Poll"][];
+                            honours: components["schemas"]["HonourContributor"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas/suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 28] Send a suggestion to the developers (game.ideas.per_day in 24 hours, else 429) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            suggestion: components["schemas"]["Suggestion"];
+                        };
+                    };
+                };
+                422: components["responses"]["ValidationError"];
+                429: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ideas/polls/{poll}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                poll: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 28] Vote in an open poll: one vote an account, changed freely while it is open */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    poll: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        option_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The poll with its counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            poll: components["schemas"]["Poll"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -11208,6 +11774,8 @@ export interface components {
             team_count: number;
             rounds_per_day: number;
             round_times: string[];
+            /** @description [Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo */
+            rest_days?: number[];
             prep_days: number;
             /** @enum {string} */
             season_end_mode: "renew" | "end";
@@ -11764,9 +12332,65 @@ export interface components {
                 played: number;
                 /** @description [Sprint 24 B2] The coins it cost (0 before Sprint 24) */
                 coins?: number;
+                /** @description [Sprint 27 B3] The quick simulation: one moment a minute (none before Sprint 27) */
+                timeline?: {
+                    /** @description The minute */
+                    m: number;
+                    /** @description Stoppage time: 45+2 is m 45, x 2 */
+                    x?: number;
+                    /** @enum {string} */
+                    k: "goal" | "red" | "penalty" | "saved" | "missed" | "blocked" | "yellow" | "corner" | "attack" | "quiet";
+                    /**
+                     * @description Whose it was (home is my club)
+                     * @enum {string}
+                     */
+                    s?: "home" | "away";
+                    p?: number;
+                    name?: string | null;
+                    /** @description [mine, theirs] after the minute */
+                    score: number[];
+                }[];
+                stats?: {
+                    home?: {
+                        [key: string]: number;
+                    };
+                    away?: {
+                        [key: string]: number;
+                    };
+                };
             };
         };
+        /** @description [Sprint 27 B2] Moving the match by whole hours on its own day (Cairo), with the other coach's yes */
+        MatchMoveView: {
+            pending: {
+                id: number;
+                /** Format: date-time */
+                to_at: string;
+                /** @description I asked (else the other coach asks me) */
+                mine: boolean;
+                /** Format: date-time */
+                expires_at: string;
+            } | null;
+            moves_left: number;
+            /** @description The hours I may ask for now (negative: earlier) */
+            hours: number[];
+        };
+        MatchMove: {
+            id: number;
+            fixture_id: number;
+            /** Format: date-time */
+            from_at: string;
+            /** Format: date-time */
+            to_at: string;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "declined" | "cancelled" | "expired";
+        };
         Friendlies: {
+            /** @description [Sprint 27 B3] My club, for the quick simulation */
+            club: {
+                name: string;
+                crest_url: string;
+            };
             /** @description [Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit */
             coins: number;
             /** @description The coach's coins */
@@ -11788,6 +12412,8 @@ export interface components {
                 strength_cp: number;
                 coach: string | null;
                 recommended: boolean;
+                /** @description [Sprint 27 X1] Already played today: one friendly a day against each club (Cairo day) */
+                played_today: boolean;
             }[];
             recent: components["schemas"]["Friendly"][];
         };
@@ -11853,6 +12479,73 @@ export interface components {
             power: number;
             /** Format: date-time */
             ends_at: string;
+        };
+        Suggestion: {
+            id: number;
+            title: string;
+            body: string;
+            /** @enum {string} */
+            status: "pending" | "accepted" | "built" | "rejected";
+            /** @description The reward given (0 for none) */
+            coins: number;
+            /** @description The team's word */
+            reply: string | null;
+            /** Format: date-time */
+            at: string;
+            /** Format: date-time */
+            decided_at: string | null;
+        };
+        PanelSuggestion: components["schemas"]["Suggestion"] & {
+            user: {
+                id: number;
+                name: string;
+                username: string | null;
+                account_no: number | null;
+            };
+        };
+        Poll: {
+            id: number;
+            question: string;
+            body: string | null;
+            /** @enum {string} */
+            state: "upcoming" | "open" | "ended";
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at: string;
+            options: {
+                id: number;
+                label: string;
+                suggestion_id: number | null;
+                /** @description Null for a coach who has not voted while it is open */
+                votes: number | null;
+            }[];
+            total: number | null;
+            /** @description The option this account chose */
+            my_vote: number | null;
+            /** @description The options with the most votes, once it ended */
+            winners: number[];
+        };
+        HonourContributor: {
+            rank: number;
+            user: {
+                id: number;
+                name: string;
+                username: string | null;
+                official: boolean;
+                avatar_url: string | null;
+            };
+            /** @description Their suggestions the team liked */
+            count: number;
+            /** @description The coins they earned with them */
+            coins: number;
+            latest: {
+                title: string;
+                /** @enum {string} */
+                status: "accepted" | "built";
+                /** Format: date-time */
+                at: string | null;
+            };
         };
         TimedEvent: {
             id: number;
@@ -12080,6 +12773,13 @@ export interface components {
             players: components["schemas"]["TrainingPlayer"][];
         };
         SquadPlayer: {
+            /** @description [Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000 */
+            place_bp: {
+                gk: number;
+                def: number;
+                mid: number;
+                att: number;
+            };
             id: number;
             name: string;
             position: string;
@@ -12472,6 +13172,8 @@ export interface components {
             };
         };
         HomeScreen: {
+            /** @description [Sprint 28] The open polls this coach has not voted in yet */
+            polls_waiting: number;
             coach: {
                 id: number;
                 name: string;
@@ -13280,8 +13982,18 @@ export interface components {
                     /** @description captain, penalty, free_kick, corner */
                     takers: {
                         [key: string]: {
+                            /** @description Who takes it in the next match */
                             player_id?: number | null;
                             auto: boolean;
+                            /** @description [Sprint 27 W5] The coach's choice, playing or not */
+                            chosen_id?: number | null;
+                            /** @description [Sprint 27 W5] The squad ranked by the role's skill (no goalkeeper but for captain) */
+                            candidates?: {
+                                id: number;
+                                skill: number;
+                                /** @description In the eleven */
+                                on: boolean;
+                            }[];
                         };
                     };
                     custom_formations: (components["schemas"]["Formation"] & {

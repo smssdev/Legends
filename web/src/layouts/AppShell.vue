@@ -179,6 +179,7 @@ watch(() => route.fullPath, () => { portal.value = null })
         <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فرقي') }}</RouterLink>
         <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />{{ $t('دورياتي') }}</RouterLink>
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
+        <RouterLink to="/ideas" class="side-item"><Icon name="idea" :size="18" />{{ $t('اقتراحات التطوير') }}</RouterLink>
       </nav>
       <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
         <RouterView v-slot="{ Component, route: r }">

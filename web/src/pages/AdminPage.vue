@@ -34,6 +34,8 @@ const SECTIONS = {
   announcements: { label: 'الإعلانات', icon: 'bell' },
   houseAds: { label: 'إعلانات المكافأة', icon: 'match' },
   events: { label: 'الفعاليات', icon: 'league' },
+  ideas: { label: 'الاقتراحات', icon: 'idea' },
+  polls: { label: 'التصويت', icon: 'predict' },
   vacations: { label: 'الإجازات', icon: 'stadium' },
   conversations: { label: 'الرسائل', icon: 'inbox' },
   alliances: { label: 'بطولات التحالفات', icon: 'match' },
@@ -66,6 +68,18 @@ const eventKinds = ref<Record<string, Record<string, number>>>({})
 const eventMaxDays = ref(14)
 const evDraft = ref<{ kind: S['TimedEvent']['kind']; league_id: number | null; starts: string; hours: number; power: number | null; count: number | null }>({ kind: 'madness', league_id: null, starts: '', hours: 48, power: null, count: null })
 const vacationFilter = ref<'pending' | 'decided'>('pending')
+// [Sprint 28] The coaches' suggestions (the answer and its reward) and the polls on what to build next.
+type IdeaStatus = S['Suggestion']['status']
+const ideas = ref<S['PanelSuggestion'][]>([])
+const ideaCounts = ref<Record<IdeaStatus, number>>({ pending: 0, accepted: 0, built: 0, rejected: 0 })
+const ideaFilter = ref<IdeaStatus>('pending')
+const ideaReward = ref({ default: 50, max: 1000 })
+const ideaAnswer = ref<Record<number, { coins: number; reply: string }>>({})
+const IDEA_TABS: [IdeaStatus, string][] = [['pending', 'تنتظر الرد'], ['accepted', 'أعجبتنا'], ['built', 'نُفّذت'], ['rejected', 'لم تُعتمد']]
+const polls = ref<S['Poll'][]>([])
+const pollLimits = ref({ max_days: 30, options_min: 2, options_max: 6 })
+const pollDraft = ref<{ question: string; body: string; starts: string; hours: number; options: { label: string; suggestion_id: number | null }[] }>(
+  { question: '', body: '', starts: '', hours: 72, options: [{ label: '', suggestion_id: null }, { label: '', suggestion_id: null }] })
 const conversations = ref<any[]>([])
 const thread = ref<any | null>(null)
 const reply = ref('')
@@ -117,6 +131,8 @@ async function show(s: Section) {
   if (s === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
   if (s === 'houseAds') await loadHouseAds()
   if (s === 'events') await loadEvents()
+  if (s === 'ideas') await loadIdeas()
+  if (s === 'polls') await loadPolls()
   if (s === 'conversations') { conversations.value = (await api.GET('/admin/conversations')).data!.conversations; thread.value = null }
   if (s === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (s === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
@@ -253,6 +269,49 @@ const toUi = (kind: string, power: number) => (unit(kind) === 'x' ? power / 1000
 const fromUi = (kind: string, v: number) => Math.round(unit(kind) === 'x' ? v * 10000 : unit(kind) === '%' ? v * 100 : v)
 const powerText = (kind: string, power: number) => (unit(kind) === 'x' ? `x${toUi(kind, power)}` : unit(kind) === '%' ? `${toUi(kind, power)}%` : `+${power}`)
 const evKind = computed(() => eventKinds.value[evDraft.value.kind])
+async function loadIdeas() {
+  const data = (await api.GET('/admin/ideas', { params: { query: { status: ideaFilter.value } } })).data!
+  ideas.value = data.suggestions
+  ideaCounts.value = data.counts
+  ideaReward.value = { default: data.reward_default, max: data.reward_max }
+  ideaAnswer.value = Object.fromEntries(data.suggestions.map((x) => [x.id, { coins: x.coins ? 0 : data.reward_default, reply: x.reply ?? '' }]))
+}
+const filterIdeas = (f: IdeaStatus) => run(async () => { ideaFilter.value = f; await loadIdeas() })
+const decideIdea = (x: S['PanelSuggestion'], status: 'accepted' | 'built' | 'rejected') => run(async () => {
+  const a = ideaAnswer.value[x.id]
+  const coins = status === 'rejected' || x.coins ? 0 : a.coins
+  await api.POST('/admin/ideas/{id}/decide', { params: { path: { id: x.id } }, body: { status, coins, reply: a.reply.trim() || null } })
+  notice.value = coins ? t('أُرسل الرد و{v0} كوينز لـ {v1}.', { v0: coins, v1: x.user.name }) : t('أُرسل الرد لـ {v0}.', { v0: x.user.name })
+  await loadIdeas()
+})
+// A liked suggestion becomes an option of the next poll at once.
+const toPoll = (x: S['PanelSuggestion']) => {
+  const empty = pollDraft.value.options.find((o) => !o.label.trim())
+  if (empty) Object.assign(empty, { label: x.title, suggestion_id: x.id })
+  else if (pollDraft.value.options.length < pollLimits.value.options_max) pollDraft.value.options.push({ label: x.title, suggestion_id: x.id })
+  return run(() => show('polls'))
+}
+async function loadPolls() {
+  const data = (await api.GET('/admin/polls')).data!
+  polls.value = data.polls
+  pollLimits.value = { max_days: data.max_days, options_min: data.options_min, options_max: data.options_max }
+}
+const pollReady = computed(() => pollDraft.value.question.trim().length >= 4 && pollDraft.value.hours >= 1 && pollDraft.value.hours <= pollLimits.value.max_days * 24
+  && pollDraft.value.options.filter((o) => o.label.trim()).length >= pollLimits.value.options_min)
+const openPoll = () => run(async () => {
+  const d = pollDraft.value
+  await api.POST('/admin/polls', { body: { question: d.question.trim(), body: d.body.trim() || null, starts_at: d.starts ? new Date(d.starts).toISOString() : null, hours: d.hours,
+    options: d.options.filter((o) => o.label.trim()).map((o) => ({ label: o.label.trim(), suggestion_id: o.suggestion_id })) } })
+  pollDraft.value = { question: '', body: '', starts: '', hours: 72, options: [{ label: '', suggestion_id: null }, { label: '', suggestion_id: null }] }
+  notice.value = t('فُتح التصويت.')
+  await loadPolls()
+})
+const closePoll = (p: S['Poll']) => run(async () => {
+  if (!confirm(t(p.state === 'open' && p.total ? 'إنهاء هذا التصويت الآن؟' : 'حذف هذا التصويت؟'))) return
+  await api.DELETE('/admin/polls/{id}', { params: { path: { id: p.id } } })
+  await loadPolls()
+})
+
 async function loadEvents() {
   const data = (await api.GET('/admin/events')).data!
   events.value = data.events
@@ -587,6 +646,78 @@ onMounted(load)
               <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="extendEvent(e)">{{ $t('مدّها 24 ساعة') }}</button>
               <button type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="stopEvent(e)">{{ $t(e.state === 'running' ? 'أنهِها الآن' : 'احذف') }}</button>
             </div>
+          </article>
+        </template>
+
+        <!-- [Sprint 28] The coaches' suggestions: answer each with a word, and a reward for one the team likes. -->
+        <template v-if="tab === 'ideas'">
+          <div class="flex gap-1 self-start overflow-x-auto rounded-xl bg-surface p-1" role="tablist">
+            <button v-for="[k, l] in IDEA_TABS" :key="k" type="button" role="tab" :aria-selected="ideaFilter === k" class="flex h-touch shrink-0 items-center gap-1 rounded-lg px-3 text-sm font-bold"
+              :class="ideaFilter === k ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="filterIdeas(k)">{{ $t(l) }} <span class="font-numbers text-xs">{{ ideaCounts[k] }}</span></button>
+          </div>
+          <p v-if="!ideas.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا اقتراحات هنا.') }}</p>
+          <article v-for="x in ideas" :key="x.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <b class="min-w-0 flex-1 font-display">{{ x.title }}</b>
+              <span class="text-xs text-text-muted">{{ x.user.name }} · <span dir="ltr">#{{ x.user.account_no }}</span> · {{ when(x.at) }}</span>
+            </div>
+            <p class="whitespace-pre-line text-sm text-text-soft">{{ x.body }}</p>
+            <p v-if="x.coins" class="text-xs font-bold text-gold">{{ $t('أخذ مكافأة {v0} كوينز', { v0: x.coins }) }}</p>
+            <template v-if="ideaAnswer[x.id] && x.status !== 'rejected' && x.status !== 'built'">
+              <div class="grid gap-2 sm:grid-cols-[8rem_minmax(0,1fr)]">
+                <label v-if="!x.coins" class="flex flex-col gap-1 text-xs">{{ $t('المكافأة (حتى {v0})', { v0: ideaReward.max }) }}
+                  <input v-model.number="ideaAnswer[x.id].coins" type="number" min="0" :max="ideaReward.max" dir="ltr" class="h-touch rounded-md bg-surface-sunk px-3 font-numbers" /></label>
+                <label class="flex flex-col gap-1 text-xs" :class="x.coins ? 'sm:col-span-2' : ''">{{ $t('كلمة للمدرب (اختيارية)') }}
+                  <input v-model="ideaAnswer[x.id].reply" maxlength="500" class="h-touch rounded-md bg-surface-sunk px-3" /></label>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button v-if="x.status === 'pending'" type="button" class="h-10 rounded-md bg-gold px-3 text-xs font-bold text-on-gold" :disabled="busy" @click="decideIdea(x, 'accepted')">{{ $t('أعجبنا') }}</button>
+                <button type="button" class="h-10 rounded-md bg-success/20 px-3 text-xs font-bold" :disabled="busy" @click="decideIdea(x, 'built')">{{ $t('نُفّذ في اللعبة') }}</button>
+                <button v-if="x.status === 'pending'" type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="decideIdea(x, 'rejected')">{{ $t('لم يُعتمد') }}</button>
+                <button v-if="x.status !== 'pending'" type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="toPoll(x)">{{ $t('أضفه لتصويت') }}</button>
+              </div>
+            </template>
+            <p v-else-if="x.reply" class="text-xs text-text-muted">{{ $t('ردنا:') }} {{ x.reply }}</p>
+          </article>
+        </template>
+
+        <!-- [Sprint 28] The polls: the options, the start and how long it runs; the counts at any time here. -->
+        <template v-if="tab === 'polls'">
+          <section :aria-label="$t('تصويت جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+            <h2 class="font-display text-lg font-bold">{{ $t('تصويت جديد') }}</h2>
+            <label class="flex flex-col gap-1 text-sm">{{ $t('السؤال') }}
+              <input v-model="pollDraft.question" maxlength="160" :placeholder="$t('ما الميزة التي نبنيها أولاً؟')" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" /></label>
+            <label class="flex flex-col gap-1 text-sm">{{ $t('شرح قصير (اختياري)') }}
+              <textarea v-model="pollDraft.body" rows="2" maxlength="1000" class="rounded-md border border-text/10 bg-surface-sunk p-3" /></label>
+            <div class="flex flex-col gap-2">
+              <span class="text-sm">{{ $t('الخيارات (من {v0} إلى {v1})', { v0: pollLimits.options_min, v1: pollLimits.options_max }) }}</span>
+              <div v-for="(o, i) in pollDraft.options" :key="i" class="flex gap-2">
+                <input v-model="o.label" maxlength="120" :placeholder="$t('الخيار {v0}', { v0: i + 1 })" :aria-label="$t('الخيار {v0}', { v0: i + 1 })" class="h-touch min-w-0 flex-1 rounded-md border border-text/10 bg-surface-sunk px-3" />
+                <button v-if="pollDraft.options.length > pollLimits.options_min" type="button" class="size-touch shrink-0 rounded-md bg-surface-raised" :aria-label="$t('احذف الخيار')" @click="pollDraft.options.splice(i, 1)">✕</button>
+              </div>
+              <button v-if="pollDraft.options.length < pollLimits.options_max" type="button" class="h-10 self-start rounded-md bg-surface-raised px-3 text-xs font-bold" @click="pollDraft.options.push({ label: '', suggestion_id: null })">{{ $t('+ خيار') }}</button>
+            </div>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <label class="flex flex-col gap-1 text-sm">{{ $t('البداية (فارغة = الآن)') }}
+                <input v-model="pollDraft.starts" type="datetime-local" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3" /></label>
+              <label class="flex flex-col gap-1 text-sm">{{ $t('المدة بالساعات (حتى {v0} يوماً)', { v0: pollLimits.max_days }) }}
+                <input v-model.number="pollDraft.hours" type="number" min="1" :max="pollLimits.max_days * 24" dir="ltr" class="h-touch rounded-md border border-text/10 bg-surface-sunk px-3 font-numbers" /></label>
+            </div>
+            <button type="button" class="h-touch self-start rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-50" :disabled="busy || !pollReady" @click="openPoll">{{ $t('افتح التصويت') }}</button>
+          </section>
+          <p v-if="!polls.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا تصويت بعد.') }}</p>
+          <article v-for="p in polls" :key="p.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4" :class="p.state === 'ended' ? 'opacity-80' : ''">
+            <div class="flex flex-wrap items-center gap-2">
+              <b class="min-w-0 flex-1 font-display">{{ p.question }}</b>
+              <span class="rounded-pill px-2 text-xs font-bold" :class="p.state === 'open' ? 'bg-success/15 text-success' : p.state === 'upcoming' ? 'bg-gold/15 text-gold' : 'bg-text/10 text-text-muted'">{{ $t(p.state === 'open' ? 'مفتوح' : p.state === 'upcoming' ? 'قادم' : 'انتهى') }}</span>
+            </div>
+            <p class="text-xs text-text-muted">{{ when(p.starts_at) }} ← {{ when(p.ends_at) }} · {{ $t('{v0} صوتاً', { v0: p.total ?? 0 }) }}</p>
+            <ul class="flex flex-col gap-1 text-sm">
+              <li v-for="o in p.options" :key="o.id" class="flex items-center gap-2 rounded-md bg-surface-sunk px-3 py-2" :class="p.winners.includes(o.id) ? 'ring-1 ring-gold' : ''">
+                <span class="min-w-0 flex-1">{{ o.label }}<span v-if="p.winners.includes(o.id)" class="ms-1">🏆</span></span><b class="font-numbers" dir="ltr">{{ o.votes ?? 0 }}</b>
+              </li>
+            </ul>
+            <button v-if="p.state !== 'ended'" type="button" class="h-10 self-start rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="closePoll(p)">{{ $t(p.state === 'open' && p.total ? 'أنهِه الآن' : 'احذف') }}</button>
           </article>
         </template>
 
