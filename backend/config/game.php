@@ -572,7 +572,13 @@ return [
     ],
     // [Sprint 27] Chat groups: members at most, a message's length, how many messages a page brings, and a group's
     // name. A member sends at most per_minute messages a minute.
-    'chat' => ['max_members' => 256, 'max_length' => 1000, 'page' => 50, 'per_minute' => 20, 'max_groups' => 50],
+    'chat' => ['max_members' => 256, 'max_length' => 1000, 'page' => 50, 'per_minute' => 20, 'max_groups' => 50,
+        // [X65] A picture is kept at most image_px on its long side (a JPEG); a voice note up to audio_kb and audio_seconds.
+        'image_max_kb' => 8192, 'image_px' => 1280, 'audio_kb' => 1500, 'audio_seconds' => 120,
+        'audio_mimes' => ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/x-m4a', 'video/webm']],
+    // [X65] The settings the admin changes from the panel (App\Support\GameSettings), with their defaults: the chat's
+    // messages older than chat.retention_days are deleted every hour (0: kept), and pictures and voice notes allowed.
+    'settings' => ['chat.retention_days' => 0, 'chat.media' => true],
     // [UP12] The press conference opens open_minutes before kick-off (until the lock), and the coach's statement adds
     // morale points to his team in that match. A right prediction of a match's winner pays the predictor's club
     // prediction_cash_bp of the league's money scale and counts xp_prediction on his career.

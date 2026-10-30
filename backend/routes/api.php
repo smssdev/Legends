@@ -109,6 +109,8 @@ Route::prefix('groups')->middleware(['auth:sanctum', 'throttle:240,1,groups'])->
     Route::patch('{group}', 'update')->whereNumber('group');
     Route::get('{group}/messages', 'messages')->whereNumber('group');
     Route::post('{group}/messages', 'send')->whereNumber('group')->middleware('throttle:60,1,group-send');
+    Route::post('{group}/media', 'sendMedia')->whereNumber('group')->middleware('throttle:20,1,group-media');
+    Route::get('{group}/media/{message}', 'media')->whereNumber(['group', 'message'])->middleware('throttle:600,1,group-media-show');
     Route::delete('{group}/messages/{message}', 'destroyMessage')->whereNumber(['group', 'message']);
     Route::post('{group}/read', 'read')->whereNumber('group');
     Route::post('{group}/members', 'addMembers')->whereNumber('group');
@@ -337,6 +339,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
             Route::post('clubs', 'createClub')->middleware('throttle:30,1,data-edit');
             Route::patch('clubs/{id}', 'updateClub')->whereNumber('id')->middleware('throttle:60,1,data-edit');
         });
+        // [X65] The chat groups: how long their messages are kept, whether media may be sent, and a clean-up now.
+        Route::get('chat', 'chat');
+        Route::put('chat', 'setChat');
+        Route::post('chat/prune', 'pruneChat');
         // [X54] Coins to any account by its number.
         Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
         // [Sprint 20 S4] The game's own rewarded ads.

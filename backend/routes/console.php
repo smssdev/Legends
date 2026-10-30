@@ -30,6 +30,8 @@ Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('h
 
 // [Sprint 21 E8.7] The logs never fill the disk: each over game.logs.max_mb is rotated.
 Schedule::command('logs:trim')->hourly()->withoutOverlapping();
+// [X65] The chat groups' messages older than the admin's retention (none while it is 0).
+Schedule::command('chat:prune')->hourly()->withoutOverlapping();
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');

@@ -3709,12 +3709,13 @@ paths:
                   missing: { type: array, items: { type: object, required: [name, players, keepers], properties: { name: { type: string }, players: { type: integer }, keepers: { type: integer } } } }
                   limits:
                     type: object
-                    required: [min_teams, max_teams, group_counts, advance]
+                    required: [min_teams, max_teams, group_counts, advance, coins_per_team]
                     properties:
                       min_teams: { type: integer }
                       max_teams: { type: integer }
                       group_counts: { type: array, items: { type: integer } }
                       advance: { type: array, items: { type: integer } }
+                      coins_per_team: { type: integer, description: '[X65] The tournament''s price: this many coins for each team' }
   /tournaments/clubs:
     get:
       tags: [tournaments]
@@ -3891,6 +3892,38 @@ paths:
           description: The message
           content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/ChatMessage' } } } } }
         '429': { $ref: '#/components/responses/Error' }
+  /groups/{group}/media:
+    parameters: [{ $ref: '#/components/parameters/Group' }]
+    post:
+      tags: [groups]
+      summary: '[X65] Send a picture (kept as a JPEG of at most 1280 pixels) or a voice note (webm, ogg, mp4 or mpeg, up to two minutes), with an optional caption'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [kind, file]
+              properties:
+                kind: { type: string, enum: [image, audio] }
+                file: { type: string, format: binary }
+                caption: { type: string, nullable: true }
+                seconds: { type: integer, nullable: true }
+                reply_to: { type: integer, nullable: true }
+      responses:
+        '201':
+          description: The message
+          content: { application/json: { schema: { type: object, required: [message], properties: { message: { $ref: '#/components/schemas/ChatMessage' } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /groups/{group}/media/{message}:
+    parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [groups]
+      summary: A picture's or voice note's bytes, for the group's members only
+      responses:
+        '200': { description: The file, content: { image/jpeg: { schema: { type: string, format: binary } }, audio/webm: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
   /groups/{group}/messages/{message}:
     parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
     delete:
@@ -3950,6 +3983,28 @@ paths:
       responses:
         '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
         '409': { $ref: '#/components/responses/Error' }
+  /admin/chat:
+    get:
+      tags: [admin]
+      summary: '[X65] The chat groups'' settings - the retention in days (0 keeps everything), whether media may be sent - and their size'
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
+        '403': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [admin]
+      summary: Set the retention (messages older than it are deleted every hour) and whether media may be sent
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [retention_days, media], properties: { retention_days: { type: integer, minimum: 0, maximum: 365 }, media: { type: boolean } } } } }
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/chat/prune:
+    post:
+      tags: [admin]
+      summary: Apply the retention now
+      responses:
+        '200': { $ref: '#/components/responses/AdminChat' }
 components:
   parameters:
     Group: { name: group, in: path, required: true, schema: { type: integer } }
@@ -3987,6 +4042,22 @@ components:
     session: { type: apiKey, in: cookie, name: legends-session, description: 'The web: Sanctum session cookie, with X-XSRF-TOKEN' }
     token: { type: http, scheme: bearer, description: 'The app: a token from /auth/token or /auth/google/token' }
   responses:
+    AdminChat:
+      description: The chat settings
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [retention_days, media, groups, messages, media_count, media_kb, oldest]
+            properties:
+              retention_days: { type: integer }
+              media: { type: boolean }
+              groups: { type: integer }
+              messages: { type: integer }
+              media_count: { type: integer }
+              media_kb: { type: integer }
+              oldest: { type: string, format: date-time, nullable: true }
+              deleted: { type: integer, description: Messages the prune just deleted }
     ChatGroup:
       description: The group
       content: { application/json: { schema: { type: object, required: [group], properties: { group: { $ref: '#/components/schemas/ChatGroup' } } } } }
@@ -4370,11 +4441,13 @@ components:
       required: [id, kind, deleted, body, user, reply_to, created_at]
       properties:
         id: { type: integer }
-        kind: { type: string, enum: [text, note], description: 'A note is the group''s own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}' }
+        kind: { type: string, enum: [text, image, audio, note], description: 'A note is the group''s own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}. A picture or voice note has its caption as body [X65]' }
         deleted: { type: boolean }
         body: { type: string }
         user: { type: object, nullable: true, required: [id, name, username], properties: { id: { type: integer }, name: { type: string }, username: { type: string } } }
-        reply_to: { type: object, nullable: true, required: [id, body], properties: { id: { type: integer }, body: { type: string } } }
+        reply_to: { type: object, nullable: true, required: [id, kind, body], properties: { id: { type: integer }, kind: { type: string }, body: { type: string } } }
+        media_url: { type: string, nullable: true, description: 'A picture''s or voice note''s address, for the members only [X65]' }
+        seconds: { type: integer, nullable: true, description: A voice note's length }
         created_at: { type: string, format: date-time }
     AssistantQuestion:
       type: object

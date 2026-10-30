@@ -45,7 +45,9 @@ class TournamentController extends Controller
             'templates' => collect(array_keys($c['templates']))->map(fn ($k) => TournamentCatalog::suggest($k))->values(),
             'nations' => TournamentCatalog::nations(),
             'missing' => TournamentCatalog::missing(),
-            'limits' => ['min_teams' => $c['min_teams'], 'max_teams' => $c['max_teams'], 'group_counts' => $c['group_counts'], 'advance' => $c['advance']],
+            'limits' => ['min_teams' => $c['min_teams'], 'max_teams' => $c['max_teams'], 'group_counts' => $c['group_counts'], 'advance' => $c['advance'],
+                // [X65] Its price: this many coins for each team.
+                'coins_per_team' => (int) config('game.league.custom_coins_per_club')],
         ]);
     }
 

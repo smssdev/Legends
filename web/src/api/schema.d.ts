@@ -9903,6 +9903,8 @@ export interface paths {
                                 max_teams: number;
                                 group_counts: number[];
                                 advance: number[];
+                                /** @description [X65] The tournament's price: this many coins for each team */
+                                coins_per_team: number;
                             };
                         };
                     };
@@ -10363,6 +10365,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{group}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [X65] Send a picture (kept as a JPEG of at most 1280 pixels) or a voice note (webm, ogg, mp4 or mpeg, up to two minutes), with an optional caption */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @enum {string} */
+                        kind: "image" | "audio";
+                        /** Format: binary */
+                        file: string;
+                        caption?: string | null;
+                        seconds?: number | null;
+                        reply_to?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The message */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: components["schemas"]["ChatMessage"];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group}/media/{message}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: components["parameters"]["Group"];
+                message: number;
+            };
+            cookie?: never;
+        };
+        /** A picture's or voice note's bytes, for the group's members only */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: components["parameters"]["Group"];
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                        "audio/webm": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{group}/messages/{message}": {
         parameters: {
             query?: never;
@@ -10626,6 +10728,83 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [X65] The chat groups' settings - the retention in days (0 keeps everything), whether media may be sent - and their size */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminChat"];
+                403: components["responses"]["Error"];
+            };
+        };
+        /** Set the retention (messages older than it are deleted every hour) and whether media may be sent */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        retention_days: number;
+                        media: boolean;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["AdminChat"];
+                422: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/chat/prune": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply the retention now */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: components["responses"]["AdminChat"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -10700,10 +10879,10 @@ export interface components {
         ChatMessage: {
             id: number;
             /**
-             * @description A note is the group's own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}
+             * @description A note is the group's own, its body JSON: {what: created|added|joined|left|removed|renamed, by?, name?}. A picture or voice note has its caption as body [X65]
              * @enum {string}
              */
-            kind: "text" | "note";
+            kind: "text" | "image" | "audio" | "note";
             deleted: boolean;
             body: string;
             user: {
@@ -10713,8 +10892,13 @@ export interface components {
             } | null;
             reply_to: {
                 id: number;
+                kind: string;
                 body: string;
             } | null;
+            /** @description A picture's or voice note's address, for the members only [X65] */
+            media_url?: string | null;
+            /** @description A voice note's length */
+            seconds?: number | null;
             /** Format: date-time */
             created_at: string;
         };
@@ -12793,6 +12977,26 @@ export interface components {
         };
     };
     responses: {
+        /** @description The chat settings */
+        AdminChat: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    retention_days: number;
+                    media: boolean;
+                    groups: number;
+                    messages: number;
+                    media_count: number;
+                    media_kb: number;
+                    /** Format: date-time */
+                    oldest: string | null;
+                    /** @description Messages the prune just deleted */
+                    deleted?: number;
+                };
+            };
+        };
         /** @description The group */
         ChatGroup: {
             headers: {

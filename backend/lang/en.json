@@ -388,5 +388,8 @@
   "وصلت إلى أقصى عدد من الجروبات.": "You are in as many groups as you can be.",
   "اختر فريقك من فرق البطولة.": "Choose your team from the tournament's teams.",
   "بعض الفرق المختارة غير موجودة.": "Some of the chosen teams do not exist.",
-  "اختر موعد البدء من الآن حتى :n أيام.": "Choose a start from now to :n days ahead."
+  "اختر موعد البدء من الآن حتى :n أيام.": "Choose a start from now to :n days ahead.",
+  "إرسال الصور والصوت متوقف الآن.": "Sending photos and voice notes is off for now.",
+  "التسجيل الصوتي غير مقبول أو أطول من المسموح.": "The voice note is not accepted or is longer than allowed.",
+  "الملف غير موجود.": "The file does not exist."
 }

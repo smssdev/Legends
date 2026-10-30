@@ -9,6 +9,7 @@ use App\Models\League;
 use App\Rules\NotJunk;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /** [Sprint 27] Chat groups: the account's groups, one group with its members and messages, and what its admins do. */
 class ChatController extends Controller
@@ -51,6 +52,34 @@ class ChatController extends Controller
         $data = $request->validate(['body' => ['required', 'string', 'max:'.config('game.chat.max_length')], 'reply_to' => ['nullable', 'integer']]);
 
         return response()->json(['message' => ChatGroups::send($group, $request->user(), $data['body'], $data['reply_to'] ?? null)], 201);
+    }
+
+    /** [X65] A picture or a voice note, with an optional caption. */
+    public function sendMedia(Request $request, int $group): JsonResponse
+    {
+        $c = config('game.chat');
+        $data = $request->validate([
+            'kind' => ['required', 'in:image,audio'],
+            'file' => ['required', 'file', 'max:'.max($c['image_max_kb'], $c['audio_kb'])],
+            'caption' => ['nullable', 'string', 'max:'.$c['max_length']],
+            'seconds' => ['nullable', 'integer', 'min:0', 'max:3600'],
+            'reply_to' => ['nullable', 'integer'],
+        ]);
+        $file = $request->file('file');
+        if ($data['kind'] === 'image') {
+            $request->validate(['file' => ['image', 'mimes:jpeg,png,webp,gif', 'max:'.$c['image_max_kb']]]);
+        }
+        $message = ChatGroups::sendMedia($group, $request->user(), $data['kind'], (string) file_get_contents($file->getRealPath()),
+            (string) ($file->getClientMimeType() ?: $file->getMimeType()), (string) ($data['caption'] ?? ''), $data['seconds'] ?? null, $data['reply_to'] ?? null);
+
+        return response()->json(['message' => $message], 201);
+    }
+
+    public function media(Request $request, int $group, int $message): Response
+    {
+        [$bytes, $mime] = ChatGroups::media($group, $request->user(), $message);
+
+        return response($bytes, 200, ['Content-Type' => $mime, 'Content-Length' => (string) strlen($bytes), 'Cache-Control' => 'private, max-age=86400']);
     }
 
     public function destroyMessage(Request $request, int $group, int $message): JsonResponse

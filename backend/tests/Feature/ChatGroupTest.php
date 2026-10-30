@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Events\ChatMessageSent;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Support\GameSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -89,5 +91,56 @@ class ChatGroupTest extends TestCase
         $this->assertSame(2, $group['members_count']);
         $this->actingAs(User::factory()->create())->getJson("/api/v1/groups/league/{$league['id']}")->assertNotFound();
         $this->actingAs($owner)->postJson("/api/v1/groups/{$group['id']}/leave")->assertStatus(409);
+    }
+
+    /** [X65] Pictures and voice notes, for the group's members only; and the admin may stop them. */
+    public function test_pictures_and_voice_notes_reach_the_members_only(): void
+    {
+        $sara = User::factory()->create(['username' => 'sara']);
+        $omar = User::factory()->create(['username' => 'omar']);
+        $id = $this->actingAs($sara)->postJson('/api/v1/groups', ['name' => 'G', 'usernames' => ['omar']])->json('group.id');
+        $photo = UploadedFile::fake()->image('goal.png', 2000, 1000);
+        $m = $this->post("/api/v1/groups/{$id}/media", ['kind' => 'image', 'file' => $photo, 'caption' => 'الهدف!'], ['Accept' => 'application/json'])
+            ->assertCreated()->json('message');
+        $this->assertSame('image', $m['kind']);
+        $this->assertSame('الهدف!', $m['body']);
+        $pic = $this->actingAs($omar)->get($m['media_url'])->assertOk();
+        $this->assertSame('image/jpeg', $pic->headers->get('Content-Type'));
+        [$w] = getimagesizefromstring($pic->getContent());
+        $this->assertSame((int) config('game.chat.image_px'), $w);
+        $voice = UploadedFile::fake()->createWithContent('voice.webm', random_bytes(4000))->mimeType('audio/webm');
+        $v = $this->post("/api/v1/groups/{$id}/media", ['kind' => 'audio', 'file' => $voice, 'seconds' => 7], ['Accept' => 'application/json'])->assertCreated()->json('message');
+        $this->assertSame(7, $v['seconds']);
+        $this->assertSame('audio/webm', $this->get($v['media_url'])->assertOk()->headers->get('Content-Type'));
+        // Not a sound: refused.
+        $this->post("/api/v1/groups/{$id}/media", ['kind' => 'audio', 'file' => UploadedFile::fake()->create('x.exe', 5, 'application/x-msdownload')], ['Accept' => 'application/json'])->assertStatus(422);
+        // A stranger cannot fetch it; a deleted voice note is gone.
+        $this->actingAs(User::factory()->create())->get($v['media_url'])->assertNotFound();
+        $this->actingAs($omar)->deleteJson("/api/v1/groups/{$id}/messages/{$v['id']}")->assertOk();
+        $this->assertSame(1, DB::table('chat_media')->count());
+        // The admin stops media.
+        GameSettings::set('chat.media', false);
+        $this->post("/api/v1/groups/{$id}/media", ['kind' => 'image', 'file' => UploadedFile::fake()->image('a.png')], ['Accept' => 'application/json'])->assertForbidden();
+    }
+
+    /** [X65] The admin keeps the messages so many days; older ones go every hour, their pictures with them. */
+    public function test_old_messages_go_after_the_admins_retention(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $sara = User::factory()->create();
+        $id = $this->actingAs($sara)->postJson('/api/v1/groups', ['name' => 'G'])->json('group.id');
+        $this->postJson("/api/v1/groups/{$id}/messages", ['body' => 'قديمة'])->assertCreated();
+        $this->post("/api/v1/groups/{$id}/media", ['kind' => 'image', 'file' => UploadedFile::fake()->image('a.png')], ['Accept' => 'application/json'])->assertCreated();
+        Carbon::setTestNow(GameClock::now()->addDays(3));
+        $this->postJson("/api/v1/groups/{$id}/messages", ['body' => 'جديدة'])->assertCreated();
+        // Kept while the retention is 0.
+        $this->artisan('chat:prune')->assertSuccessful();
+        $this->assertSame(4, DB::table('chat_group_messages')->count());
+        $this->withHeader('Referer', config('app.url'))->actingAs($admin);
+        $this->putJson('/api/v1/admin/chat', ['retention_days' => 2, 'media' => true])->assertOk()->assertJsonPath('retention_days', 2);
+        $this->actingAs($sara)->putJson('/api/v1/admin/chat', ['retention_days' => 1, 'media' => true])->assertForbidden();
+        $this->artisan('chat:prune')->assertSuccessful();
+        $this->assertSame(['جديدة'], DB::table('chat_group_messages')->pluck('body')->all());
+        $this->assertSame(0, DB::table('chat_media')->count());
     }
 }

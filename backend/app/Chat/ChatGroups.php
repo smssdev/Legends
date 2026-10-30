@@ -6,7 +6,9 @@ use App\Events\ChatMessageSent;
 use App\Messages\Inbox;
 use App\Models\League;
 use App\Models\User;
+use App\Support\Avatar;
 use App\Support\GameClock;
+use App\Support\GameSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -165,6 +167,83 @@ class ChatGroups
         if ($body === '') {
             throw new HttpException(422, __('الرسالة فارغة.'));
         }
+
+        return self::post($groupId, $user, 'text', $body, $replyTo);
+    }
+
+    /**
+     * [X65] A picture (kept as a JPEG, at most image_px on its long side) or a voice note (as recorded, up to audio_kb
+     * and audio_seconds), with an optional caption; while the admin allows media.
+     */
+    public static function sendMedia(int $groupId, User $user, string $kind, string $bytes, string $mime, string $caption = '', ?int $seconds = null, ?int $replyTo = null): array
+    {
+        self::assertMember($groupId, $user->id);
+        if (! GameSettings::get('chat.media')) {
+            throw new HttpException(403, __('إرسال الصور والصوت متوقف الآن.'));
+        }
+        $c = config('game.chat');
+        if ($kind === 'image') {
+            $bytes = Avatar::wide($bytes, $c['image_px'], $c['image_px']) ?? throw new HttpException(422, __('تعذرت قراءة الصورة، جرّب صورة أخرى.'));
+            $mime = 'image/jpeg';
+            $seconds = null;
+        } else {
+            $mime = strtolower(trim(explode(';', $mime)[0]));
+            // A webm recording is read as video by its extension; it is a voice note here.
+            $mime = $mime === 'video/webm' ? 'audio/webm' : $mime;
+            if (! in_array($mime, $c['audio_mimes'], true) || strlen($bytes) > $c['audio_kb'] * 1024) {
+                throw new HttpException(422, __('التسجيل الصوتي غير مقبول أو أطول من المسموح.'));
+            }
+            $seconds = max(1, min((int) $seconds, $c['audio_seconds']));
+        }
+
+        return DB::transaction(function () use ($groupId, $user, $kind, $bytes, $mime, $caption, $seconds, $replyTo) {
+            return self::post($groupId, $user, $kind, trim($caption), $replyTo, function (int $id) use ($bytes, $mime, $seconds) {
+                DB::table('chat_media')->insert(['chat_group_message_id' => $id, 'mime' => $mime, 'bytes' => strlen($bytes), 'seconds' => $seconds,
+                    'data' => base64_encode($bytes), 'created_at' => GameClock::now()]);
+            });
+        });
+    }
+
+    /** A picture or voice note's bytes and type, for the group's members only. */
+    public static function media(int $groupId, User $user, int $messageId): array
+    {
+        self::assertMember($groupId, $user->id);
+        $m = DB::table('chat_media')->join('chat_group_messages', 'chat_group_messages.id', '=', 'chat_media.chat_group_message_id')
+            ->where('chat_group_messages.id', $messageId)->where('chat_group_messages.chat_group_id', $groupId)->whereNull('chat_group_messages.deleted_at')
+            ->first(['chat_media.mime', 'chat_media.data']);
+        if (! $m) {
+            throw new HttpException(404, __('الملف غير موجود.'));
+        }
+
+        return [base64_decode($m->data), $m->mime];
+    }
+
+    /**
+     * [X65] The admin's retention: every message older than retention_days goes, its picture or voice note with it
+     * (0 keeps them). Returns how many went.
+     */
+    public static function prune(?int $days = null): int
+    {
+        $days ??= (int) GameSettings::get('chat.retention_days');
+        if ($days < 1) {
+            return 0;
+        }
+        $before = GameClock::now()->subDays($days);
+        $n = 0;
+        do {
+            $ids = DB::table('chat_group_messages')->where('created_at', '<', $before)->orderBy('id')->limit(500)->pluck('id')->all();
+            if ($ids) {
+                DB::table('chat_media')->whereIn('chat_group_message_id', $ids)->delete();
+                DB::table('chat_group_messages')->whereIn('reply_to_id', $ids)->update(['reply_to_id' => null]);
+                $n += DB::table('chat_group_messages')->whereIn('id', $ids)->delete();
+            }
+        } while (count($ids) === 500);
+
+        return $n;
+    }
+
+    private static function post(int $groupId, User $user, string $kind, string $body, ?int $replyTo, ?callable $then = null): array
+    {
         $recent = DB::table('chat_group_messages')->where('chat_group_id', $groupId)->where('user_id', $user->id)
             ->where('created_at', '>', GameClock::now()->subMinute())->count();
         if ($recent >= config('game.chat.per_minute')) {
@@ -173,8 +252,11 @@ class ChatGroups
         if ($replyTo && ! DB::table('chat_group_messages')->where('id', $replyTo)->where('chat_group_id', $groupId)->exists()) {
             $replyTo = null;
         }
-        $id = DB::table('chat_group_messages')->insertGetId(['chat_group_id' => $groupId, 'user_id' => $user->id, 'kind' => 'text',
+        $id = DB::table('chat_group_messages')->insertGetId(['chat_group_id' => $groupId, 'user_id' => $user->id, 'kind' => $kind,
             'body' => $body, 'reply_to_id' => $replyTo, 'created_at' => GameClock::now()]);
+        if ($then) {
+            $then($id);
+        }
         DB::table('chat_group_members')->where('chat_group_id', $groupId)->where('user_id', $user->id)->update(['last_read_id' => $id]);
         DB::table('chat_groups')->where('id', $groupId)->update(['updated_at' => GameClock::now()]);
         $view = self::views(collect([DB::table('chat_group_messages')->find($id)]))[0];
@@ -191,6 +273,8 @@ class ChatGroups
             throw new HttpException(403, __('تحذف رسائلك فقط.'));
         }
         DB::table('chat_group_messages')->where('id', $messageId)->update(['deleted_at' => GameClock::now()]);
+        // A deleted picture or voice note is gone, not hidden.
+        DB::table('chat_media')->where('chat_group_message_id', $messageId)->delete();
         ChatMessageSent::dispatch($groupId, self::views(collect([DB::table('chat_group_messages')->find($messageId)]))[0]);
     }
 
@@ -226,7 +310,7 @@ class ChatGroups
             return self::summary($g, $user) + [
                 'last' => $last ? self::views(collect([$last]))[0] : null,
                 'unread' => DB::table('chat_group_messages')->where('chat_group_id', $g->id)->where('id', '>', $g->last_read_id)
-                    ->where('kind', 'text')->where('user_id', '!=', $user->id)->whereNull('deleted_at')->count(),
+                    ->where('kind', '!=', 'note')->where('user_id', '!=', $user->id)->whereNull('deleted_at')->count(),
             ];
         })->values()->all();
     }
@@ -258,15 +342,19 @@ class ChatGroups
     {
         $users = DB::table('users')->whereIn('id', $rows->pluck('user_id')->filter()->unique()->all())->get(['id', 'name', 'username'])->keyBy('id');
         $replies = DB::table('chat_group_messages')->whereIn('id', $rows->pluck('reply_to_id')->filter()->unique()->all())->get()->keyBy('id');
+        $media = DB::table('chat_media')->whereIn('chat_group_message_id', $rows->pluck('id')->all())->get(['chat_group_message_id', 'seconds'])->keyBy('chat_group_message_id');
 
-        return $rows->map(function ($m) use ($users, $replies) {
+        return $rows->map(function ($m) use ($users, $replies, $media) {
             $u = $m->user_id ? $users[$m->user_id] ?? null : null;
             $r = $m->reply_to_id ? $replies[$m->reply_to_id] ?? null : null;
 
             return ['id' => (int) $m->id, 'kind' => $m->kind, 'deleted' => $m->deleted_at !== null,
                 'body' => $m->deleted_at ? '' : $m->body,
                 'user' => $u ? ['id' => (int) $u->id, 'name' => $u->name, 'username' => $u->username] : null,
-                'reply_to' => $r ? ['id' => (int) $r->id, 'body' => $r->deleted_at ? '' : mb_substr($r->body, 0, 80)] : null,
+                'reply_to' => $r ? ['id' => (int) $r->id, 'kind' => $r->kind, 'body' => $r->deleted_at ? '' : mb_substr($r->body, 0, 80)] : null,
+                // [X65] A picture's or voice note's address (members only) and a voice note's length.
+                'media_url' => ! $m->deleted_at && isset($media[$m->id]) ? url("/api/v1/groups/{$m->chat_group_id}/media/{$m->id}") : null,
+                'seconds' => isset($media[$m->id]) && $media[$m->id]->seconds !== null ? (int) $media[$m->id]->seconds : null,
                 'created_at' => Carbon::parse($m->created_at, 'UTC')->toIso8601ZuluString()];
         })->values()->all();
     }

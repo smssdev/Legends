@@ -6,12 +6,14 @@ use App\Http\Controllers\Api\DataController;
 use App\League\ClubLedger;
 use App\League\Joining;
 use App\League\LeagueFactory;
+use App\League\LeagueTiers;
 use App\League\LiveDraw;
 use App\League\SeasonScheduler;
 use App\Models\League;
 use App\Models\Season;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -52,12 +54,16 @@ class TournamentFactory
                 'template' => 'Tournament', 'data_version' => $version, 'team_count' => $masters->count(),
                 'rounds_per_day' => $s['rounds_per_day'], 'round_times' => array_values($s['round_times']), 'prep_days' => $s['prep_days'],
                 'starts_at' => $s['starts_at'], 'season_end_mode' => 'end', 'starting_budget' => $s['starting_budget'],
-                'fair_league' => false, 'is_dev' => $s['is_dev'] ?? false, 'press_conferences' => true, 'custom_coins' => 0,
+                'fair_league' => false, 'is_dev' => $s['is_dev'] ?? false, 'press_conferences' => true, 'custom_coins' => self::cost($masters->count(), $s),
                 'kind' => 'tournament', 'format' => $s['format'], 'tournament_template' => $s['template'],
                 'group_count' => $s['format'] === 'groups' ? (int) $s['group_count'] : null,
                 'advance_per_group' => $s['format'] === 'groups' ? (int) ($s['advance_per_group'] ?? 2) : null,
                 'legs' => $s['format'] === 'knockout' ? null : (int) ($s['legs'] ?? 1),
             ]);
+            // [X65] Paid in coins as it is made, as a customized league (the owner's decision 2026-10-30): not enough, nothing is made.
+            if ($league->custom_coins > 0) {
+                Wallet::post($owner->id, 'league_custom', -$league->custom_coins, 'tournament:'.$league->id, 'league:'.$league->id);
+            }
             // Joining stays open to the end: a tournament is short and the bots fill every seat anyway.
             $season = Season::create(['league_id' => $league->id, 'number' => 1, 'starts_at' => $s['starts_at'], 'rounds' => 0, 'lock_from_round' => 255]);
 
@@ -108,6 +114,12 @@ class TournamentFactory
 
             return $league->fresh();
         });
+    }
+
+    /** Its price in coins: as a customized league of as many teams (free for a development tournament). */
+    public static function cost(int $teams, array $s): int
+    {
+        return ($s['is_dev'] ?? false) ? 0 : LeagueTiers::cost($teams);
     }
 
     /** The shape fits the count: groups of at least two, and a knockout of 2, 4, 8 or 16 after them. */

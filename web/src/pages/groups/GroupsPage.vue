@@ -42,6 +42,8 @@ const preview = (g: Item) => {
   if (!m) return t('لا رسائل بعد')
   if (m.deleted) return t('هذه الرسالة حُذفت')
   if (m.kind === 'note') return noteText(m.body)
+  if (m.kind === 'image') return `${m.user?.name ?? ''}: 📷 ${m.body || t('صورة')}`
+  if (m.kind === 'audio') return `${m.user?.name ?? ''}: 🎤 ${t('رسالة صوتية')}`
   return `${m.user?.name ?? ''}: ${m.body}`
 }
 const time = (iso: string) => {

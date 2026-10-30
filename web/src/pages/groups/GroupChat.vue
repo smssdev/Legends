@@ -82,6 +82,78 @@ onMounted(async () => { await load(); follow() })
 onBeforeUnmount(() => { try { if (channel) live().leave(channel) } catch { /* nothing to leave */ } })
 watch(gid, async () => { try { if (channel) live().leave(channel) } catch { /* nothing to leave */ } await load(); follow() })
 
+/** [X65] A picture or a voice note, as the form the server reads; the caption is what is typed. */
+async function sendMedia(kind: 'image' | 'audio', file: Blob, name: string, seconds?: number) {
+  sending.value = true
+  notice.value = ''
+  try {
+    await ensureCsrf()
+    const form = new FormData()
+    form.append('kind', kind)
+    form.append('file', file, name)
+    if (draft.value.trim()) form.append('caption', draft.value.trim())
+    if (seconds) form.append('seconds', String(seconds))
+    if (replyTo.value) form.append('reply_to', String(replyTo.value.id))
+    const { data } = await api.POST('/groups/{group}/media', { params: { path: { group: gid.value } }, body: form as never, bodySerializer: (b: unknown) => b as FormData })
+    arrived(data!.message)
+    draft.value = ''
+    replyTo.value = null
+    toBottom()
+  } catch (e) {
+    notice.value = asApiError(e).message
+  } finally {
+    sending.value = false
+  }
+}
+const picker = ref<HTMLInputElement | null>(null)
+function picture(e: Event) {
+  const f = (e.target as HTMLInputElement).files?.[0]
+  if (f) void sendMedia('image', f, f.name)
+  ;(e.target as HTMLInputElement).value = ''
+}
+
+// A voice note: tap to record, tap again to send (up to two minutes), ✕ to drop it.
+const recording = ref(false)
+const recorded = ref(0)
+let recorder: MediaRecorder | null = null
+let chunks: Blob[] = []
+let started = 0
+let clock = 0
+let dropped = false
+async function record() {
+  if (recording.value) return void recorder?.stop()
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    const type = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'].find((m) => MediaRecorder.isTypeSupported(m)) ?? ''
+    recorder = new MediaRecorder(stream, type ? { mimeType: type } : undefined)
+    chunks = []
+    dropped = false
+    recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data)
+    recorder.onstop = () => {
+      stream.getTracks().forEach((tr) => tr.stop())
+      window.clearInterval(clock)
+      recording.value = false
+      const secs = Math.max(1, Math.round((Date.now() - started) / 1000))
+      const blob = new Blob(chunks, { type: recorder?.mimeType || 'audio/webm' })
+      if (!dropped && blob.size) void sendMedia('audio', blob, blob.type.includes('mp4') ? 'voice.m4a' : blob.type.includes('ogg') ? 'voice.ogg' : 'voice.webm', secs)
+    }
+    recorder.start()
+    started = Date.now()
+    recorded.value = 0
+    recording.value = true
+    clock = window.setInterval(() => {
+      recorded.value = Math.round((Date.now() - started) / 1000)
+      if (recorded.value >= 120) recorder?.stop()
+    }, 250)
+  } catch {
+    notice.value = t('اسمح للمتصفح باستخدام الميكروفون لتسجيل رسالة صوتية.')
+  }
+}
+function dropRecording() { dropped = true; recorder?.stop() }
+onBeforeUnmount(() => { dropped = true; recorder?.state === 'recording' && recorder.stop() })
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+const lightbox = ref<string | null>(null)
+
 async function send() {
   const body = draft.value.trim()
   if (!body || sending.value) return
@@ -170,7 +242,15 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
           <i v-if="m.user?.id !== me" class="block text-xs font-bold not-italic text-gold-light">{{ m.user?.name ?? $t('عضو سابق') }}</i>
           <span v-if="m.reply_to" class="mb-1 block border-s-2 border-gold-light ps-2 text-xs opacity-80">{{ m.reply_to.body || $t('هذه الرسالة حُذفت') }}</span>
           <span v-if="m.deleted" class="italic text-text-muted">{{ $t('هذه الرسالة حُذفت') }}</span>
-          <span v-else class="whitespace-pre-wrap break-words">{{ m.body }}</span>
+          <template v-else>
+            <img v-if="m.kind === 'image' && m.media_url" :src="m.media_url" :alt="m.body || $t('صورة')" loading="lazy"
+              class="mb-1 max-h-72 w-full rounded-xl object-cover" @click.stop="lightbox = m.media_url" />
+            <span v-if="m.kind === 'audio' && m.media_url" class="mb-1 flex items-center gap-2" @click.stop>
+              <span aria-hidden="true">🎤</span><audio :src="m.media_url" controls preload="none" class="h-10 max-w-[230px]" />
+              <span v-if="m.seconds" class="font-numbers text-xs opacity-80" dir="ltr">{{ mmss(m.seconds) }}</span>
+            </span>
+            <span v-if="m.body" class="whitespace-pre-wrap break-words">{{ m.body }}</span>
+          </template>
           <span class="mt-0.5 block text-end font-numbers text-[11px] opacity-70" dir="ltr">{{ hhmm(m.created_at) }}</span>
         </button>
       </template>
@@ -178,15 +258,32 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
 
     <p v-if="notice" class="bg-surface-sunk px-4 py-2 text-sm" role="status">{{ $t(notice) }}</p>
     <div v-if="replyTo" class="flex items-center gap-2 bg-panel px-4 pt-2 text-sm">
-      <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body }}</span>
+      <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '') }}</span>
       <button class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null">✕</button>
     </div>
     <form class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3" @submit.prevent="send">
+      <template v-if="recording">
+        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording">✕</button>
+        <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
+          <span class="size-2.5 animate-pulse rounded-full bg-live" /><span class="font-numbers" dir="ltr">{{ mmss(recorded) }}</span>
+          <span class="text-sm text-text-muted">{{ $t('يُسجَّل… اضغط ➤ للإرسال') }}</span></span>
+        <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-black text-on-gold" :aria-label="$t('أرسل الرسالة الصوتية')" @click="record">
+          <span class="rtl:-scale-x-100">➤</span></button>
+      </template>
+      <template v-else>
+      <input ref="picker" type="file" accept="image/*" class="hidden" @change="picture" />
+      <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk text-xl disabled:opacity-50" :disabled="sending"
+        :aria-label="$t('أرسل صورة')" @click="picker?.click()">📷</button>
       <textarea v-model="draft" rows="1" maxlength="1000" :placeholder="$t('اكتب رسالة…')" :aria-label="$t('اكتب رسالة…')"
         class="max-h-32 min-h-touch flex-1 resize-none rounded-3xl bg-surface-sunk px-4 py-3" @keydown.enter.exact.prevent="send" />
       <button type="submit" class="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg font-black text-on-gold disabled:opacity-50"
-        :disabled="!draft.trim() || sending" :aria-label="$t('أرسل')"><span class="rtl:-scale-x-100">➤</span></button>
+        :disabled="sending" :aria-label="draft.trim() ? $t('أرسل') : $t('سجّل رسالة صوتية')" @click="!draft.trim() && ($event.preventDefault(), record())">
+        <span v-if="draft.trim()" class="rtl:-scale-x-100">➤</span><span v-else>🎤</span></button>
+      </template>
     </form>
+    <UiDialog :open="!!lightbox" bare @close="lightbox = null">
+      <img v-if="lightbox" :src="lightbox" :alt="$t('صورة')" class="max-h-[85vh] w-full rounded-xl object-contain" @click="lightbox = null" />
+    </UiDialog>
 
     <UiDialog :open="!!picked" :title="$t('الرسالة')" @close="picked = null">
       <div class="flex flex-col gap-2">

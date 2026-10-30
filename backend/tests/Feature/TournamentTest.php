@@ -8,6 +8,7 @@ use App\Models\League;
 use App\Models\User;
 use App\Support\GameClock;
 use App\Tournament\TournamentStage;
+use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,8 @@ class TournamentTest extends TestCase
         $this->nationClub('Palestine', 'Palestine', 5, 70);
         $this->artisan('data:nations')->assertSuccessful();
         $this->owner = User::factory()->create(['name' => 'المنظم']);
+        // [X65] A tournament is paid in coins as a customized league.
+        Wallet::post($this->owner->id, 'daily', 10_000, 'test-grant:'.$this->owner->id);
     }
 
     protected function tearDown(): void
@@ -195,5 +198,19 @@ class TournamentTest extends TestCase
         $this->assertSame($this->owner->id, (int) $brazil->user_id);
         // A coach joins with the code, as in a league.
         $this->assertSame('tournament', $this->getJson("/api/v1/leagues/{$t['id']}")->assertOk()->json('league.kind'));
+    }
+
+    public function test_a_tournament_is_paid_in_coins_by_its_teams(): void
+    {
+        $poor = User::factory()->create();
+        $body = ['template' => 'custom', 'format' => 'league', 'teams' => $this->clubs(4), 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString()];
+        $this->actingAs($poor)->postJson('/api/v1/tournaments', $body)->assertStatus(409);
+        $this->assertSame(0, League::count());
+        $before = (int) DB::table('wallets')->where('user_id', $this->owner->id)->value('balance');
+        $t = $this->actingAs($this->owner)->postJson('/api/v1/tournaments', $body)->assertCreated()->json('tournament');
+        $cost = 4 * (int) config('game.league.custom_coins_per_club');
+        $this->assertSame($before - $cost, (int) DB::table('wallets')->where('user_id', $this->owner->id)->value('balance'));
+        $this->assertSame($cost, (int) League::findOrFail($t['id'])->custom_coins);
+        $this->assertSame((int) config('game.league.custom_coins_per_club'), $this->getJson('/api/v1/tournaments/catalog')->json('limits.coins_per_team'));
     }
 }

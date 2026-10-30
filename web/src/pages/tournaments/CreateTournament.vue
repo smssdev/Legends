@@ -218,6 +218,6 @@ async function create() {
     </section>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <UiButton type="submit" block :loading="sending" :disabled="count < 2">{{ $t('أنشئ البطولة') }}</UiButton>
+    <UiButton type="submit" block :loading="sending" :disabled="count < 2">{{ $t('أنشئ البطولة') }} · 🪙 <span class="font-numbers">{{ count * (catalog?.limits.coins_per_team ?? 0) }}</span></UiButton>
   </form>
 </template>
