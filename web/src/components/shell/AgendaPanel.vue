@@ -27,7 +27,7 @@ const go = (to: string) => {
 <template>
   <div class="contents">
   <div class="agenda-veil fixed inset-0 z-40 bg-black/55 md:bg-transparent" @click="emit('close')" />
-  <section class="agenda" role="dialog" :aria-label="$t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك')" @keydown.esc="emit('close')">
+  <section class="agenda" :aria-label="$t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك')">
     <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold">
       <Icon :name="kind === 'timers' ? 'clock' : 'todo'" :size="18" />{{ $t(kind === 'timers' ? 'المؤقتات' : 'ما ينتظرك') }}
     </h2>
