@@ -89,11 +89,13 @@ class FriendliesTest extends TestCase
         // The same key again: the same friendly, paid once.
         $this->play($opponent, 'k1')->assertOk()->assertJsonPath('friendly.id', $played['id']);
         $this->assertSame(17, Wallet::balance($this->owner->id));
-        // No limit: as many as the coins pay for (three more here), then a clear refusal before playing.
-        $this->play($opponent)->assertCreated();
-        $this->play($opponent)->assertCreated();
+        // No limit: as many as the coins pay for (three more here), then a clear refusal before playing. [Sprint 27 X1]
+        // Each club once a day: the other two today, the first again tomorrow.
+        $this->play($view['opponents'][1]['id'])->assertCreated();
+        $this->play($view['opponents'][2]['id'])->assertCreated();
+        Carbon::setTestNow('2026-10-23 10:00:00');
         $this->play($opponent)->assertCreated()->assertJsonPath('balance', 2);
-        $this->play($opponent)->assertConflict()->assertJsonPath('message', 'الودية بـ 5 كوينز، ورصيدك لا يكفي.');
+        $this->play($view['opponents'][1]['id'])->assertConflict()->assertJsonPath('message', 'الودية بـ 5 كوينز، ورصيدك لا يكفي.');
         $this->assertSame(4, DB::table('friendlies')->where('club_id', $this->mine)->count());
         $this->assertSame(-20, (int) DB::table('wallet_transactions')->where('user_id', $this->owner->id)->where('type', 'friendly')->sum('amount'));
     }
@@ -102,10 +104,10 @@ class FriendliesTest extends TestCase
     {
         Wallet::post($this->owner->id, 'admin_gift', 100, 'gift:1');
         config(['game.chemistry.together_matches' => 2]);
-        $opponent = DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->value('id');
+        [$opponent, $another] = DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->pluck('id')->all();
         $this->actingAs($this->owner);
         $this->play($opponent)->assertCreated();
-        $this->play($opponent)->assertCreated();
+        $this->play($another)->assertCreated();
         // Two friendlies together: every pair who played in both is linked green.
         [$first, $second] = DB::table('friendlies')->where('club_id', $this->mine)->orderBy('id')->pluck('players')->map(fn ($j) => json_decode($j, true))->all();
         $this->assertGreaterThanOrEqual(11, count($first));
@@ -120,10 +122,14 @@ class FriendliesTest extends TestCase
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => true]);
         config(['game.premium.season_cap' => 10]);
         Wallet::post($this->owner->id, 'admin_gift', 100, 'gift:1');
-        $opponent = DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->value('id');
+        $opponents = DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->pluck('id')->all();
         $this->actingAs($this->owner)->getJson($this->url())->assertJsonPath('coins', 5);
-        // Four friendlies the same day: 20 coins, over a cap of 10, and the cap left whole for the league's spends.
-        foreach (range(1, 4) as $n) {
+        // Four friendlies: 20 coins, over a cap of 10, and the cap left whole for the league's spends (each club once a
+        // day [Sprint 27 X1]: the three today, the first again tomorrow).
+        foreach ([...$opponents, $opponents[0]] as $n => $opponent) {
+            if ($n === 3) {
+                Carbon::setTestNow('2026-10-23 10:00:00');
+            }
             $this->play($opponent)->assertCreated()->assertJsonPath('friendly.report.coins', 5);
         }
         $this->assertSame(80, Wallet::balance($this->owner->id));

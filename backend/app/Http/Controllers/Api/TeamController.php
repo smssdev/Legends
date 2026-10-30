@@ -411,6 +411,9 @@ class TeamController extends Controller
                 'overall' => $p->overall, 'training_bonus' => (int) $p->training_bonus, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
                 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
                 'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,
+                // [Sprint 27 X2] What he gives in each line, as the engine plays him (bp of his ability): the screens show
+                // his rating at any place from it, the server's own number, in the web and the app alike.
+                'place_bp' => TeamSheet::placeBp($p->line),
                 'attributes' => $p->line === 'gk'
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],

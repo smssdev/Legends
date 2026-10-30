@@ -377,5 +377,6 @@
   "هذه ليست مباراة فريقك.": "This is not your club's match.",
   "لا يتغير موعد مباراة قُفلت أو بدأت.": "A match that is locked or has started cannot be moved.",
   "%s حارس مرمى: مكانه في المرمى أو على الدكة.": "%s is a goalkeeper: he plays in goal or sits on the bench.",
-  "المنفذ يجب أن يكون من فريقك.": "The taker must be from your squad."
+  "المنفذ يجب أن يكون من فريقك.": "The taker must be from your squad.",
+  "لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.": "You played this club in a friendly today: one friendly a day against each club."
 }

@@ -106,8 +106,8 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
           <span class="block truncate text-xs text-text-muted">{{ o.recommended ? $t('موصى به: الأقرب إلى قوتك') : o.coach ? $t('مدرب: {v0}', { v0: o.coach }) : $t('الكمبيوتر') }}</span>
         </span>
         <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
-        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || watching || !canPay || !!v.blocked" @click="play(o.id)">
-          {{ confirming === o.id ? $t('أكّد: {v0} كوينز', { v0: v.coins }) : $t('العب') }}
+        <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || watching || !canPay || !!v.blocked || o.played_today" @click="play(o.id)">
+          {{ o.played_today ? $t('لُعبت اليوم') : confirming === o.id ? $t('أكّد: {v0} كوينز', { v0: v.coins }) : $t('العب') }}
         </button>
       </li>
     </ul>

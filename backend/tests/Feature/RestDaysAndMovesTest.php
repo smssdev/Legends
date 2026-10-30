@@ -151,7 +151,7 @@ class RestDaysAndMovesTest extends TestCase
     public function test_the_friendly_carries_a_minute_by_minute_quick_simulation(): void
     {
         $league = $this->makeLeague($this->owner, ['team_count' => 4, 'starts_at' => '2026-10-24T10:00:00Z', 'fair_league' => false]);
-        Wallet::post($this->owner->id, 'admin_gift', 10, 'gift:t');
+        Wallet::post($this->owner->id, 'admin_gift', 20, 'gift:t');
         $opponent = DB::table('clubs')->where('league_id', $league['id'])->where('id', '!=', $league['my_club_id'])->value('id');
         $f = $this->actingAs($this->owner)->postJson("/api/v1/leagues/{$league['id']}/friendlies", ['opponent_id' => $opponent, 'idempotency_key' => (string) Str::uuid()])
             ->assertCreated()->json('friendly');
@@ -166,6 +166,17 @@ class RestDaysAndMovesTest extends TestCase
             $this->assertNotNull($g['name']);
         }
         $this->assertArrayHasKey('shots', $f['report']['stats']['home']);
+
+        // [X1] The same club once a day: refused again today, another club still open, and the same one tomorrow.
+        $url = "/api/v1/leagues/{$league['id']}/friendlies";
+        $this->postJson($url, ['opponent_id' => $opponent, 'idempotency_key' => (string) Str::uuid()])->assertStatus(409)
+            ->assertJsonPath('message', 'لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.');
+        $view = collect($this->getJson($url)->assertOk()->json('opponents'))->keyBy('id');
+        $this->assertTrue($view[$opponent]['played_today']);
+        $other = $view->firstWhere('played_today', false)['id'];
+        $this->postJson($url, ['opponent_id' => $other, 'idempotency_key' => (string) Str::uuid()])->assertCreated();
+        Carbon::setTestNow('2026-10-23 10:00:00');
+        $this->postJson($url, ['opponent_id' => $opponent, 'idempotency_key' => (string) Str::uuid()])->assertCreated();
 
         // The moment of a minute is pure: the biggest thing in it.
         $this->assertSame(['m' => 7, 'k' => 'quiet', 'score' => [0, 0]], Friendlies::moment(7, [], ['home' => 0, 'away' => 0]));

@@ -4742,7 +4742,7 @@ components:
         fitness: { type: integer, description: '[Sprint 24 B2] The fitness each player who plays gains (up to 100)' }
         blocked: { type: [object, 'null'], required: [reason], properties: { reason: { type: string, enum: [live, before_match] }, until: { type: string, format: date-time } } }
         training_progress_pct: { type: integer }
-        opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean } } } }
+        opponents: { type: array, items: { type: object, required: [id, name, code, crest_url, strength_cp, coach, recommended, played_today], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, crest_url: { type: string }, strength_cp: { type: integer }, coach: { type: [string, 'null'] }, recommended: { type: boolean }, played_today: { type: boolean, description: '[Sprint 27 X1] Already played today: one friendly a day against each club (Cairo day)' } } } }
         recent: { type: array, items: { $ref: '#/components/schemas/Friendly' } }
     Quests:
       type: object
@@ -4975,8 +4975,13 @@ components:
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
       type: object
-      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role]
+      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role, place_bp]
       properties:
+        place_bp:
+          type: object
+          description: '[Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000'
+          required: [gk, def, mid, att]
+          properties: { gk: { type: integer }, def: { type: integer }, mid: { type: integer }, att: { type: integer } }
         id: { type: integer }
         name: { type: string }
         position: { type: string }

@@ -33,7 +33,6 @@ const message = ref('')
 const history = ref<string[]>([])
 let pending = 0
 const queued = ref(false)
-const offLineBp = ref(8800)
 const view = ref<'overall' | 'fitness' | 'age' | 'value'>('overall')
 const card = ref<SquadPlayer | null>(null)
 // The ten outfield places [x, y] (the keeper stays in goal), and the bands the server allows each line.
@@ -46,7 +45,6 @@ onMounted(async () => {
   formations.value = f.data!.formations
   bands.value = f.data!.bands
   across.value = f.data!.across
-  offLineBp.value = f.data!.off_line_bp
   if (team.value) apply(team.value.lineup)
 })
 
@@ -78,16 +76,6 @@ const current = computed(() => {
   // The places the coach dragged them to.
   return { ...f, slots: f.slots.map((s, i) => (i > 0 && places.value[i - 1] ? { ...s, x: places.value[i - 1][0], y: places.value[i - 1][1] } : s)) }
 })
-// Only for a quick message when dragging: the server is the one that decides [X5].
-const POSITION_LINE: Record<string, string> = {
-  GK: 'gk', CB: 'def', LB: 'def', RB: 'def', LWB: 'def', RWB: 'def', CDM: 'mid', CM: 'mid', CAM: 'mid', LM: 'mid', RM: 'mid', LW: 'att', RW: 'att', ST: 'att', CF: 'att',
-}
-function fitsLine(id: number, line: string) {
-  const p = players.value.get(id)
-  if (!p) return true
-  const lines = new Set([p.line, ...(p.alt_positions ?? '').split(',').map((a) => POSITION_LINE[a.trim()]).filter(Boolean)])
-  return lines.has(line)
-}
 const reserves = computed(() => {
   const used = new Set([...starters.value, ...bench.value])
   return (team.value?.players ?? []).filter((p) => !used.has(p.id))
@@ -200,11 +188,21 @@ function undo() {
   later()
 }
 
-// [Sprint 27 W3] A tap opens the list of who may go there instead (OSM's way); a drag still moves at once.
-const choosing = ref<Spot | null>(null)
+// [Sprint 27 W3, X2: the owner's most important point, 2026-10-30] Choosing who plays where, both ways, by taps alone
+// (a drag still works): a tap on a place asks "who plays here?", the best for it first; a tap on a player off the pitch
+// (or «انقله» on one on it) asks "where does he play?", every place with his rating there. Each row shows the rating the
+// player will really play at in that place (the server's place_bp, as the engine plays him), so a striker in midfield
+// is seen at once for what he gives. A player already in the eleven swaps with the one he replaces.
+type Pick = { mode: 'place'; spot: Spot } | { mode: 'player'; id: number }
+const picking = ref<Pick | null>(null)
+const filter = ref<'best' | 'gk' | 'def' | 'mid' | 'att'>('best')
+const choosing = computed<Spot | null>(() => (picking.value?.mode === 'place' ? picking.value.spot : null))
 function tap(s: Spot) {
-  if (s.zone === 'reserve' && playerAt(s) === null) return
-  choosing.value = s
+  const id = playerAt(s)
+  if (s.zone === 'reserve' && id === null) return
+  filter.value = 'best'
+  // Off the pitch, a player: where does he play? A place on the pitch (or an empty bench place): who plays here?
+  picking.value = s.zone !== 'slot' && id !== null ? { mode: 'player', id } : { mode: 'place', spot: s }
 }
 /** Where a player is now. */
 function spotOf(id: number): Spot {
@@ -214,43 +212,72 @@ function spotOf(id: number): Spot {
   if (j >= 0) return { zone: 'bench', index: j }
   return { zone: 'reserve', index: reserves.value.findIndex((p) => p.id === id) }
 }
-/** The players for a place, the best for it first: in his line (and his position) before out of it, then by strength. */
+/** The rating a player plays at in a line: the server's share of his ability there (100% in his own line). */
+const ratingAt = (p: SquadPlayer, line: string | undefined) =>
+  line ? Math.floor((p.overall * ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000)) / 10000) : p.overall
+const shareAt = (p: SquadPlayer, line: string | undefined) => (line ? ((p.place_bp as Record<string, number> | undefined)?.[line] ?? 10000) / 100 : 100)
+/** The goal for a goalkeeper, and a goalkeeper for the goal (the server's rule). */
+const allowed = (p: SquadPlayer, slot: number) => (slot === 0 ? p.line === 'gk' : p.line !== 'gk')
+const LINES = { gk: 'حراس', def: 'دفاع', mid: 'وسط', att: 'هجوم' } as const
+const slotLabel = (i: number) => current.value?.slots[i]?.role ?? ''
+
+/** "Who plays here?": the players for a place, the best rating there first. */
 const options = computed(() => {
   const s = choosing.value
   if (!s || !team.value) return []
   const here = playerAt(s)
-  const slot = s.zone === 'slot' ? current.value?.slots[s.index] : null
-  const score = (p: SquadPlayer) => {
-    if (!slot) return p.overall * 10 + p.fitness / 10
-    const fit = fitsLine(p.id, slot.line) ? 2000 : 0
-    return fit + p.overall * 10 + p.fitness / 10
-  }
+  const slot = s.zone === 'slot' ? current.value?.slots[s.index] : undefined
   return team.value.players
-    .filter((p) => p.id !== here && (!slot || (s.index === 0 ? p.line === 'gk' : p.line !== 'gk')))
-    .sort((a, b) => score(b) - score(a))
-    .map((p) => ({ p, where: spotOf(p.id).zone, off: !!slot && s.index > 0 && !fitsLine(p.id, slot.line) }))
+    .filter((p) => p.id !== here && (s.zone !== 'slot' || allowed(p, s.index)) && (filter.value === 'best' || p.line === filter.value))
+    .map((p) => ({ p, rating: ratingAt(p, slot?.line), share: shareAt(p, slot?.line), from: spotOf(p.id) }))
+    .sort((a, b) => b.rating - a.rating || b.p.fitness - a.p.fitness)
 })
+/** "Where does he play?": every place on the pitch with his rating there, then the bench and out. */
+const places_ = computed(() => {
+  const pk = picking.value
+  if (pk?.mode !== 'player' || !current.value) return []
+  const p = players.value.get(pk.id)
+  if (!p) return []
+  return current.value.slots
+    .map((slot, i) => ({ i, slot, rating: ratingAt(p, slot.line), share: shareAt(p, slot.line), now: starters.value[i] ? players.value.get(starters.value[i]!) : undefined }))
+    .filter((x) => allowed(p, x.i) && x.now?.id !== p.id)
+    .sort((a, b) => b.rating - a.rating || a.i - b.i)
+})
+const pickedPlayer = computed(() => (picking.value?.mode === 'player' ? players.value.get(picking.value.id) : undefined))
 function choose(id: number) {
   const to = choosing.value
-  choosing.value = null
+  picking.value = null
   if (!to) return
   move(spotOf(id), to)
   later()
 }
+function goTo(to: Spot) {
+  const pk = picking.value
+  picking.value = null
+  if (pk?.mode !== 'player') return
+  move(spotOf(pk.id), to)
+  later()
+}
+/** The one on this place, moved elsewhere: "where does he play?". */
+function moveOccupant() {
+  const s = choosing.value
+  const id = s ? playerAt(s) : null
+  if (id !== null) picking.value = { mode: 'player', id }
+}
 /** Out of the eleven, from the place being chosen for. */
 function takeOut() {
   const s = choosing.value
-  choosing.value = null
+  picking.value = null
   if (!s || playerAt(s) === null) return
   move(s, { zone: 'reserve', index: -1 })
   later()
 }
 const WHERE: Record<string, string> = { slot: 'أساسي', bench: 'احتياط', reserve: '' }
-/** Starters playing out of their lines, at the engine's lower share. */
+/** Starters playing out of their line, at the engine's lower share. */
 const offLine = (i: number) => {
-  const id = starters.value[i]
+  const p = players.value.get(starters.value[i] ?? 0)
   const slot = current.value?.slots[i]
-  return i > 0 && !!id && !!slot && !fitsLine(id, slot.line)
+  return i > 0 && !!p && !!slot && shareAt(p, slot.line) < 100
 }
 
 // Dragging with pointer events: a ghost follows the finger; on release, the spot under it receives.
@@ -326,7 +353,7 @@ const band = computed(() => {
   return from === undefined ? null : { top: `${100 - (to / 720) * 100}%`, height: `${((to - from) / 720) * 100}%` }
 })
 const click = (s: Spot) => !suppress && tap(s)
-const isSelected = (s: Spot) => choosing.value?.zone === s.zone && choosing.value.index === s.index
+const isSelected = (s: Spot) => (choosing.value?.zone === s.zone && choosing.value.index === s.index) || (picking.value?.mode === 'player' && playerAt(s) === picking.value.id)
 
 async function improve() {
   if (!leagueId.value) return
@@ -532,7 +559,7 @@ async function saveCustom() {
               <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
               <b class="font-numbers text-lg leading-none">{{ shown(players.get(starters[i]!)!) }}</b>
               <!-- [Sprint 27 W4] Out of his lines: he plays at the engine's lower share. -->
-              <span v-if="offLine(i)" class="absolute end-0.5 top-1.5 rounded bg-warning px-0.5 font-numbers text-[9px] font-bold leading-tight text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: offLineBp / 100 })">{{ offLineBp / 100 }}%</span>
+              <span v-if="offLine(i)" class="absolute end-0.5 top-1.5 rounded bg-warning px-0.5 font-numbers text-[9px] font-bold leading-tight text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
               <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
             </span>
             <span class="max-w-full truncate rounded bg-chrome px-1.5 text-xs font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
@@ -617,28 +644,60 @@ async function saveCustom() {
       :style="{ left: `${drag.x}px`, top: `${drag.y}px` }"
     >{{ shown(players.get(drag.id)!) }}</div>
 
-    <!-- [Sprint 27 W3] Who goes in this place: the best for it first. -->
-    <UiDialog :open="!!choosing" :title="choosing?.zone === 'slot' ? $t('من يلعب {v0}؟', { v0: current?.slots[choosing.index]?.role ?? '' }) : $t('اختر لاعباً')" @close="choosing = null">
-      <div class="flex flex-col gap-2">
-        <div v-if="choosing && playerAt(choosing) !== null" class="flex gap-2">
-          <button type="button" class="h-touch flex-1 rounded-lg bg-surface-raised text-sm font-bold" @click="card = players.get(playerAt(choosing!)!) ?? null; choosing = null">{{ $t('بطاقة {v0}', { v0: short(players.get(playerAt(choosing)!)?.name ?? '') }) }}</button>
-          <button v-if="choosing.zone !== 'reserve'" type="button" class="h-touch flex-1 rounded-lg bg-surface-raised text-sm font-bold" @click="takeOut">{{ $t('أخرجه من القائمة') }}</button>
+    <!-- [Sprint 27 W3, X2] Who plays here? Each with the rating he will play at in this place. -->
+    <UiDialog :open="!!choosing" :title="choosing?.zone === 'slot' ? $t('من يلعب {v0}؟', { v0: slotLabel(choosing.index) }) : $t('من يجلس على الدكة؟')" @close="picking = null">
+      <div v-if="choosing" class="flex flex-col gap-2">
+        <div v-if="playerAt(choosing) !== null" class="grid grid-cols-3 gap-2">
+          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="moveOccupant">{{ $t('انقله لمكان آخر') }}</button>
+          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="takeOut">{{ $t('أخرجه من القائمة') }}</button>
+          <button type="button" class="h-touch rounded-lg bg-surface-raised px-1 text-xs font-bold" @click="card = players.get(playerAt(choosing!)!) ?? null; picking = null">{{ $t('بطاقته') }}</button>
         </div>
-        <ul class="flex max-h-[60vh] flex-col gap-1 overflow-y-auto">
+        <div class="flex gap-1 rounded-lg bg-surface-sunk p-1 text-sm" role="group" :aria-label="$t('العرض')">
+          <button v-for="(label, f) in { best: 'الأنسب', ...LINES }" :key="f" type="button" class="h-10 flex-1 rounded-md font-bold" :class="filter === f ? 'bg-surface-raised text-gold' : 'text-text-soft'" :aria-pressed="filter === f" @click="filter = f">{{ $t(label) }}</button>
+        </div>
+        <ul class="flex max-h-[58vh] flex-col gap-1 overflow-y-auto">
           <li v-for="o in options" :key="o.p.id">
-            <button type="button" class="flex min-h-touch w-full items-center gap-2 rounded-lg bg-surface px-3 py-2 text-start" :class="o.p.available ? '' : 'opacity-60'" @click="choose(o.p.id)">
-              <span class="font-numbers w-8 text-lg font-bold text-gold">{{ o.p.overall }}</span>
-              <span class="min-w-0 flex-1"><b class="block truncate text-sm">{{ $nm(o.p.name) }}</b>
+            <button type="button" class="flex min-h-14 w-full items-center gap-3 rounded-lg bg-surface px-3 py-2 text-start active:bg-surface-raised" :class="o.p.available ? '' : 'opacity-60'" @click="choose(o.p.id)">
+              <span class="flex w-12 shrink-0 flex-col items-center leading-none">
+                <b class="font-numbers text-2xl" :class="o.share < 100 ? 'text-warning' : 'text-gold'">{{ o.rating }}</b>
+                <span v-if="o.share < 100" class="font-numbers text-[10px] text-text-muted"><s>{{ o.p.overall }}</s> · {{ o.share }}%</span>
+              </span>
+              <span class="min-w-0 flex-1"><b class="block truncate">{{ $nm(o.p.name) }}</b>
                 <span class="text-xs text-text-muted" dir="ltr">{{ o.p.position }}</span>
-                <span v-if="o.off" class="ms-1 text-xs text-warning">{{ $t('خارج مركزه') }}</span>
+                <span v-if="o.share < 100" class="ms-1 text-xs text-warning">{{ $t('خارج مركزه') }}</span>
                 <span v-if="!o.p.available" class="ms-1 text-xs text-danger">{{ $t('غير متاح') }}</span></span>
-              <span class="flex flex-col items-end gap-1">
+              <span class="flex shrink-0 flex-col items-end gap-1">
                 <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(o.p.fitness)" :style="{ width: `${o.p.fitness}%` }" /></span>
-                <span v-if="WHERE[o.where]" class="text-[10px] text-text-muted">{{ $t(WHERE[o.where]) }}</span>
+                <span v-if="o.from.zone === 'slot'" class="text-[10px] text-text-muted">{{ $t('يتبادل مع {v0}', { v0: slotLabel(o.from.index) }) }}</span>
+                <span v-else-if="WHERE[o.from.zone]" class="text-[10px] text-text-muted">{{ $t(WHERE[o.from.zone]) }}</span>
               </span>
             </button>
           </li>
+          <li v-if="!options.length" class="p-3 text-center text-sm text-text-muted">{{ $t('لا أحد في هذا الخط.') }}</li>
         </ul>
+      </div>
+    </UiDialog>
+
+    <!-- [X2] Where does he play? Every place with his rating there, the best first; or the bench, or out. -->
+    <UiDialog :open="!!pickedPlayer" :title="pickedPlayer ? $t('أين يلعب {v0}؟', { v0: short(pickedPlayer.name) }) : ''" @close="picking = null">
+      <div v-if="pickedPlayer" class="flex flex-col gap-2">
+        <p class="text-sm text-text-muted"><span dir="ltr">{{ pickedPlayer.position }}</span> · {{ $t('القوة') }} <b class="font-numbers text-gold">{{ pickedPlayer.overall }}</b></p>
+        <ul class="grid max-h-[58vh] grid-cols-2 gap-1.5 overflow-y-auto">
+          <li v-for="x in places_" :key="x.i">
+            <button type="button" class="flex min-h-16 w-full flex-col items-start gap-0.5 rounded-lg bg-surface p-2 text-start active:bg-surface-raised" @click="goTo({ zone: 'slot', index: x.i })">
+              <span class="flex w-full items-center justify-between">
+                <b class="font-numbers text-sm" dir="ltr" :style="{ color: `var(--color-line-${x.slot.line})` }">{{ x.slot.role }}</b>
+                <b class="font-numbers text-xl" :class="x.share < 100 ? 'text-warning' : 'text-gold'">{{ x.rating }}</b>
+              </span>
+              <span class="w-full truncate text-xs text-text-muted">{{ x.now ? $t('بدل {v0}', { v0: short(x.now.name) }) : $t('مكان فارغ') }}<template v-if="x.share < 100"> · {{ x.share }}%</template></span>
+            </button>
+          </li>
+        </ul>
+        <div class="grid grid-cols-2 gap-2">
+          <button v-if="!bench.includes(pickedPlayer.id) && bench.length < 7" type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="goTo({ zone: 'bench', index: bench.length })">{{ $t('إلى الاحتياط') }}</button>
+          <button v-if="spotOf(pickedPlayer.id).zone !== 'reserve'" type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="goTo({ zone: 'reserve', index: -1 })">{{ $t('أخرجه من القائمة') }}</button>
+          <button type="button" class="h-touch rounded-lg bg-surface-raised text-sm font-bold" @click="card = pickedPlayer ?? null; picking = null">{{ $t('بطاقته') }}</button>
+        </div>
       </div>
     </UiDialog>
 

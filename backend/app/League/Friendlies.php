@@ -19,7 +19,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * table or the money. For each of the coach's players who played: game.friendlies.fitness more fitness (up to 100),
  * game.friendlies.training_progress on his bar (never past it: the +1 itself comes from a training session), and a
  * match played together for the chemistry. The coins and the match in one write, once by the request's key.
- * Not in the last game.friendlies.block_minutes before the club's next match, nor while it is live.
+ * Not in the last game.friendlies.block_minutes before the club's next match, nor while it is live. [Sprint 27 X1] One a
+ * day against each club (the Cairo day): another club, or the same one tomorrow.
  */
 class Friendlies
 {
@@ -31,13 +32,16 @@ class Friendlies
             ->get(['clubs.id', 'clubs.name', 'clubs.code', 'clubs.master_club_id', 'clubs.strength_snapshot', 'users.name as coach']);
         // Recommended: the closest in strength.
         $closest = $opponents->sortBy(fn ($o) => abs($o->strength_snapshot - $club->strength_snapshot))->first()?->id;
+        // [Sprint 27 X1] One friendly a day against each club (the Cairo day).
+        $today = DB::table('friendlies')->where('club_id', $club->id)->where('day', self::cairoDay())->pluck('opponent_id')->map(fn ($v) => (int) $v)->all();
 
         return ['club' => ['name' => $club->name, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
             'coins' => (int) $cfg['coins'], 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
             'fitness' => (int) $cfg['fitness'],
             'training_progress_pct' => intdiv((int) $cfg['training_progress'] * 100, (int) config('game.training.progress_scale')),
             'opponents' => $opponents->sortByDesc('strength_snapshot')->values()->map(fn ($o) => ['id' => (int) $o->id, 'name' => $o->name, 'code' => $o->code,
-                'crest_url' => url("/api/v1/data/clubs/{$o->master_club_id}/crest.svg"), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest])->all(),
+                'crest_url' => url("/api/v1/data/clubs/{$o->master_club_id}/crest.svg"), 'strength_cp' => (int) $o->strength_snapshot, 'coach' => $o->coach, 'recommended' => $o->id === $closest,
+                'played_today' => in_array((int) $o->id, $today, true)])->all(),
             'recent' => DB::table('friendlies')->where('club_id', $club->id)->orderByDesc('id')->limit(5)->get()->map(fn ($f) => self::row($f))->all()];
     }
 
@@ -66,6 +70,10 @@ class Friendlies
         $opponent = Club::where('league_id', $club->league_id)->where('id', '!=', $club->id)->find($opponentId);
         if (! $opponent) {
             throw new HttpException(404, 'هذا النادي ليس في دوريك.');
+        }
+        // [Sprint 27 X1, the owner's request 2026-10-30] The same opponent once a day, not again until tomorrow (Cairo).
+        if (DB::table('friendlies')->where('club_id', $club->id)->where('opponent_id', $opponent->id)->where('day', self::cairoDay())->exists()) {
+            throw new HttpException(409, 'لعبت ودية مع هذا النادي اليوم: ودية واحدة مع كل نادٍ في اليوم.');
         }
         if (self::blocked($club)) {
             throw new HttpException(409, 'لا وديات قبل مباراتك بساعة ولا أثناءها.');

@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Engine\Ability;
 use App\Engine\AutoPick;
 use App\Engine\MatchSetup;
 use App\Models\Club;
@@ -45,6 +46,22 @@ class TeamSheet
         }
 
         return array_keys($lines);
+    }
+
+    /**
+     * [Sprint 27 X2] What a player of this line gives in each line (bp of his ability), from the engine itself
+     * (App\Engine\Ability::position: his own line in full, another outfield line less, the goal far less).
+     *
+     * @return array{gk: int, def: int, mid: int, att: int}
+     */
+    public static function placeBp(string $line): array
+    {
+        $out = [];
+        foreach (['gk', 'def', 'mid', 'att'] as $at) {
+            $out[$at] = Ability::position(['line' => $line, 'slot_line' => $at]);
+        }
+
+        return $out;
     }
 
     /** Out of his lines: so far out that "تحسين" puts him there only when nobody else is left. */

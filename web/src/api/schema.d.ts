@@ -10901,6 +10901,8 @@ export interface components {
                 strength_cp: number;
                 coach: string | null;
                 recommended: boolean;
+                /** @description [Sprint 27 X1] Already played today: one friendly a day against each club (Cairo day) */
+                played_today: boolean;
             }[];
             recent: components["schemas"]["Friendly"][];
         };
@@ -11193,6 +11195,13 @@ export interface components {
             players: components["schemas"]["TrainingPlayer"][];
         };
         SquadPlayer: {
+            /** @description [Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000 */
+            place_bp: {
+                gk: number;
+                def: number;
+                mid: number;
+                att: number;
+            };
             id: number;
             name: string;
             position: string;
