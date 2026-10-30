@@ -487,7 +487,7 @@ return [
         'kinds' => [
             'referee' => ['referee'],
             'match_soon' => ['match_soon'],
-            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold'],
+            'offers' => ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'listing_sold', 'loan'],
             'done' => ['training_done', 'stadium_part', 'scout_report', 'staff_left', 'referral_reward', 'slot_opened'],
             // [Sprint 21 E7.2, E7.7] The developers' announcements and their messages to the coach.
             'news' => ['announcement', 'official_message', 'coins_gift'],
@@ -606,4 +606,12 @@ return [
     // [X61 E5] The season's awards: the best player needs min_matches at least (or half the most played), the young
     // one is young_age or under.
     'awards' => ['min_matches' => 3, 'young_age' => 21],
+    // [X61 E3] The youth academy: `offers` prospects of max_age or under every `days` days, the potential hidden within
+    // `range`, at price_bp of the value, per_season signings at most.
+    // [X61 E2] Loans between coaches: up to max_rounds league rounds, for a fee up to max_fee_bp of the player's value.
+    'loans' => ['max_rounds' => 6, 'max_fee_bp' => 2000],
+    // [X61 E1] The contracts within a season: the squad's value up to wage_cap_bp of the larger of the league's scale
+    // and the club's own squad in the data; ending one early costs release_bp of the wages left in the season.
+    'contracts' => ['wage_cap_bp' => 16000, 'release_bp' => 5000],
+    'academy' => ['days' => 3, 'offers' => 3, 'max_age' => 19, 'range' => 4, 'price_bp' => 6000, 'per_season' => 2],
 ];

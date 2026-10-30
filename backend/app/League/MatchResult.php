@@ -4,6 +4,7 @@ namespace App\League;
 
 use App\Database\Sql;
 use App\Economy\Economy;
+use App\Market\Loans;
 use App\Market\Market;
 use App\Staff\Specialists;
 use App\Support\GameClock;
@@ -124,6 +125,8 @@ class MatchResult
             ->where('status', '!=', 'finished')->min('round');
         $rounds = (int) DB::table('seasons')->where('id', $seasonId)->value('rounds');
         DB::table('seasons')->where('id', $seasonId)->update(['rounds_played' => $open ? $open - 1 : $rounds]);
+        // [X61 E2] Loans whose last round is played send their players home.
+        Loans::returnDue($seasonId);
         // The last league match is in: the prizes by final place (each paid once, by its key).
         if (! $open) {
             Economy::leaguePrizes($seasonId, Standings::order($seasonId));

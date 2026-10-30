@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Economy\Contracts;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\Economy\Tickets;
@@ -315,6 +316,24 @@ class TeamController extends Controller
     private const OFFERS = ['steady' => 'ثابت', 'bonus' => 'متوازن مع مكافأة فوز', 'ambitious' => 'طموح: أقل ثابتاً وأكثر عند الفوز'];
 
     /** My club in this league; 403 without one. */
+    /** [X61 E1] The squad's contracts: wages, the cap, and what ending each one costs. */
+    public function contracts(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        abort_unless($league->season, 404, 'لا موسم في هذا الدوري بعد.');
+
+        return response()->json(Contracts::view($club, $league->season));
+    }
+
+    public function release(Request $request, League $league, int $player): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        abort_unless($league->season, 404, 'لا موسم في هذا الدوري بعد.');
+        Contracts::end($club, $player);
+
+        return response()->json(Contracts::view($club->refresh(), $league->season));
+    }
+
     /** [X61] The coach sets the ticket price level for the home matches to come. */
     public function setTickets(Request $request, League $league): JsonResponse
     {

@@ -1827,6 +1827,63 @@ paths:
               schema: { $ref: '#/components/schemas/ClubFinance' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[X61 E1] The squad''s contracts this season: each wage a round and what ending it costs, the wages, the cap and the room left'
+      responses:
+        '200': { description: The contracts, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts/{player}/release:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: player, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [team]
+      summary: '[X61 E1] End a contract early: the player goes to the market, the club pays half the wages left in the season'
+      responses:
+        '200': { description: The contracts after it, content: { application/json: { schema: { $ref: '#/components/schemas/Contracts' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/market/academy:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[X61 E3] The youth academy: this period''s prospects (their potential a range), when they change, and the season''s signings'
+      responses:
+        '200': { description: The academy, content: { application/json: { schema: { $ref: '#/components/schemas/Academy' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [market]
+      summary: '[X61 E3] Sign one of the prospects'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [master_player_id], properties: { master_player_id: { type: integer } } } } } }
+      responses:
+        '200': { description: The academy after it, content: { application/json: { schema: { $ref: '#/components/schemas/Academy' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/loans:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [market]
+      summary: '[X61 E2] My loans this season, asked and running'
+      responses:
+        '200': { description: The loans, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+    post:
+      tags: [market]
+      summary: '[X61 E2] Ask another coach''s player on loan for some rounds and a fee'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [player_id, rounds, fee], properties: { player_id: { type: integer }, rounds: { type: integer }, fee: { type: integer } } } } } }
+      responses:
+        '200': { description: The loans after it, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/transfers/loans/{loan}/answer:
+    parameters: [{ $ref: '#/components/parameters/League' }, { name: loan, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [market]
+      summary: '[X61 E2] The owner accepts (the fee is paid, the player moves until the loan''s round) or turns it down'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [accept], properties: { accept: { type: boolean } } } } } }
+      responses:
+        '200': { description: The loans after it, content: { application/json: { schema: { $ref: '#/components/schemas/Loans' } } } }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/tickets:
     parameters: [{ $ref: '#/components/parameters/League' }]
     put:
@@ -4638,6 +4695,49 @@ components:
         injured: { type: boolean }
         maxed: { type: boolean, description: 'At 99, training adds nothing [X16]' }
         over_potential: { type: boolean, description: 'At or past his potential: training goes on, much slower [X16]' }
+    Contracts:
+      type: object
+      required: [players, wages_per_round, cap_per_round, room, rounds_left]
+      properties:
+        players:
+          type: array
+          items: { type: object, required: [id, name, position, age, value, wage, release], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, age: { type: integer }, value: { type: integer }, wage: { type: integer }, release: { type: integer } } }
+        wages_per_round: { type: integer }
+        cap_per_round: { type: integer }
+        room: { type: integer, description: The squad value the club may still add }
+        rounds_left: { type: integer }
+    Academy:
+      type: object
+      required: [prospects, renews_at, signed, per_season, balance]
+      properties:
+        prospects:
+          type: array
+          items: { type: object, required: [id, name, position, line, age, nationality, overall, potential_from, potential_to, price], properties: { id: { type: integer }, name: { type: string }, position: { type: string }, line: { type: string }, age: { type: integer }, nationality: { type: string, nullable: true }, overall: { type: integer }, potential_from: { type: integer }, potential_to: { type: integer }, price: { type: integer } } }
+        renews_at: { type: string, format: date-time }
+        signed: { type: integer }
+        per_season: { type: integer }
+        balance: { type: integer }
+    Loans:
+      type: object
+      required: [loans, max_rounds, max_fee_bp]
+      properties:
+        loans:
+          type: array
+          items:
+            type: object
+            required: [id, status, mine, player, owner, borrower, rounds, fee, until_round]
+            properties:
+              id: { type: integer }
+              status: { type: string, enum: [pending, active] }
+              mine: { type: boolean, description: The player is this coach's (he lends) }
+              player: { type: object, required: [id, name, position], properties: { id: { type: integer }, name: { type: string }, position: { type: string } } }
+              owner: { type: string }
+              borrower: { type: string }
+              rounds: { type: integer }
+              fee: { type: integer }
+              until_round: { type: integer, nullable: true }
+        max_rounds: { type: integer }
+        max_fee_bp: { type: integer }
     TicketLevels:
       type: object
       description: '[X61] The ticket price level the coach set and what each of the four brings at the next home match'

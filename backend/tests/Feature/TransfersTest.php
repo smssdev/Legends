@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\League\ClubLedger;
+use App\Market\Loans;
 use App\Market\Transfers;
 use App\Models\User;
 use App\Support\GameClock;
@@ -168,6 +169,33 @@ class TransfersTest extends TestCase
         Carbon::setTestNow(GameClock::now()->addHours(49));
         $this->assertSame(1, Transfers::expire());
         $this->assertSame('expired', DB::table('transfer_offers')->where('id', $late)->value('status'));
+    }
+
+    public function test_a_loan_moves_the_player_for_its_rounds_and_sends_him_home(): void
+    {
+        // [X61 E2] The coach asks my player for two rounds and a fee; I accept; after the rounds he is back.
+        $p = $this->players($this->mine)->first();
+        $fee = intdiv((int) $p->value, 10);
+        $this->actingAs($this->coach)->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 9, 'fee' => $fee])->assertStatus(422);
+        $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 2, 'fee' => (int) $p->value])->assertStatus(422);
+        $loans = $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 2, 'fee' => $fee])->assertOk()->json('loans');
+        $this->assertSame('pending', $loans[0]['status']);
+        $this->postJson($this->url('/loans'), ['player_id' => $p->id, 'rounds' => 1, 'fee' => 0])->assertConflict();
+        $this->postJson($this->url("/loans/{$loans[0]['id']}/answer"), ['accept' => true])->assertNotFound();
+
+        $mine = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        $this->actingAs($this->owner)->postJson($this->url("/loans/{$loans[0]['id']}/answer"), ['accept' => true])->assertOk()->assertJsonPath('loans.0.status', 'active');
+        $this->assertSame($this->theirs, (int) DB::table('players')->where('id', $p->id)->value('club_id'));
+        $this->assertSame($mine + $fee, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertBooks();
+
+        $season = DB::table('seasons')->where('league_id', $this->league['id'])->first();
+        $this->assertSame(0, Loans::returnDue($season->id));
+        DB::table('seasons')->where('id', $season->id)->update(['rounds_played' => (int) $season->rounds_played + 2]);
+        $this->assertSame(1, Loans::returnDue($season->id));
+        $this->assertSame($this->mine, (int) DB::table('players')->where('id', $p->id)->value('club_id'));
+        $this->assertSame('returned', DB::table('player_loans')->where('id', $loans[0]['id'])->value('status'));
+        $this->assertSame(0, Loans::returnDue($season->id));
     }
 
     public function test_a_bot_is_bought_from_in_the_market_not_by_offer(): void

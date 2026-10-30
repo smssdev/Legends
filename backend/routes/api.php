@@ -134,11 +134,17 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('finance', 'finance');
         Route::post('sponsors', 'signSponsor');
         Route::put('tickets', 'setTickets')->middleware('throttle:30,1,tickets');
+        // [X61 E1] The contracts.
+        Route::get('contracts', 'contracts');
+        Route::post('contracts/{player}/release', 'release')->whereNumber('player')->middleware('throttle:20,1,release');
     });
     // The market: the pool and the bot clubs [Sprint 24].
     Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::post('buy', 'buy')->middleware('throttle:30,1,market');
+        // [X61 E3] The youth academy.
+        Route::get('academy', 'academy');
+        Route::post('academy', 'signAcademy')->middleware('throttle:20,1,academy');
         Route::post('sell', 'sell')->middleware('throttle:30,1,market');
         Route::get('quote', 'quote')->middleware('throttle:120,1,market-quote');
         // [UP11] The deal before it is made, and the transfers made.
@@ -164,6 +170,10 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::post('offers/{offer}/accept', 'accept')->whereNumber('offer');
         Route::post('offers/{offer}/reject', 'reject')->whereNumber('offer');
         Route::post('offers/{offer}/cancel', 'cancel')->whereNumber('offer');
+        // [X61 E2] Loans between coaches.
+        Route::get('loans', 'loans');
+        Route::post('loans', 'askLoan')->middleware('throttle:20,1,loans');
+        Route::post('loans/{loan}/answer', 'answerLoan')->whereNumber('loan');
         Route::post('offers/{offer}/counter', 'counter')->whereNumber('offer')->middleware('throttle:30,1,transfers');
     });
     // The scout [Sprint 26].

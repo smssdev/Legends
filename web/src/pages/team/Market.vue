@@ -15,6 +15,8 @@ import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import EventsBar from '../../components/ui/EventsBar.vue'
 import UiTabs from '../../components/ui/UiTabs.vue'
+import AcademyPanel from './market/AcademyPanel.vue'
+import LoansPanel from './market/LoansPanel.vue'
 import Trades from './Trades.vue'
 import ScoutPage from './ScoutPage.vue'
 import { useWallet } from '../../stores/wallet'
@@ -30,13 +32,15 @@ const error = ref('')
 const notice = ref('')
 const busy = ref<number | null>(null)
 const route = useRoute()
-type Tab = 'list' | 'offers' | 'scout' | 'done' | 'sell'
-const tab = ref<Tab>((['list', 'offers', 'scout', 'done', 'sell'].includes(String(route.query.tab)) ? route.query.tab : 'list') as Tab)
+type Tab = 'list' | 'offers' | 'loans' | 'academy' | 'scout' | 'done' | 'sell'
+const tab = ref<Tab>((['list', 'offers', 'loans', 'academy', 'scout', 'done', 'sell'].includes(String(route.query.tab)) ? route.query.tab : 'list') as Tab)
 const line = ref<Line>('gk')
 const wallet = useWallet()
 const tabs = computed(() => [
   { id: 'list' as const, label: 'قائمة الانتقالات', n: null },
   { id: 'offers' as const, label: 'المفاوضات', n: null },
+  { id: 'loans' as const, label: 'الإعارات', n: null },
+  { id: 'academy' as const, label: 'الأكاديمية', n: null },
   { id: 'scout' as const, label: 'الكشاف', n: null },
   { id: 'done' as const, label: 'الانتقالات التي تمت', n: null },
   { id: 'sell' as const, label: 'بيع لاعبيّ', n: m.value?.mine.length ?? 0 },
@@ -231,6 +235,8 @@ onBeforeUnmount(() => clearInterval(clock))
       <UiTabs v-model="tab" :items="tabs.map((t) => ({ key: t.id, label: t.label, n: t.n }))" label="مصادر اللاعبين" class="self-start max-w-full" />
 
       <Trades v-if="tab === 'offers'" :league-id="leagueId" view="offers" :mine="m.mine" @changed="load" />
+      <LoansPanel v-else-if="tab === 'loans' && leagueId" :league-id="leagueId" @changed="load" />
+      <AcademyPanel v-else-if="tab === 'academy' && leagueId" :league-id="leagueId" @changed="load" />
       <ScoutPage v-else-if="tab === 'scout'" />
 
       <section v-else-if="tab === 'done'" :aria-label="$t('الانتقالات التي تمت')" class="rounded-xl bg-surface p-2">

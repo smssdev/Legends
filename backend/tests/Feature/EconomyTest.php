@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Economy\Contracts;
 use App\Economy\Economy;
 use App\Economy\Money;
 use App\League\ClubLedger;
@@ -202,6 +203,32 @@ class EconomyTest extends TestCase
         $this->assertSame($view['per_match'], (int) DB::table('club_transactions')->where('club_id', $this->mine)->where('type', 'tickets')->value('amount'));
         $this->assertBooksBalance();
         $this->actingAs(User::factory()->create())->putJson($url, ['level' => 'high'])->assertForbidden();
+    }
+
+    public function test_contracts_show_the_wages_keep_a_cap_and_end_early_for_a_compensation(): void
+    {
+        // [X61 E1] Each wage is the player's share of the club's wages; the cap stops a buy; ending a contract pays half
+        // of the wages left and sends the player to the market.
+        $url = "/api/v1/leagues/{$this->league['id']}/team/contracts";
+        $c = $this->actingAs($this->owner)->getJson($url)->assertOk()->json();
+        $rounds = (int) DB::table('seasons')->where('league_id', $this->league['id'])->value('rounds');
+        $this->assertSame(Money::fromConfig()->wages(Economy::squadValue($this->mine), $rounds), $c['wages_per_round']);
+        $this->assertGreaterThanOrEqual($c['wages_per_round'], $c['cap_per_round']);
+        $this->assertGreaterThan(0, $c['room']);
+        $p = end($c['players']);
+        $this->assertSame(intdiv($p['wage'] * $c['rounds_left'] * 5000, 10000), $p['release']);
+
+        $balance = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
+        $this->postJson("{$url}/{$p['id']}/release")->assertOk();
+        $this->assertNull(DB::table('players')->where('id', $p['id'])->value('club_id'));
+        $this->assertSame($balance - $p['release'], (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
+        $this->assertBooksBalance();
+        $this->postJson("{$url}/{$p['id']}/release")->assertNotFound();
+
+        // No room left: a buy is refused by the cap.
+        DB::table('players')->where('club_id', $this->mine)->update(['value' => DB::raw('value * 3')]);
+        $this->expectException(HttpException::class);
+        Contracts::assertRoom($this->mine, 1);
     }
 
     public function test_the_numbers_scale_with_the_league(): void

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Market\Loans;
 use App\Market\Market;
 use App\Market\Transfers;
 use App\Models\Club;
@@ -137,6 +138,30 @@ class TransferController extends Controller
     {
         return ['id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'value' => (int) $p->value];
+    }
+
+    /** [X61 E2] My loans this season, asked and running. */
+    public function loans(Request $request, League $league): JsonResponse
+    {
+        $cfg = config('game.loans');
+
+        return response()->json(['loans' => Loans::of($this->club($request, $league)), 'max_rounds' => (int) $cfg['max_rounds'], 'max_fee_bp' => (int) $cfg['max_fee_bp']]);
+    }
+
+    public function askLoan(Request $request, League $league): JsonResponse
+    {
+        $data = $request->validate(['player_id' => 'required|integer', 'rounds' => 'required|integer|min:1', 'fee' => 'required|integer|min:0']);
+        Loans::ask($this->club($request, $league), (int) $data['player_id'], (int) $data['rounds'], (int) $data['fee']);
+
+        return $this->loans($request, $league);
+    }
+
+    public function answerLoan(Request $request, League $league, int $loan): JsonResponse
+    {
+        $data = $request->validate(['accept' => 'required|boolean']);
+        Loans::answer($this->club($request, $league), $loan, (bool) $data['accept']);
+
+        return $this->loans($request, $league);
     }
 
     private function club(Request $request, League $league): Club

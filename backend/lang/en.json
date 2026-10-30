@@ -353,5 +353,12 @@
   "اختر اسماً حقيقياً، لا اسم تجربة.": "Choose a real name, not a test one.",
   "شكراً، سنحسّن الردود.": "Thank you, we will make the answers better.",
   "الأوسمة لأعضاء الدوري.": "The awards are for the league's members.",
-  "لا موسم في هذا الدوري بعد.": "No season in this league yet."
+  "لا موسم في هذا الدوري بعد.": "No season in this league yet.",
+  "أكاديمية الشباب": "Youth academy",
+  "وقّعت مع %d مواهب من الأكاديمية هذا الموسم، وهذا الحد.": "You signed %d academy prospects this season, the limit.",
+  "مقابل إعارة": "Loan fee",
+  "الإعارة من جولة إلى %d جولات، ومقابلها حتى %d%% من قيمة اللاعب.": "A loan is 1 to %d rounds, for up to %d%% of the player's value.",
+  "لا طلب إعارة بهذا الرقم ينتظرك.": "No loan request with this number waits for you.",
+  "تعويض إنهاء عقد": "Contract release",
+  "سقف الرواتب: هذا اللاعب يتجاوز ما يتحمله ناديك من رواتب هذا الموسم. بِع أو أنهِ عقد لاعب أولاً.": "Wage cap: this player goes over the wages your club can carry this season. Sell or release a player first."
 }

@@ -7,7 +7,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 
 const props = defineProps<{ leagueId: number; fixtureId: number; home: string; away: string }>()
 type Press = { open: boolean; opens_at: string; chances: { home: number; draw: number; away: number }; reading: { home: string; away: string };
-  statements: { kind: string; text: string }[]; said: { home: string | null; away: string | null }; mine: 'home' | 'away' | null; morale: number }
+  statements: { kind: string; text: string; stakes?: Record<'win' | 'draw' | 'loss', number> }[]; said: { home: string | null; away: string | null }; mine: 'home' | 'away' | null; morale: number }
 const press = ref<Press | null>(null)
 const enabled = ref(true)
 const error = ref('')
@@ -53,7 +53,11 @@ onMounted(load)
       </p>
       <template v-else-if="press.open">
         <p class="text-sm font-bold">{{ $t('اختر تصريحك الرسمي قبل المباراة:') }}</p>
-        <button v-for="s in press.statements" :key="s.kind" type="button" class="min-h-touch rounded-lg bg-surface-sunk px-3 py-2 text-start text-sm hover:bg-surface-raised" @click="say(s.kind)">«{{ $t(s.text) }}»</button>
+        <button v-for="s in press.statements" :key="s.kind" type="button" class="min-h-touch rounded-lg bg-surface-sunk px-3 py-2 text-start text-sm hover:bg-surface-raised" @click="say(s.kind)">«{{ $t(s.text) }}»
+          <!-- [X61 E9] What it stakes on the result. -->
+          <span v-if="s.stakes" class="mt-1 flex flex-wrap gap-x-3 font-numbers text-xs" dir="ltr">
+            <span v-for="(v, k) in { win: 'فوز', draw: 'تعادل', loss: 'خسارة' }" :key="k" :class="s.stakes[k] > 0 ? 'text-success' : s.stakes[k] < 0 ? 'text-danger' : 'text-text-muted'">{{ $t(v) }} {{ s.stakes[k] > 0 ? '+' : '' }}{{ s.stakes[k] }}</span>
+          </span></button>
       </template>
       <p v-else class="text-sm text-text-muted">{{ $t('يُعقد المؤتمر الساعة {v0}', { v0: time(press.opens_at) }) }}</p>
     </template>

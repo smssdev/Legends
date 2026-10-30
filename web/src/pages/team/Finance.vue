@@ -3,6 +3,7 @@
 // expenses per round, the ledger (never edited: the balance is its sum), each sector's sponsor, and the debt
 // rule. Every number comes from the API; the page only lays them out.
 import TicketPrices from '../../components/TicketPrices.vue'
+import ContractsPanel from './ContractsPanel.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -154,6 +155,7 @@ onMounted(load)
             <div class="flex justify-between"><span class="text-text-muted">{{ $t('لكل مباراة على أرضك') }}</span><b class="font-numbers text-success" dir="ltr">+{{ money(f.stadium.tickets_per_match) }}</b></div>
             <TicketPrices v-if="leagueId" :league-id="leagueId" :tickets="f.tickets" @changed="(t) => { f!.tickets = t; f!.stadium.tickets_per_match = t.per_match }" />
           </section>
+          <ContractsPanel v-if="leagueId" :league-id="leagueId" @changed="load" />
 
         </aside>
       </div>

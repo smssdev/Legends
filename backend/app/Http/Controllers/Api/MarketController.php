@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Data\ClubLogo;
 use App\Http\Controllers\Controller;
+use App\Market\Academy;
 use App\Market\Buyer;
 use App\Market\Market;
 use App\Market\Pool;
 use App\Models\Club;
 use App\Models\League;
+use App\Support\GameClock;
 use App\Support\Nation;
 use App\TimedEvents\TimedEvents;
 use App\Wallet\Price;
@@ -229,6 +231,29 @@ class MarketController extends Controller
         $balance = Market::sell($club->id, $data['player_id'], "sell:{$club->id}:{$data['idempotency_key']}");
 
         return response()->json(['balance' => $balance]);
+    }
+
+    /** [X61 E3] The youth academy: this period's prospects (potential as a range), the price and the season's limit. */
+    public function academy(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request, $league);
+        $cfg = config('game.academy');
+
+        return response()->json([
+            'prospects' => Academy::prospects($club),
+            'renews_at' => GameClock::now()->setTimestamp((Academy::period() + 1) * 86400 * max(1, (int) $cfg['days']))->toIso8601ZuluString(),
+            'signed' => Academy::signedThisSeason($club->id, $league->season?->id), 'per_season' => (int) $cfg['per_season'],
+            'balance' => (int) $club->fresh()->balance,
+        ]);
+    }
+
+    public function signAcademy(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request, $league);
+        $data = $request->validate(['master_player_id' => 'required|integer']);
+        Academy::sign($club, (int) $data['master_player_id'], $league->season?->id);
+
+        return $this->academy($request, $league);
     }
 
     private function club(Request $request, League $league): Club
