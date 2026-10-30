@@ -8,6 +8,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../api/client'
 import type { components } from '../api/schema'
+import Icon from '../components/Icon.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ChalkBackdrop from '../components/ChalkBackdrop.vue'
@@ -233,6 +234,14 @@ async function openRanking(by: By) {
           <p v-else class="text-sm text-text-muted">{{ $t('لا إعلانات بعد. هنا تصلك تحديثات اللعبة وأخبارها من فريق التطوير.') }}</p>
           <RouterLink v-if="latest" to="/announcements" class="self-end text-xs font-bold text-gold">{{ $t('كل الإعلانات ›') }}</RouterLink>
         </section>
+
+        <!-- [Sprint 28] An open poll waiting for this coach's vote, else the way to suggest a feature. -->
+        <RouterLink to="/ideas" class="flex min-h-touch items-center gap-3 rounded-xl p-3" :class="home.polls_waiting ? 'bg-gold/15 ring-1 ring-gold/40' : 'bg-surface'">
+          <Icon name="idea" :size="22" class="shrink-0 text-gold" />
+          <span class="min-w-0 flex-1 text-sm"><b class="block">{{ home.polls_waiting ? $t('تصويت مفتوح على الميزة القادمة') : $t('اقتراحات التطوير') }}</b>
+            <span class="text-xs text-text-muted">{{ home.polls_waiting ? $t('صوتك يحدد ما نبنيه أولاً') : $t('اقترح فكرة، وقد تأخذ مكافأة كوينز') }}</span></span>
+          <span v-if="home.polls_waiting" class="rounded-pill bg-live px-2 font-numbers text-xs font-bold text-white">{{ home.polls_waiting }}</span>
+        </RouterLink>
 
         <div class="grid grid-cols-4 gap-2 xl:grid-cols-2">
           <div class="home-tile">

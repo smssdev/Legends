@@ -202,6 +202,11 @@ class MessageTextEn
                 },
                 'link' => '/match',
             ],
+            'suggestion_answer' => [
+                'title' => ['accepted' => 'The team liked your suggestion', 'built' => 'Your suggestion is in the game', 'rejected' => 'The team answered your suggestion'][$p['status'] ?? ''] ?? 'An answer to your suggestion',
+                'body' => trim(sprintf('«%s»', $p['title'] ?? '').(($p['coins'] ?? 0) > 0 ? sprintf(' Your reward is %s coins, and your name is on the honour roll.', $p['coins']) : (($p['status'] ?? '') === 'rejected' ? '' : ' Your name is on the honour roll.')).(($p['reply'] ?? '') !== '' ? ' '.$p['reply'] : '')),
+                'link' => '/ideas',
+            ],
             'slot_opened' => [
                 'title' => sprintf('Congratulations! Coach slot %s is open', $p['slot'] ?? ''),
                 'body' => sprintf('You now have %s of %s slots open: join a new league or create your own.', $p['open'] ?? '', $p['max'] ?? '').(! empty($p['next_at']) ? sprintf(' The next one opens in %d days.', (int) config('game.league.slots.every_days')) : ' That is the last of your slots.'),

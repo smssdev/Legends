@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FriendlyController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\HonoursController;
+use App\Http\Controllers\Api\IdeasController;
 use App\Http\Controllers\Api\IntegrityController;
 use App\Http\Controllers\Api\LeagueController;
 use App\Http\Controllers\Api\MarketController;
@@ -323,6 +324,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('events', [TimedEventController::class, 'store'])->middleware('throttle:30,1,admin-events');
         Route::patch('events/{id}', [TimedEventController::class, 'update'])->whereNumber('id');
         Route::delete('events/{id}', [TimedEventController::class, 'destroy'])->whereNumber('id');
+        // [Sprint 28] The coaches' suggestions (the answer and its reward) and the polls on what to build next.
+        Route::controller(IdeasController::class)->group(function () {
+            Route::get('ideas', 'adminSuggestions');
+            Route::post('ideas/{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1,admin-ideas');
+            Route::get('polls', 'adminPolls');
+            Route::post('polls', 'openPoll')->middleware('throttle:20,1,admin-polls');
+            Route::delete('polls/{id}', 'closePoll')->whereNumber('id');
+        });
     });
 });
 
@@ -337,6 +346,13 @@ Route::post('ads/start', [AdController::class, 'start'])->middleware(['auth:sanc
 Route::prefix('support')->middleware(['auth:sanctum', 'throttle:60,1,support'])->controller(SupportController::class)->group(function () {
     Route::get('/', 'show');
     Route::post('/', 'write')->middleware('throttle:10,1,support-write');
+});
+
+// [Sprint 28] The development ideas: a suggestion to the developers, the polls on what to build next, the honour roll.
+Route::prefix('ideas')->middleware(['auth:sanctum', 'throttle:60,1,ideas'])->controller(IdeasController::class)->group(function () {
+    Route::get('/', 'show');
+    Route::post('suggestions', 'suggest')->middleware('throttle:10,1,ideas-suggest');
+    Route::post('polls/{poll}/vote', 'vote')->whereNumber('poll')->middleware('throttle:30,1,ideas-vote');
 });
 
 // Notifications [Sprint 36]: the kinds wanted and this browser's subscription.

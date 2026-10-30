@@ -23,7 +23,7 @@ const GROUPS: Record<Exclude<Group, 'all'>, string[]> = {
   league: ['match_report', 'match_of_day', 'season_end', 'join_request', 'join_approved', 'join_rejected', 'article_pending', 'referee', 'vacation_request', 'vacation_approved', 'vacation_rejected'],
   market: ['offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'listing_sold', 'scout_report', 'forced_sale'],
   team: ['training_done', 'camp_back', 'stadium_part', 'staff_left', 'assistant_led'],
-  alerts: ['absence_warning', 'left_absent', 'kicked', 'in_debt', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'announcement', 'official_message', 'coins_gift', 'referral_reward', 'slot_opened'],
+  alerts: ['absence_warning', 'left_absent', 'kicked', 'in_debt', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'announcement', 'official_message', 'coins_gift', 'suggestion_answer', 'referral_reward', 'slot_opened'],
 }
 const group = ref<Group>('all')
 const groupOf = (type: string): Group => (Object.keys(GROUPS) as Exclude<Group, 'all'>[]).find((g) => GROUPS[g].includes(type)) ?? 'alerts'

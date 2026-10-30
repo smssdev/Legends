@@ -61,6 +61,8 @@ export const router = createRouter({
         // [Sprint 21 E4.3] The season's fixtures; and «الدوري والكأس» outside a club opens the leagues.
         // [Sprint 21 E7.7] The conversation with the developers.
         { path: 'support', name: 'support', component: () => import('./pages/SupportPage.vue'), meta: { auth: true } },
+        // [Sprint 28] The development ideas: suggestions, polls and the honour roll.
+        { path: 'ideas', name: 'ideas', component: () => import('./pages/IdeasPage.vue'), meta: { auth: true } },
         { path: 'fixtures', name: 'fixtures', component: () => import('./pages/leagues/FixturesPage.vue'), meta: { auth: true } },
         { path: 'league', name: 'league', redirect: '/leagues' },
         // Sprint 22: the inbox
