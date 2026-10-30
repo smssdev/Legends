@@ -201,6 +201,7 @@ paths:
                 commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6, voice-7] }
                 match_view: { type: string, enum: [cartoon, unity] }
                 locale: { type: string, enum: [ar, en], description: 'The language of the game [UP2]' }
+                coach_look: { type: string, enum: [C1, C2, C3], description: '[Sprint 26] How the coach looks on the touchline' }
       responses:
         '200': { $ref: '#/components/responses/Account' }
         '401': { $ref: '#/components/responses/Error' }
@@ -4527,7 +4528,7 @@ components:
         missed: { type: integer, description: Matches missed (B3) }
     MissedMatch:
       type: object
-      required: [match_id, competition, round, venue, at, home, away, home_goals, away_goals, result, goals, man_of_the_match, coins, changes]
+      required: [match_id, competition, round, venue, at, home, away, home_goals, away_goals, result, goals, man_of_the_match, coins, changes, mood]
       properties:
         match_id: { type: integer }
         competition: { type: string }
@@ -4543,6 +4544,11 @@ components:
         man_of_the_match: { type: [object, 'null'], required: [id, name, rating, mine], properties: { id: { type: integer }, name: { type: [string, 'null'] }, rating: { type: integer }, mine: { type: boolean } } }
         coins: { type: integer }
         changes: { type: array, items: { type: object, required: [kind, player], properties: { kind: { type: string, enum: [injury, red] }, player: { type: [string, 'null'] } } } }
+        mood: { $ref: '#/components/schemas/Mood' }
+    Mood:
+      type: string
+      enum: [idle, joy, cheer, sad, angry, worried, think, surprise, sleep]
+      description: '[Sprint 26] What the characters feel, decided by the server (App\Characters\Mood); the screens only draw it'
     MatchRecap:
       type: object
       required: [match_id, competition, round, home, away, side, result, score, shootout, moments, stats, best, man_of_the_match]
@@ -5465,12 +5471,13 @@ components:
         inactivity_days: { type: integer, description: '[UP13] An account unused this many days in a row (no holiday) is deleted' }
         viewing:
           type: object
-          required: [commentator, match_view, unity_ready]
+          required: [commentator, match_view, unity_ready, coach_look]
           description: How the coach watches his matches, the same on every device [X9, X10]
           properties:
             commentator: { type: string, enum: [base, voice-1, voice-2, voice-3, voice-4, voice-5, voice-6, voice-7], description: 'The Arabic voice; voice-6 is the default, voice-7 the real Chawali (X41)' }
             match_view: { type: string, enum: [cartoon, unity], description: 'The simulator: the cartoon one (2D) or the advanced one (Unity)' }
             unity_ready: { type: boolean, description: 'The Unity web build is deployed; until then the cartoon one plays' }
+            coach_look: { type: string, enum: [C1, C2, C3], description: '[Sprint 26] The coach on the touchline: C1 in a suit, C2 in a tracksuit, C3 in a hijab' }
     Error:
       type: object
       required: [message, code]
@@ -5589,6 +5596,7 @@ components:
         timing: { type: object }
         clubs: { type: object }
         coaches: { type: object, description: "The coaches' names in a match between friends: {home, away}" }
+        coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
         teams: { type: object }
         slots: { type: object }
     LiveSync:

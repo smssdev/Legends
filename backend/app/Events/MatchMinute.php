@@ -47,6 +47,8 @@ class MatchMinute implements ShouldBroadcastNow
             // The commentator's line for this minute, drawn on the server [Sprint 35].
             // [E8.7] Under load the voice is the second thing given up (App\League\LiveDegrade).
             'voice' => LiveDegrade::voice() ? ($this->tick['voice'] ?? null) : null,
+            // [Sprint 26 B1] How each side's coach feels after the minute; the screens and Unity only draw it.
+            'moods' => $this->tick['moods'] ?? null,
         ];
     }
 

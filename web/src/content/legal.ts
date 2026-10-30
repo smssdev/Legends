@@ -15,7 +15,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
     sections: [
       { h: 'من نحن', p: ['GLM لعبة إدارة كرة قدم على الويب يطوّرها فريق صغير مستقل. وللتواصل معنا في أي شأن يخص بياناتك: صفحة «الدعم» داخل اللعبة، أو أزرار واتساب وتيليجرام أسفل هذه الصفحة.'] },
       { h: 'ما نجمعه منك', p: [
-        'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك.',
+        'بيانات الحساب: الاسم الظاهر، واسم المستخدم، وكلمة المرور (محفوظة مشفرة لا نراها)، والبريد إن أضفته، وصورتك إن رفعتها، ولغتك، وشكل مدربك على الخط الذي تختاره (يراه مدربو دوريك في المباريات).',
         'الدخول بحساب Google: نأخذ من Google اسمك وبريدك ومعرّف حسابك فقط، لتسجيل دخولك، ولا نصل إلى أي شيء آخر في حسابك.',
         'بيانات اللعب: أنديتك ودورياتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
         'تقييمك لردود المدرب المساعد: إن ضغطت «أفادني» أو «لم يفدني» نحفظ اختيارك والصفحة التي كنت فيها وملاحظتك إن كتبتها، لنحسّن ردوده. ولا نحفظ معها المحادثة نفسها.',
@@ -66,7 +66,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
     sections: [
       { h: 'Who we are', p: ['GLM is a web football management game made by a small independent team. For anything about your data, reach us from the Support page in the game, or the WhatsApp and Telegram buttons at the bottom of this page.'] },
       { h: 'What we collect', p: [
-        'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, and your language.',
+        'Account data: your display name, username, password (stored hashed; we never see it), your email if you add one, your picture if you upload one, your language, and the look you pick for your coach on the touchline (the coaches of your leagues see it in matches).',
         'Google sign-in: we receive only your name, email and account id from Google, to sign you in, and nothing else in your Google account.',
         'Game data: your clubs, leagues, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
         'Your rating of the Assistant Coach\'s answers: if you tap "helpful" or "not helpful" we keep your choice, the page you were on and your note if you wrote one, to improve his answers. The conversation itself is not kept with it.',

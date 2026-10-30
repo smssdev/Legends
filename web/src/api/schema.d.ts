@@ -409,6 +409,11 @@ export interface paths {
                          * @enum {string}
                          */
                         locale?: "ar" | "en";
+                        /**
+                         * @description [Sprint 26] How the coach looks on the touchline
+                         * @enum {string}
+                         */
+                        coach_look?: "C1" | "C2" | "C3";
                     };
                 };
             };
@@ -10506,7 +10511,13 @@ export interface components {
                 kind: "injury" | "red";
                 player: string | null;
             }[];
+            mood: components["schemas"]["Mood"];
         };
+        /**
+         * @description [Sprint 26] What the characters feel, decided by the server (App\Characters\Mood); the screens only draw it
+         * @enum {string}
+         */
+        Mood: "idle" | "joy" | "cheer" | "sad" | "angry" | "worried" | "think" | "surprise" | "sleep";
         MatchRecap: {
             match_id: number;
             competition: string;
@@ -11652,6 +11663,11 @@ export interface components {
                 match_view: "cartoon" | "unity";
                 /** @description The Unity web build is deployed; until then the cartoon one plays */
                 unity_ready: boolean;
+                /**
+                 * @description [Sprint 26] The coach on the touchline: C1 in a suit, C2 in a tracksuit, C3 in a hijab
+                 * @enum {string}
+                 */
+                coach_look: "C1" | "C2" | "C3";
             };
         };
         /** @description Every API error has this shape (app/Http/Errors/ApiErrors.php). */
@@ -11797,6 +11813,8 @@ export interface components {
             clubs?: Record<string, never>;
             /** @description The coaches' names in a match between friends: {home, away} */
             coaches?: Record<string, never>;
+            /** @description [Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?} */
+            coach_looks?: Record<string, never>;
             teams?: Record<string, never>;
             slots?: Record<string, never>;
         };

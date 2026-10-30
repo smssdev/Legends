@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Characters\Mood;
 use App\Simulator\Commentary;
 use App\Simulator\MatchChoreographer;
 use App\Simulator\MomentClock;
@@ -49,7 +50,8 @@ class MatchReplay
             $ball = $choreo['ball'];
             $out[] = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
                 'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
-                'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick'])];
+                'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
+                'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute'))];
         }
 
         return $out;

@@ -98,16 +98,17 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()->toAccount()]);
     }
 
-    /** The name and the username [X4], the commentator [X9], the simulator [X10] and the language [UP2]; any of them may be sent alone. */
+    /** The name and the username [X4], the commentator [X9], the simulator [X10], the language [UP2] and the coach's look [Sprint 26]; any of them may be sent alone. */
     public function update(Request $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validate([
-            'name' => ['required_without_all:username,commentator,match_view,locale', 'string', 'min:2', 'max:40'],
+            'name' => ['required_without_all:username,commentator,match_view,locale,coach_look', 'string', 'min:2', 'max:40'],
             'username' => ['sometimes', 'string', Username::RULE, $this->usernameFree($user->id)],
             'commentator' => ['sometimes', 'string', Rule::in(config('game.viewing.commentators'))],
             'match_view' => ['sometimes', 'string', Rule::in(config('game.viewing.match_views'))],
             'locale' => ['sometimes', 'string', Rule::in(SetLocale::LOCALES)],
+            'coach_look' => ['sometimes', 'string', Rule::in(config('game.characters.looks'))],
         ]);
         // [Sprint 21 E2.6] A developer's name (Owner-Sizar, Owner-Sliman) stays as it is.
         if (isset($data['username']) && Username::official($user->username) && strtolower($data['username']) !== $user->username) {
@@ -115,7 +116,8 @@ class AuthController extends Controller
         }
         $user->update(array_filter(['name' => isset($data['name']) ? trim($data['name']) : null,
             'username' => isset($data['username']) ? strtolower($data['username']) : null,
-            'commentator' => $data['commentator'] ?? null, 'match_view' => $data['match_view'] ?? null, 'locale' => $data['locale'] ?? null]));
+            'commentator' => $data['commentator'] ?? null, 'match_view' => $data['match_view'] ?? null, 'locale' => $data['locale'] ?? null,
+            'coach_look' => $data['coach_look'] ?? null]));
 
         return response()->json(['user' => $user->toAccount()]);
     }

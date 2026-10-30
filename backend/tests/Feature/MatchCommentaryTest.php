@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Characters\Mood;
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
 use App\League\LiveDegrade;
@@ -166,6 +167,35 @@ class MatchCommentaryTest extends TestCase
         }
         // The half-time events are kept in the database, the rest in the cache: both come back.
         $this->assertGreaterThan(0, DB::table('match_events')->where('match_id', $match->id)->count());
+    }
+
+    public function test_each_minute_says_how_each_coach_feels_and_the_match_shows_their_looks(): void
+    {
+        // [Sprint 26 B1, B3] The coach picked his look; the match shows it on his side, and the computer's side has none.
+        $this->actingAs($this->owner)->patchJson('/api/v1/auth/me', ['coach_look' => 'C3'])->assertOk();
+        Event::fake([MatchMinute::class]);
+        $match = $this->kickOff();
+        $this->playTo($match->id, 90);
+        $sent = Event::dispatched(MatchMinute::class)->map(fn ($e) => $e[0]->broadcastWith())->where('match_id', $match->id)->values();
+        $this->assertGreaterThanOrEqual(90, $sent->count());
+        $goals = 0;
+        foreach ($sent as $p) {
+            $this->assertContains($p['moods']['home'], Mood::ALL);
+            $this->assertContains($p['moods']['away'], Mood::ALL);
+            foreach ($p['events'] as $e) {
+                if ($e['type'] === 'goal' && ! collect($p['events'])->contains(fn ($x) => $x['type'] === 'period')) {
+                    $this->assertSame('cheer', $p['moods'][$e['team']]);
+                    $goals++;
+                }
+            }
+        }
+        // The poll carries the same moods.
+        $r = $this->getJson("/api/v1/matches/{$match->id}/live?since=45")->assertOk()->json();
+        $this->assertArrayHasKey('moods', $r['ticks'][0]);
+        $side = $this->fixture->home_id === $this->league['my_club_id'] ? 'home' : 'away';
+        $looks = $this->getJson("/api/v1/matches/{$match->id}")->assertOk()->json('coach_looks');
+        $this->assertSame(['C3'], array_values($looks));
+        $this->assertArrayHasKey($side, $looks);
     }
 
     public function test_each_minute_carries_its_match_time_and_server_time_built_once_for_everyone(): void

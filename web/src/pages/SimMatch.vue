@@ -48,6 +48,16 @@
           <span class="text-xs text-text-muted">{{ $t('أي من المدربين يستطيع البدء.') }}</span>
         </section>
 
+        <!-- [Sprint 26 W6] The coaches on the touchline, each in his own look, feeling the minute as the server says. -->
+        <div v-if="view.coach_looks && Object.keys(view.coach_looks).length" class="flex items-end justify-between gap-2 px-1" :aria-label="$t('المدربان على الخط')">
+          <template v-for="s in (['home', 'away'] as const)" :key="s">
+            <span v-if="view.coach_looks[s]" class="flex items-end gap-1" :class="s === 'away' ? 'flex-row-reverse text-end' : ''">
+              <Character :model="view.coach_looks[s]!" :mood="moods[s]" three class="w-16 md:w-20" :label="$t('مدرب {v0}', { v0: $nm(view.clubs[s].name) })" />
+              <small class="max-w-[8rem] truncate pb-2 text-xs text-text-muted"><bdi>{{ view.coaches?.[s] ?? $nm(view.clubs[s].name) }}</bdi></small>
+            </span>
+            <span v-else />
+          </template>
+        </div>
         <section class="relative w-full overflow-hidden rounded-xl border border-text/10 bg-bg-deep" style="height: min(80dvh, 780px); min-height: 460px" :aria-label="$t('المباراة')">
           <MatchFeed ref="pitch" :kits="feedKits" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :codes="{ home: view.clubs.home.code, away: view.clubs.away.code }" :logos="{ home: view.clubs.home.logo, away: view.clubs.away.logo }" :strength="{ home: view.clubs.home.strength ?? 0, away: view.clubs.away.strength ?? 0 }" :coaches="view.coaches" :countdown="countdown" :teams="teams" :seed="view.seed" :speed="live ? 1 : speed" :minute="minuteText" :score="score" :mine="mine" :lang="commentary" :intro="intro" :live="live" @cue="onCue" @sound="onSound" @say="(line) => voice.say(line)" @intro-done="endIntro" />
 
@@ -201,7 +211,7 @@
         </section>
 
         <section v-if="league && mine" class="flex max-h-[260px] flex-col gap-2 overflow-y-auto rounded-xl bg-surface p-3" :aria-label="$t('قراءة المساعد')" aria-live="polite">
-          <h2 class="font-display text-base font-bold">{{ $t('قراءة المساعد') }}</h2>
+          <h2 class="flex items-center gap-2 font-display text-base font-bold"><Character model="B2" :mood="mine ? moods[mine] : 'idle'" class="w-10" />{{ $t('قراءة المساعد') }}</h2>
           <p v-if="!readings.length" class="text-sm text-text-muted">{{ $t('يكتب لك المساعد ملاحظة كل ربع ساعة تقريباً، وبعد كل لحظة كبيرة.') }}</p>
           <div v-for="r in readings" :key="r.id" class="flex gap-3 rounded-md bg-surface-sunk px-3 py-2 text-sm" :class="r.kind.startsWith('goal') || r.kind.startsWith('red') ? 'border-s-2 border-gold' : ''">
             <span class="w-8 shrink-0 font-numbers text-base text-gold">{{ r.minute }}'</span>
@@ -243,6 +253,7 @@ import { useBroadcast } from '../stores/broadcast'
 import { nm } from '../lib/names'
 import { useRoute, useRouter } from 'vue-router'
 import MatchFeed from '../match/feed/MatchFeed.vue'
+import Character from '../components/characters/Character.vue'
 import GoalReplay from '../match/feed/GoalReplay.vue'
 import Momentum from '../components/Momentum.vue'
 import StatsGrid from '../components/StatsGrid.vue'
@@ -418,6 +429,8 @@ const playersById = computed(() => {
 })
 // The assistant's notes to this coach (league), newest first.
 const readings = ref<Reading[]>([])
+// [Sprint 26 W6] How each coach feels now: the server's word with each minute shown.
+const moods = ref<Record<Side, string>>({ home: 'idle', away: 'idle' })
 const offline = ref(false)
 // [E8.5] What a gap missed, shown for a few seconds after the jump to now.
 const caught = ref<LiveSummary | null>(null)
@@ -559,6 +572,7 @@ function show(t: Tick, animate = true, startAt?: number) {
   intro.value = false
   last.value = t
   minute.value = t.minute
+  if (t.moods) moods.value = t.moods
   if (pendingScore) score.value = pendingScore
   pendingScore = null
   // The score changes when the ball crosses the line in the shot, not at the start of the minute.

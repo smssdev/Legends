@@ -2,6 +2,7 @@
 
 namespace App\League;
 
+use App\Characters\Mood;
 use App\Events\ClubReading;
 use App\Events\MatchMinute;
 use App\Simulator\CoachWindows;
@@ -318,7 +319,9 @@ class MatchRunner
             'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
             'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
             // [X42] Play stops after this minute: the coach's window.
-            'window' => CoachWindows::window($state['out'], $state['cfg']['match'])];
+            'window' => CoachWindows::window($state['out'], $state['cfg']['match']),
+            // [Sprint 26 B1] How each side's coach feels after it; the screens only draw it.
+            'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute'))];
 
         return [$state, $choreo['ball'], $tick];
     }

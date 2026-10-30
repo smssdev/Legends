@@ -2,6 +2,7 @@
 
 namespace App\Simulator;
 
+use App\Characters\Mood;
 use App\Data\ClubLogo;
 use App\Engine\Actions;
 use App\Engine\AutoPick;
@@ -194,7 +195,8 @@ class Simulator
             $ticks[] = $state['out'];
             $out[] = Commentary::annotate($state, $state['out']) + ['frames' => $choreo['frames'], 'teams' => self::teams($state), 'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
                 'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
-                'window' => $match->live !== null && CoachWindows::window($state['out'], $state['cfg']['match'])];
+                'window' => $match->live !== null && CoachWindows::window($state['out'], $state['cfg']['match']),
+                'moods' => Mood::forTick($state['out']['events'], $state['score'], $state['out']['minute'] ?? 0, (int) config('game.characters.late_minute'))];
         }
 
         $match->fill(compact('state', 'ball', 'pending', 'applied', 'ticks'))->save();

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -7,7 +8,8 @@ namespace Legends.EditorTools
 {
     /// <summary>
     /// Builds Assets/Legends/Scenes/Match.unity: the Arena, the match scene with its bridge, the broadcast camera,
-    /// the score, and the recorded Liverpool v Arsenal match (docs/api/samples/) playing through the bridge.
+    /// the score, the coaches on the bench [Sprint 26], and the recorded Liverpool v Arsenal match (docs/api/samples/)
+    /// playing through the bridge.
     /// Press Play to watch it. Legends → Build match scene, or `build.ps1 demo`.
     /// </summary>
     public static class DemoScene
@@ -35,6 +37,12 @@ namespace Legends.EditorTools
             // A faint glow, so the ball reads from the broadcast camera under the floodlights.
             match.ballMaterial.EnableKeyword("_EMISSION");
             match.ballMaterial.SetColor("_EmissionColor", Color.white * 0.6f);
+
+            // [Sprint 26 U1] The coaches by the touchline, from the Blender models (tools/unity/art/characters.py).
+            var bench = new GameObject("Bench Coaches").AddComponent<Legends.BenchCoaches>();
+            bench.looks = new[] { "c1", "c2", "c3" }.Select(c => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Legends/Art/Characters/" + c + ".fbx")).ToArray();
+            if (bench.looks.Any(l => l == null)) Debug.LogWarning("Legends: a coach model is missing in Assets/Legends/Art/Characters (run tools/unity/art/characters.py)");
+            match.bench = bench;
 
             var bridge = new GameObject("Bridge").AddComponent<Legends.Bridge>();   // the page calls it by this name
             bridge.scene = match;

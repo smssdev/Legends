@@ -57,6 +57,20 @@ namespace Legends.Tests
         }
 
         [Test]
+        public void TheFeedCarriesTheCoachesLooksAndMoods()
+        {
+            // [Sprint 26 U1] The server's setup names each human coach's look, and every minute how each coach feels.
+            var setup = MatchSetup.From(MiniJson.Parse("{\"clubs\": {\"home\": {}, \"away\": {}}, \"coach_looks\": {\"home\": \"C3\"}}"));
+            Assert.AreEqual("C3", setup.HomeLook);
+            Assert.AreEqual("", setup.AwayLook);
+            var minute = MatchMinute.From(MiniJson.Parse("{\"tick\": 12, \"moods\": {\"home\": \"cheer\", \"away\": \"sad\"}}"), 3000);
+            Assert.AreEqual("cheer", minute.HomeMood);
+            Assert.AreEqual("sad", minute.AwayMood);
+            var older = MatchMinute.From(MiniJson.Parse("{\"tick\": 13}"), 3000);
+            Assert.AreEqual("idle", older.HomeMood);
+        }
+
+        [Test]
         public void AnUnknownMoodStandsIdle()
         {
             var unknown = Poses.At("dancing", 0.3f);

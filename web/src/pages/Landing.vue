@@ -2,7 +2,9 @@
 // [X59] The visitor's home page (the owner's request 2026-10-29): what GLM is, what is in it, how to start, and the
 // common questions, all readable before signing in, as Google AdSense asks of a site, and as a visitor deserves.
 // Every number in it is the game's own (the slots, the guide); nothing here is a rule, only a description.
+// [Sprint 26 W4] The three mascots welcome the visitor under the two ways in.
 import PublicFooter from '../components/PublicFooter.vue'
+import Character from '../components/characters/Character.vue'
 import { emblemSrc } from '../lib/i18n'
 
 const FEATURES = [
@@ -43,6 +45,11 @@ const FAQ = [
         <div class="flex flex-wrap justify-center gap-3">
           <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{ $t('ابدأ مجاناً') }}</RouterLink>
           <RouterLink to="/guide" class="flex h-12 items-center rounded-lg border border-text/25 px-7 font-bold">{{ $t('طريقة اللعب') }}</RouterLink>
+        </div>
+        <div class="flex items-end justify-center gap-1">
+          <Character model="A1" mood="joy" class="w-24 md:w-28" />
+          <Character model="A2" mood="cheer" class="w-24 md:w-28" />
+          <Character model="A3" mood="idle" class="w-20 md:w-24" />
         </div>
         <RouterLink to="/login" class="flex min-h-touch items-center text-sm text-text-muted">{{ $t('عندك حساب؟') }} <b class="ms-1 text-gold">{{ $t('سجّل الدخول') }}</b></RouterLink>
       </div>
