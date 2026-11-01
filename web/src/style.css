@@ -187,6 +187,17 @@
   border-top-color: color-mix(in srgb, var(--color-brand-light) 45%, transparent);
   box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--color-shade) 80%, transparent);   /* [UP15] one shadow, and no blur under the cards */
 }
+/* [Sprint 30 Q5] The day's fields are seen at a glance: on paper a sunk field is barely darker than its card, so
+   every text field, choice and long text gets a visible edge (3:1 against the paper, WCAG's line for a control's
+   border) and a gold ring on focus. Not inside the broadcast (it stays at night). */
+html.light :is(input:not([type=checkbox], [type=radio], [type=range], [type=file], [type=color]), select, textarea, .ui-field):not([aria-invalid=true], .bg-transparent):not(:where(.theme-night, .theme-night *)) {
+  border: 1px solid color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+html.light :is(input, select, textarea):focus-visible:not(:where(.theme-night, .theme-night *)) {
+  border-color: var(--color-gold-dark);
+  outline: 2px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  outline-offset: 1px;
+}
 /* [X56] The day's cards: white paper, a lighter emerald wash at the top. */
 html.light .rounded-xl.bg-surface,
 html.light .rounded-2xl.bg-surface,
