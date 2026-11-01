@@ -81,14 +81,15 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
 Route::get('users/{user}/avatar', [AuthController::class, 'showAvatar'])->whereNumber('user')->middleware('throttle:240,1,avatar-show');
 
 // The real clubs and players [PLAN 2.6], read-only and public: league templates, squads, badges.
-Route::prefix('data')->controller(DataController::class)->middleware('throttle:120,1,data')->group(function () {
+// [Sprint 30 Q12] The game's fixed data: kept by the browser an hour, and asked again with its ETag (304, nothing sent).
+Route::prefix('data')->controller(DataController::class)->middleware(['throttle:120,1,data', 'cache.headers:private;max_age=3600;etag'])->group(function () {
     Route::get('templates', 'templates');
     Route::get('clubs', 'clubs');
     Route::get('clubs/{club}', 'show')->whereNumber('club');
     Route::get('clubs/{club}/crest.svg', 'crest')->whereNumber('club');
     Route::get('glossary', 'glossary');
 });
-Route::get('data/formations', [TeamController::class, 'formations'])->middleware('throttle:120,1,data');
+Route::get('data/formations', [TeamController::class, 'formations'])->middleware(['throttle:120,1,data', 'cache.headers:private;max_age=3600;etag']);
 
 // [Sprint 29] Tournaments: the catalog (templates, national teams, clubs), making one, its page and its draw, which
 // anyone signed in may watch live or replay. Coaches join it by its code as a league (/leagues/join).

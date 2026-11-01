@@ -3,7 +3,8 @@
 // The web server's router (php -S, start.sh) [X45]. PHP's built-in server takes every request on one of a
 // few workers, so what does not need Laravel never reaches it:
 // - The built files (the hashed /assets/, the logos, the brand, the art) go out with a year's cache and, when the
-//   browser takes it, their gzip copy made at build time (Dockerfile): one download per version, a third the size.
+//   browser takes it, their Brotli copy made at build time (Dockerfile), else their gzip one: one download per
+//   version, a quarter to a third the size. [Sprint 30 Q12] Brotli is some 15-25% smaller than gzip on the JS.
 // - A page of the Vue app (any other GET that is not the API's or Laravel's own) is index.html, never cached, so a new
 //   version is picked up at once, without booting Laravel or touching the session.
 // - Everything else is Laravel (public/index.php), as Laravel's own server.php does.
@@ -31,10 +32,13 @@ function send(string $path, string $cache): void
     header('Content-Type: '.(TYPES[$ext] ?? (mime_content_type($path) ?: 'application/octet-stream')));
     header('Cache-Control: '.$cache);
     header('Vary: Accept-Encoding');
-    $zip = $path.'.gz';
-    if (str_contains($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') && is_file($zip)) {
+    $accepts = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
+    if (str_contains($accepts, 'br') && is_file($path.'.br')) {
+        header('Content-Encoding: br');
+        $path .= '.br';
+    } elseif (str_contains($accepts, 'gzip') && is_file($path.'.gz')) {
         header('Content-Encoding: gzip');
-        $path = $zip;
+        $path .= '.gz';
     }
     header('Content-Length: '.filesize($path));
     if ($_SERVER['REQUEST_METHOD'] !== 'HEAD') {
@@ -67,7 +71,8 @@ if (! $laravel && $uri !== '/' && $file !== false && str_starts_with($file, $pub
     if (! isset(TYPES[strtolower(pathinfo($file, PATHINFO_EXTENSION))])) {
         return false;
     }
-    send($file, $lasting ? 'public, max-age=31536000, immutable' : 'public, max-age=300');
+    // [Sprint 30 Q12] The fonts (fixed files, not hashed) a month; the rest five minutes.
+    send($file, $lasting ? 'public, max-age=31536000, immutable' : (str_starts_with($uri, '/fonts/') ? 'public, max-age=2592000' : 'public, max-age=300'));
 
     return true;
 }

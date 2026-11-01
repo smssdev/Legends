@@ -18,6 +18,18 @@ class DataApiTest extends TestCase
         $this->artisan('data:import', ['--data-version' => '2026', '--path' => base_path('tests/Fixtures/ea-fc26')])->assertSuccessful();
     }
 
+    public function test_the_fixed_data_is_cached_by_the_browser_and_asked_again_with_its_etag(): void
+    {
+        // [Sprint 30 Q12] An hour in the browser, then a 304 with nothing in it while nothing changed.
+        $first = $this->getJson('/api/v1/data/templates')->assertOk();
+        $this->assertStringContainsString('max-age=3600', (string) $first->headers->get('Cache-Control'));
+        $this->assertStringContainsString('private', (string) $first->headers->get('Cache-Control'));
+        $etag = (string) $first->headers->get('ETag');
+        $this->assertNotSame('', $etag);
+        $this->getJson('/api/v1/data/templates', ['If-None-Match' => $etag])->assertStatus(304);
+        $this->getJson('/api/v1/data/formations')->assertOk()->assertHeader('ETag');
+    }
+
     public function test_templates_list_each_league_with_its_clubs_strongest_first(): void
     {
         $res = $this->getJson('/api/v1/data/templates')->assertOk()->assertJsonPath('data_version', '2026')->json('templates');
