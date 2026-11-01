@@ -15,8 +15,8 @@ let SMOOTH = false
 export function setSmooth(v) { SMOOTH = !!v }
 const K = (s) => KITS[s] ?? KITS.home
 const other = (s) => (s === 'home' ? 'away' : 'home')
-const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
-const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
+export const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
+export const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
 // A keeper's kit that stands apart from both teams.
 export const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
 
@@ -129,8 +129,8 @@ function goalFrame(svg, p = svg.world) {
 // A player: legs, shorts, shirt with the number, arms and head, each part posable (running, striking, diving,
 // celebrating). look picks the skin and hair. Seen from behind by default; face() turns him to the camera or to his
 // side (mirrored for the other side) [Sprint 31 M4]: the live pitch picks it from where he runs.
-const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
-const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
+export const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
+export const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
 export function player(p, kit, no, s = 1, o = {}) {
   if (p.world) p = p.world
   const light = lum(kit) > 150, ink = light ? '#0A1F42' : '#fff', look = o.look ?? 0
