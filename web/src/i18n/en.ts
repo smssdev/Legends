@@ -2263,6 +2263,8 @@ export const EN: Record<string, string> = {
   'افصل بينها بمسافة أو فاصلة، ويمكنك الإضافة لاحقاً أو مشاركة رابط الجروب.': 'Separate them with a space or a comma; you can add more later or share the group link.',
   'أنشئ الجروب': 'Create the group',
   'أنشئ جروباً': 'Create a group',
+  'شارك كصورة': 'Share as image',
+  'حُفظت صورة النتيجة: شاركها من معرض الصور.': 'The result image was saved: share it from your gallery.',
   'تم. سنذكّرك قبل كل مباراة بنصف ساعة.': 'Done. We will remind you half an hour before every match.',
   'تذكير المباراة': 'Match reminder',
   'ذكّرني قبل مباراتي': 'Remind me before my match',
