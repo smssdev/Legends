@@ -240,7 +240,7 @@ async function openRanking(by: By) {
       </section>
 
       <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->
-      <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" />
+      <OnboardingChecklist :has-club="home.slots.some((s) => s.state === 'club')" :steps="home.onboarding" />
 
       <!-- The slots, the screen's heart, right under the card: all eight without scrolling. -->
       <section class="flex flex-col gap-2" :aria-label="$t('فتحات المدرب')">

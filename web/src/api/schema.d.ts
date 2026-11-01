@@ -13900,6 +13900,16 @@ export interface components {
         };
         HomeScreen: {
             starter_gift: components["schemas"]["StarterGift"];
+            /** @description [X75] The first steps, each done in the game (never by tapping it): account verified or tied to Google, another coach in my league or a friend from my link, a line coach hired, a lineup and tactics saved by the coach, a picture of his own, a friendly played */
+            onboarding: {
+                account: boolean;
+                invite: boolean;
+                coach: boolean;
+                lineup: boolean;
+                tactics: boolean;
+                name: boolean;
+                friendly: boolean;
+            };
             /** @description [Sprint 28] The open polls this coach has not voted in yet */
             polls_waiting: number;
             coach: {
