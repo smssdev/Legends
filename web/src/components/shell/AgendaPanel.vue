@@ -3,6 +3,7 @@
 // for the coach (the most urgent first). [X61] Under the top bar on the phone too (it was a sheet from the bottom, under
 // the bot and the bottom bar), and a panel under its icon on the computer.
 // Each line opens its screen and closes the window.
+import { useEscape } from '../../lib/escape'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Icon from '../Icon.vue'
@@ -13,6 +14,7 @@ import { LINE_NAMES, PENDING, SECTION_NAMES, SEVERITY, TIMER } from './agenda'
 
 const props = defineProps<{ kind: 'timers' | 'pending' }>()
 const emit = defineEmits<{ close: [] }>()
+useEscape(() => emit('close'))
 const store = useBoard()
 const inbox = useInbox()
 const router = useRouter()

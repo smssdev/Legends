@@ -194,7 +194,7 @@
               </label>
               <label v-for="k in (['pressing', 'style', 'tempo'] as const)" :key="k" class="flex flex-col gap-1">
                 <span class="flex justify-between"><span>{{ sliderLabels[k] }}</span><b class="font-numbers text-gold">{{ draft[k] }}</b></span>
-                <input v-model.number="draft[k]" type="range" min="0" max="100" class="accent-gold" />
+                <UiSlider v-model="draft[k]" :label="sliderLabels[k]" />
               </label>
               <label v-for="l in (['att', 'mid', 'def'] as const)" :key="l" class="flex items-center justify-between gap-2">{{ lineNames[l] }}
                 <select v-model="draft[l]" class="h-10 rounded-md bg-surface-sunk px-2"><option v-for="o in positioning[l]" :key="o.v" :value="o.v">{{ $t(o.label) }}</option></select>
@@ -256,6 +256,7 @@
 </template>
 
 <script setup lang="ts">
+import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { useBroadcast } from '../stores/broadcast'

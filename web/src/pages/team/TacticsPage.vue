@@ -6,6 +6,7 @@
 // presets, the tactics book and the scenarios. Tips explain how the engine plays them; they change no number
 // [PLAN 2.14]. Only tackling, marking, plan and trap are ever shown to the opponent. [Sprint 27 W6, the owner asked
 // for OSM's ease] Every change saves itself a moment later: no «حفظ» to remember.
+import UiSlider from '../../components/ui/UiSlider.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components, paths } from '../../api/schema'
@@ -187,7 +188,8 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
             <b class="text-center font-display text-lg">{{ $t(band(sl.key, t[sl.key])) }}</b>
             <div class="flex items-center gap-3">
               <output :for="`t-${sl.key}`" class="grid h-9 w-12 shrink-0 place-items-center rounded-md bg-bg-deep font-numbers text-lg">{{ t[sl.key] }}</output>
-              <input :id="`t-${sl.key}`" v-model.number="t[sl.key]" type="range" min="0" max="100" step="5" class="h-11 flex-1 accent-ring" :aria-valuetext="$t(band(sl.key, t[sl.key]))" />
+              <!-- [Sprint 30 Q4] reka-ui's Slider: smooth under the finger, the right way in Arabic. -->
+              <UiSlider :id="`t-${sl.key}`" v-model="t[sl.key]" :step="5" :label="sl.label" :value-text="$t(band(sl.key, t[sl.key]))" class="flex-1" />
             </div>
           </section>
           <div class="grid grid-cols-2 gap-3">

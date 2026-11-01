@@ -2,6 +2,7 @@
 // Trades between coaches (Sprint 25 W1), inside the market: the transfer list, my offers in and out, and the
 // composer for a new offer or a counter. Every rule (the fair range, the season limits) is checked by the API,
 // which answers in Arabic; the screen only gathers the terms.
+import UiSlider from '../../components/ui/UiSlider.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
@@ -191,7 +192,7 @@ onMounted(load)
         </label>
         <!-- [X62] The sell-on clause: a share of the next sale promised to the other coach (a new offer only). -->
         <label v-if="!draft.counterOf" class="flex flex-col gap-1 text-sm font-bold">{{ $t('نسبة له من بيعك القادم لهم (اختياري)') }}
-          <span class="flex items-center gap-2"><input v-model.number="draft.sellOn" type="range" min="0" max="20" step="5" class="h-11 flex-1 accent-gold" :aria-valuetext="`${draft.sellOn}%`" /><b class="w-12 text-center font-numbers" dir="ltr">{{ draft.sellOn }}%</b></span>
+          <span class="flex items-center gap-2"><UiSlider v-model="draft.sellOn" :max="20" :step="5" label="نسبة من البيع القادم" :value-text="`${draft.sellOn}%`" class="flex-1" /><b class="w-12 text-center font-numbers" dir="ltr">{{ draft.sellOn }}%</b></span>
         </label>
         <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}. المسموح: من 50% إلى 200% من قيمة ما تطلب.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
         <div class="flex gap-2">

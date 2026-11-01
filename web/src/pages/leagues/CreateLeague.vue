@@ -3,6 +3,8 @@
 // [UP9] The owner's spec (4, 2026-10-26): the standard league is free (every club of the real league, two days to get
 // ready, one round a day at the owner's evening, the integrity system and the press conferences on, one season).
 // Changing anything makes it a customized league, paid once: the clubs × 20 coins, shown with the coin, never as a "price".
+import UiSlider from '../../components/ui/UiSlider.vue'
+import UiSelect from '../../components/ui/UiSelect.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -175,13 +177,12 @@ const field = (name: string) => error.value?.field(name) ?? ''
           <h2 id="h-basics" class="font-display text-xl font-extrabold">{{ $t('الأساسيات') }}</h2>
           <TextField v-model="name" :label="$t('اسم الدوري')" :placeholder="$t('فارغ: اسم الدوري والكود')" :error="field('name')" />
           <div class="grid gap-4 md:grid-cols-2">
-            <label class="flex flex-col gap-1.5">
+            <div class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('الدوري') }}</span>
-              <select v-model="template" class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" :aria-invalid="!!field('template')">
-                <option v-for="t in templates" :key="t.name" :value="t.name">{{ $t('{v0} · {v1} نادياً', { v0: $nm(t.name), v1: t.clubs }) }}</option>
-              </select>
+              <!-- [Sprint 30 Q4] Some forty leagues: typed to filter (Combobox), not a long scroll. -->
+              <UiSelect v-model="template" :options="templates.map((t) => ({ value: t.name, label: $t('{v0} · {v1} نادياً', { v0: $nm(t.name), v1: t.clubs }) }))" label="الدوري" searchable />
               <span v-if="field('template')" class="text-sm text-danger">{{ field('template') }}</span>
-            </label>
+            </div>
             <label class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('بداية الموسم (بتوقيتك)') }}</span>
               <input v-model="startsAt" type="datetime-local" :min="minStart" :max="maxStart" required class="h-12 rounded-lg border border-text/10 bg-surface-sunk px-4" />
@@ -235,7 +236,7 @@ const field = (name: string) => error.value?.field(name) ?? ''
               </div>
               <label class="flex flex-col gap-2">
                 <span class="flex items-center justify-between text-sm font-bold">{{ $t('ميزانية البداية لكل نادٍ') }} <span class="font-numbers text-lg text-gold">{{ budget(startingBudget) }}</span></span>
-                <input v-model.number="startingBudget" type="range" min="1000000" max="10000000" step="500000" class="accent-gold" />
+                <UiSlider v-model="startingBudget" :min="1000000" :max="10000000" :step="500000" label="ميزانية البداية" />
                 <span class="flex justify-between text-xs text-text-muted"><span>{{ $t('مليون') }}</span><span>{{ $t('10 ملايين') }}</span></span>
               </label>
             </div>

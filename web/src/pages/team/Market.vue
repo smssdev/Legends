@@ -4,6 +4,8 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import { useEscape } from '../../lib/escape'
+import UiSlider from '../../components/ui/UiSlider.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import EmptyState from '../../components/ui/EmptyState.vue'
 import { intlLocale } from '../../lib/i18n'
@@ -68,6 +70,7 @@ const renewsIn = computed(() => {
 const picked = ref<Row | null>(null)
 const deal = ref<Quote | null>(null)
 const celebrate = ref('')
+useEscape(() => (celebrate.value = ''), () => !!celebrate.value)
 const done = ref<{ player: string; from: string | null; to: string; price: number; at: string }[]>([])
 async function loadList() {
   if (!leagueId.value) return
@@ -360,7 +363,7 @@ onBeforeUnmount(() => clearInterval(clock))
                 </div>
                 <div class="flex items-center gap-2" dir="ltr">
                   <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) <= p.floor" :aria-label="$t('أنقص السعر')" @click="nudge(p, -1)">−</button>
-                  <input v-model.number="price" type="range" :min="p.floor" :max="p.cap" :step="stepOf(p)" class="h-touch min-w-0 flex-1 accent-gold" :aria-label="$t('سعر {v0}', { v0: p.name })" />
+                  <UiSlider :model-value="Number(price) || p.value" dir="ltr" :min="p.floor" :max="p.cap" :step="stepOf(p)" :label="$t('سعر {v0}', { v0: p.name })" class="min-w-0 flex-1" @update:model-value="(v: number) => (price = v)" />
                   <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) >= p.cap" :aria-label="$t('زد السعر')" @click="nudge(p, 1)">+</button>
                 </div>
                 <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span class="font-numbers">{{ money(p.floor) }}</span><span class="font-numbers">{{ money(p.cap) }}</span></div>
