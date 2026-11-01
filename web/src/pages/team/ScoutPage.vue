@@ -142,7 +142,7 @@ onBeforeUnmount(() => clearInterval(tick))
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أكبر عمر') }}<input v-model.number="form.max_age" type="number" min="16" max="45" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           <label class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('أعلى سعر (اختياري)') }}<input v-model.number="form.max_value" type="number" min="1" step="100000" :placeholder="$t('بلا حد')" class="h-touch rounded-md bg-surface-sunk px-2 font-numbers text-text" dir="ltr" /></label>
           <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('الجنسية') }}
-            <UiSelect v-model="form.nationality" label="الجنسية" none="أي جنسية" searchable :options="v.options.nationalities.map((n) => ({ value: n, label: n }))" />
+            <UiSelect v-model="form.nationality" label="الجنسية" none="أي جنسية" searchable :options="v.options.nationalities.map((n) => ({ value: n, label: $nm(n) }))" />
           </div>
           <div class="flex flex-col gap-1 text-sm text-text-muted">{{ $t('من دوري') }}
             <UiSelect v-model="form.league" label="من دوري" none="أي دوري" searchable :options="v.options.leagues.map((l) => ({ value: l, label: l }))" />
@@ -159,7 +159,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <p v-if="r.status === 'empty'" class="px-1 text-sm text-text-muted">{{ $t('لم يجد أحداً بهذه المعايير، فرُد المبلغ.') }}</p>
         <div v-for="p in r.players" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk px-2 py-2">
           <LineBadge :line="p.line as Line" />
-          <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: p.nationality, v3: p.potential }) }}</span></span>
+          <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: $nm(p.nationality), v3: p.potential }) }}</span></span>
           <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
           <span class="w-20 text-end font-numbers text-lg" dir="ltr">{{ money(p.value) }}</span>
           <button v-if="p.state === 'available'" type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="busy || (p.price ?? 0) > v.balance" @click="buy(p.id, p.name)">{{ $t('شراء') }}</button>

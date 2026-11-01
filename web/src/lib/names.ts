@@ -7,7 +7,7 @@ import { locale } from './i18n'
 
 export type NamesLang = 'ar' | 'en'
 const KEY = 'legends.names'
-type Dict = { leagues: Record<string, string>; clubs: Record<string, string>; players: Record<string, string> }
+type Dict = { leagues: Record<string, string>; clubs: Record<string, string>; players: Record<string, string>; nations?: Record<string, string> }
 
 function readPref(): NamesLang {
   try { return localStorage.getItem(KEY) === 'en' ? 'en' : 'ar' } catch { return 'ar' }
@@ -37,7 +37,7 @@ export function setNamesLang(l: NamesLang) {
 export const shownNames = computed<NamesLang>(() => (locale.value === 'en' ? 'en' : namesLang.value))
 
 const pick = (table: keyof Dict, s: string | null | undefined) =>
-  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.[table][s] ?? s)
+  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.[table]?.[s] ?? s)
 
 /** A player's name: [Sprint 30, the owner's decision 2026-11-01] English on every screen, whatever the switch. */
 export const pn = (s: string | null | undefined) => s ?? ''
@@ -45,6 +45,8 @@ export const pn = (s: string | null | undefined) => s ?? ''
 export const cn = (s: string | null | undefined) => pick('clubs', s)
 /** A league's name. */
 export const ln = (s: string | null | undefined) => pick('leagues', s)
-/** Any name the game shows: a club's, else a league's (a player's stays English, as what none knows). */
+/** [Sprint 30 Q10] A nationality (Belgium → بلجيكا in the Arabic game). */
+export const natn = (s: string | null | undefined) => pick('nations', s)
+/** Any name the game shows: a club's, else a league's, else a country's (a player's stays English, as what none knows). */
 export const nm = (s: string | null | undefined) =>
-  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? s)
+  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? dict.value?.nations?.[s] ?? s)

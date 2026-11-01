@@ -25,14 +25,14 @@ return [
     'integer' => 'يجب أن يكون :attribute رقماً صحيحاً.',
     'lowercase' => 'يجب أن يكون :attribute بأحرف صغيرة.',
     'max' => [
-        'numeric' => 'يجب ألا يزيد :attribute على :max.',
-        'string' => 'يجب ألا يزيد :attribute على :max حرفاً.',
+        'numeric' => 'يجب ألا تزيد قيمة :attribute على :max.',
+        'string' => 'يجب ألا يزيد طول :attribute على :max حرفاً.',
         'array' => 'يجب ألا يحتوي :attribute أكثر من :max عناصر.',
         'file' => 'يجب ألا يزيد حجم :attribute على :max كيلوبايت.',
     ],
     'min' => [
-        'numeric' => 'يجب ألا يقل :attribute عن :min.',
-        'string' => 'يجب ألا يقل :attribute عن :min أحرف.',
+        'numeric' => 'يجب ألا تقل قيمة :attribute عن :min.',
+        'string' => 'يجب ألا يقل طول :attribute عن :min أحرف.',
         'array' => 'يجب أن يحتوي :attribute :min عناصر على الأقل.',
         'file' => 'يجب ألا يقل حجم :attribute عن :min كيلوبايت.',
     ],

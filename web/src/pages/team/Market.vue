@@ -333,7 +333,7 @@ onBeforeUnmount(() => clearInterval(clock))
                 <span class="min-w-0 flex-1">
                   <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-[11px] font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
                   <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-[11px] font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
-                  <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ p.nationality }}</template></span>
+                  <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ $nm(p.nationality) }}</template></span>
                 </span>
                 <span class="hidden min-w-0 max-w-48 items-center gap-1.5 text-xs sm:flex">
                   <img v-if="p.seller.logo" :src="p.seller.logo" alt="" class="size-6 object-contain" loading="lazy" />

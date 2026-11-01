@@ -28,7 +28,7 @@ function rows(file) {
 }
 
 const arabic = (s) => /[؀-ۿ]/.test(s ?? '');
-const dict = { leagues: {}, clubs: {}, players: {} };
+const dict = { leagues: {}, clubs: {}, players: {}, nations: {} };
 for (const r of rows('names/leagues.csv')) if (arabic(r.ar)) dict.leagues[r.name] = r.ar;
 // Wikidata first, then the hand-written table over it.
 for (const r of rows('names/clubs.csv')) if (arabic(r.ar)) dict.clubs[r.name] = r.ar;
@@ -37,7 +37,9 @@ for (const r of rows('names/clubs_manual.csv')) if (arabic(r.ar)) dict.clubs[r.n
 for (const r of rows('names/nations.csv')) if (arabic(r.ar)) dict.clubs[r.name] = r.ar;
 dict.leagues['National Teams'] = 'المنتخبات';
 // [Sprint 30, the owner's decision 2026-11-01] The players' names are English on every screen: none in Arabic here.
+// [Sprint 30 Q10] The nationalities in Arabic (Belgium → بلجيكا), from the national teams' names (Sprint 29).
+for (const r of rows('names/nations.csv')) if (r.name && arabic(r.ar)) dict.nations[r.name] = r.ar;
 
 fs.mkdirSync(new URL('.', out), { recursive: true });
 fs.writeFileSync(out, JSON.stringify(dict));
-console.log(`names: ${Object.keys(dict.leagues).length} leagues, ${Object.keys(dict.clubs).length} clubs, ${Object.keys(dict.players).length} players in Arabic`);
+console.log(`names: ${Object.keys(dict.leagues).length} leagues, ${Object.keys(dict.clubs).length} clubs, ${Object.keys(dict.nations).length} nations in Arabic`);

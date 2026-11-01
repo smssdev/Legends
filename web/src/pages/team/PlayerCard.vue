@@ -29,7 +29,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
           <div class="min-w-0">
             <p class="font-display text-2xl font-extrabold">{{ $nm(player.name) }}</p>
             <p class="text-sm text-text-muted">
-              {{ player.position }}<template v-if="player.alt_positions"> ({{ player.alt_positions }})</template><template v-if="player.nationality"> · {{ player.nationality }}</template>
+              {{ player.position }}<template v-if="player.alt_positions"> ({{ player.alt_positions }})</template><template v-if="player.nationality"> · {{ $nm(player.nationality) }}</template>
             </p>
             <p class="text-sm text-text-muted"><span class="font-numbers">{{ player.age }}</span> {{ $t('سنة') }}<template v-if="player.foot"> {{ $t('· القدم {v0}', { v0: player.foot === 'Left' ? $t('اليسرى') : $t('اليمنى') }) }}</template></p>
           </div>

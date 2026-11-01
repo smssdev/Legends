@@ -27,7 +27,8 @@ function pick(leagueId: number) {
         <b class="block truncate font-display text-base md:text-lg">{{ $nm(slot.current.club.name) }}</b>
         <span class="flex items-center gap-1.5 truncate text-xs font-semibold opacity-75">
           <span class="truncate">{{ $nm(slot.current.league?.name) }}</span>
-          <span v-if="slot.current.position" class="shrink-0 rounded bg-brand px-1.5 font-numbers text-white" dir="ltr">{{ slot.current.position }}/{{ slot.current.teams }}</span>
+          <!-- [Sprint 30 Q10] «4 من 20», not «4/20»: the place in the table said in words (the place alone on a narrow phone). -->
+          <span v-if="slot.current.position" class="shrink-0 rounded bg-brand px-1.5 text-white" :aria-label="$t('المركز {v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams })"><span class="font-numbers sm:hidden">{{ slot.current.position }}</span><span class="hidden sm:inline">{{ $t('{v0} من {v1}', { v0: slot.current.position, v1: slot.current.teams }) }}</span></span>
         </span>
       </span>
       <span class="shrink-0 text-gold" aria-hidden="true">▾</span>
