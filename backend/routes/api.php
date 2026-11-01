@@ -123,6 +123,8 @@ Route::prefix('groups')->middleware(['auth:sanctum', 'throttle:240,1,groups'])->
     Route::post('{group}/media', 'sendMedia')->whereNumber('group')->middleware('throttle:20,1,group-media');
     Route::get('{group}/media/{message}', 'media')->whereNumber(['group', 'message'])->middleware('throttle:600,1,group-media-show');
     Route::delete('{group}/messages/{message}', 'destroyMessage')->whereNumber(['group', 'message']);
+    // [Sprint 30 G6] A report to the admins.
+    Route::post('{group}/messages/{message}/report', 'reportMessage')->whereNumber(['group', 'message'])->middleware('throttle:20,1,chat-report');
     Route::post('{group}/read', 'read')->whereNumber('group');
     Route::post('{group}/members', 'addMembers')->whereNumber('group');
     Route::delete('{group}/members/{user}', 'removeMember')->whereNumber(['group', 'user']);
@@ -368,6 +370,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::patch('house-ads/{id}', 'updateHouseAd')->whereNumber('id');
         Route::delete('house-ads/{id}', 'deleteHouseAd')->whereNumber('id');
         // [Sprint 30 P3] The test texts players can see, and the button that removes them.
+        // [Sprint 30 G6] The groups' moderation queue, a writer let back in, and the admins' scopes.
+        Route::get('reports', 'reports');
+        Route::post('reports/{message}/decide', 'decideReport')->whereNumber('message');
+        Route::delete('users/{user}/chat-ban', 'chatUnban')->whereNumber('user');
+        Route::put('users/{user}/scope', 'setScope')->whereNumber('user');
         Route::get('junk', 'junk');
         Route::post('junk/purge', 'purgeJunk');
         // [Sprint 23] The timed events: transfer madness, extreme progression, the market's discount and its special players.

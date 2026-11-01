@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-10-30'
+export const UPDATED = '2026-11-01'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -20,6 +20,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'بيانات اللعب: أنديتك ودورياتك وبطولاتك ومبارياتك وتكتيكاتك وصفقاتك ورسائلك داخل اللعبة وما تكتبه للدعم أو للمدرب المساعد.',
         'اقتراحاتك وأصواتك: ما ترسله في «اقتراحات التطوير» يقرؤه فريق التطوير، وصوتك في كل تصويت (لا يراه غيرنا، وتظهر للجميع الأعداد فقط). وإن أعجبنا اقتراحك يظهر اسمك وصورتك وعنوان اقتراحك في «قائمة الشرف» لكل المسجلين.',
         'رسائل الجروبات: ما تكتبه أو ترسله في جروب من نص وصور ورسائل صوتية يراه أعضاؤه كلهم ويُحفظ على خادمنا. تحذف رسالتك متى شئت فتظهر لهم «حُذفت» وتُمحى صورتها أو صوتها، وتحذف الإدارة الرسائل القديمة تلقائياً بعد مدة تحددها.',
+        'البلاغات: إن بلّغت عن رسالة في جروب يصل للإدارة نص الرسالة وكاتبها وسبب بلاغك وتفاصيله إن كتبتها، ولا يعرف الكاتب من بلّغ عنه. وتحذف الإدارة الرسالة المسيئة، وقد توقف كاتبها عن الإرسال في الجروبات حتى تسمح له.',
         'دردشة القرعة المباشرة: ما تكتبه أو تتفاعل به أثناء قرعة بطولة يراه باسمك كل من يشاهدها الآن أو يعيد مشاهدتها لاحقاً، ويُحذف مع رسائل الجروبات بعد المدة نفسها. وإن شاركت في بطولة ظهر اسمك في قائمة مشاركيها لكل اللاعبين.',
         'تقييمك لردود المدرب المساعد: إن ضغطت «أفادني» أو «لم يفدني» نحفظ اختيارك والصفحة التي كنت فيها وملاحظتك إن كتبتها، لنحسّن ردوده. ولا نحفظ معها المحادثة نفسها.',
         'بيانات تقنية: عنوان IP ونوع المتصفح والجهاز وأوقات الدخول، لحماية الحسابات من الاختراق والإساءة ولإصلاح الأعطال.',
@@ -74,6 +75,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'Game data: your clubs, leagues, tournaments, matches, tactics, transfers, in-game messages, and what you write to support or to the Assistant Coach.',
         'Your suggestions and votes: what you send in «Development ideas» is read by the development team, and your vote in each poll (seen by nobody else; everyone sees only the counts). If we like your suggestion, your name, picture and its title appear on the «Honour roll» for every signed-up player.',
         'Group messages: the text, photos and voice notes you send in a group are seen by all its members and kept on our server. You can delete a message at any time: they then see it as deleted and its photo or sound is erased; and old messages are deleted automatically after a period the game\'s admins set.',
+        'Reports: if you report a message in a group, the admins receive the message, its writer, your reason and any details you add; the writer is not told who reported it. The admins may delete an offending message and may stop its writer from sending in groups until they allow it again.',
         'The live draw chat: what you write or react with during a tournament\'s draw is seen with your name by everyone watching it now or replaying it later, and is deleted with the group messages after the same period. If you enter a tournament, your name shows in its list of entrants to every player.',
         'Your rating of the Assistant Coach\'s answers: if you tap "helpful" or "not helpful" we keep your choice, the page you were on and your note if you wrote one, to improve his answers. The conversation itself is not kept with it.',
         'Technical data: IP address, browser and device type, and sign-in times, to protect accounts from abuse and to fix problems.',

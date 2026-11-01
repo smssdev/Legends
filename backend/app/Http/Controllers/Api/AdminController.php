@@ -12,6 +12,7 @@ use App\Auth\AccountVerification;
 use App\Auth\Sessions;
 use App\Auth\Username;
 use App\Chat\ChatGroups;
+use App\Chat\Moderation;
 use App\Console\Commands\MatchesLive;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
@@ -52,7 +53,9 @@ class AdminController extends Controller
         $this->adminOnly($request);
 
         return response()->json(['required' => TwoFactor::required(), 'enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed(),
-            'recovery_left' => TwoFactor::recoveryLeft($request->user())]);
+            'recovery_left' => TwoFactor::recoveryLeft($request->user()),
+            // [Sprint 30 G6] What this admin may open (null: everything).
+            'scope' => $request->user()->admin_scope, 'sections' => $request->user()->admin_scope ? config('game.admin.scopes')[$request->user()->admin_scope] : null]);
     }
 
     public function setup(Request $request): JsonResponse
@@ -124,11 +127,11 @@ class AdminController extends Controller
             ->where('users.role', $admins ? '=' : '!=', 'admin')
             ->when($q !== '', fn ($query) => preg_match('/^\d{5}$/', $q) ? $query->where('users.account_no', (int) $q)
                 : $query->where(fn ($w) => $w->whereLike('users.name', "%{$q}%")->orWhereLike('users.username', '%'.strtolower($q).'%')->orWhereLike('users.email', '%'.strtolower($q).'%')))
-            ->groupBy('users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason')
+            ->groupBy('users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.admin_scope', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason')
             ->orderByDesc('users.id')
-            ->select(['users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason',
+            ->select(['users.id', 'users.account_no', 'users.name', 'users.username', 'users.email', 'users.role', 'users.admin_scope', 'users.created_at', 'users.account_verified_at', 'users.suspended_at', 'users.suspended_reason',
                 DB::raw('max(user_activity.day) as last_day'), DB::raw('coalesce(sum(user_activity.matches_watched), 0) as live')]);
-        $row = fn ($u) => ['id' => $u->id, 'account_no' => $u->account_no, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role,
+        $row = fn ($u) => ['id' => $u->id, 'account_no' => $u->account_no, 'name' => $u->name, 'username' => $u->username, 'email' => $u->email, 'role' => $u->role, 'admin_scope' => $u->admin_scope,
             'official' => Username::official($u->username), 'verified' => $u->account_verified_at !== null,
             'suspended' => $u->suspended_at ? ['at' => Carbon::parse($u->suspended_at, 'UTC')->toIso8601ZuluString(), 'reason' => $u->suspended_reason] : null,
             'joined' => Carbon::parse($u->created_at, 'UTC')->toIso8601ZuluString(), 'last_day' => $u->last_day, 'matches_watched' => (int) $u->live];
@@ -411,6 +414,43 @@ class AdminController extends Controller
         DB::table('house_ads')->where('id', $id)->update($data + ['updated_at' => GameClock::now()]);
 
         return response()->json(['ad' => $this->houseAd(DB::table('house_ads')->find($id))]);
+    }
+
+    /** [Sprint 30 G6] The reported group messages, the most reported first. */
+    public function reports(): JsonResponse
+    {
+        return response()->json(['reports' => Moderation::queue()]);
+    }
+
+    public function decideReport(Request $request, int $message): JsonResponse
+    {
+        $action = (string) $request->validate(['action' => ['required', 'in:leave,remove,ban']])['action'];
+        $writer = DB::table('chat_group_messages')->where('id', $message)->value('user_id');
+        Moderation::decide($message, $request->user(), $action);
+        $this->log($request, 'report_'.$action, $writer ? User::find($writer) : null, "message {$message}");
+
+        return $this->reports();
+    }
+
+    public function chatUnban(Request $request, User $user): JsonResponse
+    {
+        $user->forceFill(['chat_banned_at' => null])->save();
+        $this->log($request, 'chat_unban', $user);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** [Sprint 30 G6] An admin's scope: support, content or finance (null: full). Only a full admin gives scopes. */
+    public function setScope(Request $request, User $user): JsonResponse
+    {
+        abort_unless($request->user()->admin_scope === null, 403, 'تحديد صلاحيات المشرفين للمدير الكامل فقط.');
+        abort_unless($user->isAdmin(), 422, 'الحساب ليس مشرفاً.');
+        abort_if($user->id === $request->user()->id, 422, 'لا تغيّر صلاحياتك بنفسك.');
+        $scope = $request->validate(['scope' => ['nullable', 'in:'.implode(',', array_keys(config('game.admin.scopes')))]])['scope'] ?? null;
+        $user->forceFill(['admin_scope' => $scope])->save();
+        $this->log($request, 'scope', $user, $scope ?? 'full');
+
+        return response()->json(['id' => $user->id, 'scope' => $scope]);
     }
 
     /** [Sprint 30 P3] The test texts players can see: announcements and rewarded ads (removable), and leagues (listed). */

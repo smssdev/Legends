@@ -124,6 +124,54 @@ class ChatGroupTest extends TestCase
     }
 
     /** [X65] The admin keeps the messages so many days; older ones go every hour, their pictures with them. */
+    public function test_a_reported_message_reaches_the_admins_queue_and_a_ban_keeps_its_writer_out(): void
+    {
+        // [Sprint 30 G6] Two members report a message once each; the admin removes it and keeps its writer out.
+        Event::fake([ChatMessageSent::class]);
+        $sara = User::factory()->create(['username' => 'sara']);
+        $omar = User::factory()->create(['username' => 'omar']);
+        $ali = User::factory()->create(['username' => 'ali']);
+        $id = $this->actingAs($sara)->postJson('/api/v1/groups', ['name' => 'شلة الكورة', 'usernames' => ['omar', 'ali']])->assertCreated()->json('group.id');
+        $bad = $this->actingAs($omar)->postJson("/api/v1/groups/{$id}/messages", ['body' => 'كلام مسيء'])->assertCreated()->json('message.id');
+        $this->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'abuse'])->assertUnprocessable();   // not his own
+        $this->actingAs($sara)->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'abuse', 'note' => 'سب'])->assertOk();
+        $this->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'abuse'])->assertOk();          // once is enough
+        $this->actingAs($ali)->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'spam'])->assertOk();
+        $this->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'whatever'])->assertUnprocessable();
+        $this->actingAs(User::factory()->create())->postJson("/api/v1/groups/{$id}/messages/{$bad}/report", ['reason' => 'abuse'])->assertNotFound();   // not a member: not even there
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->withHeader('Referer', config('app.url'));
+        $queue = $this->actingAs($admin)->getJson('/api/v1/admin/reports')->assertOk()->json('reports');
+        $this->assertCount(1, $queue);
+        $this->assertSame(2, $queue[0]['reports']);
+        $this->assertSame(['abuse' => 1, 'spam' => 1], $queue[0]['reasons']);
+        $this->postJson("/api/v1/admin/reports/{$bad}/decide", ['action' => 'ban'])->assertOk()->assertJsonCount(0, 'reports');
+        $this->assertNotNull(DB::table('chat_group_messages')->where('id', $bad)->value('deleted_at'));
+        $this->actingAs($omar)->postJson("/api/v1/groups/{$id}/messages", ['body' => 'مرحبا'])->assertForbidden();
+        $this->assertSame(1, DB::table('admin_log')->where('action', 'report_ban')->where('target_user_id', $omar->id)->count());
+        // Let back in.
+        $this->actingAs($admin)->deleteJson("/api/v1/admin/users/{$omar->id}/chat-ban")->assertOk();
+        $this->actingAs($omar)->postJson("/api/v1/groups/{$id}/messages", ['body' => 'آسف'])->assertCreated();
+    }
+
+    public function test_an_admins_scope_opens_its_sections_only_and_only_a_full_admin_gives_scopes(): void
+    {
+        // [Sprint 30 G6] support sees the reports and the accounts, not the coins; finance the coins, not the reports.
+        $owner = User::factory()->create(['role' => 'admin']);
+        $helper = User::factory()->create(['role' => 'admin']);
+        $this->withHeader('Referer', config('app.url'));
+        $this->actingAs($owner)->putJson("/api/v1/admin/users/{$helper->id}/scope", ['scope' => 'support'])->assertOk()->assertJsonPath('scope', 'support');
+        $this->actingAs($helper->fresh())->getJson('/api/v1/admin/reports')->assertOk();
+        $this->getJson('/api/v1/admin/users')->assertOk();
+        $this->postJson('/api/v1/admin/coins', ['account_no' => 1, 'amount' => 5, 'reason' => 'x', 'idempotency_key' => 'k'])->assertForbidden();
+        $this->getJson('/api/v1/admin/2fa')->assertOk()->assertJsonPath('scope', 'support');
+        $this->putJson("/api/v1/admin/users/{$owner->id}/scope", ['scope' => 'finance'])->assertForbidden();
+        $this->actingAs($owner)->putJson("/api/v1/admin/users/{$helper->id}/scope", ['scope' => 'finance'])->assertOk();
+        $this->actingAs($helper->fresh())->getJson('/api/v1/admin/reports')->assertForbidden();
+        $this->actingAs($owner)->putJson("/api/v1/admin/users/{$helper->id}/scope", ['scope' => null])->assertOk()->assertJsonPath('scope', null);
+    }
+
     public function test_old_messages_go_after_the_admins_retention(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

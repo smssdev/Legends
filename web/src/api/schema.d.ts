@@ -6999,6 +6999,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 30 G6] The reported group messages waiting for a decision, the most reported first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The queue */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChatReports"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/reports/{message}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 30 G6] leave it, remove it, or remove it and keep its writer out of the groups (ban); logged */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        action: "leave" | "remove" | "ban";
+                    };
+                };
+            };
+            responses: {
+                /** @description The queue after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ChatReports"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/chat-ban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 30 G6] Let a banned writer back into the groups; logged */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Done */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user}/scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [Sprint 30 G6] An admin's scope (support, content, finance; null for a full admin), given by a full admin only; logged */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    user: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string|null} */
+                        scope?: "support" | "content" | "finance" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Set */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            scope: string | null;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/junk": {
         parameters: {
             query?: never;
@@ -11454,6 +11630,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/groups/{group}/messages/{message}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group: number;
+                message: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 30 G6] Report another member's message to the admins (once per coach and message) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    group: number;
+                    message: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        reason: "abuse" | "inappropriate" | "spam" | "other";
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Sent */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups/{group}/messages/{message}": {
         parameters: {
             query?: never;
@@ -13019,6 +13249,26 @@ export interface components {
             /** @enum {string} */
             state: "upcoming" | "running" | "ended";
         };
+        ChatReports: {
+            reports: {
+                message_id: number;
+                /** @description The text (null for a picture or a voice note) */
+                body?: string | null;
+                kind: string;
+                group: string;
+                writer: {
+                    id: number;
+                    name: string | null;
+                    username?: string | null;
+                    banned: boolean;
+                };
+                reports: number;
+                reasons: {
+                    [key: string]: number;
+                };
+                notes: string[];
+            }[];
+        };
         JunkRow: {
             id: number;
             title: string;
@@ -13347,6 +13597,10 @@ export interface components {
         AdminTwoFactor: {
             /** @description [Sprint 30 Q11] One-time recovery codes not used yet */
             recovery_left: number;
+            /** @description [Sprint 30 G6] This admin's scope (null: full) */
+            scope?: string | null;
+            /** @description [Sprint 30 G6] The panel sections this scope opens (null: all) */
+            sections?: string[] | null;
             /** @description [Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once */
             recovery_codes?: string[];
             /** @description Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off) */
@@ -13856,6 +14110,8 @@ export interface components {
             };
         };
         AdminUser: {
+            /** @description [Sprint 30 G6] An admin's scope (support, content, finance; null: full) */
+            admin_scope?: string | null;
             id: number;
             account_no: number | null;
             name: string;

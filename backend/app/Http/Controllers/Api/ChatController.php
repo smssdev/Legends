@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Chat\ChatGroups;
+use App\Chat\Moderation;
 use App\Http\Controllers\Controller;
 use App\League\Members;
 use App\Models\League;
@@ -81,6 +82,15 @@ class ChatController extends Controller
         [$bytes, $mime] = ChatGroups::media($group, $request->user(), $message);
 
         return response($bytes, 200, ['Content-Type' => $mime, 'Content-Length' => (string) strlen($bytes), 'Cache-Control' => 'private, max-age=86400']);
+    }
+
+    /** [Sprint 30 G6] A member reports another's message to the admins. */
+    public function reportMessage(Request $request, int $group, int $message): JsonResponse
+    {
+        $data = $request->validate(['reason' => ['required', 'string', 'in:'.implode(',', Moderation::REASONS)], 'note' => ['nullable', 'string', 'max:300']]);
+        Moderation::report($group, $request->user(), $message, $data['reason'], $data['note'] ?? null);
+
+        return response()->json(['ok' => true]);
     }
 
     public function destroyMessage(Request $request, int $group, int $message): JsonResponse
