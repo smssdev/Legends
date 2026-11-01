@@ -433,7 +433,6 @@ async function remove() {
       <!-- [Sprint 28] A suggestion, the polls, and the honour roll. -->
       <RouterLink :to="{ name: 'ideas' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface-sunk px-4 py-3"><span><b class="block">{{ $t('اقتراحات التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('اقترح ميزة، وصوّت على القادمة، وادخل قائمة الشرف') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
       <SupportLinks />
-      <p class="text-xs text-text-muted">{{ $t('إن لم تظهر الأزرار فالدعم لم يُفعَّل على الخادم بعد.') }}</p>
     </section>
 
     <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-signout">

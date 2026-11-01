@@ -51,7 +51,7 @@ onMounted(load)
       <ul v-else class="stagger grid gap-2 sm:grid-cols-3">
         <li v-for="p in a.prospects" :key="p.id" class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-3">
           <div class="flex items-center gap-2"><LineBadge :line="p.line as Line" /><b class="min-w-0 flex-1 truncate"><bdi>{{ $nm(p.name) }}</bdi></b></div>
-          <span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ p.nationality }}</template></span>
+          <span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ $nm(p.nationality) }}</template></span>
           <div class="flex items-end justify-between">
             <span><span class="block text-xs text-text-muted">{{ $t('القوة') }}</span><b class="font-numbers text-2xl">{{ p.overall }}</b></span>
             <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('الإمكانية') }}</span><b class="font-numbers text-lg text-success" dir="ltr">{{ p.potential_from }}–{{ p.potential_to }}</b></span>

@@ -41,7 +41,7 @@ class HealthTest extends TestCase
             ->assertJsonPath('code', 'validation')
             ->assertJsonPath('message', 'تحقق من البيانات المدخلة.')
             ->assertJsonPath('errors.email.0', 'اكتب بريداً إلكترونياً صحيحاً.')
-            ->assertJsonPath('errors.name.0', 'يجب ألا يزيد الاسم على 5 حرفاً.');
+            ->assertJsonPath('errors.name.0', 'يجب ألا يزيد طول الاسم على 5 حرفاً.');
 
         Route::middleware('api')->get('/api/v1/_test/conflict', fn () => abort(409, 'انتهت المباراة.'));
         $this->getJson('/api/v1/_test/conflict')->assertStatus(409)

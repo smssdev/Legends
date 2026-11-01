@@ -55,7 +55,7 @@ class AuthTest extends TestCase
             ->assertStatus(422)->assertJsonPath('code', 'validation')
             ->assertJsonPath('errors.username.0', 'اسم المستخدم مأخوذ، اختر غيره.')
             ->assertJsonPath('errors.email.0', 'البريد الإلكتروني مستخدم من قبل.')
-            ->assertJsonPath('errors.name.0', 'يجب ألا يقل الاسم عن 2 أحرف.')
+            ->assertJsonPath('errors.name.0', 'يجب ألا يقل طول الاسم عن 2 أحرف.')
             ->assertJsonMissingPath('errors.terms');
         $this->assertStringContainsString('4', $this->postJson('/api/v1/auth/register', ['name' => 'سس', 'username' => 'other', 'password' => 'abc'])->json('errors.password.0'));
     }

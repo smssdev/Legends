@@ -1,6 +1,14 @@
+import { locale } from './i18n'
 // Numbers as the design shows them (docs/design/legends-ui: Main, MobileSquad): Latin digits in Barlow,
 // club money short (1.45M, 980K), strength with one decimal from hundredths.
 export function money(v: number): string {
+  // [Sprint 30 Q10] In the Arabic game the amount in words: «3 ملايين»، «3.5 مليون»، «750 ألف» (isolated right to left,
+  // U+2067..U+2069, so it reads well inside the left-to-right number spans it sits in). In English 3M and 750K.
+  if (locale.value !== 'en' && v >= 1_000) {
+    const [n, one, few] = v >= 1_000_000 ? [trim(v / 1_000_000, v >= 10_000_000 ? 1 : 2), 'مليون', 'ملايين'] : [trim(v / 1_000, 0), 'ألف', 'آلاف']
+    const whole = Number(n)
+    return `\u2067${n} ${Number.isInteger(whole) && whole >= 3 && whole <= 10 ? few : one}\u2069`
+  }
   if (v >= 1_000_000) return `${trim(v / 1_000_000, v >= 10_000_000 ? 1 : 2)}M`
   if (v >= 1_000) return `${trim(v / 1_000, 0)}K`
   return String(v)
