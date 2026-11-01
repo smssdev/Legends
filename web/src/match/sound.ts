@@ -183,6 +183,36 @@ export class MatchSound {
     osc.stop(t + 0.2)
   }
 
+  /** [Sprint 32 A2] A touch of the ball on the live pitch: a pass or a header, softer than a strike. */
+  touch(head = false) {
+    if (!this.ctx || !this.master) return
+    const t = this.ctx.currentTime
+    const osc = this.ctx.createOscillator()
+    const gain = this.ctx.createGain()
+    osc.frequency.setValueAtTime(head ? 300 : 240, t)
+    osc.frequency.exponentialRampToValueAtTime(head ? 120 : 70, t + 0.08)
+    gain.gain.setValueAtTime(head ? 0.1 : 0.14, t)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1)
+    osc.connect(gain).connect(this.master)
+    osc.start(t)
+    osc.stop(t + 0.12)
+  }
+
+  /** [Sprint 32 A2] The ball in the net: a short swish of the netting. */
+  net() {
+    if (!this.ctx || !this.master) return
+    const t = this.ctx.currentTime, n = Math.floor(this.ctx.sampleRate * 0.35)
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = buf.getChannelData(0)
+    // A fixed pattern, not Math.random: the same swish every time.
+    let r = 7
+    for (let i = 0; i < n; i++) { r = (r * 1103515245 + 12345) & 0x7fffffff; d[i] = (r / 0x3fffffff - 1) * (1 - i / n) }
+    const src = this.ctx.createBufferSource(), band = this.ctx.createBiquadFilter(), gain = this.ctx.createGain()
+    src.buffer = buf; band.type = 'bandpass'; band.frequency.value = 2400; band.Q.value = 0.8
+    gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
+    src.connect(band).connect(gain).connect(this.master)
+    src.start(t)
+  }
+
   /** A heartbeat before a penalty: two low thumps. */
   heart() {
     if (!this.ctx || !this.master) return

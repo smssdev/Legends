@@ -419,7 +419,11 @@ function onSound(name: string) {
   else if (name === 'thud') sound.kick(false)
   else if (name === 'whistle') sound.whistle(1)
   else if (name === 'whistle-long') sound.whistle(1)
-  else if (name === 'roar' || name === 'net') { if (name === 'roar') sound.roar() }
+  else if (name === 'roar') sound.roar()
+  // [Sprint 32 A2] The live pitch: a touch, a header, the net.
+  else if (name === 'net') sound.net()
+  else if (name === 'touch') sound.touch(false)
+  else if (name === 'head') sound.touch(true)
   else if (name === 'groan' || name === 'murmur') sound.groan()
   else if (name === 'heart') sound.heart()
   else if (name === 'post') sound.post()

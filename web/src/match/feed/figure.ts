@@ -82,6 +82,17 @@ export function figure(kit, no, o = {}) {
       api.pose(4, -4, 16 + 24 * q * amp, -16 + 24 * q * amp, Math.max(0, q) * amp, Math.max(0, -q) * amp)
     },
     idle(b) { const w = Math.sin(b) * 3; api.pose(3, -3, 10 + w, -10 - w) },
+    // [Sprint 32 A1] The moves of the live pitch (f 0..1 through each). A strike with the right foot: the leg swings
+    // back, then through the ball.
+    kick(f) { const r = f < 0.55 ? -4 + (-38 + 4) * (f / 0.55) : -38 + 90 * (1 - Math.pow(1 - (f - 0.55) / 0.45, 3)); api.pose(6, r, 34, -48, 0, f < 0.55 ? 0.55 : 0.15) },
+    // A header: a jump with the knees bent and the arms out.
+    header(f) { const a = 40 + 50 * Math.sin(f * Math.PI); api.pose(16, -16, a, -a, 0.35, 0.35) },
+    // A slide: one leg out straight, the other folded, the arms back for balance (the caller tilts him down).
+    slide() { api.pose(78, 18, -50, 30, 0, 0.4) },
+    // A keeper's dive: the arms stretched over the head (the caller lays him out towards the ball).
+    dive(f) { const a = 60 + 110 * Math.min(1, f * 1.6); api.pose(10, -24, a, -a, 0, 0.2) },
+    // Arms up, waving.
+    celebrate(t) { const w = Math.sin(t * 9) * 12; api.pose(8, -8, 150 + w, -150 - w) },
     /** The figure with its centre at (x, y), turned r degrees, at scale k; shadow false leaves out its own shadow. */
     draw(c, x, y, r, k, shadow = true) {
       c.save(); c.translate(x, y); if (r) c.rotate((r * Math.PI) / 180); c.scale(k * mirror, k)
