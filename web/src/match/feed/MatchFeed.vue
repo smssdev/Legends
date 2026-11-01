@@ -96,7 +96,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setSmooth } from './art'
 import { figure } from './figure'
 import { noteFrame, smooth } from '../perf'
-import { sample } from '../frames'
+import { sample, segment } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
@@ -478,6 +478,46 @@ function facing(t, dx, dy) {
   const side = t.face === 'side' ? ax > ay * 0.8 : ax > ay * 1.3
   if (side) { t.face = 'side'; t.mirror = dx < 0 ? -1 : 1 } else t.face = dy < 0 ? 'back' : 'front'
 }
+// [Sprint 32 A1, A2] The moves this instant from the Keyframes, drawing only: who strikes the ball as it leaves him
+// (a header when it is in the air), who heads it as it reaches him high, who slides in to take it from the other side
+// (one turnover in three, chosen by the minute and the Keyframe, so every screen shows the same), the keeper of the
+// goal a shot flies at, and the scoring side once the ball is in. And their sounds, once each, while no scene covers
+// the pitch.
+let gks = new Set(), gksFor = null, heard = new Set(), heardTick = -1
+function actions(tick, f, u) {
+  const by = {}
+  if (!f || f.length < 2) return { by }
+  if (gksFor !== props.teams) { gksFor = props.teams; gks = new Set(['home', 'away'].flatMap((s) => (props.teams?.[s]?.players ?? []).filter((p) => p.pos === 'GK').map((p) => String(p.id)))) }
+  if (heardTick !== tick.tick) { heardTick = tick.tick; heard = new Set() }
+  const say = (key, name) => { if (!heard.has(key)) { heard.add(key); if (!sceneOn.value) emit('sound', name) } }
+  const { i, k } = segment(f.length, u), A = f[i], B = f[i + 1] ?? A
+  const far = Math.hypot(B.b[0] - A.b[0], B.b[1] - A.b[1])
+  const sideOf = (id) => players.value[id]?.side
+  if (A.h != null && far > 60 && k < 0.3) { const head = (A.b[2] ?? 0) > 12; by[A.h] = { kind: head ? 'head' : 'kick', f: k / 0.3 }; say('t' + i, head ? 'head' : 'touch') }
+  if (B.h != null && B.h !== A.h && (B.b[2] ?? 0) > 12 && k > 0.7) { by[B.h] = { kind: 'head', f: (k - 0.7) / 0.3 }; if (k > 0.85) say('h' + i, 'head') }
+  const foul = (tick.events ?? []).some((e) => e.type === 'foul')
+  if (A.h != null && B.h != null && sideOf(A.h) && sideOf(B.h) && sideOf(A.h) !== sideOf(B.h) && k > 0.55 && (foul || (tick.tick * 7 + i) % 3 === 0)) by[B.h] = { kind: 'slide', f: (k - 0.55) / 0.45 }
+  const shot = (tick.events ?? []).some((e) => e.type === 'attack' && ['goal', 'saved', 'missed'].includes(e.result))
+  // A shot reaching the goal's area (a save stops at 4.5 m from the line), going that way.
+  const end = B.b[0] < 60 && B.b[0] < A.b[0] ? 0 : B.b[0] > 990 && B.b[0] > A.b[0] ? 1050 : null
+  if (shot && end !== null && Math.abs(B.b[1] - 340) < 120 && k > 0.45) {
+    let gk = null, gd = 1e9
+    for (const id in A.p) if (gks.has(String(id))) { const d = Math.abs(A.p[id][0] - end); if (d < gd) { gd = d; gk = id } }
+    if (gk && gd < 120) by[gk] = { kind: 'dive', f: (k - 0.45) / 0.55, dir: B.b[1] > A.p[gk][1] ? 1 : -1 }
+  }
+  // The goal: from the Keyframe where the ball is in the net, the scorers' side celebrates.
+  const goal = (tick.events ?? []).find((e) => e.type === 'goal')
+  if (goal) {
+    // The Keyframe nearest a goal line (the path need not land on the line itself).
+    let g = 0
+    f.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(f[g].b[0] - 525)) g = n })
+    if (Math.abs(f[g].b[0] - 525) > 470 && u * (f.length - 1) >= g) {
+      say('net', 'net')
+      for (const id in B.p) if (sideOf(id) === goal.team && !gks.has(String(id))) by[id] = { kind: 'party' }
+    }
+  }
+  return { by }
+}
 let tvLast = 0
 function drawTv(tick, u) {
   if (!ctx || !fit()) return
@@ -515,6 +555,7 @@ function drawTv(tick, u) {
   crowd(ctx, now)
   const drawn = []
   let near = null, nearD = 1e9
+  const act = actions(tick, f, u)
   for (const id in R.players) {
     const side = players.value[id]?.side
     if (!side) continue
@@ -537,6 +578,15 @@ function drawTv(tick, u) {
       if (moving) { t.ph += dts * (6 + 10 * amp); t.f.run(t.ph, 0.4 + 0.6 * amp); t.bob = Math.abs(Math.sin(t.ph)) * 2.2 * amp }
       else { t.ph += dts * 2.2; t.f.idle(t.ph); t.bob = (Math.sin(t.ph) + 1) * 0.35 }
     } else t.f.pose()
+    // [Sprint 32 A1] A move takes over the stride: a strike, a header, a slide, a keeper's dive, a celebration.
+    const a = act.by[id]
+    if (a) {
+      if (a.kind === 'kick') t.f.kick(a.f)
+      else if (a.kind === 'head') { t.f.header(a.f); t.bob = Math.sin(a.f * Math.PI) * 9 }
+      else if (a.kind === 'slide') { t.f.slide(); t.lean = (t.face === 'side' ? t.mirror : 1) * 62 * Math.min(1, a.f * 2.5); t.bob = -16 * Math.min(1, a.f * 2.5) }
+      else if (a.kind === 'dive') { t.f.dive(a.f); t.lean = a.dir * 82 * Math.min(1, a.f * 1.4); t.bob = Math.sin(Math.min(1, a.f * 1.4) * Math.PI) * 10 - 18 * Math.min(1, a.f * 1.4) }
+      else if (a.kind === 'party' && !smooth.value) { t.f.celebrate(now / 1000 + t.ph); t.bob = Math.abs(Math.sin(now / 180 + t.ph)) * 6 }
+    }
     drawn.push(t)
     const d = Math.hypot(wx - bx, wy - by)
     if (d < nearD) { nearD = d; near = t }
