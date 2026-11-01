@@ -3166,10 +3166,12 @@ paths:
         '422': { $ref: '#/components/responses/Error' }
     delete:
       tags: [admin]
-      summary: '[X62 E8] Remove a player no league has taken'
+      summary: '[X62 E8] Remove a player no league has taken; [Sprint 30 P2] with his name typed to confirm'
+      parameters: [{ name: confirm, in: query, required: true, schema: { type: string }, description: "The player's name exactly as it is" }]
       responses:
         '200': { description: Removed, content: { application/json: { schema: { type: object, required: [deleted], properties: { deleted: { type: boolean } } } } } }
         '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /admin/data/clubs:
     post:
       tags: [admin]

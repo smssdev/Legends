@@ -100,11 +100,12 @@ class DataEditorController extends Controller
         return response()->json(['row' => DB::table('master_clubs')->find($id)], 201);
     }
 
-    /** Only what no league has taken. */
+    /** Only what no league has taken, and [Sprint 30 P2] only with the player's name typed to confirm. */
     public function deletePlayer(Request $request, int $id): JsonResponse
     {
         $row = DB::table('master_players')->where('id', $id)->first();
         abort_unless($row, 404);
+        abort_unless(trim((string) $request->query('confirm')) === trim((string) $row->name), 422, 'اكتب اسم اللاعب كما هو لتأكيد الحذف.');
         abort_if(DB::table('players')->where('master_player_id', $id)->exists(), 409, 'لاعب في دوري قائم: صحّح بياناته بدل حذفه.');
         DB::table('master_players')->where('id', $id)->delete();
         $this->log($request, 'player', $id, 'delete', (array) $row);
