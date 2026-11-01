@@ -1,15 +1,14 @@
 <script setup lang="ts">
-// [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. A step is
-// done when the server says so (an account verified) or once the coach has gone to do it; kept on this device per
-// account. Folds away (Headless UI's Disclosure), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
+// [X61] The first steps of a new coach, on the home screen: seven steps, each a button to the right screen. [X75] A step
+// is done only when the server says it is done in the game (home.onboarding), never by tapping it. Folds away (Headless UI's Disclosure), and goes once every step is done. [Sprint 26 W4] The falcon (A1)
 // cheers each step.
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../stores/auth'
 import Character from './characters/Character.vue'
 
-const props = defineProps<{ hasClub: boolean }>()
+const props = defineProps<{ hasClub: boolean; steps: Record<string, boolean> }>()
 const auth = useAuth()
 const router = useRouter()
 const KEY = computed(() => `glm.onboarding.${auth.user?.id ?? 0}`)
@@ -25,20 +24,11 @@ const STEPS: Step[] = [
   { key: 'friendly', label: 'العب أول ودية', to: '/friendlies', club: true },
 ]
 
-function read(): string[] {
-  try { return JSON.parse(localStorage.getItem(KEY.value) ?? '[]') } catch { return [] }
-}
-const visited = ref<string[]>(read())
-watch(KEY, () => (visited.value = read()))
-const done = (s: Step) => (s.key === 'account' && !!auth.user?.email_verified) || visited.value.includes(s.key)
+const done = (s: Step) => !!props.steps[s.key]
 const count = computed(() => STEPS.filter(done).length)
 const hidden = ref((() => { try { return localStorage.getItem(`${KEY.value}.hidden`) === '1' } catch { return false } })())
 
 function go(s: Step) {
-  if (!visited.value.includes(s.key)) {
-    visited.value = [...visited.value, s.key]
-    try { localStorage.setItem(KEY.value, JSON.stringify(visited.value)) } catch {}
-  }
   void router.push(s.club && !props.hasClub ? '/leagues' : s.to)
 }
 function hide() {

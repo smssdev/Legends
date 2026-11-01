@@ -25,6 +25,24 @@ class HomeDashboardTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_the_first_steps_are_done_in_the_game_not_by_tapping_them(): void
+    {
+        // [X75] Nothing done for a new coach; then each step as the game sees it.
+        $this->template();
+        $coach = User::factory()->create();
+        $league = $this->makeLeague($coach);
+        $steps = $this->actingAs($coach)->getJson('/api/v1/home')->assertOk()->json('onboarding');
+        $this->assertSame(['account', 'invite', 'coach', 'lineup', 'tactics', 'name', 'friendly'], array_keys($steps));
+        $this->assertSame([], array_keys(array_filter($steps)));
+        $club = $league['my_club_id'];
+        DB::table('users')->where('id', $coach->id)->update(['account_verified_at' => GameClock::now()]);
+        DB::table('tactics')->insert(['club_id' => $club, 'plan' => 'balanced', 'tackling' => 1, 'pressing' => 50, 'style' => 50, 'tempo' => 50,
+            'att' => 'support', 'mid' => 'push', 'def' => 'stay', 'trap' => false, 'marking' => 'zone', 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+        $this->approvedCoach($coach, $league);
+        $steps = $this->actingAs($coach->fresh())->getJson('/api/v1/home')->json('onboarding');
+        $this->assertSame(['account', 'invite', 'tactics'], array_keys(array_filter($steps)));
+    }
+
     public function test_achievements_count_from_what_the_game_keeps(): void
     {
         // [Sprint 30 G4] A new coach has every badge ahead of him; an accepted idea earns its own.

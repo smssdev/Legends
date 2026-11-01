@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Season\Achievements;
 use App\Season\Career;
 use App\Season\CoachRating;
+use App\Season\Onboarding;
 use App\Wallet\StarterGift;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -51,6 +52,8 @@ class HomeController extends Controller
             'polls_waiting' => Polls::waiting($user->id),
             // [Sprint 30 P6] The new coach's first coins, to claim from here once.
             'starter_gift' => StarterGift::view($user),
+            // [X75] The first steps, each done in the game (never by tapping it).
+            'onboarding' => Onboarding::of($user),
         ]);
     }
 

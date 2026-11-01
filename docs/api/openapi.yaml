@@ -6230,9 +6230,14 @@ components:
       properties: { coins: { type: integer }, claimed: { type: boolean } }
     HomeScreen:
       type: object
-      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers, polls_waiting, starter_gift]
+      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers, polls_waiting, starter_gift, onboarding]
       properties:
         starter_gift: { $ref: '#/components/schemas/StarterGift' }
+        onboarding:
+          type: object
+          description: '[X75] The first steps, each done in the game (never by tapping it): account verified or tied to Google, another coach in my league or a friend from my link, a line coach hired, a lineup and tactics saved by the coach, a picture of his own, a friendly played'
+          required: [account, invite, coach, lineup, tactics, name, friendly]
+          properties: { account: { type: boolean }, invite: { type: boolean }, coach: { type: boolean }, lineup: { type: boolean }, tactics: { type: boolean }, name: { type: boolean }, friendly: { type: boolean } }
         polls_waiting: { type: integer, description: '[Sprint 28] The open polls this coach has not voted in yet' }
         coach:
           type: object
