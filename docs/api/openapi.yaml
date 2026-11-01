@@ -186,9 +186,10 @@ paths:
   /auth/me:
     get:
       tags: [auth]
-      summary: The signed-in account
+      summary: 'The signed-in account; [Sprint 30 Q11] 204 for a guest with no credentials, 401 for a token that no longer works'
       responses:
         '200': { $ref: '#/components/responses/Account' }
+        '204': { description: Nobody signed in (a guest on the site) }
         '401': { $ref: '#/components/responses/Error' }
     patch:
       tags: [auth]
@@ -2460,6 +2461,12 @@ paths:
       responses:
         '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
         '422': { $ref: '#/components/responses/Error' }
+  /admin/2fa/recovery:
+    post:
+      tags: [admin]
+      summary: '[Sprint 30 Q11] New recovery codes for the two-step code (the old ones stop working); logged'
+      responses:
+        '200': { description: The codes, shown once, content: { application/json: { schema: { type: object, required: [recovery_codes], properties: { recovery_codes: { type: array, items: { type: string } } } } } } }
   /admin/overview:
     get:
       tags: [admin]
@@ -5859,9 +5866,11 @@ components:
         decided_at: { type: string, format: date-time, nullable: true }
     AdminTwoFactor:
       type: object
-      required: [required, enabled, passed]
+      required: [required, enabled, passed, recovery_left]
       properties:
-        required: { type: boolean, description: 'Whether the panel asks for the code at all (off by the owner''s decision, X46)' }
+        recovery_left: { type: integer, description: '[Sprint 30 Q11] One-time recovery codes not used yet' }
+        recovery_codes: { type: array, items: { type: string }, description: '[Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once' }
+        required: { type: boolean, description: 'Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off)' }
         enabled: { type: boolean }
         passed: { type: boolean, description: 'Proved in this session, or not asked' }
     AdminCode:

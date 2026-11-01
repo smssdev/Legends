@@ -44,7 +44,7 @@ async function submit() {
   <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
     <TextField v-model="name" :label="$t('الاسم')" autocomplete="nickname" :placeholder="$t('مثلاً: كوتش حمزة')" :error="errors.name" :hint="$t('يظهر للآخرين في اللعبة')" />
     <UsernameField ref="usernameField" v-model="username" :error="errors.username" />
-    <TextField v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('4 أحرف أو أرقام على الأقل، كما تحب')" />
+    <TextField v-model="password" :label="$t('كلمة المرور')" type="password" autocomplete="new-password" :error="errors.password" :hint="$t('8 أحرف أو أرقام على الأقل')" />
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الإنشاء…') : $t('إنشاء الحساب') }}</button>
   </form>
