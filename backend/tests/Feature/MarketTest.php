@@ -376,6 +376,14 @@ class MarketTest extends TestCase
         $this->assertTrue(collect($list['players'])->every(fn ($x) => $x['line'] === $line));
         $this->assertContains('world', collect($list['players'])->pluck('seller.kind')->all());
         $this->assertContains('bot', collect($list['players'])->pluck('seller.kind')->all());
+        // [Sprint 30 Q6] «يناسب تشكيلتك»: stronger than the weakest of my usual starters in the line, from the server.
+        $starters = config('game.economy.fits_starters')[$line];
+        $mine = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
+            ->where('master_players.line', $line)->get()->map(fn ($x) => (int) $x->overall + (int) $x->training_bonus)->sortDesc()->values();
+        $bar = $mine[$starters - 1] ?? 0;
+        foreach ($list['players'] as $x) {
+            $this->assertSame($x['overall'] > $bar, $x['fits'], $x['name']);
+        }
 
         // Enough cash: the price and one or two coins to register it.
         Wallet::post($this->owner->id, 'daily', 300, 'seed');

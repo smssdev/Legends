@@ -108,7 +108,8 @@ return [
         // after a goal, a red card or a line under 60% fitness.
         'reading_minutes' => 15,
     ],
-    'economy' => [
+    // [Sprint 30 Q6] fits_starters: a line's usual starters; a listed player stronger than the weakest of them «fits».
+    'economy' => ['fits_starters' => ['gk' => 1, 'def' => 4, 'mid' => 3, 'att' => 3],
         'starting_budget' => 3_000_000,
         'starting_budget_min' => 1_000_000, 'starting_budget_max' => 10_000_000,   // what the owner may choose
         'handover_min' => 500_000,               // والحد الأعلى = starting_budget
