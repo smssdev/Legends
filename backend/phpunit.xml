@@ -21,6 +21,8 @@
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
+        <!-- [Sprint 30 P1] On by default; the admin tests that are not about it run without it. -->
+        <env name="ADMIN_TWO_FACTOR" value="false"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
         <!-- The tests keep their own game clock: a clock:travel in development does not reach them. -->

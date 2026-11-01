@@ -443,8 +443,8 @@ return [
     // Backups off this machine [PLAN 2.19, Sprint 37]: an rclone remote to Google Drive (rclone config, once).
     'backup' => ['rclone_remote' => env('BACKUP_RCLONE_REMOTE')],
     // The admin panel [PLAN 2.17, Sprint 37]: a code from the authenticator is asked again after these hours.
-    // [X46] The two-step code for the admin panel: off by the owner's decision (2026-10-27). The panel is for the two
-    // official accounts, tied to their Gmail on the server, and the admins the owner makes. ADMIN_TWO_FACTOR=true asks again.
+    // [Sprint 30 P1] The two-step code for the admin panel: asked of every admin by default (the owner's report,
+    // 2026-11-01, over X46). Only ADMIN_TWO_FACTOR=false on the server turns it off.
     // [Sprint 21 E9] Rewarded videos: each one the provider verifies cuts minutes_per_video off a training slot's next
     // session or a stadium part, up to max_per_item for the same task. Off, with no provider, until the owner picks one
     // (README section 11): no paid or account-bound SDK is in the game.
@@ -489,7 +489,7 @@ return [
                 'title_en' => 'The match is managed live', 'body_en' => 'Join your live match: change the plan and make substitutions in the coach\'s windows, with the commentator beside you.'],
         ]],
 
-    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', false), 'two_factor_hours' => 12, 'users_per_page' => 100,
+    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', true), 'two_factor_hours' => 12, 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
         'coins_max' => 100000],
     // [Sprint 28] The coaches' suggestions to the developers and the polls on what to build next: how many
