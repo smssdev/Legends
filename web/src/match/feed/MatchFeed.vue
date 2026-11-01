@@ -4,9 +4,9 @@
 
     <div class="sb">
       <div class="sb-in">
-        <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></span></div>
+        <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ $nm(clubs.home) }}</b><small>{{ coachLine('home') }}</small></span></div>
         <div class="mid"><span class="score" :class="{ pop }" dir="ltr"><FlipNumber :value="score.away" /> - <FlipNumber :value="score.home" /></span><span class="live" dir="ltr"><i />{{ clock || minute }}</span></div>
-        <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></span></div>
+        <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ $nm(clubs.away) }}</b><small>{{ coachLine('away') }}</small></span></div>
       </div>
       <div class="mom" dir="ltr"><i :style="{ width: 100 - mom + '%', background: kits.away.kit }" /><i :style="{ width: mom + '%', background: kits.home.kit }" /></div>
     </div>
@@ -39,7 +39,7 @@
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
           <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
-          <span class="burst"><b>{{ party.who }}</b><small>{{ clubs[party.side] }}</small></span>
+          <span class="burst"><b>{{ party.who }}</b><small>{{ $nm(clubs[party.side]) }}</small></span>
         </div>
         <div class="lower" :style="{ '--c': barKit }">
           <span class="ev">{{ bar?.head }}</span>
@@ -68,15 +68,15 @@
       <span class="kick">{{ live ? $t('مباراة بين صديقين') : $t('ما قبل المباراة') }}</span>
       <span v-if="live && countdown > 0" class="plan">{{ $t('الصافرة بعد') }} <b dir="ltr">{{ countdown }}</b> {{ $t('ثانية · عدّل تشكيلتك وخطتك من لوحة المدرب الآن') }}</span>
       <div class="teams">
-        <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ clubs.home }}</b><small>{{ coachLine('home') }}</small></div>
+        <div class="team"><span class="crest" v-html="crestOf('home')" /><b>{{ $nm(clubs.home) }}</b><small>{{ coachLine('home') }}</small></div>
         <span class="vs">VS</span>
-        <div class="team"><span class="crest" v-html="crestOf('away')" /><b>{{ clubs.away }}</b><small>{{ coachLine('away') }}</small></div>
+        <div class="team"><span class="crest" v-html="crestOf('away')" /><b>{{ $nm(clubs.away) }}</b><small>{{ coachLine('away') }}</small></div>
       </div>
       <div class="stats">
         <div v-for="r in compare" :key="r.label" class="st"><span>{{ r.h }}</span><span class="bar"><i :style="{ width: r.hp + '%', background: kits.home.kit }" /><i :style="{ width: 100 - r.hp + '%', background: kits.away.kit }" /></span><span>{{ r.a }}</span><span class="lbl">{{ $t(r.label) }}</span></div>
       </div>
       <div class="keys">
-        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>{{ $t('مفتاح {v0} · {v1}', { v0: clubs[s], v1: star(s)?.ovr }) }}</span></span></div>
+        <div v-for="s in (['home', 'away'] as const)" :key="s" class="key" :style="{ '--c': kits[s].kit }"><span class="no">{{ star(s)?.no }}</span><span><b>{{ $nm(star(s)?.name) }}</b><span>{{ $t('مفتاح {v0} · {v1}', { v0: $nm(clubs[s]), v1: star(s)?.ovr }) }}</span></span></div>
       </div>
       <button type="button" class="go" @click="$emit('introDone')">{{ live ? (countdown > 0 ? $t('البداية بعد {v0}', { v0: countdown }) : $t('شغّل الصوت وانتظر البداية')) : $t('ابدأ البث') }}</button>
     </div>
@@ -561,7 +561,8 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 
 .replay { position: absolute; top: 10px; inset-inline-start: 10px; padding: 3px 10px; border-radius: 6px; font-weight: 800; font-size: 13px; color: #fff; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.35); letter-spacing: .5px; pointer-events: none }
 .party { position: absolute; inset: 0 0 auto; aspect-ratio: 640 / 340; overflow: hidden; pointer-events: none }
-.party i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards; will-change: transform }
+/* [Sprint 30 Q8] The confetti falls from under the headline band (its top 64 of 300), never over «هدف!» (it hid the «ه», «فد»). */
+.party i { position: absolute; top: 22%; width: 8px; height: 13px; border-radius: 2px; animation: fall linear forwards; will-change: transform }
 /* Falling by transform, not by top: no layout on every frame [X30]. */
 @keyframes fall { to { transform: translate3d(30px, 420px, 0) rotate(540deg) } }
 .party .burst { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); display: grid; justify-items: center; padding: 6px 18px; border-radius: 12px; background: color-mix(in srgb, var(--c) 80%, #071733); border: 2px solid #F5B82E; box-shadow: 0 10px 30px rgba(0,0,0,.5); animation: burst .6s cubic-bezier(.2,.9,.25,1.4) .35s both }

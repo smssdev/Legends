@@ -22,6 +22,8 @@
            glow in each club's colour, and the score that never breaks across lines. -->
       <section class="score-board relative overflow-hidden rounded-2xl" :aria-label="$t('النتيجة')">
         <div class="score-band px-4 py-1.5 text-center text-xs font-extrabold tracking-wide text-white">{{ $t('نهاية المباراة') }}</div>
+        <!-- [Sprint 30 Q8] The result in one plain sentence too, for reading and for screen readers. -->
+        <p class="px-4 pt-3 text-center text-sm font-bold">{{ $t('النتيجة: {v0} {v1} - {v2} {v3}', { v0: $nm(view.clubs.home.name), v1: report.score.home, v2: report.score.away, v3: $nm(view.clubs.away.name) }) }}</p>
         <div class="relative flex items-center justify-center gap-3 p-5 md:gap-8 md:p-8">
           <span class="pointer-events-none absolute -start-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('home') }" aria-hidden="true" />
           <span class="pointer-events-none absolute -end-10 top-1/2 size-40 -translate-y-1/2 rounded-full opacity-30 blur-3xl" :style="{ background: color('away') }" aria-hidden="true" />
@@ -108,11 +110,24 @@
         </section>
       </div>
 
+      <!-- [Sprint 30 Q8] The match's best three, both teams together. -->
+      <section v-if="best.length" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="best3">
+        <h2 id="best3" class="font-display text-xl font-extrabold">{{ $t('أفضل 3 لاعبين') }}</h2>
+        <ol class="grid gap-2 sm:grid-cols-3">
+          <li v-for="(p, i) in best" :key="p.id" class="flex items-center gap-3 rounded-lg bg-surface-sunk p-3">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full font-numbers font-bold" :class="i === 0 ? 'bg-gold text-on-gold' : 'bg-surface-raised'">{{ i + 1 }}</span>
+            <span class="min-w-0 flex-1"><b class="block truncate"><bdi>{{ p.name }}</bdi></b><span class="text-xs text-text-muted">{{ $nm(view.clubs[p.side].name) }}</span></span>
+            <span class="font-numbers text-lg font-bold text-gold">{{ (p.rating / 100).toFixed(1) }}</span>
+          </li>
+        </ol>
+      </section>
+
       <section class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="timeline">
         <h2 id="timeline" class="font-display text-xl font-extrabold">{{ $t('أحداث المباراة') }}</h2>
         <p v-if="!events.length" class="text-sm text-text-muted">{{ $t('لا أحداث بارزة.') }}</p>
-        <ol class="flex flex-col gap-1">
-          <li v-for="(e, i) in events" :key="i" class="flex min-h-10 items-center gap-3 rounded-md px-2" :class="e.team === 'home' ? '' : 'flex-row-reverse text-end'">
+        <!-- [Sprint 30 Q8] A vertical timeline: one line down the middle, each event in time order on its team's side. -->
+        <ol class="timeline relative flex flex-col gap-1">
+          <li v-for="(e, i) in events" :key="i" class="relative flex min-h-10 items-center gap-3 rounded-md px-2" :class="e.team === 'home' ? '' : 'flex-row-reverse text-end'">
             <span class="w-12 shrink-0 text-center font-numbers text-lg text-gold" dir="ltr">{{ $t(e.label) }}</span>
             <span class="text-lg" aria-hidden="true">{{ e.icon }}</span>
             <span class="text-sm">{{ $t(e.text) }}</span>
@@ -186,6 +201,11 @@ const names = computed(() => {
   return map
 })
 
+const best = computed(() => {
+  const r = report.value?.ratings
+  if (!r) return []
+  return (['home', 'away'] as const).flatMap((side) => (r[side] ?? []).map((p: any) => ({ ...p, side: side as 'home' | 'away' }))).sort((a: any, b: any) => b.rating - a.rating).slice(0, 3) as { id: number; name: string; rating: number; side: 'home' | 'away' }[]
+})
 const events = computed(() =>
   (report.value?.timeline ?? []).filter((e: any) => !(e.type === 'penalty' && e.scored)).map((e: any) => {
     const n = (pid: number) => names.value[pid] ?? ''
@@ -245,4 +265,7 @@ onMounted(async () => {
   background: radial-gradient(circle at 50% 30%, #ffffff, var(--color-chrome) 55%, var(--color-chrome-dark));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-light) 55%, transparent), 0 12px 24px -10px color-mix(in srgb, var(--color-shade) 80%, transparent);
 }
+/* [Sprint 30 Q8] The timeline's spine. */
+.timeline::before { content: ''; position: absolute; inset-block: 0.25rem; inset-inline-start: 50%; width: 2px; background: color-mix(in srgb, var(--color-gold) 35%, transparent); }
+.timeline li { background: var(--color-surface); }
 </style>

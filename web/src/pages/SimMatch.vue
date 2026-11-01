@@ -25,7 +25,8 @@
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :aria-pressed="viewing.chosenView.value === 'unity'" @click="switchView">{{ $t('العرض: {v0}', { v0: viewing.chosenView.value === 'unity' ? $t('المطوّر') : $t('الكرتوني') }) }}</button>
       <button type="button" class="h-touch rounded-md bg-surface px-3 text-sm" :title="PERF_HINT" @click="nextPerf">{{ $t('الأداء: {v0}{v1}', { v0: PERF_NAMES[perfPref], v1: perfPref === 'auto' ? (smooth ? $t(' (سلس)') : $t(' (كامل)')) : '' }) }}</button>
       <a v-if="mine && !rerun" href="#coach" class="flex h-touch items-center rounded-md bg-surface px-3 text-sm lg:hidden">{{ $t('لوحة المدرب') }}</a>
-      <button v-if="!league" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
+      <!-- [Sprint 30 Q8] The developers' panel: the admins' only. -->
+      <button v-if="!league && auth.user?.role === 'admin'" type="button" class="h-touch rounded-md bg-surface px-3 text-sm text-text-muted" :aria-pressed="dev" @click="dev = !dev">{{ $t('لوحة المطور') }}</button>
     </header>
 
     <nav v-if="others.length > 1" class="flex flex-wrap items-center gap-2" :aria-label="$t('مبارياتك المباشرة')">
@@ -256,6 +257,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, shallowRef, watch } from 'vue'
@@ -277,6 +279,8 @@ import { perfPref, setPerfPref, smooth, type PerfPref } from '../match/perf'
 
 // league: a league match from /api/v1/matches (Sprints 18 to 20), played by the server's clock: the coach's orders,
 // the server's commentary, his assistant's readings, and catching up after a lost connection.
+// [Sprint 30 Q8] Who may open the developers' panel.
+const auth = useAuth()
 const props = defineProps<{ id: string; league?: boolean }>()
 const source = computed(() => (props.league ? leagueMatch : sim))
 const route = useRoute()
