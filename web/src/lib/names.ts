@@ -39,12 +39,12 @@ export const shownNames = computed<NamesLang>(() => (locale.value === 'en' ? 'en
 const pick = (table: keyof Dict, s: string | null | undefined) =>
   !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.[table][s] ?? s)
 
-/** A player's name as the coach chose to see it. */
-export const pn = (s: string | null | undefined) => pick('players', s)
+/** A player's name: [Sprint 30, the owner's decision 2026-11-01] English on every screen, whatever the switch. */
+export const pn = (s: string | null | undefined) => s ?? ''
 /** A club's name. */
 export const cn = (s: string | null | undefined) => pick('clubs', s)
 /** A league's name. */
 export const ln = (s: string | null | undefined) => pick('leagues', s)
-/** Any name the game shows: a player's, else a club's, else a league's (what none knows stays as it is). */
+/** Any name the game shows: a club's, else a league's (a player's stays English, as what none knows). */
 export const nm = (s: string | null | undefined) =>
-  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.players[s] ?? dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? s)
+  !s || shownNames.value === 'en' ? (s ?? '') : (dict.value?.clubs[s] ?? dict.value?.leagues[s] ?? s)
