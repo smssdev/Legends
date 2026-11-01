@@ -166,6 +166,8 @@ onBeforeUnmount(() => sizer?.disconnect())
         <span class="shrink-0 font-numbers text-xs text-text-soft" dir="ltr">{{ broadcast.minute }}</span>
       </RouterLink>
       <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('كتم صوت المباراة')" @click="broadcast.muteAsk++">🔇</button>
+      <!-- [X74] Close the broadcast: the match page behind is let go, its sound and commentary with it. -->
+      <button type="button" class="flex size-touch shrink-0 items-center justify-center rounded-full bg-text/10" :aria-label="$t('أغلق البث')" :title="$t('أغلق البث')" @click="broadcast.close()">✕</button>
     </div>
     <!-- [Sprint 21 E7.3] A suspended account: why, and the way to ask the developers. -->
     <RouterLink v-if="auth.user?.suspended" to="/support" class="block bg-live/25 px-4 py-2 text-center text-sm font-bold" role="alert">

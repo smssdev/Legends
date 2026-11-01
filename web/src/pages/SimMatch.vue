@@ -1081,7 +1081,9 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
   })
   if (finished.value) window.setTimeout(() => { if (broadcast.away && finished.value) broadcast.end() }, 20000)
 }, { immediate: true })
-onActivated(() => { broadcast.away = false })
+// [X74] Kept behind the other screens only while live (and until closed from the bar); a recorded match closes on leaving.
+watch(live, (on) => { broadcast.keep = on }, { immediate: true })
+onActivated(() => { broadcast.away = false; broadcast.keep = live.value })
 onDeactivated(() => { broadcast.away = !finished.value })
 watch(() => broadcast.muteAsk, () => { if (soundOn.value) toggleSound() })
 
