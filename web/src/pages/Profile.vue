@@ -385,12 +385,12 @@ async function remove() {
       <!-- [X40] The names switch: the leagues, clubs and players in Arabic or in English, on this device. -->
       <!-- [Sprint 21 E3.2] In English the names are English: the switch is for the Arabic game. -->
       <fieldset v-if="locale === 'ar'" class="flex flex-col gap-2">
-        <legend class="mb-1 text-sm font-bold">{{ $t('أسماء الدوريات والأندية واللاعبين') }}</legend>
+        <legend class="mb-1 text-sm font-bold">{{ $t('أسماء الدوريات والأندية') }}</legend>
         <div class="grid grid-cols-2 gap-2" role="radiogroup" :aria-label="$t('لغة الأسماء')">
           <button v-for="[k, l] in ([['ar', 'العربية'], ['en', 'English']] as const)" :key="k" type="button" role="radio" :aria-checked="namesLang === k"
             class="h-12 rounded-lg font-bold" :class="namesLang === k ? 'bg-brand' : 'bg-surface-sunk text-text-soft'" @click="setNamesLang(k)">{{ l }}</button>
         </div>
-        <span class="text-xs text-text-muted">{{ $t('ما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.') }}</span>
+        <span class="text-xs text-text-muted">{{ $t('أسماء اللاعبين بالإنجليزية دائماً، وما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.') }}</span>
       </fieldset>
       <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-danger' : 'text-success'" role="status">{{ $t(viewMsg) }}</p>
     </section>

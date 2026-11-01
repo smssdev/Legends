@@ -2263,6 +2263,8 @@ export const EN: Record<string, string> = {
   'افصل بينها بمسافة أو فاصلة، ويمكنك الإضافة لاحقاً أو مشاركة رابط الجروب.': 'Separate them with a space or a comma; you can add more later or share the group link.',
   'أنشئ الجروب': 'Create the group',
   'أنشئ جروباً': 'Create a group',
+  'أسماء الدوريات والأندية': 'League and club names',
+  'أسماء اللاعبين بالإنجليزية دائماً، وما لا نعرف له اسماً عربياً يبقى كما هو. والتعليق الإنجليزي ينطق الأسماء الإنجليزية دائماً.': 'Player names are always in English, and a name with no known Arabic stays as it is. The English commentary always says the English names.',
   'هدية البداية': 'Starter gift',
   'هدية البداية: {v0} كوينز': 'Starter gift: {v0} coins',
   'وأول ودية لك مجانية. استلمها وابدأ.': 'And your first friendly is free. Claim it and start.',
