@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Admin\Announcements;
 use App\Admin\Conversations;
+use App\Admin\JunkContent;
 use App\Admin\TwoFactor;
 use App\Auth\AccountDeletion;
 use App\Auth\AccountHolidays;
@@ -397,6 +398,21 @@ class AdminController extends Controller
         return response()->json(['ad' => $this->houseAd(DB::table('house_ads')->find($id))]);
     }
 
+    /** [Sprint 30 P3] The test texts players can see: announcements and rewarded ads (removable), and leagues (listed). */
+    public function junk(): JsonResponse
+    {
+        $found = JunkContent::find();
+        $row = fn ($r) => ['id' => (int) $r->id, 'title' => (string) ($r->title ?? $r->name)];
+
+        return response()->json(['announcements' => $found['announcements']->map($row)->all(), 'house_ads' => $found['house_ads']->map($row)->all(),
+            'leagues' => $found['leagues']->map($row)->all()]);
+    }
+
+    public function purgeJunk(): JsonResponse
+    {
+        return response()->json(JunkContent::purge());
+    }
+
     public function deleteHouseAd(int $id): JsonResponse
     {
         DB::table('house_ads')->where('id', $id)->delete();
@@ -409,7 +425,8 @@ class AdminController extends Controller
         $req = $new ? 'required' : 'sometimes';
 
         // A link opens only on the web (http or https), never a script.
-        return ['title' => [$req, 'string', 'min:3', 'max:80'], 'body' => [$req, 'string', 'min:3', 'max:300'],
+        // [Sprint 30 P3] Never a test's text (NotJunk), as the announcements.
+        return ['title' => [$req, 'string', 'min:3', 'max:80', new NotJunk], 'body' => [$req, 'string', 'min:3', 'max:300', new NotJunk],
             'cta_label' => ['sometimes', 'nullable', 'string', 'max:40'], 'cta_url' => ['sometimes', 'nullable', 'url:http,https', 'max:300'],
             'seconds' => ['sometimes', 'integer', 'min:15', 'max:60'], 'active' => ['sometimes', 'boolean']];
     }

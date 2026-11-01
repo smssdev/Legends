@@ -6863,6 +6863,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/junk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 30 P3] The test texts players can see: announcements and rewarded ads (removable), and test-named leagues (listed only) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description What was found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: components["schemas"]["JunkRow"][];
+                            house_ads: components["schemas"]["JunkRow"][];
+                            leagues: components["schemas"]["JunkRow"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/junk/purge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 30 P3] Remove the test announcements (with their inbox copies) and the test rewarded ads */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description How many went */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: number;
+                            house_ads: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/house-ads/{id}": {
         parameters: {
             query?: never;
@@ -12801,6 +12880,10 @@ export interface components {
             count: number;
             /** @enum {string} */
             state: "upcoming" | "running" | "ended";
+        };
+        JunkRow: {
+            id: number;
+            title: string;
         };
         HouseAd: {
             id: number;

@@ -364,6 +364,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('house-ads', 'storeHouseAd');
         Route::patch('house-ads/{id}', 'updateHouseAd')->whereNumber('id');
         Route::delete('house-ads/{id}', 'deleteHouseAd')->whereNumber('id');
+        // [Sprint 30 P3] The test texts players can see, and the button that removes them.
+        Route::get('junk', 'junk');
+        Route::post('junk/purge', 'purgeJunk');
         // [Sprint 23] The timed events: transfer madness, extreme progression, the market's discount and its special players.
         Route::get('events', [TimedEventController::class, 'index']);
         Route::post('events', [TimedEventController::class, 'store'])->middleware('throttle:30,1,admin-events');
