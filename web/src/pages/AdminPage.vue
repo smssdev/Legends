@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import { statusLabel } from '../lib/statuses'
 import DataEditor from './admin/DataEditor.vue'
 import AnnouncementCard from '../components/AnnouncementCard.vue'
 import { computed, onMounted, ref } from 'vue'
@@ -537,7 +538,7 @@ onMounted(load)
             <tbody>
               <tr v-for="l in leagues" :key="l.id" class="border-t border-text/5 text-center">
                 <td class="py-2 text-start">{{ l.name }}<span v-if="l.dev" class="ms-1 text-xs text-text-muted">{{ $t('تطوير') }}</span></td>
-                <td>{{ $t(l.status) }}</td><td class="font-numbers">{{ l.season }}</td><td class="font-numbers">{{ l.coaches }} / {{ l.teams }}</td>
+                <td>{{ $t(statusLabel(l.status)) }}</td><td class="font-numbers">{{ l.season }}</td><td class="font-numbers">{{ l.coaches }} / {{ l.teams }}</td>
                 <td class="text-start">{{ l.owner ?? '-' }} <span v-if="l.owner_no" class="rounded bg-surface-sunk px-1.5 font-numbers text-xs" dir="ltr">#{{ l.owner_no }}</span></td>
               </tr>
             </tbody>
@@ -779,7 +780,7 @@ onMounted(load)
         <template v-if="tab === 'alliances'">
           <p v-if="!alliances.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا طلبات.') }}</p>
           <article v-for="a in alliances" :key="a.id" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
-            <div class="flex flex-wrap items-center justify-between gap-2"><b>{{ a.name }}</b><span class="text-sm text-text-muted">{{ a.league }} · {{ $t(a.status) }}</span></div>
+            <div class="flex flex-wrap items-center justify-between gap-2"><b>{{ a.name }}</b><span class="text-sm text-text-muted">{{ a.league }} · {{ $t(statusLabel(a.status)) }}</span></div>
             <p class="text-sm text-text-muted">{{ $t('{v0} ضد {v1} · القائدان', { v0: a.size, v1: a.size }) }} <span dir="ltr">{{ a.captains.join(' / ') }}</span> {{ $t('· الدور الأول {v0}', { v0: day(a.first_round_at) }) }}</p>
             <template v-if="a.status === 'pending'">
               <input v-model="allianceNote[a.id]" maxlength="200" :placeholder="$t('ملاحظة (اختيارية)')" class="h-touch rounded-md bg-surface-sunk px-3" />
