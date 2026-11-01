@@ -16,6 +16,8 @@ defineProps<{ icon: keyof typeof PATHS; title: string; text?: string; cta?: { la
     </span>
     <h2 class="font-display text-lg font-extrabold">{{ $t(title) }}</h2>
     <p v-if="text" class="max-w-sm text-sm text-text-muted">{{ $t(text) }}</p>
+    <!-- [Sprint 30 P10] Or a button of the page's own (a dialog, not a link). -->
+    <slot />
     <RouterLink v-if="cta" :to="cta.to" class="mt-1 flex min-h-touch items-center rounded-lg bg-gold px-5 font-bold text-on-gold transition active:scale-[0.97]">{{ $t(cta.label) }}</RouterLink>
   </section>
 </template>

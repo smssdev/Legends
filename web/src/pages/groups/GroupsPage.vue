@@ -80,7 +80,10 @@ async function create() {
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
-    <EmptyState v-if="loaded && !shown.length" icon="chat" :title="$t('لا جروبات بعد')" :text="$t('أنشئ جروباً مع أصدقائك، أو افتح جروب دوريك من صفحته.')" />
+    <!-- [Sprint 30 P10] The first group from the empty page itself, not only the round button. -->
+    <EmptyState v-if="loaded && !shown.length" icon="chat" :title="$t('لا جروبات بعد')" :text="$t('أنشئ جروباً مع أصدقائك، أو افتح جروب دوريك من صفحته.')">
+      <UiButton class="mt-1" @click="creating = true">{{ $t('أنشئ جروباً') }}</UiButton>
+    </EmptyState>
     <ul class="flex flex-col gap-2">
       <li v-for="g in shown" :key="g.id">
         <RouterLink :to="{ name: 'group', params: { id: g.id } }" class="flex min-h-[64px] items-center gap-3 rounded-2xl bg-surface p-3 hover:bg-surface-raised">
