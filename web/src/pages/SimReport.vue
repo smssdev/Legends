@@ -6,6 +6,8 @@
       </RouterLink>
       <span class="rounded-pill bg-brand px-3 py-1 text-sm font-bold text-white">{{ $t('تقرير المباراة') }}</span>
       <button v-if="league" type="button" class="h-10 rounded-lg bg-gold px-3 text-sm font-bold text-on-gold" @click="recap = true">⚡ {{ $t('الملخص السريع') }}</button>
+      <!-- [Sprint 30 G2] The result as a picture, for WhatsApp and the rest. -->
+      <button v-if="report && view" type="button" class="h-10 rounded-lg bg-surface px-3 text-sm font-bold" :disabled="sharing" @click="share">📤 {{ $t('شارك كصورة') }}</button>
       <div v-if="view && !league" role="radiogroup" :aria-label="$t('التقرير من وجهة نظر')" class="ms-auto flex gap-1 rounded-md bg-surface p-1">
         <button v-for="s in sides" :key="s" type="button" role="radio" :aria-checked="side === s" class="h-10 rounded-sm px-3 text-sm font-bold" :class="side === s ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="load(s)">
           {{ $nm(view.clubs[s].name) }}
@@ -163,6 +165,10 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '../lib/i18n'
+import { nm } from '../lib/names'
+import { shareResult } from '../lib/shareCard'
+import { useToast } from '../stores/toast'
 import ShotMap from '../components/match/ShotMap.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -185,6 +191,19 @@ const side = ref<Side>((route.query.side as Side) || 'home')
 // [Sprint 24 W1] A league match's quick recap, over the report.
 const recap = ref(false)
 
+// [Sprint 30 G2] The result card (lib/shareCard): the clubs as the coach reads them, the scorers, the brand.
+const sharing = ref(false)
+async function share() {
+  if (!report.value || !view.value) return
+  sharing.value = true
+  const goals = (report.value.timeline ?? []).filter((e: any) => e.type === 'goal')
+  const scorers = { home: [] as string[], away: [] as string[] }
+  for (const g of goals) scorers[g.team as Side]?.push(`${names.value[g.scorer] ?? ''} ${Array.isArray(g.minute) ? g.minute[0] : g.minute}'`)
+  const side = (s: Side) => ({ name: nm(view.value!.clubs[s].name), color: color(s), logo: view.value!.clubs[s].logo })
+  const how = await shareResult({ home: side('home'), away: side('away'), score: report.value.score, scorers })
+  if (how === 'downloaded') useToast().show(t('حُفظت صورة النتيجة: شاركها من معرض الصور.'))
+  sharing.value = false
+}
 const color = (s: Side) => (view.value ? clubColors(view.value.clubs[s]).primary : '#163360')
 const rating = (r: number) => (r / 100).toFixed(1)
 
