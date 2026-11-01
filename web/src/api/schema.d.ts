@@ -14401,6 +14401,21 @@ export interface components {
             teams?: Record<string, never>;
             slots?: Record<string, never>;
         };
+        /** @description One of the six Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json). */
+        Keyframe: {
+            /** @description Its place among the six */
+            t: number;
+            /** @description The ball: x, y and its height */
+            b: number[];
+            /** @description Every player on the pitch by id */
+            p: {
+                [key: string]: number[];
+            };
+            /** @description The player on the ball */
+            h?: number | null;
+            /** @description [Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none */
+            r?: number[][];
+        };
         LiveSync: {
             started?: boolean;
             finished?: boolean;
@@ -14413,7 +14428,9 @@ export interface components {
             /** @description Some minutes after `since` are no longer kept; jump to the latest */
             gap?: boolean;
             /** @description Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant */
-            ticks?: Record<string, never>[];
+            ticks?: {
+                frames?: components["schemas"]["Keyframe"][];
+            }[];
             /** @description The last few seconds of reactions */
             reactions?: components["schemas"]["Reaction"][];
         };

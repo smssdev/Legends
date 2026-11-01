@@ -93,7 +93,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, keeperKit, setKits, setSmooth } from './art'
+import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setSmooth } from './art'
 import { figure } from './figure'
 import { noteFrame, smooth } from '../perf'
 import { sample } from '../frames'
@@ -101,7 +101,7 @@ import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
-const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; introDone: [] }>()
+const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; near: [closeness: number]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
 // [X35] The live pitch's camera: the broadcast's (the cartoon players, following the ball) or the plan from above.
@@ -361,6 +361,8 @@ function drawTop(tick, u) {
     const [x, y] = R.players[id]
     ctx.drawImage(dotFor(id, side), x - 25, y - 25, 50, 50)
   }
+  // [Sprint 31 D1] The officials: small discs in their colour.
+  for (const o of R.officials ?? []) { ctx.fillStyle = officialKit(); ctx.strokeStyle = '#F5B82E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(o[0], o[1], 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke() }
   const [bx, by, bz] = R.ball, h = Math.min(1, bz / 60)
   // [Sprint 31 M2] The ball's shadow stays on the grass, smaller and fainter the higher it flies.
   ctx.fillStyle = `rgba(0,0,0,${(0.35 * (1 - h * 0.6)).toFixed(3)})`
@@ -371,7 +373,7 @@ function drawTop(tick, u) {
 // The broadcast camera [X35]: the pitch in perspective as the main TV camera sees it from the stand, panning with the
 // ball, and the cartoon players (figure.ts, as art.ts's) running between the server's keyframes.
 const TV = { far: 64, near: 292, span: 620 }
-let camX = 525, tvPlayers = new Map(), tvBg: HTMLCanvasElement | null = null, tvCam = -1, tvZoom = 0, tvFy = 0, zoom = 1, lead = 0, sceneAt = -1e9, cheerAt = -1e9, camFy = 180, lightCv: HTMLCanvasElement | null = null, lightKey = ''
+let refs = [], camX = 525, tvPlayers = new Map(), tvBg: HTMLCanvasElement | null = null, tvCam = -1, tvZoom = 0, tvFy = 0, zoom = 1, lead = 0, sceneAt = -1e9, cheerAt = -1e9, camFy = 180, lightCv: HTMLCanvasElement | null = null, lightKey = ''
 const depth = (y) => Math.max(0, Math.min(1, y / 680))
 const proj = (x, y) => { const d = depth(y), k = (640 / TV.span) * (0.62 + 0.38 * d); return [320 + (x - camX) * k, TV.far + (TV.near - TV.far) * d, 0.5 + 0.5 * d] }
 // The 640 x 300 picture covers the box (as the SVG's "slice").
@@ -460,7 +462,9 @@ function tvFor(id, side) {
     const info = (props.teams?.[side]?.players ?? []).find((p) => String(p.id) === String(id))
     const gk = info?.pos === 'GK'
     const kit = gk ? keeperKit(side) : props.kits[side].kit
-    const f = figure(kit, info?.no ?? '', { look: Number(id) % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim })
+    // [Sprint 31 D2] Build and height from his id (README 7.3): the same player looks the same on every screen.
+    const n = Number(id) || 0
+    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100 })
     t = { f, ph: Number(id) % 7, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
     tvPlayers.set(id, t)
   }
@@ -537,6 +541,17 @@ function drawTv(tick, u) {
     const d = Math.hypot(wx - bx, wy - by)
     if (d < nearD) { nearD = d; near = t }
   }
+  // [Sprint 31 D1] The referee and his assistants, where the server puts them, facing the ball.
+  for (const [n, o] of (R.officials ?? []).entries()) {
+    let t = refs[n]
+    if (!t) t = refs[n] = { f: figure(officialKit(), '', { look: 9 + n * 11, flag: n ? '#F2E205' : undefined, shorts: '#111827', socks: '#111827', trim: '#F5B82E', build: 1 }), ph: n, sx: 0, sy: 0, scale: 1, bob: 0, face: 'front', mirror: 1, lean: 0 }
+    const nx = R2.officials?.[n]?.[0] ?? o[0], ny = R2.officials?.[n]?.[1] ?? o[1], speed = u >= 1 ? 0 : Math.hypot(nx - o[0], ny - o[1]) / (du * span)
+    if (speed > 12) facing(t, nx - o[0], ny - o[1]); else facing(t, bx - o[0], by - o[1])
+    const [sx, sy, sc] = proj(o[0], o[1])
+    t.sx = sx; t.sy = sy; t.scale = sc * 0.46; t.f.face(t.face, t.mirror); t.bob = 0
+    if (!smooth.value) { if (speed > 12) { t.ph += dts * 9; t.f.run(t.ph, 0.6); t.bob = Math.abs(Math.sin(t.ph)) * 1.4 } else { t.ph += dts * 2; t.f.idle(t.ph) } } else t.f.pose()
+    drawn.push(t)
+  }
   let [px, py, ps] = proj(bx, by)
   // [Sprint 31 M3] A ball on the grass close to a player sits in front of his foot (drawing only).
   if (near && bz < 4 && nearD < 26) {
@@ -590,8 +605,15 @@ function drawTv(tick, u) {
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(lightCv, 0, 0)
 }
-function buildPitch() { if (!pitchHost.value) return; const hr = cairoHour(); night = hr >= 18 || hr < 6; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null } drawPitch(lastTick, lastU) }
-function drawPitch(tick, u) { lastTick = tick; lastU = u; camera.value === 'tv' ? drawTv(tick, u) : drawTop(tick, u) }
+function buildPitch() { if (!pitchHost.value) return; const hr = cairoHour(); night = hr >= 18 || hr < 6; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null; refs = [] } drawPitch(lastTick, lastU) }
+function drawPitch(tick, u) {
+  lastTick = tick; lastU = u
+  camera.value === 'tv' ? drawTv(tick, u) : drawTop(tick, u)
+  // [Sprint 31 D4] How close the ball is to a goal, in tenths, for the crowd's sound (sent only when it changes).
+  const f = tick?.frames
+  if (f?.length) { const bx = sample(f, u).ball[0], c = Math.round(Math.max(0, Math.min(1, (Math.abs(bx - 525) - 200) / 300)) * 10) / 10; if (c !== nearSent) { nearSent = c; emit('near', c) } }
+}
+let nearSent = -1
 function tickClock(tick, u) {
   const m = tick?.minute
   if (!m || (tick.moment?.kind === 'shootout')) { clock.value = ''; return }

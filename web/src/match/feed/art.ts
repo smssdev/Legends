@@ -18,7 +18,17 @@ const other = (s) => (s === 'home' ? 'away' : 'home')
 export const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
 export const shade = (hex, p) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, v + p)); return '#' + [f(n >> 16), f((n >> 8) & 255), f(n & 255)].map((v) => v.toString(16).padStart(2, '0')).join('') }
 // A keeper's kit that stands apart from both teams.
-export const keeperKit = (side) => (side === 'home' ? '#2BB673' : '#F2994A')
+// [Sprint 31 D3] Chosen from a few, the first that stands apart from both teams' shirts (and from the other keeper's).
+const rgbOf = (hex) => { const n = parseInt(String(hex).slice(1, 7), 16); return [n >> 16, (n >> 8) & 255, n & 255] }
+const apart = (a, b) => { const x = rgbOf(a), y = rgbOf(b); return Math.abs(x[0] - y[0]) + Math.abs(x[1] - y[1]) + Math.abs(x[2] - y[2]) > 150 }
+const pickKit = (choices, avoid) => choices.find((c) => avoid.every((a) => !a || apart(c, a))) ?? choices[0]
+export const keeperKit = (side) => {
+  const shirts = [KITS.home?.kit, KITS.away?.kit]
+  const home = pickKit(['#2BB673', '#7B3FE4', '#F2994A', '#14B8C4'], shirts)
+  return side === 'home' ? home : pickKit(['#F2994A', '#14B8C4', '#7B3FE4', '#2BB673'], [...shirts, home])
+}
+/** [Sprint 31 D1, D3] The officials' shirt: black, or another colour when a team plays in a dark kit. */
+export const officialKit = () => pickKit(['#15171C', '#F2E205', '#E85D9A', '#7B3FE4'], [KITS.home?.kit, KITS.away?.kit, keeperKit('home'), keeperKit('away')])
 
 // Writes an attribute only when it changes [X30]: every write, even of the same value, makes the browser lay the
 // scene out again, and a scene sets hundreds of them a frame (most of them unchanged, like the flashes at rest).
