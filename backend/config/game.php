@@ -408,7 +408,7 @@ return [
     // verifies, up to referral_max.
     // [Sprint 30 P6] starter_coins: a new coach's first coins, claimed once from the home screen (apart from the
     // verification reward).
-    'account' => ['welcome_coins' => 1000, 'starter_coins' => 25, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
+    'account' => ['welcome_coins' => 1000, 'starter_coins' => 25, 'password_min' => 8, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
         'referral_coins' => 100, 'referral_max' => 10, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
         'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with

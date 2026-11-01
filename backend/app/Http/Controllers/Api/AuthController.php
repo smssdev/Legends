@@ -19,6 +19,7 @@ use App\Support\Activity;
 use App\Support\Avatar;
 use App\Support\GameClock;
 use App\Support\Mailer;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,8 @@ class AuthController extends Controller
     /** [UP5] Simple and the coach's own: no symbols, no mixed case, no long minimum (the owner's spec, 1). */
     private function passwordRule(): PasswordRule
     {
-        return PasswordRule::min(4);
+        // [Sprint 30 Q11] 8 at least (game.account.password_min), the owner's report; older passwords still sign in.
+        return PasswordRule::min((int) config('game.account.password_min'));
     }
 
     public function register(Request $request): JsonResponse
@@ -93,9 +95,18 @@ class AuthController extends Controller
         return response()->json(['signed_out' => true]);
     }
 
-    public function me(Request $request): JsonResponse
+    /**
+     * [Sprint 30 Q11] A guest on the site gets 204 (nobody signed in), not a 401 the browser logs as an error. A token
+     * that no longer works (the app's, expired or revoked) still gets the 401 that sends it to sign in again.
+     */
+    public function me(Request $request): JsonResponse|Response
     {
-        return response()->json(['user' => $request->user()->toAccount()]);
+        $user = $request->user('sanctum');
+        if (! $user && $request->bearerToken()) {
+            throw new AuthenticationException;
+        }
+
+        return $user ? response()->json(['user' => $user->toAccount()]) : response()->noContent();
     }
 
     /** The name and the username [X4], the commentator [X9], the simulator [X10], the language [UP2] and the coach's look [Sprint 26]; any of them may be sent alone. */

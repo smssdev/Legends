@@ -332,7 +332,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The signed-in account */
+        /** The signed-in account; [Sprint 30 Q11] 204 for a guest with no credentials, 401 for a token that no longer works */
         get: {
             parameters: {
                 query?: never;
@@ -343,6 +343,13 @@ export interface paths {
             requestBody?: never;
             responses: {
                 200: components["responses"]["Account"];
+                /** @description Nobody signed in (a guest on the site) */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 401: components["responses"]["Error"];
             };
         };
@@ -6413,6 +6420,44 @@ export interface paths {
                     };
                 };
                 422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/2fa/recovery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 30 Q11] New recovery codes for the two-step code (the old ones stop working); logged */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The codes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            recovery_codes: string[];
+                        };
+                    };
+                };
             };
         };
         delete?: never;
@@ -13242,7 +13287,11 @@ export interface components {
             decided_at?: string | null;
         };
         AdminTwoFactor: {
-            /** @description Whether the panel asks for the code at all (off by the owner's decision, X46) */
+            /** @description [Sprint 30 Q11] One-time recovery codes not used yet */
+            recovery_left: number;
+            /** @description [Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once */
+            recovery_codes?: string[];
+            /** @description Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off) */
             required: boolean;
             enabled: boolean;
             /** @description Proved in this session, or not asked */

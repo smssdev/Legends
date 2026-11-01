@@ -57,17 +57,20 @@ class AuthTest extends TestCase
             ->assertJsonPath('errors.email.0', 'البريد الإلكتروني مستخدم من قبل.')
             ->assertJsonPath('errors.name.0', 'يجب ألا يقل طول الاسم عن 2 أحرف.')
             ->assertJsonMissingPath('errors.terms');
-        $this->assertStringContainsString('4', $this->postJson('/api/v1/auth/register', ['name' => 'سس', 'username' => 'other', 'password' => 'abc'])->json('errors.password.0'));
+        // [Sprint 30 Q11] Eight at least.
+        $this->assertStringContainsString('8', $this->postJson('/api/v1/auth/register', ['name' => 'سس', 'username' => 'other', 'password' => 'abcd123'])->json('errors.password.0'));
+        // And a guest asking who is signed in: 204, not an error.
+        $this->getJson('/api/v1/auth/me')->assertNoContent();
     }
 
     /** [UP5] Three fields, the password typed once and as simple as the coach likes, no email; the session lasts. */
     public function test_three_fields_make_an_account_without_an_email(): void
     {
-        $this->postJson('/api/v1/auth/register', ['name' => 'أحمد علي', 'username' => 'ahmedali', 'password' => 'kora'])
+        $this->postJson('/api/v1/auth/register', ['name' => 'أحمد علي', 'username' => 'ahmedali', 'password' => 'kora2026'])
             ->assertCreated()->assertJsonPath('user.username', 'ahmedali')->assertJsonPath('user.email', null)
             ->assertJsonPath('user.verification.verified', false)->assertJsonPath('user.verification.welcome_coins', 1000);
         $this->assertNull(User::where('username', 'ahmedali')->value('email'));
-        $this->postJson('/api/v1/auth/token', ['email' => 'ahmedali', 'password' => 'kora', 'device_name' => 'phone'])->assertOk()->assertJsonPath('user.name', 'أحمد علي');
+        $this->postJson('/api/v1/auth/token', ['email' => 'ahmedali', 'password' => 'kora2026', 'device_name' => 'phone'])->assertOk()->assertJsonPath('user.name', 'أحمد علي');
     }
 
     public function test_the_username_is_english_letters_and_digits(): void

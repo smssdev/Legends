@@ -352,7 +352,7 @@ async function remove() {
       <p v-if="!user.has_password" class="text-sm text-text-muted">{{ $t('حسابك بجوجل فقط. أضف كلمة مرور لتدخل بالبريد أيضاً.') }}</p>
       <form class="grid gap-3 sm:grid-cols-2" novalidate @submit.prevent="savePassword">
         <TextField v-if="user.has_password" v-model="current" :label="$t('كلمة المرور الحالية')" type="password" autocomplete="current-password" :error="pwErrors.current" />
-        <TextField v-model="next" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="pwErrors.next" :hint="$t('4 أحرف أو أرقام على الأقل')" />
+        <TextField v-model="next" :label="$t('كلمة المرور الجديدة')" type="password" autocomplete="new-password" :error="pwErrors.next" :hint="$t('8 أحرف أو أرقام على الأقل')" />
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold sm:col-span-2 sm:justify-self-start">{{ $t('احفظ كلمة المرور') }}</button>
       </form>
       <p v-if="pwMsg" class="text-sm text-success" role="status">{{ $t(pwMsg) }}</p>

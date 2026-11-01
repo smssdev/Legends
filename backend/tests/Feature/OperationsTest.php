@@ -112,7 +112,18 @@ class OperationsTest extends TestCase
         // Set up: a secret, then a code from it.
         $secret = $this->actingAs($admin)->postJson('/api/v1/admin/2fa/setup')->assertOk()->json('secret');
         $this->postJson('/api/v1/admin/2fa/confirm', ['code' => '000000'])->assertUnprocessable();
-        $this->postJson('/api/v1/admin/2fa/confirm', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk()->assertJsonPath('passed', true);
+        $codes = $this->postJson('/api/v1/admin/2fa/confirm', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk()->assertJsonPath('passed', true)
+            ->assertJsonCount(8, 'recovery_codes')->json('recovery_codes');
+        // [Sprint 30 Q11] Kept as hashes only; each recovery code opens the panel once in place of the six digits.
+        $this->assertStringNotContainsString($codes[0], (string) $admin->fresh()->two_factor_recovery);
+        $this->flushSession();
+        $this->actingAs($admin)->getJson('/api/v1/admin/overview')->assertStatus(423);
+        $this->postJson('/api/v1/admin/2fa/verify', ['code' => $codes[0]])->assertOk()->assertJsonPath('passed', true)->assertJsonPath('recovery_left', 7);
+        $this->flushSession();
+        $this->actingAs($admin)->postJson('/api/v1/admin/2fa/verify', ['code' => $codes[0]])->assertUnprocessable();
+        $this->postJson('/api/v1/admin/2fa/verify', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk();
+        // The backup, and who downloaded it from where, in the admins' log.
+        $this->assertDatabaseMissing('admin_log', ['action' => 'backup']);
         $this->postJson('/api/v1/admin/2fa/setup')->assertConflict();
         Activity::record($user->id, 'visits');
         Activity::record($user->id, 'matches_watched');
@@ -124,6 +135,8 @@ class OperationsTest extends TestCase
         $this->getJson('/api/v1/admin/overview')->assertJsonPath('deploy.busy', 0)->assertJsonPath('deploy.next_kickoff', null);
         $name = $this->postJson('/api/v1/admin/backups')->assertOk()->json('backups.0.name');
         $download = $this->get("/api/v1/admin/backups/$name/download")->assertOk();
+        $this->assertSame(['backup', 'download'], DB::table('admin_log')->orderBy('id')->pluck('action')->all());
+        $this->assertNotNull(DB::table('admin_log')->where('action', 'download')->value('ip'));
         // The game's database file, or on PostgreSQL (Supabase, X43) its rows in one gzipped file.
         $this->assertStringStartsWith(DB::getDriverName() === 'pgsql' ? "\x1f\x8b" : 'SQLite format 3', (string) file_get_contents($download->baseResponse->getFile()->getPathname()));
         $this->get('/api/v1/admin/backups/2020-01-01_000000/download')->assertNotFound();

@@ -51,7 +51,8 @@ class AdminController extends Controller
     {
         $this->adminOnly($request);
 
-        return response()->json(['required' => TwoFactor::required(), 'enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed()]);
+        return response()->json(['required' => TwoFactor::required(), 'enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed(),
+            'recovery_left' => TwoFactor::recoveryLeft($request->user())]);
     }
 
     public function setup(Request $request): JsonResponse
@@ -64,17 +65,27 @@ class AdminController extends Controller
     public function confirm(Request $request): JsonResponse
     {
         $this->adminOnly($request);
-        TwoFactor::confirm($request->user(), (string) $request->validate(['code' => 'required|string|max:10'])['code']);
+        $codes = TwoFactor::confirm($request->user(), (string) $request->validate(['code' => 'required|string|max:16'])['code']);
 
-        return $this->status($request);
+        // [Sprint 30 Q11] The recovery codes once, with the panel opening.
+        return response()->json($this->status($request)->getData(true) + ['recovery_codes' => $codes]);
     }
 
     public function verify(Request $request): JsonResponse
     {
         $this->adminOnly($request);
-        TwoFactor::verify($request->user(), (string) $request->validate(['code' => 'required|string|max:10'])['code']);
+        TwoFactor::verify($request->user(), (string) $request->validate(['code' => 'required|string|max:16'])['code']);
 
         return $this->status($request);
+    }
+
+    /** [Sprint 30 Q11] New recovery codes (the old ones stop working), from inside the panel. */
+    public function recovery(Request $request): JsonResponse
+    {
+        $codes = TwoFactor::newRecovery($request->user());
+        $this->log($request, 'recovery', null);
+
+        return response()->json(['recovery_codes' => $codes]);
     }
 
     public function overview(): JsonResponse
@@ -161,10 +172,11 @@ class AdminController extends Controller
     }
 
     /** What the admins did to accounts, newest first. */
-    private function log(Request $request, string $action, User $user, ?string $details = null): void
+    /** [Sprint 30 Q11] Every sensitive admin action, with the reason and the address it came from. */
+    private function log(Request $request, string $action, ?User $user, ?string $details = null): void
     {
-        DB::table('admin_log')->insert(['admin_id' => $request->user()->id, 'action' => $action, 'target_user_id' => $user->id,
-            'details' => $details ? mb_substr($details, 0, 300) : null, 'created_at' => GameClock::now()]);
+        DB::table('admin_log')->insert(['admin_id' => $request->user()->id, 'action' => $action, 'target_user_id' => $user?->id,
+            'details' => $details ? mb_substr($details, 0, 300) : null, 'ip' => $request->ip(), 'created_at' => GameClock::now()]);
     }
 
     /** [Sprint 21 E7.5] The activity day by day (Cairo), the new accounts, and what the admins did. */
@@ -246,6 +258,8 @@ class AdminController extends Controller
     /** [UP6] A code that verifies this account, for the developer to send to the coach on WhatsApp. */
     public function verificationCode(Request $request, User $user): JsonResponse
     {
+        $this->log($request, 'verify_code', $user);
+
         return response()->json(['code' => AccountVerification::issue($user, $request->user()), 'username' => $user->username, 'id' => $user->id,
             'days' => (int) config('game.account.verify_code_days')]);
     }
@@ -256,6 +270,7 @@ class AdminController extends Controller
         $name = (string) $request->validate(['name' => ['required', 'string', Rule::in(config('game.account.official_usernames'))]])['name'];
         abort_if(Username::taken($name, $user->id), 409, 'هذا الاسم الرسمي لحساب آخر.');
         $user->forceFill(['username' => strtolower($name)])->save();
+        $this->log($request, 'official', $user, $name);
 
         return response()->json(['user' => $user->toAccount()]);
     }
@@ -408,9 +423,12 @@ class AdminController extends Controller
             'leagues' => $found['leagues']->map($row)->all()]);
     }
 
-    public function purgeJunk(): JsonResponse
+    public function purgeJunk(Request $request): JsonResponse
     {
-        return response()->json(JunkContent::purge());
+        $gone = JunkContent::purge();
+        $this->log($request, 'junk', null, "{$gone['announcements']} announcements, {$gone['house_ads']} house ads");
+
+        return response()->json($gone);
     }
 
     public function deleteHouseAd(int $id): JsonResponse
@@ -459,9 +477,10 @@ class AdminController extends Controller
             'bytes' => collect(File::files($d))->sum(fn ($f) => $f->getSize())])->all()]);
     }
 
-    public function backupNow(): JsonResponse
+    public function backupNow(Request $request): JsonResponse
     {
         Artisan::call('db:backup');
+        $this->log($request, 'backup', null);
 
         return $this->backups();
     }
@@ -470,8 +489,9 @@ class AdminController extends Controller
      * One backup's game database to keep off the server [X33]: on Render the backups live only until the next
      * restart, so the admin downloads the copy made before a deploy (start.sh) to have it on his own machine.
      */
-    public function downloadBackup(string $name): BinaryFileResponse
+    public function downloadBackup(Request $request, string $name): BinaryFileResponse
     {
+        $this->log($request, 'download', null, basename($name));
         // [X43] On Supabase a backup is the game's rows in one file (db:backup); on SQLite, its database file.
         $rows = base_path('database/backups/'.basename($name).'/legends.jsonl.gz');
         if (is_file($rows)) {

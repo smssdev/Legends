@@ -16,10 +16,10 @@ class LocaleTest extends TestCase
 
     public function test_errors_come_in_arabic_by_default_and_in_english_when_asked(): void
     {
-        $this->getJson('/api/v1/auth/me')->assertStatus(401)->assertJsonPath('message', 'سجّل الدخول أولاً.');
-        $this->withHeader('Accept-Language', 'en-US,en;q=0.9')->getJson('/api/v1/auth/me')->assertStatus(401)->assertJsonPath('message', 'Sign in first.');
+        $this->getJson('/api/v1/home')->assertStatus(401)->assertJsonPath('message', 'سجّل الدخول أولاً.');
+        $this->withHeader('Accept-Language', 'en-US,en;q=0.9')->getJson('/api/v1/home')->assertStatus(401)->assertJsonPath('message', 'Sign in first.');
         // A language we do not have falls back to Arabic.
-        $this->withHeader('Accept-Language', 'fr')->getJson('/api/v1/auth/me')->assertStatus(401)->assertJsonPath('message', 'سجّل الدخول أولاً.');
+        $this->withHeader('Accept-Language', 'fr')->getJson('/api/v1/home')->assertStatus(401)->assertJsonPath('message', 'سجّل الدخول أولاً.');
     }
 
     public function test_the_games_own_messages_have_their_english(): void

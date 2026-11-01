@@ -130,9 +130,16 @@ const load = () => run(async () => {
   if (open.value) await show('overview')
 })
 const setup = () => run(async () => { secret.value = (await api.POST('/admin/2fa/setup')).data! })
+// [Sprint 30 Q11] The recovery codes, shown once (on confirming, or when made anew), to keep off the phone.
+const recoveryCodes = ref<string[]>([])
+const newRecovery = () => run(async () => {
+  if (!(await useConfirm().ask({ title: 'رموز استرداد جديدة؟', text: 'تتوقف الرموز القديمة عن العمل.', action: 'أنشئها' }))) return
+  recoveryCodes.value = (await api.POST('/admin/2fa/recovery')).data!.recovery_codes
+})
 const prove = () => run(async () => {
   const path = state.value?.enabled ? '/admin/2fa/verify' : '/admin/2fa/confirm'
-  state.value = (await api.POST(path, { body: { code: code.value } })).data!
+  state.value = (await api.POST(path, { body: { code: code.value.trim() } })).data!
+  recoveryCodes.value = state.value.recovery_codes ?? []
   code.value = ''
   secret.value = null
   if (open.value) await show('overview')
@@ -414,11 +421,20 @@ onMounted(load)
         </div>
         <p v-else class="text-sm text-text-muted">{{ $t('اكتب الرمز الظاهر الآن في تطبيق المصادقة.') }}</p>
         <form class="flex gap-2" @submit.prevent="prove">
-          <input v-model="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr" placeholder="000000" :aria-label="$t('الرمز')"
+          <input v-model="code" autocomplete="one-time-code" maxlength="11" dir="ltr" placeholder="000000" :aria-label="$t('الرمز أو رمز الاسترداد')"
                  class="h-12 w-36 rounded-md bg-surface-sunk px-3 text-center font-numbers text-xl tracking-widest" />
           <button type="submit" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || code.length < 6">{{ $t('تحقق') }}</button>
         </form>
+        <p v-if="state.enabled" class="text-xs text-text-muted">{{ $t('ضاع جوالك؟ اكتب أحد رموز الاسترداد (مثل 1a2b3-c4d5e) مكان الرمز.') }}</p>
       </template>
+    </section>
+
+    <!-- [Sprint 30 Q11] Shown once: written down or saved somewhere off the phone. -->
+    <section v-if="recoveryCodes.length" class="flex max-w-md flex-col gap-2 rounded-xl border border-gold/50 bg-gold/10 p-4" role="alert">
+      <h2 class="font-display text-lg font-bold">{{ $t('رموز الاسترداد') }}</h2>
+      <p class="text-sm">{{ $t('احفظها في مكان آمن بعيداً عن جوالك: كل رمز يفتح اللوحة مرة واحدة إن ضاع تطبيق المصادقة. لن تظهر مرة أخرى.') }}</p>
+      <code class="grid select-all grid-cols-2 gap-1 rounded-md bg-surface-sunk p-3 font-numbers text-base" dir="ltr"><span v-for="c in recoveryCodes" :key="c">{{ c }}</span></code>
+      <button type="button" class="h-11 self-start rounded-md bg-surface-raised px-4 font-bold" @click="recoveryCodes = []">{{ $t('حفظتها') }}</button>
     </section>
 
     <div v-if="open" class="grid gap-4 lg:grid-cols-[13rem_minmax(0,1fr)]">
@@ -832,6 +848,11 @@ onMounted(load)
           </article>
         </template>
 
+        <!-- [Sprint 30 Q11] The two-step code's recovery codes: how many are left, and new ones. -->
+        <section v-if="tab === 'overview' && state?.enabled" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4" :aria-label="$t('رموز الاسترداد')">
+          <span class="min-w-0 flex-1 text-sm">{{ $t('رموز الاسترداد الباقية: {v0} من 8', { v0: state.recovery_left }) }}</span>
+          <button type="button" class="h-11 rounded-md border border-gold/40 px-4 text-sm font-bold text-gold" :disabled="busy" @click="newRecovery">{{ $t('رموز جديدة') }}</button>
+        </section>
         <section v-if="tab === 'backups'" :aria-label="$t('النسخ')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
           <div class="flex items-center justify-between gap-2">
             <h2 class="font-display text-lg font-bold">{{ $t('النسخ على هذا الجهاز') }}</h2>

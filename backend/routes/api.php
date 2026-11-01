@@ -58,8 +58,9 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     // A username's check as it is typed, with suggestions [X11].
     Route::get('username', 'usernameCheck')->middleware('throttle:30,1,username');
     Route::post('logout', 'logout');
+    // [Sprint 30 Q11] Who is signed in, open to a guest too (204, no error in the console).
+    Route::get('me', 'me');
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('me', 'me');
         Route::patch('me', 'update');
         Route::delete('me', 'destroy')->middleware('throttle:auth');
         Route::put('password', 'password')->middleware('throttle:auth');
@@ -316,6 +317,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
     Route::post('2fa/setup', 'setup');
     Route::post('2fa/confirm', 'confirm')->middleware('throttle:10,1,admin-2fa');
     Route::post('2fa/verify', 'verify')->middleware('throttle:10,1,admin-2fa');
+    Route::post('2fa/recovery', 'recovery')->middleware(['admin', 'throttle:5,1,admin-2fa']);
     Route::middleware('admin')->group(function () {
         Route::get('overview', 'overview');
         Route::get('alliances', 'alliances');

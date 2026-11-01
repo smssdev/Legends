@@ -31,7 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = ['name', 'username', 'email', 'password', 'google_id', 'google_picture', 'commentator', 'match_view', 'locale', 'coach_look'];
 
     /** @var list<string> */
-    protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret'];
+    protected $hidden = ['password', 'remember_token', 'google_id', 'two_factor_secret', 'two_factor_recovery'];
 
     protected function casts(): array
     {
