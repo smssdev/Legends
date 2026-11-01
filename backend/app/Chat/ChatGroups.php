@@ -247,6 +247,8 @@ class ChatGroups
 
     private static function post(int $groupId, User $user, string $kind, string $body, ?int $replyTo, ?callable $then = null): array
     {
+        // [Sprint 30 G6] A writer the admins kept out of the groups sends nothing.
+        Moderation::assertNotBanned($user);
         $recent = DB::table('chat_group_messages')->where('chat_group_id', $groupId)->where('user_id', $user->id)
             ->where('created_at', '>', GameClock::now()->subMinute())->count();
         if ($recent >= config('game.chat.per_minute')) {
@@ -390,7 +392,7 @@ class ChatGroups
         return DB::table('chat_group_members')->where('chat_group_id', $groupId)->where('user_id', $userId)->where('is_admin', true)->exists();
     }
 
-    private static function assertMember(int $groupId, int $userId): void
+    public static function assertMember(int $groupId, int $userId): void
     {
         if (! DB::table('chat_group_members')->where('chat_group_id', $groupId)->where('user_id', $userId)->exists()) {
             throw new HttpException(404, __('الجروب غير موجود.'));

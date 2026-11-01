@@ -4,6 +4,7 @@
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
+import { useAuth } from '../stores/auth'
 import { statusLabel } from '../lib/statuses'
 import DataEditor from './admin/DataEditor.vue'
 import AnnouncementCard from '../components/AnnouncementCard.vue'
@@ -25,6 +26,25 @@ const secret = ref<{ secret: string; uri: string } | null>(null)
 const code = ref('')
 const error = ref('')
 const notice = ref('')
+const auth = useAuth()
+// [Sprint 30 G6] The reported messages, and the decision on each (for all its reports at once).
+const reports = ref<S['ChatReports']['reports']>([])
+const REASON_NAMES: Record<string, string> = { abuse: 'سب أو إساءة', inappropriate: 'محتوى غير لائق', spam: 'إزعاج أو إعلانات', other: 'سبب آخر' }
+const decideReport = (id: number, action: 'leave' | 'remove' | 'ban') => run(async () => {
+  if (action === 'ban' && !(await useConfirm().ask({ title: 'حذف الرسالة وإيقاف كاتبها؟', text: 'لن يرسل في أي جروب حتى تسمح له الإدارة.', action: 'احذف وأوقفه' }))) return
+  reports.value = (await api.POST('/admin/reports/{message}/decide', { params: { path: { message: id } }, body: { action } })).data!.reports
+})
+const unban = (id: number) => run(async () => {
+  await api.DELETE('/admin/users/{user}/chat-ban', { params: { path: { user: id } } })
+  notice.value = t('عاد إلى الجروبات.')
+  reports.value = (await api.GET('/admin/reports')).data!.reports
+})
+// [Sprint 30 G6] An admin's scope, given by a full admin.
+const SCOPES = { '': 'مشرف كامل', support: 'دعم', content: 'محتوى', finance: 'مالي' } as const
+const setScope = (id: number, scope: string) => run(async () => {
+  await api.PUT('/admin/users/{user}/scope', { params: { path: { user: id } }, body: { scope: (scope || null) as 'support' | null } })
+  notice.value = t('تغيّرت صلاحيات المشرف.')
+})
 // [Sprint 30 P3] The test texts players can see (announcements, rewarded ads), with one button that removes them.
 const junk = ref<S['JunkRow'][] | null>(null)
 const junkLeagues = ref<S['JunkRow'][]>([])
@@ -62,7 +82,12 @@ const SECTIONS = {
   commentary: { label: 'قوالب التعليق', icon: 'news' },
   data: { label: 'محرر البيانات', icon: 'team' },
   chat: { label: 'الجروبات', icon: 'chat' },
+  // [Sprint 30 G6] The groups' moderation queue.
+  reports: { label: 'البلاغات', icon: 'chat' },
 } as const
+// [Sprint 30 G6] Each section's path on the server, for an admin with a scope (the server says which it opens).
+const PATHS: Record<string, string> = { houseAds: 'house-ads' }
+const sectionsShown = computed(() => (Object.keys(SECTIONS) as Section[]).filter((k) => !state.value?.sections || state.value.sections.includes(PATHS[k] ?? k)))
 type Section = keyof typeof SECTIONS
 const tab = ref<Section>('overview')
 
@@ -164,6 +189,7 @@ async function show(s: Section) {
   if (s === 'alliances') alliances.value = (await api.GET('/admin/alliances')).data!.tournaments
   if (s === 'backups') backups.value = (await api.GET('/admin/backups')).data!.backups
   if (s === 'commentary') commentary.value = (await api.GET('/admin/commentary')).data!.keys
+  if (s === 'reports') reports.value = (await api.GET('/admin/reports')).data!.reports
 }
 const go = (s: Section) => run(() => show(s))
 
@@ -440,9 +466,9 @@ onMounted(load)
     <div v-if="open" class="grid gap-4 lg:grid-cols-[13rem_minmax(0,1fr)]">
       <!-- The sections: a side list on the computer, a scrolling row on the phone. -->
       <nav class="flex gap-1 overflow-x-auto rounded-xl bg-surface p-1 lg:sticky lg:top-24 lg:flex-col lg:self-start lg:overflow-visible lg:p-2" :aria-label="$t('أقسام اللوحة')">
-        <button v-for="(s, key) in SECTIONS" :key="key" type="button" :data-section="key" class="flex h-touch shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-bold"
+        <button v-for="key in sectionsShown" :key="key" type="button" :data-section="key" class="flex h-touch shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-bold"
           :class="tab === key ? 'bg-gold text-on-gold' : 'text-text-soft hover:bg-surface-raised'" :aria-current="tab === key ? 'page' : undefined" @click="go(key)">
-          <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
+          <Icon :name="SECTIONS[key].icon" :size="18" />{{ $t(SECTIONS[key].label) }}
         </button>
       </nav>
 
@@ -551,6 +577,9 @@ onMounted(load)
               </template>
               <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" @click="writeTo(u)">{{ $t('راسله') }}</button>
               <button type="button" class="h-10 rounded-md bg-gold/15 px-3 text-xs font-bold text-gold" @click="fillGift(u.account_no ?? 0)">{{ $t('أضف كوينز') }}</button>
+              <select v-if="u.role === 'admin' && !state?.scope && u.id !== auth.user?.id" class="h-10 rounded-md bg-surface-sunk px-2 text-xs" :aria-label="$t('صلاحيات المشرف')" :value="(u as any).admin_scope ?? ''" @change="setScope(u.id, ($event.target as HTMLSelectElement).value)">
+                <option v-for="(label, k) in SCOPES" :key="k" :value="k">{{ $t(label) }}</option>
+              </select>
               <select v-if="u.role === 'admin'" class="h-10 rounded-md bg-surface-sunk px-2 text-xs" :aria-label="$t('أعطه اسماً رسمياً')" @change="makeOfficial(u.id, ($event.target as HTMLSelectElement).value)">
                 <option value="">{{ $t('اسم رسمي') }}</option><option>Owner-Sizar</option><option>Owner-Sliman</option>
               </select>
@@ -852,6 +881,24 @@ onMounted(load)
         <section v-if="tab === 'overview' && state?.enabled" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4" :aria-label="$t('رموز الاسترداد')">
           <span class="min-w-0 flex-1 text-sm">{{ $t('رموز الاسترداد الباقية: {v0} من 8', { v0: state.recovery_left }) }}</span>
           <button type="button" class="h-11 rounded-md border border-gold/40 px-4 text-sm font-bold text-gold" :disabled="busy" @click="newRecovery">{{ $t('رموز جديدة') }}</button>
+        </section>
+        <!-- [Sprint 30 G6] The groups' moderation: each reported message once, with how many reported it and why. -->
+        <section v-if="tab === 'reports'" class="flex flex-col gap-2" :aria-label="$t('البلاغات')">
+          <p v-if="!reports.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا بلاغات تنتظر.') }}</p>
+          <article v-for="r in reports" :key="r.message_id" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
+            <div class="flex flex-wrap items-center gap-2 text-sm">
+              <b>{{ r.writer.name }}</b><span class="text-text-muted" dir="ltr">@{{ r.writer.username }}</span><span class="text-text-muted">· {{ r.group }}</span>
+              <span class="ms-auto rounded-pill bg-live/15 px-2 font-numbers text-xs font-bold text-danger">{{ $t('{v0} بلاغ', { v0: r.reports }) }}</span>
+            </div>
+            <p class="rounded-lg bg-surface-sunk p-3 text-sm" dir="auto">{{ r.body ?? (r.kind === 'image' ? $t('صورة') : $t('رسالة صوتية')) }}</p>
+            <p class="text-xs text-text-muted">{{ Object.entries(r.reasons).map(([k, n]) => `${$t(REASON_NAMES[k] ?? k)} (${n})`).join('، ') }}<template v-if="r.notes.length"> · {{ r.notes.join(' · ') }}</template></p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" class="h-10 rounded-md bg-surface-raised px-3 text-xs font-bold" :disabled="busy" @click="decideReport(r.message_id, 'leave')">{{ $t('اتركها') }}</button>
+              <button type="button" class="h-10 rounded-md bg-warning/15 px-3 text-xs font-bold text-warning" :disabled="busy" @click="decideReport(r.message_id, 'remove')">{{ $t('احذف الرسالة') }}</button>
+              <button v-if="!r.writer.banned" type="button" class="h-10 rounded-md bg-live/15 px-3 text-xs font-bold text-danger" :disabled="busy" @click="decideReport(r.message_id, 'ban')">{{ $t('احذف وأوقف كاتبها') }}</button>
+              <button v-else type="button" class="h-10 rounded-md bg-success/15 px-3 text-xs font-bold text-success" :disabled="busy" @click="unban(r.writer.id)">{{ $t('أعده إلى الجروبات') }}</button>
+            </div>
+          </article>
         </section>
         <section v-if="tab === 'backups'" :aria-label="$t('النسخ')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
           <div class="flex items-center justify-between gap-2">

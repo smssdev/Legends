@@ -2664,6 +2664,36 @@ paths:
       responses:
         '201': { description: Made, content: { application/json: { schema: { type: object, required: [ad], properties: { ad: { $ref: '#/components/schemas/HouseAd' } } } } } }
         '422': { $ref: '#/components/responses/Error' }
+  /admin/reports:
+    get:
+      tags: [admin]
+      summary: '[Sprint 30 G6] The reported group messages waiting for a decision, the most reported first'
+      responses:
+        '200': { description: The queue, content: { application/json: { schema: { $ref: '#/components/schemas/ChatReports' } } } }
+  /admin/reports/{message}/decide:
+    parameters: [{ name: message, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 30 G6] leave it, remove it, or remove it and keep its writer out of the groups (ban); logged'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [action], properties: { action: { type: string, enum: [leave, remove, ban] } } } } } }
+      responses:
+        '200': { description: The queue after it, content: { application/json: { schema: { $ref: '#/components/schemas/ChatReports' } } } }
+  /admin/users/{user}/chat-ban:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [admin]
+      summary: '[Sprint 30 G6] Let a banned writer back into the groups; logged'
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /admin/users/{user}/scope:
+    parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+    put:
+      tags: [admin]
+      summary: '[Sprint 30 G6] An admin''s scope (support, content, finance; null for a full admin), given by a full admin only; logged'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { scope: { type: [string, 'null'], enum: [support, content, finance, null] } } } } } }
+      responses:
+        '200': { description: Set, content: { application/json: { schema: { type: object, required: [id, scope], properties: { id: { type: integer }, scope: { type: [string, 'null'] } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
   /admin/junk:
     get:
       tags: [admin]
@@ -4208,6 +4238,18 @@ paths:
       responses:
         '200': { description: The file, content: { image/jpeg: { schema: { type: string, format: binary } }, audio/webm: { schema: { type: string, format: binary } } } }
         '404': { $ref: '#/components/responses/Error' }
+  /groups/{group}/messages/{message}/report:
+    parameters: [{ name: group, in: path, required: true, schema: { type: integer } }, { name: message, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [chat]
+      summary: '[Sprint 30 G6] Report another member''s message to the admins (once per coach and message)'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string, enum: [abuse, inappropriate, spam, other] }, note: { type: [string, 'null'], maxLength: 300 } } } } }
+      responses:
+        '200': { description: Sent, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
   /groups/{group}/messages/{message}:
     parameters: [{ $ref: '#/components/parameters/Group' }, { name: message, in: path, required: true, schema: { type: integer } }]
     delete:
@@ -5630,6 +5672,24 @@ components:
         power: { type: integer }
         count: { type: integer, description: 'The special players each market renewal brings (offers, in_form, legends); 0 for the others' }
         state: { type: string, enum: [upcoming, running, ended] }
+    ChatReports:
+      type: object
+      required: [reports]
+      properties:
+        reports:
+          type: array
+          items:
+            type: object
+            required: [message_id, kind, group, writer, reports, reasons, notes]
+            properties:
+              message_id: { type: integer }
+              body: { type: [string, 'null'], description: The text (null for a picture or a voice note) }
+              kind: { type: string }
+              group: { type: string }
+              writer: { type: object, required: [id, name, banned], properties: { id: { type: integer }, name: { type: [string, 'null'] }, username: { type: [string, 'null'] }, banned: { type: boolean } } }
+              reports: { type: integer }
+              reasons: { type: object, additionalProperties: { type: integer } }
+              notes: { type: array, items: { type: string } }
     JunkRow:
       type: object
       required: [id, title]
@@ -5891,6 +5951,8 @@ components:
       required: [required, enabled, passed, recovery_left]
       properties:
         recovery_left: { type: integer, description: '[Sprint 30 Q11] One-time recovery codes not used yet' }
+        scope: { type: [string, 'null'], description: '[Sprint 30 G6] This admin''s scope (null: full)' }
+        sections: { type: [array, 'null'], items: { type: string }, description: '[Sprint 30 G6] The panel sections this scope opens (null: all)' }
         recovery_codes: { type: array, items: { type: string }, description: '[Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once' }
         required: { type: boolean, description: 'Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off)' }
         enabled: { type: boolean }
@@ -6340,6 +6402,7 @@ components:
       type: object
       required: [id, account_no, name, username, email, role, official, verified, suspended, joined, last_day, matches_watched]
       properties:
+        admin_scope: { type: [string, 'null'], description: '[Sprint 30 G6] An admin''s scope (support, content, finance; null: full)' }
         id: { type: integer }
         account_no: { type: integer, nullable: true }
         name: { type: string }

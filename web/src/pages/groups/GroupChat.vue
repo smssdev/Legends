@@ -3,6 +3,7 @@
 // others' with their names on the other, the group's notes in the middle. New messages come at once on the group's
 // channel; older ones load on scrolling up. A message can be answered or deleted; "⋮" opens the members, the link,
 // adding, the admins and leaving.
+import { useToast } from '../../stores/toast'
 import { useConfirm } from '../../stores/confirm'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -173,6 +174,22 @@ async function send() {
   }
 }
 
+// [Sprint 30 G6] A report to the admins (once per message is enough).
+const REPORT_REASONS = { abuse: 'سب أو إساءة', inappropriate: 'محتوى غير لائق', spam: 'إزعاج أو إعلانات', other: 'سبب آخر' } as const
+const reporting = ref(false)
+const reportReason = ref<keyof typeof REPORT_REASONS | ''>('')
+const reportNote = ref('')
+watch(picked, () => { reporting.value = false; reportReason.value = ''; reportNote.value = '' })
+async function report(m: Message) {
+  try {
+    await ensureCsrf()
+    await api.POST('/groups/{group}/messages/{message}/report', { params: { path: { group: gid.value, message: m.id } }, body: { reason: reportReason.value as 'abuse', note: reportNote.value.trim() || null } })
+    useToast().show(t('وصل البلاغ للإدارة. شكراً لك.'))
+    picked.value = null
+  } catch (e) {
+    notice.value = asApiError(e).message
+  }
+}
 async function remove(m: Message) {
   picked.value = null
   try {
@@ -291,6 +308,16 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
       <div class="flex flex-col gap-2">
         <UiButton variant="outline" block @click="replyTo = picked; picked = null">{{ $t('رد') }}</UiButton>
         <UiButton v-if="picked && (picked.user?.id === me || group?.is_admin)" variant="danger" block @click="remove(picked!)">{{ $t('احذف الرسالة') }}</UiButton>
+        <!-- [Sprint 30 G6] Another's message to the admins: why, and a word if needed. -->
+        <template v-if="picked && picked.user && picked.user.id !== me">
+          <UiButton v-if="!reporting" variant="quiet" block @click="reporting = true">{{ $t('بلّغ عن الرسالة') }}</UiButton>
+          <form v-else class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3" @submit.prevent="report(picked!)">
+            <span class="text-sm font-bold">{{ $t('لماذا تبلّغ عنها؟') }}</span>
+            <label v-for="(label, k) in REPORT_REASONS" :key="k" class="flex min-h-touch items-center gap-2 text-sm"><input v-model="reportReason" type="radio" :value="k" class="size-5 accent-gold" />{{ $t(label) }}</label>
+            <input v-model="reportNote" maxlength="300" :placeholder="$t('تفاصيل (اختياري)')" class="h-touch rounded-md bg-surface px-3 text-sm" />
+            <UiButton type="submit" variant="danger" block :disabled="!reportReason">{{ $t('أرسل البلاغ للإدارة') }}</UiButton>
+          </form>
+        </template>
       </div>
     </UiDialog>
 

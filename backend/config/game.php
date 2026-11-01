@@ -497,7 +497,13 @@ return [
                 'title_en' => 'The match is managed live', 'body_en' => 'Join your live match: change the plan and make substitutions in the coach\'s windows, with the commentator beside you.'],
         ]],
 
-    'admin' => ['two_factor' => (bool) env('ADMIN_TWO_FACTOR', true), 'two_factor_hours' => 12, 'users_per_page' => 100,
+    // [Sprint 30 G6] The admins' scopes: each opens these sections of the panel (the first part of the path under
+    // /admin/); an admin with no scope opens everything, and gives the scopes.
+    'admin' => ['scopes' => [
+        'support' => ['overview', 'activity', 'users', 'conversations', 'vacations', 'alliances', 'leagues', 'reports'],
+        'content' => ['overview', 'announcements', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
+        'finance' => ['overview', 'activity', 'coins', 'leagues'],
+    ], 'two_factor' => (bool) env('ADMIN_TWO_FACTOR', true), 'two_factor_hours' => 12, 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
         'coins_max' => 100000],
     // [Sprint 28] The coaches' suggestions to the developers and the polls on what to build next: how many
