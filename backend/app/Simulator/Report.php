@@ -65,6 +65,8 @@ class Report
             'stats' => ['home' => $state['teams']['home']['stats'], 'away' => $state['teams']['away']['stats']],
             'thirds' => array_map(fn ($v) => intdiv($v * 100, $total), $thirds),
             'momentum' => $state['momentum'],
+            // [Sprint 30 G5] «خطتك ضد خطته»: the shapes as they ended (seen on the pitch by both, never the tactics).
+            'formations' => ['home' => $state['teams']['home']['formation'] ?? null, 'away' => $state['teams']['away']['formation'] ?? null],
             'timeline' => self::timeline($state, $timeline),
         ];
     }

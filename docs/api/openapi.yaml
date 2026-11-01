@@ -2303,6 +2303,7 @@ paths:
                   stats: { type: object, additionalProperties: true }
                   thirds: { type: array, items: { type: integer } }
                   momentum: { type: array, items: { type: integer } }
+                  formations: { type: object, description: '[Sprint 30 G5] Both shapes as they ended (never the tactics)', properties: { home: { type: [string, 'null'] }, away: { type: [string, 'null'] } } }
                   timeline: { type: array, items: { type: object, additionalProperties: true } }
                   readings: { type: array, items: { $ref: '#/components/schemas/MatchReading' } }
         '403': { $ref: '#/components/responses/Error' }
@@ -5774,8 +5775,12 @@ components:
               per_match: { type: integer }
     TrainingView:
       type: object
-      required: [cost, balance, interval_minutes, now, slots, players]
+      required: [cost, balance, interval_minutes, now, slots, players, recommended]
       properties:
+        recommended:
+          type: object
+          description: '[Sprint 30 G5] Per line, the player whose +1 comes soonest (fewest sessions, the younger on a tie), never injured, at the ceiling or training; null for a line already training'
+          properties: { gk: { type: [integer, 'null'] }, def: { type: [integer, 'null'] }, mid: { type: [integer, 'null'] }, att: { type: [integer, 'null'] } }
         cost: { type: integer, description: One session's price }
         balance: { type: integer }
         interval_minutes: { type: integer }

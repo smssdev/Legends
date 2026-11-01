@@ -5958,6 +5958,11 @@ export interface paths {
                             };
                             thirds?: number[];
                             momentum?: number[];
+                            /** @description [Sprint 30 G5] Both shapes as they ended (never the tactics) */
+                            formations?: {
+                                home?: string | null;
+                                away?: string | null;
+                            };
                             timeline: {
                                 [key: string]: unknown;
                             }[];
@@ -13194,6 +13199,13 @@ export interface components {
             }[];
         };
         TrainingView: {
+            /** @description [Sprint 30 G5] Per line, the player whose +1 comes soonest (fewest sessions, the younger on a tie), never injured, at the ceiling or training; null for a line already training */
+            recommended: {
+                gk?: number | null;
+                def?: number | null;
+                mid?: number | null;
+                att?: number | null;
+            };
             /** @description One session's price */
             cost: number;
             balance: number;

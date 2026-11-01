@@ -78,6 +78,27 @@ class TrainingTest extends TestCase
         $this->assertSame(6 * 3600, Training::interval($this->league['id']));
     }
 
+    public function test_each_line_has_a_recommended_player_the_quickest_to_grow_and_never_one_training(): void
+    {
+        // [Sprint 30 G5] The fastest +1 of each line (fewest sessions), not injured, not training.
+        $view = $this->actingAs($this->owner)->getJson($this->url())->assertOk()->json();
+        $players = collect($view['players']);
+        foreach (['gk', 'def', 'mid', 'att'] as $line) {
+            $pool = $players->where('line', $line)->where('injured', false)->where('maxed', false);
+            if ($pool->isEmpty()) {
+                $this->assertNull($view['recommended'][$line]);
+
+                continue;
+            }
+            $pick = $players->firstWhere('id', $view['recommended'][$line]);
+            $this->assertSame($line, $pick['line']);
+            $this->assertSame($pool->min('sessions'), $pick['sessions']);
+        }
+        $mid = $view['recommended']['mid'];
+        $after = $this->postJson($this->url(), ['player_id' => $mid])->assertOk()->json('recommended');
+        $this->assertNull($after['mid']);   // the line is training: nobody else to put in it
+    }
+
     public function test_a_player_goes_in_his_lines_slot_and_a_second_one_of_his_line_waits(): void
     {
         $p = $this->trainee('mid');
