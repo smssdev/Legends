@@ -4,6 +4,7 @@
 import createClient, { type Middleware } from 'openapi-fetch'
 import type { components, paths } from './schema'
 import { locale, t } from '../lib/i18n'
+import { useToast } from '../stores/toast'
 
 export type ApiErrorBody = components['schemas']['Error']
 export type Account = components['schemas']['Account']
@@ -55,8 +56,33 @@ const session: Middleware = {
       response = retried
     }
     const body = await response.clone().json().catch(() => ({}))
-    throw new ApiError(response.status, body)
+    const error = new ApiError(response.status, body)
+    failed(request, error)
+    throw error
   },
+  // [Sprint 30 Q3] No answer at all (offline, the server down) on a tap that changes something: said at once too.
+  onError({ request }) {
+    const error = asApiError(null)
+    failed(request, error)
+    return error
+  },
+}
+
+/**
+ * [Sprint 30 Q3] A tap that changes something and fails is never silent: the error also shows in the one toast at the
+ * top of the screen, whatever the page does with it (its message may sit out of sight). Not the field errors (422,
+ * under their inputs), nor the sign-in (401) and the admin's code (423) that their screens ask for; and the same
+ * message once in a short while.
+ */
+let lastToast = { text: '', at: 0 }
+function failed(request: Request, error: ApiError) {
+  if (request.method === 'GET' || [401, 419, 422, 423].includes(error.status)) return
+  const now = Date.now()
+  if (error.message === lastToast.text && now - lastToast.at < 2500) return
+  lastToast = { text: error.message, at: now }
+  try {
+    useToast().show(t(error.message), 'error', 4500)
+  } catch { /* before the app has its store: the page's own message is enough */ }
 }
 
 export const api = createClient<paths>({ baseUrl: '/api/v1', headers: { Accept: 'application/json' }, credentials: 'same-origin' })
