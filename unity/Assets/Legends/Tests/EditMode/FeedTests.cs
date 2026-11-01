@@ -237,7 +237,7 @@ namespace Legends.Tests
                 var m = MatchMinute.From(t, 3000);
                 Assert.AreEqual(last + 1, m.Tick, "ticks in order");
                 last = m.Tick;
-                Assert.AreEqual(6, m.Frames.Count, "six key frames in tick " + m.Tick);
+                Assert.That(m.Frames.Count, Is.EqualTo(6).Or.EqualTo(10), "six key frames, ten in a busy minute (Sprint 32 R4), in tick " + m.Tick);
                 Assert.Greater(m.Ms, 0);
                 foreach (var f in m.Frames)
                 {
