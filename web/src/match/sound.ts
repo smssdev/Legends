@@ -109,8 +109,23 @@ export class MatchSound {
 
   /** Crowd level follows how dangerous the moment is (0..5). */
   danger(level: number) {
-    if (!this.crowd || !this.ctx) return
-    this.crowd.gain.setTargetAtTime(0.18 + Math.min(5, Math.abs(level)) * 0.08, this.ctx.currentTime, 0.4)
+    this.level = Math.min(5, Math.abs(level))
+    this.crowdLevel()
+  }
+
+  /** [Sprint 31 D4] And how close the ball is to a goal (0 in midfield, 1 on the goal line): the stand rises with it. */
+  near(closeness: number) {
+    this.closeness = Math.max(0, Math.min(1, closeness))
+    this.crowdLevel()
+  }
+
+  private level = 0
+  private closeness = 0
+  // A roar or a groan holds the crowd until it has died down.
+  private holdUntil = 0
+  private crowdLevel() {
+    if (!this.crowd || !this.ctx || this.ctx.currentTime < this.holdUntil) return
+    this.crowd.gain.setTargetAtTime(0.18 + Math.max(this.level * 0.08, this.closeness * this.closeness * 0.34), this.ctx.currentTime, 0.4)
   }
 
   roar(seconds = 2.5) {
@@ -119,6 +134,7 @@ export class MatchSound {
     this.crowd.gain.cancelScheduledValues(t)
     this.crowd.gain.setTargetAtTime(1.1, t, 0.05)
     this.crowd.gain.setTargetAtTime(0.3, t + seconds, 0.8)
+    this.holdUntil = t + seconds + 1.6
   }
 
   groan() {
@@ -126,6 +142,7 @@ export class MatchSound {
     const t = this.ctx.currentTime
     this.crowd.gain.setTargetAtTime(0.7, t, 0.05)
     this.crowd.gain.setTargetAtTime(0.25, t + 0.8, 0.5)
+    this.holdUntil = t + 1.8
   }
 
   whistle(blasts = 1) {

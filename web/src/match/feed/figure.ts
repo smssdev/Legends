@@ -52,20 +52,24 @@ export function figure(kit, no, o = {}) {
     if (f === 'side') { c.fill(P.hairSide); dot(c, 4.6, -22, 1.3, '#141414'); c.fillStyle = skin; c.fill(P.nose) }
     return (sprites[f] = cv)
   }
+  // [Sprint 31 D2] His build (slim, medium or strong: the shirt's width) and height, from the caller (his id).
+  const bw = [0.88, 1, 1.14][o.build ?? 1] ?? 1, bh = o.tall ?? 1
   let facing = 'back', mirror = 1
   const legs = [{ x: -6, r: 3, lift: 0 }, { x: 6, r: -3, lift: 0 }], arms = [{ x: -14.5, r: 10 }, { x: 14.5, r: -10 }]
   function leg(c, l) {
-    c.save(); c.translate(l.x * (facing === 'side' ? 0.45 : 1), 25); c.rotate((l.r * Math.PI) / 180); c.scale(1, 1 - 0.45 * l.lift)
+    c.save(); c.translate(l.x * bw * (facing === 'side' ? 0.45 : 1), 25); c.rotate((l.r * Math.PI) / 180); c.scale(1, 1 - 0.45 * l.lift)
     c.fillStyle = skin; rr(c, -4.5, 0, 9, 15, 3.5)
     c.fillStyle = socks; rr(c, -4.6, 12, 9.2, 16, 3.5)
     c.fillStyle = '#0B0F1A'; c.fill(P.boot)
     c.restore()
   }
   function arm(c, a) {
-    c.save(); c.translate(a.x * (facing === 'side' ? 0.12 : 1), -7); c.rotate((a.r * Math.PI) / 180)
+    c.save(); c.translate(a.x * bw * (facing === 'side' ? 0.12 : 1), -7); c.rotate((a.r * Math.PI) / 180)
     c.fillStyle = kit; rr(c, -4, 0, 8, 12, 3.5)
     c.fillStyle = o.gloves ? kit : skin; rr(c, -3.4, 10, 6.8, 13, 3.4)
     if (o.gloves) { c.fillStyle = o.gloves; rr(c, -5, 20, 10, 9, 3.5) }
+    // [Sprint 31 D1] An assistant referee's flag in his right hand.
+    if (o.flag && a === arms[1]) { c.fillStyle = '#2B2B2B'; c.fillRect(-0.7, 18, 1.4, 16); c.fillStyle = o.flag; c.fillRect(0.7, 18, 9, 7); c.fillStyle = '#D3122F'; c.fillRect(0.7, 18, 4.5, 3.5); c.fillRect(5.2, 21.5, 4.5, 3.5) }
     c.restore()
   }
   const api = {
@@ -81,10 +85,12 @@ export function figure(kit, no, o = {}) {
     /** The figure with its centre at (x, y), turned r degrees, at scale k; shadow false leaves out its own shadow. */
     draw(c, x, y, r, k, shadow = true) {
       c.save(); c.translate(x, y); if (r) c.rotate((r * Math.PI) / 180); c.scale(k * mirror, k)
+      // Taller or shorter, his feet stay on the same spot.
+      if (bh !== 1) { c.translate(0, 58 * (1 - bh)); c.scale(1, bh) }
       if (shadow) { c.fillStyle = 'rgba(0,0,0,.42)'; c.beginPath(); c.ellipse(0, 58, 17, 4.5, 0, 0, Math.PI * 2); c.fill() }
       leg(c, legs[0]); leg(c, legs[1])
       if (facing === 'side') arm(c, arms[0])
-      c.drawImage(sprite(facing), BOX.x, BOX.y, BOX.w, BOX.h)
+      c.drawImage(sprite(facing), BOX.x * bw, BOX.y, BOX.w * bw, BOX.h)
       if (facing !== 'side') arm(c, arms[0])
       arm(c, arms[1])
       c.restore()

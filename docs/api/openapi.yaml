@@ -6614,6 +6614,16 @@ components:
         coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
         teams: { type: object }
         slots: { type: object }
+    Keyframe:
+      type: object
+      description: 'One of the six Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json).'
+      required: [t, b, p]
+      properties:
+        t: { type: integer, description: Its place among the six, 0 to 5 }
+        b: { type: array, items: { type: integer }, minItems: 2, maxItems: 3, description: 'The ball: x, y and its height' }
+        p: { type: object, additionalProperties: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, description: Every player on the pitch by id, his x and y }
+        h: { type: [integer, 'null'], description: The player on the ball }
+        r: { type: array, items: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: 3, description: '[Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none' }
     LiveSync:
       type: object
       properties:
@@ -6623,5 +6633,5 @@ components:
         server_now: { type: integer, description: Server clock in ms }
         next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
         gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
-        ticks: { type: array, items: { type: object }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
+        ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
         reactions: { type: array, items: { $ref: '#/components/schemas/Reaction' }, description: The last few seconds of reactions }

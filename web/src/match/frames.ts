@@ -10,7 +10,7 @@
 // segment (a monotone curve, |tangent| <= 3 x the smaller neighbouring step, 0 at a turn). A long lofted ball
 // (its next Keyframe in the air, 15 m or more away) rises on top of that in a parabola: the ball's arc.
 
-export type Keyframe = { b: [number, number, number?]; p: Record<string, [number, number]> }
+export type Keyframe = { b: [number, number, number?]; p: Record<string, [number, number]>; r?: [number, number][] }
 
 /** Where progress u falls among `count` Keyframes: between i and i + 1, k of the way (0..1). */
 export function segment(count: number, u: number): { i: number; k: number } {
@@ -47,7 +47,7 @@ export function loft(a: [number, number, number?], b: [number, number, number?])
 }
 
 /** The RenderFrame at progress u: the ball (x, y, height) and every player's spot. Null with no Keyframes. */
-export function sample(frames: Keyframe[], u: number): { ball: [number, number, number]; players: Record<string, [number, number]> } | null {
+export function sample(frames: Keyframe[], u: number): { ball: [number, number, number]; players: Record<string, [number, number]>; officials?: [number, number][] } | null {
   if (!frames.length) return null
   const { i, k } = segment(frames.length, u)
   const A = frames[i], B = frames[Math.min(frames.length - 1, i + 1)]
@@ -60,11 +60,14 @@ export function sample(frames: Keyframe[], u: number): { ball: [number, number, 
     const p = P?.p[id], n = N?.p[id]
     players[id] = [curve(p?.[0], a[0], b[0], n?.[0], k), curve(p?.[1], a[1], b[1], n?.[1], k)]
   }
-  if (B === A) return { ball: [A.b[0], A.b[1], A.b[2] ?? 0], players }
+  // [Sprint 31 D1] The referee and his assistants (r, when the server sends them) follow the same curve.
+  const officials = A.r && (B === A || !B.r ? A.r.map((o) => [o[0], o[1]] as [number, number])
+    : A.r.map((a, n) => { const b = B.r![n], p = P?.r?.[n], q = N?.r?.[n]; return [curve(p?.[0], a[0], b[0], q?.[0], k), curve(p?.[1], a[1], b[1], q?.[1], k)] as [number, number] }))
+  if (B === A) return { ball: [A.b[0], A.b[1], A.b[2] ?? 0], players, ...(officials ? { officials } : {}) }
   const ball: [number, number, number] = [
     curve(P?.b[0], A.b[0], B.b[0], N?.b[0], k),
     curve(P?.b[1], A.b[1], B.b[1], N?.b[1], k),
     curve(P ? P.b[2] ?? 0 : undefined, A.b[2] ?? 0, B.b[2] ?? 0, N ? N.b[2] ?? 0 : undefined, k) + 4 * k * (1 - k) * loft(A.b, B.b),
   ]
-  return { ball, players }
+  return { ball, players, ...(officials ? { officials } : {}) }
 }

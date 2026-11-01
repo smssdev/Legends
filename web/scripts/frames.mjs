@@ -27,6 +27,14 @@ for (let run = 0; run < 200; run++) {
     if (out(got.ball[0], A.b[0], B.b[0]) || out(got.ball[1], A.b[1], B.b[1]) || out(got.players[1][0], A.p[1][0], B.p[1][0]) || out(got.players[1][1], A.p[1][1], B.p[1][1]) || got.ball[2] < 0) bad.push(`overshoot in run ${run} at u ${u}`)
   }
 }
+// [Sprint 31 D1] The officials (r) follow the very curve the players do.
+{
+  const fs = golden.frames.map((f) => ({ ...f, r: f.p[7] ? [f.p[7], f.p[7], f.p[7]] : undefined }))
+  for (const u of [0, 0.1, 0.33, 0.5, 0.75, 1]) {
+    const got = sample(fs, u)
+    if (got.officials && got.players[7] && got.officials.some((o) => !near(o[0], got.players[7][0]) || !near(o[1], got.players[7][1]))) bad.push(`officials at u ${u}`)
+  }
+}
 if (bad.length) {
   console.error('frame-golden.json: the RenderFrame rule changed\n' + bad.join('\n'))
   process.exit(1)

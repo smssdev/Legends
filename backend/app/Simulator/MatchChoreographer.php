@@ -15,7 +15,8 @@ use App\Engine\SeededRandom;
  * Coordinates are decimetres: x 0..1050 (the home team attacks towards
  * 1050), y 0..680 (0 is the far touchline). Deterministic: its own random
  * stream, separate from the engine's, so drawing never changes a result.
- * Shapes are drawn from formations only, never from hidden tactics.
+ * Shapes are drawn from formations only, never from hidden tactics. Each Keyframe also carries the
+ * officials (`r`: the referee and his two assistants, Sprint 31 D1).
  */
 class MatchChoreographer
 {
@@ -51,7 +52,7 @@ class MatchChoreographer
 
         $frames = [];
         foreach (self::sample($path, self::FRAMES) as $i => [$x, $y, $z, $team]) {
-            $frames[] = ['t' => $i, 'b' => [$x, $y, $z]] + self::players($state, $x, $y, $team);
+            $frames[] = ['t' => $i, 'b' => [$x, $y, $z]] + self::players($state, $x, $y, $team) + ['r' => self::officials($x, $y)];
         }
         $last = end($path);
 
@@ -131,6 +132,23 @@ class MatchChoreographer
         }
 
         return $samples;
+    }
+
+    /**
+     * [Sprint 31 D1] The referee and his two assistants for one ball position: the referee on the diagonal, off the
+     * ball and never in its way; the assistants outside the touchlines, each on his own half (the far one on the
+     * right half, the near one on the left), level with the ball when it is in their half. Drawing only: they
+     * follow the ball, never a side's shape or tactics.
+     *
+     * @return list<array{0: int, 1: int}> referee, far assistant, near assistant
+     */
+    public static function officials(int $bx, int $by): array
+    {
+        $low = $by > 340;
+        $rx = max(40, min(1010, $bx + ($low ? -110 : 110)));
+        $ry = max(60, min(620, 340 + intdiv(($by - 340) * 35, 100) + ($low ? -90 : 90)));
+
+        return [[$rx, $ry], [max(525, min(1040, $bx)), -14], [max(10, min(525, $bx)), 694]];
     }
 
     /** Positions of everyone on the pitch for one ball position. */
