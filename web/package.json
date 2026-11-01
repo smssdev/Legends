@@ -14,7 +14,8 @@
     "api": "openapi-typescript ../docs/api/openapi.yaml -o src/api/schema.d.ts",
     "names": "node scripts/names.mjs",
     "i18n": "node scripts/i18n.mjs",
-    "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs"
+    "frames": "node --experimental-strip-types --no-warnings scripts/frames.mjs",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -27,6 +28,8 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.11.3",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
