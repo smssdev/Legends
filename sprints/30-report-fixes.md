@@ -40,7 +40,7 @@
 
 | الرمز | المهمة | الحالة |
 |---|---|---|
-| Q1 | **طبقة مكونات headless موحّدة للـ Vue:** Headless UI (Vue) وreka-ui (مكافئ Radix للـ Vue) بأسلوب shadcn-vue (نسخ ولصق بألوان `tokens.json`)، والبنية `web/src/ui/primitives` و`themed` و`patterns`. وكلها مجانية مفتوحة المصدر. و`/dev/ui` يصير نظام التصميم المعتمد: كل مكوّن يظهر فيه أولاً. (اللعبة كلها Vue، فلا Radix ولا shadcn/ui للـ React) | |
+| Q1 | **طبقة مكونات headless موحّدة للـ Vue** (كلها مجانية مفتوحة المصدر، واللعبة كلها Vue فلا Radix ولا shadcn/ui للـ React): **Headless UI (Vue)** موجودة أصلاً تحت `UiDialog` و`UiSelect` (Combobox وListbox) و`UiTabs`، وأُضيفت **reka-ui** (Radix للـ Vue) بـ `UiSlider` و`UiTooltip` ومزوّد واحد للاتجاه (`ConfigProvider` في `App.vue`). والطبقات بأسلوب shadcn-vue: `components/ui/` المنسّقة بألوان `tokens.json`، و`components/patterns/` للأنماط المركبة. و`/dev/ui` يعرضها كلها أولاً | ✅ |
 | Q2 | **حوار تأكيد موحّد** (`ConfirmDangerDialog`، كتابة الاسم أو الرقم) يحل محل كل `window.confirm` | |
 | Q3 | **Toast موحّد** لنجاح وفشل كل عملية (منها اختبار البريد الذي يفشل بصمت) | |
 | Q4 | **Combobox** لمنتقي الدوري (42 خياراً) والفرق، و**Tabs** للدوري (بدل صفحة 3900px)، و**Slider** للتكتيك، وFocus trap وEsc في كل نافذة، وRTL من مزوّد واحد | |
@@ -65,6 +65,8 @@
 | G6 | طابور إشراف على الجروبات (بلاغات ومراجعة وحظر)، وأدوار المشرفين (دعم ومحتوى ومالي) | |
 | G7 | PWA كامل (Service Worker وطلب التثبيت) | |
 | G8 | الجودة: Playwright E2E للمسار الحرج، وفحص إتاحة (axe)، وقائمة تحقق RTL | |
+
+**Q1 طبقة المكونات:** `reka-ui@2.10.5` (MIT). `UiSlider.vue` (Slider: إصبع يتحرك بسلاسة، والأسهم وHome/End، والاتجاه الصحيح بالعربية: السهم الأيمن ينقص)، و`UiTooltip.vue` (Tooltip في طبقة فوق الصفحة لا تقصّه البطاقات). و`App.vue` يلف اللعبة بـ `ConfigProvider` (الاتجاه من اللغة) و`TooltipProvider`. وقسم «المكونات الموحّدة» في `/dev/ui` يعرض Slider وCombobox وTooltip وConfirmDangerDialog وToast. **فُحص** في Chromium بالعربية (السهم الأيمن ينقص من 3 إلى 2). **أثره على الحجم:** نحو 7KB على الحزمة الرئيسية.
 
 **قرارات صاحب المشروع (2026-11-01، في `README.md` القسم 0):** أسماء اللاعبين بالإنجليزية في كل الشاشات (D1 أدناه)، و«ادفع للحكم» باقية، والتعليق الإنجليزي وحده حالياً، ولا مزايدات مباشرة، والتطبيق Flutter. **و«أكمل مباشرة بالمرحلة 2 و3»:** كل بند في PR يُدمج وحده.
 
