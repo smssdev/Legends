@@ -45,6 +45,9 @@ COPY --from=web /app/web/dist ./public-web
 RUN composer dump-autoload --optimize --no-dev \
  && cp -r public-web/. public/ && rm -rf public-web \
  && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec gzip -k -9 {} \; \
+ && apk add --no-cache --virtual .brotli brotli \
+ && find public -type f \( -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.html' -o -name '*.wasm' -o -name '*.data' \) -size +1k -exec brotli -k -q 11 {} \; \
+ && apk del .brotli \
  && cp .env.example .env \
  && sed -i 's/^APP_ENV=.*/APP_ENV=demo/; s/^APP_DEBUG=.*/APP_DEBUG=false/; s/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env \
  && echo "SIMULATOR_ENABLED=true" >> .env \
