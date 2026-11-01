@@ -28,3 +28,7 @@ src/styles/tokens.css
 
 # The names dictionary, written before dev and build (scripts/names.mjs) [X40].
 public/names/
+
+# [Sprint 30 G8] Playwright
+test-results
+playwright-report

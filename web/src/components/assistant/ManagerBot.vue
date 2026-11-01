@@ -35,6 +35,9 @@ function quiet() {
   hello.value = false
   try { localStorage.setItem(HELLO, today) } catch {}
 }
+// [Sprint 30 G8] The greeting leaves by itself after a few seconds: on a phone it sat over the page's bottom buttons
+// («أنشئ الدوري…»), which the end-to-end test found.
+if (hello.value) setTimeout(() => { if (hello.value) quiet() }, 8000)
 
 async function show() {
   quiet()
