@@ -16,6 +16,7 @@ import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ConfirmDangerDialog from '../components/patterns/ConfirmDangerDialog.vue'
 import { useConfirm } from '../stores/confirm'
+import { useToast } from '../stores/toast'
 
 type S = components['schemas']
 type AdminUser = S['AdminUser']
@@ -377,7 +378,12 @@ const send = () => run(async () => {
 
 const mailTo = ref('')
 const mail = ref<{ mailer: string; from: string; key: 'none' | 'api' | 'smtp' | 'other'; problems: string[]; sent: boolean; error: string | null; fix: string | null } | null>(null)
-const mailTest = () => run(async () => { mail.value = (await api.POST('/admin/mail-test', { body: { to: mailTo.value } })).data ?? null })
+// [Sprint 30 Q3] The test's answer in the toast as well: sent, or why not (it used to fail without a word on top).
+const mailTest = () => run(async () => {
+  mail.value = (await api.POST('/admin/mail-test', { body: { to: mailTo.value } })).data ?? null
+  if (mail.value?.sent) useToast().show(t('أُرسلت. افحص البريد الوارد والرسائل غير المرغوبة.'))
+  else if (mail.value) useToast().show(mail.value.fix ?? mail.value.error ?? t('لم تُرسل الرسالة.'), 'error', 6000)
+})
 const review = (id: number, approve: boolean) => run(async () => {
   alliances.value = (await api.POST('/admin/alliances/{id}/review', { params: { path: { id } }, body: { approve, note: allianceNote.value[id] || null } })).data!.tournaments
 })

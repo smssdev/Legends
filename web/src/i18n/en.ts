@@ -2263,6 +2263,7 @@ export const EN: Record<string, string> = {
   'افصل بينها بمسافة أو فاصلة، ويمكنك الإضافة لاحقاً أو مشاركة رابط الجروب.': 'Separate them with a space or a comma; you can add more later or share the group link.',
   'أنشئ الجروب': 'Create the group',
   'أنشئ جروباً': 'Create a group',
+  'لم تُرسل الرسالة.': 'The message was not sent.',
   'أنهه': 'End it',
   'حذف إعلان المكافأة؟': 'Delete the rewarded ad?',
   'إيقاف الفعالية الآن؟': 'Stop the event now?',
