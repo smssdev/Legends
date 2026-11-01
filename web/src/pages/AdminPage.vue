@@ -15,6 +15,7 @@ import Icon from '../components/Icon.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
 import ConfirmDangerDialog from '../components/patterns/ConfirmDangerDialog.vue'
+import { useConfirm } from '../stores/confirm'
 
 type S = components['schemas']
 type AdminUser = S['AdminUser']
@@ -265,6 +266,7 @@ const toggleHouseAd = (a: S['HouseAd']) => run(async () => {
   await loadHouseAds()
 })
 const deleteHouseAd = (a: S['HouseAd']) => run(async () => {
+  if (!(await useConfirm().ask({ title: 'حذف إعلان المكافأة؟', text: a.title, action: 'احذف' }))) return
   await api.DELETE('/admin/house-ads/{id}', { params: { path: { id: a.id } } })
   await loadHouseAds()
 })
@@ -325,7 +327,8 @@ const openPoll = () => run(async () => {
   await loadPolls()
 })
 const closePoll = (p: S['Poll']) => run(async () => {
-  if (!confirm(t(p.state === 'open' && p.total ? 'إنهاء هذا التصويت الآن؟' : 'حذف هذا التصويت؟'))) return
+  const ending = p.state === 'open' && p.total
+  if (!(await useConfirm().ask({ title: ending ? 'إنهاء هذا التصويت الآن؟' : 'حذف هذا التصويت؟', action: ending ? 'أنهه' : 'احذف' }))) return
   await api.DELETE('/admin/polls/{id}', { params: { path: { id: p.id } } })
   await loadPolls()
 })
@@ -352,6 +355,7 @@ const extendEvent = (e: S['TimedEvent']) => run(async () => {
   await loadEvents()
 })
 const stopEvent = (e: S['TimedEvent']) => run(async () => {
+  if (!(await useConfirm().ask({ title: 'إيقاف الفعالية الآن؟', text: 'تنتهي للجميع في الحال.', action: 'أوقفها' }))) return
   await api.DELETE('/admin/events/{id}', { params: { path: { id: e.id } } })
   await loadEvents()
 })

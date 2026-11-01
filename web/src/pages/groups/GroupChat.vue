@@ -3,6 +3,7 @@
 // others' with their names on the other, the group's notes in the middle. New messages come at once on the group's
 // channel; older ones load on scrolling up. A message can be answered or deleted; "⋮" opens the members, the link,
 // adding, the admins and leaving.
+import { useConfirm } from '../../stores/confirm'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -198,9 +199,10 @@ const add = () => act(async () => {
   adding.value = ''
   return r
 })
-const kick = (user: number) => act(() => api.DELETE('/groups/{group}/members/{user}', { params: { path: { group: gid.value, user } } }))
+const kick = async (user: number) => (await useConfirm().ask({ title: 'إخراج العضو من الجروب؟', action: 'أخرجه' })) && act(() => api.DELETE('/groups/{group}/members/{user}', { params: { path: { group: gid.value, user } } }))
 const admin = (user: number, on: boolean) => act(() => api.PUT('/groups/{group}/members/{user}/admin', { params: { path: { group: gid.value, user } }, body: { admin: on } }))
 async function leave() {
+  if (!(await useConfirm().ask({ title: 'مغادرة الجروب؟', text: 'لن تصلك رسائله، ويعيدك أي مشرف بالإضافة أو الرابط.', action: 'غادر' }))) return
   try {
     await ensureCsrf()
     await api.POST('/groups/{group}/leave', { params: { path: { group: gid.value } } })
