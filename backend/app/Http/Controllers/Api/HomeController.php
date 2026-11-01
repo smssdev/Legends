@@ -12,6 +12,7 @@ use App\Messages\Inbox;
 use App\Models\Club;
 use App\Models\League;
 use App\Models\User;
+use App\Season\Achievements;
 use App\Season\Career;
 use App\Season\CoachRating;
 use App\Wallet\StarterGift;
@@ -51,6 +52,14 @@ class HomeController extends Controller
             // [Sprint 30 P6] The new coach's first coins, to claim from here once.
             'starter_gift' => StarterGift::view($user),
         ]);
+    }
+
+    /** [Sprint 30 G4] The coach's achievements, or another coach's (they are public like the ranking). */
+    public function achievements(Request $request): JsonResponse
+    {
+        $id = (int) ($request->validate(['user' => ['sometimes', 'integer', 'exists:users,id']])['user'] ?? $request->user()->id);
+
+        return response()->json(['achievements' => Achievements::of($id)]);
     }
 
     /** [Sprint 30 P6] «استلم مكافأتك»: the starter coins, once per account. */

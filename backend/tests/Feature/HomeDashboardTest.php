@@ -25,6 +25,21 @@ class HomeDashboardTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_achievements_count_from_what_the_game_keeps(): void
+    {
+        // [Sprint 30 G4] A new coach has every badge ahead of him; an accepted idea earns its own.
+        $coach = User::factory()->create();
+        $all = collect($this->actingAs($coach)->getJson('/api/v1/home/achievements')->assertOk()->json('achievements'));
+        $this->assertSame(array_keys(config('game.achievements')), $all->pluck('key')->all());
+        $this->assertFalse($all->contains('earned', true));
+        $this->assertSame((int) config('game.rating.tiers.legend'), $all->firstWhere('key', 'legend')['goal']);
+        DB::table('suggestions')->insert(['user_id' => $coach->id, 'title' => 'فكرة', 'body' => 'نص', 'status' => 'accepted', 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+        $idea = collect($this->getJson('/api/v1/home/achievements')->json('achievements'))->firstWhere('key', 'idea');
+        $this->assertSame(['key' => 'idea', 'goal' => 1, 'progress' => 1, 'earned' => true], $idea);
+        // Another coach's, public like the ranking.
+        $this->getJson('/api/v1/home/achievements?user='.$coach->id)->assertOk()->assertJsonCount(count(config('game.achievements')), 'achievements');
+    }
+
     public function test_a_new_coach_claims_the_starter_coins_once_from_home(): void
     {
         // [Sprint 30 P6] 25 coins to start, apart from the verification reward, whatever the taps.

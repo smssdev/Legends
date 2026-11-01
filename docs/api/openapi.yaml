@@ -2227,6 +2227,23 @@ paths:
       responses:
         '200': { description: The balance after it, content: { application/json: { schema: { type: object, required: [coins, starter_gift], properties: { coins: { type: integer }, starter_gift: { $ref: '#/components/schemas/StarterGift' } } } } } }
         '401': { $ref: '#/components/responses/Error' }
+  /home/achievements:
+    get:
+      tags: [leagues]
+      summary: '[Sprint 30 G4] A coach''s achievements (mine, or ?user= another''s), worked out from the matches, titles, rating peak, friendlies, ideas and invites'
+      parameters: [{ name: user, in: query, schema: { type: integer } }]
+      responses:
+        '200':
+          description: The badges in order, each with its goal and the progress toward it
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [achievements]
+                properties:
+                  achievements:
+                    type: array
+                    items: { type: object, required: [key, goal, progress, earned], properties: { key: { type: string, enum: [first_win, matches, wins, first_title, league_title, cup_title, professional, legend, friendlies, idea, invites] }, goal: { type: integer }, progress: { type: integer }, earned: { type: boolean } } }
   /home/slots/{slot}/unlock:
     parameters: [{ name: slot, in: path, required: true, schema: { type: integer, minimum: 3, maximum: 8 } }]
     post:

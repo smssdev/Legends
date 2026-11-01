@@ -5743,6 +5743,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/home/achievements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 30 G4] A coach's achievements (mine, or ?user= another's), worked out from the matches, titles, rating peak, friendlies, ideas and invites */
+        get: {
+            parameters: {
+                query?: {
+                    user?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The badges in order, each with its goal and the progress toward it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            achievements: {
+                                /** @enum {string} */
+                                key: "first_win" | "matches" | "wins" | "first_title" | "league_title" | "cup_title" | "professional" | "legend" | "friendlies" | "idea" | "invites";
+                                goal: number;
+                                progress: number;
+                                earned: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/home/slots/{slot}/unlock": {
         parameters: {
             query?: never;
