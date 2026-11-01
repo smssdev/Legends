@@ -2219,6 +2219,13 @@ paths:
                       injured: { type: object, additionalProperties: { type: integer } }
                   chat: { type: array, items: { $ref: '#/components/schemas/BroadcastChat' }, description: 'The side chat, the latest 50 [X24]' }
         '404': { $ref: '#/components/responses/Error' }
+  /home/starter-gift:
+    post:
+      tags: [leagues]
+      summary: '[Sprint 30 P6] Claim the starter coins, once per account (a repeated tap pays nothing more)'
+      responses:
+        '200': { description: The balance after it, content: { application/json: { schema: { type: object, required: [coins, starter_gift], properties: { coins: { type: integer }, starter_gift: { $ref: '#/components/schemas/StarterGift' } } } } } }
+        '401': { $ref: '#/components/responses/Error' }
   /home/slots/{slot}/unlock:
     parameters: [{ name: slot, in: path, required: true, schema: { type: integer, minimum: 3, maximum: 8 } }]
     post:
@@ -5468,10 +5475,11 @@ components:
         status: { type: string, enum: [pending, accepted, declined, cancelled, expired] }
     Friendlies:
       type: object
-      required: [club, coins, balance, fitness, blocked, training_progress_pct, opponents, recent]
+      required: [club, coins, first_free, balance, fitness, blocked, training_progress_pct, opponents, recent]
       properties:
         club: { type: object, required: [name, crest_url], properties: { name: { type: string }, crest_url: { type: string } }, description: '[Sprint 27 B3] My club, for the quick simulation' }
-        coins: { type: integer, description: '[Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit' }
+        coins: { type: integer, description: '[Sprint 24 B2] What a friendly costs this coach in any league (game.friendlies.coins, 5), with no limit; [Sprint 30 P6] 0 for the account''s first' }
+        first_free: { type: boolean, description: '[Sprint 30 P6] The account''s first friendly: free' }
         balance: { type: integer, description: The coach's coins }
         fitness: { type: integer, description: '[Sprint 24 B2] The fitness each player who plays gains (up to 100)' }
         blocked: { type: [object, 'null'], required: [reason], properties: { reason: { type: string, enum: [live, before_match] }, until: { type: string, format: date-time } } }
@@ -6122,10 +6130,16 @@ components:
             points: { type: integer }
             tier: { $ref: '#/components/schemas/RatingTierKey' }
             division: { type: integer, nullable: true }
+    StarterGift:
+      type: object
+      description: '[Sprint 30 P6] A new coach''s first coins (game.account.starter_coins, 25), claimed once from the home screen'
+      required: [coins, claimed]
+      properties: { coins: { type: integer }, claimed: { type: boolean } }
     HomeScreen:
       type: object
-      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers, polls_waiting]
+      required: [coach, trophies, slots, slots_open, next_slot_at, colleagues, announcements, rating_tiers, polls_waiting, starter_gift]
       properties:
+        starter_gift: { $ref: '#/components/schemas/StarterGift' }
         polls_waiting: { type: integer, description: '[Sprint 28] The open polls this coach has not voted in yet' }
         coach:
           type: object

@@ -25,6 +25,18 @@ class HomeDashboardTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_a_new_coach_claims_the_starter_coins_once_from_home(): void
+    {
+        // [Sprint 30 P6] 25 coins to start, apart from the verification reward, whatever the taps.
+        $coach = User::factory()->create();
+        $this->actingAs($coach)->getJson('/api/v1/home')->assertOk()->assertJsonPath('starter_gift', ['coins' => 25, 'claimed' => false]);
+        $this->postJson('/api/v1/home/starter-gift')->assertOk()->assertJsonPath('coins', 25)->assertJsonPath('starter_gift.claimed', true);
+        $this->postJson('/api/v1/home/starter-gift')->assertOk()->assertJsonPath('coins', 25);
+        $this->assertSame(25, Wallet::balance($coach->id));
+        $this->assertSame('starter', DB::table('wallet_transactions')->where('user_id', $coach->id)->value('type'));
+        $this->getJson('/api/v1/home')->assertJsonPath('starter_gift.claimed', true)->assertJsonPath('coach.coins', 25);
+    }
+
     public function test_eight_slots_one_club_one_waiting_and_the_rest_locked(): void
     {
         Carbon::setTestNow('2026-10-22 10:00:00');

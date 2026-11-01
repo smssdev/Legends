@@ -5696,6 +5696,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/home/starter-gift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 30 P6] Claim the starter coins, once per account (a repeated tap pays nothing more) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The balance after it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            coins: number;
+                            starter_gift: components["schemas"]["StarterGift"];
+                        };
+                    };
+                };
+                401: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/home/slots/{slot}/unlock": {
         parameters: {
             query?: never;
@@ -12706,8 +12746,10 @@ export interface components {
                 name: string;
                 crest_url: string;
             };
-            /** @description [Sprint 24 B2] What a friendly costs in any league (game.friendlies.coins, 5), with no limit */
+            /** @description [Sprint 24 B2] What a friendly costs this coach in any league (game.friendlies.coins, 5), with no limit; [Sprint 30 P6] 0 for the account's first */
             coins: number;
+            /** @description [Sprint 30 P6] The account's first friendly: free */
+            first_free: boolean;
             /** @description The coach's coins */
             balance: number;
             /** @description [Sprint 24 B2] The fitness each player who plays gains (up to 100) */
@@ -13490,7 +13532,13 @@ export interface components {
                 division: number | null;
             };
         };
+        /** @description [Sprint 30 P6] A new coach's first coins (game.account.starter_coins, 25), claimed once from the home screen */
+        StarterGift: {
+            coins: number;
+            claimed: boolean;
+        };
         HomeScreen: {
+            starter_gift: components["schemas"]["StarterGift"];
             /** @description [Sprint 28] The open polls this coach has not voted in yet */
             polls_waiting: number;
             coach: {
