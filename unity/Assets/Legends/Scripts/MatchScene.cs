@@ -87,28 +87,83 @@ namespace Legends
             Segment(m.Frames.Count, t, out int i, out float k);
             var a = m.Frames[i];
             var b = m.Frames[Mathf.Min(i + 1, m.Frames.Count - 1)];
+            var pf = i > 0 ? m.Frames[i - 1] : null;
+            var nf = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
             bool flip = Flipped(m.Period);
 
             foreach (var kv in players)
             {
                 // As the golden vectors: a player in frame i only (sent off, replaced) stays where he was, and one who
                 // is not in frame i is not drawn until his own frame.
-                bool inA = a.Players.TryGetValue(kv.Key, out var pa);
-                bool inB = b.Players.TryGetValue(kv.Key, out var pb);
+                bool inA = a.Players.ContainsKey(kv.Key);
                 kv.Value.gameObject.SetActive(inA);
                 if (!inA) continue;
-                if (!inB) pb = pa;
-                var from = World(pa, flip);
-                var to = World(pb, flip);
-                var pos = Vector3.Lerp(from, to, k);
-                var dir = to - from;
+                var spot = SamplePlayer(pf, a, b, nf, kv.Key, k);
+                var ahead = SamplePlayer(pf, a, b, nf, kv.Key, Mathf.Min(1f, k + 0.05f));
+                var pos = World(spot, flip);
+                var dir = World(ahead, flip) - pos;
                 kv.Value.localPosition = pos + Vector3.up * 0.9f;
                 if (dir.sqrMagnitude > 0.0004f)
                     kv.Value.localRotation = Quaternion.Slerp(kv.Value.localRotation, Quaternion.LookRotation(dir), 10f * Time.deltaTime);
             }
 
-            var ball = Vector3.Lerp(a.Ball, b.Ball, k);
+            var ball = SampleBall(pf, a, b, nf, k);
             Ball.localPosition = World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (0.16f + ball.z / 10f);
+        }
+
+        /// <summary>
+        /// [Sprint 31 M1] The tangent at cur from its neighbours (NaN when missing): Catmull-Rom, 0 at a turn, at most 3 x
+        /// the smaller step, one-sided at the ends. Exactly as web/src/match/frames.ts and docs/api/frame-golden.json.
+        /// </summary>
+        public static float Tangent(float prev, float cur, float next)
+        {
+            bool hp = !float.IsNaN(prev), hn = !float.IsNaN(next);
+            if (!hp && !hn) return 0f;
+            if (!hp) return next - cur;
+            if (!hn) return cur - prev;
+            float d0 = cur - prev, d1 = next - cur;
+            if (d0 * d1 <= 0f) return 0f;
+            float m = (d0 + d1) / 2f, lim = 3f * Mathf.Min(Mathf.Abs(d0), Mathf.Abs(d1));
+            return Mathf.Sign(m) * Mathf.Min(Mathf.Abs(m), lim);
+        }
+
+        /// <summary>[Sprint 31 M1] One coordinate between a and b: a cubic Hermite curve that never overshoots.</summary>
+        public static float Curve(float p, float a, float b, float n, float k)
+        {
+            float ma = Tangent(p, a, b), mb = Tangent(a, b, n), k2 = k * k, k3 = k2 * k;
+            return (2 * k3 - 3 * k2 + 1) * a + (k3 - 2 * k2 + k) * ma + (-2 * k3 + 3 * k2) * b + (k3 - k2) * mb;
+        }
+
+        /// <summary>[Sprint 31 M1] The ball's arc: a lofted ball (the next frame in the air) over 15 m rises by its length / 10, at most 6 m.</summary>
+        public static float Loft(Vector3 a, Vector3 b)
+        {
+            if (!(b.z > 0f)) return 0f;
+            float d = Vector2.Distance(new Vector2(a.x, a.y), new Vector2(b.x, b.y));
+            return d < 150f ? 0f : Mathf.Min(60f, Mathf.Floor(d / 10f));
+        }
+
+        /// <summary>[Sprint 31 M1] The ball (x, y, height) between frames a and b, with p before a and n after b (null if none).</summary>
+        public static Vector3 SampleBall(Frame p, Frame a, Frame b, Frame n, float k)
+        {
+            if (ReferenceEquals(a, b)) return a.Ball;
+            float N(Frame f, int c) => f == null ? float.NaN : f.Ball[c];
+            return new Vector3(
+                Curve(N(p, 0), a.Ball.x, b.Ball.x, N(n, 0), k),
+                Curve(N(p, 1), a.Ball.y, b.Ball.y, N(n, 1), k),
+                Curve(N(p, 2), a.Ball.z, b.Ball.z, N(n, 2), k) + 4f * k * (1f - k) * Loft(a.Ball, b.Ball));
+        }
+
+        /// <summary>[Sprint 31 M1] A player's spot between frames a and b (he must be in a; missing from b, he stays).</summary>
+        public static Vector2 SamplePlayer(Frame p, Frame a, Frame b, Frame n, string id, float k)
+        {
+            var pa = a.Players[id];
+            if (ReferenceEquals(a, b) || !b.Players.TryGetValue(id, out var pb)) return pa;
+            Vector2 pp = default, pn = default;
+            bool hp = p != null && p.Players.TryGetValue(id, out pp);
+            bool hn = n != null && n.Players.TryGetValue(id, out pn);
+            return new Vector2(
+                Curve(hp ? pp.x : float.NaN, pa.x, pb.x, hn ? pn.x : float.NaN, k),
+                Curve(hp ? pp.y : float.NaN, pa.y, pb.y, hn ? pn.y : float.NaN, k));
         }
 
         /// <summary>How far through the current minute's shot, 0 to 1 (the tests compare the scene with the frames at it).</summary>
@@ -116,8 +171,8 @@ namespace Legends
 
         /// <summary>
         /// Where a minute's progress t (0..1) falls among its key frames: between frame i and i + 1, by k (0..1).
-        /// Linear, exactly as the cartoon player and docs/api/frame-golden.json (Sprint 20 S5, the owner's decision):
-        /// past the end the last frame holds, never an extrapolation.
+        /// Exactly as the cartoon player and docs/api/frame-golden.json (Sprint 20 S5); between i and i + 1 the spot
+        /// follows Curve (Sprint 31 M1). Past the end the last frame holds, never an extrapolation.
         /// </summary>
         public static void Segment(int frames, float t, out int i, out float k)
         {

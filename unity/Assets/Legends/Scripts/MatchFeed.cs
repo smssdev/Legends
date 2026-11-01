@@ -106,8 +106,9 @@ namespace Legends
             {
                 var frame = new Frame { Holder = MiniJson.Str(fr, "h", null) };
                 var ball = MiniJson.Arr(fr, "b");
-                if (ball != null && ball.Count == 3)
-                    frame.Ball = new Vector3(System.Convert.ToSingle(ball[0]), System.Convert.ToSingle(ball[1]), System.Convert.ToSingle(ball[2]));
+                // The height may be left out (0), as in the golden vectors [Sprint 31 M1].
+                if (ball != null && ball.Count >= 2)
+                    frame.Ball = new Vector3(System.Convert.ToSingle(ball[0]), System.Convert.ToSingle(ball[1]), ball.Count > 2 ? System.Convert.ToSingle(ball[2]) : 0f);
                 foreach (var kv in MiniJson.Obj(fr, "p") ?? new Dictionary<string, object>())
                 {
                     var xy = kv.Value as List<object>;
