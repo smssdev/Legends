@@ -226,7 +226,8 @@ const drawTrail = (trl, path, f, op, from = 0) => { const pts = Array.from({ len
 function title(svg, text, color) {
   const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: 'rgba(4,11,28,.75)', opacity: 0 }, svg)
   const r1 = el('rect', { x: 0, y: 4, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg), r2 = el('rect', { x: 0, y: 62, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg)
-  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), opacity: 0 }, svg)
+  // [Sprint 30 Q8] A dark edge under the word: read whole over the pitch, the flashes and the band.
+  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
   t.textContent = text
   return (f) => { const e = ease(f); sa(band, 'opacity', f); sa(r1, 'opacity', f); sa(r2, 'opacity', f); sa(r1, 'transform', `translate(${(1 - e) * -640} 0)`); sa(r2, 'transform', `translate(${(1 - e) * 640} 0)`); sa(t, 'opacity', f); sa(t, 'transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`) }
 }
