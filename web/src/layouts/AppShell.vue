@@ -7,7 +7,7 @@
 //   club board) first, then the four portals, each opening its short list. One way to each place, no duplicate menu.
 // - [Sprint 22] The Assistant Coach's button on every screen, fixed on the left in Arabic and the right in English (above the bottom bar inside a slot).
 // - Outside a slot (the home screen, my leagues, the account, the inbox) only the top bar.
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Icon from '../components/Icon.vue'
 import ClubSwitcher from '../components/shell/ClubSwitcher.vue'
@@ -68,12 +68,24 @@ watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as 
 const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
 watch(() => route.fullPath, () => { portal.value = null })
+
+// [Sprint 30 P7] The header's real height (it grows with the club's tabs and wraps on narrow screens), so the side
+// menu sits right under it and fills the rest of the screen exactly, scrolling inside.
+const header = ref<HTMLElement | null>(null)
+const headerHeight = ref(68)
+let sizer: ResizeObserver | null = null
+onMounted(() => {
+  if (!header.value || typeof ResizeObserver === 'undefined') return
+  sizer = new ResizeObserver(([e]) => { headerHeight.value = Math.round(e.target.getBoundingClientRect().height) })
+  sizer.observe(header.value)
+})
+onBeforeUnmount(() => sizer?.disconnect())
 </script>
 
 <template>
-  <div class="min-h-dvh">
+  <div class="min-h-dvh" :style="{ '--shell-header': headerHeight + 'px' }">
     <ToastHost />
-    <header class="sticky top-0 z-30">
+    <header ref="header" class="sticky top-0 z-30">
       <div class="shell-top relative border-b border-shade/30">
         <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
           <!-- The club (inside a slot: a tap switches clubs), the brand outside. -->
@@ -181,7 +193,7 @@ watch(() => route.fullPath, () => { portal.value = null })
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
         <RouterLink to="/ideas" class="side-item"><Icon name="idea" :size="18" />{{ $t('اقتراحات التطوير') }}</RouterLink>
       </nav>
-      <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'pb-28' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
+      <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'shell-main-slot' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
         <RouterView v-slot="{ Component, route: r }">
           <Transition name="page">
             <component :is="Component" :key="r.path" />
@@ -193,10 +205,10 @@ watch(() => route.fullPath, () => { portal.value = null })
     <!-- [W6] Inside a slot on the phone: «النادي» first, then the four portals. -->
     <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
       <RouterLink to="/club" class="tab-item" :class="route.path === '/club' && !portal ? 'is-active' : ''" :aria-current="route.path === '/club' ? 'page' : undefined">
-        <Icon name="club" /><span class="leading-tight">{{ $t('النادي') }}</span>
+        <Icon name="club" /><span class="line-clamp-2 max-w-full leading-tight">{{ $t('النادي') }}</span>
       </RouterLink>
       <button v-for="g in groups" :key="g.key" type="button" class="tab-item" :class="groupActive(g.key) || portal === g.key ? 'is-active' : ''" :aria-expanded="portal === g.key" aria-controls="portal-list" @click="togglePortal(g.key)">
-        <Icon :name="g.icon" /><span class="leading-tight">{{ $t(g.label) }}</span>
+        <Icon :name="g.icon" /><span class="line-clamp-2 max-w-full leading-tight">{{ $t(g.label) }}</span>
       </button>
     </nav>
 
@@ -301,12 +313,16 @@ watch(() => route.fullPath, () => { portal.value = null })
 /* [Sprint 20 W6] The computer's fixed side menu inside a slot. */
 .side-nav {
   position: sticky;
-  top: 4.25rem;
-  height: calc(100dvh - 4.25rem);
+  top: var(--shell-header, 4.25rem);
+  align-self: start;
+  height: calc(100vh - var(--shell-header, 4.25rem));
+  height: calc(100dvh - var(--shell-header, 4.25rem));
   flex-direction: column;
   gap: 0.1rem;
   overflow-y: auto;
-  padding: 1rem 0.75rem;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 1rem 0.75rem 2rem;
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
   border-inline-end: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
 }
@@ -314,8 +330,10 @@ watch(() => route.fullPath, () => { portal.value = null })
 .portal-list {
   position: fixed;
   inset-inline: 0;
-  bottom: 4.6rem;
+  bottom: calc(4.6rem + env(safe-area-inset-bottom));
   z-index: 25;
+  max-height: calc(100dvh - 9rem - env(safe-area-inset-bottom));
+  overflow-y: auto;
   margin: 0 0.5rem;
   padding: 0.85rem;
   border-radius: 1rem;
@@ -357,6 +375,10 @@ watch(() => route.fullPath, () => { portal.value = null })
   background: linear-gradient(90deg, color-mix(in srgb, var(--color-live) 25%, var(--color-panel)), var(--color-panel));
   border-bottom: 1px solid color-mix(in srgb, var(--color-live) 40%, transparent);
 }
+/* [Sprint 30 P8] Inside a slot on the phone the page ends above the bottom bar and the Assistant Coach's button, the
+   phone's home bar included (safe area); on the computer as before. */
+.shell-main-slot { padding-bottom: calc(7.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .shell-main-slot { padding-bottom: 2.5rem; } }
 /* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
 .shell-tabs {
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
@@ -364,7 +386,10 @@ watch(() => route.fullPath, () => { portal.value = null })
 }
 .tab-item {
   display: flex;
+  min-width: 0;
   min-height: 3.5rem;
+  padding-inline: 0.15rem;
+  text-align: center;
   flex-direction: column;
   align-items: center;
   justify-content: center;
