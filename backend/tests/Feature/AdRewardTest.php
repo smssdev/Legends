@@ -100,6 +100,14 @@ class AdRewardTest extends TestCase
         $this->actingAs($this->owner)->getJson('/api/v1/admin/house-ads')->assertForbidden();
     }
 
+    public function test_the_games_own_adsense_account_is_the_default_and_its_ads_txt_is_googles_line(): void
+    {
+        // [X72] The owner's account in config/game.php, unless the server sets another (the tests turn it off).
+        $this->assertStringContainsString("env('ADSENSE_CLIENT', 'ca-pub-9280036306568581')", (string) file_get_contents(config_path('game.php')));
+        config(['game.adsense.client' => 'ca-pub-9280036306568581']);
+        $this->assertSame("google.com, pub-9280036306568581, DIRECT, f08c47fec0942fa0\n", $this->get('/ads.txt')->assertOk()->getContent());
+    }
+
     public function test_google_adsense_is_off_until_the_account_is_set_then_its_video_is_timed_too(): void
     {
         // [X57] No account (or a wrong one): no ads.txt, nothing in /health, and no Google watch.
