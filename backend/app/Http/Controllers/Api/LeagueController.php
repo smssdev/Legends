@@ -602,6 +602,8 @@ class LeagueController extends Controller
             'headlines' => $l->integrity ? Integrity::headlines($l->id) : [], 'status' => $l->status, 'locked' => $l->isLocked(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,
             'is_owner' => $l->isOwner($user),
+            // [Sprint 30 P5] An alliance tournament to show (else its link is the owner's alone, to make one).
+            'has_alliance' => DB::table('alliance_tournaments')->where('league_id', $l->id)->whereIn('status', ['pending', 'running', 'finished'])->exists(),
             'my_club_id' => $mine,
             'my_request' => $l->isOwner($user) ? null : LeagueJoinRequest::where('league_id', $l->id)->where('user_id', $user->id)->value('status'),
             'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
