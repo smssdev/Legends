@@ -12,6 +12,8 @@
   </RouterView>
   <!-- [UP4] The splash, once per visit, over the game until the server answers. -->
   <SplashScreen v-if="splash" @done="splash = false" />
+  <!-- [Sprint 30 Q2] The one «are you sure» window (stores/confirm). -->
+  <ConfirmHost />
   </TooltipProvider>
   </ConfigProvider>
 </template>
@@ -21,6 +23,7 @@ import { ref } from 'vue'
 import { ConfigProvider, TooltipProvider } from 'reka-ui'
 import { locale } from './lib/i18n'
 import SplashScreen from './components/SplashScreen.vue'
+import ConfirmHost from './components/shell/ConfirmHost.vue'
 
 const splash = ref(true)
 </script>
