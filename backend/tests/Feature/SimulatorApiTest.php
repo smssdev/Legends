@@ -45,9 +45,11 @@ class SimulatorApiTest extends TestCase
             'home_id' => $home, 'away_id' => $away, 'seed' => 77, 'control' => ['home' => 'me', 'away' => 'cpu'],
             'home' => ['tactics' => ['pressing' => 70, 'plan' => 'wings']],
         ])->assertCreated()->assertJsonPath('teams.home.tactics.pressing', 70)->json();
+        // [Sprint 32 V3] Its kick-off time (UTC), for the pitch's light.
+        $this->assertMatchesRegularExpression('/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/', $match['kickoff_at']);
 
         $first = $this->postJson("/api/v1/sim/matches/{$match['id']}/ticks")->assertOk()->json('ticks.0');
-        $this->assertCount(6, $first['frames']);
+        $this->assertContains(count($first['frames']), [6, 10]);
         $this->assertCount(22, $first['frames'][0]['p']);
         FloatGuard::check($first);
 

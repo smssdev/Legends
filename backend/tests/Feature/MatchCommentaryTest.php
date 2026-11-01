@@ -144,7 +144,9 @@ class MatchCommentaryTest extends TestCase
         // ...and his order is still heard (refused for the minute, between two windows [X42], never for a limit),
         // and he opens the match and his league.
         $this->postJson("/api/v1/matches/{$match->id}/actions", ['type' => 'tactics', 'tactics' => ['tempo' => 40], 'idempotency_key' => 'k1'])->assertStatus(409);
-        $this->getJson("/api/v1/matches/{$match->id}")->assertOk();
+        // [Sprint 32 V3] Its kick-off time (UTC) comes with it, for the pitch's light.
+        $kickoff = $this->getJson("/api/v1/matches/{$match->id}")->assertOk()->json('kickoff_at');
+        $this->assertMatchesRegularExpression('/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/', $kickoff);
         $this->getJson("/api/v1/leagues/{$this->league['id']}")->assertOk();
     }
 

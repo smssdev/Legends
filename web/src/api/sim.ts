@@ -137,6 +137,8 @@ export interface ChatLine { id: number; side: Side | null; who: string; body: st
 export interface MatchView {
   id: string
   seed: number
+  /** [Sprint 32 V3] When it kicks off (UTC). */
+  kickoff_at?: string | null
   competition: 'league' | 'cup'
   referee: number
   venue: 'home' | 'neutral'

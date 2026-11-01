@@ -5577,7 +5577,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The match */
+                /** @description The match, its clubs, teams (tactics only for your side), the slots of both formations, and kickoff_at: when it kicks off (UTC, Sprint 32 V3) */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -14373,6 +14373,11 @@ export interface components {
         MatchView: {
             id?: string;
             seed?: number;
+            /**
+             * Format: date-time
+             * @description [Sprint 32 V3] When the match kicks off (UTC): the screens light the pitch for that hour in Cairo
+             */
+            kickoff_at?: string | null;
             competition?: string;
             referee?: number;
             venue?: string;

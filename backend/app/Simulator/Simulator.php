@@ -325,6 +325,8 @@ class Simulator
 
         return [
             'id' => $match->id,
+            // [Sprint 32 V3] When it kicks off (UTC): the screens light the pitch for that hour in Cairo.
+            'kickoff_at' => $match->created_at?->utc()->toIso8601ZuluString(),
             'seed' => $match->seed,
             'competition' => $s['competition'],
             'referee' => $s['referee'],
