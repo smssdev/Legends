@@ -47,7 +47,23 @@ class TrainingController extends Controller
                 'over_potential' => $p->overall + $p->training_bonus >= $p->potential,
             ])->keyBy('id');
 
+        // [Sprint 30 G5] The recommended player of each line: the one whose +1 (and so his value) comes soonest, the
+        // younger first on a tie; never one injured, at the ceiling, or already training; none for a line already training.
+        $busy = $slots->pluck('player_id')->map(fn ($v) => (int) $v)->all();
+        $recommended = [];
+        foreach (Training::LINES as $line) {
+            if (isset($slots[$line])) {
+                $recommended[$line] = null;
+
+                continue;
+            }
+            $best = $players->filter(fn ($p) => $p['line'] === $line && ! $p['injured'] && ! $p['maxed'] && ! in_array($p['id'], $busy, true))
+                ->sortBy([['sessions', 'asc'], ['age', 'asc'], ['id', 'asc']])->first();
+            $recommended[$line] = $best ? (int) $best['id'] : null;
+        }
+
         return response()->json([
+            'recommended' => $recommended,
             'cost' => Training::cost($league->id),
             'balance' => (int) DB::table('clubs')->where('id', $club->id)->value('balance'),
             'interval_minutes' => intdiv(Training::interval($league->id), 60),

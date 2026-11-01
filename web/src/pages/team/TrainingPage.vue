@@ -2,6 +2,7 @@
 // Training (Sprint 27 W1, PLAN 2.8), per the WebTraining and MobileTraining drafts: the four slots with their
 // bars and the countdown to the next session, and the candidates of the chosen line. Every number comes from
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
+import { t } from '../../lib/i18n'
 import AdReward from '../../components/ads/AdReward.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -77,6 +78,18 @@ const finish = (l: string) => act(() => api.POST('/leagues/{league}/training/{li
 
 const train = (id: number, name: string) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } }) as any,
   `بدأ ${name} التدريب. أول جلسة بعد ${Math.round((v.value?.interval_minutes ?? 0) / 60)} ساعات.`)
+// [Sprint 30 G5] The server's recommended player of each line (the quickest +1), and the empty slots it can fill.
+const isRecommended = (id: number) => Object.values(v.value?.recommended ?? {}).includes(id)
+const emptyRecommended = computed(() => Object.values(v.value?.recommended ?? {}).filter((id): id is number => typeof id === 'number'))
+async function fillPlan() {
+  const ids = [...emptyRecommended.value]
+  const names = ids.map((id) => v.value?.players.find((p) => p.id === id)?.name ?? '').filter(Boolean)
+  await act(async () => {
+    let last: any = null
+    for (const id of ids) last = await api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } })
+    return last
+  }, t('بدأ التدريب: {v0}.', { v0: names.join('، ') }))
+}
 const stop = (l: string) => act(() => api.DELETE('/leagues/{league}/training/{line}', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
   'فرغت الخانة، واللاعب يحتفظ بتقدمه.')
 
@@ -174,11 +187,14 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span class="text-sm text-text-muted">{{ $t('الأصغر سناً يتطور أسرع وسقفه أعلى') }}</span>
           <UiTabs v-model="line" :items="(Object.keys(LINE_NAMES) as Line[]).map((key) => ({ key, label: LINE_NAMES[key] }))" label="الخط" size="sm" class="ms-auto max-w-full" />
         </div>
+        <!-- [Sprint 30 G5] The ready plan: every empty slot filled with its line's recommended player, in one tap. -->
+        <button v-if="emptyRecommended.length" type="button" class="flex min-h-touch items-center justify-center gap-2 rounded-lg border border-gold/40 bg-gold/10 px-3 font-bold text-gold disabled:opacity-40" :disabled="busy" @click="fillPlan">
+          {{ $t('خطة جاهزة: املأ {v0} خانات بالموصى بهم', { v0: emptyRecommended.length }) }}</button>
         <div class="hidden grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem] gap-2 px-2 text-xs text-text-muted sm:grid">
           <span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('السن') }}</span><span class="text-center">{{ $t('القوة') }}</span><span class="text-center">{{ $t('السقف') }}</span><span class="text-center">{{ $t('جلسات للـ +1') }}</span><span />
         </div>
         <div v-for="p in candidates" :key="p.id" class="grid grid-cols-[1fr_3rem_6rem] items-center gap-2 rounded-lg bg-surface-sunk px-2 py-2 sm:grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem]">
-          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
+          <span class="min-w-0"><b class="block truncate"><bdi>{{ $nm(p.name) }}</bdi><span v-if="isRecommended(p.id)" class="ms-1 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">{{ $t('الموصى به') }}</span></b><span class="text-xs text-text-muted">{{ p.position }}<template v-if="p.progress"> {{ $t('· التقدم {v0}%', { v0: p.progress }) }}</template><template v-if="p.injured"> {{ $t('· مصاب') }}</template><span class="sm:hidden"> {{ $t('· {v0} سنة · الإمكانية {v1}', { v0: p.age, v1: p.potential }) }}</span></span></span>
           <!-- [Sprint 23] Age, the strongest factor: green for the young who train faster, orange from 29. -->
           <span class="hidden text-center font-numbers sm:block" :class="(p.age_bp ?? 10000) > 10000 ? 'text-success' : (p.age_bp ?? 10000) < 10000 ? 'text-warning' : ''"
             :title="$t('سرعة التدريب في عمره {v0}%', { v0: Math.round((p.age_bp ?? 10000) / 100) })">{{ p.age }}</span>

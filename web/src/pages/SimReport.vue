@@ -112,6 +112,23 @@
         </section>
       </div>
 
+      <!-- [Sprint 30 G5] «خطتك ضد خطته»: the two shapes as they ended, and what each made of the match. Never the tactics. -->
+      <section v-if="report.formations" class="flex flex-col gap-3 rounded-xl bg-surface p-4" aria-labelledby="plans">
+        <h2 id="plans" class="font-display text-xl font-extrabold">{{ $t('خطتك ضد خطته') }}</h2>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-center">
+          <div><b class="block font-numbers text-2xl text-gold" dir="ltr">{{ report.formations[side] ?? '-' }}</b><span class="text-sm text-text-muted">{{ $nm(view.clubs[side].name) }}</span></div>
+          <span class="text-text-muted">{{ $t('ضد') }}</span>
+          <div><b class="block font-numbers text-2xl" dir="ltr">{{ report.formations[side === 'home' ? 'away' : 'home'] ?? '-' }}</b><span class="text-sm text-text-muted">{{ $nm(view.clubs[side === 'home' ? 'away' : 'home'].name) }}</span></div>
+        </div>
+        <dl class="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-1 text-center text-sm">
+          <template v-for="k in (['shots', 'on_target', 'corners'] as const)" :key="k">
+            <dd class="font-numbers font-bold">{{ report.stats?.[side]?.[k] ?? 0 }}</dd>
+            <dt class="text-text-muted">{{ $t({ shots: 'التسديدات', on_target: 'على المرمى', corners: 'الركنيات' }[k]) }}</dt>
+            <dd class="font-numbers">{{ report.stats?.[side === 'home' ? 'away' : 'home']?.[k] ?? 0 }}</dd>
+          </template>
+        </dl>
+      </section>
+
       <!-- [Sprint 30 Q8] The match's best three, both teams together. -->
       <section v-if="best.length" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="best3">
         <h2 id="best3" class="font-display text-xl font-extrabold">{{ $t('أفضل 3 لاعبين') }}</h2>

@@ -68,6 +68,10 @@ class SimulatorApiTest extends TestCase
         $this->assertTrue(end($rest)['finished']);
 
         $report = $this->getJson("/api/v1/sim/matches/{$match['id']}/report")->assertOk()->json();
+        // [Sprint 30 G5] Both shapes for «خطتك ضد خطته», and no tactics of either side.
+        $this->assertMatchesRegularExpression('/^\d(-\d)+/', (string) $report['formations']['home']);
+        $this->assertMatchesRegularExpression('/^\d(-\d)+/', (string) $report['formations']['away']);
+        $this->assertArrayNotHasKey('tactics', $report);
         $this->assertNotEmpty($report['reasons']);
         $this->assertNotNull($report['man_of_the_match']);
     }
