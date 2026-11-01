@@ -8353,10 +8353,13 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** [X62 E8] Remove a player no league has taken */
+        /** [X62 E8] Remove a player no league has taken; [Sprint 30 P2] with his name typed to confirm */
         delete: {
             parameters: {
-                query?: never;
+                query: {
+                    /** @description The player's name exactly as it is */
+                    confirm: string;
+                };
                 header?: never;
                 path: {
                     id: number;
@@ -8377,6 +8380,7 @@ export interface paths {
                     };
                 };
                 409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
             };
         };
         options?: never;

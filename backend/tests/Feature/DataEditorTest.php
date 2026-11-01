@@ -36,7 +36,11 @@ class DataEditorTest extends TestCase
         $edit = DB::table('data_edits')->where('target_id', $used)->first();
         $this->assertSame(['before' => ['age' => $age], 'after' => ['age' => $age === 30 ? 31 : 30]], json_decode($edit->changes, true));
         $this->assertSame($admin->id, (int) $edit->user_id);
-        $this->deleteJson("/api/v1/admin/data/players/{$used}")->assertConflict();
+        // [Sprint 30 P2] The name typed to confirm, else nothing goes.
+        $usedName = urlencode((string) DB::table('master_players')->where('id', $used)->value('name'));
+        $this->deleteJson("/api/v1/admin/data/players/{$used}")->assertUnprocessable();
+        $this->deleteJson("/api/v1/admin/data/players/{$used}?confirm=wrong")->assertUnprocessable();
+        $this->deleteJson("/api/v1/admin/data/players/{$used}?confirm={$usedName}")->assertConflict();
 
         // A new club and a player in it; the player removed again (no league has him).
         $club = $this->postJson('/api/v1/admin/data/clubs', ['name' => 'نادي الاختبار الجديد', 'code' => 'NEW', 'league_name' => 'دوري جديد',
@@ -46,7 +50,7 @@ class DataEditorTest extends TestCase
         $p = $this->postJson('/api/v1/admin/data/players', ['name' => 'Karim Adel', 'position' => 'ST', 'line' => 'att', 'age' => 20, 'overall' => 66,
             'potential' => 78, 'value' => 900000, 'master_club_id' => $club])->assertCreated()->json('row');
         $this->assertSame(66, (int) $p['sho']);
-        $this->deleteJson("/api/v1/admin/data/players/{$p['id']}")->assertOk();
+        $this->deleteJson("/api/v1/admin/data/players/{$p['id']}?confirm=".urlencode('Karim Adel'))->assertOk();
         $this->assertSame(['create', 'create', 'delete', 'update'], DB::table('data_edits')->orderBy('action')->pluck('action')->all());
 
         // The new league has one club: too small for a new league.

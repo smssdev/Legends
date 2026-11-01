@@ -7,6 +7,7 @@ import { api, asApiError, ensureCsrf } from '../../api/client'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiTabs from '../../components/ui/UiTabs.vue'
+import ConfirmDangerDialog from '../../components/patterns/ConfirmDangerDialog.vue'
 import { money } from '../../lib/format'
 import { t } from '../../lib/i18n'
 import { useToast } from '../../stores/toast'
@@ -59,15 +60,22 @@ async function save() {
   }
   busy.value = false
 }
-async function remove(row: Row) {
+// [Sprint 30 P2] Never at one tap: the player's name is typed first, here and on the server.
+const removing = ref<Row | null>(null)
+async function remove() {
+  const row = removing.value
+  if (!row) return
+  busy.value = true
   try {
     await ensureCsrf()
-    await api.DELETE('/admin/data/players/{id}', { params: { path: { id: row.id } } })
+    await api.DELETE('/admin/data/players/{id}', { params: { path: { id: row.id }, query: { confirm: row.name } } })
     toast.show(t('حُذف اللاعب.'))
+    removing.value = null
     await search()
   } catch (e) {
     toast.show(asApiError(e).message, 'error')
   }
+  busy.value = false
 }
 async function loadLeagues() {
   try { leagues.value = (await api.GET('/admin/data/leagues')).data!.leagues } catch {}
@@ -91,7 +99,7 @@ onMounted(() => Promise.all([search(), loadLeagues()]))
         <span class="min-w-0 flex-1 truncate"><b><bdi>{{ r.name }}</bdi></b> <span class="text-xs text-text-muted">{{ kind === 'players' ? `${r.position} · ${r.age} · ${r.club}` : r.league_name }}</span></span>
         <span v-if="kind === 'players'" class="font-numbers" dir="ltr">{{ r.overall }}/{{ r.potential }} · {{ money(r.value) }}</span>
         <button type="button" class="h-9 rounded-md px-2 text-xs font-bold text-gold hover:bg-gold/10" @click="open(r)">{{ $t('تعديل') }}</button>
-        <button v-if="kind === 'players'" type="button" class="h-9 rounded-md px-2 text-xs font-bold text-danger hover:bg-live/10" @click="remove(r)">{{ $t('حذف') }}</button>
+        <button v-if="kind === 'players'" type="button" class="h-9 rounded-md px-2 text-xs font-bold text-danger hover:bg-live/10" @click="removing = r">{{ $t('حذف') }}</button>
       </li>
       <li v-if="!rows.length" class="p-3 text-sm text-text-muted">{{ $t('لا نتائج') }}</li>
     </ul>
@@ -111,5 +119,7 @@ onMounted(() => Promise.all([search(), loadLeagues()]))
         <div class="col-span-2 mt-2 flex gap-2"><UiButton type="submit" block :loading="busy">{{ $t('احفظ') }}</UiButton><UiButton variant="quiet" @click="editing = null; creating = false">{{ $t('إلغاء') }}</UiButton></div>
       </form>
     </UiDialog>
+    <ConfirmDangerDialog :open="!!removing" title="حذف لاعب" :expected="removing?.name ?? ''" action="احذف اللاعب نهائياً" :busy="busy"
+      text="يُحذف من بيانات اللعبة ولا يعود، ويُسجّل الحذف. ولا يُحذف لاعب أخذه دوري قائم." @close="removing = null" @confirm="remove" />
   </section>
 </template>
