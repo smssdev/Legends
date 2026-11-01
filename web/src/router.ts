@@ -77,9 +77,9 @@ export const router = createRouter({
         // [X54] The developers' announcements as cards.
         { path: 'announcements', name: 'announcements', component: () => import('./pages/AnnouncementsPage.vue'), meta: { auth: true } },
         { path: 'join/:code?', name: 'join', component: () => import('./pages/leagues/JoinLeague.vue'), meta: { auth: true } },
-        // Sprint 11: the component library on a real club
-        { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue') },
-        { path: 'dev/status', name: 'dev-status', component: () => import('./pages/DevStatus.vue') },
+        // Sprint 11: the component library on a real club. [Sprint 30 P4] The admins' only (or any one in development).
+        { path: 'dev/ui', name: 'dev-ui', component: () => import('./pages/UiLibrary.vue'), meta: { auth: true, admin: true } },
+        { path: 'dev/status', name: 'dev-status', component: () => import('./pages/DevStatus.vue'), meta: { auth: true, admin: true } },
         // [X61] The league's media without a league in the address (an old link): into my current league's, or the leagues.
         ...(['newspaper', 'predictions'] as const).map((page) => ({
           path: page,
@@ -136,5 +136,9 @@ router.beforeEach(async (to) => {
   const auth = useAuth()
   await auth.ready()
   if (to.meta.auth && !auth.signedIn) return { name: 'login', query: { next: to.fullPath } }
+  // [Sprint 30 P4] The developers' pages: «الصفحة غير موجودة» for anyone else on the server.
+  if (to.meta.admin && !import.meta.env.DEV && auth.user?.role !== 'admin') {
+    return { name: 'not-found', params: { pathMatch: to.path.slice(1).split('/') }, replace: true }
+  }
   if (to.meta.guest && !to.meta.any && auth.signedIn) return { name: 'home' }
 })
