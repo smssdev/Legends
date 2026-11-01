@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import InstallPrompt from '../components/InstallPrompt.vue'
 import ReminderPrompt from '../components/ReminderPrompt.vue'
 import UiDialog from '../components/ui/UiDialog.vue'
 import { countdown, useNow } from '../lib/clock'
@@ -212,6 +213,8 @@ async function openRanking(by: By) {
         </div>
       </section>
 
+      <!-- [Sprint 30 G7] The game as an app on the home screen. -->
+      <InstallPrompt />
       <!-- [Sprint 30 G1] The match reminder: allowed from here, once. -->
       <ReminderPrompt v-if="home.slots.some((s) => s.state === 'club')" />
 
