@@ -405,7 +405,9 @@ return [
     // [Sprint 21 E2] The verification code by email: valid verify_code_minutes, once, with verify_code_attempts wrong
     // tries. And the invite gift: referral_coins to the inviter for each coach who signs up from their link and
     // verifies, up to referral_max.
-    'account' => ['welcome_coins' => 1000, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
+    // [Sprint 30 P6] starter_coins: a new coach's first coins, claimed once from the home screen (apart from the
+    // verification reward).
+    'account' => ['welcome_coins' => 1000, 'starter_coins' => 25, 'verify_code_days' => 7, 'verify_code_minutes' => 15, 'verify_code_attempts' => 5,
         'referral_coins' => 100, 'referral_max' => 10, 'auto_vacation_days' => 5, 'auto_vacations_per_season' => 2,
         'vacation_cooldown_days' => 3, 'long_vacation_max_days' => 60, 'vacation_max_days' => 14, 'vacation_rest_days' => 14, 'avatar_max_kb' => 4096, 'avatar_size' => 256,
         // Usernames [X11]: words that pass for the game's staff, anywhere in the name; the short ones only alone (or with
@@ -454,7 +456,8 @@ return [
     // training_progress on his bar (of training.progress_scale, 10000), `fitness` more fitness (up to 100), and the
     // friendly counts for chemistry. [Sprint 24 B2] coins each (the owner's request 2026-10-29), taken when the coach
     // confirms, in every league (fair ones too), with no limit: no daily one, and not in the season's coin cap.
-    'friendlies' => ['coins' => 5, 'fitness' => 5, 'block_minutes' => 60, 'training_progress' => 300],
+    // [Sprint 30 P6] first_free: an account's first friendly costs nothing.
+    'friendlies' => ['first_free' => true, 'coins' => 5, 'fitness' => 5, 'block_minutes' => 60, 'training_progress' => 300],
     // [Sprint 20 B5] The weekly quests (Monday to Monday, Cairo): a target each and coins; the big one (unbeaten: at
     // least target matches without a defeat) pays money_bp of the league's money scale to the club.
     'quests' => ['friendly' => ['target' => 1, 'coins' => 10], 'wins' => ['target' => 2, 'coins' => 20], 'stadium' => ['target' => 1, 'coins' => 15],

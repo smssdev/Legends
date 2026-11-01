@@ -52,6 +52,7 @@ class FriendliesTest extends TestCase
 
     public function test_five_coins_each_with_no_limit_and_no_effect_but_fitness_and_training(): void
     {
+        config(['game.friendlies.first_free' => false]);   // [Sprint 30 P6] the paid ones; the free first below
         $this->assertSame(0, Wallet::balance($this->owner->id));   // the league's coins all spent on making it
         Wallet::post($this->owner->id, 'admin_gift', 22, 'gift:1');
         $view = $this->actingAs($this->owner)->getJson($this->url())->assertOk()->assertJsonPath('coins', 5)->assertJsonPath('balance', 22)
@@ -117,8 +118,21 @@ class FriendliesTest extends TestCase
         $this->assertSame(['green'], array_values(array_unique(array_column($chem['links'], 'color'))));
     }
 
+    public function test_the_accounts_first_friendly_is_free_then_five_coins(): void
+    {
+        // [Sprint 30 P6] A new coach with no coins plays the first one, and the next is paid.
+        $this->assertSame(0, Wallet::balance($this->owner->id));
+        $opponents = DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->orderBy('id')->pluck('id');
+        $this->actingAs($this->owner)->getJson($this->url())->assertOk()->assertJsonPath('coins', 0)->assertJsonPath('first_free', true);
+        $this->play($opponents[0], 'free')->assertCreated()->assertJsonPath('friendly.report.coins', 0)->assertJsonPath('balance', 0);
+        $this->assertSame(0, (int) DB::table('wallet_transactions')->where('user_id', $this->owner->id)->where('type', 'friendly')->count());
+        $this->getJson($this->url())->assertJsonPath('coins', 5)->assertJsonPath('first_free', false);
+        $this->play($opponents[1], 'paid')->assertStatus(409);
+    }
+
     public function test_five_coins_in_a_fair_league_too_and_never_against_the_season_cap(): void
     {
+        config(['game.friendlies.first_free' => false]);
         DB::table('leagues')->where('id', $this->league['id'])->update(['fair_league' => true]);
         config(['game.premium.season_cap' => 10]);
         Wallet::post($this->owner->id, 'admin_gift', 100, 'gift:1');

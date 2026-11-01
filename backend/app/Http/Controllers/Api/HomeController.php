@@ -14,6 +14,7 @@ use App\Models\League;
 use App\Models\User;
 use App\Season\Career;
 use App\Season\CoachRating;
+use App\Wallet\StarterGift;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,7 +48,17 @@ class HomeController extends Controller
                 ->map(fn ($m) => Inbox::view($m))->values(),
             // [Sprint 28] The open polls this coach has not voted in yet.
             'polls_waiting' => Polls::waiting($user->id),
+            // [Sprint 30 P6] The new coach's first coins, to claim from here once.
+            'starter_gift' => StarterGift::view($user),
         ]);
+    }
+
+    /** [Sprint 30 P6] «استلم مكافأتك»: the starter coins, once per account. */
+    public function claimStarter(Request $request): JsonResponse
+    {
+        $balance = StarterGift::claim($request->user());
+
+        return response()->json(['coins' => $balance, 'starter_gift' => StarterGift::view($request->user())]);
     }
 
     /**

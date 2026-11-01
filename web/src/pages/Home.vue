@@ -21,6 +21,7 @@ import { rememberLeague } from '../lib/currentLeague'
 import { useAuth } from '../stores/auth'
 import { useWallet } from '../stores/wallet'
 import { chime } from '../lib/chime'
+import UiButton from '../components/ui/UiButton.vue'
 import RatingBadge from '../components/RatingBadge.vue'
 import { divisionName, signed, tierName } from '../lib/rating'
 
@@ -91,6 +92,24 @@ async function unlock() {
     buyBusy.value = false
   }
 }
+// [Sprint 30 P6] «استلم مكافأتك»: the new coach's first coins, once, with the coin chime.
+const claiming = ref(false)
+async function claimStarter() {
+  if (!home.value || claiming.value) return
+  claiming.value = true
+  try {
+    await ensureCsrf()
+    const d = (await api.POST('/home/starter-gift')).data!
+    home.value.starter_gift = d.starter_gift
+    home.value.coach.coins = d.coins
+    chime()
+    useWallet().load()
+  } catch (e) {
+    error.value = asApiError(e).message
+  } finally {
+    claiming.value = false
+  }
+}
 function openSlot(s: Home['slots'][number]) {
   if (s.state === 'waiting') return router.push(`/leagues/${s.league!.id}`)
   rememberLeague(s.league!.id)
@@ -153,6 +172,16 @@ async function openRanking(by: By) {
             <span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(cashClub.cash) }}</span>
           </span>
         </div>
+      </section>
+
+      <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
+      <section v-if="!home.starter_gift.claimed" class="flex animate-fade-up items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4" :aria-label="$t('هدية البداية')">
+        <img src="/brand/coin.svg" alt="" class="size-12 shrink-0 animate-pulse-ring rounded-full" />
+        <span class="min-w-0 flex-1">
+          <b class="block font-display text-lg">{{ $t('هدية البداية: {v0} كوينز', { v0: home.starter_gift.coins }) }}</b>
+          <span class="text-sm text-text-muted">{{ $t('وأول ودية لك مجانية. استلمها وابدأ.') }}</span>
+        </span>
+        <UiButton :loading="claiming" @click="claimStarter">{{ $t('استلم مكافأتك') }}</UiButton>
       </section>
 
       <!-- [X61] A new coach's first steps, until they are all done (or hidden). -->

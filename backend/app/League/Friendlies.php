@@ -24,6 +24,14 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Friendlies
 {
+    /** [Sprint 30 P6] What this coach pays: nothing for the account's first friendly (game.friendlies.first_free). */
+    public static function price(?int $userId): int
+    {
+        $first = config('game.friendlies.first_free') && $userId && ! DB::table('friendlies')->where('user_id', $userId)->exists();
+
+        return $first ? 0 : (int) config('game.friendlies.coins');
+    }
+
     /** What the screen shows: the price, the coach's coins, why none can be played now, and the opponents. */
     public static function view(Club $club): array
     {
@@ -36,7 +44,7 @@ class Friendlies
         $today = DB::table('friendlies')->where('club_id', $club->id)->where('day', self::cairoDay())->pluck('opponent_id')->map(fn ($v) => (int) $v)->all();
 
         return ['club' => ['name' => $club->name, 'crest_url' => url("/api/v1/data/clubs/{$club->master_club_id}/crest.svg")],
-            'coins' => (int) $cfg['coins'], 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
+            'coins' => self::price($club->user_id ? (int) $club->user_id : null), 'first_free' => self::price($club->user_id ? (int) $club->user_id : null) === 0, 'balance' => $club->user_id ? Wallet::balance((int) $club->user_id) : 0, 'blocked' => self::blocked($club),
             'fitness' => (int) $cfg['fitness'],
             'training_progress_pct' => intdiv((int) $cfg['training_progress'] * 100, (int) config('game.training.progress_scale')),
             'opponents' => $opponents->sortByDesc('strength_snapshot')->values()->map(fn ($o) => ['id' => (int) $o->id, 'name' => $o->name, 'code' => $o->code,
@@ -78,7 +86,7 @@ class Friendlies
         if (self::blocked($club)) {
             throw new HttpException(409, 'لا وديات قبل مباراتك بساعة ولا أثناءها.');
         }
-        $coins = (int) config('game.friendlies.coins');
+        $coins = self::price($userId);
         // Before playing it: a friendly the coach cannot pay for is not played.
         if (Wallet::balance($userId) < $coins) {
             throw new HttpException(409, sprintf(__('الودية بـ %d كوينز، ورصيدك لا يكفي.'), $coins));
@@ -115,7 +123,9 @@ class Friendlies
             return DB::transaction(function () use ($club, $opponent, $userId, $seed, $state, $played, $report, $coins, $key) {
                 // The coins with the match, in the same write: no friendly unpaid, no coins for none. Not a league
                 // spend, so the season's coin cap does not count it (no limit, the owner's request), fair league or not.
-                Wallet::post($userId, 'friendly', -$coins, "friendly:{$key}", "friendly:{$club->id}");
+                if ($coins > 0) {
+                    Wallet::post($userId, 'friendly', -$coins, "friendly:{$key}", "friendly:{$club->id}");
+                }
                 $step = (int) config('game.friendlies.training_progress');
                 $cap = (int) config('game.training.progress_scale') - 1;
                 $fitness = (int) config('game.friendlies.fitness');

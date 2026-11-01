@@ -64,7 +64,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
         <h1 class="font-display text-3xl font-extrabold">{{ $t('الوديات') }}</h1>
       </div>
       <span v-if="v" class="flex flex-col items-end gap-1">
-        <span class="rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold">{{ $t('الودية بـ {v0} كوينز', { v0: v.coins }) }}</span>
+        <span class="rounded-pill bg-gold px-3 py-1 text-sm font-bold text-on-gold">{{ v.first_free ? $t('أول ودية لك مجانية') : $t('الودية بـ {v0} كوينز', { v0: v.coins }) }}</span>
         <span class="text-xs text-text-muted">{{ $t('رصيدك') }}: <b class="font-numbers" dir="ltr">{{ v.balance }}</b></span>
       </span>
     </header>
@@ -107,7 +107,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
         </span>
         <button v-if="confirming === o.id" type="button" class="h-touch shrink-0 rounded-lg px-3 text-sm text-text-muted" @click="confirming = null">{{ $t('إلغاء') }}</button>
         <button type="button" class="h-touch shrink-0 rounded-lg px-4 font-bold disabled:opacity-40" :class="confirming === o.id ? 'bg-success text-white' : o.recommended ? 'bg-gold text-on-gold' : 'bg-surface-raised'" :disabled="busy || watching || !canPay || !!v.blocked || o.played_today" @click="play(o.id)">
-          {{ o.played_today ? $t('لُعبت اليوم') : confirming === o.id ? $t('أكّد: {v0} كوينز', { v0: v.coins }) : $t('العب') }}
+          {{ o.played_today ? $t('لُعبت اليوم') : confirming === o.id ? (v.first_free ? $t('العب مجاناً') : $t('أكّد: {v0} كوينز', { v0: v.coins })) : $t('العب') }}
         </button>
       </li>
     </ul>

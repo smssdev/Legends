@@ -431,6 +431,7 @@ Route::prefix('wallet')->middleware(['auth:sanctum', 'throttle:60,1,wallet'])->c
 // The coach's home screen and the coaches' global ranking [X18].
 Route::middleware(['auth:sanctum', 'throttle:60,1,home'])->controller(HomeController::class)->group(function () {
     Route::get('home', 'show');
+    Route::post('home/starter-gift', 'claimStarter');
     Route::get('rankings/coaches', 'ranking');
     // [Sprint 24 B3] Open a locked slot now for coins.
     Route::post('home/slots/{slot}/unlock', 'unlock')->whereNumber('slot');
