@@ -14,6 +14,7 @@ import { intlLocale, t } from '../lib/i18n'
 import Icon from '../components/Icon.vue'
 import OfficialBadge from '../components/OfficialBadge.vue'
 import VerifiedBadge from '../components/VerifiedBadge.vue'
+import ConfirmDangerDialog from '../components/patterns/ConfirmDangerDialog.vue'
 
 type S = components['schemas']
 type AdminUser = S['AdminUser']
@@ -22,6 +23,21 @@ const secret = ref<{ secret: string; uri: string } | null>(null)
 const code = ref('')
 const error = ref('')
 const notice = ref('')
+// [Sprint 30 P3] The test texts players can see (announcements, rewarded ads), with one button that removes them.
+const junk = ref<S['JunkRow'][] | null>(null)
+const junkLeagues = ref<S['JunkRow'][]>([])
+const purging = ref(false)
+async function loadJunk() {
+  const d = (await api.GET('/admin/junk')).data!
+  junk.value = [...d.announcements, ...d.house_ads]
+  junkLeagues.value = d.leagues
+}
+const purgeJunk = () => run(async () => {
+  const d = (await api.POST('/admin/junk/purge')).data!
+  purging.value = false
+  await show(tab.value)
+  notice.value = t('حُذف {v0} إعلان و{v1} إعلان مكافأة تجريبي.', { v0: d.announcements, v1: d.house_ads })
+})
 // [X65] The chat groups: how long their messages are kept, and whether pictures and voice notes may be sent.
 type ChatSettings = { retention_days: number; media: boolean; groups: number; messages: number; media_count: number; media_kb: number; oldest: string | null }
 const chat = ref<ChatSettings | null>(null)
@@ -129,6 +145,7 @@ async function show(s: Section) {
   if (s === 'chat') chat.value = (await api.GET('/admin/chat')).data!
   if (s === 'leagues') leagues.value = (await api.GET('/admin/leagues')).data!.leagues
   if (s === 'announcements') announcements.value = (await api.GET('/admin/announcements')).data!.announcements
+  if (s === 'announcements' || s === 'houseAds') await loadJunk()
   if (s === 'vacations') vacations.value = (await api.GET('/admin/vacations')).data!.vacations
   if (s === 'houseAds') await loadHouseAds()
   if (s === 'events') await loadEvents()
@@ -547,6 +564,12 @@ onMounted(load)
 
         <!-- [Sprint 21 E7.2] The announcements: write one, and open any to read it whole. -->
         <template v-if="tab === 'announcements'">
+          <section v-if="junk?.length" class="flex flex-col gap-2 rounded-xl border border-live/40 bg-live/10 p-4" role="alert">
+            <h2 class="font-display text-lg font-bold">{{ $t('نصوص تجريبية يراها المدربون: {v0}', { v0: junk.length }) }}</h2>
+            <p class="text-sm"><bdi v-for="(j, i) in junk" :key="i" class="me-2 inline-block rounded-pill bg-surface px-2 py-0.5" dir="auto">{{ j.title }}</bdi></p>
+            <p v-if="junkLeagues.length" class="text-xs text-text-muted">{{ $t('ودوريات بأسماء تجريبية (تُنهى يدوياً): {v0}', { v0: junkLeagues.map((l) => l.title).join('، ') }) }}</p>
+            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-white" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
+          </section>
           <section :aria-label="$t('إعلان جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
             <h2 class="font-display text-lg font-bold">{{ $t('إعلان جديد لكل اللاعبين') }}</h2>
             <p class="text-xs text-text-muted">{{ $t('يُرسل من حسابك الرسمي (Owner-Sizar أو Owner-Sliman) بشارته، ويصل رسالة وإشعاراً لكل الحسابات.') }}</p>
@@ -582,6 +605,12 @@ onMounted(load)
 
         <!-- [Sprint 20 S4] The rewarded ads: each watch cuts 30 minutes off a training or stadium wait. -->
         <template v-if="tab === 'houseAds'">
+          <section v-if="junk?.length" class="flex flex-col gap-2 rounded-xl border border-live/40 bg-live/10 p-4" role="alert">
+            <h2 class="font-display text-lg font-bold">{{ $t('نصوص تجريبية يراها المدربون: {v0}', { v0: junk.length }) }}</h2>
+            <p class="text-sm"><bdi v-for="(j, i) in junk" :key="i" class="me-2 inline-block rounded-pill bg-surface px-2 py-0.5" dir="auto">{{ j.title }}</bdi></p>
+            <p v-if="junkLeagues.length" class="text-xs text-text-muted">{{ $t('ودوريات بأسماء تجريبية (تُنهى يدوياً): {v0}', { v0: junkLeagues.map((l) => l.title).join('، ') }) }}</p>
+            <button type="button" class="h-touch self-start rounded-md bg-live px-4 font-bold text-white" :disabled="busy" @click="purging = true">{{ $t('امسحها من الإعلانات وإعلانات المكافأة') }}</button>
+          </section>
           <section :aria-label="$t('إعلان مكافأة جديد')" class="flex flex-col gap-2 rounded-xl bg-surface p-4">
             <h2 class="font-display text-lg font-bold">{{ $t('إعلان مكافأة جديد') }}</h2>
             <p class="text-xs text-text-muted">{{ $t('يظهر للمدربين حين يضغطون «شاهد إعلاناً» في التدريب أو الملعب، ويقلّص 30 دقيقة بعد انتهاء وقته. وحين لا يوجد إعلان مفعّل تظهر إعلانات اللعبة ({v0}).', { v0: houseDefaults }) }}</p>
@@ -830,5 +859,7 @@ onMounted(load)
         </template>
       </div>
     </div>
+    <ConfirmDangerDialog :open="purging" title="مسح النصوص التجريبية" expected="امسح" action="امسحها نهائياً" :busy="busy"
+      text="تُحذف الإعلانات التجريبية ونسخها من صناديق المدربين، وإعلانات المكافأة التجريبية. ولا يُمس غيرها." @close="purging = false" @confirm="purgeJunk" />
   </div>
 </template>

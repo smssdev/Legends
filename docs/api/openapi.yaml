@@ -2632,6 +2632,32 @@ paths:
       responses:
         '201': { description: Made, content: { application/json: { schema: { type: object, required: [ad], properties: { ad: { $ref: '#/components/schemas/HouseAd' } } } } } }
         '422': { $ref: '#/components/responses/Error' }
+  /admin/junk:
+    get:
+      tags: [admin]
+      summary: '[Sprint 30 P3] The test texts players can see: announcements and rewarded ads (removable), and test-named leagues (listed only)'
+      responses:
+        '200':
+          description: What was found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [announcements, house_ads, leagues]
+                properties:
+                  announcements: { type: array, items: { $ref: '#/components/schemas/JunkRow' } }
+                  house_ads: { type: array, items: { $ref: '#/components/schemas/JunkRow' } }
+                  leagues: { type: array, items: { $ref: '#/components/schemas/JunkRow' } }
+  /admin/junk/purge:
+    post:
+      tags: [admin]
+      summary: '[Sprint 30 P3] Remove the test announcements (with their inbox copies) and the test rewarded ads'
+      responses:
+        '200':
+          description: How many went
+          content:
+            application/json:
+              schema: { type: object, required: [announcements, house_ads], properties: { announcements: { type: integer }, house_ads: { type: integer } } }
   /admin/house-ads/{id}:
     parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
     patch:
@@ -5571,6 +5597,10 @@ components:
         power: { type: integer }
         count: { type: integer, description: 'The special players each market renewal brings (offers, in_form, legends); 0 for the others' }
         state: { type: string, enum: [upcoming, running, ended] }
+    JunkRow:
+      type: object
+      required: [id, title]
+      properties: { id: { type: integer }, title: { type: string } }
     HouseAd:
       type: object
       required: [id, title, body, cta_label, cta_url, seconds, active, views, at]

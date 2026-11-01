@@ -10,10 +10,10 @@ class NotJunkTest extends TestCase
 {
     public function test_test_names_are_refused_and_real_names_pass(): void
     {
-        foreach (['test', 'Tesst', ' تست ', 'تجربة', 'Hhh', 'ytkregekgek', 'asdf!', '...aaaa'] as $junk) {
+        foreach (['test', 'Tesst', ' تست ', 'تجربة', 'Hhh', 'ytkregekgek', 'asdf!', '...aaaa', 'slklsklskslkslks', 'slkslkslk', 'hjkhjkhjk', 'qwrtpsdf'] as $junk) {
             $this->assertTrue(NotJunk::junk($junk), $junk);
         }
-        foreach (['دوري الأصدقاء', 'Test Cup 2026', 'LALIGA EA SPORTS #73VYZAL7', 'Al Ahly', 'كأس الجمعة', 'Liga 1'] as $real) {
+        foreach (['دوري الأصدقاء', 'Test Cup 2026', 'LALIGA EA SPORTS #73VYZAL7', 'Al Ahly', 'كأس الجمعة', 'Liga 1', 'Rhythm FC', 'Mbappe', 'Strasbourg', 'Bayern Munchen', 'شاهد إعلاناً واختصر التدريب.'] as $real) {
             $this->assertFalse(NotJunk::junk($real), $real);
         }
     }
