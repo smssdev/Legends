@@ -2263,6 +2263,7 @@ export const EN: Record<string, string> = {
   'افصل بينها بمسافة أو فاصلة، ويمكنك الإضافة لاحقاً أو مشاركة رابط الجروب.': 'Separate them with a space or a comma; you can add more later or share the group link.',
   'أنشئ الجروب': 'Create the group',
   'أنشئ جروباً': 'Create a group',
+  'أغلق البث': 'Close the broadcast',
   'ثبّت اللعبة': 'Install the game',
   'ثبّت اللعبة على جوالك': 'Install the game on your phone',
   'من زر المشاركة اختر «إضافة إلى الشاشة الرئيسية»، فتفتح كتطبيق وتصلك التذكيرات.': 'From the Share button choose «Add to Home Screen»: it opens as an app and the reminders reach you.',

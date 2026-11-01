@@ -14,6 +14,12 @@ export const useBroadcast = defineStore('broadcast', () => {
   const live = ref(false)
   /** Bumped by the bar's mute button; the match page turns its sound off when it changes. */
   const muteAsk = ref(0)
+  /**
+   * [X74] Whether the match page may stay alive behind the other screens (KeepAlive in App.vue): a live match only. A
+   * recorded one (a finished match watched again, a practice match) closes as soon as the coach leaves it, and «أغلق
+   * البث» closes a live one: the page is let go, so its sound and commentary stop with it.
+   */
+  const keep = ref(false)
 
   function update(p: { path: string; title: string; score: string; minute: string; live: boolean }) {
     path.value = p.path
@@ -26,6 +32,11 @@ export const useBroadcast = defineStore('broadcast', () => {
     path.value = null
     away.value = false
   }
+  /** [X74] «أغلق البث»: the page behind is let go (KeepAlive drops it), and the bar goes. */
+  function close() {
+    keep.value = false
+    end()
+  }
 
-  return { path, away, title, score, minute, live, muteAsk, update, end }
+  return { path, away, title, score, minute, live, muteAsk, keep, update, end, close }
 })
