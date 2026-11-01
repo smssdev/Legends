@@ -12,12 +12,22 @@ import UiButton from '../components/ui/UiButton.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiChip from '../components/ui/UiChip.vue'
 import UiTable from '../components/ui/UiTable.vue'
+import UiSlider from '../components/ui/UiSlider.vue'
+import UiTooltip from '../components/ui/UiTooltip.vue'
+import UiSelect from '../components/ui/UiSelect.vue'
+import ConfirmDangerDialog from '../components/patterns/ConfirmDangerDialog.vue'
+import { useToast } from '../stores/toast'
 import { LINES, money, strength, type Line } from '../lib/format'
 
 type Club = components['schemas']['DataClub']
 type Player = components['schemas']['DataPlayer']
 type Template = { name: string; clubs: number; top_strength_cp: number }
 
+// [Sprint 30 Q1] The design system's headless primitives, each shown here before any screen uses it.
+const sliderValue = ref(3)
+const pickedLeague = ref('')
+const dangerOpen = ref(false)
+const toast = useToast()
 const templates = ref<Template[]>([])
 const league = ref('Premier League')
 const clubs = ref<Club[]>([])
@@ -84,6 +94,23 @@ const table = computed(() => clubs.value.map((c, i) => ({ rank: i + 1, ...c })))
         <LineBadge v-for="l in lines" :key="l" :line="l" full />
         <span class="text-sm text-text-muted">{{ $t('ألوان الخطوط تفرّق الخط فقط') }}</span>
       </div>
+    </UiCard>
+
+    <!-- [Sprint 30 Q1] The headless primitives: Headless UI (Dialog, Combobox, Tabs) and reka-ui (Slider, Tooltip). -->
+    <UiCard :title="$t('المكونات الموحّدة')">
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="flex flex-col gap-1"><span class="text-sm font-bold">UiSlider</span>
+          <UiSlider v-model="sliderValue" :min="1" :max="5" label="الضغط" :marks="['منخفض', 'متوسط', 'عالٍ']" /></div>
+        <div class="flex flex-col gap-1"><span class="text-sm font-bold">UiSelect (Combobox)</span>
+          <UiSelect v-model="pickedLeague" :options="templates.map((t) => ({ value: t.name, label: t.name }))" label="الدوري" searchable /></div>
+        <div class="flex flex-wrap items-center gap-2"><span class="text-sm font-bold">UiTooltip</span>
+          <UiTooltip text="القوة: متوسط أفضل 11 لاعباً"><button type="button" class="h-touch rounded-md bg-surface-raised px-3 font-numbers">85</button></UiTooltip></div>
+        <div class="flex flex-wrap items-center gap-2">
+          <UiButton variant="danger" @click="dangerOpen = true">ConfirmDangerDialog</UiButton>
+          <UiButton variant="outline" @click="toast.show($t('حُفظ.'))">Toast</UiButton>
+        </div>
+      </div>
+      <ConfirmDangerDialog :open="dangerOpen" title="حذف" expected="Liverpool" action="احذف" @close="dangerOpen = false" @confirm="dangerOpen = false" />
     </UiCard>
 
     <UiCard :title="$t('النادي')">
