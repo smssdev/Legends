@@ -4,6 +4,7 @@
 // The closest in strength recommended; the report at once. [Sprint 24 B2] Five coins each, with no limit, in every
 // league: the first tap asks to confirm with the price, and the coins go with the match. [Sprint 27 B3] Then the quick
 // simulation plays in the page (QuickMatch, from the server's timeline) before the result shows.
+import { scoreText } from '../../lib/format'
 import { computed, onMounted, ref } from 'vue'
 import QuickMatch from '../../components/match/QuickMatch.vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -88,7 +89,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       <div class="flex items-center gap-3">
         <img :src="last.opponent.crest_url" alt="" class="size-10" />
         <span class="min-w-0 flex-1"><b class="block">{{ $t('ضد {v0}', { v0: $nm(last.opponent.name) }) }}</b><span class="text-xs text-text-muted">{{ $t(result(last)) }}</span></span>
-        <b class="font-numbers text-4xl" dir="ltr">{{ last.goals_for }} - {{ last.goals_against }}</b>
+        <b class="font-numbers text-4xl" dir="ltr">{{ scoreText(last.goals_for, last.goals_against) }}</b>
       </div>
       <ul v-if="last.report.goals.length" class="flex flex-wrap gap-x-3 text-sm">
         <li v-for="(g, i) in last.report.goals" :key="i" :class="g.side === 'home' ? '' : 'text-text-muted'"><span class="font-numbers text-text-muted" dir="ltr">{{ g.minute }}'</span> <bdi>{{ $nm(g.name ?? '') }}</bdi></li>
@@ -116,7 +117,7 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       <h2 class="font-display text-lg font-bold">{{ $t('آخر الوديات') }}</h2>
       <div v-for="f in v.recent" :key="f.id" class="flex items-center gap-2 rounded-lg bg-surface px-3 py-2 text-sm">
         <img :src="f.opponent.crest_url" alt="" class="size-7" /><span class="min-w-0 flex-1 truncate">{{ $nm(f.opponent.name) }}</span>
-        <b class="font-numbers text-base" dir="ltr">{{ f.goals_for }} - {{ f.goals_against }}</b>
+        <b class="font-numbers text-base" dir="ltr">{{ scoreText(f.goals_for, f.goals_against) }}</b>
       </div>
     </section>
   </div>

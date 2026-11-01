@@ -34,7 +34,7 @@
             <span class="line-clamp-2 font-display text-base font-extrabold md:text-lg">{{ $nm(view.clubs.home.name) }}</span>
           </div>
           <div class="flex shrink-0 flex-col items-center gap-1.5">
-            <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{ report.score.away }} – {{ report.score.home }}</span>
+            <span class="whitespace-nowrap rounded-xl bg-black/45 px-4 py-1 font-numbers text-4xl shadow-inner md:text-6xl" dir="ltr">{{ scoreText(report.score.home, report.score.away) }}</span>
             <span v-if="report.shootout" class="text-sm text-text-soft">{{ $t('ركلات الترجيح') }} <b class="font-numbers" dir="ltr">{{ report.shootout.away }} – {{ report.shootout.home }}</b></span>
             <span class="rounded-pill px-3 py-1 text-sm font-bold" :class="resultClass">{{ $t(resultLabel) }}</span>
           </div>
@@ -182,6 +182,7 @@
 </template>
 
 <script setup lang="ts">
+import { scoreText } from '../lib/format'
 import { t } from '../lib/i18n'
 import { nm } from '../lib/names'
 import { shareResult } from '../lib/shareCard'

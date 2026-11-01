@@ -9,6 +9,7 @@
 import VOICE_LINES from '../../../../backend/resources/commentary/voice.json'
 import { locale, t } from '../../lib/i18n'
 import { cn } from '../../lib/names'
+import { scoreText } from '../../lib/format'
 
 // Commentary. {p} the main player, {q} the second one (assist, keeper, defender),
 // {A} the club the moment belongs to, {B} the other one, {n} a number.
@@ -192,7 +193,7 @@ export function story(tick, ctx) {
     const st = (side) => tick.teams?.[side]?.stats ?? {}
     const rows = [[t('الهجمات'), 'attacks'], [t('التسديدات'), 'shots'], [t('على المرمى'), 'on_target'], [t('الركنيات'), 'corners']].map(([l, k]) => [l, st('home')[k] ?? 0, st('away')[k] ?? 0])
     // The score reads left to right with home on the right, as on the scoreboard.
-    set('whistle', 'home', { big: head, score: `${tick.score.away} - ${tick.score.home}`, stats: rows }, big, '', sc)
+    set('whistle', 'home', { big: head, score: scoreText(tick.score.home, tick.score.away), stats: rows }, big, '', sc)
     speak({ halftime: 'halftime', fulltime: 'fulltime', extra_time: 'extra_time', penalties: 'penalties' }[period.name] ?? 'halftime', { key: 0.25 })
     item('home', 'whistle', head, sc, { center: true })
   } else if (kind === 'stoppage' && stoppage) {

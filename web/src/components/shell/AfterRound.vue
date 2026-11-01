@@ -4,6 +4,7 @@
 // next one, or «تخطَّ الكل». Once skipped, a match does not come back. [Sprint 24 W1] «الملخص السريع» first: the
 // match's big moments fast, then the numbers (MatchRecap), and it counts as seen. [Sprint 26 W2] The lion mascot (A2)
 // feels the result as the server says (joy, surprise, calm, sad or angry).
+import { scoreText } from '../../lib/format'
 import { useEscape } from '../../lib/escape'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -60,7 +61,7 @@ const RESULT = { 1: ['فوز', 'bg-success/20 text-success'], 0: ['تعادل', 
       <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-center">
         <span class="flex min-w-0 flex-col items-center gap-1"><img :src="m.home.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(m.home.name) }}</b></span>
         <span class="flex flex-col items-center gap-1">
-          <b class="font-numbers text-5xl leading-none" dir="ltr">{{ m.home_goals }} - {{ m.away_goals }}</b>
+          <b class="font-numbers text-5xl leading-none" dir="ltr">{{ scoreText(m.home_goals, m.away_goals) }}</b>
           <span class="rounded-pill px-2 py-0.5 text-xs font-bold" :class="RESULT[m.result as 1 | 0 | -1][1]">{{ $t(RESULT[m.result as 1 | 0 | -1][0]) }}{{ m.result === 1 && m.venue === 'away' ? ' ' + $t('خارج أرضك') : '' }}</span>
         </span>
         <span class="flex min-w-0 flex-col items-center gap-1"><img :src="m.away.crest_url" alt="" class="size-12" /><b class="max-w-full truncate text-sm">{{ $nm(m.away.name) }}</b></span>

@@ -118,6 +118,10 @@ class PressTest extends TestCase
         $paper = $this->getJson($this->url('/newspaper'))->assertOk()->json();
         $this->assertSame(1, $paper['edition']['round']);
         $this->assertContains('big_win', array_column($paper['edition']['stories'], 'kind'));
+        // [X73] Its score as the winner's, whoever was at home («3-0», never «0-3»).
+        $big = collect($paper['edition']['stories'])->firstWhere('kind', 'big_win');
+        preg_match('/(\d+)-(\d+)/', $big['text'], $m);
+        $this->assertGreaterThan((int) $m[2], (int) $m[1]);
         $this->assertContains('goals', array_column($paper['edition']['stories'], 'kind'));
 
         // A coach writes; it waits for the owner, who publishes it.

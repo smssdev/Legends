@@ -29,3 +29,13 @@ export const LINES = {
   att: { letter: 'هـ', name: 'هجوم', plural: 'هجوم' },
 } as const
 export type Line = keyof typeof LINES
+
+/**
+ * [X73] A score for a left-to-right number box: the first side's goals on the first side's edge. In Arabic the first
+ * (home, or mine) team sits on the right, so its number is written last to land on the right; in English first.
+ * «سيراميكا 1 - 3 الزمالك» showed the 1 beside Zamalek, as if Zamalek had lost.
+ */
+export function scoreText(first: number | string | null | undefined, second: number | string | null | undefined): string {
+  const [a, b] = [first ?? '-', second ?? '-']
+  return locale.value === 'en' ? `${a} - ${b}` : `${b} - ${a}`
+}
