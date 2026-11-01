@@ -2941,7 +2941,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description [UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first); [Sprint 23] special (offer|in_form|legend, an event's player, listed first of all), was_price (the price before a discount), renews_at (sooner in a transfer madness) and events (TimedEventNow[]) */
+                    /** @description [UP11] list is the transfer list of one line: players[] with seller {kind world|bot|coach, club, coach, logo}, price, and star (a star from a parallel league, in the pool from mid-season, listed first); [Sprint 23] special (offer|in_form|legend, an event's player, listed first of all), was_price (the price before a discount), renews_at (sooner in a transfer madness) and events (TimedEventNow[]); [Sprint 30 Q6] fits (stronger than the weakest of my usual starters in the line, game.economy.fits_starters) */
                     source?: "list" | "pool" | "bots";
                     line?: "gk" | "def" | "mid" | "att";
                     /** @description Part of a name */

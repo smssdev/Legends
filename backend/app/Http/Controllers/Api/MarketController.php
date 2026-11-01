@@ -119,7 +119,15 @@ class MarketController extends Controller
         $masters = DB::table('master_clubs')->whereIn('id', $world->pluck('master_club_id')->merge($bots->pluck('master_club_id'))->merge($coaches->pluck('master_club_id'))->filter()->unique())
             ->get(['id', 'name', 'league_name'])->keyBy('id');
         $logo = fn ($id) => isset($masters[$id]) ? ClubLogo::path($masters[$id]->league_name, $masters[$id]->name) : null;
+        // [Sprint 30 Q6] «يناسب تشكيلتك»: stronger than the weakest of my usual starters in this line (the best
+        // game.economy.fits_starters of it), or any player while the line is short of them.
+        $starters = (int) (config('game.economy.fits_starters')[$line] ?? 1);
+        $bar = (int) (DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.club_id', $club->id)->where('master_players.line', $line)
+            ->orderByRaw('players.overall + players.training_bonus desc')->offset($starters - 1)->limit(1)
+            ->selectRaw('players.overall + players.training_bonus as ovr')->value('ovr') ?? 0);
         $row = fn ($p, int $price, array $seller) => [
+            'fits' => (int) $p->overall + (int) $p->training_bonus > $bar,
             'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'line' => $p->line, 'age' => (int) $p->age,
             'overall' => (int) $p->overall + (int) $p->training_bonus, 'potential' => (int) $p->potential, 'nationality' => Nation::name($p->nationality),
             'value' => (int) $p->value, 'price' => $price, 'seller' => $seller, 'star' => (bool) ($p->pool_star ?? false),

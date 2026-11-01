@@ -4,6 +4,7 @@
 // few hours with a countdown, each player with his seller: a club and its coach, a computer's club, or his own club
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
+import UiButton from '../../components/ui/UiButton.vue'
 import { useEscape } from '../../lib/escape'
 import UiSlider from '../../components/ui/UiSlider.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
@@ -52,7 +53,7 @@ const LINES: { id: Line; label: string }[] = [{ id: 'gk', label: 'حراس ال�
 // [UP11] The transfer list of one line, its renewal countdown, a player's deal and the celebration.
 type Seller = { kind: 'world' | 'bot' | 'coach'; club_id: number | null; club: string | null; coach: string | null; logo: string | null }
 // [Sprint 23] special: an admin's event's player (an offer, a player of the week, a legend); was_price: before a discount.
-type Row = Market['players'][number] & { seller: Seller; star?: boolean; special?: 'offer' | 'in_form' | 'legend' | null; was_price?: number | null }
+type Row = Market['players'][number] & { seller: Seller; star?: boolean; special?: 'offer' | 'in_form' | 'legend' | null; was_price?: number | null; fits?: boolean }
 type ListView = { closed: string | null; line: Line; balance: number; renews_at: string | null; events?: components['schemas']['TimedEventNow'][]; players: Row[] }
 const SPECIAL = { offer: '🎁 عرض خاص', in_form: '🔥 نجم الأسبوع', legend: '👑 أسطورة' } as const
 type Quote = { price: number; cash: number; doc_coins: number; short: number; compensate: { cash: number; coins: number } | null; can: boolean; why: string | null }
@@ -60,8 +61,40 @@ const list = ref<ListView | null>(null)
 // [X61] The transfer list a page at a time, back to the first page with each line or renewal.
 const PAGE = 30
 const page = ref(0)
-const pages = computed(() => Math.ceil((list.value?.players.length ?? 0) / PAGE))
-watch([line, () => list.value?.players.length], () => (page.value = 0))
+// [Sprint 30 Q6] The list's search, filters and order (what the server sent, only shown differently), and two players
+// side by side. «يناسب تشكيلتك» (fits) comes from the server.
+const query = ref('')
+const maxAge = ref(0)
+const minOvr = ref(0)
+const maxPrice = ref(0)
+const onlyFits = ref(false)
+const sortBy = ref<'default' | 'overall' | 'age' | 'price'>('default')
+const AGES = [0, 21, 25, 29, 33]
+const OVRS = [0, 65, 70, 75, 80, 85]
+const PRICES = [0, 1_000_000, 3_000_000, 5_000_000, 10_000_000, 20_000_000]
+const fold = (x: string) => x.toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+const shown = computed(() => {
+  const q = fold(query.value.trim())
+  const rows = (list.value?.players ?? []).filter((p) => (!q || fold(p.name).includes(q))
+    && (!maxAge.value || p.age <= maxAge.value) && (!minOvr.value || p.overall >= minOvr.value)
+    && (!maxPrice.value || p.price <= maxPrice.value) && (!onlyFits.value || p.fits))
+  const by = { overall: (a: Row, b: Row) => b.overall - a.overall, age: (a: Row, b: Row) => a.age - b.age, price: (a: Row, b: Row) => a.price - b.price }
+  return sortBy.value === 'default' ? rows : [...rows].sort(by[sortBy.value])
+})
+const filtering = computed(() => !!(query.value || maxAge.value || minOvr.value || maxPrice.value || onlyFits.value))
+function clearFilters() {
+  query.value = ''
+  maxAge.value = minOvr.value = maxPrice.value = 0
+  onlyFits.value = false
+}
+const comparing = ref<Row[]>([])
+const compareOpen = ref(false)
+function toggleCompare(p: Row) {
+  comparing.value = comparing.value.some((x) => x.id === p.id) ? comparing.value.filter((x) => x.id !== p.id) : [...comparing.value, p].slice(-2)
+}
+const ATTR_LABELS: Record<string, string> = { pac: 'سرعة', sho: 'تسديد', pas: 'تمرير', dri: 'مراوغة', def: 'دفاع', phy: 'بدنية', diving: 'طيران', handling: 'إمساك', kicking: 'ركل', positioning: 'تمركز', reflexes: 'ردة فعل' }
+const pages = computed(() => Math.ceil(shown.value.length / PAGE))
+watch([line, () => shown.value.length], () => (page.value = 0))
 const now = ref(Date.now())
 const renewsIn = computed(() => {
   const s = list.value?.renews_at ? Math.max(0, Math.floor((new Date(list.value.renews_at).getTime() - now.value) / 1000)) : 0
@@ -260,15 +293,46 @@ onBeforeUnmount(() => clearInterval(clock))
         </div>
         <!-- [Sprint 23] The admin's events running in this league. -->
         <EventsBar :events="list?.events" @ended="loadList" />
+        <!-- [Sprint 30 Q6] Search, filters and order (the owner's report: the market is a table to search, not a scroll). -->
+        <form class="grid grid-cols-2 gap-2 rounded-xl bg-surface p-2 sm:grid-cols-6" role="search" @submit.prevent>
+          <input v-model="query" type="search" dir="auto" :placeholder="$t('ابحث بالاسم')" :aria-label="$t('ابحث بالاسم')" class="col-span-2 h-touch rounded-md bg-surface-sunk px-3" />
+          <select v-model.number="minOvr" :aria-label="$t('القوة من')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
+            <option v-for="o in OVRS" :key="o" :value="o">{{ o ? $t('القوة {v0}+', { v0: o }) : $t('كل القوى') }}</option></select>
+          <select v-model.number="maxAge" :aria-label="$t('العمر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
+            <option v-for="a in AGES" :key="a" :value="a">{{ a ? $t('حتى {v0} سنة', { v0: a }) : $t('كل الأعمار') }}</option></select>
+          <select v-model.number="maxPrice" :aria-label="$t('السعر حتى')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
+            <option v-for="x in PRICES" :key="x" :value="x">{{ x ? $t('حتى {v0}', { v0: money(x) }) : $t('كل الأسعار') }}</option></select>
+          <select v-model="sortBy" :aria-label="$t('الترتيب')" class="h-touch rounded-md bg-surface-sunk px-2 text-sm">
+            <option value="default">{{ $t('الترتيب: المميزون أولاً') }}</option><option value="overall">{{ $t('الأقوى أولاً') }}</option>
+            <option value="age">{{ $t('الأصغر أولاً') }}</option><option value="price">{{ $t('الأرخص أولاً') }}</option></select>
+          <label class="col-span-2 flex min-h-touch items-center gap-2 text-sm sm:col-span-6"><input v-model="onlyFits" type="checkbox" class="size-5 accent-gold" />{{ $t('من يناسب تشكيلتك فقط') }}
+            <button v-if="filtering" type="button" class="ms-auto min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></label>
+        </form>
+        <!-- The comparison under the filters, never over the Assistant Coach's button. -->
+        <div v-if="comparing.length" class="flex items-center gap-2">
+          <button type="button" class="flex h-12 min-w-0 flex-1 items-center justify-center rounded-pill px-4 font-bold" :class="comparing.length === 2 ? 'bg-gold text-on-gold' : 'bg-surface text-text-muted'"
+            :disabled="comparing.length < 2" @click="compareOpen = true">
+            <span class="truncate">{{ comparing.length === 2 ? $t('قارن بين {v0} و{v1}', { v0: comparing[0].name, v1: comparing[1].name }) : $t('اختر لاعباً آخر للمقارنة مع {v0}', { v0: comparing[0].name }) }}</span>
+          </button>
+          <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface" :aria-label="$t('ابدأ مقارنة جديدة')" @click="comparing = []">✕</button>
+        </div>
         <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl bg-surface p-2">
           <p v-if="!list" class="p-4 text-sm text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
           <p v-else-if="!list.players.length" class="p-4 text-sm text-text-muted">{{ $t('لا لاعبين في هذا المركز الآن.') }}</p>
-          <ul v-else class="flex flex-col">
-            <li v-for="p in list.players.slice(page * PAGE, (page + 1) * PAGE)" :key="p.id" class="v-row">
+          <p v-else-if="!shown.length" class="flex flex-wrap items-center gap-2 p-4 text-sm text-text-muted">{{ $t('لا لاعب يطابق البحث.') }}
+            <button type="button" class="min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></p>
+          <!-- [Sprint 30 Q6] Fixed columns: their names stay over the list while it scrolls. -->
+          <div v-if="shown.length" class="sticky top-[var(--shell-header,4.25rem)] z-10 flex items-center gap-2 rounded-lg bg-surface-sunk px-2 py-1.5 text-xs font-bold text-text-muted sm:gap-3" aria-hidden="true">
+            <span class="w-8 text-center sm:w-10">{{ $t('القوة') }}</span><span class="flex-1">{{ $t('اللاعب') }}</span>
+            <span class="hidden max-w-48 flex-1 sm:block">{{ $t('النادي') }}</span><span class="w-16 text-end sm:w-20">{{ $t('السعر') }}</span>
+          </div>
+          <ul v-if="shown.length" class="flex flex-col">
+            <li v-for="p in shown.slice(page * PAGE, (page + 1) * PAGE)" :key="p.id" class="v-row">
               <button type="button" class="flex w-full items-center gap-2 border-t border-text/5 px-2 py-2 text-start transition-transform first:border-0 hover:bg-surface-raised sm:gap-3" @click="pick(p)">
                 <span class="w-8 text-center font-numbers text-lg sm:w-10 sm:text-xl" :class="p.overall >= 80 ? 'text-success' : p.overall >= 70 ? 'text-gold' : ''">{{ p.overall }}</span>
                 <span class="min-w-0 flex-1">
                   <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-[11px] font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
+                  <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-[11px] font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
                   <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ p.nationality }}</template></span>
                 </span>
                 <span class="hidden min-w-0 max-w-48 items-center gap-1.5 text-xs sm:flex">
@@ -308,9 +372,31 @@ onBeforeUnmount(() => clearInterval(clock))
             <button v-else-if="deal.compensate" type="button" class="h-12 rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !!list?.closed" @click="buy(true)">
               <span dir="ltr" class="font-numbers">{{ money(deal.compensate.cash) }}</span> + <img src="/brand/coin.svg" alt="" class="inline size-4" /> <span class="font-numbers">{{ deal.compensate.coins + deal.doc_coins }}</span> {{ $t('كوينز') }}</button>
           </template>
+          <button type="button" class="h-11 rounded-lg border border-gold/40 font-bold text-gold" @click="toggleCompare(picked)">
+            {{ comparing.some((x) => x.id === picked!.id) ? $t('أزله من المقارنة') : $t('أضفه للمقارنة') }}</button>
           <button type="button" class="h-11 rounded-lg bg-surface-raised font-bold" @click="picked = null">{{ $t('إغلاق') }}</button>
         </div>
       </template></UiDialog>
+
+      <!-- [Sprint 30 Q6] Two players side by side: each attribute, the higher in gold. -->
+      <UiDialog :open="compareOpen && comparing.length === 2" title="مقارنة لاعبين" wide @close="compareOpen = false">
+        <table class="w-full text-sm">
+          <thead><tr><th class="text-start text-text-muted"></th><th v-for="c in comparing" :key="c.id" class="p-1 text-center"><bdi>{{ c.name }}</bdi></th></tr></thead>
+          <tbody>
+            <tr v-for="row in [{ k: 'overall', l: 'القوة' }, { k: 'potential', l: 'الإمكانية' }, { k: 'age', l: 'العمر', low: true }, { k: 'price', l: 'السعر', low: true, money: true }]" :key="row.k" class="border-t border-text/5">
+              <th class="py-1.5 text-start font-normal text-text-muted">{{ $t(row.l) }}</th>
+              <td v-for="c in comparing" :key="c.id" class="text-center font-numbers" dir="ltr"
+                :class="(row.low ? (c as any)[row.k] < (comparing.find((x) => x.id !== c.id) as any)[row.k] : (c as any)[row.k] > (comparing.find((x) => x.id !== c.id) as any)[row.k]) ? 'font-bold text-gold' : ''">
+                {{ row.money ? money((c as any)[row.k]) : (c as any)[row.k] }}</td>
+            </tr>
+            <tr v-for="k in Object.keys(comparing[0].attributes ?? {})" :key="k" class="border-t border-text/5">
+              <th class="py-1.5 text-start font-normal text-text-muted">{{ $t(ATTR_LABELS[k] ?? k) }}</th>
+              <td v-for="c in comparing" :key="c.id" class="text-center font-numbers" :class="((c.attributes as any)?.[k] ?? 0) > ((comparing.find((x) => x.id !== c.id)!.attributes as any)?.[k] ?? 0) ? 'font-bold text-gold' : ''">{{ (c.attributes as any)?.[k] ?? '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <UiButton variant="quiet" block class="mt-3" @click="comparing = []; compareOpen = false">{{ $t('ابدأ مقارنة جديدة') }}</UiButton>
+      </UiDialog>
 
       <!-- The celebration. -->
       <div v-if="celebrate" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-deep/85 p-4" role="alertdialog" :aria-label="$t('تمت الصفقة')" @click="celebrate = ''">
