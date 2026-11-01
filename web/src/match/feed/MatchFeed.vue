@@ -185,6 +185,7 @@ function play(tick, startAt = null) {
   } catch (e) { console.error(e); made = null }
   if (made) {
     scene = made
+    sceneAt = performance.now()
     stage.value.replaceChildren(scene.svg)
     sceneOn.value = true
   } else {
@@ -259,6 +260,7 @@ function step(now) {
     if (s.scene === 'miss' && s.data.how === 'post' && t >= keyT) cue('post', keyT, () => emit('sound', 'post'))
     if (t >= keyT) fire('key', () => { revealed.value = true; tense.value = false })
     if (s.goal && t >= keyT) fire('goal', () => {
+      cheerAt = performance.now()
       emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
       party.value = { side: s.side, who: s.who }
     })
@@ -302,7 +304,7 @@ let resizer: ResizeObserver | null = null
 onMounted(() => {
   if (typeof ResizeObserver !== 'undefined' && pitchHost.value) { resizer = new ResizeObserver(() => { if (fit()) drawPitch(lastTick, lastU) }); resizer.observe(pitchHost.value) }
   // The numbers are painted once into each player's sprite: once the match's fonts arrive, they are painted again.
-  document.fonts?.ready.then(() => { tvPlayers = new Map(); dots = new Map() })
+  document.fonts?.ready.then(() => { tvPlayers = new Map(); dots = new Map(); for (const k in boards) delete boards[k]; tvBg = null })
 })
 onBeforeUnmount(() => resizer?.disconnect())
 
@@ -369,18 +371,35 @@ function drawTop(tick, u) {
 // The broadcast camera [X35]: the pitch in perspective as the main TV camera sees it from the stand, panning with the
 // ball, and the cartoon players (figure.ts, as art.ts's) running between the server's keyframes.
 const TV = { far: 64, near: 292, span: 620 }
-let camX = 525, tvPlayers = new Map(), tvBg: HTMLCanvasElement | null = null, tvCam = -1
+let camX = 525, tvPlayers = new Map(), tvBg: HTMLCanvasElement | null = null, tvCam = -1, tvZoom = 0, tvFy = 0, zoom = 1, lead = 0, sceneAt = -1e9, cheerAt = -1e9, camFy = 180, lightCv: HTMLCanvasElement | null = null, lightKey = ''
 const depth = (y) => Math.max(0, Math.min(1, y / 680))
 const proj = (x, y) => { const d = depth(y), k = (640 / TV.span) * (0.62 + 0.38 * d); return [320 + (x - camX) * k, TV.far + (TV.near - TV.far) * d, 0.5 + 0.5 * d] }
 // The 640 x 300 picture covers the box (as the SVG's "slice").
 function tvView() { const s = Math.max(cw / 640, ch / 300); return { s, ox: (cw - 640 * s) / 2, oy: (ch - 300 * s) / 2 } }
+// [Sprint 31 C2] Night or day from the hour in Cairo (the game's schedule zone) when the match plays: the same on
+// every screen watching it together. Night from 18:00 to 05:59, under the floodlights.
+function cairoHour() { try { return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: 'numeric', hourCycle: 'h23' }).format(new Date())) } catch { return 20 } }
+let night = true
+const LOOK = {
+  night: { sky: '#0B1D2E', rows: ['#14304A', '#183A57'], grass: ['#1d8a4b', '#23994f'], tint: 'rgba(7,23,51,.18)' },
+  day: { sky: '#7FB3D9', rows: ['#2C4A6B', '#35587D'], grass: ['#2a9a52', '#33aa5c'], tint: 'rgba(255,236,190,.06)' },
+}
 function paintTvPitch(c) {
-  c.fillStyle = '#0B1D2E'; c.fillRect(0, 0, 640, 300)
-  // The stand behind the far touchline: rows of crowd as a soft band.
-  for (let r = 0; r < 4; r++) { c.fillStyle = r % 2 ? '#14304A' : '#183A57'; c.fillRect(0, 8 + r * 13, 640, 11) }
-  c.fillStyle = '#0A7559'; c.fillRect(0, 56, 640, 6)
-  const quad = (x0, x1, fill) => { const a = proj(x0, 0), b = proj(x1, 0), d = proj(x1, 680), e = proj(x0, 680); c.fillStyle = fill; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(d[0], d[1]); c.lineTo(e[0], e[1]); c.closePath(); c.fill() }
-  for (let i = 0; i < 10; i++) quad(i * 105, i * 105 + 105, i % 2 ? '#1d8a4b' : '#23994f')
+  const L = night ? LOOK.night : LOOK.day
+  c.fillStyle = L.sky; c.fillRect(-200, -200, 1040, 700)
+  // The stand behind the far touchline (its crowd is drawn every frame, crowd()).
+  for (let r = 0; r < 4; r++) { c.fillStyle = L.rows[r % 2]; c.fillRect(-200, 8 + r * 13, 1040, 11) }
+  c.fillStyle = '#0A1A2B'; c.fillRect(-200, 52, 1040, 12)
+  const quad = (x0, x1, y0, y1, fill) => { const a = proj(x0, y0), b = proj(x1, y0), d = proj(x1, y1), e = proj(x0, y1); c.fillStyle = fill; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(d[0], d[1]); c.lineTo(e[0], e[1]); c.closePath(); c.fill() }
+  // The grass around the pitch, then the mown stripes, and finer cuts across them.
+  quad(-200, 1250, -40, 680 + 400, L.grass[0])
+  for (let i = 0; i < 10; i++) quad(i * 105, i * 105 + 105, 0, 680, L.grass[i % 2])
+  for (let j = 0; j < 8; j++) if (j % 2) quad(0, 1050, j * 85, j * 85 + 85, 'rgba(255,255,255,.035)')
+  // [Sprint 31 C3] The advertising boards along the far touchline: LEGENDS, navy and gold.
+  const [b0x, b0y] = proj(-60, -26), [b1x] = proj(1110, -26), bh = 7
+  c.fillStyle = '#071733'; c.fillRect(b0x, b0y - bh, b1x - b0x, bh)
+  c.fillStyle = '#F5B82E'; c.fillRect(b0x, b0y - 1, b1x - b0x, 1)
+  for (let x = -40; x <= 1100; x += 120) { const [px] = proj(x, -26); c.drawImage(boardSprite((x + 40) / 120 % 2 ? '#F5B82E' : '#FFFFFF'), px - 16, b0y - 7, 32, 6) }
   c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1.6
   const line = (pts) => { c.beginPath(); pts.forEach(([x, y], i) => { const [px, py] = proj(x, y); i ? c.lineTo(px, py) : c.moveTo(px, py) }); c.stroke() }
   line([[0, 0], [1050, 0], [1050, 680], [0, 680], [0, 0]]); line([[525, 0], [525, 680]])
@@ -388,6 +407,47 @@ function paintTvPitch(c) {
   for (const [x, d] of [[0, 1], [1050, -1]]) {
     line([[x, 138], [x + d * 165, 138], [x + d * 165, 542], [x, 542]]); line([[x, 248], [x + d * 55, 248], [x + d * 55, 432], [x, 432]])
   }
+}
+// The word on the boards, painted once per colour (text is the slowest thing a canvas draws).
+const boards = {}
+function boardSprite(colour) {
+  if (boards[colour]) return boards[colour]
+  const b = document.createElement('canvas'); b.width = 128; b.height = 24
+  const c = b.getContext('2d'); c.fillStyle = colour; c.font = '800 22px "Barlow Condensed", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('LEGENDS', 64, 13)
+  return (boards[colour] = b)
+}
+// [Sprint 31 C3] The crowd: dots in the home side's colours (the away fans in a corner), the same seats on every screen
+// (from the match's seed). They sway with the danger of the minute and jump at a goal.
+let fans = [], fansFor = ''
+function seatFans() {
+  const key = `${props.seed}|${props.kits.home.kit}|${props.kits.away.kit}|${smooth.value}`
+  if (key === fansFor) return
+  fansFor = key
+  let r = (props.seed | 0) || 1
+  const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff }
+  const H = [props.kits.home.kit, props.kits.home.trim || '#fff'], A = [props.kits.away.kit, props.kits.away.trim || '#fff']
+  const n = smooth.value ? 220 : 660
+  fans = Array.from({ length: n }, (_, i) => {
+    const x = -150 + rnd() * 1350, row = Math.floor(rnd() * 4), away = x > 1000 && rnd() < 0.8
+    const pick = rnd(), colour = pick < 0.12 ? '#C9D2E1' : pick < 0.2 ? '#0A1F42' : (away ? A : H)[pick < 0.65 ? 0 : 1]
+    return { x, y: 10 + row * 13 + rnd() * 8, c: colour, ph: rnd() * 6.28, w: 1.6 + rnd() * 0.8 }
+  }).sort((a, b) => (a.c < b.c ? -1 : a.c > b.c ? 1 : 0))
+}
+let danger = 0
+function crowd(c, now) {
+  seatFans()
+  const sway = smooth.value ? 0 : 0.15 + danger * 0.35, jump = Math.max(0, 1 - (now - cheerAt) / 2600) * 4
+  // One path per colour (the fans are seated sorted by it): a few fills a frame, not hundreds.
+  let colour = ''
+  for (const f of fans) {
+    if (f.c !== colour) { if (colour) c.fill(); colour = f.c; c.fillStyle = colour; c.beginPath() }
+    // The stand is a little farther than the far touchline: it pans a little slower than the pitch.
+    const sx = 320 + (f.x - camX) * (640 / TV.span) * 0.58
+    if (sx < -4 || sx > 644) continue
+    const dy = Math.sin(now * 0.006 + f.ph) * sway - Math.abs(Math.sin(now * 0.014 + f.ph)) * jump
+    c.rect(sx, f.y + dy, f.w, f.w * 1.3)
+  }
+  if (colour) c.fill()
 }
 // The goals stand up from the line: drawn with the players, so one in front of them covers them.
 function goalAt(c, x) {
@@ -426,15 +486,29 @@ function drawTv(tick, u) {
   // [Sprint 31 M1] The shared curve between the keyframes; a moment later on it gives every player's speed and way.
   const R = sample(f, u), span = (tick.moment?.ms ?? 3000) / 1000, du = 0.02, R2 = sample(f, Math.min(1, u + du))
   const [bx, by, bz] = R.ball
-  // The camera pans after the ball, gently, and never past the ends of the pitch.
-  camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx)) - camX) * 0.06
-  // The pitch is painted again only when the camera has moved (as the SVG did): else its picture is copied.
-  if (!tvBg || tvBg.width !== cw || tvBg.height !== ch || Math.abs(camX - tvCam) >= 0.8) {
+  danger = tick.danger ?? 0
+  // [Sprint 31 C1] The camera pans after the ball, a little ahead of it where the play goes, gently, and never past
+  // the ends of the pitch.
+  const bvx = u >= 1 ? 0 : (R2.ball[0] - bx) / (du * span)
+  lead += (Math.max(-70, Math.min(70, bvx * 0.35)) - lead) * Math.min(1, dts * 1.5)
+  camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx + lead)) - camX) * 0.06
+  // It closes in on the last third (up to 1.3), and punches in on the ball as a key moment's scene opens.
+  const third = Math.max(0, Math.min(1, (Math.abs(bx - 525) - 175) / 250))
+  const punch = now - sceneAt < 650 ? 1.75 : 0
+  zoom += ((punch || 1 + 0.3 * third * third * (3 - 2 * third)) - zoom) * Math.min(1, dts * (punch ? 6 : 1.4))
+  if (smooth.value) zoom = 1
+  const [, bsy] = proj(bx, by), fx = 320
+  camFy += (Math.max(90, Math.min(270, bsy)) - camFy) * Math.min(1, dts * 2)
+  const fy = zoom < 1.003 ? camFy : Math.round(camFy)
+  const T = [vs * zoom, ox + vs * fx * (1 - zoom), oy + vs * fy * (1 - zoom)]
+  // The pitch is painted again only when the camera has moved or zoomed: else its picture is copied.
+  if (!tvBg || tvBg.width !== cw || tvBg.height !== ch || Math.abs(camX - tvCam) >= 0.8 || Math.abs(zoom - tvZoom) > 0.004 || (zoom > 1.003 && Math.abs(fy - tvFy) >= 1)) {
     if (!tvBg || tvBg.width !== cw || tvBg.height !== ch) { tvBg = document.createElement('canvas'); tvBg.width = cw; tvBg.height = ch }
     const b = tvBg.getContext('2d', { alpha: false })
-    b.setTransform(vs, 0, 0, vs, ox, oy); paintTvPitch(b); tvCam = camX
+    b.setTransform(T[0], 0, 0, T[0], T[1], T[2]); paintTvPitch(b); tvCam = camX; tvZoom = zoom; tvFy = fy
   }
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(tvBg, 0, 0); ctx.setTransform(vs, 0, 0, vs, ox, oy)
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(tvBg, 0, 0); ctx.setTransform(T[0], 0, 0, T[0], T[1], T[2])
+  crowd(ctx, now)
   const drawn = []
   let near = null, nearD = 1e9
   for (const id in R.players) {
@@ -476,8 +550,19 @@ function drawTv(tick, u) {
   items.push({ y: py + 0.5, ball: true }, { y: proj(0, 377)[1], goal: 0 }, { y: proj(1050, 377)[1], goal: 1050 })
   items.sort((a, b) => a.y - b.y)
   const h = Math.min(1, bz / 60)
+  // [Sprint 31 C4] Every player's shadow first, under them all: at night two faint ones from the floodlights in the
+  // far corners, by day one from the sun.
+  const lights = night ? [[-1, 0.2], [1, 0.2]] : [[1, 0.32]]
+  for (const [dir, a] of lights) {
+    ctx.fillStyle = `rgba(0,0,0,${a})`; ctx.beginPath()
+    for (const t of drawn) {
+      const k = t.scale, cx = t.sx + dir * 9 * k, cy = t.sy + 2 * k, r = dir * 0.35
+      ctx.moveTo(cx + 17 * k * Math.cos(r), cy + 17 * k * Math.sin(r)); ctx.ellipse(cx, cy, 17 * k, 4 * k, r, 0, Math.PI * 2)
+    }
+    ctx.fill()
+  }
   for (const it of items) {
-    if (it.t) { const t = it.t; t.f.draw(ctx, t.sx, t.sy - 58 * t.scale - t.bob * t.scale, t.lean, t.scale) }
+    if (it.t) { const t = it.t; t.f.draw(ctx, t.sx, t.sy - 58 * t.scale - t.bob * t.scale, t.lean, t.scale, false) }
     else if (it.goal !== undefined) goalAt(ctx, it.goal)
     else {
       // [Sprint 31 M2] The ball flies in an arc; its shadow stays on the grass, smaller, fainter and further off the higher it goes.
@@ -487,8 +572,25 @@ function drawTv(tick, u) {
       ctx.beginPath(); ctx.arc(px, py - 3 * ps - bz * 0.35 * ps, 4.5 * ps + bz * 0.02, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
     }
   }
+  // [Sprint 31 C2] The light: the floodlights' sheen on the grass at night (the sun's warmth by day), and the
+  // picture's edges darkened as a camera's lens does. Painted once for the box's size, then laid over every frame.
+  const key = `${cw}x${ch}|${night}|${smooth.value}`
+  if (!lightCv || lightKey !== key) {
+    lightKey = key; lightCv = document.createElement('canvas'); lightCv.width = cw; lightCv.height = ch
+    const l = lightCv.getContext('2d')
+    if (!smooth.value) {
+      const g = l.createRadialGradient(cw / 2, ch * 0.25, 0, cw / 2, ch * 0.25, cw * 0.6)
+      g.addColorStop(0, night ? 'rgba(255,255,240,.10)' : 'rgba(255,240,200,.08)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+      l.fillStyle = g; l.fillRect(0, 0, cw, ch)
+    }
+    l.fillStyle = (night ? LOOK.night : LOOK.day).tint; l.fillRect(0, 0, cw, ch)
+    const v = l.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.35, cw / 2, ch / 2, Math.max(cw, ch) * 0.75)
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.42)')
+    l.fillStyle = v; l.fillRect(0, 0, cw, ch)
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(lightCv, 0, 0)
 }
-function buildPitch() { if (!pitchHost.value) return; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null } drawPitch(lastTick, lastU) }
+function buildPitch() { if (!pitchHost.value) return; const hr = cairoHour(); night = hr >= 18 || hr < 6; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null } drawPitch(lastTick, lastU) }
 function drawPitch(tick, u) { lastTick = tick; lastU = u; camera.value === 'tv' ? drawTv(tick, u) : drawTop(tick, u) }
 function tickClock(tick, u) {
   const m = tick?.minute
@@ -571,10 +673,10 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
   .row .card, .row.away .card { grid-column: 2; flex-direction: row; text-align: right; border-inline-start: 3px solid var(--c); border-inline-end: 1px solid rgba(255,255,255,.09) }
 }
 
-.moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .35s }
+.moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .45s ease-out }
 .moment.on { opacity: 1 }
 .moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7) }
-.mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(14px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.25,1.15) }
+.mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(10px) scale(.9); transition: transform .55s cubic-bezier(.2,.9,.25,1.1) }
 .moment.on .mbox { transform: none }
 /* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */
 .stage { aspect-ratio: 640 / 340; contain: strict; will-change: transform }
