@@ -467,7 +467,7 @@ unity/
 
 | الميزة | المفاتيح | الحالة |
 |---|---|---|
-| البريد | `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` (كلمة مرور تطبيق من حساب جوجل ← Security ← App passwords) | ✅ |
+| البريد | الآن `GMAIL_ADDRESS` و`GMAIL_APP_PASSWORD` (كلمة مرور تطبيق من حساب جوجل ← Security ← App passwords). **والمطلوب (X71، 2026-11-01): من `nesr@nesr.site` باسم «المدرب الأسطورة» ليصل للبريد الرئيسي لا غير المرغوب:** حساب Brevo المجاني، والدومين `nesr.site` موثّق فيه بسجلات DKIM وSPF وDMARC، ثم `legends-set BREVO_API_KEY` و`MAIL_FROM_ADDRESS=nesr@nesr.site` (فيُستعمل Brevo بدل Gmail تلقائياً، `deploy/docker/start.sh`). والاسم الافتراضي للمرسل «المدرب الأسطورة» في `.env.example`. وللردود: تحويل مجاني (ImprovMX) بسجلي MX، وسجل SPF واحد يجمعهما | 🔄 |
 | الدخول بجوجل | `GOOGLE_CLIENT_ID` و`GOOGLE_CLIENT_SECRET`، وفي العميل: origin `https://nesr.site` وredirect `https://nesr.site/auth/google/callback` (X70) | ✅ |
 | الحسابان الرسميان | `OWNER_SOLIMAN_EMAIL` و`OWNER_HAMZA_EMAIL`: من يدخل بأحدهما مؤكَّداً يصير مديراً | ✅ |
 | الدعم | `SUPPORT_WHATSAPP` و`SUPPORT_TELEGRAM` | ✅ |
