@@ -2259,6 +2259,7 @@ export const EN: Record<string, string> = {
   'أضف أعضاء بأسماء المستخدمين': 'Add members by their usernames',
   'افصل بينها بمسافة أو فاصلة، ويمكنك الإضافة لاحقاً أو مشاركة رابط الجروب.': 'Separate them with a space or a comma; you can add more later or share the group link.',
   'أنشئ الجروب': 'Create the group',
+  'أنشئ جروباً': 'Create a group',
   'ينضم إلى الجروب…': 'Joining the group…',
   'أنشأ {by} الجروب': '{by} created the group',
   'أضاف {by} {name}': '{by} added {name}',
