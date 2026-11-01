@@ -253,10 +253,14 @@
       </aside>
     </div>
     <MatchRecap v-if="recapOpen" :match-id="Number(id)" :watch="false" @close="recapOpen = false" />
+    <!-- [Sprint 30 G3] The first live matches, taught as they happen by the Assistant Coach. -->
+    <FirstMatchTips :active="!!(live && league && mine)" :started="started && minute[0] > 0" :window-on="windowOn" :halftime="halftime"
+      :conceded="mine ? score[mine === 'home' ? 'away' : 'home'] : 0" :finished="finished" />
   </main>
 </template>
 
 <script setup lang="ts">
+import FirstMatchTips from '../components/match/FirstMatchTips.vue'
 import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
