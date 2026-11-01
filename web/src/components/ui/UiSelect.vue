@@ -14,7 +14,7 @@ const labelOf = (v: string) => all.value.find((o) => o.value === v)?.label ?? ''
 const query = ref('')
 const fold = (s: string) => s.toLocaleLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
 const filtered = computed(() => (query.value ? all.value.filter((o) => fold(o.label).includes(fold(query.value))) : all.value))
-const FIELD = 'flex h-touch w-full items-center gap-2 rounded-md bg-surface-sunk px-3 text-start text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70'
+const FIELD = 'ui-field flex h-touch w-full items-center gap-2 rounded-md bg-surface-sunk px-3 text-start text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70'
 const PANEL = 'drop-panel absolute inset-x-0 top-full z-50 mt-1 max-h-[min(60vh,18rem)] overflow-y-auto overscroll-contain rounded-xl border border-text/10 bg-surface p-1 shadow-2xl focus:outline-none'
 </script>
 
