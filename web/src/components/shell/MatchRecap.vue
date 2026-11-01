@@ -5,6 +5,7 @@
 // «التقرير الكامل» opens the report. The server picks the moments and counts the numbers; this only shows them.
 // [X69] For any match of the league: a member who coaches neither side gets no result badge and no report, and
 // «شاهد المحاكاة كاملة» plays the whole match again (watch: false where it already plays).
+import { useEscape } from '../../lib/escape'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, asApiError } from '../../api/client'
@@ -12,6 +13,7 @@ import type { components } from '../../api/schema'
 
 const props = withDefaults(defineProps<{ matchId: number; watch?: boolean }>(), { watch: true })
 const emit = defineEmits<{ close: [] }>()
+useEscape(() => emit('close'))
 const router = useRouter()
 type Recap = components['schemas']['MatchRecap']
 const r = ref<Recap | null>(null)

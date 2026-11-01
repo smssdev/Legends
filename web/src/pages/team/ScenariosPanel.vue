@@ -2,6 +2,7 @@
 // The pre-match scenarios [X23]: up to three plans the server carries out at their moment, even when the
 // coach is away: trailing from a minute, a red card against us, holding a lead from a minute. Each changes
 // the pressing, the tempo or the style and may make one substitution. The rival never sees them.
+import UiSlider from '../../components/ui/UiSlider.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -92,7 +93,7 @@ async function save() {
       <template v-if="rows[k.kind].on">
         <label v-if="k.minute" class="flex flex-col gap-1">
           <span class="flex justify-between text-sm"><span>{{ $t(KIND[k.kind].hint) }}</span><span class="font-numbers text-xl font-bold text-gold" dir="ltr">{{ rows[k.kind].minute }}'</span></span>
-          <input v-model.number="rows[k.kind].minute" type="range" :min="k.minute.min" :max="k.minute.max" step="1" class="accent-gold" />
+          <UiSlider v-model="rows[k.kind].minute" :min="k.minute.min" :max="k.minute.max" :label="KIND[k.kind].hint" :value-text="`${rows[k.kind].minute}'`" />
         </label>
         <p v-else class="text-sm text-text-muted">{{ $t(KIND[k.kind].hint) }}</p>
 
@@ -102,7 +103,7 @@ async function save() {
             <span v-if="rows[k.kind].tactics[s.key] !== undefined" class="font-numbers text-xl font-bold text-gold">{{ rows[k.kind].tactics[s.key] }}</span>
             <span v-else class="text-sm text-text-muted">{{ $t('بلا تغيير') }}</span>
           </span>
-          <input v-if="rows[k.kind].tactics[s.key] !== undefined" v-model.number="rows[k.kind].tactics[s.key]" type="range" min="0" max="100" step="5" class="accent-gold" :aria-label="s.label" />
+          <UiSlider v-if="rows[k.kind].tactics[s.key] !== undefined" v-model="rows[k.kind].tactics[s.key]!" :step="5" :label="s.label" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">

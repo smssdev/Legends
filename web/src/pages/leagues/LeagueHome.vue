@@ -2,6 +2,7 @@
 // One league (Sprints 13 to 15): the table, calendar and cup (LeagueTabs), its card, the invite to share, my club, my presence and holiday,
 // the coaches (the owner can send one away with a reason), who left and why, and the join requests.
 // Sprint 14's parts have no draft yet: built with the same cards, waiting for approval like Sprint 10's. The table, fixtures and cup of the draft MobileLeague come with the schedule (Sprint 15).
+import UiTabs from '../../components/ui/UiTabs.vue'
 import OfficialBadge from '../../components/OfficialBadge.vue'
 import VerifiedBadge from '../../components/VerifiedBadge.vue'
 import { computed, onMounted, ref } from 'vue'
@@ -109,6 +110,14 @@ async function holiday(start: boolean) {
 
 // Resigning [PLAN 2.2, Sprint 32]: asked twice, since the club goes back to a bot for the rest of the season.
 const router = useRouter()
+// [Sprint 30 Q4] The page's four tabs; the coaches' one shows the requests waiting for the owner.
+const section = ref<'standings' | 'coaches' | 'season' | 'more'>('standings')
+const sections = computed(() => [
+  { key: 'standings' as const, label: 'الترتيب والمباريات' },
+  { key: 'coaches' as const, label: 'المدربون', n: league.value?.is_owner ? (league.value.pending_requests || null) : null },
+  { key: 'season' as const, label: 'الموسم' },
+  { key: 'more' as const, label: 'المزيد' },
+])
 const confirmResign = ref(false)
 const resignError = ref('')
 async function resign() {
@@ -235,9 +244,16 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         <span>{{ $t('الكأس: {v0}', { v0: cupGoal(mine.objectives.cup.target) }) }}</span>
       </section>
 
-      <LeagueTabs v-if="clubs.length" :league-id="leagueId" :my-club-id="league.my_club_id" :team-count="league.team_count" />
+      <!-- [Sprint 30 Q4] The page in four tabs instead of one long scroll: the table and matches, the coaches, the
+           season (invite, dates, holidays), and the rest (the clubs, the media, the draw and the alliances). -->
+      <!-- No team yet: the way to one stays above the tabs, never hidden in one. -->
+      <RouterLink v-if="!league.my_club_id && (league.is_owner || league.my_request === 'approved') && league.free_clubs" :to="{ name: 'pick-team', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold">{{ $t('اختر فريقك') }} <span aria-hidden="true">←</span></RouterLink>
+      <UiTabs v-model="section" :items="sections" label="أقسام الدوري" fill size="sm" />
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <LeagueTabs v-if="section === 'standings' && clubs.length" :league-id="leagueId" :my-club-id="league.my_club_id" :team-count="league.team_count" />
+
+      <div v-if="section === 'season'" class="grid gap-4 md:grid-cols-2">
         <UiCard v-if="league.code" :title="$t('ادعُ أصحابك')">
           <span class="rounded-lg bg-surface-sunk px-4 py-3 text-center font-numbers text-3xl font-bold tracking-[0.3em] text-gold" dir="ltr">{{ league.code }}</span>
           <div class="grid grid-cols-2 gap-2">
@@ -274,7 +290,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </UiCard>
       </div>
 
-      <UiCard v-if="league.me" :title="$t('حضورك')">
+      <UiCard v-if="section === 'season' && league.me" :title="$t('حضورك')">
         <p v-if="league.me.on_holiday" class="rounded-lg bg-gold/15 px-3 py-2 text-sm">
           {{ $t('أنت في إجازة حتى {v0}. لا يُحسب غيابك، والمساعد يدير فريقك.', { v0: since(league.me.vacation_until) }) }}
         </p>
@@ -312,7 +328,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </div>
       </UiCard>
 
-      <UiCard v-if="league.members.length" :title="$t('المدربون')">
+      <UiCard v-if="section === 'coaches' && league.members.length" :title="$t('المدربون')">
         <ul class="flex flex-col gap-2">
           <li v-for="m in league.members" :key="m.id" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
             <div class="flex min-h-touch flex-wrap items-center gap-3">
@@ -347,7 +363,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </ul>
       </UiCard>
 
-      <UiCard v-if="league.departures.length" :title="$t('غادروا هذا الموسم')">
+      <UiCard v-if="section === 'coaches' && league.departures.length" :title="$t('غادروا هذا الموسم')">
         <ul class="flex flex-col gap-2 text-sm">
           <li v-for="(d, i) in league.departures" :key="i" class="rounded-lg bg-surface-sunk p-3">
             <span class="font-bold">{{ d.user }}</span><span v-if="d.club" class="text-text-muted"> ({{ d.club }})</span>: {{ $t(LEFT[d.reason]) }}
@@ -357,7 +373,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </ul>
       </UiCard>
 
-      <UiCard v-if="league.is_owner" :title="$t('طلبات الانضمام')">
+      <UiCard v-if="section === 'coaches' && league.is_owner" :title="$t('طلبات الانضمام')">
         <template #action><UiChip v-if="waiting.length" tone="live">{{ $t('{v0} بانتظارك', { v0: waiting.length }) }}</UiChip></template>
         <p v-if="!requests.length" class="text-sm text-text-muted">{{ $t('لا طلبات بعد. شارك الكود ليصل أصحابك.') }}</p>
         <ul v-else class="flex flex-col gap-2">
@@ -374,6 +390,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       </UiCard>
 
       <!-- [Sprint 29] A tournament's own page and draw; every league's and tournament's group chat. -->
+      <template v-if="section === 'more'">
       <RouterLink v-if="league.kind === 'tournament'" :to="{ name: 'tournament', params: { id } }"
         class="flex min-h-touch items-center justify-between gap-3 rounded-xl border border-gold/30 bg-surface px-4 py-3">
         <span><b class="block">{{ $t('صفحة البطولة') }}</b><span class="text-sm text-text-muted">{{ $t('المجموعات والأدوار الإقصائية والقرعة') }}</span></span>
@@ -426,6 +443,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </ul>
         <p class="text-xs text-text-muted"><span class="font-numbers">{{ coaches.length }}</span> {{ $t('مدربين، والباقي يديره الحاسوب.') }}</p>
       </UiCard>
+      </template>
     </template>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <!-- [X57] One Google ad at the page's foot. -->

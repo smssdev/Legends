@@ -2,6 +2,7 @@
 // The alliance tournament [X27]: the owner's request (it waits for the developers), the two alliances with their
 // captains, and the rounds. Team-mates are not played: their captain picks who goes on, and a title left to one
 // alliance is its own without another match.
+import UiSlider from '../../components/ui/UiSlider.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -128,7 +129,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
           </label>
         </div>
         <label class="flex flex-col gap-1 text-sm">{{ $t('عدد كل تحالف:') }} <b class="font-numbers text-gold">{{ $t('{v0} ضد {v1}', { v0: form.size, v1: form.size }) }}</b>
-          <input v-model.number="form.size" type="range" :min="view.sizes[0]" :max="view.sizes[1]" class="accent-gold" />
+          <UiSlider v-model="form.size" :min="view.sizes[0]" :max="view.sizes[1]" label="عدد كل تحالف:" />
         </label>
         <label class="flex flex-col gap-1 text-sm">{{ $t('موعد الدور الأول') }}<input v-model="form.first_round_at" type="datetime-local" required class="h-touch rounded-lg bg-surface-sunk px-3" dir="ltr" /></label>
         <UiButton type="submit" :disabled="busy">{{ $t('أرسل للاعتماد') }}</UiButton>

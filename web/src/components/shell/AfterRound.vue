@@ -4,6 +4,7 @@
 // next one, or «تخطَّ الكل». Once skipped, a match does not come back. [Sprint 24 W1] «الملخص السريع» first: the
 // match's big moments fast, then the numbers (MatchRecap), and it counts as seen. [Sprint 26 W2] The lion mascot (A2)
 // feels the result as the server says (joy, surprise, calm, sad or angry).
+import { useEscape } from '../../lib/escape'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../api/client'
@@ -19,6 +20,8 @@ const matches = ref<components['schemas']['MissedMatch'][]>([])
 const at = ref(0)
 const m = computed(() => matches.value[at.value] ?? null)
 const path = { params: { path: { league: props.leagueId } } }
+// [Sprint 30 Q4] Esc: «later» for all of them (as skipping), unless the recap is open over it (its own Esc).
+useEscape(() => skipAll(), () => !!m.value && recap.value === null)
 
 onMounted(async () => {
   matches.value = (await api.GET('/leagues/{league}/team/missed', path)).data?.matches ?? []
