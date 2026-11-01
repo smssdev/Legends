@@ -481,7 +481,9 @@ return [
     // rewarded video (H5 Games Ads) is tried before our own ad and cuts the same minutes; its watch is timed on the
     // server for at least adsense_seconds (Google has no server check for the web), and the 5 a task stay. test asks
     // Google for test ads (ADSENSE_TEST) until H5 Games Ads approves the site.
-    'adsense' => ['client' => env('ADSENSE_CLIENT'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
+    // [X72] The game's own AdSense account by default (the owner's, 2026-11-01): its publisher id is public, so it sits
+    // here; ADSENSE_CLIENT on the server still replaces it, and an empty one turns Google's ads off.
+    'adsense' => ['client' => env('ADSENSE_CLIENT', 'ca-pub-9280036306568581'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
         'test' => (bool) env('ADSENSE_TEST', false), 'adsense_seconds' => 10],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
