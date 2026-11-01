@@ -100,7 +100,7 @@ import { sample, segment } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
-const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
+const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; kickoff?: string | null; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; near: [closeness: number]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
@@ -377,10 +377,16 @@ let refs = [], camX = 525, tvPlayers = new Map(), tvBg: HTMLCanvasElement | null
 const depth = (y) => Math.max(0, Math.min(1, y / 680))
 const proj = (x, y) => { const d = depth(y), k = (640 / TV.span) * (0.62 + 0.38 * d); return [320 + (x - camX) * k, TV.far + (TV.near - TV.far) * d, 0.5 + 0.5 * d] }
 // The 640 x 300 picture covers the box (as the SVG's "slice").
-function tvView() { const s = Math.max(cw / 640, ch / 300); return { s, ox: (cw - 640 * s) / 2, oy: (ch - 300 * s) / 2 } }
+// [Sprint 32 V2] A box wider than the picture (a computer) shows more of the pitch across instead of cutting the
+// stand and the near touchline off: the picture fits its height and runs on to the sides.
+function tvView() { const s = cw / ch > 640 / 300 ? ch / 300 : Math.max(cw / 640, ch / 300); return { s, ox: (cw - 640 * s) / 2, oy: (ch - 300 * s) / 2 } }
 // [Sprint 31 C2] Night or day from the hour in Cairo (the game's schedule zone) when the match plays: the same on
 // every screen watching it together. Night from 18:00 to 05:59, under the floodlights.
-function cairoHour() { try { return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: 'numeric', hourCycle: 'h23' }).format(new Date())) } catch { return 20 } }
+// [Sprint 32 V3] The hour of its kick-off when the server sends it (a replay keeps its own light), else now.
+function cairoHour() {
+  const at = props.kickoff ? new Date(props.kickoff) : new Date()
+  try { return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: 'numeric', hourCycle: 'h23' }).format(isNaN(+at) ? new Date() : at)) } catch { return 20 }
+}
 let night = true
 const LOOK = {
   night: { sky: '#0B1D2E', rows: ['#14304A', '#183A57'], grass: ['#1d8a4b', '#23994f'], tint: 'rgba(7,23,51,.18)' },
@@ -388,20 +394,21 @@ const LOOK = {
 }
 function paintTvPitch(c) {
   const L = night ? LOOK.night : LOOK.day
-  c.fillStyle = L.sky; c.fillRect(-200, -200, 1040, 700)
+  c.fillStyle = rainy() ? '#33414F' : L.sky; c.fillRect(-900, -200, 2440, 700)
   // The stand behind the far touchline (its crowd is drawn every frame, crowd()).
-  for (let r = 0; r < 4; r++) { c.fillStyle = L.rows[r % 2]; c.fillRect(-200, 8 + r * 13, 1040, 11) }
-  c.fillStyle = '#0A1A2B'; c.fillRect(-200, 52, 1040, 12)
+  for (let r = 0; r < 4; r++) { c.fillStyle = L.rows[r % 2]; c.fillRect(-900, 8 + r * 13, 2440, 11) }
+  c.fillStyle = '#0A1A2B'; c.fillRect(-900, 52, 2440, 12)
   const quad = (x0, x1, y0, y1, fill) => { const a = proj(x0, y0), b = proj(x1, y0), d = proj(x1, y1), e = proj(x0, y1); c.fillStyle = fill; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(d[0], d[1]); c.lineTo(e[0], e[1]); c.closePath(); c.fill() }
   // The grass around the pitch, then the mown stripes, and finer cuts across them.
-  quad(-200, 1250, -40, 680 + 400, L.grass[0])
+  quad(-900, 1950, -40, 680 + 400, L.grass[0])
   for (let i = 0; i < 10; i++) quad(i * 105, i * 105 + 105, 0, 680, L.grass[i % 2])
+  if (rainy()) quad(-900, 1950, -40, 1080, 'rgba(10,30,40,.18)')
   for (let j = 0; j < 8; j++) if (j % 2) quad(0, 1050, j * 85, j * 85 + 85, 'rgba(255,255,255,.035)')
   // [Sprint 31 C3] The advertising boards along the far touchline: LEGENDS, navy and gold.
-  const [b0x, b0y] = proj(-60, -26), [b1x] = proj(1110, -26), bh = 7
+  const [b0x, b0y] = proj(-700, -26), [b1x] = proj(1750, -26), bh = 7
   c.fillStyle = '#071733'; c.fillRect(b0x, b0y - bh, b1x - b0x, bh)
   c.fillStyle = '#F5B82E'; c.fillRect(b0x, b0y - 1, b1x - b0x, 1)
-  for (let x = -40; x <= 1100; x += 120) { const [px] = proj(x, -26); c.drawImage(boardSprite((x + 40) / 120 % 2 ? '#F5B82E' : '#FFFFFF'), px - 16, b0y - 7, 32, 6) }
+  for (let x = -640; x <= 1700; x += 120) { const [px] = proj(x, -26); c.drawImage(boardSprite((x + 40) / 120 % 2 ? '#F5B82E' : '#FFFFFF'), px - 16, b0y - 7, 32, 6) }
   c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1.6
   const line = (pts) => { c.beginPath(); pts.forEach(([x, y], i) => { const [px, py] = proj(x, y); i ? c.lineTo(px, py) : c.moveTo(px, py) }); c.stroke() }
   line([[0, 0], [1050, 0], [1050, 680], [0, 680], [0, 0]]); line([[525, 0], [525, 680]])
@@ -418,24 +425,45 @@ function boardSprite(colour) {
   const c = b.getContext('2d'); c.fillStyle = colour; c.font = '800 22px "Barlow Condensed", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('LEGENDS', 64, 13)
   return (boards[colour] = b)
 }
+// [Sprint 32 V2] One match in six is played in the rain: its streaks fall in front of everything.
+const rainy = () => (Number(props.seed) || 0) % 6 === 1
+let drops = [], dropsFor = ''
+function rain(c, now) {
+  const key = `${props.seed}|${smooth.value}`
+  if (key !== dropsFor) {
+    dropsFor = key
+    let r = (Number(props.seed) || 1) * 7 + 3
+    const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff }
+    drops = Array.from({ length: smooth.value ? 40 : 120 }, () => ({ x: rnd(), y: rnd(), v: 0.6 + rnd() * 0.5 }))
+  }
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0)
+  c.strokeStyle = 'rgba(200,215,235,.35)'; c.lineWidth = Math.max(1, cw / 900); c.beginPath()
+  for (const d of drops) {
+    const y = ((d.y + now * 0.0012 * d.v) % 1) * ch, x = ((d.x + now * 0.0002) % 1) * cw
+    c.moveTo(x, y); c.lineTo(x - cw * 0.004, y + ch * 0.05)
+  }
+  c.stroke(); c.restore()
+}
 // [Sprint 31 C3] The crowd: dots in the home side's colours (the away fans in a corner), the same seats on every screen
 // (from the match's seed). They sway with the danger of the minute and jump at a goal.
 let fans = [], fansFor = ''
 function seatFans() {
-  const key = `${props.seed}|${props.kits.home.kit}|${props.kits.away.kit}|${smooth.value}`
+  const key = `${props.seed}|${props.kits.home.kit}|${props.kits.away.kit}|${smooth.value}|${props.strength?.home}`
   if (key === fansFor) return
   fansFor = key
   let r = (props.seed | 0) || 1
   const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff }
   const H = [props.kits.home.kit, props.kits.home.trim || '#fff'], A = [props.kits.away.kit, props.kits.away.trim || '#fff']
-  const n = smooth.value ? 220 : 660
+  // [Sprint 32 V2] As full as the home side is big: a strong club's stand is packed, a small one's half empty.
+  const fill = Math.max(0.5, Math.min(1, 0.4 + (props.strength?.home ?? 6000) / 10000 * 0.6))
+  const n = Math.round((smooth.value ? 260 : 900) * fill)
   fans = Array.from({ length: n }, (_, i) => {
-    const x = -150 + rnd() * 1350, row = Math.floor(rnd() * 4), away = x > 1000 && rnd() < 0.8
+    const x = -700 + rnd() * 2450, row = Math.floor(rnd() * 4), away = x > 1000 && rnd() < 0.8
     const pick = rnd(), colour = pick < 0.12 ? '#C9D2E1' : pick < 0.2 ? '#0A1F42' : (away ? A : H)[pick < 0.65 ? 0 : 1]
     return { x, y: 10 + row * 13 + rnd() * 8, c: colour, ph: rnd() * 6.28, w: 1.6 + rnd() * 0.8 }
   }).sort((a, b) => (a.c < b.c ? -1 : a.c > b.c ? 1 : 0))
 }
-let danger = 0
+let danger = 0, viewL = 0, viewR = 640
 function crowd(c, now) {
   seatFans()
   const sway = smooth.value ? 0 : 0.15 + danger * 0.35, jump = Math.max(0, 1 - (now - cheerAt) / 2600) * 4
@@ -445,15 +473,33 @@ function crowd(c, now) {
     if (f.c !== colour) { if (colour) c.fill(); colour = f.c; c.fillStyle = colour; c.beginPath() }
     // The stand is a little farther than the far touchline: it pans a little slower than the pitch.
     const sx = 320 + (f.x - camX) * (640 / TV.span) * 0.58
-    if (sx < -4 || sx > 644) continue
+    if (sx < viewL - 4 || sx > viewR + 4) continue
     const dy = Math.sin(now * 0.006 + f.ph) * sway - Math.abs(Math.sin(now * 0.014 + f.ph)) * jump
     c.rect(sx, f.y + dy, f.w, f.w * 1.3)
   }
   if (colour) c.fill()
 }
 // The goals stand up from the line: drawn with the players, so one in front of them covers them.
-function goalAt(c, x) {
+// [Sprint 32 V1] Each with its net behind it, which ripples when the ball goes in.
+let netHit = { 0: -1e9, 1050: -1e9 }
+function goalAt(c, x, now = 0) {
+  const d = x ? 1 : -1, back = x + d * 20
   const [p1x, p1y, s1] = proj(x, 303), [p2x, p2y, s2] = proj(x, 377)
+  const shake = Math.max(0, 1 - (now - netHit[x]) / 900), w = Math.sin(now / 45) * 3 * shake
+  const [b1x, b1y] = proj(back, 309), [b2x, b2y] = proj(back, 371)
+  const B1 = [b1x + d * w, b1y - 16 * s1], B2 = [b2x + d * w, b2y - 16 * s2]
+  // The smooth mode leaves the netting out.
+  if (!smooth.value) {
+  c.strokeStyle = 'rgba(230,236,245,.45)'; c.lineWidth = 0.6; c.beginPath()
+  for (let j = 0; j <= 6; j++) {
+    const t = j / 6
+    // Lines across the back and down from the bar to the ground at the back.
+    c.moveTo(p1x + (p2x - p1x) * t, p1y - 22 * s1 + (p2y - 22 * s2 - p1y + 22 * s1) * t); c.lineTo(B1[0] + (B2[0] - B1[0]) * t, B1[1] + (B2[1] - B1[1]) * t)
+    c.moveTo(B1[0] + (B2[0] - B1[0]) * t, B1[1] + (B2[1] - B1[1]) * t); c.lineTo(b1x + (b2x - b1x) * t, b1y + (b2y - b1y) * t)
+  }
+  for (let j = 0; j <= 3; j++) { const t = j / 3; c.moveTo(B1[0], B1[1] + (b1y - B1[1]) * t); c.lineTo(B2[0], B2[1] + (b2y - B2[1]) * t) }
+  c.stroke()
+  }
   c.strokeStyle = '#fff'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(p1x, p1y); c.lineTo(p1x, p1y - 22 * s1); c.lineTo(p2x, p2y - 22 * s2); c.lineTo(p2x, p2y); c.stroke()
 }
 function tvFor(id, side) {
@@ -486,7 +532,7 @@ function facing(t, dx, dy) {
 let gks = new Set(), gksFor = null, heard = new Set(), heardTick = -1
 function actions(tick, f, u) {
   const by = {}
-  if (!f || f.length < 2) return { by }
+  if (!f || f.length < 2) return { by, holder: f?.[0]?.h ?? null }
   if (gksFor !== props.teams) { gksFor = props.teams; gks = new Set(['home', 'away'].flatMap((s) => (props.teams?.[s]?.players ?? []).filter((p) => p.pos === 'GK').map((p) => String(p.id)))) }
   if (heardTick !== tick.tick) { heardTick = tick.tick; heard = new Set() }
   const say = (key, name) => { if (!heard.has(key)) { heard.add(key); if (!sceneOn.value) emit('sound', name) } }
@@ -516,7 +562,7 @@ function actions(tick, f, u) {
       for (const id in B.p) if (sideOf(id) === goal.team && !gks.has(String(id))) by[id] = { kind: 'party' }
     }
   }
-  return { by }
+  return { by, holder: k < 0.5 ? A.h : B.h }
 }
 let tvLast = 0
 function drawTv(tick, u) {
@@ -545,6 +591,7 @@ function drawTv(tick, u) {
   camFy += (Math.max(90, Math.min(270, bsy)) - camFy) * Math.min(1, dts * 2)
   const fy = zoom < 1.003 ? camFy : Math.round(camFy)
   const T = [vs * zoom, ox + vs * fx * (1 - zoom), oy + vs * fy * (1 - zoom)]
+  viewL = -T[1] / T[0]; viewR = (cw - T[1]) / T[0]
   // The pitch is painted again only when the camera has moved or zoomed: else its picture is copied.
   if (!tvBg || tvBg.width !== cw || tvBg.height !== ch || Math.abs(camX - tvCam) >= 0.8 || Math.abs(zoom - tvZoom) > 0.004 || (zoom > 1.003 && Math.abs(fy - tvFy) >= 1)) {
     if (!tvBg || tvBg.width !== cw || tvBg.height !== ch) { tvBg = document.createElement('canvas'); tvBg.width = cw; tvBg.height = ch }
@@ -628,15 +675,35 @@ function drawTv(tick, u) {
   }
   for (const it of items) {
     if (it.t) { const t = it.t; t.f.draw(ctx, t.sx, t.sy - 58 * t.scale - t.bob * t.scale, t.lean, t.scale, false) }
-    else if (it.goal !== undefined) goalAt(ctx, it.goal)
+    else if (it.goal !== undefined) goalAt(ctx, it.goal, now)
     else {
       // [Sprint 31 M2] The ball flies in an arc; its shadow stays on the grass, smaller, fainter and further off the higher it goes.
       ctx.fillStyle = `rgba(0,0,0,${(0.35 * (1 - h * 0.6)).toFixed(3)})`
       ctx.beginPath(); ctx.ellipse(px + h * 6 * ps, py + 1, 6 * ps * (1 - h * 0.55), 2.5 * ps * (1 - h * 0.55), 0, 0, Math.PI * 2); ctx.fill()
+      const ry = py - 3 * ps - bz * 0.35 * ps, rr = 4.5 * ps + bz * 0.02
+      // [Sprint 32 V1] A fast ball leaves a short fading trail behind it.
+      const [qx, qy, qs] = proj(R2.ball[0], R2.ball[1]), qz = R2.ball[2], dx = qx - px, dy = qy - 3 * qs - qz * 0.35 * qs - ry
+      if (!smooth.value && u < 1 && Math.hypot(dx, dy) > 6) for (let n = 3; n >= 1; n--) { ctx.fillStyle = `rgba(255,255,255,${0.12 * (4 - n)})`; ctx.beginPath(); ctx.arc(px - dx * n * 0.35, ry - dy * n * 0.35, rr * (1 - n * 0.12), 0, Math.PI * 2); ctx.fill() }
       ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 1
-      ctx.beginPath(); ctx.arc(px, py - 3 * ps - bz * 0.35 * ps, 4.5 * ps + bz * 0.02, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+      ctx.beginPath(); ctx.arc(px, ry, rr, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
     }
   }
+  // The ball in a net: it ripples.
+  if (Math.abs(by - 340) < 40 && (bx <= 6 || bx >= 1044)) { const g = bx < 525 ? 0 : 1050; if (now - netHit[g] > 1200) netHit[g] = now }
+  // [Sprint 32 V1] The name of the player on the ball over his head, as a broadcast's caption.
+  const holderId = act.holder
+  const ht = holderId != null ? tvPlayers.get(String(holderId)) : null
+  const hname = holderId != null ? players.value[holderId]?.name : null
+  if (ht && hname && !smooth.value) {
+    const label = String(hname).split(' ').slice(-1)[0].slice(0, 14), tx = ht.sx, ty = ht.sy - (95 + ht.bob) * ht.scale - 3
+    ctx.font = '700 7px "Barlow Condensed", sans-serif'; ctx.textAlign = 'center'
+    const w = ctx.measureText(label).width + 8
+    ctx.fillStyle = 'rgba(7,23,51,.82)'; ctx.fillRect(tx - w / 2, ty - 7, w, 9)
+    ctx.fillStyle = '#F5B82E'; ctx.fillRect(tx - w / 2, ty + 1.2, w, 0.8)
+    ctx.fillStyle = '#FFFFFF'; ctx.fillText(label, tx, ty)
+  }
+  // [Sprint 32 V2] Rain on some matches (from the seed: the same on every screen), the grass a little darker.
+  if (rainy()) rain(ctx, now)
   // [Sprint 31 C2] The light: the floodlights' sheen on the grass at night (the sun's warmth by day), and the
   // picture's edges darkened as a camera's lens does. Painted once for the box's size, then laid over every frame.
   const key = `${cw}x${ch}|${night}|${smooth.value}`
@@ -672,6 +739,7 @@ function tickClock(tick, u) {
   if (clock.value !== text) clock.value = text
 }
 watch(() => props.kits, () => buildPitch(), { deep: true })
+watch(() => props.kickoff, () => buildPitch())
 onMounted(buildPitch)
 onMounted(() => {
   raf = requestAnimationFrame((n) => { last = n; frame(n) })

@@ -2146,7 +2146,7 @@ paths:
       summary: A league match for the viewer
       description: The same shape as the simulator's live match (docs/api/match-events.md). The league's members only (404 otherwise). Each side's tactics reach only its own coach (`you`).
       responses:
-        '200': { description: The match, its clubs, teams (tactics only for your side) and the slots of both formations }
+        '200': { description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, and kickoff_at: when it kicks off (UTC, Sprint 32 V3)' }
         '404': { $ref: '#/components/responses/Error' }
   /matches/{match}/live:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
@@ -6596,6 +6596,7 @@ components:
       properties:
         id: { type: string }
         seed: { type: integer }
+        kickoff_at: { type: [string, 'null'], format: date-time, description: '[Sprint 32 V3] When the match kicks off (UTC): the screens light the pitch for that hour in Cairo' }
         competition: { type: string }
         referee: { type: integer }
         venue: { type: string }

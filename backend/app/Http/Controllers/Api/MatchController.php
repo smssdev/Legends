@@ -22,6 +22,7 @@ use App\Support\Activity;
 use App\Support\GameClock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -40,6 +41,8 @@ class MatchController extends Controller
         $view = [
             'id' => $m->id, 'fixture_id' => $f->id, 'league_id' => $f->league_id, 'competition' => $f->competition, 'round' => $f->round,
             'mode' => $m->mode, 'status' => $m->status, 'you' => $you, 'started' => true,
+            // [Sprint 32 V3] When it kicks off (UTC): the screens light the pitch for that hour in Cairo.
+            'kickoff_at' => Carbon::parse($f->scheduled_at ?? $m->started_at, 'UTC')->toIso8601ZuluString(),
             'finished' => $m->status === 'finished', 'score' => ['home' => $m->home_goals, 'away' => $m->away_goals], 'tick' => $m->tick,
             'timing' => ['tick_ms' => (int) $state['cfg']['match']['tick_ms'], 'extra_time_tick_ms' => (int) $state['cfg']['match']['extra_time_tick_ms'],
                 'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
