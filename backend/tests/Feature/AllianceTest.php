@@ -101,8 +101,12 @@ class AllianceTest extends TestCase
         $this->postJson($this->url, ['name' => 'كأس', 'captain_a' => 'boss', 'captain_b' => 'coach1', 'size' => 6, 'first_round_at' => $at])->assertStatus(422);
         $this->postJson($this->url, ['name' => 'كأس', 'captain_a' => 'boss', 'captain_b' => 'coach1', 'size' => 5, 'first_round_at' => GameClock::now()->addMinutes(5)->toIso8601ZuluString()])->assertStatus(422);
         $this->actingAs($this->coaches[3])->postJson($this->url, ['name' => 'كأس', 'captain_a' => 'boss', 'captain_b' => 'coach1', 'size' => 5, 'first_round_at' => $at])->assertStatus(403);
+        // [Sprint 30 P5] No tournament yet: the league tells the page's link to hide for a coach.
+        $leagueUrl = '/api/v1/leagues/'.$this->league['id'];
+        $this->assertFalse($this->actingAs($this->coaches[3])->getJson($leagueUrl)->json('league.has_alliance'));
 
         $id = $this->create();
+        $this->assertTrue($this->actingAs($this->coaches[3])->getJson($leagueUrl)->json('league.has_alliance'));
         $view = $this->actingAs($this->coaches[2])->getJson($this->url)->assertOk()->json('tournament');
         $this->assertSame('pending', $view['status']);
         $this->assertCount(5, $view['alliances']['a']['clubs']);

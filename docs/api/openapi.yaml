@@ -5026,6 +5026,7 @@ components:
         locked: { type: boolean, description: Settings are locked once the league starts }
         owner: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         is_owner: { type: boolean }
+        has_alliance: { type: boolean, description: '[Sprint 30 P5] An alliance tournament to show (pending, running or finished)' }
         my_club_id: { type: integer, nullable: true }
         my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
         coaches: { type: integer, description: Clubs with a coach }

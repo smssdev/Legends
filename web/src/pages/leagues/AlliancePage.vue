@@ -9,6 +9,7 @@ import type { components } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import UiChip from '../../components/ui/UiChip.vue'
+import EmptyState from '../../components/ui/EmptyState.vue'
 
 type View = components['responses']['Alliance']['content']['application/json']
 type Card = { id: number; name: string; code: string; coach?: string | null; crest_url: string }
@@ -76,6 +77,8 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm" role="status">{{ $t(message) }}</p>
 
+    <!-- [Sprint 30 P5] Never a blank page: a waiting card while it loads. -->
+    <div v-if="!view && !error" class="h-40 animate-pulse rounded-2xl bg-surface" :aria-label="$t('يحمّل…')" role="status" />
     <template v-if="view">
       <section v-if="t" class="flex flex-col gap-3 rounded-2xl border border-gold/30 bg-surface p-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -130,7 +133,8 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
         <label class="flex flex-col gap-1 text-sm">{{ $t('موعد الدور الأول') }}<input v-model="form.first_round_at" type="datetime-local" required class="h-touch rounded-lg bg-surface-sunk px-3" dir="ltr" /></label>
         <UiButton type="submit" :disabled="busy">{{ $t('أرسل للاعتماد') }}</UiButton>
       </form>
-      <p v-else-if="!t" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('لا بطولة تحالفات في هذا الدوري بعد. ينشئها منشئ الدوري.') }}</p>
+      <EmptyState v-else-if="!t" icon="trophy" :title="$t('لا بطولة تحالفات في هذا الدوري بعد')" :text="$t('ينشئها منشئ الدوري: تحالفان من مدربي الدوري بقائد لكل منهما، وتبدأ بعد اعتماد المطورين.')"
+        :cta="{ label: 'عُد إلى الدوري', to: `/leagues/${id}` }" />
     </template>
   </div>
 </template>

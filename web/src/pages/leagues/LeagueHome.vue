@@ -400,7 +400,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
         </RouterLink>
       </div>
 
-      <RouterLink :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
+      <!-- [Sprint 30 P5] Only when there is one to see, or for the owner who makes it. -->
+      <RouterLink v-if="league.is_owner || league.has_alliance" :to="{ name: 'league-alliance', params: { id } }" class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3">
         <span><b class="block">{{ $t('بطولة التحالفات') }}</b><span class="text-sm text-text-muted">{{ $t('تحالفان من مدربي الدوري بقائد لكل منهما') }}</span></span>
         <span class="font-bold text-gold">←</span>
       </RouterLink>

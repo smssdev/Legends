@@ -12037,6 +12037,8 @@ export interface components {
                 name: string;
             } | null;
             is_owner: boolean;
+            /** @description [Sprint 30 P5] An alliance tournament to show (pending, running or finished) */
+            has_alliance?: boolean;
             my_club_id?: number | null;
             /** @enum {string|null} */
             my_request?: "pending" | "approved" | "rejected" | null;
