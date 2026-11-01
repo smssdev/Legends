@@ -3,7 +3,7 @@
 // and for the browser (src/lib/seo.ts keeps the tags right as the coach moves and switches the language).
 // In Arabic the game is «المدرب الأسطورة»; GLM stays the English short name.
 
-export const SITE_URL = 'https://srv2100776.hstgr.cloud'
+export const SITE_URL = 'https://nesr.site'   // [X70] the game's own domain (2026-11-01)
 
 export const BRAND = { ar: 'المدرب الأسطورة', en: 'GLM · Game Legend Manager' } as const
 
