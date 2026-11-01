@@ -126,8 +126,9 @@ function goalFrame(svg, p = svg.world) {
   }
 }
 
-// A player seen from behind: legs, shorts, shirt with the number, arms and head, each part
-// posable (running, striking, diving, celebrating). look picks the skin and hair.
+// A player: legs, shorts, shirt with the number, arms and head, each part posable (running, striking, diving,
+// celebrating). look picks the skin and hair. Seen from behind by default; face() turns him to the camera or to his
+// side (mirrored for the other side) [Sprint 31 M4]: the live pitch picks it from where he runs.
 const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
 const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
 export function player(p, kit, no, s = 1, o = {}) {
@@ -136,26 +137,53 @@ export function player(p, kit, no, s = 1, o = {}) {
   const skin = SKINS[look % SKINS.length], hair = HAIR[Math.floor(look / 7) % HAIR.length], shorts = o.shorts ?? (light ? '#1C2B48' : shade(kit, -80))
   const g = el('g', {}, p)
   el('ellipse', { cx: 0, cy: 58, rx: 17, ry: 4.5, fill: 'rgba(0,0,0,.42)' }, g)
-  const part = (x, y, html) => { const e = el('g', {}, g); e.innerHTML = html; return { e, x, y } }
+  const fig = el('g', {}, g)
+  const part = (x, y, html) => { const e = el('g', {}, fig); e.innerHTML = html; return { e, x, y } }
   const leg = `<rect x="-4.5" y="0" width="9" height="15" rx="3.5" fill="${skin}"/><rect x="-4.6" y="12" width="9.2" height="16" rx="3.5" fill="${o.socks ?? (light ? kit : shade(kit, 25))}"/><path d="M-5.5 27 h10 q4.5 0 4.5 3.2 v1.6 h-14.5 z" fill="#0B0F1A"/>`
   const legs = [part(-6, 25, leg), part(6, 25, leg)]
-  const body = el('g', {}, g)
+  const body = el('g', {}, fig)
   body.innerHTML = `<path d="M-13.5 17 H13.5 L15 31 H1.5 L0 27 L-1.5 31 H-15 Z" fill="${shorts}"/>
     <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>
     <path d="M-6 21 Q0 -2 6 21" fill="rgba(0,0,0,.08)"/>
     <path d="M-15 -9 Q0 -15 15 -9" fill="none" stroke="${o.trim ?? shade(kit, light ? -45 : 45)}" stroke-width="2"/>
-    <text x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>`
+    <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>
+    <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${no ?? ''}</text>`
+  const back = body.querySelector('[data-back]'), chest = body.querySelector('[data-front]')
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
   const arms = [part(-14.5, -7, arm), part(14.5, -7, arm)]
-  part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/>`)
-  const setLeg = (i, r, lift) => sa(legs[i].e, 'transform', `translate(${legs[i].x} ${legs[i].y}) rotate(${r}) scale(1 ${1 - 0.45 * lift})`)
-  const setArm = (i, r) => sa(arms[i].e, 'transform', `translate(${arms[i].x} ${arms[i].y}) rotate(${r})`)
+  // The head from behind (hair over it), from the front (a face) and from the side (a profile looking right).
+  const head = part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/>
+    <g data-h="back"><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/></g>
+    <g data-h="front" display="none"><path d="M-9.6 -22 Q-10 -32 0 -32.5 Q10 -32 9.6 -22 Q6 -28 0 -28 Q-6 -28 -9.6 -22 Z" fill="${hair}"/><circle cx="-3.4" cy="-21" r="1.3" fill="#141414"/><circle cx="3.4" cy="-21" r="1.3" fill="#141414"/><path d="M-2.6 -16.6 Q0 -15 2.6 -16.6" fill="none" stroke="rgba(60,20,10,.6)" stroke-width="1"/></g>
+    <g data-h="side" display="none"><path d="M-9.6 -19 Q-11 -32 0 -32.5 Q9 -32 9.4 -24 Q4 -27 -1 -25 Q-3 -20 -9.6 -19 Z" fill="${hair}"/><circle cx="4.6" cy="-22" r="1.3" fill="#141414"/><path d="M9 -21 L11.6 -18.6 L9 -17.6" fill="${skin}"/></g>`)
+  const heads = Object.fromEntries([...head.e.querySelectorAll('[data-h]')].map((e) => [e.dataset.h, e]))
+  // Facing: 'back', 'front' or 'side'; mirror -1 turns the side profile to the left. Narrower from the side.
+  let facing = 'back', mirror = 1, wide = 1
+  const setLeg = (i, r, lift) => sa(legs[i].e, 'transform', `translate(${legs[i].x * wide} ${legs[i].y}) rotate(${r}) scale(1 ${1 - 0.45 * lift})`)
+  const setArm = (i, r) => sa(arms[i].e, 'transform', `translate(${arms[i].x * (wide < 1 ? 0.12 : 1)} ${arms[i].y}) rotate(${r})`)
   const api = {
     g,
-    at(x, y, r = 0, k = s) { sa(g, 'transform', `translate(${x} ${y}) rotate(${r}) scale(${k})`) },
+    at(x, y, r = 0, k = s) { sa(g, 'transform', `translate(${x} ${y}) rotate(${r}) scale(${k * mirror} ${k})`) },
+    face(f = 'back', m = 1) {
+      if (f === facing && m === mirror) return
+      facing = f; mirror = f === 'side' ? (m < 0 ? -1 : 1) : 1; wide = f === 'side' ? 0.45 : 1
+      for (const k in heads) sa(heads[k], 'display', k === f ? 'inline' : 'none')
+      sa(back, 'display', f === 'back' ? 'inline' : 'none'); sa(chest, 'display', f === 'front' ? 'inline' : 'none')
+      sa(body, 'transform', f === 'side' ? 'scale(.72 1)' : 'scale(1 1)')
+      // From the side the far arm swings behind the body, the near one in front of it.
+      fig.insertBefore(arms[0].e, f === 'side' ? body : arms[1].e)
+    },
+    get facing() { return facing },
     // Arm angles: 0 hangs down, positive swings the left arm out (the right arm takes the negative).
     pose(l1 = 3, l2 = -3, a1 = 10, a2 = -10, lift1 = 0, lift2 = 0) { setLeg(0, l1, lift1); setLeg(1, l2, lift2); setArm(0, a1); setArm(1, a2) },
-    run(ph, amp = 1) { const q = Math.sin(ph); api.pose(4, -4, 16 + 24 * q * amp, -16 + 24 * q * amp, Math.max(0, q) * amp, Math.max(0, -q) * amp) },
+    // From the side the legs and arms swing forward and back (a stride); from behind or in front they lift in turn.
+    run(ph, amp = 1) {
+      const q = Math.sin(ph)
+      if (facing === 'side') { const st = 30 * q * amp; api.pose(st, -st, -st * 1.1, st * 1.1, Math.max(0, -q) * amp * 0.5, Math.max(0, q) * amp * 0.5); return }
+      api.pose(4, -4, 16 + 24 * q * amp, -16 + 24 * q * amp, Math.max(0, q) * amp, Math.max(0, -q) * amp)
+    },
+    // Standing: breathing, the arms swaying a little (b 0..1 around the breath).
+    idle(b) { const w = Math.sin(b) * 3; api.pose(3, -3, 10 + w, -10 - w) },
     // A strike with the right foot: the leg swings back, then through the ball (f 0..1).
     kick(f) { const r = f < 0.55 ? lerp(-4, -38, f / 0.55) : lerp(-38, 52, ease((f - 0.55) / 0.45)); api.pose(6, r, 34, -48, 0, f < 0.55 ? 0.55 : 0.15) },
     celebrate(t) { const w = Math.sin(t * 9) * 12; api.pose(8, -8, 112 + w, -112 - w) },

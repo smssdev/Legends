@@ -188,6 +188,40 @@ namespace Legends.Tests
             }
         }
 
+        /// <summary>
+        /// [Sprint 31 M1] The curve between the frames (and the ball's arc) is the cartoon player's: every sample of the
+        /// shared golden vectors, players and ball.
+        /// </summary>
+        [Test]
+        public void SampleFollowsTheGoldenVectors()
+        {
+            var golden = (Dictionary<string, object>)MiniJson.Parse(File.ReadAllText(GoldenPath));
+            var m = MatchMinute.From(new Dictionary<string, object> { ["frames"] = golden["frames"] }, 3000);
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            foreach (var c in MiniJson.Arr(golden, "samples"))
+            {
+                var o = (Dictionary<string, object>)c;
+                float u = System.Convert.ToSingle(o["u"], inv);
+                MatchScene.Segment(m.Frames.Count, u, out int i, out float k);
+                var a = m.Frames[i];
+                var b = m.Frames[Mathf.Min(i + 1, m.Frames.Count - 1)];
+                var p = i > 0 ? m.Frames[i - 1] : null;
+                var n = i + 2 < m.Frames.Count ? m.Frames[i + 2] : null;
+                var ball = MatchScene.SampleBall(p, a, b, n, k);
+                var want = MiniJson.Arr(c, "ball");
+                for (int x = 0; x < 3; x++) Assert.AreEqual(System.Convert.ToSingle(want[x], inv), ball[x], 1e-2f, "ball " + x + " at u " + u);
+                var players = MiniJson.Obj(c, "players");
+                Assert.AreEqual(players.Count, a.Players.Count, "players drawn at u " + u);
+                foreach (var kv in players)
+                {
+                    var xy = (List<object>)kv.Value;
+                    var got = MatchScene.SamplePlayer(p, a, b, n, kv.Key, k);
+                    Assert.AreEqual(System.Convert.ToSingle(xy[0], inv), got.x, 1e-2f, kv.Key + " x at u " + u);
+                    Assert.AreEqual(System.Convert.ToSingle(xy[1], inv), got.y, 1e-2f, kv.Key + " y at u " + u);
+                }
+            }
+        }
+
         // ------------------------------------------------------------ the recording
 
         [Test]

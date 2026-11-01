@@ -1,27 +1,34 @@
 {
-  "about": "Golden vectors for turning a MatchMinute's Keyframes into RenderFrames [Sprint 21 E8.4]. u is the minute's progress on the match clock (0..1), clamped: past the end the last Keyframe holds, no extrapolation. Between Keyframe i and i + 1 the position is linear in k; a player missing from Keyframe i + 1 stays where he was in i. The cartoon player checks them in every build (web/scripts/frames.mjs); Unity's MatchScene.Segment must give the same.",
+  "about": "Golden vectors for turning a MatchMinute's Keyframes into RenderFrames [Sprint 21 E8.4, curved in Sprint 31 M1]. u is the minute's progress on the match clock (0..1), clamped: past the end the last Keyframe holds, no extrapolation. Between Keyframe i and i + 1 each coordinate is a cubic Hermite curve in k: its tangent at a Keyframe is Catmull-Rom ((next - prev) / 2), 0 where the steps on both sides differ in sign, at most 3 x the smaller step in size, and the one-sided step at the first and last Keyframe (or where the player is missing from the neighbouring Keyframe): so it never overshoots. The ball's height adds 4 k (1 - k) x loft when Keyframe i + 1 is in the air and at least 150 away (loft = floor(distance / 10), at most 60). A player missing from Keyframe i + 1 stays where he was in i; one missing from i is not drawn. The cartoon player checks them in every build (web/scripts/frames.mjs); Unity's MatchScene.Segment and MatchScene.Sample must give the same (FeedTests).",
   "segments": [
-    { "count": 6, "u": 0, "i": 0, "k": 0 },
-    { "count": 6, "u": 0.1, "i": 0, "k": 0.5 },
-    { "count": 6, "u": 0.5, "i": 2, "k": 0.5 },
-    { "count": 6, "u": 0.9, "i": 4, "k": 0.5 },
-    { "count": 6, "u": 1, "i": 4, "k": 1 },
-    { "count": 6, "u": 1.7, "i": 4, "k": 1 },
-    { "count": 6, "u": -0.3, "i": 0, "k": 0 },
-    { "count": 2, "u": 0.25, "i": 0, "k": 0.25 },
-    { "count": 1, "u": 0.6, "i": 0, "k": 0 },
-    { "count": 0, "u": 0.6, "i": 0, "k": 0 }
+    {"count": 6, "u": 0, "i": 0, "k": 0},
+    {"count": 6, "u": 0.1, "i": 0, "k": 0.5},
+    {"count": 6, "u": 0.5, "i": 2, "k": 0.5},
+    {"count": 6, "u": 0.9, "i": 4, "k": 0.5},
+    {"count": 6, "u": 1, "i": 4, "k": 1},
+    {"count": 6, "u": 1.7, "i": 4, "k": 1},
+    {"count": 6, "u": -0.3, "i": 0, "k": 0},
+    {"count": 2, "u": 0.25, "i": 0, "k": 0.25},
+    {"count": 1, "u": 0.6, "i": 0, "k": 0},
+    {"count": 0, "u": 0.6, "i": 0, "k": 0}
   ],
   "frames": [
-    { "b": [525, 340, 0], "p": { "7": [500, 300], "9": [600, 400] } },
-    { "b": [625, 340, 40], "p": { "7": [520, 320], "9": [580, 380] } },
-    { "b": [725, 300], "p": { "7": [540, 340] } }
+    {"b": [525, 340, 0], "p": {"7": [500, 300], "9": [600, 400]}},
+    {"b": [625, 340, 40], "p": {"7": [520, 320], "9": [580, 380]}},
+    {"b": [725, 300], "p": {"7": [540, 340]}},
+    {"b": [745, 300, 0], "p": {"7": [600, 340]}},
+    {"b": [400, 100, 30], "p": {"7": [560, 340]}},
+    {"b": [400, 100, 0], "p": {"7": [560, 340]}}
   ],
   "samples": [
-    { "u": 0, "ball": [525, 340, 0], "players": { "7": [500, 300], "9": [600, 400] } },
-    { "u": 0.25, "ball": [575, 340, 20], "players": { "7": [510, 310], "9": [590, 390] } },
-    { "u": 0.75, "ball": [675, 320, 20], "players": { "7": [530, 330], "9": [580, 380] } },
-    { "u": 1, "ball": [725, 300, 0], "players": { "7": [540, 340], "9": [580, 380] } },
-    { "u": 2, "ball": [725, 300, 0], "players": { "7": [540, 340], "9": [580, 380] } }
+    {"u": 0, "ball": [525, 340, 0], "players": {"7": [500, 300], "9": [600, 400]}},
+    {"u": 0.1, "ball": [575, 340, 25], "players": {"7": [510, 310], "9": [590, 390]}},
+    {"u": 0.25, "ball": [651.875, 333.75, 33.75], "players": {"7": [524.0625, 325.9375], "9": [580, 380]}},
+    {"u": 0.5, "ball": [742.5, 300, 0], "players": {"7": [575, 340]}},
+    {"u": 0.7, "ball": [572.5, 200, 54], "players": {"7": [580, 340]}},
+    {"u": 0.75, "ball": [453.90625, 131.25, 54.5625], "players": {"7": [566.25, 340]}},
+    {"u": 0.9, "ball": [400, 100, 18.75], "players": {"7": [560, 340]}},
+    {"u": 1, "ball": [400, 100, 0], "players": {"7": [560, 340]}},
+    {"u": 2, "ball": [400, 100, 0], "players": {"7": [560, 340]}}
   ]
 }

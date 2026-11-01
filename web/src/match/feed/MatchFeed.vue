@@ -95,7 +95,7 @@ import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, player as cartoon, setKits, setSmooth } from './art'
 import { noteFrame, smooth } from '../perf'
-import { segment } from '../frames'
+import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
@@ -315,23 +315,24 @@ function dotFor(id, side) {
   }
   return d
 }
-const lerp = (a, b, u) => a + (b - a) * u
 function drawTop(tick, u) {
   const f = tick?.frames
   if (!pitchSvg || !f?.length) return
-  const { i, k } = segment(f.length, u)
-  const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
+  // [Sprint 31 M1] The shared curve between the keyframes (frames.ts), with the long ball's arc.
+  const R = sample(f, u)
   const seen = new Set()
-  for (const id in A.p) {
+  for (const id in R.players) {
     const side = players.value[id]?.side
     if (!side) continue
-    const a = A.p[id], b = B.p[id] ?? a, d = dotFor(id, side)
-    sa(d, 'transform', `translate(${Math.round(lerp(a[0], b[0], k))} ${Math.round(lerp(a[1], b[1], k))})`)
+    const [x, y] = R.players[id], d = dotFor(id, side)
+    sa(d, 'transform', `translate(${Math.round(x)} ${Math.round(y)})`)
     seen.add(id)
   }
   for (const [id, d] of dots) sa(d, 'opacity', seen.has(id) ? 1 : 0)
-  const bx = lerp(A.b[0], B.b[0], k), by = lerp(A.b[1], B.b[1], k), bz = lerp(A.b[2] ?? 0, B.b[2] ?? 0, k)
-  sa(shadowEl, 'cx', Math.round(bx)); sa(shadowEl, 'cy', Math.round(by) + 6)
+  const [bx, by, bz] = R.ball, h = Math.min(1, bz / 60)
+  // [Sprint 31 M2] The ball's shadow stays on the grass, smaller and fainter the higher it flies.
+  sa(shadowEl, 'cx', Math.round(bx + h * 10)); sa(shadowEl, 'cy', Math.round(by) + 6)
+  sa(shadowEl, 'rx', (9 * (1 - h * 0.5)).toFixed(1)); sa(shadowEl, 'ry', (5 * (1 - h * 0.5)).toFixed(1)); sa(shadowEl, 'opacity', (1 - h * 0.6).toFixed(2))
   sa(ballEl, 'cx', Math.round(bx)); sa(ballEl, 'cy', Math.round(by - bz * 0.6)); sa(ballEl, 'r', Math.round(8 + bz * 0.08))
 }
 // The broadcast camera [X35]: the pitch in perspective as the main TV camera sees it from the stand, panning with the
@@ -377,38 +378,74 @@ function tvFor(id, side) {
     const gk = info?.pos === 'GK'
     const kit = gk ? keeperKit(side) : props.kits[side].kit
     const f = cartoon(tvLayer, kit, info?.no ?? '', 1, { look: Number(id) % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim })
-    t = { f, ph: Number(id) % 7, x: null, y: null, sy: 0 }
+    t = { f, ph: Number(id) % 7, sy: 0, face: 'back', mirror: 1, lean: 0 }
     tvPlayers.set(id, t)
   }
   return t
 }
+// [Sprint 31 M4] Which way a player faces from where he goes on the pitch (dx, dy in decimetres): to his side when
+// he runs across, his back when he runs towards the far touchline, his face when he comes towards the camera. A
+// little hysteresis, so he does not flicker between two near a diagonal.
+function facing(t, dx, dy) {
+  const ax = Math.abs(dx), ay = Math.abs(dy) * 1.4
+  const side = t.face === 'side' ? ax > ay * 0.8 : ax > ay * 1.3
+  if (side) { t.face = 'side'; t.mirror = dx < 0 ? -1 : 1 } else t.face = dy < 0 ? 'back' : 'front'
+}
+let tvLast = 0
 function drawTv(tick, u) {
   const f = tick?.frames
   if (!pitchSvg || !f?.length) return
-  const { i, k } = segment(f.length, u)
-  const A = f[i], B = f[Math.min(f.length - 1, i + 1)]
-  const bx = lerp(A.b[0], B.b[0], k), by = lerp(A.b[1], B.b[1], k), bz = lerp(A.b[2] ?? 0, B.b[2] ?? 0, k)
+  const now = performance.now(), dts = Math.min(0.05, Math.max(0, (now - tvLast) / 1000)) * (props.speed || 1)
+  tvLast = now
+  // [Sprint 31 M1] The shared curve between the keyframes; a moment later on it gives every player's speed and way.
+  const R = sample(f, u), span = (tick.moment?.ms ?? 3000) / 1000, du = 0.02, R2 = sample(f, Math.min(1, u + du))
+  const [bx, by, bz] = R.ball
   // The camera pans after the ball, gently, and never past the ends of the pitch.
   camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx)) - camX) * 0.06
   drawTvLines()
   const seen = new Set()
-  for (const id in A.p) {
+  let near = null, nearD = 1e9
+  for (const id in R.players) {
     const side = players.value[id]?.side
     if (!side) continue
-    const a = A.p[id], b = B.p[id] ?? a, wx = lerp(a[0], b[0], k), wy = lerp(a[1], b[1], k), t = tvFor(id, side)
-    const moved = t.x === null ? 0 : Math.hypot(wx - t.x, wy - t.y)
-    t.x = wx; t.y = wy
+    const [wx, wy] = R.players[id], t = tvFor(id, side)
+    const nx = R2.players[id]?.[0] ?? wx, ny = R2.players[id]?.[1] ?? wy
+    // His speed in decimetres a second of the broadcast (u runs over the minute's span), 0 once the minute holds.
+    const vx = u >= 1 ? 0 : (nx - wx) / (du * span), vy = u >= 1 ? 0 : (ny - wy) / (du * span), speed = Math.hypot(vx, vy)
+    const moving = speed > 12
+    // [Sprint 31 M4] Facing where he runs; standing, he faces the ball.
+    if (moving) facing(t, vx, vy); else if (Math.hypot(bx - wx, by - wy) > 20) facing(t, bx - wx, by - wy)
     const [sx, sy, sc] = proj(wx, wy)
     t.sy = sy
     const scale = sc * 0.48
-    t.f.at(sx, sy - 58 * scale, 0, scale)
-    if (!smooth.value) { if (moved > 0.4) { t.ph += Math.min(0.5, moved * 0.18); t.f.run(t.ph, Math.min(1, moved / 3)) } else t.f.pose() }
+    // [Sprint 31 M5] The faster he runs, the quicker his stride and the more he leans into it (sideways only on screen).
+    const amp = Math.min(1, speed / 70)
+    const lean = moving && t.face === 'side' ? t.mirror * Math.min(9, speed / 9) : 0
+    t.lean += (lean - t.lean) * Math.min(1, dts * 8)
+    t.f.face(t.face, t.mirror)
+    let bob = 0
+    if (!smooth.value) {
+      if (moving) { t.ph += dts * (6 + 10 * amp); t.f.run(t.ph, 0.4 + 0.6 * amp); bob = Math.abs(Math.sin(t.ph)) * 2.2 * amp }
+      else { t.ph += dts * 2.2; t.f.idle(t.ph); bob = (Math.sin(t.ph) + 1) * 0.35 }
+    } else t.f.pose()
+    t.f.at(sx, sy - 58 * scale - bob * scale, t.lean, scale)
     sa(t.f.g, 'opacity', 1)
     seen.add(id)
+    const d = Math.hypot(wx - bx, wy - by)
+    if (d < nearD) { nearD = d; near = { t, sx, sy, scale } }
   }
   for (const [id, t] of tvPlayers) if (!seen.has(id)) sa(t.f.g, 'opacity', 0)
-  const [px, py, ps] = proj(bx, by)
-  sa(tvShadow, 'cx', px.toFixed(1)); sa(tvShadow, 'cy', (py + 1).toFixed(1))
+  let [px, py, ps] = proj(bx, by)
+  // [Sprint 31 M3] A ball on the grass close to a player sits in front of his foot (drawing only).
+  if (near && bz < 4 && nearD < 26) {
+    const w = (1 - nearD / 26) * (1 - bz / 4) * 0.85, s = near.scale
+    const fx = near.sx + (near.t.face === 'side' ? near.t.mirror * 13 * s : 4 * s), fy = near.sy + (near.t.face === 'front' ? 3 * s : near.t.face === 'back' ? -2 * s : 1 * s)
+    px += (fx - px) * w; py += (fy - py) * w
+  }
+  // [Sprint 31 M2] The ball flies in an arc; its shadow stays on the grass, smaller, fainter and further off the higher it goes.
+  const h = Math.min(1, bz / 60)
+  sa(tvShadow, 'cx', (px + h * 6 * ps).toFixed(1)); sa(tvShadow, 'cy', (py + 1).toFixed(1))
+  sa(tvShadow, 'rx', (6 * ps * (1 - h * 0.55)).toFixed(1)); sa(tvShadow, 'ry', (2.5 * ps * (1 - h * 0.55)).toFixed(1)); sa(tvShadow, 'opacity', (1 - h * 0.6).toFixed(2))
   sa(tvBall, 'cx', px.toFixed(1)); sa(tvBall, 'cy', (py - 3 * ps - bz * 0.35 * ps).toFixed(1)); sa(tvBall, 'r', (4.5 * ps + bz * 0.02).toFixed(1))
   // Nearer players drawn over farther ones: the order is set again a few times a second.
   if (++sortTick % 8 === 0) {
