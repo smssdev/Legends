@@ -111,6 +111,17 @@ async function claimStarter() {
     claiming.value = false
   }
 }
+// [Sprint 30 G4] The badges (worked out on the server), with their emblem and name here.
+type Badge = { key: string; goal: number; progress: number; earned: boolean }
+const badges = ref<Badge[]>([])
+const BADGES: Record<string, [string, string]> = {
+  first_win: ['🥇', 'أول فوز'], matches: ['🏟️', '100 مباراة'], wins: ['⚽', '25 فوزاً'], first_title: ['🏆', 'أول لقب'],
+  league_title: ['👑', 'بطل الدوري'], cup_title: ['🏅', 'بطل الكأس'], professional: ['🎖️', 'درجة المحترف'], legend: ['🌟', 'درجة الأسطورة'],
+  friendlies: ['🤝', '10 وديات'], idea: ['💡', 'فكرة اعتُمدت'], invites: ['📨', '3 أصدقاء'],
+}
+onMounted(async () => {
+  try { badges.value = ((await api.GET('/home/achievements')).data?.achievements ?? []).filter((b) => BADGES[b.key]) } catch { /* the badges are a bonus */ }
+})
 // [Sprint 30 Q9] The clubs with something waiting, the most first; and into a club's screen from the home page.
 const todo = computed(() => (home.value?.slots ?? []).filter((s) => s.state === 'club' && s.pending > 0).sort((a, b) => b.pending - a.pending).slice(0, 3))
 function goClub(s: Home['slots'][number], to: string) {
@@ -305,6 +316,20 @@ async function openRanking(by: By) {
           <RouterLink v-if="latest" to="/announcements" class="self-end text-xs font-bold text-gold">{{ $t('كل الإعلانات ›') }}</RouterLink>
         </section>
 
+        <!-- [Sprint 30 G4] The badges: earned ones lit, the rest with how far there is to go. -->
+        <section v-if="badges.length" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('أوسمتي')">
+          <h2 class="flex items-center justify-between px-1 font-display text-base font-extrabold">{{ $t('أوسمتي') }}
+            <span class="font-numbers text-sm text-gold">{{ badges.filter((b) => b.earned).length }}/{{ badges.length }}</span></h2>
+          <ul class="grid grid-cols-4 gap-2">
+            <li v-for="b in badges" :key="b.key" class="flex flex-col items-center gap-1 rounded-lg p-1.5 text-center" :class="b.earned ? 'bg-gold/15' : 'bg-surface-sunk opacity-70'"
+              :title="$t(BADGES[b.key][1]) + ' · ' + b.progress + '/' + b.goal">
+              <span class="text-2xl" :class="b.earned ? '' : 'grayscale'" aria-hidden="true">{{ BADGES[b.key][0] }}</span>
+              <span class="line-clamp-2 text-[11px] font-bold leading-tight">{{ $t(BADGES[b.key][1]) }}</span>
+              <span v-if="!b.earned" class="h-1 w-full overflow-hidden rounded-pill bg-bg/50" role="progressbar" :aria-valuenow="b.progress" :aria-valuemax="b.goal" :aria-label="$t(BADGES[b.key][1])">
+                <span class="block h-full rounded-pill bg-gold" :style="{ width: `${Math.round((b.progress / b.goal) * 100)}%` }" /></span>
+            </li>
+          </ul>
+        </section>
         <!-- [Sprint 28] An open poll waiting for this coach's vote, else the way to suggest a feature. -->
         <RouterLink to="/ideas" class="flex min-h-touch items-center gap-3 rounded-xl p-3" :class="home.polls_waiting ? 'bg-gold/15 ring-1 ring-gold/40' : 'bg-surface'">
           <Icon name="idea" :size="22" class="shrink-0 text-gold" />

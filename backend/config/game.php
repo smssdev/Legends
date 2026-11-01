@@ -384,6 +384,10 @@ return [
         'away' => 2, 'big_win' => 3, 'big_margin' => 3, 'trophies' => ['league' => [1 => 100, 2 => 40, 3 => 20], 'cup' => [1 => 60, 2 => 20]],
         'tiers' => ['prospect' => 0, 'tactician' => 150, 'professional' => 400, 'elite' => 800, 'mastermind' => 1400, 'icon' => 2200, 'legend' => 3200],
         'divisions' => 3, 'recent' => 10],
+    // [Sprint 30 G4] The achievements and their goals (App\Season\Achievements), in the order they show. professional and
+    // legend are the rating's tiers (their goal is the tier's points, game.rating.tiers).
+    'achievements' => ['first_win' => 1, 'matches' => 100, 'wins' => 25, 'first_title' => 1, 'league_title' => 1, 'cup_title' => 1,
+        'professional' => 0, 'legend' => 0, 'friendlies' => 10, 'idea' => 1, 'invites' => 3],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
