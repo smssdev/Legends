@@ -89,6 +89,7 @@
 // then its card joins the timeline and the commentator sums it up on the mic
 // bar. The parent calls play(tick) per minute; the minute's length is the
 // server's (tick.moment.ms).
+import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -167,7 +168,7 @@ function play(tick, startAt = null) {
   // [X41] A goal on the broadcast's long minute: after the celebration, the replay in slow motion, as on TV.
   const room = total - sceneT - 3.2, slow = s.goal && s.scene ? nominal / room : 1
   const replay = slow >= 0.4 && slow <= 0.8 ? { at: sceneT + 2.6, rate: slow } : null
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: `${tick.score.away} - ${tick.score.home}`, startAt, tick }
+  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   revealed.value = !s.pre

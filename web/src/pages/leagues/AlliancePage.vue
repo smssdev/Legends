@@ -2,6 +2,7 @@
 // The alliance tournament [X27]: the owner's request (it waits for the developers), the two alliances with their
 // captains, and the rounds. Team-mates are not played: their captain picks who goes on, and a title left to one
 // alliance is its own without another match.
+import { scoreText } from '../../lib/format'
 import UiSlider from '../../components/ui/UiSlider.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onMounted, ref } from 'vue'
@@ -105,7 +106,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
         <article v-for="x in ties" :key="x.id" class="flex flex-col gap-2 rounded-xl bg-surface p-3">
           <div class="flex items-center gap-2">
             <b class="min-w-0 flex-1 truncate" :class="x.winner_id === card(x.home)?.id ? 'text-gold' : ''">{{ $nm(card(x.home)?.name) }}</b>
-            <span v-if="x.score" class="font-numbers font-bold" dir="ltr">{{ x.score.home }} - {{ x.score.away }}</span>
+            <span v-if="x.score" class="font-numbers font-bold" dir="ltr">{{ scoreText(x.score.home, x.score.away) }}</span>
             <span v-else-if="x.kind === 'match'" class="text-sm text-text-muted">{{ $t('ضد') }}</span>
             <b v-if="x.away" class="min-w-0 flex-1 truncate text-end" :class="x.winner_id === card(x.away)?.id ? 'text-gold' : ''">{{ $nm(card(x.away)?.name) }}</b>
           </div>

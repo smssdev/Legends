@@ -4,6 +4,7 @@
 // name opens its squad; a live one the match. [X69] A played match's score opens its quick
 // recap for any member (then the whole match again on /live/{id}), and on top: the coach's last match and the last
 // round's matches, each with «ملخص» and «شاهد المحاكاة».
+import { scoreText } from '../../lib/format'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
@@ -136,7 +137,7 @@ const lastRound = computed(() => {
             <img v-if="f.home" :src="f.home.crest_url" alt="" class="size-6 shrink-0" /><span class="truncate">{{ f.home ? $nm(f.home.name) : $t('يُحدد لاحقاً') }}</span>
           </button>
           <button v-if="f.match_id && played(f)" type="button" class="min-h-touch rounded-md bg-surface px-2 py-1 text-center font-numbers font-bold text-gold" dir="ltr"
-            :aria-label="$t('الملخص السريع')" @click="recapOf = f.match_id">{{ f.home_goals }} - {{ f.away_goals }}</button>
+            :aria-label="$t('الملخص السريع')" @click="recapOf = f.match_id">{{ scoreText(f.home_goals, f.away_goals) }}</button>
           <RouterLink v-else-if="f.match_id && f.status === 'live'" :to="{ name: 'league-match', params: { id: f.match_id } }"
             class="rounded-md bg-live px-2 py-1 text-center font-numbers font-bold text-white">{{ $t('مباشر') }}</RouterLink>
           <span v-else class="text-center font-numbers text-xs text-text-muted" dir="ltr">{{ new Date(f.scheduled_at).toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' }) }}</span>

@@ -157,7 +157,8 @@ class Newspaper
         $big = $fixtures->sortByDesc(fn ($f) => abs($f->home_goals - $f->away_goals) * 10 + $f->home_goals + $f->away_goals)->first();
         if ($big && $big->home_goals !== $big->away_goals) {
             [$w, $l] = $big->home_goals > $big->away_goals ? [$big->home_id, $big->away_id] : [$big->away_id, $big->home_id];
-            $out[] = ['kind' => 'big_win', 'title' => sprintf(__('%s يكتسح %s'), $name($w), $name($l)), 'text' => sprintf(__('أكبر انتصار في الجولة: %d-%d.'), $big->home_goals, $big->away_goals)];
+            $out[] = ['kind' => 'big_win', 'title' => sprintf(__('%s يكتسح %s'), $name($w), $name($l)), // [X73] The winner's goals first («3-0»), whoever was at home.
+                'text' => sprintf(__('أكبر انتصار في الجولة: %d-%d.'), max($big->home_goals, $big->away_goals), min($big->home_goals, $big->away_goals))];
         }
         $upset = $fixtures->filter(function ($f) use ($clubs) {
             if ($f->home_goals === $f->away_goals) {
@@ -170,7 +171,7 @@ class Newspaper
         if ($upset) {
             [$w, $l] = $upset->home_goals > $upset->away_goals ? [$upset->home_id, $upset->away_id] : [$upset->away_id, $upset->home_id];
             $out[] = ['kind' => 'upset', 'title' => sprintf(__('مفاجأة الجولة: %s يُسقط %s'), $name($w), $name($l)),
-                'text' => sprintf(__('الأضعف على الورق فاز %d-%d، وكرة القدم لا تعترف بالأرقام.'), $upset->home_goals, $upset->away_goals)];
+                'text' => sprintf(__('الأضعف على الورق فاز %d-%d، وكرة القدم لا تعترف بالأرقام.'), max($upset->home_goals, $upset->away_goals), min($upset->home_goals, $upset->away_goals))];
         }
         $feast = $fixtures->sortByDesc(fn ($f) => $f->home_goals + $f->away_goals)->first();
         if ($feast && $feast->home_goals + $feast->away_goals >= 5) {

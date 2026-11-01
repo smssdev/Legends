@@ -3,6 +3,7 @@
 // the results, its stories and the team of the week), and the coaches' articles, which the owner publishes.
 // [Sprint 21 E4.5, E4.6] «أخبار الدوري»: the round's best matches, its player and its coach, the bribes an opponent
 // exposed, and one article a round for each coach.
+import { scoreText } from '../../lib/format'
 import { onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import AdSlot from '../../components/ads/AdSlot.vue'
@@ -84,7 +85,7 @@ onMounted(() => load())
         <div v-if="p.edition.coach" class="flex items-center gap-3 rounded-lg bg-brand/15 p-3">
           <span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand text-2xl" aria-hidden="true">🧠</span>
           <span class="min-w-0"><span class="block text-xs font-bold text-brand-light">{{ $t('أفضل مدرب في الجولة') }}</span><b class="block truncate font-display text-lg">{{ p.edition.coach.coach.name }}</b>
-            <span class="text-xs text-text-muted">{{ $t('{v0} فاز على {v1}', { v0: $nm(p.edition.coach.club), v1: $nm(p.edition.coach.opponent) }) }} <b class="font-numbers" dir="ltr">{{ p.edition.coach.goals[0] }}-{{ p.edition.coach.goals[1] }}</b><template v-if="p.edition.coach.away"> {{ $t('خارج أرضه') }}</template></span></span>
+            <span class="text-xs text-text-muted">{{ $t('{v0} فاز على {v1}', { v0: $nm(p.edition.coach.club), v1: $nm(p.edition.coach.opponent) }) }} <b class="font-numbers" dir="ltr">{{ scoreText(p.edition.coach.goals[0], p.edition.coach.goals[1]) }}</b><template v-if="p.edition.coach.away"> {{ $t('خارج أرضه') }}</template></span></span>
         </div>
       </div>
       <div v-if="p.edition.best_matches?.length">
@@ -93,7 +94,7 @@ onMounted(() => load())
           <li v-for="(m, i) in p.edition.best_matches" :key="i">
             <component :is="m.match_id ? 'RouterLink' : 'div'" :to="m.match_id ? { name: 'league-report', params: { id: m.match_id } } : undefined" class="flex items-center gap-2 rounded-lg bg-surface-sunk px-3 py-2 text-sm">
               <span class="font-numbers text-text-muted">{{ i + 1 }}</span>
-              <bdi class="flex-1 truncate">{{ $nm(m.home) }}</bdi><b class="font-numbers" dir="ltr">{{ m.home_goals }} - {{ m.away_goals }}</b><bdi class="flex-1 truncate text-end">{{ $nm(m.away) }}</bdi>
+              <bdi class="flex-1 truncate">{{ $nm(m.home) }}</bdi><b class="font-numbers" dir="ltr">{{ scoreText(m.home_goals, m.away_goals) }}</b><bdi class="flex-1 truncate text-end">{{ $nm(m.away) }}</bdi>
               <span v-if="m.upset" class="rounded-pill bg-warning/20 px-2 text-xs text-warning">{{ $t('مفاجأة') }}</span>
             </component>
           </li>
@@ -111,7 +112,7 @@ onMounted(() => load())
           <h3 class="mb-1 font-bold">{{ $t('النتائج') }}</h3>
           <ul class="flex flex-col text-sm">
             <li v-for="(m, i) in p.edition.results" :key="i" class="flex items-center justify-between gap-2 border-t border-text/5 py-1.5 first:border-0">
-              <bdi class="flex-1 truncate">{{ $nm(m.home) }}</bdi><b class="font-numbers" dir="ltr">{{ m.home_goals }} - {{ m.away_goals }}</b><bdi class="flex-1 truncate text-end">{{ $nm(m.away) }}</bdi>
+              <bdi class="flex-1 truncate">{{ $nm(m.home) }}</bdi><b class="font-numbers" dir="ltr">{{ scoreText(m.home_goals, m.away_goals) }}</b><bdi class="flex-1 truncate text-end">{{ $nm(m.away) }}</bdi>
             </li>
           </ul>
         </div>

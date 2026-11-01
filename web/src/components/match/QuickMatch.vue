@@ -3,6 +3,7 @@
 // match should be: about fifteen seconds of a minute ring, a little pitch where the ball goes where the server says
 // each minute went (an attack, a chance saved or missed, a corner, a goal), the score turning and the moments in a
 // list, then the result. The server played it (report.timeline); this only draws it. "تخطَّ" goes to the end.
+import { scoreText } from '../../lib/format'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 type Moment = { m: number; x?: number; k: string; s?: 'home' | 'away'; name?: string | null; score: number[] }
@@ -76,7 +77,7 @@ const sideName = (s?: string) => (s === 'away' ? props.away.name : props.home.na
           <circle cx="40" cy="40" :r="R" fill="none" stroke="var(--color-gold)" stroke-width="6" stroke-linecap="round" :stroke-dasharray="dash" class="transition-[stroke-dasharray] duration-150" />
         </svg>
         <span class="flex flex-col items-center leading-none">
-          <b class="font-numbers text-2xl" dir="ltr">{{ score[0] }} - {{ score[1] }}</b>
+          <b class="font-numbers text-2xl" dir="ltr">{{ scoreText(score[0], score[1]) }}</b>
           <span class="font-numbers text-xs text-text-muted" dir="ltr">{{ shownMinute(now) }}'</span>
         </span>
       </span>

@@ -78,7 +78,7 @@
                     </div>
                     <div v-if="(halftime || finished || windowOn) && !highlighting" dir="rtl" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-bg-deep/85 p-4 text-center">
             <span class="text-sm font-bold text-gold">{{ finished ? $t('نهاية المباراة') : windowOn ? $t('فترة توقف · الدقيقة {v0}', { v0: minute[0] }) : $t('الاستراحة') }}</span>
-            <span class="font-numbers text-6xl" dir="ltr">{{ score.away }} – {{ score.home }}</span>
+            <span class="font-numbers text-6xl" dir="ltr">{{ scoreText(score.home, score.away) }}</span>
             <span v-if="shootout" class="text-sm text-text-soft">{{ $t('ركلات الترجيح: {v0} - {v1}', { v0: shootout.home, v1: shootout.away }) }}</span>
             <div class="flex flex-wrap justify-center gap-2">
               <span v-if="halftime && live" class="text-sm text-text-soft">{{ $t('الشوط الثاني بعد') }} <b class="font-numbers text-lg text-gold">{{ halftimeLeft }}</b> {{ $t('ثانية · غيّر خطتك الآن') }}</span>
@@ -260,6 +260,7 @@
 </template>
 
 <script setup lang="ts">
+import { scoreText } from '../lib/format'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
 import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
@@ -1074,7 +1075,7 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
   broadcast.update({
     path: ownPath,
     title: `${nm(view.value.clubs.home.name)} - ${nm(view.value.clubs.away.name)}`,
-    score: `${score.value.home} - ${score.value.away}`,
+    score: scoreText(score.value.home, score.value.away),
     minute: finished.value ? 'نهاية المباراة' : minuteText.value,
     live: !finished.value,
   })
