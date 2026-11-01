@@ -14401,9 +14401,9 @@ export interface components {
             teams?: Record<string, never>;
             slots?: Record<string, never>;
         };
-        /** @description One of the six Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json). */
+        /** @description One of the Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json). */
         Keyframe: {
-            /** @description Its place among the six */
+            /** @description Its place among the minute's Keyframes from 0: six, or ten in a minute with a chance, a corner or a goal (Sprint 32 R4) */
             t: number;
             /** @description The ball: x, y and its height */
             b: number[];

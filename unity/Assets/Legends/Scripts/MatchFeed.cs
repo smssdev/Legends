@@ -68,7 +68,7 @@ namespace Legends
         public bool Keeper, Home;
     }
 
-    /// <summary>One minute of play: the six key frames, the shot and how long it lasts, the score.</summary>
+    /// <summary>One minute of play: its key frames (six, ten in a busy minute), the shot and how long it lasts, the score.</summary>
     public sealed class MatchMinute
     {
         public int Tick, Period, Minute, Added, HomeGoals, AwayGoals, Ms;
