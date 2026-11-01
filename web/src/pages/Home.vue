@@ -2,6 +2,7 @@
 // The coach's home screen [X18], rebuilt by updates1 UP7 (2026-10-26): the coach's card on top (picture, name, level,
 // cash and coins) and the eight club slots right under it, all in one screen without scrolling; the announcements, the
 // record, the trophies and the rankings below. A guest sees the way in ([X59] the landing page).
+import ReminderPrompt from '../components/ReminderPrompt.vue'
 import UiDialog from '../components/ui/UiDialog.vue'
 import { countdown, useNow } from '../lib/clock'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -199,6 +200,9 @@ async function openRanking(by: By) {
           <UiButton variant="outline" @click="goClub(nextUp, '/tactics')">{{ $t('التكتيك') }}</UiButton>
         </div>
       </section>
+
+      <!-- [Sprint 30 G1] The match reminder: allowed from here, once. -->
+      <ReminderPrompt v-if="home.slots.some((s) => s.state === 'club')" />
 
       <!-- [Sprint 30 Q9] «المطلوب منك اليوم»: the clubs with the most waiting, three at most, one tap to each. -->
       <section v-if="todo.length" class="flex flex-col gap-2 rounded-2xl bg-surface p-3" :aria-label="$t('المطلوب منك اليوم')">
