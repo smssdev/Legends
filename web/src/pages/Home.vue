@@ -110,6 +110,12 @@ async function claimStarter() {
     claiming.value = false
   }
 }
+// [Sprint 30 Q9] The clubs with something waiting, the most first; and into a club's screen from the home page.
+const todo = computed(() => (home.value?.slots ?? []).filter((s) => s.state === 'club' && s.pending > 0).sort((a, b) => b.pending - a.pending).slice(0, 3))
+function goClub(s: Home['slots'][number], to: string) {
+  if (s.league) rememberLeague(s.league.id)
+  router.push(to)
+}
 function openSlot(s: Home['slots'][number]) {
   if (s.state === 'waiting') return router.push(`/leagues/${s.league!.id}`)
   rememberLeague(s.league!.id)
@@ -172,6 +178,37 @@ async function openRanking(by: By) {
             <span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(cashClub.cash) }}</span>
           </span>
         </div>
+      </section>
+
+      <!-- [Sprint 30 Q9] The next match on top: who, when (counting down), and the way to get ready. -->
+      <section v-if="nextUp?.next_match" class="next-hero flex flex-col gap-3 rounded-2xl border border-gold/30 p-4" :aria-label="$t('مباراتك القادمة')">
+        <div class="flex items-center justify-between gap-2 text-sm">
+          <b class="text-gold">{{ nextUp.next_match.live ? '● ' + $t('مباشر الآن') : $t('مباراتك القادمة') }}</b>
+          <span class="text-text-muted">{{ when(nextUp.next_match.scheduled_at) }}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <img v-if="nextUp.club" :src="nextUp.club.crest_url" alt="" class="size-12 shrink-0" />
+          <span class="min-w-0 flex-1">
+            <b class="block truncate font-display text-lg">{{ $nm(nextUp.club?.name) }}</b>
+            <span class="block truncate text-sm text-text-muted">{{ $t(nextUp.next_match.venue === 'home' ? 'ضد' : 'عند') }} {{ $nm(nextUp.next_match.opponent) }}</span>
+          </span>
+          <b v-if="!nextUp.next_match.live" class="shrink-0 font-numbers text-3xl text-gold" dir="ltr">{{ countdown(nextUp.next_match.scheduled_at, now) || $t('الآن') }}</b>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <UiButton @click="goClub(nextUp, '/lineup')">{{ $t('التشكيلة') }}</UiButton>
+          <UiButton variant="outline" @click="goClub(nextUp, '/tactics')">{{ $t('التكتيك') }}</UiButton>
+        </div>
+      </section>
+
+      <!-- [Sprint 30 Q9] «المطلوب منك اليوم»: the clubs with the most waiting, three at most, one tap to each. -->
+      <section v-if="todo.length" class="flex flex-col gap-2 rounded-2xl bg-surface p-3" :aria-label="$t('المطلوب منك اليوم')">
+        <h2 class="px-1 font-display text-base font-extrabold">{{ $t('المطلوب منك اليوم') }}</h2>
+        <button v-for="s in todo" :key="s.slot" type="button" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface-sunk px-3 py-2 text-start" @click="goClub(s, '/club')">
+          <img v-if="s.club" :src="s.club.crest_url" alt="" class="size-8 shrink-0" />
+          <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(s.club?.name) }}</span>
+          <span class="shrink-0 rounded-pill bg-live px-2.5 py-0.5 font-numbers text-sm font-bold text-white">{{ s.pending }}</span>
+          <span class="shrink-0 text-sm text-text-muted">{{ $t('ينتظرك') }}</span>
+        </button>
       </section>
 
       <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
@@ -529,4 +566,6 @@ async function openRanking(by: By) {
   transition: transform 0.15s ease;
 }
 button.home-tile:hover { transform: scale(1.03); box-shadow: 0 8px 18px -12px color-mix(in srgb, var(--color-shade) 80%, transparent); }
+/* [Sprint 30 Q9] The next match's card: the night pitch's green under the gold, our signature. */
+.next-hero { background: linear-gradient(160deg, color-mix(in srgb, var(--color-brand) 30%, var(--color-surface)), var(--color-surface) 70%); }
 </style>
