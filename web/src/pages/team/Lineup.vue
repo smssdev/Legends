@@ -9,6 +9,7 @@
 // on any player opens the list to choose who goes there instead, the best for that place first. An outfield player
 // may stand in any line, out of his own at the engine's lower share (shown on his card). The specialists are cards,
 // each chosen from the whole squad by the role's skill.
+import { t } from '../../lib/i18n'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiSelect from '../../components/ui/UiSelect.vue'
 import { computed, onMounted, ref } from 'vue'
@@ -70,6 +71,15 @@ const dirty = computed(() => saved.value !== '' && snapshot() !== saved.value)
 
 const players = computed(() => new Map((team.value?.players ?? []).map((p) => [p.id, p])))
 const all = computed(() => [...formations.value, ...(team.value?.custom_formations ?? [])])
+// [Sprint 30 Q7] Folded to two rows (the current one always among them) until «كل الخطط».
+const FORMATIONS_FOLDED = 7
+const allFormations = ref(false)
+const shownFormations = computed(() => {
+  if (allFormations.value) return all.value
+  const first = all.value.slice(0, FORMATIONS_FOLDED)
+  const cur = all.value.find((f) => f.name === formation.value)
+  return cur && !first.includes(cur) ? [...first.slice(0, FORMATIONS_FOLDED - 1), cur] : first
+})
 const current = computed(() => {
   const f = all.value.find((x) => x.name === formation.value)
   if (!f) return undefined
@@ -83,6 +93,8 @@ const reserves = computed(() => {
 
 /** A slot's place on the vertical pitch: depth up the screen, right-sided roles on the right. */
 const place = (s: { x: number; y: number }) => ({ top: `${100 - (s.x / 720) * 100}%`, left: `${(s.y / 680) * 100}%` })
+// [Sprint 30 Q7] Why a player cannot play, in words, wherever he is listed.
+const unavailable = (p: SquadPlayer) => p.injured_matches ? t('مصاب: {v0} مباراة', { v0: p.injured_matches }) : p.suspended_matches ? t('موقوف: {v0} مباراة', { v0: p.suspended_matches }) : t('غير جاهز')
 const shown = (p: SquadPlayer) => ({ overall: p.overall, fitness: `${p.fitness}%`, age: p.age, value: money(p.value) })[view.value]
 /** The name on the pitch: the last word, or the last two when it is short ("Vinícius Jr." → "Vinícius Jr."). */
 const short = (latin: string) => {
@@ -288,7 +300,14 @@ function down(e: PointerEvent, s: Spot) {
   drag.value = { from: s, id, x: e.clientX, y: e.clientY, moved: false }
   window.addEventListener('pointermove', follow)
   window.addEventListener('pointerup', up, { once: true })
-  window.addEventListener('pointercancel', up, { once: true })
+  // [Sprint 30 Q7] A touch the phone takes back (a call, a system gesture) drops nothing anywhere: the drag ends.
+  window.addEventListener('pointercancel', cancelDrag, { once: true })
+}
+function cancelDrag() {
+  window.removeEventListener('pointermove', follow)
+  window.removeEventListener('pointerup', up)
+  edge = 0
+  drag.value = null
 }
 function follow(e: PointerEvent) {
   if (!drag.value) return
@@ -312,6 +331,7 @@ function scroll() {
 }
 function up(e: PointerEvent) {
   window.removeEventListener('pointermove', follow)
+  window.removeEventListener('pointercancel', cancelDrag)
   edge = 0
   const d = drag.value
   drag.value = null
@@ -486,19 +506,22 @@ async function saveCustom() {
         </div>
       </header>
 
-      <div class="flex gap-2 overflow-x-auto pb-1" :aria-label="$t('الطريقة')">
+      <!-- [Sprint 30 Q7] The formations in a grid (two rows, then all), never a long sideways scroll. -->
+      <div class="grid grid-cols-4 gap-2 sm:grid-cols-6" role="group" :aria-label="$t('الطريقة')">
         <button
-          v-for="f in all"
+          v-for="f in shownFormations"
           :key="f.name"
           type="button"
-          class="h-12 shrink-0 rounded-xl border px-4 font-numbers text-lg font-bold"
+          class="h-12 min-w-0 truncate rounded-xl border px-2 font-numbers text-base font-bold sm:text-lg"
           :class="f.name === formation ? 'border-gold bg-surface-raised text-gold' : 'border-transparent bg-surface text-text-soft'"
           :aria-pressed="f.name === formation"
           :dir="f.name.startsWith('custom:') ? undefined : 'ltr'"
           @click="pick(f.name)"
         >{{ $t(f.label) }}</button>
-        <button type="button" class="h-12 shrink-0 rounded-xl border border-dashed border-gold/50 px-4 font-bold text-gold" @click="openCustom">{{ $t('+ مخصصة') }}</button>
+        <button type="button" class="h-12 min-w-0 rounded-xl border border-dashed border-gold/50 px-2 text-sm font-bold text-gold" @click="openCustom">{{ $t('+ مخصصة') }}</button>
       </div>
+      <button v-if="all.length > FORMATIONS_FOLDED" type="button" class="-mt-2 min-h-touch self-start text-sm font-bold text-gold" :aria-expanded="allFormations" @click="allFormations = !allFormations">
+        {{ allFormations ? $t('خطط أقل') : $t('كل الخطط ({v0})', { v0: all.length }) }}</button>
 
       <div class="flex flex-wrap items-center gap-2">
         <span v-for="(label, l) in { def: 'دفاع', mid: 'وسط', att: 'هجوم' }" :key="l" class="flex h-10 items-center gap-2 rounded-xl bg-surface px-3 text-sm">
@@ -547,13 +570,14 @@ async function saveCustom() {
           :style="place(slot)"
           :aria-label="$t('{v0}: {v1}', { v0: slot.role, v1: starters[i] ? players.get(starters[i]!)?.name : $t('فارغة') })"
           @touchmove="editing && $event.preventDefault()"
+          @contextmenu="editing && $event.preventDefault()"
           @pointerdown="down($event, { zone: 'slot', index: i })"
           @click="click({ zone: 'slot', index: i })"
         >
           <template v-if="starters[i] && players.get(starters[i]!)">
             <!-- A mini card [X29]: gold, silver or bronze by rating, its line's colour on top, the number and the slot's role. -->
             <span
-              class="mini-card relative flex h-16 w-13 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
+              class="mini-card relative flex h-[4.5rem] w-14 flex-col items-center justify-center overflow-hidden rounded-lg border-2 bg-gradient-to-b shadow-lg shadow-shade/50"
               :class="[MINI[tier(players.get(starters[i]!)!.overall)], isSelected({ zone: 'slot', index: i }) ? 'ring-4 ring-gold' : '', players.get(starters[i]!)!.available ? '' : 'opacity-60']"
             >
               <span class="absolute inset-x-0 top-0 h-1" :style="{ background: `var(--color-line-${slot.line})` }" aria-hidden="true" />
@@ -561,6 +585,9 @@ async function saveCustom() {
               <!-- [Sprint 27 W4] Out of his lines: he plays at the engine's lower share. -->
               <span v-if="offLine(i)" class="absolute end-0.5 top-1.5 rounded bg-warning px-0.5 font-numbers text-[9px] font-bold leading-tight text-on-gold" :title="$t('خارج مركزه: {v0}% من مستواه', { v0: shareAt(players.get(starters[i]!)!, slot.line) })">{{ shareAt(players.get(starters[i]!)!, slot.line) }}%</span>
               <span class="mt-0.5 font-numbers text-[10px] leading-none text-text-soft" dir="ltr">{{ slot.role }}</span>
+              <!-- [Sprint 30 Q7] Why he cannot play, on the card itself: injured or suspended, and for how many matches. -->
+              <span v-if="players.get(starters[i]!)!.injured_matches" class="absolute start-0.5 top-1.5 rounded bg-live px-0.5 font-numbers text-[9px] font-bold leading-tight text-white" :title="$t('مصاب: {v0} مباراة', { v0: players.get(starters[i]!)!.injured_matches })">✚{{ players.get(starters[i]!)!.injured_matches }}</span>
+              <span v-else-if="players.get(starters[i]!)!.suspended_matches" class="absolute start-0.5 top-1.5 rounded bg-live px-0.5 font-numbers text-[9px] font-bold leading-tight text-white" :title="$t('موقوف: {v0} مباراة', { v0: players.get(starters[i]!)!.suspended_matches })">▮{{ players.get(starters[i]!)!.suspended_matches }}</span>
             </span>
             <span class="max-w-full truncate rounded bg-chrome px-1.5 text-xs font-extrabold text-on-chrome shadow" dir="auto">{{ short(players.get(starters[i]!)!.name) }}</span>
             <span class="h-1 w-10 rounded-full bg-bg/60"><span class="block h-full rounded-full" :class="barColor(players.get(starters[i]!)!.fitness)" :style="{ width: `${players.get(starters[i]!)!.fitness}%` }" /></span>
@@ -588,6 +615,7 @@ async function saveCustom() {
           >
             <span class="flex items-center justify-between"><span class="font-numbers text-xl font-bold text-gold">{{ shown(players.get(id)!) }}</span><span class="text-xs text-text-muted">{{ players.get(id)!.position }}</span></span>
             <span class="truncate text-sm font-bold">{{ $nm(players.get(id)!.name) }}</span>
+            <span v-if="!players.get(id)!.available" class="text-[11px] font-bold text-danger">{{ unavailable(players.get(id)!) }}</span>
           </button>
           <button
             v-if="bench.length < 7"
@@ -615,7 +643,7 @@ async function saveCustom() {
             @dblclick="card = p"
           >
             <span class="font-numbers text-lg font-bold text-gold">{{ shown(p) }}</span>
-            <span class="min-w-0 flex-1 truncate">{{ $nm(p.name) }}</span>
+            <span class="min-w-0 flex-1 truncate">{{ $nm(p.name) }}<span v-if="!p.available" class="block text-[11px] font-bold text-danger">{{ unavailable(p) }}</span></span>
             <span class="text-xs text-text-muted">{{ p.position }}</span>
           </button>
         </div>
