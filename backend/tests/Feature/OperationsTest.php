@@ -87,9 +87,11 @@ class OperationsTest extends TestCase
         $this->artisan('matches:live --soon=15')->expectsOutput((string) $soon)->assertSuccessful();
     }
 
-    public function test_without_the_two_step_code_the_panel_opens_for_an_admin_at_once(): void
+    public function test_the_two_step_code_is_asked_by_default_and_off_only_by_the_server(): void
     {
-        // [X46] The owner's decision: no code asked (game.admin.two_factor off by default).
+        // [Sprint 30 P1] Asked of every admin unless ADMIN_TWO_FACTOR=false (the tests set it off, phpunit.xml).
+        $this->assertStringContainsString("env('ADMIN_TWO_FACTOR', true)", (string) file_get_contents(config_path('game.php')));
+        // Off on the server: the panel opens for an admin at once.
         $user = User::factory()->create();
         $admin = User::factory()->create(['role' => 'admin']);
         $this->withHeader('Referer', config('app.url'));
