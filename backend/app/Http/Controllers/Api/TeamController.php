@@ -378,6 +378,16 @@ class TeamController extends Controller
         return response()->json(Contracts::view($club->refresh(), $league->season));
     }
 
+    /** [X91] Renew every contract ending this season for one season more, in one tap. */
+    public function renewEnding(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        abort_unless($league->season, 404, 'لا موسم في هذا الدوري بعد.');
+        $n = Contracts::renewEnding($club);
+
+        return response()->json(['renewed' => $n] + Contracts::view($club->refresh(), $league->season));
+    }
+
     /** [X61] The coach sets the ticket price level for the home matches to come. */
     public function setTickets(Request $request, League $league): JsonResponse
     {

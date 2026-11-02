@@ -133,4 +133,22 @@ class SeasonEndTest extends TestCase
         $this->assertSame('finished', DB::table('leagues')->where('id', $this->league['id'])->value('status'));
         $this->assertSame(1, DB::table('seasons')->where('league_id', $this->league['id'])->count());
     }
+
+    /** [X91] «جدّد للجميع»: every contract ending this season, one season more, in one request; the renewed left alone. */
+    public function test_every_ending_contract_is_renewed_in_one_tap(): void
+    {
+        $this->devLeague();
+        $mine = $this->league['my_club_id'];
+        $url = "/api/v1/leagues/{$this->league['id']}/team/contracts";
+        $first = (int) DB::table('players')->where('club_id', $mine)->orderBy('id')->value('id');
+        $this->actingAs($this->owner)->postJson("{$url}/{$first}/renew", ['seasons' => 2])->assertOk();
+        $squad = DB::table('players')->where('club_id', $mine)->count();
+        $c = $this->postJson("{$url}/renew-ending")->assertOk()->json();
+        $this->assertSame($squad - 1, $c['renewed']);
+        $this->assertSame(0, collect($c['players'])->where('until', '<=', 1)->count());
+        $this->assertSame(3, collect($c['players'])->firstWhere('id', $first)['until']);
+        $this->assertSame($squad, DB::table('club_transactions')->where('club_id', $mine)->where('type', 'contract_renewal')->count());
+        // Nothing left to renew: none renewed, nothing paid.
+        $this->postJson("{$url}/renew-ending")->assertOk()->assertJsonPath('renewed', 0);
+    }
 }

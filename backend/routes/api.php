@@ -190,6 +190,7 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('contracts', 'contracts');
         Route::post('contracts/{player}/release', 'release')->whereNumber('player')->middleware('throttle:20,1,release');
         Route::post('contracts/{player}/renew', 'renew')->whereNumber('player')->middleware('throttle:20,1,renew');
+        Route::post('contracts/renew-ending', 'renewEnding')->middleware('throttle:10,1,renew-ending');
     });
     // The market: the pool and the bot clubs [Sprint 24].
     Route::controller(MarketController::class)->prefix('{league}/market')->whereNumber('league')->group(function () {
