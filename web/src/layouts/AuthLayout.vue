@@ -5,10 +5,12 @@
 // [X56] The stadium side is a night poster in both looks (theme-night); the form follows the coach's look.
 // [X57] The privacy policy and the terms under every form.
 import LegalLinks from '../components/LegalLinks.vue'
+import PublicFooter from '../components/PublicFooter.vue'
 import { emblemSrc } from '../lib/i18n'
 </script>
 
 <template>
+  <div>
   <div class="grid min-h-dvh md:grid-cols-2">
     <aside class="auth-art theme-night relative hidden overflow-hidden md:flex md:flex-col md:justify-center md:gap-6 md:p-14">
       <img :src="emblemSrc" alt="Game Legend Manager" class="relative size-48 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)]" />
@@ -31,6 +33,9 @@ import { emblemSrc } from '../lib/i18n'
         <LegalLinks />
       </div>
     </main>
+  </div>
+  <!-- [X90] The game's footer here too, as on every screen. -->
+  <PublicFooter />
   </div>
 </template>
 
