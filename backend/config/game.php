@@ -45,17 +45,22 @@ return [
         'minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
         // [X41] The broadcast as on TV, the owner's (2026-10-26), in place of the fixed pace above for the matches made
         // from now on: fewer scenes and each one its real length (MomentClock), the commentator finishing what he says.
-        // A half about three and a half minutes: quiet minutes pass quickly, a goal takes 20 s with its replay; a small
+        // A half about one and a half to two minutes since X79 (three and a half before): quiet minutes pass quickly, a goal takes 20 s with its replay; a small
         // chance ('brief') is its card and one line. MomentClockTest checks a match's length.
         'broadcast_ms' => [
-            'quiet' => 2200, 'attack' => 2800, 'brief' => 4200, 'stoppage' => 5000, 'whistle' => 10000, 'coach' => 5000,
-            'sub' => 6000, 'injury' => 6000, 'offside' => 4200, 'corner' => 8000, 'miss' => 10000, 'save' => 11000,
-            'goal' => 20000, 'yellow' => 8500, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
+            // [X79] The highlights broadcast, the owner's (2026-11-02): the clock runs fast (a quiet minute in a second) and
+            // only the big moments play their scene; the small ones are their card and one line as the clock runs on.
+            'quiet' => 1000, 'attack' => 1200, 'brief' => 2600, 'stoppage' => 2600, 'whistle' => 10000, 'coach' => 2600,
+            'sub' => 2600, 'injury' => 2600, 'offside' => 2600, 'corner' => 2600, 'miss' => 8000, 'save' => 8000,
+            'goal' => 20000, 'yellow' => 2600, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
             'penalty' => 14000, 'penalty_goal' => 20000,
             // [Sprint 36 F5] A half's end (whistle, 10 s): its board, then the walk to the tunnel or the handshakes.
             // [Sprint 35 C3] A goal ruled out by VAR: the ball in, the check, no goal, and the coaches.
             'var' => 16000,
         ],
+        // [X79] Told as their card and one line, never a scene, unless the minute has a goal: only a goal, a penalty, a
+        // red card, VAR and a real chance (a big save or miss) play in full. A match made before keeps its scenes (no key).
+        'broadcast_brief' => ['corner', 'yellow', 'sub', 'injury', 'coach', 'stoppage', 'offside', 'free_kick'],
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.

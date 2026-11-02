@@ -101,7 +101,7 @@
             <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">{{ $t('مساحة إعلانية') }}</div>
           </div>
 
-          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" @done="replayTick = null" />
+          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" :tag="replayMissed ? $t('فاتك · {v0}', { v0: replayTick.minute[0] + `'` }) : undefined" @done="nextReplay" />
           <!-- [E8.5] Back after a gap (a hidden tab, a lost connection, joining late): now, with what was missed. -->
           <button v-if="caught" type="button" class="absolute inset-x-3 top-24 z-30 flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg bg-surface-raised/95 px-3 py-2 text-center text-sm font-bold" role="status" @click="caught = null">
             <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
@@ -474,6 +474,23 @@ function skipMoment() {
 const say = (e: MatchEvent) => e.text ?? line(e, nameOf, clubName)
 // The goal replay (live) and its players by id.
 const replayTick = shallowRef<Tick | null>(null)
+// [X79] Back after a gap: the goals missed, one after another in the small frame, while the match plays on live.
+const replayMissed = ref(false)
+const reel: Tick[] = []
+function nextReplay() {
+  const t = reel.shift() ?? null
+  replayMissed.value = !!t
+  replayTick.value = t
+}
+/** A minute with a goal that was over before this screen saw it: into the reel (its scene from its events alone). */
+function missedGoal(t: { tick: number; minute: number | [number, number]; events: MatchEvent[] }) {
+  const goal = t.events.find((e) => e.type === 'goal')
+  if (!goal || reel.some((x) => x.tick === t.tick)) return
+  const kind = ({ penalty: 'penalty', free_kick: 'free_kick' } as Record<string, string>)[(goal as any).kind ?? 'open'] ?? 'goal'
+  reel.push({ ...(t as any), minute: Array.isArray(t.minute) ? t.minute : [t.minute, 0], score: score.value, moment: { kind, ms: 0 } })
+  reel.sort((a, b) => a.tick - b.tick)
+  if (!replayTick.value) nextReplay()
+}
 let lastGoal: Tick | null = null
 const LOW_END = (navigator.hardwareConcurrency ?? 8) <= 4
 const playersById = computed(() => {
@@ -638,7 +655,7 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   // Live: the goal again in a small frame while the next minute plays (not on a slow phone).
   // Not after a goal whose long minute already played its replay [X41].
-  if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
+  if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END && !replayMissed.value) replayTick.value = lastGoal
   lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
   // The stands sing: after a goal, and now and then in a quiet spell (every 13 minutes of play) [Sprint 35].
@@ -838,8 +855,7 @@ function catchUp() {
     clearTimeout(id)
     playTimers.delete(id)
     const { t, startAt } = late[i][1]
-    if (i < late.length - 1) show(t, false)
-    else show(t, true, startAt)
+    if (i < late.length - 1) { show(t, false); missedGoal(t) } else show(t, true, startAt)
   })
 }
 
@@ -878,6 +894,7 @@ function handleSync(r: LiveSync): number {
   for (const m of r.missed ?? []) {
     if (m.tick <= seen) continue
     seen = m.tick
+    missedGoal(m as any)
     for (const e of m.events) {
       const text = say(e)
       if (text) feed.value.unshift({ minute: `${m.minute}'`, text, important: ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type) })
@@ -895,7 +912,7 @@ function handleSync(r: LiveSync): number {
     const delay = at - serverNow()
     const next = fresh[i + 1]
     // Already over (a locked screen, a slow phone): its result at once, no scene. Only the minute playing now animates.
-    if (next?.at !== undefined && next.at <= serverNow()) return show(t, false)
+    if (next?.at !== undefined && next.at <= serverNow()) { show(t, false); return missedGoal(t) }
     const startAt = performance.now() + delay
     if (delay <= 0) return show(t, true, startAt)
     const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)

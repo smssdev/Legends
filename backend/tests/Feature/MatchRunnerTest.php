@@ -64,7 +64,7 @@ class MatchRunnerTest extends TestCase
         return DB::table('matches')->where('fixture_id', $this->fixture->id)->first();
     }
 
-    public function test_a_development_match_starts_by_itself_plays_live_and_ends_in_about_eight_minutes(): void
+    public function test_a_development_match_starts_by_itself_plays_live_and_ends_in_about_five_minutes(): void
     {
         Event::fake([MatchMinute::class]);
         $match = $this->kickOff();
@@ -85,9 +85,9 @@ class MatchRunnerTest extends TestCase
             }
         }
         $minutes = $start->diffInSeconds(GameClock::now()) / 60;
-        // [X41] Two halves of about three and a half minutes and the break.
-        $this->assertGreaterThan(5, $minutes);
-        $this->assertLessThan(11, $minutes);
+        // [X79] Two halves of about two minutes (the highlights broadcast), the windows and the break.
+        $this->assertGreaterThan(3, $minutes);
+        $this->assertLessThan(8, $minutes);
 
         $done = DB::table('matches')->where('id', $match->id)->first();
         $this->assertSame('finished', $done->status);

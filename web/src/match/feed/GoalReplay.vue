@@ -1,6 +1,6 @@
 <template>
   <div class="replay" role="img" :aria-label="$t('إعادة الهدف: {v0}', { v0: who })">
-    <span class="tag">إعادة · {{ who }}</span>
+    <span class="tag">{{ tag ?? 'إعادة' }} · {{ who }}</span>
     <div ref="stage" class="stage" />
   </div>
 </template>
@@ -13,7 +13,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { SCENES } from './art'
 import { SCENE_TIME, story } from './story'
 
-const props = defineProps<{ tick: any; players: any; clubs: { home: string; away: string }; seed: number }>()
+// tag: what the label says before the scorer (the missed goals on a return say so, X79).
+const props = defineProps<{ tick: any; players: any; clubs: { home: string; away: string }; seed: number; tag?: string }>()
 const emit = defineEmits<{ done: [] }>()
 const stage = ref<HTMLElement>()
 const s = story(props.tick, { players: props.players, clubs: props.clubs, seed: props.seed, mine: null })
