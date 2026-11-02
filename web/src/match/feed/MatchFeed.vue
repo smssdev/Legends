@@ -15,7 +15,7 @@
          server's keyframes, never only the key moments. -->
     <div class="pitch">
       <div ref="pitchHost" class="pitch-in" aria-hidden="true" />
-      <span v-if="replaying && !sceneOn" class="replay">{{ $t('إعادة') }}</span>
+      <span v-if="replaying && !sceneOn" class="replay">{{ replayAngle === 2 ? $t('إعادة · زاوية أخرى') : $t('إعادة') }}</span>
       <button type="button" class="cam" :aria-label="camera === 'tv' ? $t('عرض الخطة من أعلى') : $t('كاميرا البث')" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? $t('الخطة') : $t('البث') }}</button>
     </div>
 
@@ -36,7 +36,7 @@
     <div class="moment" :class="{ on: sceneOn, tense }">
       <div class="mbox">
         <div ref="stage" class="stage" :class="{ shake }" />
-        <span v-if="replaying" class="replay">{{ $t('إعادة') }}</span>
+        <span v-if="replaying" class="replay">{{ replayAngle === 2 ? $t('إعادة · زاوية أخرى') : $t('إعادة') }}</span>
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
           <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
@@ -156,8 +156,11 @@ const compare = computed(() => [
 ].map((r) => ({ ...r, hp: r.h + r.a ? (r.h / (r.h + r.a)) * 100 : 50 })))
 
 // ---------------------------------------------------------------- playing a minute
-// [Sprint 34 V4] The goal's replay is playing on the live pitch.
-let pitchReplay = false
+// [Sprint 34 V4] The goal's replay is playing on the live pitch (0 no; 1 or 2: its angle, Sprint 36 F4).
+let pitchReplay = 0
+// [Sprint 36 F4] The replay's angle (1, then 2 at the full tier), and the frame that turns the scene round for it.
+const replayAngle = ref(1)
+let angleWrap: any = null
 // [Sprint 35 C1] The minute's own scene (for its replay) and the cutaway playing now.
 let mainScene: any = null, cutScene: any = null
 /**
@@ -178,6 +181,10 @@ function director(s, tick, total, sceneT) {
   // [Sprint 35 C2] A red card: tempers flare first (both sides squaring up), then the coach.
   else if (s.scene === 'card') list = s.data.type === 'red' ? [{ name: 'brawl', data: { side: s.side, v: (props.seed || 1) * 13 + tick.tick }, dur: SCENE_TIME.brawl[0] }, coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
   else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
+  // [Sprint 36 F5] The end of a half: at half time the players walk off to the tunnel; at full time they shake
+  // hands, then the coaches in their moods (the server's: joy for the winners, sorrow for the losers).
+  else if (s.scene === 'whistle' && s.data.name === 'halftime') list = [{ name: 'tunnel', data: { side: 'home' }, dur: SCENE_TIME.tunnel[0] }]
+  else if (s.scene === 'whistle' && s.data.name === 'fulltime') list = [{ name: 'handshake', data: { side: 'home' }, dur: SCENE_TIME.handshake[0] }, coach('home', 'idle'), coach('away', 'idle')]
   // [Sprint 35 C3] A goal ruled out by VAR: the coach who thought his side had scored, then the relieved one.
   else if (s.scene === 'var') list = [coach(s.side, 'angry'), coach(other, 'joy')]
   list = list.slice(0, tier.value === 'high' ? 3 : 1)
@@ -220,6 +227,7 @@ function play(tick, startAt = null) {
     made = SCENES[s.scene]({ ...s.data, side: s.side })
     made.update(0)
   } catch (e) { console.error(e); made = null }
+  angleWrap = null; replayAngle.value = 1
   if (made) {
     scene = made
     mainScene = made
@@ -258,7 +266,7 @@ function finish() {
   if (!plan) return
   sceneOn.value = false
   replaying.value = false
-  pitchReplay = false
+  pitchReplay = 0
   cutScene = null
   tense.value = false
   party.value = null
@@ -328,12 +336,28 @@ function step(now) {
       frames.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(frames[g].b[0] - 525)) g = n })
       const onPitch = frames.length > 2 && Math.abs(frames[g].b[0] - 525) > 470
       if (u < len) {
-        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = !onPitch; pitchReplay = onPitch; if (!onPitch && mainScene) { scene = mainScene; stage.value.replaceChildren(mainScene.svg) } })
+        fire('replay', () => {
+          bubbleOn.value = false; replaying.value = true; sceneOn.value = !onPitch; pitchReplay = onPitch ? 1 : 0
+          if (!onPitch && mainScene) {
+            scene = mainScene; stage.value.replaceChildren(mainScene.svg)
+            // The scene's world in a frame the second angle can turn round.
+            const w = mainScene.svg.world
+            if (w && !angleWrap) { angleWrap = document.createElementNS('http://www.w3.org/2000/svg', 'g'); w.parentNode.insertBefore(angleWrap, w); angleWrap.appendChild(w) }
+          }
+        })
+        // [Sprint 36 F4] Two angles at the full tier: halfway through, the director cuts to the reverse angle, closer
+        // (the scene turned round about the goal; on the live pitch, a tighter camera).
+        const angle = tier.value === 'high' && (u - (rp.off ?? 0)) / Math.max(0.01, len - (rp.off ?? 0)) > 0.5 ? 2 : 1
+        if (angle !== replayAngle.value) {
+          replayAngle.value = angle
+          if (onPitch) pitchReplay = angle
+          else if (angleWrap) angleWrap.setAttribute('transform', angle === 2 ? 'translate(320 130) scale(-1.3 1.3) translate(-320 -130)' : '')
+        }
         if (onPitch) {
           const n = frames.length - 1, from = Math.max(0, g - 3) / n, to = Math.min(1, (g + 0.4) / n)
           if (!smooth.value || now - pitchDrawn >= 32) { pitchDrawn = now; drawPitch(plan.tick, from + (to - from) * (u / len)) }
         } else if (!smooth.value || now - drawn >= 32) { drawn = now; draw(u) }
-      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; pitchReplay = false; showBubble() })
+      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; pitchReplay = 0; replayAngle.value = 1; showBubble() })
     }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
     if (!plan.replay && t >= (scene ? Math.min(total, sceneT + plan.cutT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
@@ -741,7 +765,7 @@ function drawTv(tick, u) {
   camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx + lead)) - camX) * 0.06
   // It closes in on the last third (up to 1.3), and punches in on the ball as a key moment's scene opens.
   const third = Math.max(0, Math.min(1, (Math.abs(bx - 525) - 175) / 250))
-  const punch = pitchReplay ? 1.6 : now - sceneAt < 650 ? 1.75 : 0
+  const punch = pitchReplay === 2 ? 2.15 : pitchReplay ? 1.6 : now - sceneAt < 650 ? 1.75 : 0
   zoom += ((punch || 1 + 0.3 * third * third * (3 - 2 * third)) - zoom) * Math.min(1, dts * (punch ? 6 : 1.4))
   if (smooth.value) zoom = 1
   const [, bsy] = proj(bx, by), fx = 320

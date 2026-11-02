@@ -48,10 +48,11 @@ return [
         // A half about three and a half minutes: quiet minutes pass quickly, a goal takes 20 s with its replay; a small
         // chance ('brief') is its card and one line. MomentClockTest checks a match's length.
         'broadcast_ms' => [
-            'quiet' => 2200, 'attack' => 2800, 'brief' => 4200, 'stoppage' => 5000, 'whistle' => 6500, 'coach' => 5000,
+            'quiet' => 2200, 'attack' => 2800, 'brief' => 4200, 'stoppage' => 5000, 'whistle' => 10000, 'coach' => 5000,
             'sub' => 6000, 'injury' => 6000, 'offside' => 4200, 'corner' => 8000, 'miss' => 10000, 'save' => 11000,
             'goal' => 20000, 'yellow' => 8500, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
             'penalty' => 14000, 'penalty_goal' => 20000,
+            // [Sprint 36 F5] A half's end (whistle, 10 s): its board, then the walk to the tunnel or the handshakes.
             // [Sprint 35 C3] A goal ruled out by VAR: the ball in, the check, no goal, and the coaches.
             'var' => 16000,
         ],

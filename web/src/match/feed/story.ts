@@ -29,7 +29,7 @@ export const SCENE_TIME = {
   goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
   offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
   // [Sprint 35 C1] The director's cutaways after a scene.
-  crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2],
+  crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2], tunnel: [2.8, 0.2], handshake: [3.0, 0.2],
   // [Sprint 35 C3] A goal ruled out by VAR: the ball in at 3.0 s, the check, no goal at 6.4 s.
   var: [8.2, 6.4],
 }
@@ -206,7 +206,7 @@ export function story(tick, ctx) {
     const st = (side) => tick.teams?.[side]?.stats ?? {}
     const rows = [[t('الهجمات'), 'attacks'], [t('التسديدات'), 'shots'], [t('على المرمى'), 'on_target'], [t('الركنيات'), 'corners']].map(([l, k]) => [l, st('home')[k] ?? 0, st('away')[k] ?? 0])
     // The score reads left to right with home on the right, as on the scoreboard.
-    set('whistle', 'home', { big: head, score: scoreText(tick.score.home, tick.score.away), stats: rows }, big, '', sc)
+    set('whistle', 'home', { big: head, score: scoreText(tick.score.home, tick.score.away), stats: rows, name: period.name }, big, '', sc)
     speak({ halftime: 'halftime', fulltime: 'fulltime', extra_time: 'extra_time', penalties: 'penalties' }[period.name] ?? 'halftime', { key: 0.25 })
     item('home', 'whistle', head, sc, { center: true })
   } else if (kind === 'stoppage' && stoppage) {
