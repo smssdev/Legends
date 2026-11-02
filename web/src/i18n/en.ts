@@ -2108,6 +2108,12 @@ export const EN: Record<string, string> = {
   'رقم النادي': 'Club number',
   'اللون الأول': 'First colour',
   'اللون الثاني': 'Second colour',
+  'نقش القميص': 'Kit pattern',
+  'سادة': 'Plain',
+  'خطوط طولية': 'Stripes',
+  'خطوط عرضية': 'Hoops',
+  'نصفان': 'Halves',
+  'حزام مائل': 'Sash',
   // [Sprint 26] The characters.
   'المدربان على الخط': 'The coaches on the touchline',
   'شكلك على الخط': 'Your look on the touchline',

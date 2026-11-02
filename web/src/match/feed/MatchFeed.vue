@@ -513,7 +513,7 @@ function tvFor(id, side) {
     const kit = gk ? keeperKit(side) : props.kits[side].kit
     // [Sprint 31 D2] Build and height from his id (README 7.3): the same player looks the same on every screen.
     const n = Number(id) || 0
-    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100, hair: (n * 11 + 3) % 5 })
+    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, pattern: gk ? null : props.kits[side].pattern, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100, hair: (n * 11 + 3) % 5 })
     t = { f, ph: Number(id) % 7, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
     tvPlayers.set(id, t)
   }

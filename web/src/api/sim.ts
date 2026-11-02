@@ -29,6 +29,8 @@ export interface Club {
   strength?: number
   strength_cp?: number
   logo?: string | null
+  /** [X76] The kit's pattern (stripes, hoops, halves, sash), null for plain. */
+  pattern?: string | null
 }
 
 export interface TeamPlayer {

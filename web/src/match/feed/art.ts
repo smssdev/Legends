@@ -141,6 +141,17 @@ function goalFrame(svg, p = svg.world) {
 // side (mirrored for the other side) [Sprint 31 M4]: the live pitch picks it from where he runs.
 export const SKINS = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982', '#5A3524']
 export const HAIR = ['#1B1410', '#2A1A10', '#5A3A1E', '#0E0E0E', '#B8893E', '#3B2414']
+// [X76] The club's kit pattern on a scene's player, in its trim colour: the side is the one whose shirt this is.
+function kitPatternSvg(kit, o) {
+  const side = kit === KITS.home?.kit ? 'home' : kit === KITS.away?.kit ? 'away' : null, p = side && !o.gloves ? KITS[side].pattern : null
+  if (!p) return ''
+  const id = 'kp' + ++uid, c = o.trim ?? KITS[side].trim ?? '#fff'
+  const shapes = p === 'stripes' ? [-12, -4, 4, 12].map((x) => `<rect x="${x - 2}" y="-16" width="4" height="42"/>`).join('')
+    : p === 'hoops' ? [-8, 1, 10, 19].map((y) => `<rect x="-16" y="${y - 2.2}" width="32" height="4.4"/>`).join('')
+    : p === 'halves' ? '<rect x="0" y="-16" width="16" height="42"/>'
+    : p === 'sash' ? '<path d="M-16 -6 L-9 -16 L16 16 L16 25 Z"/>' : ''
+  return `<clipPath id="${id}"><path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z"/></clipPath><g clip-path="url(#${id})" fill="${c}">${shapes}</g>`
+}
 export function player(p, kit, no, s = 1, o = {}) {
   if (p.world) p = p.world
   const light = lum(kit) > 150, ink = light ? '#0A1F42' : '#fff', look = o.look ?? 0
@@ -153,7 +164,7 @@ export function player(p, kit, no, s = 1, o = {}) {
   const legs = [part(-6, 25, leg), part(6, 25, leg)]
   const body = el('g', {}, fig)
   body.innerHTML = `<path d="M-13.5 17 H13.5 L15 31 H1.5 L0 27 L-1.5 31 H-15 Z" fill="${shorts}"/>
-    <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>
+    <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>${kitPatternSvg(kit, o)}
     <path d="M-6 21 Q0 -2 6 21" fill="rgba(0,0,0,.08)"/>
     <path d="M-15 -9 Q0 -15 15 -9" fill="none" stroke="${o.trim ?? shade(kit, light ? -45 : 45)}" stroke-width="2"/>
     <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>

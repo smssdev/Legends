@@ -383,8 +383,9 @@ let waited = 0
 const minuteText = computed(() => (minute.value[1] ? `${minute.value[0]}+${minute.value[1]}'` : `${minute.value[0]}'`))
 // The feed's kits: shirt, the ink on it and the trim, per side.
 const feedKits = computed(() => ({
-  home: { kit: bkits.value.home.shirt, ink: bkits.value.home.text, trim: bkits.value.home.trim, name: bkits.value.home.name },
-  away: { kit: bkits.value.away.shirt, ink: bkits.value.away.text, trim: bkits.value.away.trim, name: bkits.value.away.name },
+  // [X76] And each club's kit pattern, drawn in its trim colour.
+  home: { kit: bkits.value.home.shirt, ink: bkits.value.home.text, trim: bkits.value.home.trim, name: bkits.value.home.name, pattern: view.value?.clubs.home.pattern ?? null },
+  away: { kit: bkits.value.away.shirt, ink: bkits.value.away.text, trim: bkits.value.away.trim, name: bkits.value.away.name, pattern: view.value?.clubs.away.pattern ?? null },
 }))
 // Score bug and stats colours follow the kits (with the away change kit on a clash).
 const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))

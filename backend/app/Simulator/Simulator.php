@@ -4,6 +4,7 @@ namespace App\Simulator;
 
 use App\Characters\Mood;
 use App\Data\ClubLogo;
+use App\Data\KitPattern;
 use App\Engine\Actions;
 use App\Engine\AutoPick;
 use App\Engine\Formations;
@@ -346,7 +347,9 @@ class Simulator
                 // [X42] The coach's windows: a live match stops after these minutes for window_seconds.
                 'windows' => $live ? ($s['cfg']['match']['windows'] ?? []) : [], 'window_seconds' => (int) ($s['cfg']['match']['window_seconds'] ?? 0),
             ],
-            'clubs' => ['home' => ClubLogo::with($s['teams']['home']['club']), 'away' => ClubLogo::with($s['teams']['away']['club'])],
+            // [X76] Each club with its kit pattern (the data club's).
+            'clubs' => ['home' => ClubLogo::with($s['teams']['home']['club']) + ['pattern' => KitPattern::ofMaster($s['teams']['home']['club']['id'] ?? null)],
+                'away' => ClubLogo::with($s['teams']['away']['club']) + ['pattern' => KitPattern::ofMaster($s['teams']['away']['club']['id'] ?? null)]],
             'coaches' => (object) ($match->setup['names'] ?? []),
             'teams' => $live ? self::redact(['teams' => self::teams($s)], $you)['teams'] : self::teams($s),
             'slots' => [
