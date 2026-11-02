@@ -2675,4 +2675,13 @@ export const EN: Record<string, string> = {
   'بدأ التدريب في {v0} خانات.': 'Training started in {v0} slots.',
   'لا لاعب موصى به للخانات الفارغة الآن.': 'No recommended player for the empty slots now.',
   'املأها بالموصى بهم': 'Fill with the recommended',
+  // [X89] Where an email went.
+  'أرسلنا لك بريداً': 'We sent you an email',
+  'أرسلنا الرسالة إلى {v0}.': 'We sent it to {v0}.',
+  'أرسلنا الرسالة إلى بريدك.': 'We sent it to your email.',
+  'لم تجدها خلال دقيقة؟': 'Not there within a minute?',
+  'افتح مجلد «الرسائل غير المرغوب فيها» (Spam) في بريدك، وفي Gmail أيضاً «العروض الترويجية».': 'Open your Spam folder, and in Gmail the Promotions tab too.',
+  'افتح رسالتنا واضغط «ليست رسالة غير مرغوب فيها» (Not spam)، فتصلك رسائلنا بعدها في البريد الوارد.': 'Open our email and tap «Not spam»: the next ones will land in your inbox.',
+  'أضف {v0} إلى جهات الاتصال.': 'Add {v0} to your contacts.',
+  'أرسل مرة أخرى': 'Send again',
 }

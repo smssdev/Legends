@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The account (Sprint 10 W1; modern in Sprint 21 E2.7): a header with the picture, the name, the badge and the
 // account's number, then the verification by email (E2.4) and the invite gift (E2.3), and the settings in cards.
+import MailSentNote from '../components/MailSentNote.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
 import LegalLinks from '../components/LegalLinks.vue'
 import { computed, ref, watch } from 'vue'
@@ -190,11 +191,13 @@ async function shareInvite() {
 const joined = computed(() => (user.value.created_at ? new Date(user.value.created_at).toLocaleDateString(intlLocale(), { year: 'numeric', month: 'long' }) : ''))
 
 const resendMsg = ref('')
+const resendSent = ref(false)
 async function resend() {
   try {
     await ensureCsrf()
     await api.POST('/auth/email/resend')
-    resendMsg.value = t('أرسلنا الرسالة من جديد. تحقق من بريدك (والرسائل غير المرغوبة).')
+    resendSent.value = true
+    resendMsg.value = ''
   } catch (e) {
     resendMsg.value = asApiError(e).message
   }
@@ -296,7 +299,8 @@ async function remove() {
         </div>
         <button type="submit" class="h-12 rounded-lg bg-surface-raised px-5 font-bold disabled:opacity-60" :disabled="sendBusy || !verifyEmail.trim()">{{ sentTo ? $t('أرسل كوداً جديداً') : $t('أرسل الكود') }}</button>
       </form>
-      <p v-if="sentTo" class="text-sm text-success" role="status">{{ $t('أرسلنا الكود إلى {v0}. تحقق من بريدك (والرسائل غير المرغوبة).', { v0: sentTo }) }}</p>
+      <!-- [X89] Where the code went, and how to find it out of spam. -->
+      <MailSentNote v-if="sentTo" :to="sentTo" />
       <form class="flex flex-wrap items-end gap-2" novalidate @submit.prevent="verifyAccount">
         <div class="min-w-40 flex-1"><TextField v-model="verifyCode" :label="$t('كود التوثيق')" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr" :error="verifyErr" /></div>
         <button type="submit" class="h-12 rounded-lg bg-gold px-5 font-bold text-on-gold disabled:opacity-60" :disabled="verifyBusy || verifyCode.trim().length < 6">{{ $t('تأكيد وتفعيل') }}</button>
@@ -337,7 +341,8 @@ async function remove() {
       <div v-if="user.email && !user.email_verified" class="flex flex-col gap-2 rounded-lg bg-warning/10 p-3 text-sm">
         <p>{{ $t('أكّد بريدك من الرابط الذي أرسلناه، لتستطيع استعادة حسابك إن نسيت كلمة المرور.') }}</p>
         <button type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 font-bold" @click="resend">{{ $t('أرسل الرابط من جديد') }}</button>
-        <p v-if="resendMsg" role="status">{{ $t(resendMsg) }}</p>
+        <MailSentNote v-if="resendSent" :to="user.email" />
+        <p v-else-if="resendMsg" role="alert">{{ $t(resendMsg) }}</p>
       </div>
       <form class="flex flex-col gap-3 sm:flex-row sm:items-end" novalidate @submit.prevent="saveName">
         <div class="flex-1"><TextField v-model="name" :label="$t('اسمك في اللعبة')" autocomplete="nickname" :error="nameErr" /></div>

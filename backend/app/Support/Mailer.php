@@ -49,7 +49,7 @@ class Mailer
         $key = (string) (config("mail.mailers.{$mailer}.key") ?? '');
         $problems = [];
         if (! self::live()) {
-            $problems[] = 'البريد يُكتب في السجل ولا يُرسل: لا BREVO_API_KEY ولا RESEND_API_KEY ولا GMAIL في Environment، أو لم يُعد النشر بعد إضافتها (Manual Deploy).';
+            $problems[] = 'البريد يُكتب في السجل ولا يُرسل: ضع كلمة مرور تطبيق Gmail للعبة على السيرفر (legends-set GMAIL_APP_PASSWORD)، فالبريد يخرج من game.legend.manager@gmail.com وحده [X89].';
         }
         if ($mailer === 'brevo' && str_starts_with($key, 'xsmtpsib-')) {
             $problems[] = 'هذا مفتاح SMTP من Brevo. المطلوب مفتاح API: من SMTP & API ← تبويب API Keys ← Generate a new API key (يبدأ بـ xkeysib-).';
