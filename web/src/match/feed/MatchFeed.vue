@@ -95,7 +95,7 @@ import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setSmooth } from './art'
 import { figure } from './figure'
-import { noteFrame, smooth } from '../perf'
+import { noteFrame, smooth, tier } from '../perf'
 import { sample, segment } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
@@ -168,7 +168,8 @@ function play(tick, startAt = null) {
   const sceneT = s.scene ? Math.min(nominal, total * (tick.moment?.ms <= 3400 ? 0.9 : 0.72)) : 0
   // [X41] A goal on the broadcast's long minute: after the celebration, the replay in slow motion, as on TV.
   const room = total - sceneT - 3.2, slow = s.goal && s.scene ? nominal / room : 1
-  const replay = slow >= 0.4 && slow <= 0.8 ? { at: sceneT + 2.6, rate: slow } : null
+  // [Sprint 33 Q1] No slow-motion replay at the lowest tier: the weak phone rests after the goal's scene.
+  const replay = slow >= 0.4 && slow <= 0.8 && !smooth.value ? { at: sceneT + 2.6, rate: slow } : null
   plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
@@ -239,8 +240,9 @@ const SOUNDS = {
 let bgTimer = 0
 function frame(now) { step(now); raf = requestAnimationFrame(frame) }
 function step(now) {
-  // Frames that fall behind while a scene plays turn the smooth mode on (auto) [X30].
-  if (scene && sceneOn.value) noteFrame(now - last)
+  // [Sprint 33 Q1] Frames that fall behind while the match plays lower the auto tier, one at a time [X30]. A hidden
+  // page (stepped by the timer, not by frames) says nothing of the device.
+  if (plan && !document.hidden) noteFrame(now - last)
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
   last = now
   if (plan) {
@@ -283,10 +285,11 @@ function step(now) {
 // the plan from above are painted afresh every frame, nearer things over farther ones. The look is the same.
 let cv: HTMLCanvasElement | null = null, ctx: CanvasRenderingContext2D | null = null, cw = 0, ch = 0, dpr = 1
 let topBg: HTMLCanvasElement | null = null, dots = new Map(), lastTick = null, lastU = 0
-// The canvas follows its box and the screen's density (1 in the smooth mode: a quarter of the pixels to paint).
+// The canvas follows its box and the screen's density: at most 2 pixels a point, 1.5 at the middle tier and 1 at the
+// lowest (a quarter of the pixels to paint) [Sprint 33 Q1].
 function fit() {
   if (!cv || !pitchHost.value) return false
-  const r = pitchHost.value.getBoundingClientRect(), d = smooth.value ? 1 : Math.min(2, window.devicePixelRatio || 1)
+  const r = pitchHost.value.getBoundingClientRect(), d = Math.min(tier.value === 'low' ? 1 : tier.value === 'mid' ? 1.5 : 2, window.devicePixelRatio || 1)
   const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d))
   if (w !== cw || h !== ch || d !== dpr) { cw = cv.width = w; ch = cv.height = h; dpr = d; topBg = null }
   return true
@@ -429,12 +432,12 @@ function boardSprite(colour) {
 const rainy = () => (Number(props.seed) || 0) % 6 === 1
 let drops = [], dropsFor = ''
 function rain(c, now) {
-  const key = `${props.seed}|${smooth.value}`
+  const key = `${props.seed}|${tier.value}`
   if (key !== dropsFor) {
     dropsFor = key
     let r = (Number(props.seed) || 1) * 7 + 3
     const rnd = () => { r = (r * 1103515245 + 12345) & 0x7fffffff; return r / 0x7fffffff }
-    drops = Array.from({ length: smooth.value ? 40 : 120 }, () => ({ x: rnd(), y: rnd(), v: 0.6 + rnd() * 0.5 }))
+    drops = Array.from({ length: tier.value === 'low' ? 40 : tier.value === 'mid' ? 80 : 120 }, () => ({ x: rnd(), y: rnd(), v: 0.6 + rnd() * 0.5 }))
   }
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0)
   c.strokeStyle = 'rgba(200,215,235,.35)'; c.lineWidth = Math.max(1, cw / 900); c.beginPath()
@@ -448,7 +451,7 @@ function rain(c, now) {
 // (from the match's seed). They sway with the danger of the minute and jump at a goal.
 let fans = [], fansFor = ''
 function seatFans() {
-  const key = `${props.seed}|${props.kits.home.kit}|${props.kits.away.kit}|${smooth.value}|${props.strength?.home}`
+  const key = `${props.seed}|${props.kits.home.kit}|${props.kits.away.kit}|${tier.value}|${props.strength?.home}`
   if (key === fansFor) return
   fansFor = key
   let r = (props.seed | 0) || 1
@@ -456,7 +459,7 @@ function seatFans() {
   const H = [props.kits.home.kit, props.kits.home.trim || '#fff'], A = [props.kits.away.kit, props.kits.away.trim || '#fff']
   // [Sprint 32 V2] As full as the home side is big: a strong club's stand is packed, a small one's half empty.
   const fill = Math.max(0.5, Math.min(1, 0.4 + (props.strength?.home ?? 6000) / 10000 * 0.6))
-  const n = Math.round((smooth.value ? 260 : 900) * fill)
+  const n = Math.round((tier.value === 'low' ? 260 : tier.value === 'mid' ? 500 : 900) * fill)
   fans = Array.from({ length: n }, (_, i) => {
     const x = -700 + rnd() * 2450, row = Math.floor(rnd() * 4), away = x > 1000 && rnd() < 0.8
     const pick = rnd(), colour = pick < 0.12 ? '#C9D2E1' : pick < 0.2 ? '#0A1F42' : (away ? A : H)[pick < 0.65 ? 0 : 1]
@@ -664,7 +667,8 @@ function drawTv(tick, u) {
   const h = Math.min(1, bz / 60)
   // [Sprint 31 C4] Every player's shadow first, under them all: at night two faint ones from the floodlights in the
   // far corners, by day one from the sun.
-  const lights = night ? [[-1, 0.2], [1, 0.2]] : [[1, 0.32]]
+  // The middle tier keeps one floodlight's shadow at night [Sprint 33 Q1].
+  const lights = night ? (tier.value === 'high' ? [[-1, 0.2], [1, 0.2]] : [[1, 0.26]]) : [[1, 0.32]]
   for (const [dir, a] of lights) {
     ctx.fillStyle = `rgba(0,0,0,${a})`; ctx.beginPath()
     for (const t of drawn) {
@@ -683,7 +687,7 @@ function drawTv(tick, u) {
       const ry = py - 3 * ps - bz * 0.35 * ps, rr = 4.5 * ps + bz * 0.02
       // [Sprint 32 V1] A fast ball leaves a short fading trail behind it.
       const [qx, qy, qs] = proj(R2.ball[0], R2.ball[1]), qz = R2.ball[2], dx = qx - px, dy = qy - 3 * qs - qz * 0.35 * qs - ry
-      if (!smooth.value && u < 1 && Math.hypot(dx, dy) > 6) for (let n = 3; n >= 1; n--) { ctx.fillStyle = `rgba(255,255,255,${0.12 * (4 - n)})`; ctx.beginPath(); ctx.arc(px - dx * n * 0.35, ry - dy * n * 0.35, rr * (1 - n * 0.12), 0, Math.PI * 2); ctx.fill() }
+      if (tier.value === 'high' && u < 1 && Math.hypot(dx, dy) > 6) for (let n = 3; n >= 1; n--) { ctx.fillStyle = `rgba(255,255,255,${0.12 * (4 - n)})`; ctx.beginPath(); ctx.arc(px - dx * n * 0.35, ry - dy * n * 0.35, rr * (1 - n * 0.12), 0, Math.PI * 2); ctx.fill() }
       ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 1
       ctx.beginPath(); ctx.arc(px, ry, rr, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
     }
@@ -706,7 +710,7 @@ function drawTv(tick, u) {
   if (rainy()) rain(ctx, now)
   // [Sprint 31 C2] The light: the floodlights' sheen on the grass at night (the sun's warmth by day), and the
   // picture's edges darkened as a camera's lens does. Painted once for the box's size, then laid over every frame.
-  const key = `${cw}x${ch}|${night}|${smooth.value}`
+  const key = `${cw}x${ch}|${night}|${tier.value}`
   if (!lightCv || lightKey !== key) {
     lightKey = key; lightCv = document.createElement('canvas'); lightCv.width = cw; lightCv.height = ch
     const l = lightCv.getContext('2d')
