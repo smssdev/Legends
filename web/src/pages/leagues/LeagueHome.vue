@@ -16,6 +16,8 @@ import UiButton from '../../components/ui/UiButton.vue'
 import UiCard from '../../components/ui/UiCard.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import { money, strength } from '../../lib/format'
+import { t } from '../../lib/i18n'
+import { useToast } from '../../stores/toast'
 import AdSlot from '../../components/ads/AdSlot.vue'
 import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 
@@ -61,6 +63,20 @@ async function decide(r: JoinRequest, approve: boolean) {
   } catch (e) {
     error.value = asApiError(e).message
   }
+}
+
+// [X91] All the waiting requests at once, one after the other (a full league stops at the first that does not fit).
+const approvingAll = ref(false)
+async function approveAll() {
+  approvingAll.value = true
+  let n = 0
+  for (const r of [...waiting.value]) {
+    await decide(r, true)
+    if (error.value) break
+    n++
+  }
+  approvingAll.value = false
+  if (n) useToast().show(t('وافقت على {v0} طلب.', { v0: n }), 'success')
 }
 
 // The invite (Sprint 14 B2): the link opens the join screen with the code, and WhatsApp shows its card.
@@ -374,7 +390,10 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       </UiCard>
 
       <UiCard v-if="section === 'coaches' && league.is_owner" :title="$t('طلبات الانضمام')">
-        <template #action><UiChip v-if="waiting.length" tone="live">{{ $t('{v0} بانتظارك', { v0: waiting.length }) }}</UiChip></template>
+        <template #action><span class="flex items-center gap-2">
+          <UiChip v-if="waiting.length" tone="live">{{ $t('{v0} بانتظارك', { v0: waiting.length }) }}</UiChip>
+          <UiButton v-if="waiting.length > 1" :loading="approvingAll" @click="approveAll">{{ $t('وافق على الكل') }}</UiButton>
+        </span></template>
         <p v-if="!requests.length" class="text-sm text-text-muted">{{ $t('لا طلبات بعد. شارك الكود ليصل أصحابك.') }}</p>
         <ul v-else class="flex flex-col gap-2">
           <li v-for="r in requests" :key="r.id" class="flex min-h-touch flex-wrap items-center gap-3 rounded-lg bg-surface-sunk p-3">

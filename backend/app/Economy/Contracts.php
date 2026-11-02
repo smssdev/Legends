@@ -109,6 +109,33 @@ class Contracts
         });
     }
 
+    /**
+     * [X91] Renew, for one season more, every contract ending this season (the loaned left out), in one request: each
+     * player his own renewal and its own entry. Stops at the first that cannot be paid; the count renewed comes back.
+     */
+    public static function renewEnding(object $club): int
+    {
+        $season = League::find($club->league_id)->season;
+        $ids = DB::table('players')->where('club_id', $club->id)
+            ->where(fn ($q) => $q->whereNull('contract_until')->orWhere('contract_until', '<=', (int) $season->number))
+            ->whereNotIn('id', DB::table('player_loans')->where('status', 'active')->select('player_id'))
+            ->orderByDesc('value')->pluck('id')->all();
+        $n = 0;
+        foreach ($ids as $id) {
+            try {
+                self::renew($club, (int) $id, 1);
+            } catch (HttpException $e) {
+                if ($n === 0) {
+                    throw $e;
+                }
+                break;
+            }
+            $n++;
+        }
+
+        return $n;
+    }
+
     /** The squad's contracts: each player's wage and what ending it costs, the wages, the cap and the room left. */
     public static function view(object $club, object $season): array
     {

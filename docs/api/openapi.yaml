@@ -1874,6 +1874,17 @@ paths:
         '404': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/contracts/renew-ending:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [team]
+      summary: '[X91] Renew every contract ending this season for one season more, in one request; stops at the first that cannot be paid'
+      responses:
+        '200':
+          description: How many were renewed, and the contracts after it
+          content: { application/json: { schema: { allOf: [{ $ref: '#/components/schemas/Contracts' }, { type: object, required: [renewed], properties: { renewed: { type: integer } } }] } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/market/academy:
     parameters: [{ $ref: '#/components/parameters/League' }]
     get:

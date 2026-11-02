@@ -2,11 +2,17 @@
 // Trades between coaches (Sprint 25 W1), inside the market: the transfer list, my offers in and out, and the
 // composer for a new offer or a counter. Every rule (the fair range, the season limits) is checked by the API,
 // which answers in Arabic; the screen only gathers the terms.
+// [X91] Simpler (the owner's request): «عرض سريع» from the list sends his asking price in one tap (with «تراجع» to
+// withdraw it); the composer starts at the fair money for what is chosen, with chips for it, +10% and +25%, and says
+// at once whether the offer is in the allowed range. Every action through lib/action (its button waits, a toast).
 import UiSlider from '../../components/ui/UiSlider.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
+import { act, busy as isBusy } from '../../lib/action'
+import { nm } from '../../lib/names'
+import { t as tr } from '../../lib/i18n'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import { count, money, type Line } from '../../lib/format'
@@ -19,8 +25,6 @@ const emit = defineEmits<{ changed: [] }>()
 
 const t = ref<T | null>(null)
 const error = ref('')
-const notice = ref('')
-const busy = ref(false)
 const STATUS: Record<string, string> = { pending: 'بانتظار الرد', accepted: 'تمت', rejected: 'رُفض', countered: 'رُد عليه بعرض', cancelled: 'أُلغي', expired: 'انتهت مدته' }
 const path = computed(() => ({ path: { league: props.leagueId } }))
 
@@ -33,29 +37,21 @@ async function load() {
   }
 }
 
-async function run(label: string, fn: () => Promise<unknown>) {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    await fn()
-    notice.value = label
-    await load()
-    emit('changed')
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+async function run<R>(key: string, fn: () => Promise<R>, o: Parameters<typeof act<R>>[2] = {}) {
+  const r = await act(key, fn, o)
+  if (r !== undefined) { await load(); emit('changed') }
+  return r
 }
+const withdraw = (id: number) => api.POST('/leagues/{league}/transfers/offers/{offer}/cancel' as any, { params: { path: { league: props.leagueId, offer: id } } }).then(load)
 
 // [X84] Listing a player is in «بيع لاعبيّ» only (SellPanel.vue).
 
 // ---------------------------------------------------------------- the composer
 type Squad = { id: number; name: string; position: string; line: string; overall: number; value: number }
-const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, sellOn: 0, in: [] as number[], out: [] as number[] })
+const draft = reactive({ open: false, to: 0, toName: '', counterOf: 0, money: 0, sellOn: 0, in: [] as number[], out: [] as number[], touched: false, more: false })
 const theirs = ref<Squad[]>([])
 async function compose(to: number, toName: string, opts: { in?: number[]; out?: number[]; money?: number; counterOf?: number } = {}) {
-  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, sellOn: 0, in: opts.in ?? [], out: opts.out ?? [] })
+  Object.assign(draft, { open: true, to, toName, counterOf: opts.counterOf ?? 0, money: opts.money ?? 0, sellOn: 0, in: opts.in ?? [], out: opts.out ?? [], touched: !!opts.money, more: false })
   theirs.value = []
   try {
     const { data } = await api.GET('/leagues/{league}/clubs/{club}', { params: { path: { league: props.leagueId, club: to } } })
@@ -67,31 +63,63 @@ async function compose(to: number, toName: string, opts: { in?: number[]; out?: 
 const toggle = (list: number[], id: number) => (list.includes(id) ? list.splice(list.indexOf(id), 1) : list.length < 5 && list.push(id))
 const wantValue = computed(() => theirs.value.filter((p) => draft.in.includes(p.id)).reduce((s, p) => s + p.value, 0))
 const giveValue = computed(() => props.mine.filter((p) => draft.out.includes(p.id)).reduce((s, p) => s + p.value, 0))
-function send() {
+// The allowed range (the API's rule, said here before sending): what I give, money and players, from half to twice
+// the value of what I ask for.
+const fair = computed(() => Math.max(0, wantValue.value - giveValue.value))
+const range = computed(() => ({ min: Math.max(0, Math.ceil(wantValue.value / 2) - giveValue.value), max: Math.max(0, wantValue.value * 2 - giveValue.value) }))
+const inRange = computed(() => !draft.in.length || ((draft.money || 0) >= range.value.min && (draft.money || 0) <= range.value.max))
+const presets = computed(() => [
+  { label: 'السعر العادل', v: fair.value },
+  { label: '+10%', v: Math.round((fair.value * 11) / 10 / 1000) * 1000 },
+  { label: '+25%', v: Math.round((fair.value * 5) / 4 / 1000) * 1000 },
+].filter((x, i, a) => x.v <= range.value.max && a.findIndex((y) => y.v === x.v) === i))
+// Until the coach types his own number, the money follows the fair price of what is chosen.
+watch(fair, (v) => { if (draft.open && !draft.touched) draft.money = v })
+const pick = (v: number) => { draft.money = v; draft.touched = true }
+const sendKey = computed(() => `offer:${draft.to}`)
+async function send() {
   const body = { money: draft.money || 0, in: draft.in, out: draft.out, idempotency_key: crypto.randomUUID() }
-  const label = draft.counterOf ? `أُرسل ردك إلى ${draft.toName}.` : `أُرسل عرضك إلى ${draft.toName}.`
-  run(label, () => draft.counterOf
+  const name = nm(draft.toName)
+  const r = await run(sendKey.value, () => (draft.counterOf
     ? api.POST('/leagues/{league}/transfers/offers/{offer}/counter', { params: { path: { league: props.leagueId, offer: draft.counterOf } }, body })
-    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to, sell_on_bp: draft.sellOn * 100 } })).then(() => { if (!error.value) draft.open = false })
+    : api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { ...body, to_club_id: draft.to, sell_on_bp: draft.sellOn * 100 } })) as Promise<{ data?: { offer?: Offer } }>, {
+    success: draft.counterOf ? tr('أُرسل ردك إلى {v0}.', { v0: name }) : tr('أُرسل عرضك إلى {v0}.', { v0: name }),
+  })
+  if (r !== undefined) draft.open = false
+}
+// [X91] One tap from the list: his asking price for him alone; «تراجع» withdraws it.
+type Listing = T['listings'][number]
+function quick(l: Listing) {
+  let id = 0
+  return run(`quick:${l.player.id}`, async () => {
+    const r = await api.POST('/leagues/{league}/transfers/offers', { params: path.value, body: { to_club_id: l.club.id, money: l.price, in: [l.player.id], out: [], sell_on_bp: 0, idempotency_key: crypto.randomUUID() } })
+    id = (r as { data?: { offer?: Offer } }).data?.offer?.id ?? 0
+    return r
+  }, {
+    success: tr('أُرسل عرضك {v0} على {v1} إلى {v2}.', { v0: money(l.price), v1: nm(l.player.name), v2: nm(l.club.name) }),
+    undo: () => (id ? withdraw(id) : Promise.resolve()),
+  })
 }
 // A counter: I want what he offered of his, and I give what he asked of mine.
 const counter = (o: Offer) => compose(o.from.id, o.from.name, { counterOf: o.id, in: o.out.map((p) => p.id), out: o.in.map((p) => p.id), money: 0 })
-const decide = (o: Offer, what: 'accept' | 'reject' | 'cancel') => run(
-  { accept: 'تمت الصفقة.', reject: 'رُفض العرض.', cancel: 'سُحب العرض.' }[what],
-  () => api.POST(`/leagues/{league}/transfers/offers/{offer}/${what}` as any, { params: { path: { league: props.leagueId, offer: o.id } } }),
-)
+// Accepting cannot be undone (the players move): asked first; rejecting and withdrawing go at once.
+const decide = (o: Offer, what: 'accept' | 'reject' | 'cancel') => run(`deal:${o.id}`,
+  () => api.POST(`/leagues/{league}/transfers/offers/{offer}/${what}` as any, { params: { path: { league: props.leagueId, offer: o.id } } }), {
+    success: tr({ accept: 'تمت الصفقة.', reject: 'رُفض العرض.', cancel: 'سُحب العرض.' }[what]),
+    confirm: what === 'accept' ? { title: tr('تقبل عرض {v0}؟', { v0: nm(o.from.name) }), text: tr('تنتقل الأموال واللاعبون الآن، ولا تراجع بعد القبول.'), action: tr('قبول'), tone: 'gold' } : undefined,
+  })
+const busy = (key: string) => isBusy(key)
 const pending = computed(() => (t.value?.offers ?? []).filter((o) => o.status === 'pending'))
 const done = computed(() => (t.value?.offers ?? []).filter((o) => o.status !== 'pending'))
 const hours = (iso: string) => Math.max(0, Math.round((new Date(iso).getTime() - Date.now()) / 3_600_000))
 
-watch(() => props.view, () => (notice.value = error.value = ''))
+watch(() => props.view, () => (error.value = ''))
 onMounted(load)
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
 
     <template v-if="t && view === 'list'">
       <section :aria-label="$t('قائمة الانتقالات')" class="rounded-xl bg-surface p-2">
@@ -103,7 +131,10 @@ onMounted(load)
             <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(l.player.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} · {v2} سنة · قيمته {v3}', { v0: $nm(l.club.name), v1: l.player.position, v2: l.player.age, v3: money(l.player.value) }) }}</span></span>
             <span class="w-10 text-center font-numbers text-xl">{{ l.player.overall }}</span>
             <span class="w-20 text-end font-numbers text-lg font-bold" dir="ltr">{{ money(l.price) }}</span>
-            <button type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!t.closed" @click="compose(l.club.id, l.club.name, { in: [l.player.id], money: l.price })">{{ $t('قدّم عرضاً') }}</button>
+            <span class="flex flex-col gap-1 sm:flex-row">
+              <button type="button" class="h-touch rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="!!t.closed || busy(`quick:${l.player.id}`)" :title="$t('عرض بسعره مباشرة')" @click="quick(l)">{{ busy(`quick:${l.player.id}`) ? '...' : $t('اشترِه بسعره') }}</button>
+              <button type="button" class="h-touch rounded-md border border-gold/60 px-3 text-sm font-bold text-gold disabled:opacity-40" :disabled="!!t.closed" @click="compose(l.club.id, l.club.name, { in: [l.player.id], money: l.price })">{{ $t('فاوض') }}</button>
+            </span>
           </li>
         </ul>
       </section>
@@ -140,11 +171,11 @@ onMounted(load)
         </div>
         <div v-if="o.status === 'pending'" class="flex flex-wrap gap-2">
           <template v-if="o.incoming">
-            <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy || !!t.closed" @click="decide(o, 'accept')">{{ $t('قبول') }}</button>
-            <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold" :disabled="busy" @click="counter(o)">{{ $t('تفاوض') }}</button>
-            <button type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy" @click="decide(o, 'reject')">{{ $t('رفض') }}</button>
+            <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy(`deal:${o.id}`) || !!t.closed" @click="decide(o, 'accept')">{{ $t('قبول') }}</button>
+            <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold" :disabled="busy(`deal:${o.id}`)" @click="counter(o)">{{ $t('تفاوض') }}</button>
+            <button type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy(`deal:${o.id}`)" @click="decide(o, 'reject')">{{ $t('رفض') }}</button>
           </template>
-          <button v-else type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy" @click="decide(o, 'cancel')">{{ $t('اسحب العرض') }}</button>
+          <button v-else type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy(`deal:${o.id}`)" @click="decide(o, 'cancel')">{{ $t('اسحب العرض') }}</button>
         </div>
       </article>
     </template>
@@ -160,7 +191,8 @@ onMounted(load)
             </UiToggle>
           </div>
         </div>
-        <div>
+        <button v-if="!draft.more && !draft.counterOf && !draft.out.length" type="button" class="h-touch self-start rounded-md bg-surface-raised px-4 text-sm font-bold" @click="draft.more = true">{{ $t('أضف لاعبين منك أو نسبة من بيعه القادم') }}</button>
+        <div v-if="draft.more || draft.counterOf || draft.out.length">
           <h3 class="mb-1 text-sm font-bold">{{ $t('تعطيه من فريقك (اختياري)') }}</h3>
           <div class="flex max-h-40 flex-col overflow-y-auto rounded-lg bg-surface-sunk">
             <UiToggle v-for="p in mine" :key="p.id" class="border-b border-text/5 px-2" :model-value="draft.out.includes(p.id)" @update:model-value="toggle(draft.out, p.id)">
@@ -168,16 +200,27 @@ onMounted(load)
             </UiToggle>
           </div>
         </div>
-        <label class="flex flex-col gap-1 text-sm font-bold">{{ $t('والمال من أموال النادي') }}
-          <input v-model.number="draft.money" type="number" min="0" inputmode="numeric" class="h-touch rounded-md bg-surface-sunk px-3 font-numbers" dir="ltr" />
-        </label>
+        <div class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
+          <label class="flex flex-col gap-1 text-sm font-bold">{{ $t('والمال من أموال النادي') }}
+            <input v-model.number="draft.money" type="number" min="0" inputmode="numeric" class="h-touch rounded-md bg-surface px-3 font-numbers" dir="ltr" @input="draft.touched = true" />
+          </label>
+          <div v-if="draft.in.length" class="flex flex-wrap gap-2" role="group" :aria-label="$t('مبالغ جاهزة')">
+            <button v-for="x in presets" :key="x.label" type="button" class="h-9 rounded-pill px-3 text-xs font-bold"
+              :class="draft.money === x.v ? 'bg-gold text-on-gold' : 'bg-surface text-text-soft hover:bg-surface-raised'" @click="pick(x.v)">
+              {{ $t(x.label) }} <bdi dir="ltr" class="font-numbers">{{ money(x.v) }}</bdi>
+            </button>
+          </div>
+          <p v-if="draft.in.length" class="text-xs" :class="inRange ? 'text-success' : 'text-danger'" role="status">
+            {{ inRange ? $t('عرض مقبول في الحدود: المال من {v0} إلى {v1}.', { v0: money(range.min), v1: money(range.max) }) : $t('خارج الحدود: المال من {v0} إلى {v1}.', { v0: money(range.min), v1: money(range.max) }) }}
+          </p>
+        </div>
         <!-- [X62] The sell-on clause: a share of the next sale promised to the other coach (a new offer only). -->
-        <label v-if="!draft.counterOf" class="flex flex-col gap-1 text-sm font-bold">{{ $t('نسبة له من بيعك القادم لهم (اختياري)') }}
+        <label v-if="!draft.counterOf && draft.more" class="flex flex-col gap-1 text-sm font-bold">{{ $t('نسبة له من بيعك القادم لهم (اختياري)') }}
           <span class="flex items-center gap-2"><UiSlider v-model="draft.sellOn" :max="20" :step="5" label="نسبة من البيع القادم" :value-text="`${draft.sellOn}%`" class="flex-1" /><b class="w-12 text-center font-numbers" dir="ltr">{{ draft.sellOn }}%</b></span>
         </label>
-        <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}. المسموح: من 50% إلى 200% من قيمة ما تطلب.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
+        <p class="text-xs text-text-muted">{{ $t('تطلب لاعبين قيمتهم {v0}، وتعطي {v1}.', { v0: money(wantValue), v1: money(giveValue + (draft.money || 0)) }) }}</p>
         <div class="flex gap-2">
-          <button type="button" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || !draft.in.length" @click="send">{{ draft.counterOf ? $t('أرسل الرد') : $t('أرسل العرض') }}</button>
+          <button type="button" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy(sendKey) || !draft.in.length || !inRange" @click="send">{{ draft.counterOf ? $t('أرسل الرد') : $t('أرسل العرض') }}</button>
           <button type="button" class="h-12 rounded-md bg-surface-raised px-5" @click="draft.open = false">{{ $t('إلغاء') }}</button>
         </div>
       </section>
