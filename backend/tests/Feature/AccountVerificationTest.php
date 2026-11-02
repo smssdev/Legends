@@ -22,7 +22,7 @@ class AccountVerificationTest extends TestCase
         $this->assertArrayNotHasKey('whatsapp', $me);
         $this->assertSame(0, Wallet::balance($coach->id));
 
-        // A developer issues the code from the admin panel, signed in (Sprint 38 A1: no second step).
+        // A developer issues the code from the admin panel, signed in (Sprint 39 A1: no second step).
         $admin = User::factory()->create(['role' => 'admin']);
         // The admin panel is the site's: a request from it carries a session (Sanctum's stateful domains).
         $this->withHeader('Referer', config('app.url'));

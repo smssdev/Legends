@@ -1074,9 +1074,9 @@ export interface paths {
                             };
                             /** @description The width (y) a player may be dragged to, [from, to] */
                             across: number[];
-                            /** @description [Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 38 E1) */
+                            /** @description [Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1) */
                             off_line_bp: number;
-                            /** @description [Sprint 38 E1] What an outfield player gives two lines away (a defender up front), bp */
+                            /** @description [Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp */
                             far_line_bp: number;
                         };
                     };
@@ -6329,7 +6329,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** [Sprint 38 A1] What this admin may open (signed in with the password alone: no two-step code) */
+        /** [Sprint 39 A1] What this admin may open (signed in with the password alone: no two-step code) */
         get: {
             parameters: {
                 query?: never;

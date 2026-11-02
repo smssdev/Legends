@@ -37,7 +37,7 @@ function setView(v: 'list' | 'cards') {
   try { localStorage.setItem('legends.squadView', v) } catch {}
 }
 onMounted(load)
-// [Sprint 38 S1] A player sold or listed from his card: the word, and the squad again.
+// [Sprint 39 S1] A player sold or listed from his card: the word, and the squad again.
 const toast = useToast()
 async function sold(text: string) {
   open.value = null
@@ -52,7 +52,7 @@ const starters = computed(() => (team.value?.players ?? []).filter((p) => p.role
 const average = computed(() => (starters.value.length ? Math.round(starters.value.reduce((n, p) => n + p.overall, 0) / starters.value.length) : null))
 const best = computed(() => [...(team.value?.players ?? [])].sort((a, b) => b.overall - a.overall)[0] ?? null)
 // [Sprint 21 E3.5] The list by line, each under its own heading: keepers, defenders, midfield, attack.
-// [Sprint 38 S2] Each line's divider: its name and its letters, as the coach knows them.
+// [Sprint 39 S2] Each line's divider: its name and its letters, as the coach knows them.
 const LINE_TITLE = { gk: 'حراسة المرمى · GK', def: 'خط الدفاع · DEF', mid: 'خط الوسط · MID', att: 'خط الهجوم · FWD' } as const
 const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
 
@@ -60,7 +60,7 @@ function status(p: SquadPlayer) {
   if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-danger' }
   if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-danger' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
-  // The fatigue lines [Sprint 38 E2]: from 90% full, from 75% slower, under 75% a sharp drop and twice the injuries.
+  // The fatigue lines [Sprint 39 E2]: from 90% full, from 75% slower, under 75% a sharp drop and twice the injuries.
   if (p.fitness < 75) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
   if (p.fitness < 90) return { text: 'متعب', tone: 'text-warning' }
   return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
@@ -137,7 +137,7 @@ function status(p: SquadPlayer) {
       </div>
       </div>
 
-      <!-- The cards, five or six a row on the computer. [Sprint 38 S2] By line like the list: keepers, defence,
+      <!-- The cards, five or six a row on the computer. [Sprint 39 S2] By line like the list: keepers, defence,
            midfield, attack, each under its own divider. -->
       <div v-if="view === 'cards'" class="flex flex-col gap-5">
         <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-2" :aria-label="$t(LINES[grp.line].plural)">
@@ -199,7 +199,7 @@ function status(p: SquadPlayer) {
 </template>
 
 <style scoped>
-/* [Sprint 38 S2] A line's divider: its colour first, then a hairline across to the end. */
+/* [Sprint 39 S2] A line's divider: its colour first, then a hairline across to the end. */
 .line-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--line)); opacity: 0.5; }
 :dir(rtl) .line-divider::after { background: linear-gradient(to right, transparent, var(--line)); }
 </style>

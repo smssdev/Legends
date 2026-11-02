@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // A player's card (Sprint 16 W1), after the draft MobilePlayer: rating and line, the attributes with bars,
 // fitness, room to grow and value. [Sprint 20 W9] A sheet from the bottom on the phone, a panel from the side on the
-// computer, so the list behind stays where it was; and its actions: train him, or sell him. [Sprint 38 S1] Selling is
+// computer, so the list behind stays where it was; and its actions: train him, or sell him. [Sprint 39 S1] Selling is
 // right here (the market's own panel, market/SellPanel.vue), without going to the market; buying stays in the market.
 import { ref } from 'vue'
 import { api, asApiError } from '../../api/client'
@@ -82,7 +82,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">
         {{ player.injured_matches ? $t('مصاب: يغيب {v0} مباريات', { v0: player.injured_matches }) : $t('موقوف: {v0} مباريات', { v0: player.suspended_matches }) }}
       </p>
-      <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 38 S1]. -->
+      <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 39 S1]. -->
       <div class="grid grid-cols-2 gap-2">
         <RouterLink :to="{ name: 'training' }" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold" @click="$emit('close')">{{ $t('درّبه') }}</RouterLink>
         <button type="button" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning disabled:opacity-40" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : $t('بيع اللاعب') }}</button>

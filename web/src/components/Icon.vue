@@ -39,7 +39,7 @@ export const PATHS = {
   // [Sprint 29] The chat groups and the tournaments.
   chat: 'M4 5h16v10H9l-5 4zM8 9h8M8 12h5',
   trophy: 'M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6',
-  // [Sprint 38 N2] The notification sound on the top bar: on, and muted.
+  // [Sprint 39 N2] The notification sound on the top bar: on, and muted.
   sound: 'M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12',
   muted: 'M4 9v6h4l5 4V5L8 9zM17 9l5 6M22 9l-5 6',
 } as const

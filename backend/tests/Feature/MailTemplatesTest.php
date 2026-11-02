@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
-/** [Sprint 38 M1-M3] The game's emails share one frame, in Arabic (right to left) or English. */
+/** [Sprint 39 M1-M3] The game's emails share one frame, in Arabic (right to left) or English. */
 class MailTemplatesTest extends TestCase
 {
     use RefreshDatabase;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 38 N2] The notification sound on the top bar: one tap mutes it, another turns it on (and plays it once, so the
+// [Sprint 39 N2] The notification sound on the top bar: one tap mutes it, another turns it on (and plays it once, so the
 // coach hears what it is). The same switch as the account page's (lib/tone.ts), kept on this device.
 import Icon from '../Icon.vue'
 import { setTone, toneOn } from '../../lib/tone'

@@ -499,8 +499,8 @@ paths:
                     description: The depth (x) a player of each line may be dragged to, [from, to]
                     additionalProperties: { type: array, items: { type: integer } }
                   across: { type: array, items: { type: integer }, description: 'The width (y) a player may be dragged to, [from, to]' }
-                  off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 38 E1)' }
-                  far_line_bp: { type: integer, description: '[Sprint 38 E1] What an outfield player gives two lines away (a defender up front), bp' }
+                  off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1)' }
+                  far_line_bp: { type: integer, description: '[Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp' }
   /health:
     get:
       tags: [system]
@@ -2449,7 +2449,7 @@ paths:
   /admin/access:
     get:
       tags: [admin]
-      summary: '[Sprint 38 A1] What this admin may open (signed in with the password alone: no two-step code)'
+      summary: '[Sprint 39 A1] What this admin may open (signed in with the password alone: no two-step code)'
       responses:
         '200': { description: The access, content: { application/json: { schema: { $ref: '#/components/schemas/AdminAccess' } } } }
         '403': { $ref: '#/components/responses/Error' }

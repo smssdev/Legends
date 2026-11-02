@@ -311,7 +311,7 @@ final class MatchEngine
         // The plan against the shape moves the odds of getting through and of making the chance, never the players
         // [Sprint 21 E5.4]. Long shots skip the chance, so their one gate carries both.
         $matchup = (int) ($this->eng['matchup_bp'][$this->planKey($plan)][self::shape($td)] ?? 0);
-        // [Sprint 38 E4] The plan with the formation that suits it, and a defence whose settings pull it apart.
+        // [Sprint 39 E4] The plan with the formation that suits it, and a defence whose settings pull it apart.
         $synergy = $counter ? 0 : $this->synergy($atk, $plan);
         $gaps = $this->gaps($def);
         $a = $this->ability($atk, $mix, Ability::LINES[$mix]) - $tempoLoss + $this->posMod($ta, 'progress')
@@ -334,7 +334,7 @@ final class MatchEngine
 
         if ($trapped) {
             $paceGap = $this->lineAttr($def, 'def', 'pac') - $this->lineAttr($atk, 'att', 'pac');
-            // [Sprint 38 E5] A high line of three under a high press springs it; a deep four or five that tries it breaks.
+            // [Sprint 39 E5] A high line of three under a high press springs it; a deep four or five that tries it breaks.
             $deep = $this->count($def, 'def') >= 4 && $td['pressing'] < 50;
             $high = $this->count($def, 'def') <= 3 && $td['pressing'] >= 60;
             $trapP = (int) $this->eng['trap_base_bp'] + $paceGap * 40
@@ -477,7 +477,7 @@ final class MatchEngine
     }
 
     /**
-     * Marking [Sprint 38 E5]: the zone holds while the back line outnumbers the forwards, and is stretched when it does
+     * Marking [Sprint 39 E5]: the zone holds while the back line outnumbers the forwards, and is stretched when it does
      * not; man to man pays when the defenders are as many as the forwards and quicker and stronger than them, and is
      * beaten one on one when they are not.
      */
@@ -503,7 +503,7 @@ final class MatchEngine
     }
 
     /**
-     * [Sprint 38 E4] A plan with the formation built for it (the owner's simulation file): three up for the wings, four
+     * [Sprint 39 E4] A plan with the formation built for it (the owner's simulation file): three up for the wings, four
      * in midfield and two up for passing, five in midfield for long shots, five at the back for counters, four up for
      * long balls. A back three suits the wings and passing nearly as well. And the plans that clash with a formation
      * (long shots with three up, wings with one, passing or long balls with a crowded midfield skipped, passing with
@@ -527,7 +527,7 @@ final class MatchEngine
     }
 
     /**
-     * [Sprint 38 E4] The golden triangle: settings that pull a side apart leave gaps for the other's progress. Pressing
+     * [Sprint 39 E4] The golden triangle: settings that pull a side apart leave gaps for the other's progress. Pressing
      * and attacking style far apart split the lines; a back five pushed into a high press and an all-out attack opens;
      * a back three sitting deep gives the space it cannot cover.
      */
@@ -547,7 +547,7 @@ final class MatchEngine
         return min((int) $g['max_bp'], $bp);
     }
 
-    /** [Sprint 38 E4] Counters need space: a counter side pressing high wins the ball where there is none to run into. */
+    /** [Sprint 39 E4] Counters need space: a counter side pressing high wins the ball where there is none to run into. */
     private function counterPlan(array $t, int $bp): int
     {
         $over = max(0, $t['pressing'] - (int) $this->eng['counter_press_from']);
@@ -584,7 +584,7 @@ final class MatchEngine
 
         $this->stat($def, 'fouls');
         $this->rate($def, $fouler, -5, 'fouls');
-        // [Sprint 38 E3] A side down in morale gives penalties away more easily.
+        // [Sprint 39 E3] A side down in morale gives penalties away more easily.
         $defMorale = $this->s['teams'][$def]['morale'] ?? 50;
         $share = intdiv((int) $this->eng['penalty_share_bp'] * (10000 + max(0, 50 - $defMorale) * (int) $this->eng['morale_penalty_bp']), 10000);
         $penalty = $where === 'create' && $this->rng->chance(intdiv($share * $this->leaning($atk, 'penalty'), 10000));
@@ -663,7 +663,7 @@ final class MatchEngine
         $save = $keeper ? Ability::player($keeper, 'keep') : 3000;
 
         $base = (int) $this->eng['goal_base_bp'][$quality];
-        // [Sprint 38 E3] Morale up finishes the chances; morale down misses them.
+        // [Sprint 39 E3] Morale up finishes the chances; morale down misses them.
         $moraleNow = $this->s['teams'][$atk]['morale'] ?? null;
         $base += $moraleNow === null ? 0 : ($moraleNow - 50) * (int) $this->eng['morale_finish_bp'];
         $goalP = max(150, min(8500, $base + intdiv(($shot - $save) * (int) $this->eng['goal_slope_bp'], 100)));

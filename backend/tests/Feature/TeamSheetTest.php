@@ -122,7 +122,7 @@ class TeamSheetTest extends TestCase
         $this->putJson("{$this->url}/lineup", ['formation' => '3-5-2B', 'starters' => $keeperOut, 'bench' => []])->assertUnprocessable()
             ->assertJsonPath('errors.starters.0', DB::table('master_players')->join('players', 'players.master_player_id', '=', 'master_players.id')->where('players.id', $keepers[0])->value('master_players.name').' حارس مرمى: مكانه في المرمى أو على الدكة.');
         $this->getJson('/api/v1/data/formations')->assertOk()->assertJsonPath('off_line_bp', 7000)->assertJsonPath('far_line_bp', 5000);
-        // [X2, Sprint 38 E1] Each player's share in every line, from the engine: his own in full, the next line 70%, two lines
+        // [X2, Sprint 39 E1] Each player's share in every line, from the engine: his own in full, the next line 70%, two lines
         // away 50%, the goal 40% (a striker: midfield next, defence two lines back; his second positions may be in full).
         $place = collect($this->getJson($this->url)->json('players'))->firstWhere('id', $striker['id'])['place_bp'];
         $this->assertSame([4000, 10000], [$place['gk'], $place['att']]);

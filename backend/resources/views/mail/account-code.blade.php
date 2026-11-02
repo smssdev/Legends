@@ -1,4 +1,4 @@
-{{-- The verification code email [Sprint 21 E2.4], in the shared frame [Sprint 38 M1]. --}}
+{{-- The verification code email [Sprint 21 E2.4], in the shared frame [Sprint 39 M1]. --}}
 @extends('mail.layout')
 @php($align = $en ? 'left' : 'right')
 @section('title'){{ $en ? 'Your verification code' : 'كود توثيق حسابك' }}@endsection

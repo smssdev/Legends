@@ -39,7 +39,7 @@ const FAQ = [
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
         <img :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
-        <!-- [Sprint 38 B1] The official name over the promise, the Arabic one under it in Arabic. -->
+        <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. -->
         <p class="flex flex-col items-center leading-tight">
           <span class="font-display text-2xl font-extrabold uppercase tracking-[0.12em] md:text-3xl" dir="ltr">Game Legend <span class="text-gold">Manager</span></span>
           <span v-if="locale === 'ar'" class="text-sm font-bold text-text-soft">المدرب الأسطورة</span>

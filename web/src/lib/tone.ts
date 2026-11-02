@@ -1,7 +1,7 @@
 // The game's notification tone [Sprint 21 E3.6] (tools/web/notify_tone.py, public/sounds/notify.ogg and .mp3): short and
 // calm, played on the game's events while it is open: a message, a code, an offer, a player sold, a match report
 // (stores/inbox.ts), and a match kicking off (layouts/AppShell.vue). On this device, kept in its storage.
-// [Sprint 38 N1] Browsers play no sound before the coach's first tap on the page (their autoplay policy): the first tap
+// [Sprint 39 N1] Browsers play no sound before the coach's first tap on the page (their autoplay policy): the first tap
 // anywhere, or «فعّلها» in the activation card (components/shell/SoundPrompt.vue), unlocks it; until then it stays silent
 // and nothing fails. The card asks once; the top bar's speaker (SoundToggle.vue) mutes or unmutes it at any time.
 import { ref } from 'vue'

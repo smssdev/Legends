@@ -74,7 +74,7 @@ final class Ability
     }
 
     /**
-     * Fitness effect in basis points [Sprint 38 E2, the owner's simulation file]: full from 90%; from 80% to 90% five to
+     * Fitness effect in basis points [Sprint 39 E2, the owner's simulation file]: full from 90%; from 80% to 90% five to
      * ten per cent less; from 75% to 80% up to fifteen; under 75% a sharp drop, down to a quarter less at 50% and under.
      */
     public static function fitness(int $fit): int
@@ -88,7 +88,7 @@ final class Ability
     }
 
     /**
-     * Out-of-position penalty [Sprint 38 E1, the owner's simulation file]: none in the player's line; 30% off one line
+     * Out-of-position penalty [Sprint 39 E1, the owner's simulation file]: none in the player's line; 30% off one line
      * away (a defender in midfield, a midfielder up front), 50% off two lines away (a defender up front); a keeper out
      * of goal, or an outfield player in it, 60% off.
      */

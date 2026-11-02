@@ -73,7 +73,7 @@ const running = computed(() => board.board?.timers.filter((t) => ['training', 's
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
 watch(() => route.fullPath, () => { portal.value = null })
 
-// [Sprint 38 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
+// [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
 // report's message, stores/inbox.ts). Only within the next hours; a new board moves the timer.
 const toast = useToast()
 let kickoff = 0
@@ -102,7 +102,7 @@ onBeforeUnmount(() => sizer?.disconnect())
 <template>
   <div class="min-h-dvh" :style="{ '--shell-header': headerHeight + 'px' }">
     <ToastHost />
-    <!-- [Sprint 38 N1] Asked once a device: the game's sound and notifications. -->
+    <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
     <SoundPrompt v-if="auth.user" />
     <header ref="header" class="sticky top-0 z-30">
       <div class="shell-top relative border-b border-shade/30">
@@ -138,7 +138,7 @@ onBeforeUnmount(() => sizer?.disconnect())
                   </Transition>
                 </Popover>
               </template>
-              <!-- [Sprint 38 N2] The notification sound: on or muted, one tap. -->
+              <!-- [Sprint 39 N2] The notification sound: on or muted, one tap. -->
               <SoundToggle :class="inSlot ? 'max-sm:hidden' : ''" />
               <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->
               <RouterLink to="/inbox" class="bar-icon" :class="inSlot ? 'max-sm:hidden' : ''" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">

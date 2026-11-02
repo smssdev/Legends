@@ -1,10 +1,10 @@
 // What Google reads on each page: the title, the description, the keywords and whether it is indexed. One table for
 // the build (vite.config.ts writes sitemap.xml, robots.txt and a page per public route with its tags in its <head>)
 // and for the browser (src/lib/seo.ts keeps the tags right as the coach moves and switches the language).
-// [Sprint 38 B1] The game's official name is Game Legend Manager, in every language; in Arabic «المدرب الأسطورة» follows it.
+// [Sprint 39 B1] The game's official name is Game Legend Manager, in every language; in Arabic «المدرب الأسطورة» follows it.
 
 /**
- * The site's address [X70, Sprint 38 B3]: one setting, PUBLIC_URL on the server, which the image's build passes here as
+ * The site's address [X70, Sprint 39 B3]: one setting, PUBLIC_URL on the server, which the image's build passes here as
  * VITE_SITE_URL (Dockerfile, deploy/vps/compose.yml), so moving to gamelegendmanager.online is a server setting and a
  * deploy. The build (Vite, in the browser) and scripts/seo.mjs (Node, after it) read it each their own way.
  */
@@ -24,7 +24,7 @@ export interface PageSeo {
 }
 
 // The words players type, shared by every page.
-// [Sprint 38 B2] The owner's words first (simple and compound searches), in both languages on every page: a search in
+// [Sprint 39 B2] The owner's words first (simple and compound searches), in both languages on every page: a search in
 // either language finds the game.
 const COMMON = {
   ar: ['Game Legend Manager', 'المدرب الأسطورة', 'لعبة المدرب الأسطورة', 'لعبة مدرب كرة قدم', 'المدرب الأفضل', 'لعبة كرة قدم تكتيكية', 'تدريب أندية أونلاين',

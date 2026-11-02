@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The admin panel (Sprint 37 B2, PLAN 2.17 and 2.22; rebuilt in Sprint 21 E7): the admin only, with the password alone (Sprint 38 A1)
+// The admin panel (Sprint 37 B2, PLAN 2.17 and 2.22; rebuilt in Sprint 21 E7): the admin only, with the password alone (Sprint 39 A1)
 // A side list of sections (a scrolling row on the phone), each one page of its own: the overview,
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
@@ -130,7 +130,7 @@ const allianceNote = ref<Record<number, string>>({})
 const backups = ref<S['AdminBackups']['backups']>([])
 const commentary = ref<{ key: string; count: number; lines: string[] }[]>([])
 
-// [Sprint 38 A1] The panel opens once the admin's access is read: the password alone, no two-step code.
+// [Sprint 39 A1] The panel opens once the admin's access is read: the password alone, no two-step code.
 const open = computed(() => !!state.value)
 const size = (b: number) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.ceil(b / 1024) + ' KB')
 const day = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso))

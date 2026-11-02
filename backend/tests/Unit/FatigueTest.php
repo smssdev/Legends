@@ -6,7 +6,7 @@ use App\Engine\Ability;
 use PHPUnit\Framework\TestCase;
 
 /**
- * [Sprint 38 E1, E2] The owner's simulation file: the fatigue lines (full from 90%, 5% to 10% less from 80%, up to 15%
+ * [Sprint 39 E1, E2] The owner's simulation file: the fatigue lines (full from 90%, 5% to 10% less from 80%, up to 15%
  * less from 75%, a sharp drop to a quarter less under 75%) and the out-of-position penalty (30% one line away, 50% two).
  */
 class FatigueTest extends TestCase

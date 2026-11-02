@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Notification;
  */
 class MailCheck extends Command
 {
-    protected $signature = 'mail:check {to : The address that should receive the test email} {--sample= : Send a designed email instead: code, match, alert or deal [Sprint 38]} {--en : The sample in English}';
+    protected $signature = 'mail:check {to : The address that should receive the test email} {--sample= : Send a designed email instead: code, match, alert or deal [Sprint 39]} {--en : The sample in English}';
 
     protected $description = 'Send a test email and print the result';
 
@@ -44,7 +44,7 @@ class MailCheck extends Command
         return self::SUCCESS;
     }
 
-    /** [Sprint 38 M1] One of the game's designed emails with sample values, to see it in a real inbox. */
+    /** [Sprint 39 M1] One of the game's designed emails with sample values, to see it in a real inbox. */
     private function sample(string $kind, string $to): int
     {
         $en = (bool) $this->option('en');

@@ -1,5 +1,5 @@
 {{--
-  [Sprint 38 M1] Every email of Game Legend Manager in one frame: the game's colours (docs/design/tokens.json: ink #0A1F42,
+  [Sprint 39 M1] Every email of Game Legend Manager in one frame: the game's colours (docs/design/tokens.json: ink #0A1F42,
   gold #F5B82E, chalk #F7F4EA), the name on top with «المدرب الأسطورة» under it in Arabic, and the team's word at the
   foot. Tables and inline styles only: what Gmail, Outlook and the phones' mail apps all show the same.
   Each email sets: $en (English or Arabic), and the sections title, preheader and body.

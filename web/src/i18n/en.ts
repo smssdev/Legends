@@ -2578,7 +2578,7 @@ export const EN: Record<string, string> = {
   'ملخص': 'Recap',
   'شاهد المحاكاة': 'Watch',
   'الجولة الأخيرة · {v0}': 'Last round · {v0}',
-  // [Sprint 38] Selling from the player's card, the squad's line dividers, the referees.
+  // [Sprint 39] Selling from the player's card, the squad's line dividers, the referees.
   '{v0} من أموال النادي': '{v0} of the club\'s money',
   '{v0} ساعات تقريباً': 'about {v0} hours',
   '{v0} ساعة تقريباً': 'about {v0} hours',
@@ -2593,7 +2593,7 @@ export const EN: Record<string, string> = {
   'خط الدفاع · DEF': 'Defence · DEF',
   'خط الوسط · MID': 'Midfield · MID',
   'خط الهجوم · FWD': 'Attack · FWD',
-  // [Sprint 38 N1, N2] The game's sound: the activation card and the top bar's speaker.
+  // [Sprint 39 N1, N2] The game's sound: the activation card and the top bar's speaker.
   'فعّل الأصوات والإشعارات': 'Turn on sounds and notifications',
   'نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي. تكتمها متى شئت من زر السماعة في الأعلى.': 'A short tone when your player is sold, an offer, a message or a code arrives, or your match starts or ends. Mute it any time with the speaker at the top.',
   'نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة': 'A short tone when your player is sold, an offer, a message or a code arrives, or your match starts or ends, while the game is open',

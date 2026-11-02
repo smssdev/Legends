@@ -50,7 +50,7 @@ class TeamSheet
 
     /**
      * [Sprint 27 X2] What a player of this line gives in each line (bp of his ability), from the engine itself
-     * (App\Engine\Ability::position: his own line in full, the next one 70% and two lines away 50% [Sprint 38 E1], the
+     * (App\Engine\Ability::position: his own line in full, the next one 70% and two lines away 50% [Sprint 39 E1], the
      * goal far less; a winger, or a second position, is in full in its line too).
      *
      * @return array{gk: int, def: int, mid: int, att: int}

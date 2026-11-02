@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [Sprint 38 N1] The first time a signed-in coach opens the game on a device: a small card asks to turn on the game's
+// [Sprint 39 N1] The first time a signed-in coach opens the game on a device: a small card asks to turn on the game's
 // sound and its notifications. «فعّلها» is the tap browsers ask for before any sound (autoplay policy): it unlocks the
 // tone and plays it once, and, where the server sends push notifications and the browser has them, asks the browser's
 // own permission and subscribes this device (the same as the account page's card). «بدون صوت» mutes it; «لاحقاً» only

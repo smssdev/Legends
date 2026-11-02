@@ -744,6 +744,8 @@ function drawTv(tick, u) {
       else if (a.kind === 'throw') t.f.throwOut(a.f)
       else if (a.kind === 'throwin') { const r = 165 - 60 * a.f; t.f.pose(4, -10, r, -r) }
       else if (a.kind === 'fallen') { const d = Math.min(1, a.f * 4); t.f.fallen(); t.lean = (t.face === 'side' ? t.mirror : 1) * 84 * d; t.bob = -20 * d }
+      // [Sprint 38 L3] Arms out at the referee.
+      else if (a.kind === 'protest') { const w = Math.sin(now / 140 + t.ph) * 8; t.f.pose(5, -5, 95 + w, -95 - w) }
     }
     drawn.push(t)
     const d = Math.hypot(wx - bx, wy - by)
@@ -764,6 +766,11 @@ function drawTv(tick, u) {
     t.f.showCard(null)
     if (!smooth.value) { if (speed > 12 || (at && call.w < 0.45)) { t.ph += dts * 9; t.f.run(t.ph, 0.6); t.bob = Math.abs(Math.sin(t.ph)) * 1.4 } else { t.ph += dts * 2; t.f.idle(t.ph) } } else t.f.pose()
     if (call?.card) t.f.showCard(call.card)
+    // [Sprint 38 L2] Offside: the assistant nearer the play stops, faces the pitch and holds his flag up.
+    if (n > 0 && act.flag) {
+      const other = R.officials?.[n === 1 ? 2 : 1], mine = Math.abs(o[0] - act.flag.x) <= Math.abs((other?.[0] ?? 1e9) - act.flag.x)
+      if (mine) { t.f.face('front'); t.bob = 0; t.f.pose(3, -3, 10, -10 - 160 * act.flag.w) }
+    }
     drawn.push(t)
   }
   // [Sprint 34 V2, Sprint 35 C1] The two coaches in their technical areas on the near touchline: the approved 3D

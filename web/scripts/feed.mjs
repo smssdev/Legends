@@ -78,6 +78,31 @@ check(pitchActions({ tick: 1, events: [] }, [{ b: [1, 1, 0], p: P(), h: 1 }], 0.
   check(JSON.stringify(a) === JSON.stringify(b), 'deterministic')
 }
 
+{
+  // [Sprint 38 L3] The booked player protests once the card is up.
+  const f = [{ b: [500, 340, 0], p: P(), h: 3 }, { b: [520, 340, 0], p: P(), h: 1 }, { b: [540, 340, 0], p: P(), h: 1 }]
+  const ev = [{ type: 'foul', player: 3, victim: 1 }, { type: 'card', player: 3, color: 'yellow' }]
+  check(pitchActions({ tick: 1, events: ev }, f, 0.75, ctx).by[3]?.kind === 'protest', 'the booked player protests')
+  check(pitchActions({ tick: 1, events: [ev[0]] }, f, 0.75, ctx).by[3] === undefined, 'no card: no protest')
+}
+{
+  // [Sprint 38 L1] An injury: down from his Keyframe with the ball, and stays down.
+  const f = [{ b: [500, 340, 0], p: P(), h: 1 }, { b: [520, 340, 0], p: P(), h: 2 }, { b: [540, 340, 0], p: P(), h: 1 }]
+  const ev = [{ type: 'injury', player: 2 }]
+  check(pitchActions({ tick: 1, events: ev }, f, 0.3, ctx).by[2] === undefined, 'not down before his touch')
+  const a = pitchActions({ tick: 1, events: ev }, f, 0.95, ctx)
+  check(a.by[2]?.kind === 'fallen' && a.by[2].f === 1, 'the injured player down and staying down')
+}
+{
+  // [Sprint 38 L2] Offside: the flag goes up when the attacker caught takes the ball; not for a goal VAR rules out.
+  const f = [{ b: [500, 340, 0], p: P(), h: 1 }, { b: [820, 300, 0], p: P(), h: 2 }, { b: [840, 300, 0], p: P(), h: 2 }]
+  const ev = [{ type: 'attack', result: 'offside', receiver: 2 }]
+  check(pitchActions({ tick: 1, events: ev, moment: { kind: 'offside' } }, f, 0.3, ctx).flag === null, 'no flag before the pass arrives')
+  const a = pitchActions({ tick: 1, events: ev, moment: { kind: 'offside' } }, f, 0.8, ctx)
+  check(a.flag?.x === 820 && a.flag.w === 1, 'the flag up where he took it')
+  check(pitchActions({ tick: 1, events: ev, moment: { kind: 'var' } }, f, 0.8, ctx).flag === null, 'VAR: no flag')
+}
+
 if (bad.length) {
   console.error('the live pitch (director.ts, actions.ts) changed\n' + bad.join('\n'))
   process.exit(1)

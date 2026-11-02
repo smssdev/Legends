@@ -47,7 +47,7 @@ class AdminController extends Controller
     }
 
     /**
-     * [Sprint 38 A1] What this admin may open (null: everything). Signed in with the password is enough: the two-step
+     * [Sprint 39 A1] What this admin may open (null: everything). Signed in with the password is enough: the two-step
      * code is gone (the owner's request, 2026-11-02).
      */
     public function access(Request $request): JsonResponse

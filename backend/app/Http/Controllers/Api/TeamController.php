@@ -48,7 +48,7 @@ class TeamController extends Controller
             'bands' => FormationBook::BANDS,
             'across' => FormationBook::ACROSS,
             // [Sprint 27 W4] What an outfield player gives out of his lines (bp), as the engine plays him: the next line
-            // [Sprint 38 E1]; two lines away is far_line_bp.
+            // [Sprint 39 E1]; two lines away is far_line_bp.
             'off_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'mid']),
             'far_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'att']),
         ]);

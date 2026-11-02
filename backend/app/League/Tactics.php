@@ -32,7 +32,7 @@ class Tactics
     /** What the opponent may see once the sides are locked. */
     public const PUBLIC = ['tackling', 'marking', 'plan', 'trap'];
 
-    /** [Sprint 38 E7] Five referees, from very lenient (green) to very strict (red). */
+    /** [Sprint 39 E7] Five referees, from very lenient (green) to very strict (red). */
     public const REFEREES = ['very_lenient', 'lenient', 'medium', 'strict', 'very_strict'];
 
     /** Mine, or the neutral defaults (a bot's, or a coach who never set any). */

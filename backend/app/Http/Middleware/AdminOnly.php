@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * The admin panel: an admin's account, signed in on the site [Sprint 37]. [Sprint 38 A1] Its email (or username) and
+ * The admin panel: an admin's account, signed in on the site [Sprint 37]. [Sprint 39 A1] Its email (or username) and
  * password only: the two-step code is gone (the owner's request, 2026-11-02).
  */
 class AdminOnly

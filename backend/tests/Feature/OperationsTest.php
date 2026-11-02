@@ -88,7 +88,7 @@ class OperationsTest extends TestCase
 
     public function test_the_admin_panel_opens_with_the_password_alone(): void
     {
-        // [Sprint 38 A1] No two-step code (the owner's request, 2026-11-02): an admin signed in opens the panel at once.
+        // [Sprint 39 A1] No two-step code (the owner's request, 2026-11-02): an admin signed in opens the panel at once.
         $this->assertStringNotContainsString('two_factor', (string) file_get_contents(config_path('game.php')));
         $this->assertFileDoesNotExist(app_path('Admin/TwoFactor.php'));
         $user = User::factory()->create();

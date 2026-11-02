@@ -6,7 +6,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * [Sprint 38 M2] A game event by email in the game's frame (resources/views/mail/game-update.blade.php): a match's
+ * [Sprint 39 M2] A game event by email in the game's frame (resources/views/mail/game-update.blade.php): a match's
  * summary with its score board, or any alert (a player sold, an offer, a match about to start). Built from plain
  * values, so any part of the game can send one; App\Messages\Inbox stays the place every event is written first.
  */

@@ -6,7 +6,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * [Sprint 38 M3] The store's deals and top-up offers by email (resources/views/mail/store-deal.blade.php), ready for
+ * [Sprint 39 M3] The store's deals and top-up offers by email (resources/views/mail/store-deal.blade.php), ready for
  * when the store opens: nothing sends it yet. Only to coaches who asked for offers (README section 11: the owner
  * decides the store and who receives its emails), and a new kind of email goes into the privacy policy first.
  */

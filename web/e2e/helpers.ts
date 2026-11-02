@@ -6,7 +6,7 @@ export async function ready(page: Page) {
   // The Assistant Coach's greeting closed, as a coach would (it also leaves by itself after a few seconds).
   const hello = page.locator('.bot-hello-x')
   if (await hello.isVisible().catch(() => false)) await hello.click()
-  // [Sprint 38 N1] The sound card, asked once a device: «لاحقاً», as a coach in a hurry would.
+  // [Sprint 39 N1] The sound card, asked once a device: «لاحقاً», as a coach in a hurry would.
   const later = page.locator('section[aria-labelledby="sound-prompt-title"]').getByRole('button', { name: 'لاحقاً' })
   await later.waitFor({ state: 'visible', timeout: 1500 }).then(() => later.click()).catch(() => {})
 }

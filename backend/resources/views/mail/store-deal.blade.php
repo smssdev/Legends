@@ -1,5 +1,5 @@
 {{--
-  [Sprint 38 M3] The store's deals and top-up offers, ready for when the store opens (README section 11): a banner line,
+  [Sprint 39 M3] The store's deals and top-up offers, ready for when the store opens (README section 11): a banner line,
   up to four packs (name, what it gives, its price, and its old price struck through when it is a discount), until when
   the offer lasts, the button, and how to stop these emails. Nothing sends it yet: App\Notifications\StoreDealNotice.
 --}}

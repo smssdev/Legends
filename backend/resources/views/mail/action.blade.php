@@ -1,5 +1,5 @@
 {{--
-  [Sprint 38 M1] An email with one thing to do (confirm the email, choose a new password): a title, its lines, the button,
+  [Sprint 39 M1] An email with one thing to do (confirm the email, choose a new password): a title, its lines, the button,
   and a closing line. $lines and $after are plain text, escaped here.
 --}}
 @extends('mail.layout')

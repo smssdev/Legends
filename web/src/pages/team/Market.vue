@@ -362,7 +362,7 @@ onBeforeUnmount(() => clearInterval(clock))
               <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
               <button type="button" class="h-touch min-w-20 rounded-md border border-warning/60 px-3 font-bold text-warning disabled:opacity-40" :aria-expanded="open === p.id" :disabled="!!m.closed" @click="openSell(p)">{{ $t('بيع') }}</button>
             </div>
-            <!-- [Sprint 38 S1] The same panel as the player's card on the squad page. -->
+            <!-- [Sprint 39 S1] The same panel as the player's card on the squad page. -->
             <SellPanel v-if="open === p.id" class="mt-2" :league-id="leagueId!" :player="p" @done="sold" @error="(e: string) => (error = e)" />
           </li>
         </ul>

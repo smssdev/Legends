@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Selling one of my players [X6, Sprint 21 E5.1, Sprint 23], one panel for the market's «بيع لاعبيّ» and the player's
-// card on the squad page [Sprint 38 S1]: withdraw him if listed; sell him now (asked first: it cannot be undone); list
+// card on the squad page [Sprint 39 S1]: withdraw him if listed; sell him now (asked first: it cannot be undone); list
 // him at his value; or at my price on a slider between his floor and his cap, with the server's estimate of the wait.
 // Prices, fees and limits come from the API (GET /market's `mine`); buying stays in the market only.
 import { ref, watch } from 'vue'

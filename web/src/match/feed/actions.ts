@@ -15,13 +15,15 @@ export type Actions = {
   by: Record<string, any>
   holder: any
   call: { at: any; card: string | null; w: number } | null
+  /** [Sprint 38 L2] Offside: the assistant level with this x raises his flag (w 0..1). */
+  flag: { x: number; w: number } | null
   /** [key, sound]: the screen plays each key once a minute. */
   sounds: [string, string][]
 }
 
 export function pitchActions(tick, f, u: number, ctx: ActionCtx): Actions {
   const by: Record<string, any> = {}, sounds: [string, string][] = [], gks = ctx.gks
-  if (!f || f.length < 2) return { by, holder: f?.[0]?.h ?? null, call: null, sounds }
+  if (!f || f.length < 2) return { by, holder: f?.[0]?.h ?? null, call: null, flag: null, sounds }
   const say = (key: string, name: string) => { sounds.push([key, name]) }
   const { i, k } = segment(f.length, u), A = f[i], B = f[i + 1] ?? A
   const far = Math.hypot(B.b[0] - A.b[0], B.b[1] - A.b[1])
@@ -81,5 +83,23 @@ export function pitchActions(tick, f, u: number, ctx: ActionCtx): Actions {
       call = { at: fouled.victim, card: card && w > 0.35 ? (card.color === 'red' ? '#D3122F' : '#F2E205') : null, w }
     }
   }
-  return { by, holder: k < 0.5 ? A.h : B.h, call, sounds }
+  // [Sprint 38 L3] The one booked protests, arms out, once the card is up.
+  if (call?.card && fouled?.player != null && call.w > 0.35 && B.p[fouled.player]) by[fouled.player] = { kind: 'protest' }
+  // [Sprint 38 L1] An injury: from his Keyframe with the ball (or a third of the way in) the player goes down and stays
+  // there; the whistle once.
+  const hurt = ev.find((e) => e.type === 'injury')
+  if (hurt?.player != null && B.p[hurt.player] && String(hurt.player) !== String(fouled?.victim)) {
+    const n = f.findIndex((x) => String(x.h) === String(hurt.player)), from = n >= 0 ? n / (f.length - 1) : 0.35
+    if (u >= from) { by[hurt.player] = { kind: 'fallen', f: Math.min(1, (u - from) / 0.3) }; say('injury', 'whistle') }
+  }
+  // [Sprint 38 L2] Offside (the minute's moment, so not a goal VAR rules out later): when the attacker caught takes the
+  // ball the assistant on that side raises his flag, and keeps it up.
+  let flag: Actions['flag'] = null
+  const off = tick.moment?.kind === 'offside' ? ev.find((e) => e.type === 'attack') : null
+  if (off) {
+    const who = off.receiver ?? off.shooter, n = f.findIndex((x) => who != null && String(x.h) === String(who)), at = n >= 0 ? n : f.length - 1
+    const from = at / (f.length - 1)
+    if (u >= from) { flag = { x: f[at].b[0], w: Math.min(1, (u - from) / 0.12) }; say('offside', 'whistle') }
+  }
+  return { by, holder: k < 0.5 ? A.h : B.h, call, flag, sounds }
 }

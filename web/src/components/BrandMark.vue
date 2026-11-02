@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The game's mark: the crest with its name beside it (tools/brand/logo.py, X44). [Sprint 38 B1] The official name,
+// The game's mark: the crest with its name beside it (tools/brand/logo.py, X44). [Sprint 39 B1] The official name,
 // GAME LEGEND MANAGER, in every language (MANAGER in gold, as on the logo); in Arabic «المدرب الأسطورة» under it, in
 // English what the game is.
 import { emblemSrc, locale } from '../lib/i18n'

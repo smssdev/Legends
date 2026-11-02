@@ -40,9 +40,9 @@ export function scoreText(first: number | string | null | undefined, second: num
   return locale.value === 'en' ? `${a} - ${b}` : `${b} - ${a}`
 }
 
-/** [Sprint 38 E7] The five referees, from very lenient (green) to very strict (red), as the server names them. */
+/** [Sprint 39 E7] The five referees, from very lenient (green) to very strict (red), as the server names them. */
 export const REFEREE: Record<string, string> = { very_lenient: 'متساهل جداً', lenient: 'متساهل', medium: 'متوسط', strict: 'صارم', very_strict: 'صارم جداً' }
 
-/** [Sprint 38 E2] The fitness lines: full from 90, slower from 75 to 90, a sharp drop and injuries under 75. */
+/** [Sprint 39 E2] The fitness lines: full from 90, slower from 75 to 90, a sharp drop and injuries under 75. */
 export const fitnessTone = (v: number, kind: 'bg' | 'text' = 'bg') =>
   kind === 'bg' ? (v >= 90 ? 'bg-success' : v >= 75 ? 'bg-gold' : 'bg-live') : v >= 90 ? 'text-success' : v >= 75 ? 'text-warning' : 'text-danger'

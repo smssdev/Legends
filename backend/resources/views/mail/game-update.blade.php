@@ -1,5 +1,5 @@
 {{--
-  [Sprint 38 M2] A game event by email: a match's result (the score board), or any alert (a sale, an offer, a match
+  [Sprint 39 M2] A game event by email: a match's result (the score board), or any alert (a sale, an offer, a match
   about to start). $kind is a small label over the title; $score, when there is one, is [home, home_goals, away_goals,
   away]; $facts are [label, value] rows (the scorers, the money, the time); then the button.
 --}}
