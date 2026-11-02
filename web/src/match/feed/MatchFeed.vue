@@ -97,8 +97,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setRain, setSmooth } from './art'
 import { figure } from './figure'
 import { noteFrame, smooth, tier } from '../perf'
-import { sample, segment } from '../frames'
+import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
+import { director } from './director'
+import { pitchActions } from './actions'
 import { voiceLine, type Lang } from '../voice'
 
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; kickoff?: string | null; looks?: Partial<Record<'home' | 'away', string>> | null; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
@@ -163,38 +165,6 @@ const replayAngle = ref(1)
 let angleWrap: any = null
 // [Sprint 35 C1] The minute's own scene (for its replay) and the cutaway playing now.
 let mainScene: any = null, cutScene: any = null
-/**
- * [Sprint 35 C1] The director: which cutaways follow the scene, as on a broadcast. A goal: the scorers' fans, their
- * coach's joy, then the other coach. A red card: the players squaring up, then the sent-off player's coach. A big chance missed or saved: the
- * shooter's coach. The moods are the server's (tick.moods) when it has an expressive one. None at the lowest tier,
- * one at the middle, up to three at the full one; and only what fits in the minute before its replay and close.
- */
-function director(s, tick, total, sceneT) {
-  if (!s.scene || tier.value === 'low') return []
-  const other = s.side === 'home' ? 'away' : 'home', moods = tick.moods ?? {}
-  const look = (side) => props.looks?.[side] ?? (side === 'home' ? 'C1' : 'C2')
-  const felt = (side, fallback) => (['joy', 'cheer', 'angry', 'worried', 'sad', 'surprise'].includes(moods[side]) ? moods[side] : fallback)
-  const coach = (side, fallback) => ({ name: 'coachReact', data: { side, look: look(side), mood: felt(side, fallback) }, dur: SCENE_TIME.coachReact[0] })
-  const crowdCut = () => ({ name: 'crowd', data: { side: s.side, v: (props.seed || 1) * 7 + tick.tick, count: tier.value === 'high' ? 110 : 60, flares: tier.value === 'high' }, dur: SCENE_TIME.crowd[0] })
-  let list = []
-  if (s.goal) list = [crowdCut(), coach(s.side, 'joy'), coach(other, 'angry')]
-  // [Sprint 35 C2] A red card: tempers flare first (both sides squaring up), then the coach.
-  else if (s.scene === 'card') list = s.data.type === 'red' ? [{ name: 'brawl', data: { side: s.side, v: (props.seed || 1) * 13 + tick.tick }, dur: SCENE_TIME.brawl[0] }, coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
-  else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
-  // [Sprint 36 F5] The end of a half: at half time the players walk off to the tunnel; at full time they shake
-  // hands, then the coaches in their moods (the server's: joy for the winners, sorrow for the losers).
-  else if (s.scene === 'whistle' && s.data.name === 'halftime') list = [{ name: 'tunnel', data: { side: 'home' }, dur: SCENE_TIME.tunnel[0] }]
-  else if (s.scene === 'whistle' && s.data.name === 'fulltime') list = [{ name: 'handshake', data: { side: 'home' }, dur: SCENE_TIME.handshake[0] }, coach('home', 'idle'), coach('away', 'idle')]
-  // [Sprint 35 C3] A goal ruled out by VAR: the coach who thought his side had scored, then the relieved one.
-  else if (s.scene === 'var') list = [coach(s.side, 'angry'), coach(other, 'joy')]
-  list = list.slice(0, tier.value === 'high' ? 3 : 1)
-  // What fits: a goal keeps room for its replay (4.5 s), the rest for the commentator's line (1.2 s).
-  const keep = s.goal ? 4.5 : 1.2
-  const fit = []
-  let used = 0
-  for (const c of list) { if (sceneT + used + c.dur + keep <= total) { fit.push(c); used += c.dur } }
-  return fit
-}
 let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0, pitchDrawn = 0
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
@@ -208,7 +178,7 @@ function play(tick, startAt = null) {
   const sceneT = s.scene ? Math.min(nominal, total * (tick.moment?.ms <= 3400 ? 0.9 : 0.72)) : 0
   // [Sprint 35 C1] The director's cutaways after the scene (the crowd, the coaches), as many as the tier and the
   // minute's length allow; then [X41] a goal's replay in slow motion, as on TV.
-  const cuts = director(s, tick, total, sceneT), cutT = cuts.reduce((a, c) => a + c.dur, 0)
+  const cuts = director(s, tick, total, sceneT, { tier: tier.value, looks: props.looks, seed: props.seed }), cutT = cuts.reduce((a, c) => a + c.dur, 0)
   const at = sceneT + (cuts.length ? cutT + 0.5 : 2.6), room = total - at - 0.8
   // [Sprint 33 Q1] No replay at the lowest tier. Too little room for the whole scene slowed: its last part, the shot.
   const rate = s.goal && s.scene && room > 1.6 && !smooth.value ? Math.max(0.4, Math.min(0.8, nominal / room)) : 0
@@ -649,72 +619,13 @@ function facing(t, dx, dy) {
 // (one turnover in three, chosen by the minute and the Keyframe, so every screen shows the same), the keeper of the
 // goal a shot flies at, and the scoring side once the ball is in. And their sounds, once each, while no scene covers
 // the pitch.
-let gks = new Set(), gksFor = null, heard = new Set(), heardTick = -1
+let gks = new Set<string>(), gksFor = null, heard = new Set(), heardTick = -1
 function actions(tick, f, u) {
-  const by = {}
-  if (!f || f.length < 2) return { by, holder: f?.[0]?.h ?? null }
   if (gksFor !== props.teams) { gksFor = props.teams; gks = new Set(['home', 'away'].flatMap((s) => (props.teams?.[s]?.players ?? []).filter((p) => p.pos === 'GK').map((p) => String(p.id)))) }
   if (heardTick !== tick.tick) { heardTick = tick.tick; heard = new Set() }
-  const say = (key, name) => { if (!heard.has(key)) { heard.add(key); if (!sceneOn.value) emit('sound', name) } }
-  const { i, k } = segment(f.length, u), A = f[i], B = f[i + 1] ?? A
-  const far = Math.hypot(B.b[0] - A.b[0], B.b[1] - A.b[1])
-  const sideOf = (id) => players.value[id]?.side
-  // [Sprint 34 K2] From the touchline it is a throw-in: both hands over the head.
-  const line = A.b[1] <= 20 || A.b[1] >= 660
-  if (A.h != null && far > 60 && k < 0.3) { const head = (A.b[2] ?? 0) > 12; by[A.h] = { kind: line ? 'throwin' : head ? 'head' : 'kick', f: k / 0.3 }; say('t' + i, head ? 'head' : 'touch') }
-  if (B.h != null && B.h !== A.h && (B.b[2] ?? 0) > 12 && k > 0.7) { by[B.h] = { kind: 'head', f: (k - 0.7) / 0.3 }; if (k > 0.85) say('h' + i, 'head') }
-  const foul = (tick.events ?? []).some((e) => e.type === 'foul')
-  if (A.h != null && B.h != null && sideOf(A.h) && sideOf(B.h) && sideOf(A.h) !== sideOf(B.h) && k > 0.55 && (foul || (tick.tick * 7 + i) % 3 === 0)) by[B.h] = { kind: 'slide', f: (k - 0.55) / 0.45 }
-  const shot = (tick.events ?? []).some((e) => e.type === 'attack' && ['goal', 'saved', 'missed'].includes(e.result))
-  // A shot reaching the goal's area (a save stops at 4.5 m from the line), going that way.
-  const end = B.b[0] < 60 && B.b[0] < A.b[0] ? 0 : B.b[0] > 990 && B.b[0] > A.b[0] ? 1050 : null
-  if (shot && end !== null && Math.abs(B.b[1] - 340) < 120 && k > 0.45) {
-    let gk = null, gd = 1e9
-    for (const id in A.p) if (gks.has(String(id))) { const d = Math.abs(A.p[id][0] - end); if (d < gd) { gd = d; gk = id } }
-    if (gk && gd < 120) by[gk] = { kind: 'dive', f: (k - 0.45) / 0.55, dir: B.b[1] > A.p[gk][1] ? 1 : -1 }
-  }
-  const ev = tick.events ?? [], at = u * (f.length - 1)
-  // The Keyframe nearest a goal line (the path need not land on the line itself): where a shot ends.
-  let g = 0
-  f.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(f[g].b[0] - 525)) g = n })
-  const shotEnd = Math.abs(f[g].b[0] - 525) > 440 ? g : -1
-  // The goal: from the Keyframe where the ball is in the net, the scorers' side celebrates and the other hangs its head.
-  const goal = ev.find((e) => e.type === 'goal')
-  if (goal && shotEnd >= 0 && Math.abs(f[g].b[0] - 525) > 470 && at >= shotEnd) {
-    say('net', 'net')
-    for (const id in B.p) if (!gks.has(String(id))) by[id] = sideOf(id) === goal.team ? { kind: 'party' } : { kind: 'down' }
-  }
-  // [Sprint 33 L4] A chance missed: the shooter's hands on his head once the ball has gone wide.
-  const miss = ev.find((e) => e.type === 'attack' && e.result === 'missed')
-  if (miss?.shooter != null && shotEnd >= 0 && at >= shotEnd) by[miss.shooter] = { kind: 'head-hands' }
-  // [Sprint 33 L1] A save: from the Keyframe of the save the keeper holds the ball, then throws it out.
-  const saved = ev.find((e) => (e.type === 'attack' && e.result === 'saved') || ((e.type === 'free_kick' || e.type === 'penalty') && !e.scored))
-  if (saved && shotEnd >= 0 && at >= shotEnd) {
-    const S = f[shotEnd], end = S.b[0] < 525 ? 0 : 1050
-    let gk = null, gd = 1e9
-    for (const id in S.p) if (gks.has(String(id))) { const d = Math.abs(S.p[id][0] - end); if (d < gd) { gd = d; gk = id } }
-    if (gk) {
-      const after = i === shotEnd && B !== A ? k : shotEnd === f.length - 1 ? 0 : 1
-      if (after < 0.3) by[gk] = { kind: 'gather' }
-      else if (after < 0.7) { by[gk] = { kind: 'throw', f: (after - 0.3) / 0.4 }; if (after > 0.5) say('gk', 'touch') }
-    }
-  }
-  // [Sprint 33 L2] A foul: the fouled player goes down where he had the ball (or mid-minute), the whistle, the
-  // referee runs over and, when the minute has a card for the fouler, holds it up.
-  const fouled = ev.find((e) => e.type === 'foul')
-  let call = null
-  if (fouled?.victim != null) {
-    const n = f.findIndex((x) => String(x.h) === String(fouled.victim))
-    const from = n >= 0 ? n / (f.length - 1) : 0.4
-    if (u >= from && u < from + 0.32) {
-      const w = (u - from) / 0.32
-      by[fouled.victim] = { kind: 'fallen', f: w }
-      say('foul', 'whistle')
-      const card = ev.find((e) => e.type === 'card' && String(e.player) === String(fouled.player))
-      call = { at: fouled.victim, card: card && w > 0.35 ? (card.color === 'red' ? '#D3122F' : '#F2E205') : null, w }
-    }
-  }
-  return { by, holder: k < 0.5 ? A.h : B.h, call }
+  const out = pitchActions(tick, f, u, { gks, sideOf: (id) => players.value[id]?.side })
+  for (const [key, name] of out.sounds) if (!heard.has(key)) { heard.add(key); if (!sceneOn.value) emit('sound', name) }
+  return out
 }
 // [Sprint 33 L3] Where each player was last drawn (for the one taken off), and how much of the minute a substitution's
 // walk takes.
