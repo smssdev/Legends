@@ -15,6 +15,7 @@
          server's keyframes, never only the key moments. -->
     <div class="pitch">
       <div ref="pitchHost" class="pitch-in" aria-hidden="true" />
+      <span v-if="replaying && !sceneOn" class="replay">{{ $t('إعادة') }}</span>
       <button type="button" class="cam" :aria-label="camera === 'tv' ? $t('عرض الخطة من أعلى') : $t('كاميرا البث')" @click="setCamera(camera === 'tv' ? 'top' : 'tv')">{{ camera === 'tv' ? $t('الخطة') : $t('البث') }}</button>
     </div>
 
@@ -155,6 +156,8 @@ const compare = computed(() => [
 ].map((r) => ({ ...r, hp: r.h + r.a ? (r.h / (r.h + r.a)) * 100 : 50 })))
 
 // ---------------------------------------------------------------- playing a minute
+// [Sprint 34 V4] The goal's replay is playing on the live pitch.
+let pitchReplay = false
 let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0, pitchDrawn = 0
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
@@ -221,6 +224,7 @@ function finish() {
   if (!plan) return
   sceneOn.value = false
   replaying.value = false
+  pitchReplay = false
   tense.value = false
   party.value = null
   addItems(false)
@@ -249,7 +253,7 @@ function step(now) {
     t = plan.startAt === null ? t + dt : Math.max(0, (now - plan.startAt) / 1000)
     const { s, total, sceneT, rate, fired } = plan
     tickClock(plan.tick, Math.min(1, t / total))
-    if (!smooth.value || now - pitchDrawn >= 32) { pitchDrawn = now; drawPitch(plan.tick, Math.min(1, t / total)) }
+    if (!pitchReplay && (!smooth.value || now - pitchDrawn >= 32)) { pitchDrawn = now; drawPitch(plan.tick, Math.min(1, t / total)) }
     const fire = (k, fn) => { if (!fired.has(k)) { fired.add(k); fn() } }
     // A line or a sound long past (the screen joined late) is dropped, not played out of time.
     const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
@@ -270,10 +274,20 @@ function step(now) {
     const rp = plan.replay
     if (scene && rp && t >= rp.at) {
       const u = (t - rp.at) * rp.rate
-      if (u < SCENE_TIME[s.scene][0]) {
-        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = true })
-        if (!smooth.value || now - drawn >= 32) { drawn = now; draw(u) }
-      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; showBubble() })
+      const len = SCENE_TIME[s.scene][0]
+      // [Sprint 34 V4] At the middle and full tiers the replay is the live pitch itself: the last Keyframes before the
+      // ball went in, slower and closer, then back. The lowest tier has no replay (Sprint 33 Q1).
+      const frames = plan.tick?.frames ?? []
+      let g = 0
+      frames.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(frames[g].b[0] - 525)) g = n })
+      const onPitch = frames.length > 2 && Math.abs(frames[g].b[0] - 525) > 470
+      if (u < len) {
+        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = !onPitch; pitchReplay = onPitch })
+        if (onPitch) {
+          const n = frames.length - 1, from = Math.max(0, g - 3) / n, to = Math.min(1, (g + 0.4) / n)
+          if (!smooth.value || now - pitchDrawn >= 32) { pitchDrawn = now; drawPitch(plan.tick, from + (to - from) * (u / len)) }
+        } else if (!smooth.value || now - drawn >= 32) { drawn = now; draw(u) }
+      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; pitchReplay = false; showBubble() })
     }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
     if (!plan.replay && t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
@@ -418,6 +432,37 @@ function paintTvPitch(c) {
   line(Array.from({ length: 33 }, (_, i) => [525 + 91 * Math.cos(i * Math.PI / 16), 340 + 91 * Math.sin(i * Math.PI / 16)]))
   for (const [x, d] of [[0, 1], [1050, -1]]) {
     line([[x, 138], [x + d * 165, 138], [x + d * 165, 542], [x, 542]]); line([[x, 248], [x + d * 55, 248], [x + d * 55, 432], [x, 432]])
+  }
+  // [Sprint 34 V5] The stadium's details: the dugouts before the far stand with the substitutes in their kits, the
+  // photographers crouched behind each goal line, and the four corner flags.
+  for (const [side, x0] of [['home', 360], ['away', 600]]) {
+    const [l, ty] = proj(x0, -34), [r] = proj(x0 + 90, -34)
+    c.fillStyle = 'rgba(200,215,235,.35)'; c.fillRect(l, ty - 9, r - l, 2)
+    c.fillStyle = '#0B1626'; c.fillRect(l, ty - 7, r - l, 7)
+    c.fillStyle = props.kits[side]?.kit ?? '#fff'
+    for (let k = 0; k < 7; k++) c.fillRect(l + 3 + k * (r - l - 6) / 7, ty - 5, 2.4, 3.2)
+  }
+  for (const [x, d] of [[0, -1], [1050, 1]]) for (let k = 0; k < 6; k++) {
+    const [px, py, ps] = proj(x + d * 22, 170 + k * 68)
+    c.fillStyle = '#121A28'; c.beginPath(); c.ellipse(px, py - 3 * ps, 2.6 * ps, 3.4 * ps, 0, 0, Math.PI * 2); c.fill()
+    c.fillStyle = '#2A3446'; c.fillRect(px - 1.4 * ps, py - 6 * ps, 2.8 * ps, 1.6 * ps)
+  }
+  for (const [x, y] of [[0, 0], [1050, 0], [0, 680], [1050, 680]]) {
+    const [px, py, ps] = proj(x, y), h = 12 * ps
+    c.strokeStyle = '#F7F4EA'; c.lineWidth = 0.9; c.beginPath(); c.moveTo(px, py); c.lineTo(px, py - h); c.stroke()
+    c.fillStyle = '#F5B82E'; c.beginPath(); c.moveTo(px, py - h); c.lineTo(px + 5 * ps, py - h + 2 * ps); c.lineTo(px, py - h + 4 * ps); c.closePath(); c.fill()
+  }
+}
+// [Sprint 34 V5] The photographers' flashes when the play is dangerous or a goal has gone in (the same moments on
+// every screen: from the clock of the page only for which camera flickers, never for what happens).
+function flashes(c, now) {
+  const hot = danger >= 3 || now - cheerAt < 2500
+  if (!hot || smooth.value) return
+  for (const [x, d] of [[0, -1], [1050, 1]]) for (let k = 0; k < 6; k++) {
+    if (((Math.floor(now / 90) * 7 + k * 13 + x) % 23) !== 0) continue
+    const [px, py, ps] = proj(x + d * 22, 170 + k * 68)
+    c.fillStyle = 'rgba(255,255,255,.95)'; c.beginPath(); c.arc(px, py - 6 * ps, 2.2 * ps, 0, Math.PI * 2); c.fill()
+    c.fillStyle = 'rgba(255,255,255,.25)'; c.beginPath(); c.arc(px, py - 6 * ps, 6 * ps, 0, Math.PI * 2); c.fill()
   }
 }
 // The word on the boards, painted once per colour (text is the slowest thing a canvas draws).
@@ -634,7 +679,7 @@ function drawTv(tick, u) {
   camX += (Math.max(TV.span / 2 - 40, Math.min(1050 - TV.span / 2 + 40, bx + lead)) - camX) * 0.06
   // It closes in on the last third (up to 1.3), and punches in on the ball as a key moment's scene opens.
   const third = Math.max(0, Math.min(1, (Math.abs(bx - 525) - 175) / 250))
-  const punch = now - sceneAt < 650 ? 1.75 : 0
+  const punch = pitchReplay ? 1.6 : now - sceneAt < 650 ? 1.75 : 0
   zoom += ((punch || 1 + 0.3 * third * third * (3 - 2 * third)) - zoom) * Math.min(1, dts * (punch ? 6 : 1.4))
   if (smooth.value) zoom = 1
   const [, bsy] = proj(bx, by), fx = 320
@@ -650,6 +695,7 @@ function drawTv(tick, u) {
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(tvBg, 0, 0); ctx.setTransform(T[0], 0, 0, T[0], T[1], T[2])
   crowd(ctx, now)
+  flashes(ctx, now)
   const drawn = []
   let near = null, nearD = 1e9
   const act = actions(tick, f, u)
@@ -981,6 +1027,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .moment.tense::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 70% at 50% 50%, transparent 55%, rgba(120,10,10,.45)); animation: beat 1.1s ease-in-out infinite }
 @keyframes beat { 0%, 100% { opacity: 1 } 15% { opacity: .65 } 30% { opacity: 1 } 45% { opacity: .8 } }
 
+.pitch .replay { z-index: 2 }
 .replay { position: absolute; top: 10px; inset-inline-start: 10px; padding: 3px 10px; border-radius: 6px; font-weight: 800; font-size: 13px; color: #fff; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.35); letter-spacing: .5px; pointer-events: none }
 .party { position: absolute; inset: 0 0 auto; aspect-ratio: 640 / 340; overflow: hidden; pointer-events: none }
 /* [Sprint 30 Q8] The confetti falls from under the headline band (its top 64 of 300), never over «هدف!» (it hid the «ه», «فد»). */
