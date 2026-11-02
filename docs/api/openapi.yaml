@@ -1771,7 +1771,7 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
     post:
       tags: [team]
-      summary: Put a player in his line's slot (in place of whoever is there)
+      summary: Put a player in his line's slot; with replace, in place of whoever trains there (who keeps his progress)
       requestBody:
         required: true
         content:
@@ -1781,6 +1781,7 @@ paths:
               required: [player_id]
               properties:
                 player_id: { type: integer }
+                replace: { type: boolean, description: '[X83] The line''s player in training makes room in the same step; without it a taken slot is a 409' }
       responses:
         '200':
           description: Training after the change

@@ -42,9 +42,13 @@ class Training
      * Put a player in his line's slot. [UP8] One player per line at a time (the owner's spec, 3): a second keeper,
      * defender, midfielder or forward waits until the one there has finished his +1 (or it was finished for coins).
      */
-    public static function add(int $clubId, int $playerId): void
+    /**
+     * A player into his line's slot. [X83] With $replace, a player already training in that line makes room in the same
+     * step (he keeps his progress, as when the slot is emptied), so changing who trains is one tap, not two.
+     */
+    public static function add(int $clubId, int $playerId, bool $replace = false): void
     {
-        DB::transaction(function () use ($clubId, $playerId) {
+        DB::transaction(function () use ($clubId, $playerId, $replace) {
             $p = self::player($playerId);
             if (! $p || (int) $p->club_id !== $clubId) {
                 throw new HttpException(404, 'اللاعب ليس في فريقك.');
@@ -59,6 +63,10 @@ class Training
             $busy = DB::table('training_slots')->join('players', 'players.id', '=', 'training_slots.player_id')
                 ->join('master_players', 'master_players.id', '=', 'players.master_player_id')
                 ->where('training_slots.club_id', $clubId)->where('training_slots.line', $p->line)->value('master_players.name');
+            if ($busy !== null && $replace) {
+                self::remove($clubId, $p->line);
+                $busy = null;
+            }
             if ($busy !== null) {
                 throw new HttpException(409, "لاعب واحد من كل خط في التدريب: {$busy} يتدرب الآن، ويُتاح غيره حين ينهي تدريبه أو تسرّعه.");
             }
