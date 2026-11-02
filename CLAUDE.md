@@ -10,7 +10,7 @@
 
 ## الحالة الحالية (2026-11-01)
 
-- **اللعبة على سيرفرنا في Hostinger** (`README.md` القسم 8): **https://nesr.site** (X70، 2026-11-01، والعنوان القديم `srv2100776.hstgr.cloud` يحوّل إليه في `deploy/docker/router.php`)، بـ Docker وPostgreSQL على السيرفر نفسه. والنشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` (مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان)، أو من الجوال بـ `legends-deploy` في Web console على hPanel (X64)، والمفاتيح يكتبها سليمان على السيرفر بـ `legends-set` ولا تُكتب في المحادثة. وRender وSupabase باقيان باللعبة القديمة حتى يقرر صاحب المشروع، ولا شيء لهما في المستودع.
+- **اللعبة على سيرفرنا في Hostinger** (`README.md` القسم 8): **https://gamelegendmanager.online** (X77، 2026-11-02، بدل `nesr.site` الذي أُلغي كلياً، وأي اسم آخر يحوّل إليه في `deploy/docker/router.php`)، بـ Docker وPostgreSQL على السيرفر نفسه. والنشر بنقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` (مفتاح SSH `~/.ssh/legends_vps` على جهاز سليمان)، أو من الجوال بـ `legends-deploy` في Web console على hPanel (X64)، والمفاتيح يكتبها سليمان على السيرفر بـ `legends-set` ولا تُكتب في المحادثة. وRender وSupabase باقيان باللعبة القديمة حتى يقرر صاحب المشروع، ولا شيء لهما في المستودع.
 - **منجز:** Sprint 01 (الأساس)، و03 (التحسينات العاجلة)، و04 (updates1: وثيقة المواصفات واللغتان والهوية)، و05 (سيرفرنا)، و21 (updates2، 2026-10-29).
 - **جارٍ:** Sprint 02 (Unity): المشهد يعمل في المحرر والمتصفح، ويبقى B1 (`/matches/{id}/scene`) والإغلاق.
 - **Sprint 21 منجز (2026-10-29)** (`sprints/21-owner-updates2.md`): الأجزاء E1 إلى E8 وقاعدة الإعلانات E9. وما بقي نُقل إلى Sprint 20 (S1 إلى S6) وأُنجز. وما دام CI معطلاً تُشغَّل الفحوص محلياً قبل الدمج.

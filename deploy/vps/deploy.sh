@@ -31,7 +31,7 @@ git archive --format=tar.gz HEAD Dockerfile .dockerignore backend data web docs/
 
 # The secrets, made once on the server: the database password and the app key's seed.
 ssh_ 'test -f /opt/legends/.env || { umask 077; {
-  echo "PUBLIC_URL=https://nesr.site"
+  echo "PUBLIC_URL=https://gamelegendmanager.online"
   echo "DB_PASSWORD=$(openssl rand -hex 24)"
   echo "APP_KEY_SEED=$(openssl rand -hex 32)"
 } > /opt/legends/.env; echo "Made /opt/legends/.env"; }

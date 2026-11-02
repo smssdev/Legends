@@ -10,7 +10,7 @@
  */
 const env = (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_SITE_URL
   ?? (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.VITE_SITE_URL
-export const SITE_URL = (env || 'https://nesr.site').replace(/\/+$/, '')
+export const SITE_URL = (env || 'https://gamelegendmanager.online').replace(/\/+$/, '')
 
 export const BRAND = { ar: 'Game Legend Manager · المدرب الأسطورة', en: 'Game Legend Manager' } as const
 
