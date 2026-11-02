@@ -3,6 +3,7 @@
 namespace App\League;
 
 use App\Messages\Inbox;
+use App\Notify\MatchEmail;
 use App\Simulator\Report;
 use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,8 @@ class MatchReport
                 Inbox::send(Inbox::coachOf($clubId), 'match_report', ['match_id' => $matchId, 'result' => $report['result'],
                     'opponent' => $state['teams'][$other]['club']['name'], 'score' => $state['score'][$side].' - '.$state['score'][$other]],
                     $f->league_id, $clubId);
+                // [X79] And by email, for a coach who asked for it.
+                MatchEmail::send(Inbox::coachOf($clubId), $state, $side, $matchId, $f->league_id);
             }
         }
     }

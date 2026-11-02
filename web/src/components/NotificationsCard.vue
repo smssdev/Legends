@@ -70,6 +70,12 @@ async function toggle(kind: string, on: boolean) {
   settings.value = (await api.PUT('/notifications', { body: { kinds: { [kind]: on } } })).data!
 }
 
+// [X79] The match summary by email, off until the coach asks for it.
+async function toggleEmail(on: boolean) {
+  await ensureCsrf()
+  settings.value = (await api.PUT('/notifications', { body: { email_match: on } })).data!
+}
+
 onMounted(load)
 </script>
 
@@ -92,6 +98,11 @@ onMounted(load)
 
     <!-- [Sprint 21 E3.6] The game's own tone when a message arrives, on this device. -->
     <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
+
+    <!-- [X79] The match summary by email: the score, the scorers and the way to the report. -->
+    <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_match" :label="$t('ملخص المباراة بالبريد')"
+      :hint="settings.email_ready ? $t('النتيجة والهدافون ورابط التقرير بعد كل مباراة لك') : $t('أكّد بريدك أولاً من صفحة حسابك ليصلك الملخص')"
+      @update:model-value="(on: boolean) => toggleEmail(on)" />
 
     <template v-if="settings">
       <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>

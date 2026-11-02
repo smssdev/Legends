@@ -9,18 +9,48 @@ use App\Simulator\MomentClock;
 use App\Simulator\Runner;
 use App\Simulator\Simulator;
 use App\Simulator\Voice;
+use App\Support\GameClock;
 use Illuminate\Support\Facades\DB;
 
 /**
  * A league match again [PLAN 2.12, Sprint 19 B3]: its starting state (seed and config snapshot inside) and the
  * orders at the minutes they went in give every minute as it was, with its frames, while the engine is the
- * same version. A match from an older engine is shown from its stored events.
+ * same version. [X78] And the scene is kept when the match ends (match_replays), so it is watched the same after the
+ * engine changes. A match from an older engine with no kept scene is shown from its stored events.
  */
 class MatchReplay
 {
     public static function replayable(object $match): bool
     {
-        return (int) $match->engine_version === (int) config('game.engine.version');
+        return (int) $match->engine_version === (int) config('game.engine.version')
+            || DB::table('match_replays')->where('match_id', $match->id)->exists();
+    }
+
+    /**
+     * [X78] Keep a finished match's scene, once, while its engine is this one (after it, the scene can no longer be
+     * made). True when it is kept, now or before.
+     */
+    public static function keep(object $match): bool
+    {
+        if (DB::table('match_replays')->where('match_id', $match->id)->exists()) {
+            return true;
+        }
+        if ($match->status !== 'finished' || (int) $match->engine_version !== (int) config('game.engine.version')) {
+            return false;
+        }
+        $packed = base64_encode((string) gzencode(json_encode(self::make($match), JSON_UNESCAPED_UNICODE), 6));
+        DB::table('match_replays')->insertOrIgnore(['match_id' => $match->id, 'engine_version' => (int) $match->engine_version,
+            'bytes' => strlen($packed), 'ticks' => $packed, 'created_at' => GameClock::now()]);
+
+        return true;
+    }
+
+    /** [X78] The kept scene, or null. */
+    public static function kept(int $matchId): ?array
+    {
+        $packed = DB::table('match_replays')->where('match_id', $matchId)->value('ticks');
+
+        return $packed === null ? null : json_decode((string) gzdecode(base64_decode($packed)), true);
     }
 
     /** The final state and every minute (the engine's output), as the match was played. */
@@ -37,8 +67,13 @@ class MatchReplay
         return [$state, $ticks];
     }
 
-    /** Every minute as the viewer plays it: the frames, the players' numbers and the scene's length. */
+    /** Every minute as the viewer plays it: the frames, the players' numbers and the scene's length (kept, or made now). */
     public static function ticks(object $match): array
+    {
+        return self::kept((int) $match->id) ?? self::make($match);
+    }
+
+    private static function make(object $match): array
     {
         $state = json_decode($match->initial_state, true);
         $orders = MatchOrders::byTick($match->id);

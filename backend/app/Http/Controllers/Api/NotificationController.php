@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Notify\MatchEmail;
 use App\Notify\Push;
 use App\Support\GameClock;
 use Illuminate\Http\JsonResponse;
@@ -22,15 +23,21 @@ class NotificationController extends Controller
             'enabled' => Push::configured(),
             'devices' => DB::table('push_subscriptions')->where('user_id', $user->id)->count(),
             'kinds' => array_map(fn ($k) => ['kind' => $k, 'on' => Push::wants($user->id, $k)], array_keys(config('game.notifications.kinds'))),
+            // [X79] The match summary by email: the account's choice (off by default), and whether it can arrive.
+            'email_match' => MatchEmail::wants($user->id),
+            'email_ready' => (bool) $user->email && $user->email_verified_at !== null,
         ]);
     }
 
     public function update(Request $request): JsonResponse
     {
         $kinds = array_keys(config('game.notifications.kinds'));
-        $data = $request->validate(['kinds' => 'required|array', 'kinds.*' => 'boolean']);
+        $data = $request->validate(['kinds' => 'required_without:email_match|array', 'kinds.*' => 'boolean', 'email_match' => 'sometimes|boolean']);
         $prefs = json_decode((string) $request->user()->notify_prefs, true) ?: [];
-        foreach ($data['kinds'] as $kind => $on) {
+        if (array_key_exists('email_match', $data)) {
+            $prefs['email_match'] = (bool) $data['email_match'];
+        }
+        foreach ($data['kinds'] ?? [] as $kind => $on) {
             abort_unless(in_array($kind, $kinds, true), 422, 'نوع إشعار غير معروف.');
             $prefs[$kind] = (bool) $on;
         }

@@ -16,6 +16,7 @@ use App\Support\GameClock;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -418,7 +419,7 @@ class MatchRunner
     /** Show a finished match: the fixture's result, the table, the cup, and its mark on the players. */
     public static function publish(int $id): bool
     {
-        return DB::transaction(function () use ($id) {
+        $done = DB::transaction(function () use ($id) {
             if (DB::table('matches')->where('id', $id)->where('status', 'done')->update(['status' => 'finished']) !== 1) {
                 return false;
             }
@@ -426,5 +427,16 @@ class MatchRunner
 
             return true;
         });
+        // [X78] Its scene kept for good, outside the result's transaction: a failure here never touches the result
+        // (the replay is made again from the seed while the engine is the same, and matches:keep-replays tries again).
+        if ($done) {
+            try {
+                MatchReplay::keep(DB::table('matches')->where('id', $id)->first());
+            } catch (Throwable $e) {
+                Log::warning("Replay of match {$id} not kept: ".$e->getMessage());
+            }
+        }
+
+        return $done;
     }
 }

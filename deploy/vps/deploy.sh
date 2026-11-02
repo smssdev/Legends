@@ -21,6 +21,10 @@ if [ "${busy:-0}" -gt 0 ] 2>/dev/null && [ "${LEGENDS_FORCE:-0}" != "1" ]; then
 fi
 echo "Safe to deploy: no match live or due within 30 minutes."
 
+# [X78] Every finished match's scene kept by the running game, while its engine is still the one it was played on: a
+# new engine can no longer remake it. An older game without the command just says so.
+ssh_ 'docker exec legends-app-1 php artisan matches:keep-replays 2>/dev/null | tail -n 1 || echo "No replays kept (older game)."' || true
+
 # [Sprint 21 E8.7] The disk first: a build needs room, and a full disk stops the database. Under 2 GB free, stop here.
 ssh_ 'free=$(df -Pm / | awk "NR==2 {print \$4}"); echo "Disk: ${free} MB free"; [ "$free" -ge 2048 ] || {
   echo "Under 2 GB free: clean up first (docker image prune -a, docker builder prune). The pgdata volume is never touched."; exit 1; }'
