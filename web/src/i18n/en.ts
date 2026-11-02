@@ -2118,6 +2118,8 @@ export const EN: Record<string, string> = {
   'دهشة المدرب': 'The coach in disbelief',
   'المدرب يفكر': 'The coach thinks',
   'المدرب': 'The coach',
+  'توتر في الملعب': 'Tempers flare',
+  'طرد!': 'Sent off!',
   'لون الطقم الاحتياطي': 'Change kit colour',
   'نقش الطقم الاحتياطي': 'Change kit pattern',
   'سادة': 'Plain',

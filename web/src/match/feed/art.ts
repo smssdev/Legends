@@ -171,7 +171,9 @@ export function player(p, kit, no, s = 1, o = {}) {
     <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Amin, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${no ?? ''}</text>`
   const back = body.querySelector('[data-back]'), chest = body.querySelector('[data-front]')
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
-  const arms = [part(-14.5, -7, arm), part(14.5, -7, arm)]
+  // [Sprint 35 C2] The right hand can hold a card up (the referee's).
+  const arms = [part(-14.5, -7, arm), part(14.5, -7, arm + '<rect data-card="1" x="-4.5" y="20" width="9" height="13" rx="1.5" stroke="rgba(0,0,0,.35)" stroke-width=".8" display="none"/>')]
+  const cardEl = arms[1].e.querySelector('[data-card]')
   // The head from behind (hair over it), from the front (a face) and from the side (a profile looking right).
   const head = part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/>
     <g data-h="back"><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/></g>
@@ -195,6 +197,8 @@ export function player(p, kit, no, s = 1, o = {}) {
       fig.insertBefore(arms[0].e, f === 'side' ? body : arms[1].e)
     },
     get facing() { return facing },
+    // [Sprint 35 C2] A card in the right hand (its colour), or none.
+    card(colour) { sa(cardEl, 'display', colour ? 'inline' : 'none'); if (colour) sa(cardEl, 'fill', colour) },
     // Arm angles: 0 hangs down, positive swings the left arm out (the right arm takes the negative).
     pose(l1 = 3, l2 = -3, a1 = 10, a2 = -10, lift1 = 0, lift2 = 0) { setLeg(0, l1, lift1); setLeg(1, l2, lift2); setArm(0, a1); setArm(1, a2) },
     // From the side the legs and arms swing forward and back (a stride); from behind or in front they lift in turn.
@@ -328,7 +332,15 @@ function openPlay(e, outcome, KT) {
   // Where the ball ends: chosen from the outcome, then the keeper's answer to it.
   const corner = (far) => [side * (far ? -1 : 1) > 0 ? POSTS[1] - 9 - R() * 10 : POSTS[0] + 9 + R() * 10, pick([84, 92, 136, 142, 140])]
   let target, kGoal, kWrong = false, after = 'net'
-  if (outcome === 'goal') {
+  // [Sprint 35 C2] How a one-on-one ends: a chip over the keeper coming out, or round him into the empty net.
+  const finish = outcome === 'goal' && q === 'big' ? pick(['shot', 'shot', 'chip', 'round']) : 'shot'
+  if (outcome === 'goal' && finish === 'chip') {
+    target = [320 + side * (8 + R() * 20), 140]
+    kGoal = [lerp(320, target[0], 0.4), 150]
+  } else if (outcome === 'goal' && finish === 'round') {
+    target = [320 - side * (20 + R() * 20), 144]
+    kGoal = [320 + side * 40, 170]
+  } else if (outcome === 'goal') {
     target = q === 'big' && R() < 0.4 ? [320 + side * (30 + R() * 25), 144] : corner(R() < 0.6)
     kWrong = q !== 'big' && R() < 0.3
     const reach = q === 'long' && target[1] < 100 ? 0.5 : 0.72
@@ -337,6 +349,11 @@ function openPlay(e, outcome, KT) {
     const high = R() < 0.45
     target = [320 + (R() < 0.5 ? -1 : 1) * (q === 'big' ? 14 + R() * 18 : 20 + R() * 46), high ? 86 + R() * 16 : 118 + R() * 24]
     after = e.corner ? (target[1] < 104 ? 'tip' : 'parry') : Math.abs(target[0] - 320) < 30 ? 'hold' : pick(['hold', 'parry'])
+    // [Sprint 35 C2] Different saves: a high ball near him punched clear with both fists, a low one near him blocked
+    // with his foot (a one-on-one), a high one wide tipped over.
+    if (!e.corner && high && Math.abs(target[0] - 320) < 34 && R() < 0.6) after = 'punch'
+    else if (!e.corner && !high && q === 'big' && R() < 0.6) { after = 'foot'; target = [320 + side * (10 + R() * 14), 142] }
+    else if (!e.corner && high && Math.abs(target[0] - 320) > 40 && R() < 0.4) after = 'tip'
     kGoal = target
   } else if (outcome === 'miss') {
     const how = e.how ?? 'wide'
@@ -350,10 +367,10 @@ function openPlay(e, outcome, KT) {
     kGoal = [320, 120]
   }
   const strike = [spot[0] - 3, spot[1] + 2]
-  const loft = { big: 28, normal: 48, half: 34, long: 70, header: 14 }[q] + (target[1] < 100 ? 22 : 0)
+  const loft = finish === 'chip' ? 110 : { big: 28, normal: 48, half: 34, long: 70, header: 14 }[q] + (target[1] < 100 ? 22 : 0)
   const path = [strike, [(strike[0] + target[0]) / 2 + side * (R() - 0.3) * 40, Math.min(strike[1], target[1]) - loft], target]
   const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
-  const kRush = q === 'big' ? 22 : 0, kx0 = () => 320 + (lx - 320) * 0.18
+  const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
   const out = side > 0 ? 1 : -1
   let landed = null
 
@@ -376,6 +393,8 @@ function openPlay(e, outcome, KT) {
     if (t < tP1) { const f = inout(seg(t, 0.1, tP1)); sx = lerp(sFrom[0], recv[0], f); sy = lerp(sFrom[1], recv[1], f) }
     else { const f = inout(seg(t, tP1, tS)); sx = lerp(recv[0], spot[0], f); sy = lerp(recv[1], spot[1], f) }
     if (q === 'header') lift = 26 * Math.sin(Math.PI * seg(t, tS - 0.32, tS + 0.3))
+    // Round the keeper: a touch past him to the side, then the finish.
+    if (finish === 'round') sx -= side * 36 * ease(seg(t, tS - 0.5, tS - 0.05))
     put(sh, sx, sy, q === 'header' ? -side * 8 * seg(t, tS - 0.3, tS) : 0, 1, lift)
     if (t > KT + 0.5 && outcome === 'goal') {
       // Away to the corner flag, arms out; the team-mate follows him.
@@ -402,7 +421,9 @@ function openPlay(e, outcome, KT) {
     if (t < tD) ready(kp, k0 + (sx - 320) * 0.08, ky, t, q === 'big' ? 1.4 : 1)
     else {
       const f = seg(t, tD, KT), a = seg(t, KT + 0.25, KT + 0.9)
-      glove = after === 'block' ? (ready(kp, k0, ky, t), null) : dive(kp, k0, ky, kGoal[0], kGoal[1], f, a)
+      if (after === 'punch') { const j = Math.sin(Math.PI * Math.min(1, f * 1.2)); put(kp, lerp(k0, target[0], f), ky, 0, 1, 26 * j); kp.pose(10, -10, 172, -172, 0.3, 0.3); glove = [target[0], target[1]] }
+      else if (after === 'foot') { put(kp, lerp(k0, target[0] - side * 8, f), ky + 6 * f); kp.pose(6, -64 * f * side, 40, -40); glove = [target[0], target[1]] }
+      else glove = after === 'block' ? (ready(kp, k0, ky, t), null) : dive(kp, k0, ky, kGoal[0], kGoal[1], f, a)
       if (outcome === 'goal' && t > KT + 1.6) kp.pose(4, -4, 150, -150)
     }
 
@@ -428,6 +449,8 @@ function openPlay(e, outcome, KT) {
       if (after === 'net') { const f = ease(clamp(a / 0.18)), d = clamp((a - 0.18) / 0.5); bx = target[0] + (target[0] - 320) * 0.05 * f; by = lerp(target[1] - 10 * f, 146, d * d) - Math.abs(Math.sin(d * 9)) * 4 * (1 - d); gr = LINE - 8 }
       else if (after === 'hold') { landed ??= glove; bx = (glove ?? landed)[0]; by = (glove ?? landed)[1]; gr = LINE + 2; turn = 0 }
       else if (after === 'parry') { const f = ease(clamp(a / 0.8)), dx = Math.sign(target[0] - 320) || 1; const p = bez([target, [target[0] + dx * 70, target[1] - 26], [target[0] + dx * (e.corner ? 150 : 96), 196]], f); bx = p[0]; by = p[1] - Math.abs(Math.sin(f * 7)) * 8 * (1 - f); gr = lerp(LINE, 196, f) }
+      else if (after === 'punch') { const f = ease(clamp(a / 0.8)); const p = bez([target, [target[0] + (target[0] - 320) * 2, target[1] - 40], [target[0] + (target[0] >= 320 ? 120 : -120), 230]], f); bx = p[0]; by = p[1]; gr = lerp(LINE, 230, f) }
+      else if (after === 'foot') { const f = ease(clamp(a / 0.8)); const p = bez([target, [target[0] - side * 50, target[1] + 10], [target[0] - side * 150, 220]], f); bx = p[0]; by = p[1]; gr = lerp(LINE + 4, 220, f) }
       else if (after === 'tip') { const f = ease(clamp(a / 0.7)); bx = target[0] + Math.sign(target[0] - 320) * 26 * f; by = lerp(target[1], 30, f); gr = LINE - 10 * f; op = 1 - seg(a, 0.45, 0.7) }
       else if (after === 'post') { const f = ease(clamp(a / 0.9)); const p = bez([target, [lerp(target[0], 320, 0.3), target[1] + 10], [lerp(target[0], 320, 0.55), 212]], f); bx = p[0]; by = p[1] - Math.abs(Math.sin(f * 6)) * 10 * (1 - f); gr = lerp(LINE, 212, f) }
       else if (after === 'block') { const f = ease(clamp(a / 0.9)); const p = bez([target, [target[0] + side * 60, target[1] - 40], [target[0] + side * 160, target[1] + 40]], f); bx = p[0]; by = p[1]; gr = lerp(target[1] + 6, target[1] + 40, f) }
@@ -566,18 +589,48 @@ export const SCENES = {
       tt(seg(t, 2.2, 2.6))
     } }
   },
+  // [Sprint 35 C2] The card: the referee holds it up over the offender, who protests (arms out, or hands together
+  // pleading); a red, and he walks off, head down, past his team-mate.
   card(e) {
-    const svg = stage(e.side), red = e.type === 'red', col = red ? '#EF4444' : '#FFD400'
-    const pl = player(svg, K(e.side).kit, e.no, 1.6)
-    const glow = el('circle', { cx: 430, cy: 150, r: 90, fill: col, opacity: 0, filter: ref(svg, 'soft') }, svg)
-    const card = el('g', {}, svg); card.innerHTML = `<rect x="-38" y="-54" width="76" height="108" rx="8" fill="${col}"/><path d="M-30 -46 L30 -46" stroke="rgba(255,255,255,.5)" stroke-width="3"/>`
+    const svg = stage(e.side), w = svg.world, red = e.type === 'red', col = red ? '#EF4444' : '#FFD400', R = rnd(e.v ?? (e.no ?? 4) * 13)
+    const rf = player(w, officialKit(), '', 1.5, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const pl = player(w, K(e.side).kit, e.no, 1.5, { look: Math.floor(R() * 40) })
+    const mate = red ? player(w, K(e.side).kit, '', 1.3, { look: Math.floor(R() * 40) }) : null
+    const glow = el('circle', { cx: 250, cy: 120, r: 70, fill: col, opacity: 0, filter: ref(svg, 'soft') }, w)
+    const plead = R() < 0.5
     const tt = title(svg, red ? tr('طرد!') : tr('إنذار'), col)
     return { dur: 4.4, svg, update(t) {
-      pl.at(230, 228, t > 1.4 ? -6 : 0)
-      const f = ease(seg(t, 0.4, 1.1))
-      sa(card, 'transform', `translate(430 ${lerp(360, 150, f)}) rotate(${lerp(-35, 8, f)}) scale(${Math.max(0.05, Math.cos((1 - f) * 1.4))} 1)`)
-      sa(glow, 'opacity', 0.45 * seg(t, 1, 1.4))
-      tt(seg(t, 1.3, 1.7))
+      cam(svg, 1.08, 320, 200)
+      rf.face?.('front'); pl.face?.('front')
+      rf.at(250, 196, 0, 1.5)
+      const up = ease(seg(t, 0.5, 1.0))
+      rf.pose(3, -3, 12, -12 - 156 * up)
+      rf.card(up > 0.05 ? col : null)
+      sa(glow, 'opacity', 0.4 * seg(t, 0.9, 1.3))
+      // The offender: protests, then (a red) walks away.
+      const go = red ? ease(seg(t, 2.0, 4.4)) : 0
+      pl.at(lerp(400, 700, go), 200 + go * 20, 0, 1.5)
+      if (go > 0) { pl.face?.('side', 1); pl.run(t * 6, 0.25); pl.despair() }
+      else if (t > 1.0) { const w2 = Math.sin(t * 7) * 10; plead ? pl.pose(4, -4, 60 + w2, -60 - w2) : pl.pose(6, -6, 96 + w2, -96 - w2) }
+      else pl.pose()
+      if (mate) { mate.at(lerp(520, 470, ease(seg(t, 1.5, 2.5))), 214, 0, 1.3); mate.pose(3, -3, 40, -40) }
+      tt(seg(t, 1.1, 1.5))
+    } }
+  },
+  // [Sprint 35 C2] After a red card: players of both sides square up and push, the referee steps in between them.
+  brawl(e) {
+    const svg = stage(e.side), w = svg.world, R = rnd(e.v ?? 11)
+    const a = [0, 1, 2].map((i) => player(w, K(e.side).kit, '', 1.3, { look: Math.floor(R() * 40) }))
+    const b = [0, 1, 2].map((i) => player(w, K(other(e.side)).kit, '', 1.3, { look: Math.floor(R() * 40) }))
+    const rf = player(w, officialKit(), '', 1.35, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const tt = title(svg, tr('توتر في الملعب'), '#EF4444')
+    return { dur: 2.8, svg, update(t) {
+      cam(svg, 1.12 + 0.05 * Math.sin(t * 2), 320, 200)
+      const shove = Math.sin(t * 9)
+      a.forEach((p, i) => { p.face?.('side', 1); p.at(250 + i * 18 + shove * (i === 1 ? 10 : 4), 200 + i * 14, shove * 6, 1.3); p.pose(10, -10, 80 + shove * 30, 70 - shove * 20) })
+      b.forEach((p, i) => { p.face?.('side', -1); p.at(390 - i * 18 - shove * (i === 1 ? 10 : 4), 204 + i * 12, -shove * 6, 1.3); p.pose(10, -10, 80 - shove * 30, 70 + shove * 20) })
+      rf.face?.('front'); rf.at(320, 214, 0, 1.35); rf.pose(3, -3, 100 + Math.sin(t * 6) * 10, -100 - Math.sin(t * 6) * 10)
+      tt(seg(t, 0.2, 0.6))
     } }
   },
   offside(e) {

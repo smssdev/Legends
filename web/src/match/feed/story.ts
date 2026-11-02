@@ -29,7 +29,7 @@ export const SCENE_TIME = {
   goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
   offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
   // [Sprint 35 C1] The director's cutaways after a scene.
-  crowd: [2.6, 0.3], coachReact: [2.4, 0.2],
+  crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2],
 }
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 
@@ -127,7 +127,7 @@ export function story(tick, ctx) {
   } else if ((kind === 'red' || kind === 'yellow') && card) {
     const s = card.team, red = kind === 'red'
     Object.assign(vars, { p: card.player, A: s })
-    set('card', s, { no: no(card.player), type: red ? 'red' : 'yellow' }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : club(s))
+    set('card', s, { no: no(card.player), type: red ? 'red' : 'yellow', v: seed() }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : club(s))
     before(t('خطأ'), nm(card.player), t('الحكم يقترب...'))
     speak(card.second_yellow ? 'second_yellow' : red ? 'red' : 'yellow', { key: 0.3, post: 0.65 })
     item(s, red ? 'red' : 'yellow', nm(card.player), red ? (card.second_yellow ? t('إنذار ثانٍ وطرد') : t('بطاقة حمراء')) : t('بطاقة صفراء'))
