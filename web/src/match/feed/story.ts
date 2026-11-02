@@ -10,6 +10,9 @@ import VOICE_LINES from '../../../../backend/resources/commentary/voice.json'
 import { locale, t } from '../../lib/i18n'
 import { cn } from '../../lib/names'
 import { scoreText } from '../../lib/format'
+import { SCENE_TIME } from './timing'
+
+export { SCENE_TIME }
 
 // Commentary. {p} the main player, {q} the second one (assist, keeper, defender),
 // {A} the club the moment belongs to, {B} the other one, {n} a number.
@@ -24,15 +27,6 @@ function rng(seed) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }
 }
 const first = (events, type) => events.find((e) => e.type === type)
-// The scene's own length in seconds, and when its key moment happens (see art.ts).
-export const SCENE_TIME = {
-  goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
-  offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
-  // [Sprint 35 C1] The director's cutaways after a scene.
-  crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2], tunnel: [2.8, 0.2], handshake: [3.0, 0.2],
-  // [Sprint 35 C3] A goal ruled out by VAR: the ball in at 3.0 s, the check, no goal at 6.4 s.
-  var: [8.2, 6.4],
-}
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 
 /**
