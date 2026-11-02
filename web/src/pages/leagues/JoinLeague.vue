@@ -5,6 +5,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
+import { track } from '../../lib/analytics'
 import { budget, END_MODES, when, type League } from '../../api/leagues'
 import Icon from '../../components/Icon.vue'
 import UiButton from '../../components/ui/UiButton.vue'
@@ -36,6 +37,7 @@ async function send() {
     const { data } = await api.POST('/leagues/join', { body: { code: clean.value } })
     league.value = data!.league ?? null
     status.value = data!.request.status
+    track('join_league', { template: league.value?.template ?? '' })
     router.replace({ query: { league: league.value?.id } })
   } catch (e) {
     error.value = asApiError(e).message

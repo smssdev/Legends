@@ -9,6 +9,7 @@ import UiToggle from '../../components/ui/UiToggle.vue'
 import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { track } from '../../lib/analytics'
 import { api, asApiError, ensureCsrf, type ApiError } from '../../api/client'
 import { budget, END_MODES, lockFromRound, roundsFor } from '../../api/leagues'
 import type { components } from '../../api/schema'
@@ -140,6 +141,7 @@ async function create() {
       },
     })
     void wallet.load()
+    track('create_league', { template: template.value })
     router.push({ name: 'league-home', params: { id: data!.league.id }, query: { welcome: '1' } })
   } catch (e) {
     error.value = asApiError(e)

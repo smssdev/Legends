@@ -544,6 +544,14 @@ paths:
                       slot: { type: string, nullable: true, description: The display unit's id, null for none }
                       rewarded: { type: boolean, description: 'Google''s rewarded video (H5 Games Ads) is tried before the game''s own ad' }
                       test: { type: boolean, description: Google's test ads, until H5 Games Ads approves the site }
+                  analytics:
+                    type: object
+                    nullable: true
+                    description: '[X81] The site''s measurement for the web, null when both are off'
+                    required: [ga, pixel]
+                    properties:
+                      ga: { type: string, nullable: true, example: G-XXXXXXXXXX, description: Google Analytics 4 measurement id }
+                      pixel: { type: string, nullable: true, description: Meta Pixel id }
   /health/ping:
     post:
       tags: [system]

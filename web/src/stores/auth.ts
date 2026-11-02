@@ -1,5 +1,6 @@
 // The signed-in account for the web (Sanctum session cookie) [PLAN 2.17].
 import { defineStore } from 'pinia'
+import { track } from '../lib/analytics'
 import { computed, ref } from 'vue'
 import { api, ensureCsrf, type Account } from '../api/client'
 import { adoptLocale } from '../lib/i18n'
@@ -28,6 +29,7 @@ export const useAuth = defineStore('auth', () => {
     const { data } = await api.POST('/auth/login', { body: { email, password, remember } })
     user.value = data!.user!
     adoptLocale(user.value.locale)
+    track('login')
   }
   /** [UP5] The name, the username and the password; the session stays until the coach signs out. */
   async function register(name: string, username: string, password: string) {
@@ -39,6 +41,7 @@ export const useAuth = defineStore('auth', () => {
     } catch {}
     const { data } = await api.POST('/auth/register', { body: { name, username, password, ref } })
     user.value = data!.user
+    track('sign_up')
     return data!.verification_sent !== false
   }
   async function logout() {
