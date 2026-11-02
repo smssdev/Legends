@@ -513,7 +513,7 @@ function tvFor(id, side) {
     const kit = gk ? keeperKit(side) : props.kits[side].kit
     // [Sprint 31 D2] Build and height from his id (README 7.3): the same player looks the same on every screen.
     const n = Number(id) || 0
-    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100 })
+    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100, hair: (n * 11 + 3) % 5 })
     t = { f, ph: Number(id) % 7, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
     tvPlayers.set(id, t)
   }
@@ -600,6 +600,7 @@ function actions(tick, f, u) {
 // [Sprint 33 L3] Where each player was last drawn (for the one taken off), and how much of the minute a substitution's
 // walk takes.
 const lastSeen = new Map(), SUB_WALK = 0.45
+let ballTurn = 0, lastBall = [525, 340]
 let tvLast = 0
 function drawTv(tick, u) {
   if (!ctx || !fit()) return
@@ -751,6 +752,13 @@ function drawTv(tick, u) {
       if (tier.value === 'high' && u < 1 && Math.hypot(dx, dy) > 6) for (let n = 3; n >= 1; n--) { ctx.fillStyle = `rgba(255,255,255,${0.12 * (4 - n)})`; ctx.beginPath(); ctx.arc(px - dx * n * 0.35, ry - dy * n * 0.35, rr * (1 - n * 0.12), 0, Math.PI * 2); ctx.fill() }
       ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 1
       ctx.beginPath(); ctx.arc(px, ry, rr, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+      // [Sprint 33 V1] Its panels turn as it rolls or flies (by the way it has come), and the floodlights' glint.
+      if (tier.value !== 'low') {
+        ballTurn += Math.hypot(bx - lastBall[0], by - lastBall[1]) * 0.03 * (bx >= lastBall[0] ? 1 : -1); lastBall = [bx, by]
+        ctx.fillStyle = '#1B2333'
+        for (let n = 0; n < 3; n++) { const a = ballTurn + n * 2.09, x = px + Math.cos(a) * rr * 0.55; if (Math.sin(a) > -0.2) { ctx.beginPath(); ctx.arc(x, ry + Math.sin(a * 0.7) * rr * 0.25, rr * 0.28, 0, Math.PI * 2); ctx.fill() } }
+        ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.arc(px - rr * 0.38, ry - rr * 0.4, rr * 0.22, 0, Math.PI * 2); ctx.fill()
+      }
     }
   }
   // The ball in a net: it ripples.

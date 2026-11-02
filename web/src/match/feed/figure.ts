@@ -46,11 +46,37 @@ export function figure(kit, no, o = {}) {
     if (f === 'front') { c.font = '800 8px "Barlow Condensed", Amin, sans-serif'; c.fillText(String(no ?? ''), 6, 4) }
     c.restore()
     c.fillStyle = skin; c.fillRect(-3.4, -15, 6.8, 7); dot(c, 0, -21, 9.4, skin)
-    c.fillStyle = hair
-    if (f === 'back') c.fill(P.hairBack)
-    if (f === 'front') { c.fill(P.hairFront); dot(c, -3.4, -21, 1.3, '#141414'); dot(c, 3.4, -21, 1.3, '#141414'); c.strokeStyle = 'rgba(60,20,10,.6)'; c.lineWidth = 1; c.stroke(P.mouth) }
-    if (f === 'side') { c.fill(P.hairSide); dot(c, 4.6, -22, 1.3, '#141414'); c.fillStyle = skin; c.fill(P.nose) }
+    // [Sprint 33 V1] Ears from the front, then his hair in its style, then the face.
+    if (f === 'front') { dot(c, -9.4, -20.5, 2, skin); dot(c, 9.4, -20.5, 2, skin) }
+    hairOf(c, f)
+    if (f === 'front') {
+      dot(c, -3.4, -21, 1.3, '#141414'); dot(c, 3.4, -21, 1.3, '#141414')
+      c.strokeStyle = shade(hair, 10); c.lineWidth = 1.1; c.lineCap = 'round'
+      c.beginPath(); c.moveTo(-5.2, -24.2); c.lineTo(-1.9, -24.7); c.moveTo(1.9, -24.7); c.lineTo(5.2, -24.2); c.stroke()
+      c.strokeStyle = 'rgba(60,20,10,.35)'; c.lineWidth = 0.8; c.beginPath(); c.moveTo(0, -20.5); c.lineTo(-0.8, -18.4); c.lineTo(0.4, -18.2); c.stroke()
+      c.strokeStyle = 'rgba(60,20,10,.6)'; c.lineWidth = 1; c.stroke(P.mouth)
+    }
+    if (f === 'side') { dot(c, 4.6, -22, 1.3, '#141414'); c.strokeStyle = shade(hair, 10); c.lineWidth = 1; c.beginPath(); c.moveTo(2.8, -24.6); c.lineTo(6.4, -24.4); c.stroke(); dot(c, -2.4, -20.5, 2, shade(skin, -12)); c.fillStyle = skin; c.fill(P.nose) }
     return (sprites[f] = cv)
+  }
+  // [Sprint 33 V1] His hair style from the caller (his id): short, cropped, curly, long or shaved.
+  const style = ['short', 'crop', 'curly', 'long', 'shaved'][o.hair ?? 0] ?? 'short'
+  function hairOf(c, f) {
+    c.fillStyle = hair
+    if (style === 'shaved') { c.fillStyle = 'rgba(255,255,255,.18)'; c.beginPath(); c.ellipse(-2.5, -27, 3.4, 1.6, -0.4, 0, Math.PI * 2); c.fill(); return }
+    if (style === 'crop') { c.globalAlpha = 0.75; c.beginPath(); c.arc(0, -21, 9.7, Math.PI * (f === 'back' ? 0.95 : 1.08), Math.PI * (f === 'back' ? 2.05 : 1.92)); c.closePath(); c.fill(); c.globalAlpha = 1; return }
+    if (style === 'curly') {
+      const top = f === 'back' ? [[-7, -27], [-3.5, -30], [0.5, -31], [4.5, -29.5], [7.5, -26], [-8.5, -22.5], [8.5, -22.5], [0, -26]] : [[-7, -27], [-3.5, -30], [0.5, -31], [4.5, -29.5], [7.5, -26], [f === 'side' ? -8.5 : -8.8, -23.5]]
+      for (const [x, y] of top) dot(c, x, y, 3.6, hair)
+      return
+    }
+    c.fill(f === 'back' ? P.hairBack : f === 'front' ? P.hairFront : P.hairSide)
+    if (style === 'long') {
+      if (f === 'back') rr(c, -8.5, -24, 17, 13, 4)
+      else if (f === 'front') { rr(c, -10.6, -26, 3.6, 13, 1.8); rr(c, 7, -26, 3.6, 13, 1.8) }
+      else rr(c, -10, -25, 6, 13, 2.5)
+      c.fillStyle = hair
+    }
   }
   // [Sprint 31 D2] His build (slim, medium or strong: the shirt's width) and height, from the caller (his id).
   const bw = [0.88, 1, 1.14][o.build ?? 1] ?? 1, bh = o.tall ?? 1
