@@ -2,6 +2,8 @@
 // Training (Sprint 27 W1, PLAN 2.8), per the WebTraining and MobileTraining drafts: the four slots with their
 // bars and the countdown to the next session, and the candidates of the chosen line. Every number comes from
 // the server; the countdown reloads when a session is due. "Finish now" waits for the premium coins.
+// [X83] A slot's «اختر لاعباً» or «استبدل اللاعب» opens the picker (TrainingPicker.vue): its line's players with a search,
+// four orders and a filter, one tap to train; a taken slot is replaced in the same tap, the other keeping his progress.
 import { t } from '../../lib/i18n'
 import AdReward from '../../components/ads/AdReward.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
@@ -14,6 +16,7 @@ import UiTabs from '../../components/ui/UiTabs.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, money, type Line } from '../../lib/format'
+import TrainingPicker from './TrainingPicker.vue'
 
 type View = components['schemas']['TrainingView']
 // The "?" texts [X19].
@@ -76,8 +79,15 @@ const wallet = useWallet()
 const finish = (l: string) => act(() => api.POST('/leagues/{league}/training/{line}/finish', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
   'انتهت الجلسة الآن.').then(() => wallet.load())
 
-const train = (id: number, name: string) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } }) as any,
-  `بدأ ${name} التدريب. أول جلسة بعد ${Math.round((v.value?.interval_minutes ?? 0) / 60)} ساعات.`)
+// [X83] replace: the line's player in training makes room in the same step (he keeps his progress).
+const train = (id: number, name: string, replace = false) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id, replace } }) as any,
+  t('بدأ {v0} التدريب. أول جلسة بعد {v1} ساعات.', { v0: name, v1: Math.round((v.value?.interval_minutes ?? 0) / 60) })).then(() => { if (!error.value) picking.value = null })
+// [X83] The picker, opened from a slot: its line's players to choose from.
+const picking = ref<Line | null>(null)
+function pick(l: Line) {
+  line.value = l
+  picking.value = l
+}
 // [Sprint 30 G5] The server's recommended player of each line (the quickest +1), and the empty slots it can fill.
 const isRecommended = (id: number) => Object.values(v.value?.recommended ?? {}).includes(id)
 const emptyRecommended = computed(() => Object.values(v.value?.recommended ?? {}).filter((id): id is number => typeof id === 'number'))
@@ -152,7 +162,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
               <p class="mt-1 text-xs text-text-muted">{{ $t('حوالي {v0} جلسة للـ +1 · {v1} جلسة حتى الآن', { v0: s.player.sessions, v1: s.sessions_done }) }}</p>
             </div>
             <div class="flex gap-2">
-              <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="line = s.line as Line">{{ $t('اختر لاعباً آخر') }}</button>
+              <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="pick(s.line as Line)">{{ $t('استبدل اللاعب') }}</button>
               <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish(s.line)"
                 :title="$t('أنهِ الجلسة الآن')">{{ $t('الآن ·') }} <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
               <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">{{ $t('إفراغ') }}</button>
@@ -165,7 +175,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <template v-else>
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm text-text-muted">{{ $t('الخانة فارغة.') }}</p>
-              <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="line = s.line as Line">{{ $t('اختر لاعباً') }}</button>
+              <button type="button" class="h-touch rounded-md bg-brand px-4 font-bold" @click="pick(s.line as Line)">{{ $t('اختر لاعباً') }}</button>
             </div>
           </template>
           <!-- [X61] Who trains the line: the free basic coach until one is signed, and the way straight to the staff. -->
@@ -201,12 +211,15 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span class="text-center font-numbers text-lg">{{ p.overall }}</span>
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
-          <span v-if="!p.maxed && lineBusy" class="text-center text-xs text-text-muted" :title="$t('لاعب واحد من كل خط في التدريب')">{{ $t('الخانة مشغولة') }}</span>
-          <button v-else-if="!p.maxed" type="button" class="h-touch rounded-md bg-brand px-3 text-sm font-bold disabled:opacity-40" :disabled="busy" @click="train(p.id, p.name)">{{ $t('درّب') }}</button>
+          <!-- [X83] A taken slot no longer blocks: the player takes its place in one tap (the other keeps his progress). -->
+          <button v-if="!p.maxed" type="button" class="h-touch rounded-md px-3 text-sm font-bold disabled:opacity-40" :class="lineBusy ? 'bg-gold text-on-gold' : 'bg-brand'" :disabled="busy"
+            :title="lineBusy ? $t('يأخذ مكان من يتدرب الآن، ويحتفظ ذاك بتقدمه') : undefined" @click="train(p.id, p.name, lineBusy)">{{ lineBusy ? $t('استبدل به') : $t('درّب') }}</button>
           <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>
         <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">{{ $t('لا لاعبين آخرين في هذا الخط.') }}</p>
       </section>
+
+      <TrainingPicker v-if="picking" :view="v" :line="picking" :busy="busy" :error="error" @close="picking = null" @line="(l: Line) => pick(l)" @pick="(p, replace) => train(p.id, p.name, replace)" />
 
       <section :aria-label="$t('منشأة التدريب')" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
         <div class="flex-1"><b class="block">{{ $t('منشأة التدريب') }}</b><span class="text-sm text-text-muted">{{ $t('كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب.') }}</span></div>

@@ -4381,7 +4381,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Put a player in his line's slot (in place of whoever is there) */
+        /** Put a player in his line's slot; with replace, in place of whoever trains there (who keeps his progress) */
         post: {
             parameters: {
                 query?: never;
@@ -4395,6 +4395,8 @@ export interface paths {
                 content: {
                     "application/json": {
                         player_id: number;
+                        /** @description [X83] The line's player in training makes room in the same step; without it a taken slot is a 409 */
+                        replace?: boolean;
                     };
                 };
             };

@@ -90,8 +90,9 @@ class TrainingController extends Controller
     public function add(Request $request, League $league): JsonResponse
     {
         $club = $this->club($request, $league);
-        $data = $request->validate(['player_id' => 'required|integer']);
-        Training::add($club->id, $data['player_id']);
+        $data = $request->validate(['player_id' => 'required|integer', 'replace' => 'sometimes|boolean']);
+        // [X83] replace: the line's player in training makes room (he keeps his progress).
+        Training::add($club->id, $data['player_id'], (bool) ($data['replace'] ?? false));
 
         return $this->show($request, $league);
     }

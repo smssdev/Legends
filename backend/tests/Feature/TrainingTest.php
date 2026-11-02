@@ -130,6 +130,27 @@ class TrainingTest extends TestCase
         $this->assertSame(0, DB::table('training_slots')->count());
     }
 
+    /** [X83] Changing who trains is one step: the new player takes the line's slot, the other keeps his progress. */
+    public function test_a_player_replaces_the_one_training_in_his_line_in_one_step(): void
+    {
+        $p = $this->trainee('mid');
+        $this->actingAs($this->owner)->postJson($this->url(), ['player_id' => $p->id])->assertOk();
+        DB::table('players')->where('id', $p->id)->update(['training_progress' => 4200]);
+        $other = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $this->mine)
+            ->where('master_players.line', 'mid')->whereColumn('master_players.potential', '>', 'players.overall')->where('players.id', '!=', $p->id)->value('players.id');
+
+        $page = $this->postJson($this->url(), ['player_id' => $other, 'replace' => true])->assertOk();
+        $this->assertSame($other, collect($page->json('slots'))->firstWhere('line', 'mid')['player']['id']);
+        $this->assertSame(1, DB::table('training_slots')->where('club_id', $this->mine)->where('line', 'mid')->count());
+        $this->assertSame(4200, (int) DB::table('players')->where('id', $p->id)->value('training_progress'));
+        // Replace touches his own line only: the other lines' slots stay as they were.
+        $def = $this->trainee('def');
+        $this->postJson($this->url(), ['player_id' => $def->id, 'replace' => true])->assertOk();
+        $this->assertSame($def->id, (int) DB::table('training_slots')->where('club_id', $this->mine)->where('line', 'def')->value('player_id'));
+        $this->assertSame($other, (int) DB::table('training_slots')->where('club_id', $this->mine)->where('line', 'mid')->value('player_id'));
+        $this->assertSame(2, DB::table('training_slots')->where('club_id', $this->mine)->count());
+    }
+
     public function test_sessions_run_with_the_coach_away_each_one_paid_and_the_missed_ones_caught_up(): void
     {
         $p = $this->trainee();
