@@ -26,6 +26,8 @@ const STEPS: Step[] = [
 
 const done = (s: Step) => !!props.steps[s.key]
 const count = computed(() => STEPS.filter(done).length)
+// [X86] Closed by default: the next step under its title, the seven when opened.
+const next = computed(() => STEPS.find((s) => !done(s)) ?? null)
 const hidden = ref((() => { try { return localStorage.getItem(`${KEY.value}.hidden`) === '1' } catch { return false } })())
 
 function go(s: Step) {
@@ -38,7 +40,7 @@ function hide() {
 </script>
 
 <template>
-  <Disclosure v-if="!hidden && count < STEPS.length" v-slot="{ open }" as="section" default-open class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3" :aria-label="$t('خطواتك الأولى')">
+  <Disclosure v-if="!hidden && count < STEPS.length" v-slot="{ open }" as="section" class="animate-fade-up rounded-xl border border-gold/30 bg-surface p-3" :aria-label="$t('خطواتك الأولى')">
     <div class="flex items-center gap-2">
       <Character model="A1" :mood="count ? 'cheer' : 'joy'" class="w-12 shrink-0" />
       <DisclosureButton class="flex min-h-touch flex-1 items-center gap-3 text-start">
@@ -51,7 +53,7 @@ function hide() {
           <b class="font-numbers text-sm" dir="ltr">{{ count }}/{{ STEPS.length }}</b>
         </span>
         <span class="min-w-0 flex-1"><b class="block font-display text-base">{{ $t('خطواتك الأولى') }}</b>
-          <span class="text-xs text-text-muted">{{ $t('سبع خطوات تجهّز ناديك لأول مباراة') }}</span></span>
+          <span class="text-xs text-text-muted">{{ open || !next ? $t('سبع خطوات تجهّز ناديك لأول مباراة') : $t('التالية: {v0}', { v0: $t(next.label) }) }}</span></span>
         <span class="text-gold transition-transform duration-200" :class="open ? 'rotate-180' : ''" aria-hidden="true">▾</span>
       </DisclosureButton>
       <button type="button" class="grid size-11 place-items-center rounded-lg text-text-muted hover:bg-surface-raised" :aria-label="$t('إخفاء')" @click="hide">✕</button>
