@@ -307,8 +307,9 @@ const halftimeLeft = ref(30)
 // [X42] The coach's window (live): play stops after minutes 15, 30, 60 and 75; its countdown shares halftimeLeft.
 const windowOn = ref(false)
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
-/** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not its last 2 s). */
-const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && halftimeLeft.value > 2))
+/** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not their last 2 s). */
+// [X78] Half-time keeps the window's margin too: the server makes the second half's first minute a moment early.
+const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || ((halftime.value || windowOn.value) && halftimeLeft.value > 2))
 // [UP17] «أنا مستعد» and the emergency substitution (league, live).
 const pause = ref<LiveSync['pause']>(null)
 const readyBusy = ref(false)
@@ -645,7 +646,8 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (animate && t.events.some((e) => e.type === 'goal')) sound.chant(6)
   else if (animate && t.moment?.kind === 'quiet' && t.minute?.[0] % 13 === 7) sound.chant()
   pendingReveal = () => tell(t, animate)
-  shownAt = performance.now()
+  // [X78] A minute that started before it was shown (back on the page) counts from its real start.
+  shownAt = startAt ?? performance.now()
   if (animate) pitch.value?.play(t, startAt)
   else reveal()
 }
@@ -693,7 +695,7 @@ function tell(t: Tick, animate: boolean) {
 function startHalftime() {
   halftime.value = true
   // Live: the clock ticker counts down to the second half from the server's time.
-  if (live.value) return
+  if (live.value) return clockTick()
   halftimeLeft.value = Math.round((view.value!.timing.halftime_seconds || 30) / speed.value)
   clearInterval(htTimer)
   htTimer = window.setInterval(() => {
@@ -1053,6 +1055,11 @@ onMounted(async () => {
         rerun.value = true
         rerunTicks = r.ticks
         startRerun()
+        // [X78] A finished match opens at its end (the score, the stats, the timeline), not played again from the
+        // kick-off: «شاهدها من جديد» and the highlights play it on demand.
+        intro.value = false
+        while (buffer.length) show(buffer.shift()!, false)
+        return
       } else {
         oldEngine.value = true
       }
@@ -1060,7 +1067,9 @@ onMounted(async () => {
     if (live.value) {
       intro.value = !view.value.started || view.value.tick === 0
       started.value = view.value.started
-      seen = view.value.tick
+      // [X78] Back on the page (closed by mistake, reloaded): from the first minute, so the screen comes back where the
+      // match is (the minute, the half-time or a window, the feed with what was missed), not at a kick-off.
+      seen = 0
       clockTimer = window.setInterval(clockTick, 250)
       keepAwake()
       return poll()
@@ -1077,7 +1086,7 @@ onMounted(async () => {
 // bar the score and the minute; the bar brings the coach back or mutes it. A finished match leaves the bar soon after.
 const broadcast = useBroadcast()
 // This page's own address, taken now: the route object follows the coach to the other screens.
-const ownPath = route.fullPath.split('?')[0]
+const ownPath = route.path
 watch(() => [view.value, score.value.home, score.value.away, minuteText.value, finished.value] as const, () => {
   if (!view.value) return
   broadcast.update({
