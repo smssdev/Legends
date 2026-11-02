@@ -34,34 +34,46 @@ class MatchChoreographer
     public static function frames(array $state, array $out, array $ball): array
     {
         $rng = SeededRandom::forTick($state['seed'], $out['tick'], 9);
-        $path = [[...$ball, 0, null]];
+        // Each waypoint: x, y, height, the side on the ball, and what happens there [Sprint 33 B1, B2]: a pass
+        // reaching a player ('pass' and the attack's phases), a shot's end ('end'), a free kick or a penalty taken
+        // from its spot ('fk', 'pen') and flying at goal ('kick'), or the kick-off ('kickoff').
+        $path = [[...$ball, 0, null, 'start']];
         foreach ($out['events'] as $e) {
             if ($e['type'] === 'attack') {
                 array_push($path, ...self::attackPath($e, $rng));
             } elseif ($e['type'] === 'corner') {
                 $dir = $e['team'] === 'home' ? 1 : -1;
-                $path[] = [self::wx(1040, $dir), $rng->chance(5000) ? 20 : 660, 0, $e['team']];
-                $path[] = [self::wx(990, $dir), 340, 25, $e['team']];
+                $path[] = [self::wx(1040, $dir), $rng->chance(5000) ? 20 : 660, 0, $e['team'], 'corner'];
+                $path[] = [self::wx(990, $dir), 340, 25, $e['team'], 'pass'];
+            } elseif ($e['type'] === 'free_kick' || $e['type'] === 'penalty') {
+                // [B2] The kick from its spot (a free kick around 22 m out, a penalty from the spot), then at goal.
+                $dir = $e['team'] === 'home' ? 1 : -1;
+                $y = fn (int $v) => $dir === 1 ? $v : 680 - $v;
+                $pen = $e['type'] === 'penalty';
+                $path[] = [self::wx($pen ? 940 : 820 + $rng->int(40), $dir), $y($pen ? 340 : 270 + $rng->int(140)), 0, $e['team'], $pen ? 'pen' : 'fk'];
+                $path[] = $e['scored'] ?? false
+                    ? [self::wx(1048, $dir), $y(310 + $rng->int(60)), $pen ? 4 : 14, $e['team'], 'kick']
+                    : [self::wx(1008, $dir), $y(300 + $rng->int(80)), $pen ? 0 : 10, $e['team'], 'kick'];
             } elseif ($e['type'] === 'goal' || ($e['type'] === 'period' && in_array($e['name'], ['halftime', 'extra_time'], true))) {
-                $path[] = [525, 340, 0, null];
+                $path[] = [525, 340, 0, null, 'kickoff'];
             }
         }
         if (count($path) === 1) {
             // A quiet minute: the ball circulates around midfield.
             for ($i = 0; $i < 3; $i++) {
-                $path[] = [400 + $rng->int(250), 180 + $rng->int(320), 0, $rng->chance(5000) ? 'home' : 'away'];
+                $path[] = [400 + $rng->int(250), 180 + $rng->int(320), 0, $rng->chance(5000) ? 'home' : 'away', 'pass'];
             }
         }
 
         $busy = false;
         foreach ($out['events'] as $e) {
-            $busy = $busy || in_array($e['type'], ['corner', 'goal'], true)
+            $busy = $busy || in_array($e['type'], ['corner', 'goal', 'free_kick', 'penalty'], true)
                 || ($e['type'] === 'attack' && in_array($e['result'] ?? null, ['goal', 'saved', 'missed', 'blocked'], true));
         }
 
         $frames = [];
-        foreach (self::sample($path, $busy ? self::FRAMES_BUSY : self::FRAMES) as $i => [$x, $y, $z, $team]) {
-            $at = self::players($state, $x, $y, $team);
+        foreach (self::sample($path, $busy ? self::FRAMES_BUSY : self::FRAMES) as $i => [$x, $y, $z, $team, $leg]) {
+            $at = self::players($state, $x, $y, $team, $leg);
             $frames[] = ['t' => $i, 'b' => [$x, $y, $z], 'p' => $at['p'], 'h' => $at['h'], 'r' => self::officials($x, $y)];
         }
         // [Sprint 32 R1] The pass goes to a player: whoever has the ball in the next Keyframe is already running to
@@ -101,7 +113,7 @@ class MatchChoreographer
                 'shot', 'corner' => [900 + $rng->int(50), 280 + $rng->int(120)],
                 default => [525, 340],
             };
-            $points[] = [self::wx($ax, $dir), $y($ay), $height($phase['n']), $e['team']];
+            $points[] = [self::wx($ax, $dir), $y($ay), $height($phase['n']), $e['team'], $phase['n'] === 'offside' ? 'offside' : ($phase['n'] === 'shot' ? 'shot' : 'pass')];
         }
 
         $end = match ($e['result']) {
@@ -112,7 +124,7 @@ class MatchChoreographer
             default => null,
         };
         if ($end) {
-            $points[] = [self::wx($end[0], $dir), $y($end[1]), $end[2], $e['team']];
+            $points[] = [self::wx($end[0], $dir), $y($end[1]), $end[2], $e['team'], 'end'];
         }
 
         return $points;
@@ -123,7 +135,7 @@ class MatchChoreographer
         return $dir === 1 ? $ax : 1050 - $ax;
     }
 
-    /** Evenly spaced samples along the polyline of waypoints. */
+    /** Evenly spaced samples along the polyline of waypoints, each with the leg it is on. */
     private static function sample(array $path, int $n): array
     {
         $lengths = [0];
@@ -148,6 +160,8 @@ class MatchChoreographer
                 $a[1] + intdiv(($b[1] - $a[1]) * $f, $span),
                 $b[2],
                 $b[3] ?? $a[3],
+                // [Sprint 33 B1] The leg of the path it is on: from what, to what, and how far along (per mille).
+                ['from' => $a[4] ?? 'pass', 'to' => $b[4] ?? 'pass', 'at' => intdiv($f * 1000, $span), 'end' => [$b[0], $b[1]]],
             ];
         }
 
@@ -180,8 +194,18 @@ class MatchChoreographer
      *
      * @return array{p: array<int|string, array{0: int, 1: int}>, h: int|string|null, sides: array<int|string, string>}
      */
-    private static function players(array $state, int $bx, int $by, ?string $possession): array
+    private static function players(array $state, int $bx, int $by, ?string $possession, array $leg = []): array
     {
+        $to = $leg['to'] ?? 'pass';
+        $at = $leg['at'] ?? 1000;
+        $from = $leg['from'] ?? 'pass';
+        // [Sprint 33 B2] At a set piece (arriving at its spot or just leaving it) and at the kick-off, everyone takes
+        // up his place for it.
+        $setPiece = (in_array($to, ['fk', 'pen'], true) && $at >= 600) ? $to : ((in_array($from, ['fk', 'pen'], true) && $at <= 250) ? $from : null);
+        $kickoff = ($to === 'kickoff' && $at >= 600) || ($from === 'kickoff' && $at <= 250);
+        if ($kickoff) {
+            $possession = null;
+        }
         $positions = [];
         $sides = [];
         $lines = [];
@@ -206,6 +230,26 @@ class MatchChoreographer
                 if ($line === 'gk') {
                     $x += intdiv(($bx - 525) * 6, 100);
                     $y = 340 + intdiv(($by - 340) * 25, 100);
+                } elseif ($setPiece !== null && $possession !== null) {
+                    // [B2] A free kick: a wall of four 9 m from the ball towards the goal, the rest of the defence in
+                    // the box, the attackers along its edge. A penalty: everyone outside the box but the taker.
+                    $end = $possession === 'home' ? 1 : -1;
+                    $gx = $end === 1 ? 1050 : 0;
+                    $spot = $n++;
+                    if ($setPiece === 'pen') {
+                        $x = $gx - $end * (190 + ($spot % 3) * 25 + ($attacking ? 0 : 12));
+                        $y = 180 + ($spot * 41) % 320;
+                    } elseif (! $attacking && $spot < 4) {
+                        $len = max(1, abs($gx - $bx) + abs(340 - $by));
+                        $x = $bx + intdiv(($gx - $bx) * 91, $len);
+                        $y = $by + intdiv((340 - $by) * 91, $len) + ($spot - 1) * 14 - 7;
+                    } elseif (! $attacking) {
+                        $x = $gx - $end * (40 + ($spot % 3) * 35);
+                        $y = 270 + ($spot * 29) % 150;
+                    } else {
+                        $x = $gx - $end * (150 + ($spot % 2) * 20);
+                        $y = 230 + ($spot * 37) % 230;
+                    }
                 } elseif ($corner && $possession !== null) {
                     // A corner: most of both sides in the box at the corner's end, the attackers among the defenders.
                     $end = $bx >= 525 ? 1 : -1;
@@ -231,6 +275,10 @@ class MatchChoreographer
                         $y += intdiv(($by - $y) * 25, 100);
                     }
                 }
+                if ($kickoff) {
+                    // [B2] The kick-off: each side in its own half.
+                    $x = $dir === 1 ? min($x, 510) : max($x, 540);
+                }
                 $x = max(15, min(1035, $x));
                 $y = max(15, min(665, $y));
                 $positions[$p['id']] = [$x, $y];
@@ -241,7 +289,7 @@ class MatchChoreographer
 
         // [R3] Marking: away from a corner, each outfield player of the side without the ball steps a third of the way
         // towards the nearest opponent, staying goal side of him.
-        if ($possession !== null && ! $corner) {
+        if ($possession !== null && ! $corner && $setPiece === null) {
             $other = $possession === 'home' ? 'away' : 'home';
             $goalX = $other === 'home' ? 0 : 1050;
             $runners = array_keys(array_filter($sides, fn ($s) => $s === $possession));
@@ -266,6 +314,31 @@ class MatchChoreographer
             }
         }
 
+        // [Sprint 33 B3] The back line of the side without the ball steps up and drops as one: its defenders level,
+        // at their average depth. And an offside: the attacker caught is a step beyond that line.
+        if ($possession !== null && ! $corner && $setPiece === null) {
+            $other = $possession === 'home' ? 'away' : 'home';
+            $back = array_keys(array_filter($sides, fn ($s, $id) => $s === $other && $lines[$id] === 'def', ARRAY_FILTER_USE_BOTH));
+            if (count($back) > 1) {
+                $line = intdiv(array_sum(array_map(fn ($id) => $positions[$id][0], $back)), count($back));
+                foreach ($back as $id) {
+                    $positions[$id][0] = $line;
+                }
+                if ($to === 'offside' && $at >= 400) {
+                    $dirA = $possession === 'home' ? 1 : -1;
+                    $near = null;
+                    foreach ($positions as $id => [$x, $y]) {
+                        if ($sides[$id] === $possession && $lines[$id] === 'att' && ($near === null || abs($y - $by) < abs($positions[$near][1] - $by))) {
+                            $near = $id;
+                        }
+                    }
+                    if ($near !== null) {
+                        $positions[$near][0] = max(15, min(1035, $line + $dirA * 25));
+                    }
+                }
+            }
+        }
+
         foreach ($positions as $id => [$x, $y]) {
             $d = abs($x - $bx) + abs($y - $by);
             if ($lines[$id] !== 'gk' && (! isset($best[$sides[$id]]) || $d < $best[$sides[$id]][0])) {
@@ -273,12 +346,37 @@ class MatchChoreographer
             }
         }
         $holder = null;
+        // [Sprint 33 B1] A pass in flight (past the first third of its leg, to a player): no one has the ball; the
+        // teammate nearest where it lands runs to meet it there, arriving with it. Before that, the passer carries it.
+        // A shot, or a free kick or a penalty, once struck: in flight at goal, no one's.
+        if (in_array($to, ['end', 'kick'], true) && $at > 150) {
+            return ['p' => $positions, 'h' => null, 'sides' => $sides];
+        }
+        $flight = ! $kickoff && $setPiece === null && $at > 350 && in_array($to, ['pass', 'offside', 'shot'], true) && isset($leg['end']);
+        if ($flight && $possession !== null) {
+            [$ex, $ey] = $leg['end'];
+            $recv = null;
+            $rd = PHP_INT_MAX;
+            foreach ($positions as $id => [$x, $y]) {
+                $d = abs($x - $ex) + abs($y - $ey);
+                if ($sides[$id] === $possession && $lines[$id] !== 'gk' && $d < $rd) {
+                    $rd = $d;
+                    $recv = $id;
+                }
+            }
+            if ($recv !== null) {
+                [$x, $y] = $positions[$recv];
+                $positions[$recv] = [$x + intdiv(($ex - $x) * $at, 1000), $y + intdiv(($ey - $y) * $at, 1000)];
+            }
+
+            return ['p' => $positions, 'h' => null, 'sides' => $sides];
+        }
         if ($possession && isset($best[$possession])) {
             $holder = $best[$possession][1];
             $dir = $possession === 'home' ? 1 : -1;
             $positions[$holder] = [max(15, min(1035, $bx - $dir * 12)), max(15, min(665, $by + 6))];
             $other = $possession === 'home' ? 'away' : 'home';
-            if (isset($best[$other])) {
+            if (isset($best[$other]) && $setPiece === null) {
                 $positions[$best[$other][1]] = [max(15, min(1035, $bx + $dir * 22)), max(15, min(665, $by + 18))];
             }
         }
