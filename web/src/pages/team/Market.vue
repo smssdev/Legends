@@ -10,7 +10,10 @@ import UiDialog from '../../components/ui/UiDialog.vue'
 import EmptyState from '../../components/ui/EmptyState.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
+import { act, busy as isBusy } from '../../lib/action'
+import { nm } from '../../lib/names'
+import { t } from '../../lib/i18n'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
@@ -31,8 +34,7 @@ const leagueId = ref<number | null>(null)
 const m = ref<Market | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const notice = ref('')
-const busy = ref<number | null>(null)
+const busy = computed(() => (picked.value && isBusy(`buy:${picked.value.id}`) ? picked.value.id : null))
 const route = useRoute()
 type Tab = 'list' | 'offers' | 'loans' | 'academy' | 'scout' | 'done' | 'sell'
 const tab = ref<Tab>((['list', 'offers', 'loans', 'academy', 'scout', 'done', 'sell'].includes(String(route.query.tab)) ? route.query.tab : 'list') as Tab)
@@ -119,29 +121,29 @@ async function pick(p: Row) {
     error.value = asApiError(e).message
   }
 }
+// [X92] Through lib/action: the deal's button waits; an offer to a coach is said in a toast with «تراجع» (withdrawn),
+// a purchase with the celebration; an error in a toast.
 async function buy(compensate: boolean) {
   const p = picked.value
   if (!p || !leagueId.value) return
-  busy.value = p.id
-  error.value = ''
-  try {
-    await ensureCsrf()
-    if (p.seller.kind === 'coach') {
-      // A coach's listed player: an offer at his price, for his coach to accept (the negotiations).
-      await api.POST('/leagues/{league}/transfers/offers', { params: { path: { league: leagueId.value } },
-        body: { to_club_id: p.seller.club_id!, money: p.price, in: [p.id], idempotency_key: crypto.randomUUID() } as any })
-      notice.value = `أُرسل عرضك لمدرب ${p.seller.club}. تابعه في المفاوضات.`
-    } else {
-      await api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID(), compensate } })
-      celebrate.value = p.name
-      void wallet.load()
-    }
-    picked.value = null
-    await Promise.all([load(), loadList()])
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = null
+  const league = leagueId.value
+  let offer = 0
+  const r = p.seller.kind === 'coach'
+    // A coach's listed player: an offer at his price, for his coach to accept (the negotiations).
+    ? await act(`buy:${p.id}`, async () => {
+        const res = await api.POST('/leagues/{league}/transfers/offers', { params: { path: { league } },
+          body: { to_club_id: p.seller.club_id!, money: p.price, in: [p.id], idempotency_key: crypto.randomUUID() } as any })
+        offer = (res.data as { offer?: { id: number } } | undefined)?.offer?.id ?? 0
+        return res
+      }, {
+        success: t('أُرسل عرضك لمدرب {v0}. تابعه في المفاوضات.', { v0: nm(p.seller.club ?? '') }),
+        undo: () => (offer ? api.POST('/leagues/{league}/transfers/offers/{offer}/cancel' as any, { params: { path: { league, offer } } }) : Promise.resolve()),
+      })
+    : await act(`buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID(), compensate } }))
+  if (r === undefined) return
+  if (p.seller.kind !== 'coach') { celebrate.value = p.name; void wallet.load() }
+  picked.value = null
+  await Promise.all([load(), loadList()])
 }
 async function loadDone() {
   if (leagueId.value) done.value = (await api.GET('/leagues/{league}/market/done', { params: { path: { league: leagueId.value } } })).data!.transfers
@@ -170,9 +172,9 @@ const open = ref<number | null>(null)
 function openSell(p: Mine) {
   open.value = open.value === p.id ? null : p.id
 }
-async function sold(text: string) {
+// The panel says its own result in a toast (lib/action); the market only loads again.
+async function sold() {
   error.value = ''
-  if (text) notice.value = text
   open.value = null
   await load()
 }
@@ -203,7 +205,6 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
     </header>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 

@@ -3,31 +3,26 @@
 // price, the crowd it would draw and what it would bring at the next home match, from the server. Cheap fills the
 // stands, dear empties them; the gate is posted after each home match.
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
-import { ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../api/client'
+import { computed } from 'vue'
+import { api } from '../api/client'
+import { act, busy as isBusy } from '../lib/action'
 import type { components } from '../api/schema'
 import { money } from '../lib/format'
 import { t } from '../lib/i18n'
-import { useToast } from '../stores/toast'
 
 type Tickets = components['schemas']['TicketLevels']
 const props = defineProps<{ leagueId: number; tickets: Tickets }>()
 const emit = defineEmits<{ changed: [Tickets] }>()
-const busy = ref(false)
-const toast = useToast()
-
+// [X92] Through lib/action: «تراجع» puts back the level before.
+const busy = computed(() => isBusy('ticket-price'))
+const set = (level: Tickets['level']) => api.PUT('/leagues/{league}/team/tickets', { params: { path: { league: props.leagueId } }, body: { level } }).then((r) => { if (r.data) emit('changed', r.data); return r })
 async function pick(level: Tickets['level']) {
   if (level === props.tickets.level || busy.value) return
-  busy.value = true
-  try {
-    await ensureCsrf()
-    const { data } = await api.PUT('/leagues/{league}/team/tickets', { params: { path: { league: props.leagueId } }, body: { level } })
-    emit('changed', data!)
-    toast.show(t('سعر التذاكر الآن: {v0}', { v0: data!.levels.find((l) => l.level === level)?.name ?? '' }))
-  } catch (e) {
-    toast.show(asApiError(e).message, 'error')
-  }
-  busy.value = false
+  const before = props.tickets.level
+  await act('ticket-price', () => set(level), {
+    success: (r) => t('سعر التذاكر الآن: {v0}', { v0: r.data?.levels.find((l) => l.level === level)?.name ?? '' }),
+    undo: () => set(before),
+  })
 }
 </script>
 

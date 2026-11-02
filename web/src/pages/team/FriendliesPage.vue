@@ -7,7 +7,8 @@
 import { scoreText } from '../../lib/format'
 import { computed, onMounted, ref } from 'vue'
 import QuickMatch from '../../components/match/QuickMatch.vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api } from '../../api/client'
+import { act, busy as isBusy } from '../../lib/action'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
 import { countdown, useNow } from '../../lib/clock'
@@ -20,8 +21,6 @@ const last = ref<components['schemas']['Friendly'] | null>(null)
 // The friendly being watched (its quick simulation), before its result shows.
 const watching = ref(false)
 
-const message = ref('')
-const busy = ref(false)
 const loaded = ref(false)
 const now = useNow()
 // The opponent waiting for the coach to confirm the price.
@@ -34,27 +33,23 @@ onMounted(async () => {
   if (leagueId.value) v.value = (await api.GET('/leagues/{league}/friendlies', path.value)).data ?? null
   loaded.value = true
 })
+// [X92] Through lib/action: its button waits, an error in a toast. The price stays asked on the button itself (the
+// second tap, Sprint 24), which is lighter than a window for five coins.
 async function play(opponent: number) {
-  message.value = ''
   if (confirming.value !== opponent) {
     confirming.value = opponent
     return
   }
   confirming.value = null
-  busy.value = true
-  try {
-    await ensureCsrf()
-    const { data } = await api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: crypto.randomUUID() } })
-    last.value = data!.friendly
-    watching.value = !!data!.friendly.report.timeline?.length
-    v.value = data!
-    useWallet().load()
-  } catch (e) {
-    message.value = asApiError(e).message
-  } finally {
-    busy.value = false
-  }
+  const r = await act('friendly', () => api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: crypto.randomUUID() } }))
+  const data = r?.data
+  if (!data) return
+  last.value = data.friendly
+  watching.value = !!data.friendly.report.timeline?.length
+  v.value = data
+  useWallet().load()
 }
+const busy = computed(() => isBusy('friendly'))
 const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_against ? 'فوز' : f.goals_for < f.goals_against ? 'خسارة' : 'تعادل')
 </script>
 
@@ -70,7 +65,6 @@ const result = (f: components['schemas']['Friendly']) => (f.goals_for > f.goals_
       </span>
     </header>
     <p v-if="loaded && !leagueId" class="rounded-xl bg-surface p-6 text-center text-text-muted">{{ $t('ليس لديك فريق بعد.') }}</p>
-    <p v-if="message" class="rounded-lg bg-surface px-3 py-2 text-sm text-warning" role="status">{{ $t(message) }}</p>
     <p v-if="v && v.balance < v.coins" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">{{ $t('رصيدك لا يكفي لودية. الكوينز تُكسب من المهام والفوز.') }}</p>
     <p v-if="v?.blocked" class="rounded-lg bg-warning/15 px-3 py-2 text-sm text-warning" role="status">
       {{ v.blocked.reason === 'live' ? $t('مباراتك تُلعب الآن: الوديات بعدها.') : $t('مباراتك بعد قليل: الوديات تعود بعدها ({v0}).', { v0: countdown(v.blocked.until, now) }) }}

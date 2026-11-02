@@ -2,7 +2,8 @@
 // [X61 E2] Loans this season: the requests for my players (accept or turn down) and mine, and the loans running with
 // the round each player goes home. A loan is asked from another coach's squad (its window, from a club's name).
 import { onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../../api/client'
+import { api, asApiError } from '../../../api/client'
+import { act, busy } from '../../../lib/action'
 import type { components } from '../../../api/schema'
 import EmptyState from '../../../components/ui/EmptyState.vue'
 import { money } from '../../../lib/format'
@@ -18,15 +19,12 @@ const path = () => ({ params: { path: { league: props.leagueId } } })
 async function load() {
   try { v.value = (await api.GET('/leagues/{league}/transfers/loans', path())).data ?? null } catch (e) { toast.show(asApiError(e).message, 'error') }
 }
+// [X92] Through lib/action: its two buttons wait together, the result in a toast.
 async function answer(id: number, accept: boolean) {
-  try {
-    await ensureCsrf()
-    v.value = (await api.POST('/leagues/{league}/transfers/loans/{loan}/answer', { params: { path: { league: props.leagueId, loan: id } }, body: { accept } })).data ?? null
-    toast.show(accept ? t('قبلت الإعارة.') : t('رفضت الإعارة.'))
-    emit('changed')
-  } catch (e) {
-    toast.show(asApiError(e).message, 'error')
-  }
+  const r = await act(`loan:${id}`, () => api.POST('/leagues/{league}/transfers/loans/{loan}/answer', { params: { path: { league: props.leagueId, loan: id } }, body: { accept } }), {
+    success: accept ? t('قبلت الإعارة.') : t('رفضت الإعارة.'),
+  })
+  if (r?.data) { v.value = r.data; emit('changed') }
 }
 onMounted(load)
 </script>
@@ -44,8 +42,8 @@ onMounted(load)
         </span>
         <span v-if="l.status === 'active'" class="rounded-pill bg-success/15 px-3 py-1 text-xs font-bold text-success">{{ $t('معار حتى الجولة {v0}', { v0: l.until_round ?? '' }) }}</span>
         <template v-else-if="l.mine">
-          <button type="button" class="h-11 rounded-lg bg-gold px-4 text-sm font-bold text-on-gold" @click="answer(l.id, true)">{{ $t('اقبل') }}</button>
-          <button type="button" class="h-11 rounded-lg bg-surface-raised px-4 text-sm font-bold" @click="answer(l.id, false)">{{ $t('ارفض') }}</button>
+          <button type="button" class="h-11 rounded-lg bg-gold px-4 text-sm font-bold text-on-gold disabled:opacity-40" :disabled="busy(`loan:${l.id}`)" @click="answer(l.id, true)">{{ $t('اقبل') }}</button>
+          <button type="button" class="h-11 rounded-lg bg-surface-raised px-4 text-sm font-bold disabled:opacity-40" :disabled="busy(`loan:${l.id}`)" @click="answer(l.id, false)">{{ $t('ارفض') }}</button>
         </template>
         <span v-else class="rounded-pill bg-warning/15 px-3 py-1 text-xs font-bold text-warning">{{ $t('بانتظار رده') }}</span>
       </li>
