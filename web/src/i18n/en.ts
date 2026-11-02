@@ -2109,6 +2109,8 @@ export const EN: Record<string, string> = {
   'اللون الأول': 'First colour',
   'اللون الثاني': 'Second colour',
   'نقش القميص': 'Kit pattern',
+  'لون الطقم الاحتياطي': 'Change kit colour',
+  'نقش الطقم الاحتياطي': 'Change kit pattern',
   'سادة': 'Plain',
   'خطوط طولية': 'Stripes',
   'خطوط عرضية': 'Hoops',

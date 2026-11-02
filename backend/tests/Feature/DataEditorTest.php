@@ -74,5 +74,12 @@ class DataEditorTest extends TestCase
         $view = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5])->assertCreated()->json();
         $this->assertSame('stripes', $view['clubs']['home']['pattern']);
         $this->assertNull($view['clubs']['away']['pattern']);
+
+        // [Sprint 34 V1] A change kit: its colour checked, and sent with the club.
+        $this->patchJson("/api/v1/admin/data/clubs/{$away}", ['away_color' => 'blue'])->assertJsonValidationErrors('away_color');
+        $this->patchJson("/api/v1/admin/data/clubs/{$away}", ['away_color' => '#1A2B3C', 'away_pattern' => 'hoops'])->assertOk();
+        $view = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 6])->assertCreated()->json();
+        $this->assertSame(['color' => '#1A2B3C', 'pattern' => 'hoops'], $view['clubs']['away']['away_kit']);
+        $this->assertNull($view['clubs']['home']['away_kit']);
     }
 }

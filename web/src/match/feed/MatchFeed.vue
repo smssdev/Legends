@@ -513,7 +513,9 @@ function tvFor(id, side) {
     const kit = gk ? keeperKit(side) : props.kits[side].kit
     // [Sprint 31 D2] Build and height from his id (README 7.3): the same player looks the same on every screen.
     const n = Number(id) || 0
-    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, pattern: gk ? null : props.kits[side].pattern, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100, hair: (n * 11 + 3) % 5 })
+    // [Sprint 34 V3] His surname on his back, and the captain's armband.
+    const surname = String(info?.name ?? '').trim().split(/\s+/).slice(-1)[0], captain = String(props.teams?.[side]?.captain ?? '') === String(id)
+    const f = figure(kit, info?.no ?? '', { look: n % 42, gloves: gk ? '#E4FF5A' : undefined, trim: props.kits[side].trim, pattern: gk ? null : props.kits[side].pattern, name: surname, captain, build: (n * 7) % 3, tall: 0.94 + ((n * 13) % 13) / 100, hair: (n * 11 + 3) % 5 })
     t = { f, ph: Number(id) % 7, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
     tvPlayers.set(id, t)
   }
@@ -611,7 +613,7 @@ function fitness(tick) {
   for (const side of ['home', 'away']) for (const p of teams?.[side]?.players ?? []) fitMap.set(String(p.id), { pac: Number(p.pac ?? 70), fit: Number(p.fit ?? 100) })
   return fitMap
 }
-let ballTurn = 0, lastBall = [525, 340]
+let ballTurn = 0, lastBall = [525, 340], coaches = {}
 let tvLast = 0
 function drawTv(tick, u) {
   if (!ctx || !fit()) return
@@ -718,6 +720,24 @@ function drawTv(tick, u) {
     if (call?.card) t.f.showCard(call.card)
     drawn.push(t)
   }
+  // [Sprint 34 V2] The two coaches in their technical areas on the near touchline, seen from behind, watching: how
+  // each feels is the server's (the minute's moods), the screen only draws it.
+  for (const side of ['home', 'away']) {
+    let c = coaches[side]
+    if (!c) c = coaches[side] = { f: figure('#1C2B48', '', { look: side === 'home' ? 12 : 30, shorts: '#141C2E', socks: '#141C2E', trim: '#F5B82E', build: 1 }), ph: side === 'home' ? 0 : 2, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
+    const mood = tick.moods?.[side] ?? 'idle', pace = smooth.value ? 0 : Math.sin(now / 1400 + c.ph) * 14
+    const [sx, sy, sc] = proj((side === 'home' ? 445 : 605) + pace, 712)
+    c.sx = sx; c.sy = sy; c.scale = sc * 0.5; c.bob = 0; c.lean = 0
+    c.f.face('back', 1)
+    if (smooth.value) c.f.pose()
+    else if (mood === 'joy' || mood === 'cheer') { c.f.celebrate(now / 1000 + c.ph); c.bob = Math.abs(Math.sin(now / 200)) * 4 }
+    else if (mood === 'angry') c.f.pose(6, -6, 95 + Math.sin(now / 160) * 20, -95 - Math.sin(now / 160) * 20)
+    else if (mood === 'worried' || mood === 'surprise') c.f.handsOnHead()
+    else if (mood === 'sad') c.f.hangHead()
+    else if (mood === 'think') c.f.pose(3, -3, 12, -150)
+    else { c.ph += dts * 1.6; c.f.idle(c.ph) }
+    drawn.push(c)
+  }
   // [Sprint 33 L3] The player taken off walks from where he was to the near touchline, and leaves.
   for (const e of subs) {
     const last = lastSeen.get(String(e.out)), side = players.value[e.out]?.side
@@ -810,7 +830,7 @@ function drawTv(tick, u) {
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(lightCv, 0, 0)
 }
-function buildPitch() { if (!pitchHost.value) return; const hr = cairoHour(); night = hr >= 18 || hr < 6; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null; refs = [] } drawPitch(lastTick, lastU) }
+function buildPitch() { if (!pitchHost.value) return; const hr = cairoHour(); night = hr >= 18 || hr < 6; if (!cv) buildCanvas(); else { tvPlayers = new Map(); dots = new Map(); topBg = null; refs = []; coaches = {} } drawPitch(lastTick, lastU) }
 function drawPitch(tick, u) {
   lastTick = tick; lastU = u
   camera.value === 'tv' ? drawTv(tick, u) : drawTop(tick, u)

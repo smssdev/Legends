@@ -21,7 +21,7 @@ class DataEditorController extends Controller
 {
     private const PLAYER = ['name', 'position', 'line', 'age', 'nationality', 'overall', 'potential', 'value', 'master_club_id'];
 
-    private const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern'];
+    private const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern', 'away_color', 'away_pattern'];
 
     private static function version(): string
     {
@@ -154,6 +154,8 @@ class DataEditorController extends Controller
             'color_primary' => [$r, 'regex:/^#[0-9A-Fa-f]{6}$/'], 'color_secondary' => [$r, 'regex:/^#[0-9A-Fa-f]{6}$/'],
             // [X76] The kit's pattern in the club's two colours.
             'kit_pattern' => ['sometimes', 'nullable', Rule::in(KitPattern::ALL)],
+            // [Sprint 34 V1] The change kit: its shirt colour (empty: none) and pattern.
+            'away_color' => ['sometimes', 'nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'], 'away_pattern' => ['sometimes', 'nullable', Rule::in(KitPattern::ALL)],
         ];
     }
 }

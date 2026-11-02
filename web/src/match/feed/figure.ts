@@ -51,7 +51,9 @@ export function figure(kit, no, o = {}) {
     c.fillStyle = 'rgba(0,0,0,.08)'; c.fill(P.fold)
     c.strokeStyle = trim; c.lineWidth = 2; c.stroke(P.collar)
     c.fillStyle = ink; c.textAlign = 'center'
-    if (f === 'back') { c.font = '800 18px "Barlow Condensed", Amin, sans-serif'; c.fillText(String(no ?? ''), 0, 12) }
+    // [Sprint 34 V3] His surname over the number on his back, as on a real shirt.
+    if (f === 'back' && o.name) { c.font = '700 4.6px "Barlow Condensed", sans-serif'; c.fillText(String(o.name).toUpperCase().slice(0, 12), 0, 1.2) }
+    if (f === 'back') { c.font = `800 ${o.name ? 15 : 18}px "Barlow Condensed", Amin, sans-serif`; c.fillText(String(no ?? ''), 0, o.name ? 14.5 : 12) }
     if (f === 'front') { c.font = '800 8px "Barlow Condensed", Amin, sans-serif'; c.fillText(String(no ?? ''), 6, 4) }
     c.restore()
     c.fillStyle = skin; c.fillRect(-3.4, -15, 6.8, 7); dot(c, 0, -21, 9.4, skin)
@@ -104,6 +106,8 @@ export function figure(kit, no, o = {}) {
     c.fillStyle = o.gloves ? kit : skin; rr(c, -3.4, 10, 6.8, 13, 3.4)
     if (o.gloves) { c.fillStyle = o.gloves; rr(c, -5, 20, 10, 9, 3.5) }
     // [Sprint 31 D1] An assistant referee's flag in his right hand.
+    // [Sprint 34 V3] The captain's armband on his left arm.
+    if (o.captain && a === arms[0]) { c.fillStyle = '#F5B82E'; c.fillRect(-4.3, 4, 8.6, 3.2); c.fillStyle = '#071733'; c.font = '800 2.8px sans-serif'; c.textAlign = 'center'; c.fillText('C', 0, 6.6) }
     // [Sprint 33 L2] The referee's card held up in his right hand.
     if (card && a === arms[1]) { c.fillStyle = card; c.fillRect(-3, 22, 6, 8.5); c.strokeStyle = 'rgba(0,0,0,.4)'; c.lineWidth = 0.6; c.strokeRect(-3, 22, 6, 8.5) }
     if (o.flag && a === arms[1]) { c.fillStyle = '#2B2B2B'; c.fillRect(-0.7, 18, 1.4, 16); c.fillStyle = o.flag; c.fillRect(0.7, 18, 9, 7); c.fillStyle = '#D3122F'; c.fillRect(0.7, 18, 4.5, 3.5); c.fillRect(5.2, 21.5, 4.5, 3.5) }

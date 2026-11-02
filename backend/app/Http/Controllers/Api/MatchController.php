@@ -48,9 +48,9 @@ class MatchController extends Controller
             'timing' => ['tick_ms' => (int) $state['cfg']['match']['tick_ms'], 'extra_time_tick_ms' => (int) $state['cfg']['match']['extra_time_tick_ms'],
                 'halftime_seconds' => (int) $state['cfg']['match']['halftime_seconds'],
                 'windows' => $state['cfg']['match']['windows'] ?? [], 'window_seconds' => (int) ($state['cfg']['match']['window_seconds'] ?? 0)],
-            // [X76] Each club with its kit pattern (its data club's).
-            'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']) + ['pattern' => KitPattern::ofClub($f->home_id)],
-                'away' => ClubLogo::with($state['teams']['away']['club']) + ['pattern' => KitPattern::ofClub($f->away_id)]],
+            // [X76, Sprint 34 V1] Each club with its kit pattern and change kit (its data club's).
+            'clubs' => ['home' => ClubLogo::with($state['teams']['home']['club']) + KitPattern::kits($f->home_id, true),
+                'away' => ClubLogo::with($state['teams']['away']['club']) + KitPattern::kits($f->away_id, true)],
             'coaches' => DB::table('clubs')->leftJoin('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
                 ->pluck('users.name', 'clubs.id')->mapWithKeys(fn ($n, $id) => [$id === $f->home_id ? 'home' : 'away' => $n])->filter(),
             // [Sprint 26 B3] Each human coach's look on the touchline (C1 to C3); a club without a coach has none.
