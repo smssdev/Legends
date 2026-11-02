@@ -17,7 +17,6 @@ import ChalkBackdrop from '../components/ChalkBackdrop.vue'
 import Landing from './Landing.vue'
 import OnboardingChecklist from '../components/OnboardingChecklist.vue'
 import AdSlot from '../components/ads/AdSlot.vue'
-import { money } from '../lib/format'
 import { intlLocale, t } from '../lib/i18n'
 import { rememberLeague } from '../lib/currentLeague'
 import { useAuth } from '../stores/auth'
@@ -46,7 +45,6 @@ const latest = computed(() => home.value?.announcements[announcement.value] ?? n
 const greeting = computed(() => (new Date().getHours() < 12 ? t('صباح الخير يا كوتش') : new Date().getHours() < 18 ? t('نهارك سعيد يا كوتش') : t('مساء الخير يا كوتش')))
 const nextUp = computed(() => home.value?.slots.filter((s) => s.next_match).sort((a, b) => (a.next_match!.live ? -1 : 0) - (b.next_match!.live ? -1 : 0) || a.next_match!.scheduled_at.localeCompare(b.next_match!.scheduled_at))[0] ?? null)
 // The cash shown on the card: the club of the soonest match, else the first club.
-const cashClub = computed(() => nextUp.value?.club ?? home.value?.slots.find((s) => s.club)?.club ?? null)
 const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(iso))
 
 async function load() {
@@ -124,7 +122,21 @@ onMounted(async () => {
   try { badges.value = ((await api.GET('/home/achievements')).data?.achievements ?? []).filter((b) => BADGES[b.key]) } catch { /* the badges are a bonus */ }
 })
 // [Sprint 30 Q9] The clubs with something waiting, the most first; and into a club's screen from the home page.
-const todo = computed(() => (home.value?.slots ?? []).filter((s) => s.state === 'club' && s.pending > 0).sort((a, b) => b.pending - a.pending).slice(0, 3))
+// [X86] The slots: all the open ones, and of the locked only the next one, until the coach asks for all.
+const allSlots = ref(false)
+const shownSlots = computed(() => {
+  const slots = home.value?.slots ?? []
+  if (allSlots.value) return slots
+  const firstLocked = slots.find((s) => s.state === 'locked')
+  return slots.filter((s) => s.state !== 'locked' || s === firstLocked)
+})
+const lockedHidden = computed(() => (home.value?.slots.length ?? 0) - shownSlots.value.length)
+// [X86] «المزيد» (the news, the badges, the poll, the ranking, the ways in), closed until the coach opens it, remembered here.
+const moreOpen = ref((() => { try { return localStorage.getItem('glm.home.more') === 'open' } catch { return false } })())
+function setMore(open: boolean) {
+  moreOpen.value = open
+  try { localStorage.setItem('glm.home.more', open ? 'open' : 'closed') } catch {}
+}
 function goClub(s: Home['slots'][number], to: string) {
   if (s.league) rememberLeague(s.league.id)
   router.push(to)
@@ -157,7 +169,9 @@ async function openRanking(by: By) {
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <!-- [Sprint 21 E3.4] On a computer two columns fill the screen: the card and the slots, and beside them the
          announcements, the record and quick ways in. On a phone the same in one column. -->
-    <div v-if="home" class="relative grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-6">
+    <!-- [X86] The home screen simplified (the owner's request 2026-11-02): the coach, the next match and the slots; the
+         rest (the news, the badges, the poll, the ranking, the ways in, the install and the reminder) under «المزيد». -->
+    <div v-if="home" class="relative mx-auto flex w-full max-w-4xl flex-col gap-4">
       <div class="flex min-w-0 flex-col gap-4">
       <!-- [UP7] The coach's card on top: the picture, the name, the level, the club's cash and the coins. -->
       <section class="coach-card" :aria-label="$t('ملف المدرب')">
@@ -168,13 +182,6 @@ async function openRanking(by: By) {
         <div class="flex min-w-0 flex-1 flex-col gap-1">
           <span class="text-xs font-bold text-gold">{{ greeting }}</span>
           <b class="truncate font-display text-lg leading-tight md:text-xl">{{ home.coach.name }} <OfficialBadge v-if="home.coach.official" /><VerifiedBadge v-else-if="home.coach.verified" /></b>
-          <div class="flex items-center gap-2">
-            <span class="grid size-7 shrink-0 place-items-center rounded-md bg-bronze font-numbers text-sm font-extrabold text-white" :title="$t('المستوى {n}', { n: home.coach.level.level })">{{ home.coach.level.level }}</span>
-            <div class="h-1.5 max-w-40 flex-1 overflow-hidden rounded-pill bg-surface-sunk" role="progressbar" :aria-valuenow="home.coach.level.progress_bp / 100" aria-valuemin="0" aria-valuemax="100" :aria-label="$t('التقدم إلى المستوى التالي')">
-              <div class="h-full rounded-pill bg-success" :style="{ width: home.coach.level.progress_bp / 100 + '%' }" />
-            </div>
-            <span class="font-numbers text-[11px] text-text-muted" dir="ltr">{{ home.coach.level.xp }}/{{ home.coach.level.next }}</span>
-          </div>
           <!-- [Sprint 25] The rating: the tier's emblem, its name and division, and the points; opens the sheet. -->
           <button type="button" class="rating-chip" :aria-label="$t('نقاط المدرب ودرجته')" @click="ratingOpen = true">
             <RatingBadge :tier="home.coach.rating.tier.key" :division="home.coach.rating.tier.division" :size="22" />
@@ -187,9 +194,6 @@ async function openRanking(by: By) {
           <RouterLink to="/wallet" class="flex items-center gap-1 rounded-pill bg-gold/15 px-2.5 py-1 text-sm font-bold" :aria-label="$t('الكوينز')">
             <img src="/brand/coin.svg" alt="" class="size-4" /><span class="font-numbers" dir="ltr">{{ home.coach.coins }}</span>
           </RouterLink>
-          <span v-if="cashClub" class="flex items-center gap-1 rounded-pill bg-brand/25 px-2.5 py-1 text-sm font-bold" :title="$t('أموال {club}', { club: $nm(cashClub.name) })" :aria-label="$t('أموال {club}', { club: $nm(cashClub.name) })">
-            <span aria-hidden="true">💵</span><span class="font-numbers" dir="ltr">{{ money(cashClub.cash) }}</span>
-          </span>
         </div>
       </section>
 
@@ -213,21 +217,8 @@ async function openRanking(by: By) {
         </div>
       </section>
 
-      <!-- [Sprint 30 G7] The game as an app on the home screen. -->
-      <InstallPrompt />
-      <!-- [Sprint 30 G1] The match reminder: allowed from here, once. -->
-      <ReminderPrompt v-if="home.slots.some((s) => s.state === 'club')" />
 
-      <!-- [Sprint 30 Q9] «المطلوب منك اليوم»: the clubs with the most waiting, three at most, one tap to each. -->
-      <section v-if="todo.length" class="flex flex-col gap-2 rounded-2xl bg-surface p-3" :aria-label="$t('المطلوب منك اليوم')">
-        <h2 class="px-1 font-display text-base font-extrabold">{{ $t('المطلوب منك اليوم') }}</h2>
-        <button v-for="s in todo" :key="s.slot" type="button" class="flex min-h-touch items-center gap-3 rounded-xl bg-surface-sunk px-3 py-2 text-start" @click="goClub(s, '/club')">
-          <img v-if="s.club" :src="s.club.crest_url" alt="" class="size-8 shrink-0" />
-          <span class="min-w-0 flex-1 truncate font-bold">{{ $nm(s.club?.name) }}</span>
-          <span class="shrink-0 rounded-pill bg-live px-2.5 py-0.5 font-numbers text-sm font-bold text-white">{{ s.pending }}</span>
-          <span class="shrink-0 text-sm text-text-muted">{{ $t('ينتظرك') }}</span>
-        </button>
-      </section>
+      <!-- [X86] «المطلوب منك اليوم» is gone: each slot's card counts what waits in it. -->
 
       <!-- [Sprint 30 P6] The starter coins, until claimed; and the first friendly is free. -->
       <section v-if="!home.starter_gift.claimed" class="flex animate-fade-up items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4" :aria-label="$t('هدية البداية')">
@@ -249,7 +240,7 @@ async function openRanking(by: By) {
         <div class="stagger grid grid-cols-2 gap-2 sm:grid-cols-4 lg:gap-3">
           <!-- [X32] Each slot a card: a band with its number and league (blue for a club), the crest on a ivory disc,
                and the next match at its foot. -->
-          <template v-for="s in home.slots" :key="s.slot">
+          <template v-for="s in shownSlots" :key="s.slot">
           <!-- [Sprint 20 W1] An empty slot: «أنشئ دورياً» at once, and «انضم بكود». -->
           <div v-if="s.state === 'free'" class="slot-card is-free" :class="opened.includes(s.slot) ? 'is-opened' : ''" role="group" :aria-label="$t('الفتحة {n}: دوري جديد', { n: s.slot })">
             <span class="slot-band"><b class="font-numbers text-sm">{{ s.slot }}</b><span class="min-w-0 flex-1 truncate text-start text-[11px] font-bold">{{ $t('فتحة فارغة') }}</span></span>
@@ -295,10 +286,23 @@ async function openRanking(by: By) {
           </button>
           </template>
         </div>
+        <!-- [X86] Only the next locked slot shows; the others behind one line. -->
+        <button v-if="lockedHidden" type="button" class="flex min-h-touch items-center justify-center gap-2 rounded-xl border border-dashed border-text/15 text-sm text-text-muted hover:text-text" @click="allSlots = true">
+          🔒 {{ $t('و{v0} فتحات مقفلة أخرى', { v0: lockedHidden }) }} <span aria-hidden="true">▾</span>
+        </button>
       </section>
       </div>
 
-      <aside class="flex flex-col gap-3" :aria-label="$t('آخر الأخبار')">
+      <details class="home-more" :open="moreOpen" @toggle="(e: Event) => setMore((e.target as HTMLDetailsElement).open)">
+        <summary class="flex min-h-touch cursor-pointer list-none items-center justify-between gap-2 rounded-xl bg-surface px-4 font-bold">
+          <span>{{ $t('المزيد') }} <span class="text-xs font-normal text-text-muted">{{ $t('الإعلانات والأوسمة والترتيب') }}</span></span>
+          <span class="more-chevron text-text-muted" aria-hidden="true">▾</span>
+        </summary>
+      <aside class="mt-3 grid gap-3 md:grid-cols-2" :aria-label="$t('آخر الأخبار')">
+        <!-- [Sprint 30 G7] The game as an app on the home screen. -->
+        <InstallPrompt />
+        <!-- [Sprint 30 G1] The match reminder: allowed from here, once. -->
+        <ReminderPrompt v-if="home.slots.some((s) => s.state === 'club')" />
 
         <!-- The developers' announcements: updates and news [X11, X18]. -->
         <section class="flex flex-col gap-1 rounded-xl bg-gradient-to-l from-bronze/60 via-surface-raised to-surface p-3" :aria-label="$t('الإعلانات')">
@@ -371,6 +375,7 @@ async function openRanking(by: By) {
           <RouterLink to="/profile" class="home-tile"><span class="text-xl" aria-hidden="true">🎁</span><span class="text-xs font-bold">{{ $t('ادعُ أصدقاءك') }}</span></RouterLink>
         </nav>
       </aside>
+      </details>
     </div>
     <p v-else-if="!error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <!-- [X57] One Google ad at the bottom of the home screen, away from the slots' buttons. -->
@@ -474,6 +479,10 @@ async function openRanking(by: By) {
 </template>
 
 <style scoped>
+/* [X86] «المزيد»: its arrow turns when open. */
+.home-more summary::-webkit-details-marker { display: none; }
+.more-chevron { transition: transform 0.2s; }
+.home-more[open] .more-chevron { transform: rotate(180deg); }
 .rating-chip {
   display: inline-flex;
   align-items: center;

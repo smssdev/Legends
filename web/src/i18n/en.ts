@@ -2655,4 +2655,7 @@ export const EN: Record<string, string> = {
   'هذا اللاعب معروض للبيع بالفعل. اسحبه من قائمة الانتقالات أولاً إن أردت سعراً آخر.': 'This player is already listed. Withdraw him from the transfer list first for another price.',
   'أموال {v0}': '{v0}\'s money',
   'أموال {v0}: {v1}': '{v0}\'s money: {v1}',
+  'الإعلانات والأوسمة والترتيب': 'News, badges and rankings',
+  'و{v0} فتحات مقفلة أخرى': 'and {v0} more locked slots',
+  'التالية: {v0}': 'Next: {v0}',
 }
