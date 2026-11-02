@@ -72,6 +72,9 @@ watch(() => [inSlot.value, slot.current?.league?.id ?? null, route.fullPath] as 
 const running = computed(() => board.board?.timers.filter((t) => ['training', 'stadium', 'scout'].includes(t.kind)).length ?? 0)
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
 watch(() => route.fullPath, () => { portal.value = null })
+// [X85] The screens where the club's money matters (spent or earned there): the money shows on the top bar only on them.
+const MONEY_PAGES = new Set(['club', 'team', 'market', 'training', 'specialists', 'stadium', 'finance', 'scout', 'friendlies'])
+const showMoney = computed(() => inSlot.value && MONEY_PAGES.has(String(route.name)))
 
 // [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
 // report's message, stores/inbox.ts). Only within the next hours; a new board moves the timer.
@@ -119,8 +122,11 @@ onBeforeUnmount(() => sizer?.disconnect())
               <RouterLink to="/wallet" class="pill-coins" :aria-label="$t('المحفظة')">
                 <img src="/brand/coin.svg" alt="" class="size-5" /><b class="font-numbers text-base" dir="ltr"><CountUp :value="wallet.view?.balance ?? 0" /></b>
               </RouterLink>
-              <!-- [W2] The club's money beside the coins, always in sight inside a slot. -->
-              <RouterLink v-if="inSlot && board.board" to="/finance" class="pill-money" :aria-label="$t('أموال النادي: {v0}', { v0: money(board.board.money.cash) })">
+              <!-- [X85] The money of the club of this slot only (the board of its league), in one place: the top bar, on the
+                   screens where money is spent or earned, and refreshed after every tap that changes it. -->
+              <RouterLink v-if="showMoney && board.board" to="/finance" class="pill-money flex-col !gap-0 leading-none" :title="$t('أموال {v0}', { v0: $nm(board.board.club.name) })"
+                :aria-label="$t('أموال {v0}: {v1}', { v0: $nm(board.board.club.name), v1: money(board.board.money.cash) })">
+                <span class="hidden text-[10px] font-bold opacity-80 md:block">{{ $t('أموال النادي') }}</span>
                 <b class="font-numbers text-base" dir="ltr"><CountUp :value="board.board.money.cash" :format="money" /></b>
               </RouterLink>
               <template v-if="inSlot">
@@ -302,7 +308,8 @@ onBeforeUnmount(() => sizer?.disconnect())
 .pill-money {
   display: flex;
   align-items: center;
-  height: 2.25rem;
+  justify-content: center;
+  min-height: 2.25rem;
   padding: 0 0.7rem;
   border-radius: 999px;
   color: var(--color-success);
@@ -332,7 +339,8 @@ onBeforeUnmount(() => sizer?.disconnect())
   font-size: 0.75rem;
   text-align: center;
 }
-@media (max-width: 380px) { .pill-money { display: none } }
+/* [X85] Always in sight on its screens, narrow phones too: only tighter. */
+@media (max-width: 380px) { .pill-money { padding: 0 0.45rem } }
 /* [Sprint 20 W6] The computer's fixed side menu inside a slot. */
 .side-nav {
   position: sticky;

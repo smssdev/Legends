@@ -33,5 +33,15 @@ export const useBoard = defineStore('board', () => {
     timer ??= setInterval(() => document.visibilityState === 'visible' && league.value && load(league.value, true), 60000)
   }
 
+  // [X85] After a tap that changed something in this league (api/client.ts), the board again, once for a burst of taps.
+  let soon: ReturnType<typeof setTimeout> | undefined
+  if (typeof window !== 'undefined') {
+    window.addEventListener('glm:league-changed', (e) => {
+      if ((e as CustomEvent<number>).detail !== league.value) return
+      clearTimeout(soon)
+      soon = setTimeout(() => league.value && load(league.value, true), 400)
+    })
+  }
+
   return { board, league, load, refresh: () => load(league.value, true) }
 })
