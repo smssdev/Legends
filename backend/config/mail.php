@@ -124,4 +124,7 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    // [X89] Replies go to the game's own Gmail (a real reply-to address is one of the signs of a real sender).
+    'reply_to' => ['address' => env('MAIL_REPLY_TO_ADDRESS'), 'name' => env('MAIL_FROM_NAME', 'Game Legend Manager')],
+
 ];

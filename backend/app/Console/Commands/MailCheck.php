@@ -25,14 +25,14 @@ class MailCheck extends Command
         $to = (string) $this->argument('to');
         $this->line('الطريقة: '.Mailer::name().'، والمرسل: '.config('mail.from.address'));
         if (! Mailer::live()) {
-            $this->warn('البريد يُكتب في السجل ولا يُرسل. ضع BREVO_API_KEY (أو RESEND_API_KEY، أو GMAIL_ADDRESS وGMAIL_APP_PASSWORD خارج Render) في المتغيرات.');
+            $this->warn('البريد يُكتب في السجل ولا يُرسل. ضع كلمة مرور تطبيق Gmail للعبة: legends-set GMAIL_APP_PASSWORD.');
         }
         if ($sample = $this->option('sample')) {
             return $this->sample((string) $sample, $to);
         }
         try {
             // [X80] The test in the game's own design, so what arrives is what the coaches get.
-            Notification::route('mail', $to)->notifyNow(GameUpdateNotice::alert(false, 'البريد يعمل ✓',
+            Notification::route('mail', $to)->notifyNow(GameUpdateNotice::alert(false, 'البريد يعمل',
                 'هذه رسالة تجربة من Game Legend Manager: البريد يخرج من السيرفر ويصل بتصميم اللعبة.', '/', [['المرسل', (string) config('mail.from.address')], ['الطريقة', Mailer::name()]]));
         } catch (\Throwable $e) {
             $this->error('لم تُرسل: '.$e->getMessage());

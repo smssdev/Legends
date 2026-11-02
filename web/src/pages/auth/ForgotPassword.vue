@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // No approved design yet: built in the style of WebLogin (owner's decision, 2026-10-20).
+import MailSentNote from '../../components/MailSentNote.vue'
 import { ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import TextField from '../../components/TextField.vue'
@@ -31,7 +32,8 @@ async function submit() {
     <h1 class="font-display text-3xl font-extrabold">{{ $t('نسيت كلمة المرور؟') }}</h1>
     <p class="mt-1 text-text-muted">{{ $t('اكتب بريدك ونرسل لك رابطاً لاختيار كلمة مرور جديدة.') }}</p>
   </div>
-  <p v-if="sent" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">{{ sent }}</p>
+  <!-- [X89] Where the link went, and how to find it out of spam. -->
+  <MailSentNote v-if="sent" :to="email.trim()" resend :busy="busy" @resend="submit" />
   <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
     <TextField v-model="email" :label="$t('البريد الإلكتروني')" type="email" autocomplete="email" placeholder="you@example.com" :error="error" />
     <button type="submit" class="h-12 rounded-lg bg-gold text-lg font-bold text-on-gold disabled:opacity-60" :disabled="busy">{{ busy ? $t('جارٍ الإرسال…') : $t('أرسل الرابط') }}</button>

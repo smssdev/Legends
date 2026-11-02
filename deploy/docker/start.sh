@@ -17,21 +17,21 @@ if [ -n "${PUBLIC_URL:-}" ]; then
   export TRUSTED_PROXIES='*'
 fi
 
-# Real emails [X8]: Gmail's SMTP (GMAIL_ADDRESS and its app password), or over HTTPS with BREVO_API_KEY (free, 300 a
-# day) or RESEND_API_KEY (free, needs a domain of ours). Without any of them the emails go to the log.
-# [Sprint 39 M1] The game's own Gmail by default (an address, not a secret): only its app password is set on the server
-# (legends-set GMAIL_APP_PASSWORD), and every email goes out from it under the game's name.
+# Real emails [X8]. [X89] The game's own Gmail only (the owner's decision 2026-11-02: "we do not use Brevo"): every email
+# goes out through Gmail's own servers (smtp.gmail.com, TLS on 587), from game.legend.manager@gmail.com under the game's
+# name, with its app password set on the server (legends-set GMAIL_APP_PASSWORD). Sent anywhere else in a gmail.com name
+# (Brevo, Resend), Gmail sees a message that never left Google and files it as spam (DMARC), so no other way is taken
+# even when its key is still on the server. Without the password the emails go to the log.
 export GMAIL_ADDRESS="${GMAIL_ADDRESS:-game.legend.manager@gmail.com}"
 export MAIL_FROM_NAME="${MAIL_FROM_NAME:-Game Legend Manager}"
-if [ -n "${BREVO_API_KEY:-}" ]; then
-  export MAIL_MAILER=brevo MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-${GMAIL_ADDRESS:-}}"
-elif [ -n "${RESEND_API_KEY:-}" ]; then
-  export MAIL_MAILER=resend MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-onboarding@resend.dev}"
-elif [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
-  export MAIL_MAILER=smtp MAIL_HOST=smtp.gmail.com MAIL_PORT=587
-  export MAIL_USERNAME="$GMAIL_ADDRESS" MAIL_FROM_ADDRESS="$GMAIL_ADDRESS"
+if [ -n "${GMAIL_ADDRESS:-}" ] && [ -n "${GMAIL_APP_PASSWORD:-}" ]; then
+  export MAIL_MAILER=smtp MAIL_SCHEME=smtp MAIL_HOST=smtp.gmail.com MAIL_PORT=587
+  export MAIL_USERNAME="$GMAIL_ADDRESS" MAIL_FROM_ADDRESS="$GMAIL_ADDRESS" MAIL_REPLY_TO_ADDRESS="$GMAIL_ADDRESS"
   MAIL_PASSWORD=$(printf '%s' "$GMAIL_APP_PASSWORD" | tr -d ' ')
   export MAIL_PASSWORD
+  [ -n "${BREVO_API_KEY:-}${RESEND_API_KEY:-}" ] && echo "Emails: BREVO_API_KEY or RESEND_API_KEY on the server is not used (Gmail only, X89)."
+else
+  export MAIL_MAILER=log
 fi
 
 # One key for every deploy, so sign-ins and encrypted values survive it.
