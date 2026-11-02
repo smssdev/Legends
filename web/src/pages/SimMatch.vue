@@ -307,9 +307,8 @@ const halftimeLeft = ref(30)
 // [X42] The coach's window (live): play stops after minutes 15, 30, 60 and 75; its countdown shares halftimeLeft.
 const windowOn = ref(false)
 const windows = computed(() => (live.value ? view.value?.timing.windows ?? [] : []))
-/** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not their last 2 s). */
-// [X78] Half-time keeps the window's margin too: the server makes the second half's first minute a moment early.
-const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || ((halftime.value || windowOn.value) && halftimeLeft.value > 2))
+/** A coach may change now: always without windows; live, before kick-off, at half-time or in a window (not its last 2 s). */
+const canChange = computed(() => !windows.value.length || !started.value || minute.value[0] === 0 || halftime.value || (windowOn.value && halftimeLeft.value > 2))
 // [UP17] «أنا مستعد» and the emergency substitution (league, live).
 const pause = ref<LiveSync['pause']>(null)
 const readyBusy = ref(false)
