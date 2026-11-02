@@ -653,6 +653,66 @@ export const SCENES = {
       bars.forEach((b, i) => { const f = ease(seg(t, 0.4 + i * 0.15, 1.2 + i * 0.15)), tot = b.h + b.a || 1, wh = (150 * b.h / tot) * f, wa = (150 * b.a / tot) * f; sa(b.hb, 'width', wh); sa(b.ab, 'x', 320 - wa); sa(b.ab, 'width', wa) })
     } }
   },
+  // ------------------------------------------------------------ [Sprint 35 C1] the director's cutaways
+  // The crowd behind the goal on its feet: the scoring side's fans jumping with their arms and scarves up, two big
+  // flags waving, and (the full tier) flares and paper raining down. e.side: whose fans; e.count: how many to draw.
+  crowd(e) {
+    const svg = stage(e.side), w = svg.world, k = K(e.side), R = rnd(e.v ?? 7)
+    const g = el('g', {}, w), fans = []
+    const skins = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982']
+    const n = e.count ?? 90
+    for (let i = 0; i < n; i++) {
+      const row = i % 6, x = ((i * 53 + row * 29) % 700) - 30, y = 120 + row * 38, s = 0.7 + row * 0.12
+      const f = el('g', {}, g), shirt = R() < 0.7 ? k.kit : k.trim ?? '#fff'
+      f.innerHTML = `<rect x="-9" y="0" width="18" height="26" rx="6" fill="${shirt}"/><circle cy="-8" r="8" fill="${skins[i % skins.length]}"/>`
+        + `<rect class="a1" x="-12" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/><rect class="a2" x="7" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/>`
+        + (i % 4 === 0 ? `<rect class="sc" x="-16" y="-34" width="32" height="7" rx="2" fill="${k.trim ?? '#F5B82E'}"/>` : '')
+      fans.push({ f, x, y, s, ph: R() * 6.3, a1: f.querySelector('.a1'), a2: f.querySelector('.a2'), sc: f.querySelector('.sc') })
+    }
+    const flags = [140, 470].map((x) => { const p = el('path', { fill: k.kit, stroke: k.trim ?? '#fff', 'stroke-width': 3, opacity: 0.95 }, w); return { p, x } })
+    const flares = (e.flares ? [90, 330, 560] : []).map((x) => el('circle', { cx: x, cy: 150, r: 26, fill: '#FF8A3D', opacity: 0, filter: ref(svg, 'soft') }, w))
+    const paper = (e.flares ? Array.from({ length: 40 }, (_, i) => el('rect', { width: 5, height: 3, fill: ['#fff', k.kit, '#F5B82E'][i % 3], opacity: 0.9 }, w)) : [])
+    const tt = title(svg, tr('فرحة الجماهير'))
+    return { dur: 2.6, svg, update(t) {
+      cam(svg, 1.25 - 0.08 * ease(seg(t, 0, 2.6)), 320, 200)
+      for (const q of fans) {
+        const j = Math.abs(Math.sin(t * 7 + q.ph)) * 10
+        sa(q.f, 'transform', `translate(${q.x} ${q.y - j}) scale(${q.s})`)
+        const a = 150 + Math.sin(t * 9 + q.ph) * 20
+        sa(q.a1, 'transform', `rotate(${a} -9 0)`); sa(q.a2, 'transform', `rotate(${-a} 9 0)`)
+        if (q.sc) sa(q.sc, 'transform', `translate(0 ${-j * 0.3}) rotate(${Math.sin(t * 5 + q.ph) * 6})`)
+      }
+      for (const { p, x } of flags) {
+        const wv = (dx) => Math.sin(t * 6 + dx / 18) * 8
+        sa(p, 'd', `M${x} 60 L${x + 120} ${60 + wv(120)} L${x + 120} ${130 + wv(120)} L${x} 130 Z`)
+      }
+      flares.forEach((f, i) => sa(f, 'opacity', 0.5 + 0.3 * Math.sin(t * 13 + i * 2)))
+      paper.forEach((r, i) => { const x = (i * 83 + t * 30 * (i % 3 + 1)) % 700 - 30, y = ((t * (60 + (i % 5) * 20) + i * 37) % 360) - 20; sa(r, 'transform', `translate(${x} ${y}) rotate(${t * 200 + i * 40})`) })
+      tt(seg(t, 0.3, 0.7))
+    } }
+  },
+  // A coach on his touchline in his mood (the server's), the approved 3D model of his look (C1 to C3, Sprint 26):
+  // his joy at a goal, his anger at a goal against or a red card, his worry at a chance missed.
+  coachReact(e) {
+    const svg = stage(e.side), w = svg.world
+    el('rect', { x: -80, y: 236, width: 800, height: 110, fill: 'rgba(4,11,28,.55)' }, w)
+    el('rect', { x: 60, y: 168, width: 520, height: 12, rx: 4, fill: '#0B1626' }, w)
+    el('rect', { x: 60, y: 166, width: 520, height: 3, fill: 'rgba(200,215,235,.4)' }, w)
+    el('path', { d: 'M100 300 H540', stroke: 'rgba(255,255,255,.7)', 'stroke-width': 2, 'stroke-dasharray': '8 6' }, w)
+    const look = ['C1', 'C2', 'C3'].includes(e.look) ? e.look : 'C1', mood = e.mood ?? 'joy'
+    const img = el('image', { href: `/characters/${look.toLowerCase()}-${mood}.webp`, x: 205, y: 8, width: 250, height: 325, preserveAspectRatio: 'xMidYMax meet' }, svg)
+    const glow = el('circle', { cx: 360, cy: 180, r: 120, fill: K(e.side).kit, opacity: 0, filter: ref(svg, 'soft') }, svg)
+    svg.insertBefore(glow, img)
+    const words = { joy: 'فرحة المدرب', cheer: 'فرحة المدرب', angry: 'غضب المدرب', worried: 'قلق المدرب', sad: 'حسرة المدرب', surprise: 'دهشة المدرب', think: 'المدرب يفكر' }
+    const tt = title(svg, tr(words[mood] ?? 'المدرب'), mood === 'angry' ? '#EF4444' : mood === 'joy' || mood === 'cheer' ? undefined : '#C9D2E1')
+    return { dur: 2.4, svg, update(t) {
+      cam(svg, 1.05 + 0.06 * t / 2.4, 320, 200)
+      const f = ease(seg(t, 0, 0.35))
+      sa(img, 'transform', `translate(${(1 - f) * 80} 0)`); sa(img, 'opacity', f)
+      sa(glow, 'opacity', 0.35 * f)
+      tt(seg(t, 0.2, 0.6))
+    } }
+  },
   board(e) {
     const svg = stage('home'), bd = el('g', {}, svg)
     bd.innerHTML = `<rect x="-90" y="-56" width="180" height="112" rx="14" fill="#071733" stroke="rgba(245,184,46,.6)" stroke-width="2"/><text y="-22" text-anchor="middle" font-family="IBM Plex Sans Arabic, sans-serif" font-size="15" fill="#93A3BF">الوقت بدل الضائع</text><text y="34" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="60" fill="#2BB673">+${e.plus ?? ''}</text>`
