@@ -3,7 +3,7 @@
 // each player with his line, status, fitness, value and rating. A tap opens his card. [Sprint 20 W11] Its header also
 // says the eleven's average, the place against the objective, the formation, the strongest player and the next
 // opponent, and «فريق نادٍ آخر» opens any club's squad of the league (without its tactics).
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import RatingRing from '../../components/ui/RatingRing.vue'
@@ -37,6 +37,11 @@ function setView(v: 'list' | 'cards') {
   try { localStorage.setItem('legends.squadView', v) } catch {}
 }
 onMounted(load)
+// [X87] A change made elsewhere on the screen (an undo from the toast, after the card closed): the squad again.
+let again = 0
+const changed = () => { clearTimeout(again); again = window.setTimeout(() => load(), 450) }
+onMounted(() => window.addEventListener('glm:league-changed', changed))
+onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 // [Sprint 39 S1] A player sold or listed from his card: the word, and the squad again.
 const toast = useToast()
 const saleOpen = ref(false)
@@ -46,7 +51,7 @@ function openSale(p: SquadPlayer) {
 }
 async function sold(text: string) {
   open.value = null
-  toast.show(text)
+  if (text) toast.show(text)
   await load()
 }
 

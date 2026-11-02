@@ -6,9 +6,11 @@ import TicketPrices from '../../components/TicketPrices.vue'
 import AdReward from '../../components/ads/AdReward.vue'
 import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import PriceTag from '../../components/ui/PriceTag.vue'
+import { act, busy as isBusy } from '../../lib/action'
+import { t } from '../../lib/i18n'
 import { count, money } from '../../lib/format'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
@@ -20,8 +22,6 @@ const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const notice = ref('')
-const busy = ref(false)
 const now = ref(Date.now())
 let skew = 0
 let tick = 0
@@ -63,36 +63,16 @@ async function load() {
   loaded.value = true
 }
 
-async function start(s: Section) {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    const { data } = await api.POST('/leagues/{league}/stadium', { params: { path: { league: leagueId.value! } }, body: { section: s.section, idempotency_key: crypto.randomUUID() } })
-    v.value = data!
-    notice.value = `بدأ الجزء ${s.next!.part} من المرحلة ${s.next!.stage} في ${INFO[s.section]!.title}.`
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
-}
+// [X87] Through lib/action: only the pressed button waits, the result in a toast, coins asked once from 10 up.
+const start = (s: Section) => act(`start:${s.section}`, () => api.POST('/leagues/{league}/stadium', { params: { path: { league: leagueId.value! } }, body: { section: s.section, idempotency_key: crypto.randomUUID() } }), {
+  success: t('بدأ الجزء {v0} من المرحلة {v1} في {v2}.', { v0: s.next!.part, v1: s.next!.stage, v2: t(INFO[s.section]!.title) }), onError: (m) => (error.value = m),
+}).then((r) => { if (r?.data) v.value = r.data })
 
 // Finish the part now for coins [Sprint 34].
 const wallet = useWallet()
-async function finish() {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    await api.POST('/leagues/{league}/stadium/finish', { params: { path: { league: leagueId.value! } } })
-    await load()
-    wallet.load()
-    notice.value = 'اكتمل الجزء الآن.'
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
-}
+const finish = () => act('finish', () => api.POST('/leagues/{league}/stadium/finish', { params: { path: { league: leagueId.value! } } }), {
+  success: t('اكتمل الجزء الآن.'), coins: wallet.price('finish_stadium_per_stage') * (v.value?.building?.stage ?? 1), onError: (m) => (error.value = m),
+}).then((r) => { if (r) { void load(); wallet.load() } })
 
 onMounted(() => {
   load()
@@ -113,7 +93,6 @@ onBeforeUnmount(() => clearInterval(tick))
       <!-- [X85] The club's money is on the top bar, for this slot's club only. -->
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
@@ -133,7 +112,7 @@ onBeforeUnmount(() => clearInterval(tick))
         <span class="flex-1"><b class="block">{{ $t('يُبنى الآن: {v0}', { v0: INFO[v.building.section]!.title }) }}</b>
           <span class="text-sm text-text-muted">{{ $t('الجزء {v0} من 5 في المرحلة {v1}', { v0: v.building.part, v1: v.building.stage }) }}</span></span>
         <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('يكتمل بعد') }}</span><b class="font-numbers text-2xl text-success" dir="ltr">{{ left }}</b></span>
-        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
+        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="isBusy('finish')" @click="finish">
           {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_stadium_per_stage') * v.building.stage" currency="coins" /></button>
         <!-- [Sprint 20 S4] A game ad cuts the part's time. -->
         <AdReward v-if="leagueId" :league-id="leagueId" item="stadium" :ads="v.building.ads" @done="load" />
@@ -157,7 +136,7 @@ onBeforeUnmount(() => clearInterval(tick))
           </div>
           <p class="text-sm text-text-muted">{{ $t('{v0} من 3 مراحل · {v1} من 15 جزءاً', { v0: s.stage, v1: s.done }) }}</p>
           <button v-if="s.next" type="button" class="mt-auto h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40"
-            :disabled="busy || !!v.building || s.next.cost > v.balance" @click="start(s)">
+            :disabled="isBusy(`start:${s.section}`) || !!v.building || s.next.cost > v.balance" @click="start(s)">
             {{ $t('ابدأ الجزء التالي ·') }} <span class="font-numbers" dir="ltr">{{ money(s.next.cost) }}</span></button>
           <p v-else class="mt-auto rounded-md bg-gold/15 py-3 text-center font-bold text-gold">{{ $t('القسم مكتمل') }}</p>
         </article>
