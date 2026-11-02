@@ -407,6 +407,10 @@ class Guide
             $t('press_stakes', ['match'], 'match',
                 ['ماذا يفعل تصريحي في المؤتمر الصحفي؟', 'مؤتمر صحفي تصريح وعد معنويات عواقب', 'يرفع معنويات لاعبيك في المباراة، ثم تحكم النتيجة عليه: الوعد بالفوز الكاسح يكافئك إن فزت ويكلفك إن خسرت، والهادئ آمن، والحماسي بينهما. وتظهر أرقام كل تصريح تحته.'],
                 ['What does my press statement do?', 'press conference statement promise morale stakes', 'It lifts your players\' morale in the match, then the result judges it: promising a crushing win pays if you win and costs if you lose, the calm one is safe, the rallying one in between. Each statement shows its numbers under it.']),
+            // [Sprint 33 Q1] The match's drawing tiers.
+            $t('quality', ['match'], 'match',
+                ['لماذا يبدو البث أخف على جوالي؟', 'اداء سلس متوازن كامل بطيء تقطيع جودة رسوم جوال ضعيف', 'زر «الأداء» في شاشة المباراة له ثلاث درجات: «سلس» للجوالات الضعيفة (رسوم أخف وجمهور أقل، بلا إعادة بطيئة للهدف)، و«متوازن» للجوالات المتوسطة، و«كامل» للجوالات القوية والكمبيوتر بكل المؤثرات. و«تلقائي» يختار حسب جهازك، وينزل درجة وحده إن بدأت الحركة تتقطع. والمباراة نفسها لا تتغير: الدرجة تغيّر الرسم فقط.'],
+                ['Why does the broadcast look lighter on my phone?', 'performance smooth balanced full slow lag quality graphics weak phone', 'The match screen\'s «Performance» button has three tiers: «Smooth» for weak phones (lighter drawing, a smaller crowd, no slow-motion replay of the goal), «Balanced» for mid-range phones, and «Full» for strong phones and computers with every effect. «Auto» picks for your device and steps down by itself if the motion starts to stutter. The match itself never changes: the tier changes only the drawing.']),
         ];
     }
 }
