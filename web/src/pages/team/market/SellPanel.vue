@@ -3,6 +3,7 @@
 // card on the squad page [Sprint 39 S1]: withdraw him if listed; sell him now (asked first: it cannot be undone); list
 // him at his value; or at my price on a slider between his floor and his cap, with the server's estimate of the wait.
 // Prices, fees and limits come from the API (GET /market's `mine`); buying stays in the market only.
+// [X84] A player is listed once: once listed, the panel offers only withdraw him (back to the choices) or keep him.
 import { ref, watch } from 'vue'
 import { api, asApiError, ensureCsrf } from '../../../api/client'
 import type { components } from '../../../api/schema'
@@ -13,7 +14,7 @@ import { useConfirm } from '../../../stores/confirm'
 
 type Mine = components['schemas']['Market']['mine'][number]
 const props = defineProps<{ leagueId: number; player: Mine }>()
-const emit = defineEmits<{ done: [notice: string]; error: [message: string] }>()
+const emit = defineEmits<{ done: [notice: string]; error: [message: string]; keep: [] }>()
 
 const busy = ref(false)
 const price = ref<number | ''>(props.player.listed?.price ?? props.player.value)
@@ -65,11 +66,18 @@ const unlist = () => run(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3 rounded-lg bg-surface-sunk p-3 text-sm">
-    <div v-if="player.listed" class="flex flex-wrap items-center gap-2">
-      <span>{{ $t('معروض بـ') }} <b dir="ltr" class="font-numbers">{{ money(player.listed.price) }}</b><template v-if="player.listed.sells_at">{{ $t('، ويُباع {v0} إن لم يشتره مدرب.', { v0: when(player.listed.sells_at) }) }}</template></span>
-      <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy" @click="unlist">{{ $t('اسحبه من البيع') }}</button>
+  <!-- [X84] Listed once only: a listed player shows his listing and two choices, withdraw him or keep him as he is. -->
+  <div v-if="player.listed" class="flex flex-col gap-3 rounded-lg border border-gold/40 bg-gold/10 p-3 text-sm" role="group" :aria-label="$t('معروض للبيع')">
+    <p class="flex flex-wrap items-center gap-2">
+      <span class="rounded-pill bg-gold px-2 py-0.5 text-xs font-bold text-on-gold">{{ $t('معروض للبيع') }}</span>
+      <span>{{ $t('بسعر') }} <b dir="ltr" class="font-numbers">{{ money(player.listed.price) }}</b><template v-if="player.listed.sells_at">{{ $t('، ويُباع {v0} إن لم يشتره مدرب.', { v0: when(player.listed.sells_at) }) }}</template></span>
+    </p>
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" class="h-touch rounded-md border border-danger/50 px-3 font-bold text-danger disabled:opacity-40" :disabled="busy" @click="unlist">{{ busy ? '...' : $t('اسحبه من قائمة الانتقالات') }}</button>
+      <button type="button" class="h-touch rounded-md bg-surface-raised px-3 font-bold" :disabled="busy" @click="emit('keep')">{{ $t('اتركه كما هو') }}</button>
     </div>
+  </div>
+  <div v-else class="flex flex-col gap-3 rounded-lg bg-surface-sunk p-3 text-sm">
     <div class="flex flex-wrap items-center justify-between gap-2">
       <span><b>{{ $t('بيع فوري') }}</b>{{ $t(': تحصل الآن على') }} <b dir="ltr" class="font-numbers text-success">{{ money(player.quick.pays) }}</b> {{ $t('مقابل {v0}.', { v0: fee() }) }}</span>
       <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="sellNow">{{ busy ? '...' : $t('بع الآن') }}</button>
