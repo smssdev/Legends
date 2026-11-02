@@ -30,6 +30,7 @@ class GameUpdateNotice extends Notification implements ShouldQueue
         public ?array $score = null,
         public array $facts = [],
         public bool $en = false,
+        public string $why = '',
     ) {}
 
     /** A finished match: the score, the scorers and the way to its report. */
@@ -47,6 +48,7 @@ class GameUpdateNotice extends Notification implements ShouldQueue
             score: [$home, $homeGoals, $awayGoals, $away],
             facts: array_map(fn ($s) => [$en ? 'Goal' : 'هدف', $s], $scorers),
             en: $en,
+            why: $en ? 'You get this because you turned on match summaries by email (My account, then Notifications).' : 'وصلتك لأنك فعّلت ملخص المباريات بالبريد. تُوقفه من «حسابي» ← الإشعارات.',
         );
     }
 
@@ -62,6 +64,7 @@ class GameUpdateNotice extends Notification implements ShouldQueue
             path: $path,
             facts: $facts,
             en: $en,
+            why: $en ? 'You get this because of your account in the game.' : 'وصلتك هذه الرسالة بسبب حسابك في اللعبة.',
         );
     }
 
@@ -74,10 +77,16 @@ class GameUpdateNotice extends Notification implements ShouldQueue
     {
         $url = rtrim((string) config('app.url'), '/').$this->path;
 
+        $site = rtrim((string) config('app.url'), '/');
+
         return (new MailMessage)
             ->subject($this->subject)
+            // [X80] One tap to stop these in the mail app (Gmail shows it beside the sender).
+            ->withSymfonyMessage(fn ($m) => $m->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:'.config('mail.from.address').'?subject=unsubscribe>, <'.$site.'/profile>'))
             ->action($this->button, $url)
-            ->view('mail.game-update', ['en' => $this->en, 'kind' => $this->kind, 'title' => $this->title, 'lead' => $this->lead,
-                'score' => $this->score, 'facts' => $this->facts, 'button' => $this->button, 'url' => $url]);
+            ->view(['html' => 'mail.game-update', 'text' => 'mail.text'], ['en' => $this->en, 'kind' => $this->kind, 'title' => $this->title, 'lead' => $this->lead,
+                'score' => $this->score, 'facts' => $this->facts, 'button' => $this->button, 'url' => $url, 'why' => $this->why,
+                'heading' => $this->score ? "{$this->score[0]} {$this->score[1]} - {$this->score[2]} {$this->score[3]}" : $this->title,
+                'lines' => array_merge([$this->lead], array_map(fn ($f) => "{$f[0]}: {$f[1]}", $this->facts))]);
     }
 }

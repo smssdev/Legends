@@ -39,7 +39,8 @@ class MailTemplatesTest extends TestCase
         $this->assertSame('انتهت المباراة: الأهلي 2 – 1 الزمالك', $mail->subject);
         $this->assertStringEndsWith('/live/77/report', $mail->actionUrl);
         $html = $mail->render();
-        $this->assertStringContainsString('2 – 1', $html);
+        // In Arabic the home side is on the right with its goals beside it: shown left to right as away – home.
+        $this->assertStringContainsString('1 – 2', $html);
         $this->assertStringContainsString(e("صلاح 23'"), $html);
 
         $alert = GameUpdateNotice::alert(true, 'Your player was sold', 'A club bought him.', '/market', [['Price', '2,400,000']])->toMail($coach);

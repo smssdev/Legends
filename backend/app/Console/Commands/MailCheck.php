@@ -8,7 +8,6 @@ use App\Notifications\GameUpdateNotice;
 use App\Notifications\StoreDealNotice;
 use App\Support\Mailer;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
 /**
@@ -32,7 +31,9 @@ class MailCheck extends Command
             return $this->sample((string) $sample, $to);
         }
         try {
-            Mail::raw('رسالة تجربة من لعبة المدرب الأسطورة: البريد يعمل.', fn ($m) => $m->to($to)->subject('تجربة البريد في لعبة المدرب الأسطورة'));
+            // [X80] The test in the game's own design, so what arrives is what the coaches get.
+            Notification::route('mail', $to)->notifyNow(GameUpdateNotice::alert(false, 'البريد يعمل ✓',
+                'هذه رسالة تجربة من Game Legend Manager: البريد يخرج من السيرفر ويصل بتصميم اللعبة.', '/', [['المرسل', (string) config('mail.from.address')], ['الطريقة', Mailer::name()]]));
         } catch (\Throwable $e) {
             $this->error('لم تُرسل: '.$e->getMessage());
             $this->line('الحل: '.Mailer::explain($e->getMessage()));
