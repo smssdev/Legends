@@ -589,6 +589,9 @@ export const SCENES = {
     const wall = [0, 1, 2, 3].map((i) => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
     const tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
     const fl = flash(svg), cf = flashes(svg)
+    // [Sprint 38 S3] The referee marks the wall's line with his spray, then steps away.
+    const rf = player(w, officialKit(), '', 1, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const foam = el('path', { fill: 'none', stroke: '#F7F9FC', 'stroke-width': 2.6, 'stroke-linecap': 'round', opacity: 0.85 }, w)
     const KT = 2.65, tS = 1.85, side = R() < 0.5 ? -1 : 1, spot = [320 - side * 50, 252]
     const target = e.scored ? [side > 0 ? POSTS[1] - 12 : POSTS[0] + 12, 84 + R() * 8] : e.saved ? [320 + side * (44 + R() * 14), 92 + R() * 14] : [320 + side * 20, 50]
     const path = [spot, [lerp(spot[0], target[0], 0.4) - side * 30, 30], target]
@@ -597,6 +600,10 @@ export const SCENES = {
       cam(svg, 1.06 + 0.1 * inout(seg(t, 0.2, tS)), 320, 165)
       // The wall, nine metres off, jumps as the kick is taken.
       const jump = 14 * Math.sin(Math.PI * seg(t, tS - 0.05, tS + 0.45))
+      const sp = seg(t, 0, 0.55), x0 = spot[0] + side * 20 - 34, x1 = spot[0] + side * 20 + 34
+      sa(foam, 'd', `M${x0} 224 L${lerp(x0, x1, sp)} 224`); sa(foam, 'opacity', 0.85 * (1 - seg(t, 4.2, 5)))
+      put(rf, t < 0.6 ? lerp(x0, x1, sp) : lerp(x1, spot[0] + side * 140, ease(seg(t, 0.6, 1.4))), t < 0.6 ? 228 : lerp(228, 240, ease(seg(t, 0.6, 1.4))))
+      t < 0.6 ? rf.pose(8, -8, 10, -60) : t < 1.4 ? rf.run(t * 9, 0.5) : rf.pose(); rf.mood('focus')
       wall.forEach((p, i) => { put(p, spot[0] + side * 20 + (i - 1.5) * 15, 218, 0, 1, jump); p.pose(4, -4, 4, -4, jump > 1 ? 0.5 : 0, jump > 1 ? 0.5 : 0) })
       const f = inout(seg(t, 0.6, tS)); put(tk, lerp(spot[0] - side * 30, spot[0] - side * 5, f), lerp(spot[1] + 30, spot[1] + 6, f))
       if (t < 0.6) tk.pose(3, -3, 20, -20); else if (t < tS - 0.3) tk.run(t * 11, 0.7); else tk.kick(seg(t, tS - 0.3, tS + 0.12))
@@ -697,20 +704,37 @@ export const SCENES = {
       tt(seg(t, 0.2, 0.6))
     } }
   },
+  // [Sprint 38 S1] Offside, as on TV: the pass is played, the attacker is a step beyond the last defender, the assistant
+  // on the touchline raises his flag, and the picture freezes with the line drawn across the defence.
   offside(e) {
-    const svg = stage(e.side)
-    const defs = [0, 1, 2, 3].map(() => player(svg, K(other(e.side)).kit, '', 0.9)), rn = player(svg, K(e.side).kit, e.no, 1.1)
-    const line = el('line', { x1: 120, y1: 214, x2: 520, y2: 214, stroke: '#EF4444', 'stroke-width': 3, 'stroke-dasharray': '10 7', opacity: 0, filter: ref(svg, 'glow') }, svg)
+    const svg = stage(e.side), w = svg.world, R = rnd((e.no || 7) * 37)
+    const defs = [0, 1, 2, 3].map(() => player(w, K(other(e.side)).kit, '', 1, { look: Math.floor(R() * 40) }))
+    const rn = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), ps = player(w, K(e.side).kit, '', 1, { look: Math.floor(R() * 40) })
+    const ar = player(w, officialKit(), '', 1, { look: 20, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const fl = el('g', {}, w); fl.innerHTML = '<rect x="-0.8" y="0" width="1.6" height="18" fill="#2B2B2B"/><path d="M0.8 0 H13 V9 H0.8 Z" fill="#F2E205"/><path d="M0.8 0 H6.9 V4.5 H0.8 Z M6.9 4.5 H13 V9 H6.9 Z" fill="#D3122F"/>'
+    const b = ball(svg), lineY = 206, runTo = [352, 190]
+    // A horizontal line has no height, so a filter would draw nothing: the glow is a wider faint line under it.
+    const line = el('g', { opacity: 0 }, w)
+    el('line', { x1: -40, y1: lineY, x2: 680, y2: lineY, stroke: 'rgba(239,68,68,.35)', 'stroke-width': 7 }, line)
+    el('line', { x1: -40, y1: lineY, x2: 680, y2: lineY, stroke: '#EF4444', 'stroke-width': 2.4, 'stroke-dasharray': '10 7' }, line)
     const fr = el('rect', { width: 640, height: 340, fill: 'rgba(30,70,160,.18)', opacity: 0 }, svg)
-    const flag = el('g', { opacity: 0 }, svg); flag.innerHTML = '<rect x="-1.5" y="0" width="3" height="46" fill="#DDE3F0"/><path d="M1.5 2 H30 L24 12 L30 22 H1.5 Z" fill="#EF4444"/>'
     const tt = title(svg, tr('تسلل'), '#EF4444')
     return { dur: 4.2, svg, update(t) {
-      const fz = t > 1.5 && t < 2.6
-      defs.forEach((d, i) => d.at(200 + i * 80, 220, 0, 0.9))
-      rn.at(lerp(330, 300, ease(seg(t, 0, 1.4))), lerp(260, 196, ease(seg(t, 0, 1.4))), 0, 1.1)
-      sa(line, 'opacity', seg(t, 1.4, 1.7)); sa(fr, 'opacity', fz ? 1 : 0)
-      sa(flag, 'opacity', seg(t, 1.2, 1.4)); sa(flag, 'transform', `translate(560 ${lerp(250, 170, ease(seg(t, 1.2, 1.5)))}) rotate(${Math.sin(t * 9) * 8})`)
-      tt(seg(t, 2.4, 2.8))
+      // The picture freezes at the pass's arrival (1.5 s) until 2.6 s.
+      const T = t > 1.5 && t < 2.6 ? 1.5 : t < 2.6 ? t : t - 1.1
+      cam(svg, 1.08, 340, 200)
+      defs.forEach((d, i) => { put(d, 170 + i * 90 + Math.sin(T * 2 + i) * 4, lineY + (i % 2) * 3); T < 1.3 ? d.run(T * 8 + i, 0.3) : d.pose(4, -4, i === 1 ? 140 : 10, i === 2 ? -140 : -10) })
+      const go = ease(seg(T, 0, 1.4)); put(rn, lerp(330, runTo[0], go), lerp(262, runTo[1], go)); rn.run(T * 12, go < 1 ? 0.8 : 0.2)
+      put(ps, 250, 286); T < 0.75 && T > 0.45 ? ps.kick(seg(T, 0.45, 0.75)) : ps.pose()
+      // The assistant level with the last defender on the far touchline: the flag goes up as the ball arrives.
+      const up = ease(seg(T, 1.2, 1.45))
+      put(ar, 572, lineY); ar.face?.('front'); ar.mood('focus'); ar.pose(3, -3, 10, -10 - 160 * up)
+      const s2 = persp(lineY)
+      sa(fl, 'transform', `translate(${572 + 15 * s2 * up} ${lineY - 58 * s2 - lerp(-30, 52, up) * s2}) scale(${s2})`)
+      const k = ease(seg(T, 0.7, 1.5)), p = [lerp(256, runTo[0] - 6, k), lerp(282, runTo[1] + 3, k)]
+      b.set(p[0], p[1] - 30 * Math.sin(Math.PI * k) * 0.6, p[1], T * 900, 1)
+      sa(line, 'opacity', seg(t, 1.5, 1.7) * (1 - seg(t, 2.6, 2.9))); sa(fr, 'opacity', t > 1.5 && t < 2.6 ? 1 : 0)
+      tt(seg(t, 1.6, 2.0))
     } }
   },
   // [Sprint 37 N2] The substitution: the fourth official holds up the lit board (off in red, on in green), the player
@@ -925,9 +949,19 @@ export const SCENES = {
       tt(seg(t, 0.2, 0.6))
     } }
   },
+  // [Sprint 38 S2] Stoppage time: the fourth official holds up the lit board with the minutes added.
   board(e) {
-    const svg = stage('home'), bd = el('g', {}, svg)
-    bd.innerHTML = `<rect x="-90" y="-56" width="180" height="112" rx="14" fill="#071733" stroke="rgba(245,184,46,.6)" stroke-width="2"/><text y="-22" text-anchor="middle" font-family="IBM Plex Sans Arabic, sans-serif" font-size="15" fill="#93A3BF">الوقت بدل الضائع</text><text y="34" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="60" fill="#2BB673">+${e.plus ?? ''}</text>`
-    return { dur: 3, svg, update(t) { sa(bd, 'transform', `translate(320 ${lerp(400, 170, ease(seg(t, 0.1, 0.7)))}) scale(${1 + 0.03 * Math.sin(t * 8)})`) } }
+    const svg = stage('home'), w = svg.world
+    const fo = player(w, officialKit(), '', 1.5, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const bd = el('g', {}, w)
+    bd.innerHTML = `<rect x="-62" y="-40" width="124" height="64" rx="6" fill="#05080F" stroke="#3A4256" stroke-width="2"/><text y="12" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="46" fill="#3BFF8A" filter="${ref(svg, 'glow')}">+${e.plus ?? ''}</text><rect x="-6" y="24" width="12" height="22" rx="3" fill="#1B2233"/>`
+    const tt = title(svg, tr('الوقت بدل الضائع'), '#2BB673')
+    return { dur: 3, svg, update(t) {
+      cam(svg, 1.05, 320, 200)
+      const up = ease(seg(t, 0.05, 0.5))
+      fo.face?.('front'); fo.mood('focus'); fo.at(320, 196, 0, 1.5); fo.pose(3, -3, 150 * up, -150 * up)
+      sa(bd, 'transform', `translate(320 ${lerp(170, 96, up)}) scale(${0.85 + 0.15 * up + 0.02 * Math.sin(t * 8)})`)
+      tt(seg(t, 0.4, 0.8))
+    } }
   },
 }
