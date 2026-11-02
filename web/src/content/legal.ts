@@ -6,7 +6,7 @@ import type { Locale } from '../lib/i18n'
 export type LegalSection = { h: string; p: string[] }
 export type LegalDoc = { title: string; intro: string; sections: LegalSection[] }
 
-export const UPDATED = '2026-11-01'
+export const UPDATED = '2026-11-02'
 
 const PRIVACY: Record<Locale, LegalDoc> = {
   ar: {
@@ -48,7 +48,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'من يعالج البيانات معنا', p: [
         'الاستضافة: خادمنا لدى Hostinger، وعليه قاعدة البيانات ونسخها الاحتياطية.',
         'Google: الدخول بحساب Google، والإعلانات (AdSense)، والمدرب المساعد (Gemini) الذي يُرسل إليه سؤالك وأرقام فريقك اللازمة للإجابة فقط، بلا اسمك ولا بريدك.',
-        'البريد: خدمة إرسال البريد التي توصل رسائل التوثيق واستعادة كلمة المرور.',
+        'البريد: خدمة إرسال البريد (Gmail من Google) التي توصل رسائل التوثيق واستعادة كلمة المرور، وملخص مبارياتك بالبريد إن فعّلته بنفسك من «حسابي» ← الإشعارات (متوقف حتى تفعّله، وتوقفه متى شئت).',
       ] },
       { h: 'مدة الاحتفاظ', p: [
         'نحتفظ ببيانات حسابك ما دام قائماً. وحين تحذفه يُحذف معه كل ما هو خاص بك (المحفظة والرسائل والأجهزة والنشاط)، وتعود أنديتك للبوتات، وتبقى نتائج المباريات والألقاب في سجل الدوري بلا اسمك، ورسائلك في الجروبات لأعضائها بلا اسمك (احذفها قبل حذف الحساب إن شئت).',
@@ -103,7 +103,7 @@ const PRIVACY: Record<Locale, LegalDoc> = {
       { h: 'Who processes data with us', p: [
         'Hosting: our server at Hostinger, with the database and its backups.',
         'Google: Google sign-in, ads (AdSense), and the Assistant Coach (Gemini), which receives your question and only the numbers about your team it needs to answer, without your name or email.',
-        'Email: the sending service that delivers verification and password reset emails.',
+        'Email: the sending service (Gmail, from Google) that delivers verification and password reset emails, and your match summaries by email if you turn them on yourself in My account, then Notifications (off until you do, and you can turn them off at any time).',
       ] },
       { h: 'How long we keep it', p: [
         'We keep your account data while your account exists. When you delete it, everything that is only yours goes with it (wallet, messages, devices, activity), your clubs return to the bots, match results and titles stay in the league\'s history without your name, and your group messages stay for their members without your name (delete them before deleting the account if you wish).',

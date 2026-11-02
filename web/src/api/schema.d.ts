@@ -9027,9 +9027,11 @@ export interface paths {
                 content: {
                     "application/json": {
                         /** @description referee, match_soon, offers, done, absence, news */
-                        kinds: {
+                        kinds?: {
                             [key: string]: boolean;
                         };
+                        /** @description [X79] The match summary by email (off by default) */
+                        email_match?: boolean;
                     };
                 };
             };
@@ -13458,6 +13460,10 @@ export interface components {
             }[];
         };
         NotificationSettings: {
+            /** @description [X79] The match summary by email, the account's choice (off by default) */
+            email_match: boolean;
+            /** @description [X79] The account has a confirmed email, so the summary can arrive */
+            email_ready: boolean;
             /** @description The server's VAPID public key for PushManager.subscribe */
             public_key: string | null;
             /** @description The server can push (its keys are set) */

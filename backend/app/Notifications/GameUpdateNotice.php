@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -10,8 +12,10 @@ use Illuminate\Notifications\Notification;
  * summary with its score board, or any alert (a player sold, an offer, a match about to start). Built from plain
  * values, so any part of the game can send one; App\Messages\Inbox stays the place every event is written first.
  */
-class GameUpdateNotice extends Notification
+class GameUpdateNotice extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     /**
      * @param  array{0: string, 1: int, 2: int, 3: string}|null  $score  home, its goals, away's goals, away
      * @param  list<array{0: string, 1: string}>  $facts  label and value rows

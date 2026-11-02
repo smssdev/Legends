@@ -7,6 +7,8 @@ use App\League\MatchOrders;
 use App\League\MatchReplay;
 use App\League\MatchRunner;
 use App\Models\User;
+use App\Notifications\GameUpdateNotice;
+use App\Notify\MatchEmail;
 use App\Simulator\CoachWindows;
 use App\Simulator\Runner;
 use App\Support\GameClock;
@@ -14,6 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
@@ -250,10 +253,55 @@ class MatchOrdersTest extends TestCase
         $this->assertSame([], $this->actingAs(User::factory()->create())->getJson('/api/v1/matches/live')->json('matches'));
     }
 
+    /** [X78] The scene is kept when the match ends, so it is watched the same after the engine changes. */
+    public function test_the_replay_is_kept_and_survives_a_new_engine(): void
+    {
+        $match = $this->kickOff();
+        $this->playTo($match, 200);
+        $kept = DB::table('match_replays')->where('match_id', $match->id)->first();
+        $this->assertNotNull($kept);
+        $this->assertSame((int) config('game.engine.version'), (int) $kept->engine_version);
+        $this->assertLessThan(2_000_000, (int) $kept->bytes);
+        $before = $this->actingAs($this->owner)->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->json();
+
+        // A new engine: the kept scene, minute for minute.
+        DB::table('matches')->where('id', $match->id)->update(['engine_version' => 1]);
+        $after = $this->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->json();
+        $this->assertTrue($after['replayable']);
+        $this->assertSame($before['ticks'], $after['ticks']);
+
+        // Kept once; the command keeps those of this engine that have none, and skips the rest.
+        DB::table('matches')->where('id', $match->id)->update(['engine_version' => (int) config('game.engine.version')]);
+        DB::table('match_replays')->delete();
+        $this->artisan('matches:keep-replays')->assertSuccessful();
+        $this->assertTrue(DB::table('match_replays')->where('match_id', $match->id)->exists());
+        $count = DB::table('match_replays')->count();
+        $this->artisan('matches:keep-replays')->expectsOutput('Kept 0 replays.')->assertSuccessful();
+        $this->assertSame($count, DB::table('match_replays')->count());
+    }
+
+    /** [X79] The match summary by email: off by default, then for the coach who turned it on with a confirmed email. */
+    public function test_the_match_summary_goes_by_email_only_when_asked(): void
+    {
+        config(['mail.default' => 'smtp']);
+        Notification::fake();
+        $this->owner->forceFill(['email' => 'coach@example.com', 'email_verified_at' => GameClock::now()])->save();
+        $this->actingAs($this->owner)->getJson('/api/v1/notifications')->assertOk()->assertJsonPath('email_match', false)->assertJsonPath('email_ready', true);
+        $match = $this->kickOff();
+        $this->playTo($match, 200);
+        Notification::assertNothingSentTo($this->owner);
+
+        $this->actingAs($this->owner)->putJson('/api/v1/notifications', ['email_match' => true])->assertOk()->assertJsonPath('email_match', true);
+        $done = DB::table('matches')->where('id', $match->id)->first();
+        $this->assertTrue(MatchEmail::send($this->owner->id, json_decode($done->state, true), $this->side, $match->id, $this->league['id']));
+        Notification::assertSentTo($this->owner, GameUpdateNotice::class, fn ($n) => str_ends_with($n->toMail($this->owner)->actionUrl, "/live/{$match->id}/report"));
+    }
+
     public function test_a_match_from_an_older_engine_is_shown_from_its_events(): void
     {
         $match = $this->kickOff();
         $this->playTo($match, 200);
+        DB::table('match_replays')->delete();
         DB::table('matches')->where('id', $match->id)->update(['engine_version' => 1]);
         $replay = $this->actingAs($this->owner)->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->json();
         $this->assertFalse($replay['replayable']);

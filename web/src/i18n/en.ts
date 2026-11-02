@@ -2604,4 +2604,8 @@ export const EN: Record<string, string> = {
   'تشغيل صوت الإشعارات': 'Turn on notification sound',
   'بدأت مباراتك الآن': 'Your match has kicked off',
   'ثبّت Game Legend Manager على شاشتك الرئيسية': 'Install Game Legend Manager on your home screen',
+  // [X79] The match summary by email.
+  'ملخص المباراة بالبريد': 'Match summary by email',
+  'النتيجة والهدافون ورابط التقرير بعد كل مباراة لك': 'The score, the scorers and a link to the report after each of your matches',
+  'أكّد بريدك أولاً من صفحة حسابك ليصلك الملخص': 'Confirm your email first on your account page to receive it',
 }

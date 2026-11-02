@@ -3353,9 +3353,9 @@ paths:
           application/json:
             schema:
               type: object
-              required: [kinds]
               properties:
                 kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence, news' }
+                email_match: { type: boolean, description: '[X79] The match summary by email (off by default)' }
       responses:
         '200':
           description: The settings after
@@ -5929,8 +5929,10 @@ components:
           items: { type: object, required: [name, bytes], properties: { name: { type: string }, bytes: { type: integer } } }
     NotificationSettings:
       type: object
-      required: [public_key, enabled, devices, kinds]
+      required: [public_key, enabled, devices, kinds, email_match, email_ready]
       properties:
+        email_match: { type: boolean, description: '[X79] The match summary by email, the account''s choice (off by default)' }
+        email_ready: { type: boolean, description: '[X79] The account has a confirmed email, so the summary can arrive' }
         public_key: { type: string, nullable: true, description: The server's VAPID public key for PushManager.subscribe }
         enabled: { type: boolean, description: The server can push (its keys are set) }
         devices: { type: integer }
