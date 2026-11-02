@@ -542,7 +542,9 @@ function actions(tick, f, u) {
   const { i, k } = segment(f.length, u), A = f[i], B = f[i + 1] ?? A
   const far = Math.hypot(B.b[0] - A.b[0], B.b[1] - A.b[1])
   const sideOf = (id) => players.value[id]?.side
-  if (A.h != null && far > 60 && k < 0.3) { const head = (A.b[2] ?? 0) > 12; by[A.h] = { kind: head ? 'head' : 'kick', f: k / 0.3 }; say('t' + i, head ? 'head' : 'touch') }
+  // [Sprint 34 K2] From the touchline it is a throw-in: both hands over the head.
+  const line = A.b[1] <= 20 || A.b[1] >= 660
+  if (A.h != null && far > 60 && k < 0.3) { const head = (A.b[2] ?? 0) > 12; by[A.h] = { kind: line ? 'throwin' : head ? 'head' : 'kick', f: k / 0.3 }; say('t' + i, head ? 'head' : 'touch') }
   if (B.h != null && B.h !== A.h && (B.b[2] ?? 0) > 12 && k > 0.7) { by[B.h] = { kind: 'head', f: (k - 0.7) / 0.3 }; if (k > 0.85) say('h' + i, 'head') }
   const foul = (tick.events ?? []).some((e) => e.type === 'foul')
   if (A.h != null && B.h != null && sideOf(A.h) && sideOf(B.h) && sideOf(A.h) !== sideOf(B.h) && k > 0.55 && (foul || (tick.tick * 7 + i) % 3 === 0)) by[B.h] = { kind: 'slide', f: (k - 0.55) / 0.45 }
@@ -600,6 +602,15 @@ function actions(tick, f, u) {
 // [Sprint 33 L3] Where each player was last drawn (for the one taken off), and how much of the minute a substitution's
 // walk takes.
 const lastSeen = new Map(), SUB_WALK = 0.45
+// [Sprint 34 K4] Each player's pace and fitness now (the minute's teams, else the match's), by id.
+let fitFor = null, fitMap = new Map()
+function fitness(tick) {
+  const teams = tick?.teams ?? props.teams
+  if (teams === fitFor) return fitMap
+  fitFor = teams; fitMap = new Map()
+  for (const side of ['home', 'away']) for (const p of teams?.[side]?.players ?? []) fitMap.set(String(p.id), { pac: Number(p.pac ?? 70), fit: Number(p.fit ?? 100) })
+  return fitMap
+}
 let ballTurn = 0, lastBall = [525, 340]
 let tvLast = 0
 function drawTv(tick, u) {
@@ -658,13 +669,16 @@ function drawTv(tick, u) {
     const [sx, sy, sc] = proj(wx, wy)
     t.sx = sx; t.sy = sy; t.scale = sc * 0.48
     // [Sprint 31 M5] The faster he runs, the quicker his stride and the more he leans into it (sideways only on screen).
-    const amp = Math.min(1, speed / 70)
-    const lean = moving && t.face === 'side' ? t.mirror * Math.min(9, speed / 9) : 0
+    // [Sprint 34 K4] His own stride: a quick player turns his legs over faster, a tired one (fitness under 60) runs
+    // heavier, upright and lower in the knee.
+    const me = fitness(tick).get(String(id)), pace = me ? 0.8 + me.pac / 250 : 1, tired = me && me.fit < 60 ? 0.75 : 1
+    const amp = Math.min(1, speed / 70) * tired
+    const lean = moving && t.face === 'side' ? t.mirror * Math.min(9, speed / 9) * tired : 0
     t.lean += (lean - t.lean) * Math.min(1, dts * 8)
     t.f.face(t.face, t.mirror)
     t.bob = 0
     if (!smooth.value) {
-      if (moving) { t.ph += dts * (6 + 10 * amp); t.f.run(t.ph, 0.4 + 0.6 * amp); t.bob = Math.abs(Math.sin(t.ph)) * 2.2 * amp }
+      if (moving) { t.ph += dts * (6 + 10 * amp) * pace; t.f.run(t.ph, 0.4 + 0.6 * amp); t.bob = Math.abs(Math.sin(t.ph)) * 2.2 * amp }
       else { t.ph += dts * 2.2; t.f.idle(t.ph); t.bob = (Math.sin(t.ph) + 1) * 0.35 }
     } else t.f.pose()
     // [Sprint 32 A1] A move takes over the stride: a strike, a header, a slide, a keeper's dive, a celebration.
@@ -680,6 +694,7 @@ function drawTv(tick, u) {
       else if (a.kind === 'head-hands') t.f.handsOnHead()
       else if (a.kind === 'gather') t.f.gather()
       else if (a.kind === 'throw') t.f.throwOut(a.f)
+      else if (a.kind === 'throwin') { const r = 165 - 60 * a.f; t.f.pose(4, -10, r, -r) }
       else if (a.kind === 'fallen') { const d = Math.min(1, a.f * 4); t.f.fallen(); t.lean = (t.face === 'side' ? t.mirror : 1) * 84 * d; t.bob = -20 * d }
     }
     drawn.push(t)

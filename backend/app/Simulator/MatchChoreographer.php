@@ -41,6 +41,13 @@ class MatchChoreographer
         foreach ($out['events'] as $e) {
             if ($e['type'] === 'attack') {
                 array_push($path, ...self::attackPath($e, $rng));
+                if (($e['result'] ?? null) === 'missed') {
+                    // [Sprint 34 K2] A shot wide: a goal kick from the six-yard box, long towards midfield.
+                    $def = $e['team'] === 'home' ? 'away' : 'home';
+                    $dd = $def === 'home' ? 1 : -1;
+                    $path[] = [self::wx(55, $dd), 300 + $rng->int(80), 0, $def, 'goalkick'];
+                    $path[] = [self::wx(470 + $rng->int(110), $dd), 140 + $rng->int(400), 30, $def, 'pass'];
+                }
             } elseif ($e['type'] === 'corner') {
                 $dir = $e['team'] === 'home' ? 1 : -1;
                 $path[] = [self::wx(1040, $dir), $rng->chance(5000) ? 20 : 660, 0, $e['team'], 'corner', $e['taker'] ?? null];
@@ -63,6 +70,11 @@ class MatchChoreographer
             for ($i = 0; $i < 3; $i++) {
                 $path[] = [400 + $rng->int(250), 180 + $rng->int(320), 0, $rng->chance(5000) ? 'home' : 'away', 'pass'];
             }
+            // [Sprint 34 K2] One quiet minute in four has the ball out for a throw-in, then played on.
+            if ($rng->chance(2500)) {
+                $last = $path[2];
+                $path[2] = [$last[0], $rng->chance(5000) ? 8 : 672, 0, $last[3], 'throw'];
+            }
         }
 
         $busy = false;
@@ -73,7 +85,7 @@ class MatchChoreographer
 
         $frames = [];
         foreach (self::sample($path, $busy ? self::FRAMES_BUSY : self::FRAMES) as $i => [$x, $y, $z, $team, $leg]) {
-            $at = self::players($state, $x, $y, $team, $leg);
+            $at = self::players($state, $x, $y, $team, $leg + ['z' => $z]);
             $frames[] = ['t' => $i, 'b' => [$x, $y, $z], 'p' => $at['p'], 'h' => $at['h'], 'r' => self::officials($x, $y)];
         }
         // [Sprint 32 R1] The pass goes to a player: whoever has the ball in the next Keyframe is already running to
@@ -211,6 +223,9 @@ class MatchChoreographer
         // up his place for it.
         $setPiece = (in_array($to, ['fk', 'pen'], true) && $at >= 600) ? $to : ((in_array($from, ['fk', 'pen'], true) && $at <= 250) ? $from : null);
         $kickoff = ($to === 'kickoff' && $at >= 600) || ($from === 'kickoff' && $at <= 250);
+        // [Sprint 34 K2] A goal kick and a throw-in, arriving at their spot or just leaving it.
+        $restart = (in_array($to, ['goalkick', 'throw'], true) && $at >= 600) ? $to : ((in_array($from, ['goalkick', 'throw'], true) && $at <= 350) ? $from : null);
+        $bz = $leg['z'] ?? 0;
         if ($kickoff) {
             $possession = null;
         }
@@ -238,6 +253,25 @@ class MatchChoreographer
                 if ($line === 'gk') {
                     $x += intdiv(($bx - 525) * 6, 100);
                     $y = 340 + intdiv(($by - 340) * 25, 100);
+                    // [Sprint 34 K1] Near his goal the keeper comes for the ball: off his line to claim a cross in the
+                    // air, and out to narrow the angle when an opponent has it in his box. A goal kick: he takes it.
+                    $gx = $dir === 1 ? 0 : 1050;
+                    $deep = abs($bx - $gx);
+                    if ($restart === 'goalkick' && $attacking) {
+                        [$x, $y] = [$bx - $dir * 10, $by];
+                    } elseif ($deep < 160 && abs($by - 340) < 200 && $bz >= 15) {
+                        $x += intdiv(($bx - $x) * 70, 100);
+                        $y += intdiv(($by - $y) * 70, 100);
+                    } elseif ($deep < 200 && abs($by - 340) < 220 && $possession !== null && ! $attacking && $setPiece === null) {
+                        $x += intdiv(($bx - $x) * 35, 100);
+                        $y += intdiv(($by - $y) * 50, 100);
+                    }
+                } elseif ($restart === 'goalkick' && $possession !== null) {
+                    // [K2] A goal kick: the kicking side spread out of the box, the other back towards halfway.
+                    $x = $attacking ? max(15, min(1035, $x)) : $x + intdiv((525 - $x) * 50, 100);
+                    if ($attacking && $line === 'def') {
+                        $x = $dir === 1 ? max($x, 190) : min($x, 860);
+                    }
                 } elseif ($setPiece !== null && $possession !== null) {
                     // [B2] A free kick: a wall of four 9 m from the ball towards the goal, the rest of the defence in
                     // the box, the attackers along its edge. A penalty: everyone outside the box but the taker.
@@ -273,7 +307,8 @@ class MatchChoreographer
                     $y += intdiv(($by - 340) * 18, 100);
                     if ($attacking && $line === 'att' && $ax > 600) {
                         // [R2] The forwards run beyond the last line, and pull a little away from the ball across.
-                        $x += $dir * intdiv(($ax - 600) * 30, 100);
+                        // [Sprint 34 K4] As far as his pace takes him: a quick forward runs deeper.
+                        $x += $dir * intdiv(($ax - 600) * 30 * max(50, (int) ($p['a']['pac'] ?? 75)), 7500);
                         $y += intdiv(($y - $by) * 10, 100);
                     } elseif ($attacking && $line === 'def' && $ax > 450 && abs($y - 340) > 140 && ($y - 340) * ($by - 340) > 0) {
                         // [R2] The wide defender on the ball's flank overlaps.
@@ -319,6 +354,50 @@ class MatchChoreographer
                     $mx += $goalX === 0 ? -18 : 18;
                     $positions[$id] = [max(15, min(1035, $x + intdiv($mx - $x, 3))), max(15, min(665, $y + intdiv($my - $y, 3)))];
                 }
+            }
+        }
+
+        // [Sprint 34 K2] A throw-in: two of the thrower's teammates come close to take it.
+        if ($restart === 'throw' && $possession !== null) {
+            $near = array_keys(array_filter($sides, fn ($s, $id) => $s === $possession && $lines[$id] !== 'gk', ARRAY_FILTER_USE_BOTH));
+            usort($near, fn ($a, $b) => (abs($positions[$a][0] - $bx) + abs($positions[$a][1] - $by)) <=> (abs($positions[$b][0] - $bx) + abs($positions[$b][1] - $by)) ?: $a <=> $b);
+            foreach (array_slice($near, 1, 2) as $k => $id) {
+                $positions[$id] = [max(15, min(1035, $bx + ($k ? 90 : -90))), max(15, min(665, $by + ($by < 340 ? 110 : -110)))];
+            }
+        }
+
+        // [Sprint 34 K3] Support: the wide players of the side on the ball hold the width, its nearest midfielder
+        // comes to show for a pass behind the ball, and the other side's nearest defender engages the ball while the
+        // next one covers behind him. From the shape and the ball only.
+        if ($possession !== null && ! $corner && $setPiece === null && $restart === null) {
+            $other = $possession === 'home' ? 'away' : 'home';
+            $dirA = $possession === 'home' ? 1 : -1;
+            $byDist = function (string $side, string $line) use ($positions, $sides, $lines, $bx, $by): array {
+                $ids = array_keys(array_filter($sides, fn ($s, $id) => $s === $side && $lines[$id] === $line, ARRAY_FILTER_USE_BOTH));
+                usort($ids, fn ($a, $b) => (abs($positions[$a][0] - $bx) + abs($positions[$a][1] - $by)) <=> (abs($positions[$b][0] - $bx) + abs($positions[$b][1] - $by)) ?: $a <=> $b);
+
+                return $ids;
+            };
+            foreach ($positions as $id => [$x, $y]) {
+                if ($sides[$id] === $possession && $lines[$id] !== 'gk' && $lines[$id] !== 'def' && abs($y - 340) > 170) {
+                    $positions[$id][1] = max(15, min(665, $y + ($y < 340 ? -40 : 40)));
+                }
+            }
+            $mids = $byDist($possession, 'mid');
+            if (isset($mids[1])) {
+                // The nearest is likely on the ball: the next one shows.
+                $m = $mids[1];
+                [$x, $y] = $positions[$m];
+                $tx = $bx - $dirA * 120;
+                $positions[$m] = [max(15, min(1035, $x + intdiv(($tx - $x) * 35, 100))), max(15, min(665, $y + intdiv(($by - $y) * 35, 100)))];
+            }
+            $defs = $byDist($other, 'def');
+            if (isset($defs[0])) {
+                [$x, $y] = $positions[$defs[0]];
+                $positions[$defs[0]] = [$x + intdiv(($bx - $x) * 40, 100), $y + intdiv(($by - $y) * 40, 100)];
+            }
+            if (isset($defs[1])) {
+                $positions[$defs[1]][0] = max(15, min(1035, $positions[$defs[1]][0] + ($other === 'home' ? -40 : 40)));
             }
         }
 
@@ -383,6 +462,14 @@ class MatchChoreographer
             }
 
             return ['p' => $positions, 'h' => null, 'sides' => $sides];
+        }
+        // [Sprint 34 K2] At a goal kick the keeper has the ball.
+        if ($restart === 'goalkick' && $possession !== null) {
+            foreach ($positions as $id => $_) {
+                if ($sides[$id] === $possession && $lines[$id] === 'gk') {
+                    return ['p' => $positions, 'h' => $id, 'sides' => $sides];
+                }
+            }
         }
         // [B4] Carrying: the named passer (or, arriving at the waypoint, its own named player), else the nearest.
         $named = $at >= 900 ? ($leg['receiver'] ?? null) : ($leg['passer'] ?? null);

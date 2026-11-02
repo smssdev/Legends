@@ -171,4 +171,44 @@ class ChoreographyTest extends TestCase
         // Only when he is close enough to reach it without a jump (25 m): about a third of the time.
         $this->assertGreaterThan($shots / 4, $seen, "{$seen} of {$shots} shooters on the ball");
     }
+
+    /** [Sprint 34 K1, K2] A goal kick after a shot wide (the keeper on the ball), throw-ins, and the keeper off his line. */
+    public function test_goal_kicks_throw_ins_and_the_keeper(): void
+    {
+        $state = $this->state(6);
+        $state['out'] = ['tick' => 40, 'events' => [['type' => 'attack', 'team' => 'home', 'phases' => [['n' => 'build'], ['n' => 'shot']], 'result' => 'missed', 'shooter' => 115]]];
+        $frames = MatchChoreographer::frames($state, $state['out'], [500, 340])['frames'];
+        $this->assertTrue(collect($frames)->contains(fn ($f) => $f['h'] === 200), 'the away keeper takes the goal kick');
+
+        $throws = 0;
+        foreach ($this->minutes(12) as [, $frames]) {
+            foreach ($frames as $f) {
+                $throws += ($f['b'][1] <= 20 || $f['b'][1] >= 660) && $f['h'] !== null ? 1 : 0;
+            }
+        }
+        $this->assertGreaterThan(0, $throws, 'some throw-ins');
+
+        // A cross into his box: the keeper comes for it.
+        $state['out'] = ['tick' => 41, 'events' => [['type' => 'corner', 'team' => 'home', 'taker' => 113]]];
+        $frames = MatchChoreographer::frames($state, $state['out'], [1040, 20])['frames'];
+        $cross = collect($frames)->first(fn ($f) => $f['b'][2] >= 15 && $f['b'][0] > 900 && abs($f['b'][1] - 340) < 150);
+        $this->assertNotNull($cross);
+        $this->assertLessThan(120, abs($cross['p'][200][0] - $cross['b'][0]) + abs($cross['p'][200][1] - $cross['b'][1]), 'the keeper comes for the cross');
+    }
+
+    /** [Sprint 34 K4] A quicker forward runs deeper beyond the line. */
+    public function test_a_quick_forward_runs_deeper(): void
+    {
+        $at = function (int $pac): int {
+            $state = $this->state(2);
+            foreach ($state['teams']['home']['players'] as &$p) {
+                $p['a']['pac'] = $pac;
+            }
+            $state['out'] = ['tick' => 10, 'events' => []];
+            $f = MatchChoreographer::frames($state, ['tick' => 10, 'events' => [['type' => 'attack', 'team' => 'home', 'phases' => [['n' => 'create']], 'result' => null]]], [700, 340])['frames'];
+
+            return max(array_map(fn ($fr) => $fr['p'][115][0], $f));
+        };
+        $this->assertGreaterThan($at(55), $at(95));
+    }
 }
