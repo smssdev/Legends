@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Admin\TwoFactor;
 use App\League\ClubLedger;
 use App\Messages\Inbox;
 use App\Models\User;
@@ -87,44 +86,22 @@ class OperationsTest extends TestCase
         $this->artisan('matches:live --soon=15')->expectsOutput((string) $soon)->assertSuccessful();
     }
 
-    public function test_the_two_step_code_is_asked_by_default_and_off_only_by_the_server(): void
+    public function test_the_admin_panel_opens_with_the_password_alone(): void
     {
-        // [Sprint 30 P1] Asked of every admin unless ADMIN_TWO_FACTOR=false (the tests set it off, phpunit.xml).
-        $this->assertStringContainsString("env('ADMIN_TWO_FACTOR', true)", (string) file_get_contents(config_path('game.php')));
-        // Off on the server: the panel opens for an admin at once.
+        // [Sprint 39 A1] No two-step code (the owner's request, 2026-11-02): an admin signed in opens the panel at once.
+        $this->assertStringNotContainsString('two_factor', (string) file_get_contents(config_path('game.php')));
+        $this->assertFileDoesNotExist(app_path('Admin/TwoFactor.php'));
         $user = User::factory()->create();
         $admin = User::factory()->create(['role' => 'admin']);
+        // From the site: Sanctum's session.
         $this->withHeader('Referer', config('app.url'));
         $this->actingAs($user)->getJson('/api/v1/admin/overview')->assertForbidden();
-        $this->actingAs($admin)->getJson('/api/v1/admin/2fa')->assertOk()->assertJsonPath('required', false)->assertJsonPath('passed', true);
-        $this->actingAs($admin)->getJson('/api/v1/admin/overview')->assertOk();
-    }
-
-    public function test_the_admin_panel_is_for_the_admin_after_the_two_step_code(): void
-    {
-        config(['game.admin.two_factor' => true]);
-        $user = User::factory()->create();
-        $admin = User::factory()->create(['role' => 'admin']);
-        // From the site: Sanctum's session (the second step is kept in it).
-        $this->withHeader('Referer', config('app.url'));
-        $this->actingAs($user)->getJson('/api/v1/admin/overview')->assertForbidden();
-        $this->actingAs($admin)->getJson('/api/v1/admin/overview')->assertStatus(423);
-        // Set up: a secret, then a code from it.
-        $secret = $this->actingAs($admin)->postJson('/api/v1/admin/2fa/setup')->assertOk()->json('secret');
-        $this->postJson('/api/v1/admin/2fa/confirm', ['code' => '000000'])->assertUnprocessable();
-        $codes = $this->postJson('/api/v1/admin/2fa/confirm', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk()->assertJsonPath('passed', true)
-            ->assertJsonCount(8, 'recovery_codes')->json('recovery_codes');
-        // [Sprint 30 Q11] Kept as hashes only; each recovery code opens the panel once in place of the six digits.
-        $this->assertStringNotContainsString($codes[0], (string) $admin->fresh()->two_factor_recovery);
-        $this->flushSession();
-        $this->actingAs($admin)->getJson('/api/v1/admin/overview')->assertStatus(423);
-        $this->postJson('/api/v1/admin/2fa/verify', ['code' => $codes[0]])->assertOk()->assertJsonPath('passed', true)->assertJsonPath('recovery_left', 7);
-        $this->flushSession();
-        $this->actingAs($admin)->postJson('/api/v1/admin/2fa/verify', ['code' => $codes[0]])->assertUnprocessable();
-        $this->postJson('/api/v1/admin/2fa/verify', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk();
+        $this->actingAs($user)->getJson('/api/v1/admin/access')->assertForbidden();
+        $this->actingAs($admin)->getJson('/api/v1/admin/access')->assertOk()->assertJsonPath('scope', null)->assertJsonPath('sections', null);
+        $this->assertEmpty(array_filter(array_map(fn ($r) => $r->uri(), app('router')->getRoutes()->getRoutes()), fn ($u) => str_contains($u, '2fa')));
+        $this->getJson('/api/v1/admin/overview')->assertOk();
         // The backup, and who downloaded it from where, in the admins' log.
         $this->assertDatabaseMissing('admin_log', ['action' => 'backup']);
-        $this->postJson('/api/v1/admin/2fa/setup')->assertConflict();
         Activity::record($user->id, 'visits');
         Activity::record($user->id, 'matches_watched');
         $this->getJson('/api/v1/admin/overview')->assertOk()->assertJsonPath('users', 2)->assertJsonPath('active_today', 2);
@@ -141,11 +118,6 @@ class OperationsTest extends TestCase
         $this->assertStringStartsWith(DB::getDriverName() === 'pgsql' ? "\x1f\x8b" : 'SQLite format 3', (string) file_get_contents($download->baseResponse->getFile()->getPathname()));
         $this->get('/api/v1/admin/backups/2020-01-01_000000/download')->assertNotFound();
         $this->get('/api/v1/admin/backups/..%2F..%2F.env/download')->assertNotFound();
-        // Hours later the code is asked again.
-        Carbon::setTestNow(GameClock::now()->addHours(13));
-        $this->getJson('/api/v1/admin/overview')->assertStatus(423);
-        $this->postJson('/api/v1/admin/2fa/verify', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk();
-        $this->getJson('/api/v1/admin/overview')->assertOk();
     }
 
     public function test_the_return_indicator_counts_who_came_back_the_next_week(): void

@@ -4,12 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0B1A2C" />
+    <!-- [Sprint 39 B1] The game's icons in every standard size and format, from the crest (brand/current). -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="application-name" content="Game Legend Manager" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="المدرب الأسطورة" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Game Legend Manager" />
+    <meta name="msapplication-TileColor" content="#0B1A2C" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- The game's font, Amin (Sprint 20 S2), from our own files; Barlow Condensed for the scores and counters. -->
@@ -26,47 +32,67 @@
         }
       } catch (e) {}
     </script>
-    <!-- [X72] Google AdSense: the site's ownership (the publisher id is public by design; the ads themselves wait for ADSENSE_CLIENT on the server). -->
-    <meta name="google-adsense-account" content="ca-pub-9280036306568581" />
+    <!-- [X72, Sprint 39 B2] Google AdSense: the site's ownership (the owner's account, 2026-11-02; the publisher id is public by design). -->
+    <meta name="google-adsense-account" content="ca-pub-3803730964219444" />
     <!-- seo: each public page's tags (src/content/seo.ts); the build writes them, src/lib/seo.ts keeps them as the coach moves -->
-    <title>المدرب الأسطورة · لعبة إدارة كرة القدم أونلاين مع أصحابك</title>
-    <meta name="description" content="المدرب الأسطورة لعبة عربية مجانية لإدارة كرة القدم أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية." />
+    <title>Game Legend Manager · المدرب الأسطورة: لعبة مدرب كرة قدم أونلاين مع أصحابك</title>
+    <meta name="description" content="Game Legend Manager (المدرب الأسطورة) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية، وبيع واشترِ اللاعبين." />
+    <meta name="keywords" content="Game Legend Manager، المدرب الأسطورة، لعبة مدرب كرة قدم، المدرب الأفضل، لعبة كرة قدم تكتيكية، تدريب أندية أونلاين، بيع وشراء لاعبين، Football Manager Web، Soccer Simulation Game، Best Online Football Tactics" />
     <!-- [X61] Every other link (an invite /join/CODE shared on WhatsApp) still shows a card: the game's own. -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="المدرب الأسطورة" />
-    <meta property="og:title" content="المدرب الأسطورة · العب معي في دوري خاص" />
-    <meta property="og:description" content="لعبة عربية مجانية لإدارة كرة القدم أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية." />
-    <meta property="og:image" content="https://nesr.site/brand/og-invite.png" />
+    <meta property="og:site_name" content="Game Legend Manager · المدرب الأسطورة" />
+    <meta property="og:title" content="Game Legend Manager · العب معي في دوري خاص" />
+    <meta property="og:description" content="لعبة مدرب كرة قدم مجانية أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية." />
+    <meta property="og:image" content="%VITE_SITE_URL%/brand/og-invite.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Game Legend Manager" />
     <meta property="og:locale" content="ar_AR" />
+    <meta property="og:locale:alternate" content="en_GB" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Game Legend Manager · المدرب الأسطورة" />
+    <meta name="twitter:description" content="Football Manager Web and soccer simulation game: pick a club, play a private league with your friends, and run every match live." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/brand/og-invite.png" />
     <!-- /seo -->
+    <!-- [Sprint 39 B2] Schema.org: the site and the game (VideoGame) for Google's rich results, in both languages. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
             "@type": "WebSite",
-            "name": "المدرب الأسطورة",
-            "alternateName": ["لعبة المدرب الأسطورة", "Game Legend Manager", "GLM"],
-            "url": "https://nesr.site/",
+            "@id": "%VITE_SITE_URL%/#website",
+            "name": "Game Legend Manager",
+            "alternateName": ["المدرب الأسطورة", "لعبة المدرب الأسطورة", "GLM"],
+            "url": "%VITE_SITE_URL%/",
             "inLanguage": ["ar", "en"]
           },
           {
+            "@type": "Organization",
+            "@id": "%VITE_SITE_URL%/#org",
+            "name": "Game Legend Manager",
+            "url": "%VITE_SITE_URL%/",
+            "logo": "%VITE_SITE_URL%/icon-512.png",
+            "email": "game.legend.manager@gmail.com"
+          },
+          {
             "@type": "VideoGame",
-            "name": "المدرب الأسطورة",
-            "alternateName": "Game Legend Manager",
-            "description": "لعبة عربية مجانية لإدارة كرة القدم أونلاين: دوريات خاصة مع الأصدقاء، ومباريات تُدار حية بالتكتيك والتبديلات، وسوق وتدريب وملعب.",
-            "url": "https://nesr.site/",
-            "image": "https://nesr.site/icon-512.png",
-            "genre": ["Sports", "Football manager", "Simulation"],
-            "gamePlatform": ["Web browser", "Android"],
+            "@id": "%VITE_SITE_URL%/#game",
+            "name": "Game Legend Manager",
+            "alternateName": ["المدرب الأسطورة", "GLM"],
+            "description": "Game Legend Manager (المدرب الأسطورة) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: دوريات خاصة مع الأصدقاء، ومباريات تُدار حية بالتكتيك والتبديلات، وبيع وشراء اللاعبين، وتدريب وملعب. A free online football manager and soccer simulation game.",
+            "url": "%VITE_SITE_URL%/",
+            "image": "%VITE_SITE_URL%/brand/og-invite.png",
+            "publisher": { "@id": "%VITE_SITE_URL%/#org" },
+            "keywords": "Game Legend Manager, لعبة مدرب كرة قدم, المدرب الأفضل, لعبة كرة قدم تكتيكية, تدريب أندية أونلاين, بيع وشراء لاعبين, Football Manager Web, Soccer Simulation Game, Best Online Football Tactics",
+            "genre": ["Sports", "Football manager", "Simulation", "Strategy"],
+            "gamePlatform": ["Web browser", "Android", "iOS"],
             "applicationCategory": "GameApplication",
             "operatingSystem": "Any",
-            "playMode": "MultiPlayer",
+            "playMode": ["MultiPlayer", "SinglePlayer"],
             "inLanguage": ["ar", "en"],
-            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
           }
         ]
       }

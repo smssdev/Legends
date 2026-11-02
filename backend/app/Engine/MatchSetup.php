@@ -25,7 +25,7 @@ final class MatchSetup
     /**
      * @param  array  $home  ['club' => [...], 'squad' => [...], optional 'formation', 'starters', 'bench', 'tactics',
      *                       and 'slots' (a league formation's own slots, App\League\FormationBook) with 'takers']
-     * @param  array  $options  seed, competition (league|cup), referee (0..2), venue (home|neutral), pitch (the home stadium's pitch stage, 0..3)
+     * @param  array  $options  seed, competition (league|cup), referee (0..4: very lenient to very strict, Sprint 39 E7), venue (home|neutral), pitch (the home stadium's pitch stage, 0..3)
      * @param  array  $cfg  config snapshot: ['match' => ..., 'engine' => ...]
      */
     public static function build(array $home, array $away, array $options, array $cfg): array
@@ -35,7 +35,7 @@ final class MatchSetup
             'seed' => (int) $options['seed'],
             'cfg' => $cfg,
             'competition' => $options['competition'] ?? 'league',
-            'referee' => (int) ($options['referee'] ?? 1),
+            'referee' => (int) ($options['referee'] ?? 2),
             'venue' => $options['venue'] ?? 'home',
             'pitch' => (int) ($options['pitch'] ?? 0),
             'tick' => 0,

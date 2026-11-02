@@ -1,5 +1,5 @@
 {
-    "engine_version": 11,
+    "engine_version": 12,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -61,9 +61,9 @@
             "home_base_bp": 500,
             "home_pitch_bp": [
                 0,
-                100,
                 200,
-                300
+                400,
+                600
             ],
             "minute_ms": 3333,
             "extra_minute_ms": 2000,
@@ -114,7 +114,7 @@
             }
         },
         "engine": {
-            "version": 11,
+            "version": 12,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -161,10 +161,32 @@
             "fitness_drain_base": 12,
             "fitness_drain_pressing_max": 20,
             "fitness_drain_tempo_max": 8,
-            "tired_fit": 5500,
-            "tired_injury_bp": 30000,
+            "tired_fit": 7500,
+            "tired_injury_bp": 20000,
             "red_card_drain_bp": 11500,
             "morale_bp": 6,
+            "morale_finish_bp": 4,
+            "morale_penalty_bp": 60,
+            "synergy_bp": {
+                "fit": 300,
+                "near": 150,
+                "clash": -300
+            },
+            "gaps": {
+                "spread": 35,
+                "per_point_bp": 15,
+                "five_open_bp": 400,
+                "three_deep_bp": 300,
+                "max_bp": 800
+            },
+            "counter_press_from": 55,
+            "trap_line_bp": 1000,
+            "trap_deep_fail_cp": 300,
+            "marking_cp": {
+                "zone_outnumbered": -100,
+                "man_fit": 150,
+                "man_beaten": -150
+            },
             "bribe_own_card_bp": 5000,
             "bribe_rival_card_bp": 16000,
             "bribe_penalty_bp": 30000,
@@ -209,21 +231,23 @@
             "trap_base_bp": 3500,
             "trap_fail_bonus_cp": 600,
             "foul_bp": [
-                800,
-                1300,
-                1900,
-                2700
-            ],
-            "card_bp": [
+                650,
                 1300,
                 1950,
-                2850,
+                2600
+            ],
+            "card_bp": [
+                975,
+                1950,
+                2925,
                 3900
             ],
             "referee_bp": [
-                7000,
+                3333,
+                6667,
                 10000,
-                13500
+                13333,
+                16667
             ],
             "dogso_red_bp": 120,
             "second_yellow_spare_bp": 8000,
@@ -287,7 +311,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "645c36faf26d23beffa71ce482068a54095c26ef06175005402b497d3082dfff"
+            "sha256": "a401354ee9067ac0b575a0a75c9502e69b2af55233cc591c634431dc0947a494"
         },
         {
             "seed": 42,
@@ -298,7 +322,7 @@
                 "away": 0
             },
             "shootout": null,
-            "sha256": "de35edea781d796eb47b664cb81667315df0c0bcd5c2852aa66b4a9223573d20"
+            "sha256": "9d53abcea2717b0ec2d700019731f1c944f7a4747a4da277a6e8f9069714f149"
         },
         {
             "seed": 48213,
@@ -309,7 +333,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "a674e789768b6af02ed424ac1fbda87c12a4a5bf8fd23d1dcf3bcecb405f6860"
+            "sha256": "7b446008463658b9cc226810ee1402aaabb5339366806426609fc1654e3929b8"
         },
         {
             "seed": 7,
@@ -323,7 +347,7 @@
                 "home": 3,
                 "away": 4
             },
-            "sha256": "4e6cbc98a07af0864471dfaaae778e29965beb679e142f0b830e30e39a25dc14"
+            "sha256": "189481e28ca05092025108cd5f6f243ffb3be7aadf0218513eb02c57019da75e"
         },
         {
             "seed": 99,
@@ -334,7 +358,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "fba6064fcdfa76646a04ec2aa99d70a8fb76e14820f2aea56737697ad80f5cb7"
+            "sha256": "45ea24fa599cd86bb5bb22e72300e9138c4c8ae81bfe1e1be8746adaa20ba9bc"
         }
     ]
 }

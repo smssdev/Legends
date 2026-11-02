@@ -74,30 +74,52 @@ final class Ability
     }
 
     /**
-     * Fitness effect in basis points (docs/ENGINE.md 3, X21): none from 75%; from 55% to 75% up to a tenth less (slower,
-     * and the shots less sure); under 55% a sharp drop, from 85% down to 55%.
+     * Fitness effect in basis points [Sprint 39 E2, the owner's simulation file]: full from 90%; from 80% to 90% five to
+     * ten per cent less; from 75% to 80% up to fifteen; under 75% a sharp drop, down to a quarter less at 50% and under.
      */
     public static function fitness(int $fit): int
     {
         return match (true) {
-            $fit >= 7500 => 10000,
-            $fit >= 5500 => 9000 + intdiv(($fit - 5500) * 1000, 2000),
-            default => 5500 + intdiv(max(0, $fit) * 3000, 5500),
+            $fit >= 9000 => 10000,
+            $fit >= 8000 => 9000 + intdiv(($fit - 8000) * 500, 1000),
+            $fit >= 7500 => 8500 + intdiv(($fit - 7500) * 500, 500),
+            default => 7500 + intdiv(max(0, $fit - 5000) * 1000, 2500),
         };
     }
 
-    /** Out-of-position penalty: none in the player's line, heavy for goalkeepers. */
+    /**
+     * Out-of-position penalty [Sprint 39 E1, the owner's simulation file]: none in the player's line; 30% off one line
+     * away (a defender in midfield, a midfielder up front), 50% off two lines away (a defender up front); a keeper out
+     * of goal, or an outfield player in it, 60% off.
+     */
     public static function position(array $p): int
     {
         $native = $p['line'];
         $slot = $p['slot_line'] ?? $native;
-        if ($native === $slot) {
+        if ($native === $slot || in_array($slot, self::alsoPlays($p), true)) {
             return 10000;
         }
         if ($native === 'gk' || $slot === 'gk') {
             return 4000;
         }
+        $order = ['def' => 0, 'mid' => 1, 'att' => 2];
 
-        return 8800;
+        return abs($order[$native] - $order[$slot]) === 1 ? 7000 : 5000;
+    }
+
+    /** The positions' lines (a winger on the wing of midfield and back is in his place, as the formations' slots say). */
+    private const POSITION_LINES = ['GK' => ['gk'], 'CB' => ['def'], 'LB' => ['def'], 'RB' => ['def'], 'LWB' => ['def', 'mid'], 'RWB' => ['def', 'mid'],
+        'CDM' => ['mid'], 'CM' => ['mid'], 'CAM' => ['mid'], 'LM' => ['mid', 'att'], 'RM' => ['mid', 'att'], 'LW' => ['att', 'mid'], 'RW' => ['att', 'mid'],
+        'ST' => ['att'], 'CF' => ['att']];
+
+    /** @return list<string> the other lines a player's position and his second positions belong to */
+    private static function alsoPlays(array $p): array
+    {
+        $lines = [];
+        foreach (array_merge([$p['pos'] ?? ''], explode(',', (string) ($p['alt'] ?? ''))) as $pos) {
+            $lines = array_merge($lines, self::POSITION_LINES[trim($pos)] ?? []);
+        }
+
+        return $lines;
     }
 }

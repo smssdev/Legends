@@ -32,7 +32,8 @@ class Tactics
     /** What the opponent may see once the sides are locked. */
     public const PUBLIC = ['tackling', 'marking', 'plan', 'trap'];
 
-    public const REFEREES = ['lenient', 'medium', 'strict'];
+    /** [Sprint 39 E7] Five referees, from very lenient (green) to very strict (red). */
+    public const REFEREES = ['very_lenient', 'lenient', 'medium', 'strict', 'very_strict'];
 
     /** Mine, or the neutral defaults (a bot's, or a coach who never set any). */
     public static function of(Club $club): array
@@ -109,9 +110,9 @@ class Tactics
         $tips = [];
         $hard = $t['tackling'] >= 2;
         if ($t['pressing'] >= 70 && $hard) {
-            $tips[] = 'ضغط عالٍ مع قطع قوي: كرات مسترجعة أكثر، لكن كل صراع تخسره قد يصير خطأ'.($referee === 'strict' ? '، والحكم صارم: انتظر بطاقات.' : '.');
+            $tips[] = 'ضغط عالٍ مع قطع قوي: كرات مسترجعة أكثر، لكن كل صراع تخسره قد يصير خطأ'.(in_array($referee, ['strict', 'very_strict'], true) ? '، والحكم صارم: انتظر بطاقات.' : '.');
         } elseif ($t['tackling'] === 3) {
-            $tips[] = 'الخشونة تكسب صراعات أكثر، لكنها تعني أخطاء وبطاقات أكثر'.($referee === 'strict' ? '، خصوصاً مع حكم صارم.' : '، وقد يُطرد لاعب.');
+            $tips[] = 'الخشونة تكسب صراعات أكثر، لكنها تعني أخطاء وبطاقات أكثر'.(in_array($referee, ['strict', 'very_strict'], true) ? '، خصوصاً مع حكم صارم.' : '، وقد يُطرد لاعب.');
         }
         if ($t['pressing'] >= 75) {
             $tips[] = 'الضغط العالي يرهق لاعبيك أسرع: جهّز التبديلات بين الدقيقة 60 و70.';

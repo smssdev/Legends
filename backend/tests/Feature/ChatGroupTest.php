@@ -165,7 +165,7 @@ class ChatGroupTest extends TestCase
         $this->actingAs($helper->fresh())->getJson('/api/v1/admin/reports')->assertOk();
         $this->getJson('/api/v1/admin/users')->assertOk();
         $this->postJson('/api/v1/admin/coins', ['account_no' => 1, 'amount' => 5, 'reason' => 'x', 'idempotency_key' => 'k'])->assertForbidden();
-        $this->getJson('/api/v1/admin/2fa')->assertOk()->assertJsonPath('scope', 'support');
+        $this->getJson('/api/v1/admin/access')->assertOk()->assertJsonPath('scope', 'support');
         $this->putJson("/api/v1/admin/users/{$owner->id}/scope", ['scope' => 'finance'])->assertForbidden();
         $this->actingAs($owner)->putJson("/api/v1/admin/users/{$helper->id}/scope", ['scope' => 'finance'])->assertOk();
         $this->actingAs($helper->fresh())->getJson('/api/v1/admin/reports')->assertForbidden();

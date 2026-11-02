@@ -26,6 +26,9 @@ services:
   app:
     build:
       context: ../..
+      # [Sprint 39 B3] The site's address for the web build (canonical links, sitemap): the domain is one setting.
+      args:
+        PUBLIC_URL: ${PUBLIC_URL:-https://nesr.site}
     image: legends:latest
     restart: unless-stopped
     logging: *logs

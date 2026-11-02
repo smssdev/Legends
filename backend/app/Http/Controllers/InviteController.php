@@ -16,7 +16,8 @@ class InviteController extends Controller
     {
         $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $code));
         $league = League::where('code', $code)->with('owner')->first();
-        $brand = config('game.brand.name', 'لعبة المدرب الأسطورة');
+        // [Sprint 39 B1] The official name, the Arabic one beside it.
+        $brand = config('game.brand.name', 'Game Legend Manager').' ('.config('game.brand.name_ar', 'المدرب الأسطورة').')';
         $title = $league ? "انضم لـ{$league->name} في {$brand}" : "دعوة إلى {$brand}";
         $description = $league
             ? ($league->owner ? "{$league->owner->name} يدعوك" : 'دعوة').' لدوري خاص من '.$league->team_count.' فريقاً على '.$league->template.'. اختر ناديك وأدِره ضد أصحابك. الكود: '.$code

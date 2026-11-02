@@ -42,6 +42,8 @@ function apply(to: RouteLocationNormalized) {
   meta('property', 'og:url', urlOf(page.path, l))
   meta('property', 'og:site_name', BRAND[l])
   meta('property', 'og:locale', l === 'ar' ? 'ar_AR' : 'en_GB')
+  meta('name', 'twitter:title', page.title[l])
+  meta('name', 'twitter:description', page.description[l])
   link('canonical', urlOf(page.path, l))
 }
 

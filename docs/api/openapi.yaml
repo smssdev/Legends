@@ -489,7 +489,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [formations, limits, bands, across, off_line_bp]
+                required: [formations, limits, bands, across, off_line_bp, far_line_bp]
                 properties:
                   formations: { type: array, items: { $ref: '#/components/schemas/Formation' } }
                   limits: { type: object, additionalProperties: { type: array, items: { type: integer } } }
@@ -499,7 +499,8 @@ paths:
                     description: The depth (x) a player of each line may be dragged to, [from, to]
                     additionalProperties: { type: array, items: { type: integer } }
                   across: { type: array, items: { type: integer }, description: 'The width (y) a player may be dragged to, [from, to]' }
-                  off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives out of his lines (bp of his ability), as the engine plays him' }
+                  off_line_bp: { type: integer, description: '[Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1)' }
+                  far_line_bp: { type: integer, description: '[Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp' }
   /health:
     get:
       tags: [system]
@@ -2094,7 +2095,7 @@ paths:
                       status: { type: string, enum: [scheduled, locked, live] }
                       referee_at: { type: string, format: date-time }
                       lock_at: { type: string, format: date-time }
-                      referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+                      referee: { type: string, nullable: true, enum: [very_lenient, lenient, medium, strict, very_strict, null] }
                       morale: { type: integer, description: 'My morale for this match with my crowd and the tickets cheering me [X25]' }
                       slot: { type: integer, enum: [1, 2], description: 'The round''s first or second time slot [X31]' }
                       match_of_day: { type: boolean, description: 'The night''s big match of the round [X31]' }
@@ -2445,46 +2446,13 @@ paths:
                         home: { type: string, description: The home club's code }
                         away: { type: string }
                         competition: { type: string, enum: [league, cup, alliance] }
-  /admin/2fa:
+  /admin/access:
     get:
       tags: [admin]
-      summary: Is the two-step code set up for this admin, and proved in this session?
+      summary: '[Sprint 39 A1] What this admin may open (signed in with the password alone: no two-step code)'
       responses:
-        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
+        '200': { description: The access, content: { application/json: { schema: { $ref: '#/components/schemas/AdminAccess' } } } }
         '403': { $ref: '#/components/responses/Error' }
-  /admin/2fa/setup:
-    post:
-      tags: [admin]
-      summary: A new secret for the authenticator app (until it is confirmed)
-      responses:
-        '200':
-          description: The secret and its otpauth link (shown as a QR code)
-          content:
-            application/json:
-              schema: { type: object, required: [secret, uri], properties: { secret: { type: string }, uri: { type: string } } }
-        '409': { $ref: '#/components/responses/Error' }
-  /admin/2fa/confirm:
-    post:
-      tags: [admin]
-      summary: Turn the two-step code on with a first code from the app
-      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/AdminCode' } } } }
-      responses:
-        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
-        '422': { $ref: '#/components/responses/Error' }
-  /admin/2fa/verify:
-    post:
-      tags: [admin]
-      summary: Prove the code for this session (asked again after game.admin.two_factor_hours)
-      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/AdminCode' } } } }
-      responses:
-        '200': { description: The state, content: { application/json: { schema: { $ref: '#/components/schemas/AdminTwoFactor' } } } }
-        '422': { $ref: '#/components/responses/Error' }
-  /admin/2fa/recovery:
-    post:
-      tags: [admin]
-      summary: '[Sprint 30 Q11] New recovery codes for the two-step code (the old ones stop working); logged'
-      responses:
-        '200': { description: The codes, shown once, content: { application/json: { schema: { type: object, required: [recovery_codes], properties: { recovery_codes: { type: array, items: { type: string } } } } } } }
   /admin/overview:
     get:
       tags: [admin]
@@ -4478,7 +4446,7 @@ components:
                         stops: { type: array, description: Most stopped first, items: { type: string, enum: [counter, long, passing, wings, shots] } }
                   mine: { type: string, nullable: true, enum: [high, mid, low, null], description: The shape my saved tactics make }
               tips: { type: array, items: { type: string } }
-              referee: { type: string, nullable: true, enum: [lenient, medium, strict, null] }
+              referee: { type: string, nullable: true, enum: [very_lenient, lenient, medium, strict, very_strict, null] }
               help:
                 type: object
                 description: 'What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips'
@@ -5946,22 +5914,12 @@ components:
         user: { type: object, nullable: true, required: [id, name], properties: { id: { type: integer }, name: { type: string } } }
         created_at: { type: string, format: date-time }
         decided_at: { type: string, format: date-time, nullable: true }
-    AdminTwoFactor:
+    AdminAccess:
       type: object
-      required: [required, enabled, passed, recovery_left]
+      required: [scope, sections]
       properties:
-        recovery_left: { type: integer, description: '[Sprint 30 Q11] One-time recovery codes not used yet' }
         scope: { type: [string, 'null'], description: '[Sprint 30 G6] This admin''s scope (null: full)' }
         sections: { type: [array, 'null'], items: { type: string }, description: '[Sprint 30 G6] The panel sections this scope opens (null: all)' }
-        recovery_codes: { type: array, items: { type: string }, description: '[Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once' }
-        required: { type: boolean, description: 'Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off)' }
-        enabled: { type: boolean }
-        passed: { type: boolean, description: 'Proved in this session, or not asked' }
-    AdminCode:
-      type: object
-      required: [code]
-      properties:
-        code: { type: string, description: 'The six digits from the authenticator app' }
     AdminBackups:
       type: object
       required: [backups]

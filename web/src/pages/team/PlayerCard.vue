@@ -1,15 +1,43 @@
 <script setup lang="ts">
 // A player's card (Sprint 16 W1), after the draft MobilePlayer: rating and line, the attributes with bars,
 // fitness, room to grow and value. [Sprint 20 W9] A sheet from the bottom on the phone, a panel from the side on the
-// computer, so the list behind stays where it was; and its actions: train him, or sell him.
+// computer, so the list behind stays where it was; and its actions: train him, or sell him. [Sprint 39 S1] Selling is
+// right here (the market's own panel, market/SellPanel.vue), without going to the market; buying stays in the market.
+import { ref } from 'vue'
+import { api, asApiError } from '../../api/client'
+import type { components } from '../../api/schema'
+import { currentLeague } from '../../lib/currentLeague'
+import SellPanel from './market/SellPanel.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import UiChip from '../../components/ui/UiChip.vue'
-import { money, type Line } from '../../lib/format'
+import { fitnessTone, money, type Line } from '../../lib/format'
 import { ATTRIBUTES, barColor, type SquadPlayer } from './team'
 
-defineProps<{ player: SquadPlayer }>()
-defineEmits<{ close: [] }>()
+const props = defineProps<{ player: SquadPlayer }>()
+const emit = defineEmits<{ close: []; sold: [notice: string] }>()
+
+// The sale's terms for this player (the market's `mine`), asked when the coach opens the panel.
+const selling = ref<{ league: number; mine: components['schemas']['Market']['mine'][number] } | null>(null)
+const sellError = ref('')
+const loadingSale = ref(false)
+async function openSale() {
+  if (selling.value) return (selling.value = null)
+  sellError.value = ''
+  loadingSale.value = true
+  try {
+    const league = await currentLeague()
+    const market = league ? (await api.GET('/leagues/{league}/market', { params: { path: { league }, query: { source: 'pool', line: 'gk' } as any } })).data : null
+    const mine = market?.mine.find((m) => m.id === props.player.id)
+    if (!league || !market) sellError.value = 'لا دوري لك الآن.'
+    else if (market.closed) sellError.value = market.closed
+    else if (!mine) sellError.value = 'لا يمكن بيع هذا اللاعب الآن.'
+    else selling.value = { league, mine }
+  } catch (e) {
+    sellError.value = asApiError(e).message
+  }
+  loadingSale.value = false
+}
 const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' } as const
 </script>
 
@@ -47,18 +75,20 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       </div>
 
       <dl class="grid grid-cols-3 gap-2 text-center">
-        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="player.fitness >= 75 ? 'text-success' : player.fitness >= 55 ? 'text-warning' : 'text-danger'">{{ player.fitness }}%</dd></div>
+        <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('اللياقة') }}</dt><dd class="font-numbers text-2xl" :class="fitnessTone(player.fitness, 'text')">{{ player.fitness }}%</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('سقف التطور') }}</dt><dd class="font-numbers text-2xl">{{ player.potential }}</dd></div>
         <div class="rounded-xl bg-surface p-3"><dt class="text-sm text-text-muted">{{ $t('القيمة') }}</dt><dd class="font-numbers text-2xl">{{ money(player.value) }}</dd></div>
       </dl>
       <p v-if="!player.available" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger">
         {{ player.injured_matches ? $t('مصاب: يغيب {v0} مباريات', { v0: player.injured_matches }) : $t('موقوف: {v0} مباريات', { v0: player.suspended_matches }) }}
       </p>
-      <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap. -->
+      <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 39 S1]. -->
       <div class="grid grid-cols-2 gap-2">
         <RouterLink :to="{ name: 'training' }" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold" @click="$emit('close')">{{ $t('درّبه') }}</RouterLink>
-        <RouterLink :to="{ name: 'market', query: { tab: 'sell' } }" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning" @click="$emit('close')">{{ $t('بيع اللاعب') }}</RouterLink>
+        <button type="button" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning disabled:opacity-40" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : $t('بيع اللاعب') }}</button>
       </div>
+      <p v-if="sellError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(sellError) }}</p>
+      <SellPanel v-if="selling" :league-id="selling.league" :player="selling.mine" @done="(n: string) => emit('sold', n)" @error="(e: string) => (sellError = e)" />
     </section>
   </UiDialog>
 </template>

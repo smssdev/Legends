@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { REFEREE } from '../../lib/format'
 // Tactics (Sprint 17 W1). [Sprint 20 S1] Laid out as the owner's picture, in our colours and drawings: the match on
 // top (both sides, their strength and last five, the formations and the referee), then a board of cards: the three
 // sliders with their word and number, the trap and the marking on the right; the plan on its pitch, the tackling, and
@@ -51,7 +52,6 @@ const LINES = [
   { key: 'mid', label: 'الوسط', color: 'bg-line-mid', options: { def: 'مساندة الدفاع', stay: 'بقاء', push: 'اندفاع' } },
   { key: 'def', label: 'الدفاع', color: 'bg-line-def', options: { stay: 'بقاء', fullbacks: 'هجوم الظهيرين', mid: 'مساندة الوسط' } },
 ] as const
-const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
 // [UP16] The quick presets of the spec (10): each sets the knobs the engine plays with.
 const MENTALITY = [
   { id: 'all_out', label: 'الهجوم الكاسح', style: 95 }, { id: 'attacking', label: 'هجومي', style: 75 }, { id: 'balanced', label: 'متوازن', style: 50 },

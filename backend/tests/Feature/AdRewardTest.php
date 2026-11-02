@@ -103,9 +103,9 @@ class AdRewardTest extends TestCase
     public function test_the_games_own_adsense_account_is_the_default_and_its_ads_txt_is_googles_line(): void
     {
         // [X72] The owner's account in config/game.php, unless the server sets another (the tests turn it off).
-        $this->assertStringContainsString("env('ADSENSE_CLIENT', 'ca-pub-9280036306568581')", (string) file_get_contents(config_path('game.php')));
-        config(['game.adsense.client' => 'ca-pub-9280036306568581']);
-        $this->assertSame("google.com, pub-9280036306568581, DIRECT, f08c47fec0942fa0\n", $this->get('/ads.txt')->assertOk()->getContent());
+        $this->assertStringContainsString("env('ADSENSE_CLIENT', 'ca-pub-3803730964219444')", (string) file_get_contents(config_path('game.php')));
+        config(['game.adsense.client' => 'ca-pub-3803730964219444']);
+        $this->assertSame("google.com, pub-3803730964219444, DIRECT, f08c47fec0942fa0\n", $this->get('/ads.txt')->assertOk()->getContent());
     }
 
     public function test_google_adsense_is_off_until_the_account_is_set_then_its_video_is_timed_too(): void

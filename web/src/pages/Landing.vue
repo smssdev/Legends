@@ -5,7 +5,7 @@
 // [Sprint 26 W4] The three mascots welcome the visitor under the two ways in.
 import PublicFooter from '../components/PublicFooter.vue'
 import Character from '../components/characters/Character.vue'
-import { emblemSrc } from '../lib/i18n'
+import { emblemSrc, locale } from '../lib/i18n'
 
 const FEATURES = [
   { icon: '◎', title: 'مباراة حية تديرها لحظة بلحظة', body: 'تابع مباراتك دقيقة بدقيقة، وبدّل لاعبيك وغيّر تكتيكك أثناء اللعب، وخصمك يرى ما يحدث في الملعب لا خطتك.' },
@@ -38,7 +38,12 @@ const FAQ = [
     <!-- The hero: the stadium at night, the promise and the two ways in. -->
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
-        <img :src="emblemSrc" :alt="$t('المدرب الأسطورة')" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
+        <img :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
+        <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. -->
+        <p class="flex flex-col items-center leading-tight">
+          <span class="font-display text-2xl font-extrabold uppercase tracking-[0.12em] md:text-3xl" dir="ltr">Game Legend <span class="text-gold">Manager</span></span>
+          <span v-if="locale === 'ar'" class="text-sm font-bold text-text-soft">المدرب الأسطورة</span>
+        </p>
         <span class="rounded-pill bg-gold/15 px-4 py-1 text-sm font-bold text-gold">{{ $t('لعبة إدارة كرة قدم عربية مجانية') }}</span>
         <h1 class="font-display text-4xl font-extrabold leading-tight md:text-6xl">{{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span></h1>
         <p class="max-w-xl text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك في دوريات خاصة، وأدر كل مباراة مباشرة لحظة بلحظة، من الجوال أو الكمبيوتر.') }}</p>

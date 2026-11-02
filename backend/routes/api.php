@@ -316,11 +316,7 @@ Route::prefix('messages')->middleware(['auth:sanctum', 'throttle:120,1,messages'
 
 // The admin panel [Sprint 37]: the admin only, and after the two-step code (from the site's session).
 Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->controller(AdminController::class)->group(function () {
-    Route::get('2fa', 'status');
-    Route::post('2fa/setup', 'setup');
-    Route::post('2fa/confirm', 'confirm')->middleware('throttle:10,1,admin-2fa');
-    Route::post('2fa/verify', 'verify')->middleware('throttle:10,1,admin-2fa');
-    Route::post('2fa/recovery', 'recovery')->middleware(['admin', 'throttle:5,1,admin-2fa']);
+    Route::get('access', 'access');
     Route::middleware('admin')->group(function () {
         Route::get('overview', 'overview');
         Route::get('alliances', 'alliances');

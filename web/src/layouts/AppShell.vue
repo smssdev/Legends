@@ -17,6 +17,10 @@ import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import CountUp from '../components/ui/CountUp.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
+import SoundToggle from '../components/shell/SoundToggle.vue'
+import SoundPrompt from '../components/shell/SoundPrompt.vue'
+import { playTone } from '../lib/tone'
+import { useToast } from '../stores/toast'
 import { money } from '../lib/format'
 import { useAuth } from '../stores/auth'
 import { useBoard } from '../stores/board'
@@ -69,6 +73,19 @@ const running = computed(() => board.board?.timers.filter((t) => ['training', 's
 const waiting = computed(() => (board.board?.pending.length ?? 0) + (inbox.unread ? 1 : 0))
 watch(() => route.fullPath, () => { portal.value = null })
 
+// [Sprint 39 N1] The tone when the coach's next match kicks off while the game is open (its end comes as the match
+// report's message, stores/inbox.ts). Only within the next hours; a new board moves the timer.
+const toast = useToast()
+let kickoff = 0
+watch(() => board.board?.match && board.board.match.status !== 'live' ? board.board.match.scheduled_at : null, (at) => {
+  window.clearTimeout(kickoff)
+  const wait = at ? new Date(at).getTime() - Date.now() : -1
+  if (wait > 0 && wait < 6 * 3600_000) {
+    kickoff = window.setTimeout(() => { playTone(); toast.show('بدأت مباراتك الآن') }, wait)
+  }
+}, { immediate: true })
+onBeforeUnmount(() => window.clearTimeout(kickoff))
+
 // [Sprint 30 P7] The header's real height (it grows with the club's tabs and wraps on narrow screens), so the side
 // menu sits right under it and fills the rest of the screen exactly, scrolling inside.
 const header = ref<HTMLElement | null>(null)
@@ -85,6 +102,8 @@ onBeforeUnmount(() => sizer?.disconnect())
 <template>
   <div class="min-h-dvh" :style="{ '--shell-header': headerHeight + 'px' }">
     <ToastHost />
+    <!-- [Sprint 39 N1] Asked once a device: the game's sound and notifications. -->
+    <SoundPrompt v-if="auth.user" />
     <header ref="header" class="sticky top-0 z-30">
       <div class="shell-top relative border-b border-shade/30">
         <div class="relative mx-auto flex max-w-7xl items-center gap-1.5 px-3 py-2 md:gap-3 md:px-6 md:py-0" :class="inSlot ? 'md:max-w-none' : route.meta.wide ? 'xl:max-w-[96rem]' : ''">
@@ -119,6 +138,8 @@ onBeforeUnmount(() => sizer?.disconnect())
                   </Transition>
                 </Popover>
               </template>
+              <!-- [Sprint 39 N2] The notification sound: on or muted, one tap. -->
+              <SoundToggle :class="inSlot ? 'max-sm:hidden' : ''" />
               <!-- Inside a slot on a narrow phone the messages sit in «ما ينتظرك», so the club keeps its room. -->
               <RouterLink to="/inbox" class="bar-icon" :class="inSlot ? 'max-sm:hidden' : ''" :aria-label="unread ? $t('الرسائل: {n} غير مقروءة', { n: inbox.unread }) : $t('الرسائل')">
                 <Icon name="inbox" /><span v-if="unread" class="bar-badge bg-live text-white">{{ unread }}</span>

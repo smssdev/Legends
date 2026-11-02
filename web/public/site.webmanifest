@@ -1,7 +1,7 @@
 {
-  "name": "المدرب الأسطورة · لعبة إدارة كرة القدم",
-  "short_name": "المدرب الأسطورة",
-  "description": "لعبة إدارة كرة القدم أونلاين مع أصدقائك: دوري خاص، ومباريات تديرها حية.",
+  "name": "Game Legend Manager · المدرب الأسطورة",
+  "short_name": "Game Legend",
+  "description": "Game Legend Manager (المدرب الأسطورة): لعبة مدرب كرة قدم أونلاين مع أصدقائك: دوري خاص، ومباريات تديرها حية، وسوق وتدريب وتكتيك.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
@@ -11,6 +11,21 @@
   "background_color": "#06111E",
   "theme_color": "#0B1A2C",
   "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",

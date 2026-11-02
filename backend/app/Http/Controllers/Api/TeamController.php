@@ -47,8 +47,10 @@ class TeamController extends Controller
             // Where a player may be dragged [X5]: his line's depth band, and across from touchline to touchline.
             'bands' => FormationBook::BANDS,
             'across' => FormationBook::ACROSS,
-            // [Sprint 27 W4] What an outfield player gives out of his lines (bp), as the engine plays him.
-            'off_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'att']),
+            // [Sprint 27 W4] What an outfield player gives out of his lines (bp), as the engine plays him: the next line
+            // [Sprint 39 E1]; two lines away is far_line_bp.
+            'off_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'mid']),
+            'far_line_bp' => Ability::position(['line' => 'def', 'slot_line' => 'att']),
         ]);
     }
 
@@ -413,7 +415,7 @@ class TeamController extends Controller
                 'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,
                 // [Sprint 27 X2] What he gives in each line, as the engine plays him (bp of his ability): the screens show
                 // his rating at any place from it, the server's own number, in the web and the app alike.
-                'place_bp' => TeamSheet::placeBp($p->line),
+                'place_bp' => TeamSheet::placeBp($p->line, $p->position, $p->alt_positions),
                 'attributes' => $p->line === 'gk'
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],

@@ -1074,8 +1074,10 @@ export interface paths {
                             };
                             /** @description The width (y) a player may be dragged to, [from, to] */
                             across: number[];
-                            /** @description [Sprint 27 W4] What an outfield player gives out of his lines (bp of his ability), as the engine plays him */
+                            /** @description [Sprint 27 W4] What an outfield player gives one line away from his own (bp of his ability), as the engine plays him (7000 since Sprint 39 E1) */
                             off_line_bp: number;
+                            /** @description [Sprint 39 E1] What an outfield player gives two lines away (a defender up front), bp */
+                            far_line_bp: number;
                         };
                     };
                 };
@@ -5480,7 +5482,7 @@ export interface paths {
                                 /** Format: date-time */
                                 lock_at: string;
                                 /** @enum {string|null} */
-                                referee?: "lenient" | "medium" | "strict" | null;
+                                referee?: "very_lenient" | "lenient" | "medium" | "strict" | "very_strict" | null;
                                 /** @description My morale for this match with my crowd and the tickets cheering me [X25] */
                                 morale: number;
                                 /**
@@ -6320,14 +6322,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/2fa": {
+    "/admin/access": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Is the two-step code set up for this admin, and proved in this session? */
+        /** [Sprint 39 A1] What this admin may open (signed in with the password alone: no two-step code) */
         get: {
             parameters: {
                 query?: never;
@@ -6337,13 +6339,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The state */
+                /** @description The access */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["AdminTwoFactor"];
+                        "application/json": components["schemas"]["AdminAccess"];
                     };
                 };
                 403: components["responses"]["Error"];
@@ -6351,166 +6353,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/2fa/setup": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** A new secret for the authenticator app (until it is confirmed) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The secret and its otpauth link (shown as a QR code) */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            secret: string;
-                            uri: string;
-                        };
-                    };
-                };
-                409: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/2fa/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Turn the two-step code on with a first code from the app */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AdminCode"];
-                };
-            };
-            responses: {
-                /** @description The state */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AdminTwoFactor"];
-                    };
-                };
-                422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/2fa/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Prove the code for this session (asked again after game.admin.two_factor_hours) */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AdminCode"];
-                };
-            };
-            responses: {
-                /** @description The state */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AdminTwoFactor"];
-                    };
-                };
-                422: components["responses"]["Error"];
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/2fa/recovery": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** [Sprint 30 Q11] New recovery codes for the two-step code (the old ones stop working); logged */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The codes */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            recovery_codes: string[];
-                        };
-                    };
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;
@@ -13603,24 +13445,11 @@ export interface components {
             /** Format: date-time */
             decided_at?: string | null;
         };
-        AdminTwoFactor: {
-            /** @description [Sprint 30 Q11] One-time recovery codes not used yet */
-            recovery_left: number;
+        AdminAccess: {
             /** @description [Sprint 30 G6] This admin's scope (null: full) */
-            scope?: string | null;
+            scope: string | null;
             /** @description [Sprint 30 G6] The panel sections this scope opens (null: all) */
-            sections?: string[] | null;
-            /** @description [Sprint 30 Q11] On confirming only: eight one-time codes (xxxxx-xxxxx), shown once */
-            recovery_codes?: string[];
-            /** @description Whether the panel asks for the code (on by default since Sprint 30 P1; ADMIN_TWO_FACTOR=false turns it off) */
-            required: boolean;
-            enabled: boolean;
-            /** @description Proved in this session, or not asked */
-            passed: boolean;
-        };
-        AdminCode: {
-            /** @description The six digits from the authenticator app */
-            code: string;
+            sections: string[] | null;
         };
         AdminBackups: {
             backups: {
@@ -14578,7 +14407,7 @@ export interface components {
                     };
                     tips: string[];
                     /** @enum {string|null} */
-                    referee?: "lenient" | "medium" | "strict" | null;
+                    referee?: "very_lenient" | "lenient" | "medium" | "strict" | "very_strict" | null;
                     /** @description What each part does, for its "?": plan, pressing, style, tempo, tackling, lines, trap, marking, tips */
                     help: {
                         [key: string]: string;

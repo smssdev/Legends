@@ -288,7 +288,7 @@ final class MatchEngine
                 $this->rate($def, $winner, 8, 'tackles');
                 $this->attackEvent($atk, $plan, false, $phases, 'lost', compact('carrier') + ['defender' => $winner]);
                 $counterP = (int) $this->eng['counter_base_bp'] + ($td['pressing'] - 50) * 20
-                    + ($td['plan'] === 'counter' ? (int) $this->eng['counter_plan_bp'] : 0) + ($ta['style'] - 50) * 20;
+                    + ($td['plan'] === 'counter' ? $this->counterPlan($td, (int) $this->eng['counter_plan_bp']) : 0) + ($ta['style'] - 50) * 20;
                 if ($this->rng->chance($counterP)) {
                     $this->stat($def, 'counters');
                     $this->attack($def, true);
@@ -311,6 +311,9 @@ final class MatchEngine
         // The plan against the shape moves the odds of getting through and of making the chance, never the players
         // [Sprint 21 E5.4]. Long shots skip the chance, so their one gate carries both.
         $matchup = (int) ($this->eng['matchup_bp'][$this->planKey($plan)][self::shape($td)] ?? 0);
+        // [Sprint 39 E4] The plan with the formation that suits it, and a defence whose settings pull it apart.
+        $synergy = $counter ? 0 : $this->synergy($atk, $plan);
+        $gaps = $this->gaps($def);
         $a = $this->ability($atk, $mix, Ability::LINES[$mix]) - $tempoLoss + $this->posMod($ta, 'progress')
             + ($counter ? (int) $this->eng['counter_bonus_cp'] : 0);
         $holdMix = $plan === 'counter' ? 'hold_counter' : 'hold';
@@ -331,7 +334,11 @@ final class MatchEngine
 
         if ($trapped) {
             $paceGap = $this->lineAttr($def, 'def', 'pac') - $this->lineAttr($atk, 'att', 'pac');
-            $trapP = (int) $this->eng['trap_base_bp'] + $paceGap * 40;
+            // [Sprint 39 E5] A high line of three under a high press springs it; a deep four or five that tries it breaks.
+            $deep = $this->count($def, 'def') >= 4 && $td['pressing'] < 50;
+            $high = $this->count($def, 'def') <= 3 && $td['pressing'] >= 60;
+            $trapP = (int) $this->eng['trap_base_bp'] + $paceGap * 40
+                + ($high ? (int) $this->eng['trap_line_bp'] : 0) - ($deep ? (int) $this->eng['trap_line_bp'] : 0);
             if ($this->rng->chance(max(1500, min(6000, $trapP)))) {
                 $phases[] = ['n' => 'offside', 'ok' => false];
                 $this->stat($atk, 'offsides');
@@ -339,17 +346,17 @@ final class MatchEngine
 
                 return;
             }
-            $createBonus = (int) $this->eng['trap_fail_bonus_cp'];
+            $createBonus = (int) $this->eng['trap_fail_bonus_cp'] + ($deep ? (int) $this->eng['trap_deep_fail_cp'] : 0);
         }
 
         $r = $this->phase('progress', $a, $d, 0, ($counter ? $this->chemistry($atk) : 0) + $this->morale($atk) - $this->morale($def)
-            + ($plan === 'shots' ? 2 : 1) * $matchup);
+            + ($plan === 'shots' ? 2 : 1) * ($matchup + $synergy) + $gaps);
         $phases[] = ['n' => 'progress', 'ok' => $r['ok'], 'p' => $r['p']];
         if (! $r['ok']) {
             $this->rate($def, $marker, 6, 'tackles');
             $this->attackEvent($atk, $plan, $counter, $phases, 'lost', ['carrier' => $carrier, 'receiver' => $receiver, 'defender' => $marker]);
             // Winning the ball in midfield also opens a counter, less often than a broken build-up.
-            $counterP = intdiv((int) $this->eng['counter_base_bp'], 3) + ($td['plan'] === 'counter' ? intdiv((int) $this->eng['counter_plan_bp'], 2) : 0) + ($ta['style'] - 50) * 15;
+            $counterP = intdiv((int) $this->eng['counter_base_bp'], 3) + ($td['plan'] === 'counter' ? $this->counterPlan($td, intdiv((int) $this->eng['counter_plan_bp'], 2)) : 0) + ($ta['style'] - 50) * 15;
             if (! $counter && $this->rng->chance($counterP)) {
                 $this->stat($def, 'counters');
                 $this->attack($def, true);
@@ -374,7 +381,7 @@ final class MatchEngine
         if ($plan !== 'shots') {
             $a = $this->ability($atk, 'create', Ability::LINES['create']) - $tempoLoss + $createBonus + $this->posMod($ta, 'create');
             $d = $this->ability($def, 'mark', Ability::LINES['mark']) + $this->markingMod($td, $A);
-            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def) + $matchup);
+            $r = $this->phase('create', $a, $d, 0, $this->morale($atk) - $this->morale($def) - $this->chemistry($def) + $matchup + $synergy);
             $phases[] = ['n' => 'create', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $corner = $this->rng->chance(2500);
@@ -469,15 +476,83 @@ final class MatchEngine
         return $total;
     }
 
-    /** Man marking shuts down one star but suffers against many attackers. */
+    /**
+     * Marking [Sprint 39 E5]: the zone holds while the back line outnumbers the forwards, and is stretched when it does
+     * not; man to man pays when the defenders are as many as the forwards and quicker and stronger than them, and is
+     * beaten one on one when they are not.
+     */
     private function markingMod(array $td, array $attTeam): int
     {
+        $def = $attTeam['side'] === 'home' ? 'away' : 'home';
+        $atk = $attTeam['side'];
+        $backs = $this->count($def, 'def');
+        $forwards = $this->count($atk, 'att');
+        $m = $this->eng['marking_cp'];
         if ($td['marking'] !== 'man') {
-            return 0;
+            return $backs > $forwards ? 0 : (int) $m['zone_outnumbered'];
         }
-        $forwards = count(array_filter($attTeam['players'], fn ($p) => $p['on'] && $p['slot_line'] === 'att'));
+        $stronger = $this->lineAttr($def, 'def', 'def') + $this->lineAttr($def, 'def', 'pac') > $this->lineAttr($atk, 'att', 'dri') + $this->lineAttr($atk, 'att', 'pac');
 
-        return $forwards >= 3 ? -150 : 150;
+        return $stronger && $backs >= $forwards ? (int) $m['man_fit'] : ($stronger ? 0 : (int) $m['man_beaten']);
+    }
+
+    /** Players on the pitch in a line (where they stand, not where they come from). */
+    private function count(string $side, string $line): int
+    {
+        return count(array_filter($this->s['teams'][$side]['players'], fn ($p) => $p['on'] && $p['slot_line'] === $line));
+    }
+
+    /**
+     * [Sprint 39 E4] A plan with the formation built for it (the owner's simulation file): three up for the wings, four
+     * in midfield and two up for passing, five in midfield for long shots, five at the back for counters, four up for
+     * long balls. A back three suits the wings and passing nearly as well. And the plans that clash with a formation
+     * (long shots with three up, wings with one, passing or long balls with a crowded midfield skipped, passing with
+     * five at the back). In basis points of the progress and the chance, never the players.
+     */
+    private function synergy(string $side, string $plan): int
+    {
+        $d = $this->count($side, 'def');
+        $m = $this->count($side, 'mid');
+        $a = $this->count($side, 'att');
+        $fit = match ($plan) {
+            'wings' => $a >= 3 ? 'fit' : ($d === 3 ? 'near' : ($a <= 1 ? 'clash' : null)),
+            'passing' => $m === 4 && $a === 2 ? 'fit' : ($d === 3 ? 'near' : ($d >= 5 ? 'clash' : null)),
+            'shots' => $m >= 5 ? 'fit' : ($a >= 3 ? 'clash' : null),
+            'counter' => $d >= 5 ? 'fit' : null,
+            'long' => $a >= 4 ? 'fit' : ($m >= 4 && $a === 2 ? 'clash' : null),
+            default => null,
+        };
+
+        return $fit === null ? 0 : (int) $this->eng['synergy_bp'][$fit];
+    }
+
+    /**
+     * [Sprint 39 E4] The golden triangle: settings that pull a side apart leave gaps for the other's progress. Pressing
+     * and attacking style far apart split the lines; a back five pushed into a high press and an all-out attack opens;
+     * a back three sitting deep gives the space it cannot cover.
+     */
+    private function gaps(string $side): int
+    {
+        $t = $this->s['teams'][$side]['tactics'];
+        $g = $this->eng['gaps'];
+        $bp = max(0, abs($t['pressing'] - $t['style']) - (int) $g['spread']) * (int) $g['per_point_bp'];
+        $backs = $this->count($side, 'def');
+        if ($backs >= 5 && $t['pressing'] >= 75 && $t['style'] >= 75) {
+            $bp += (int) $g['five_open_bp'];
+        }
+        if ($backs <= 3 && $t['pressing'] < 40) {
+            $bp += (int) $g['three_deep_bp'];
+        }
+
+        return min((int) $g['max_bp'], $bp);
+    }
+
+    /** [Sprint 39 E4] Counters need space: a counter side pressing high wins the ball where there is none to run into. */
+    private function counterPlan(array $t, int $bp): int
+    {
+        $over = max(0, $t['pressing'] - (int) $this->eng['counter_press_from']);
+
+        return intdiv($bp * max(0, 100 - $over * 3), 100);
     }
 
     private function lineAttr(string $side, string $line, string $attr): int
@@ -509,7 +584,10 @@ final class MatchEngine
 
         $this->stat($def, 'fouls');
         $this->rate($def, $fouler, -5, 'fouls');
-        $penalty = $where === 'create' && $this->rng->chance(intdiv((int) $this->eng['penalty_share_bp'] * $this->leaning($atk, 'penalty'), 10000));
+        // [Sprint 39 E3] A side down in morale gives penalties away more easily.
+        $defMorale = $this->s['teams'][$def]['morale'] ?? 50;
+        $share = intdiv((int) $this->eng['penalty_share_bp'] * (10000 + max(0, 50 - $defMorale) * (int) $this->eng['morale_penalty_bp']), 10000);
+        $penalty = $where === 'create' && $this->rng->chance(intdiv($share * $this->leaning($atk, 'penalty'), 10000));
         // A foul at the box always gives a free kick in shooting range, further out only sometimes;
         // otherwise the attackers take it quickly and the attack goes on, so fouling never stops an attack for free.
         $setPiece = $penalty || $where === 'create' || ($where === 'progress' && $this->rng->chance((int) $this->eng['progress_free_kick_bp']));
@@ -585,6 +663,9 @@ final class MatchEngine
         $save = $keeper ? Ability::player($keeper, 'keep') : 3000;
 
         $base = (int) $this->eng['goal_base_bp'][$quality];
+        // [Sprint 39 E3] Morale up finishes the chances; morale down misses them.
+        $moraleNow = $this->s['teams'][$atk]['morale'] ?? null;
+        $base += $moraleNow === null ? 0 : ($moraleNow - 50) * (int) $this->eng['morale_finish_bp'];
         $goalP = max(150, min(8500, $base + intdiv(($shot - $save) * (int) $this->eng['goal_slope_bp'], 100)));
         $this->stat($atk, 'shots');
         $this->stat($atk, 'xg', $goalP);

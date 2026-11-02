@@ -1,8 +1,8 @@
 // Legends service worker (Sprint 9): makes the site installable as an app (PWA) and opens it
 // without a network. The API is never cached: game data always comes live from the server.
 // Sprint 36: the game's notifications (Web Push), and a tap opens the screen they are about.
-const VERSION = 'legends-v6'
-const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png']
+const VERSION = 'legends-v7'
+const SHELL = ['/', '/site.webmanifest', '/icon-192.png', '/icon-512.png']
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()))

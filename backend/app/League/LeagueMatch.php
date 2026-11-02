@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 class LeagueMatch
 {
-    public const REFEREE = ['lenient' => 0, 'medium' => 1, 'strict' => 2];
+    public const REFEREE = ['very_lenient' => 0, 'lenient' => 1, 'medium' => 2, 'strict' => 3, 'very_strict' => 4];
 
     public static function state(object $fixture, int $seed): array
     {

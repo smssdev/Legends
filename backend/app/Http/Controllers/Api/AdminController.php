@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Admin\Announcements;
 use App\Admin\Conversations;
 use App\Admin\JunkContent;
-use App\Admin\TwoFactor;
 use App\Auth\AccountDeletion;
 use App\Auth\AccountHolidays;
 use App\Auth\AccountVerification;
@@ -47,48 +46,16 @@ class AdminController extends Controller
         abort_unless($request->user()?->isAdmin(), 403, 'لوحة الإدارة للمدير فقط.');
     }
 
-    /** Where the admin stands: two-step set up? passed in this session? */
-    public function status(Request $request): JsonResponse
+    /**
+     * [Sprint 39 A1] What this admin may open (null: everything). Signed in with the password is enough: the two-step
+     * code is gone (the owner's request, 2026-11-02).
+     */
+    public function access(Request $request): JsonResponse
     {
         $this->adminOnly($request);
 
-        return response()->json(['required' => TwoFactor::required(), 'enabled' => (bool) $request->user()->two_factor_enabled_at, 'passed' => TwoFactor::passed(),
-            'recovery_left' => TwoFactor::recoveryLeft($request->user()),
-            // [Sprint 30 G6] What this admin may open (null: everything).
-            'scope' => $request->user()->admin_scope, 'sections' => $request->user()->admin_scope ? config('game.admin.scopes')[$request->user()->admin_scope] : null]);
-    }
-
-    public function setup(Request $request): JsonResponse
-    {
-        $this->adminOnly($request);
-
-        return response()->json(TwoFactor::setup($request->user()));
-    }
-
-    public function confirm(Request $request): JsonResponse
-    {
-        $this->adminOnly($request);
-        $codes = TwoFactor::confirm($request->user(), (string) $request->validate(['code' => 'required|string|max:16'])['code']);
-
-        // [Sprint 30 Q11] The recovery codes once, with the panel opening.
-        return response()->json($this->status($request)->getData(true) + ['recovery_codes' => $codes]);
-    }
-
-    public function verify(Request $request): JsonResponse
-    {
-        $this->adminOnly($request);
-        TwoFactor::verify($request->user(), (string) $request->validate(['code' => 'required|string|max:16'])['code']);
-
-        return $this->status($request);
-    }
-
-    /** [Sprint 30 Q11] New recovery codes (the old ones stop working), from inside the panel. */
-    public function recovery(Request $request): JsonResponse
-    {
-        $codes = TwoFactor::newRecovery($request->user());
-        $this->log($request, 'recovery', null);
-
-        return response()->json(['recovery_codes' => $codes]);
+        return response()->json(['scope' => $request->user()->admin_scope,
+            'sections' => $request->user()->admin_scope ? config('game.admin.scopes')[$request->user()->admin_scope] : null]);
     }
 
     public function overview(): JsonResponse

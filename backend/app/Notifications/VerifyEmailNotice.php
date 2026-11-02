@@ -28,19 +28,15 @@ class VerifyEmailNotice extends Notification
         if (($notifiable->locale ?? app()->getLocale()) === 'en') {
             return (new MailMessage)
                 ->subject('Confirm your email in Game Legend Manager')
-                ->greeting('Hello '.$notifiable->name)
-                ->line('Press the button to confirm your email and activate your account.')
                 ->action('Confirm email', self::url($notifiable))
-                ->line('The link is valid for 24 hours. If you did not create a Game Legend Manager account, ignore this message.')
-                ->salutation('The Game Legend Manager team');
+                ->view('mail.action', ['en' => true, 'title' => 'Confirm your email in Game Legend Manager', 'greeting' => 'Hello '.$notifiable->name,
+                    'lines' => ['Press the button to confirm your email and activate your account.'], 'button' => 'Confirm email', 'url' => self::url($notifiable), 'after' => 'The link is valid for 24 hours. If you did not create a Game Legend Manager account, ignore this message.']);
         }
 
         return (new MailMessage)
             ->subject('أكّد بريدك في لعبة المدرب الأسطورة')
-            ->greeting('أهلاً '.$notifiable->name)
-            ->line('اضغط الزر لتأكيد بريدك وتفعيل حسابك.')
             ->action('تأكيد البريد', self::url($notifiable))
-            ->line('الرابط صالح 24 ساعة. إن لم تنشئ حساباً في لعبة المدرب الأسطورة فتجاهل هذه الرسالة.')
-            ->salutation('فريق لعبة المدرب الأسطورة');
+            ->view('mail.action', ['en' => false, 'title' => 'أكّد بريدك في لعبة المدرب الأسطورة', 'greeting' => 'أهلاً '.$notifiable->name,
+                'lines' => ['اضغط الزر لتأكيد بريدك وتفعيل حسابك.'], 'button' => 'تأكيد البريد', 'url' => self::url($notifiable), 'after' => 'الرابط صالح 24 ساعة. إن لم تنشئ حساباً في لعبة المدرب الأسطورة فتجاهل هذه الرسالة.']);
     }
 }

@@ -10,7 +10,7 @@ class MessageText
 {
     public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team'];
 
-    private const STRICTNESS = ['lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم'];
+    private const STRICTNESS = ['very_lenient' => 'متساهل جداً', 'lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم', 'very_strict' => 'صارم جداً'];
 
     private const SECTION = ['seats' => 'التذاكر والمقاعد', 'pitch' => 'أرضية الملعب', 'training' => 'منشأة التدريب'];
 
@@ -50,7 +50,7 @@ class MessageText
             'referee' => [
                 'title' => 'حكم مباراتك القادمة',
                 'body' => sprintf('حكم مباراتك أمام %s في %s %s. %s', $p['opponent'] ?? '', $league, self::STRICTNESS[$p['strictness'] ?? 'medium'] ?? '',
-                    ($p['strictness'] ?? '') === 'strict' ? 'الحكم الصارم يكثر من البطاقات، فراجع قطع الكرة قبل القفل.' : 'راجع تشكيلتك وتكتيكك قبل القفل.'),
+                    in_array($p['strictness'] ?? '', ['strict', 'very_strict'], true) ? 'الحكم الصارم يكثر من البطاقات، فراجع قطع الكرة قبل القفل.' : 'راجع تشكيلتك وتكتيكك قبل القفل.'),
                 'link' => '/match',
             ],
             'absence_warning' => [
