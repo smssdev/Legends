@@ -2,7 +2,9 @@
 // [X61 E3] The youth academy: this period's prospects with their potential as a range (the true one after signing),
 // their price, and the season's signings out of the limit.
 import { onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../../api/client'
+import { api, asApiError } from '../../../api/client'
+import { act, busy } from '../../../lib/action'
+import { nm } from '../../../lib/names'
 import type { components } from '../../../api/schema'
 import EmptyState from '../../../components/ui/EmptyState.vue'
 import LineBadge from '../../../components/ui/LineBadge.vue'
@@ -15,7 +17,6 @@ import { useToast } from '../../../stores/toast'
 const props = defineProps<{ leagueId: number }>()
 const emit = defineEmits<{ changed: [] }>()
 const a = ref<components['schemas']['Academy'] | null>(null)
-const busy = ref<number | null>(null)
 const now = useNow()
 const toast = useToast()
 const path = () => ({ params: { path: { league: props.leagueId } } })
@@ -23,17 +24,13 @@ const path = () => ({ params: { path: { league: props.leagueId } } })
 async function load() {
   try { a.value = (await api.GET('/leagues/{league}/market/academy', path())).data ?? null } catch (e) { toast.show(asApiError(e).message, 'error') }
 }
-async function sign(id: number, name: string) {
-  busy.value = id
-  try {
-    await ensureCsrf()
-    a.value = (await api.POST('/leagues/{league}/market/academy', { ...path(), body: { master_player_id: id } })).data ?? null
-    toast.show(t('انضم {v0} إلى فريقك من الأكاديمية.', { v0: name }))
-    emit('changed')
-  } catch (e) {
-    toast.show(asApiError(e).message, 'error')
-  }
-  busy.value = null
+// [X92] Through lib/action: signing pays now and is for good, so it asks first with the price.
+async function sign(id: number, name: string, price: number) {
+  const r = await act(`academy:${id}`, () => api.POST('/leagues/{league}/market/academy', { ...path(), body: { master_player_id: id } }), {
+    confirm: { title: t('توقّع مع {v0}؟', { v0: nm(name) }), text: t('يُخصم {v0} من أموال النادي، ويُحسب من توقيعات الموسم.', { v0: money(price) }), action: t('وقّع'), tone: 'gold' },
+    success: t('انضم {v0} إلى فريقك من الأكاديمية.', { v0: nm(name) }),
+  })
+  if (r?.data) { a.value = r.data; emit('changed') }
 }
 onMounted(load)
 </script>
@@ -56,7 +53,7 @@ onMounted(load)
             <span><span class="block text-xs text-text-muted">{{ $t('القوة') }}</span><b class="font-numbers text-2xl">{{ p.overall }}</b></span>
             <span class="text-end"><span class="block text-xs text-text-muted">{{ $t('الإمكانية') }}</span><b class="font-numbers text-lg text-success" dir="ltr">{{ p.potential_from }}–{{ p.potential_to }}</b></span>
           </div>
-          <UiButton block :loading="busy === p.id" :disabled="a.signed >= a.per_season || a.balance < p.price" @click="sign(p.id, p.name)">{{ $t('وقّع') }} · <span class="font-numbers" dir="ltr">{{ money(p.price) }}</span></UiButton>
+          <UiButton block :loading="busy(`academy:${p.id}`)" :disabled="a.signed >= a.per_season || a.balance < p.price" @click="sign(p.id, p.name, p.price)">{{ $t('وقّع') }} · <span class="font-numbers" dir="ltr">{{ money(p.price) }}</span></UiButton>
         </li>
       </ul>
     </template>

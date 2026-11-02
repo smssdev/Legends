@@ -5,7 +5,9 @@
 import UiSelect from '../../components/ui/UiSelect.vue'
 import { t } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
+import { act, busy } from '../../lib/action'
+import { nm } from '../../lib/names'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
@@ -19,8 +21,6 @@ const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const notice = ref('')
-const busy = ref(false)
 const form = reactive({ line: 'att', position: '', min_overall: 70, max_overall: 85, max_age: 30, max_value: null as number | null, nationality: '', league: '' })
 const now = ref(Date.now())
 let tick = 0
@@ -47,54 +47,35 @@ async function load() {
   loaded.value = true
 }
 
+// [X92] Through lib/action: only the pressed button waits, the result in a toast (no notice at the top); finishing
+// for coins asks once from COINS_ASK up; buying asks first (the money leaves now).
 async function ask() {
   if (!leagueId.value) return
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: crypto.randomUUID() }
-    for (const k of ['line', 'position', 'nationality', 'league'] as const) if (form[k]) body[k] = form[k]
-    if (form.max_value) body.max_value = form.max_value
-    const { data } = await api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value } }, body: body as any })
-    v.value = data!
-    notice.value = 'انطلق الكشاف. يصلك تقريره كرسالة في موعده.'
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+  const body: Record<string, unknown> = { min_overall: form.min_overall, max_overall: form.max_overall, max_age: form.max_age, idempotency_key: crypto.randomUUID() }
+  for (const k of ['line', 'position', 'nationality', 'league'] as const) if (form[k]) body[k] = form[k]
+  if (form.max_value) body.max_value = form.max_value
+  const r = await act('scout:ask', () => api.POST('/leagues/{league}/scout', { params: { path: { league: leagueId.value! } }, body: body as any }), {
+    success: t('انطلق الكشاف. يصلك تقريره كرسالة في موعده.'),
+  })
+  if (r?.data) v.value = r.data
 }
 
 // Finish the search now for coins [Sprint 34].
 const wallet = useWallet()
 async function finish() {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    v.value = (await api.POST('/leagues/{league}/scout/finish', { params: { path: { league: leagueId.value! } } })).data as any
-    await load()
-    wallet.load()
-    notice.value = 'وصل تقرير الكشاف.'
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+  const r = await act('scout:finish', () => api.POST('/leagues/{league}/scout/finish', { params: { path: { league: leagueId.value! } } }), {
+    coins: wallet.price('finish_scout'), success: t('وصل تقرير الكشاف.'),
+  })
+  if (r !== undefined) { await load(); wallet.load() }
 }
 
-async function buy(id: number, name: string) {
+async function buy(p: { id: number; name: string; price?: number | null; value: number }) {
   if (!leagueId.value) return
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    await api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value } }, body: { player_id: id, idempotency_key: crypto.randomUUID() } })
-    notice.value = `انضم ${name} إلى فريقك.`
-    await load()
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+  const r = await act(`scout:buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value! } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID() } }), {
+    confirm: { title: t('تشتري {v0}؟', { v0: nm(p.name) }), text: t('يُخصم {v0} من أموال النادي الآن.', { v0: money(p.price ?? p.value) }), action: t('شراء'), tone: 'gold' },
+    success: t('انضم {v0} إلى فريقك.', { v0: nm(p.name) }),
+  })
+  if (r !== undefined) await load()
 }
 
 onMounted(() => {
@@ -113,7 +94,6 @@ onBeforeUnmount(() => clearInterval(tick))
       <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الكشاف') }}</h1></span>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
@@ -121,7 +101,7 @@ onBeforeUnmount(() => clearInterval(tick))
       <section v-if="searching" :aria-label="$t('الكشاف يبحث')" class="flex flex-wrap items-center gap-4 rounded-xl border border-gold/40 bg-surface p-4">
         <div class="flex-1"><b class="block">{{ $t('الكشاف يبحث') }}</b><span class="text-sm text-text-muted">{{ describe(searching.criteria) }}</span></div>
         <span class="font-numbers text-3xl text-gold" dir="ltr" aria-live="off">{{ left }}</span>
-        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish">
+        <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy('scout:finish')" @click="finish">
           {{ $t('أنهِ الآن ·') }} <PriceTag :amount="wallet.price('finish_scout')" currency="coins" /></button>
       </section>
 
@@ -149,7 +129,7 @@ onBeforeUnmount(() => clearInterval(tick))
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || v.balance < v.cost" @click="ask">{{ $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></button>
+          <button type="button" class="h-12 rounded-md bg-gold px-6 font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy('scout:ask') || v.balance < v.cost" @click="ask">{{ busy('scout:ask') ? '...' : $t('اطلب التقرير ·') }} <span class="font-numbers" dir="ltr">{{ money(v.cost) }}</span></button>
           <span class="text-sm text-text-muted">{{ $t('رحلة {v0} ساعة، ثم 5 خيارات مطابقة لطلبك كرسالة، ولو لم يجد أحداً يُرد لك المبلغ.', { v0: v.hours }) }}</span>
         </div>
       </section>
@@ -162,7 +142,7 @@ onBeforeUnmount(() => clearInterval(tick))
           <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('{v0} · {v1} سنة · {v2} · إمكانية {v3}', { v0: p.position, v1: p.age, v2: $nm(p.nationality), v3: p.potential }) }}</span></span>
           <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
           <span class="w-20 text-end font-numbers text-lg" dir="ltr">{{ money(p.value) }}</span>
-          <button v-if="p.state === 'available'" type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="busy || (p.price ?? 0) > v.balance" @click="buy(p.id, p.name)">{{ $t('شراء') }}</button>
+          <button v-if="p.state === 'available'" type="button" class="h-touch min-w-20 rounded-md bg-gold px-3 font-bold text-on-gold disabled:opacity-40" :disabled="busy(`scout:buy:${p.id}`) || (p.price ?? 0) > v.balance" @click="buy(p)">{{ busy(`scout:buy:${p.id}`) ? '...' : $t('شراء') }}</button>
           <span v-else class="min-w-20 text-center text-sm text-text-muted">{{ p.state === 'mine' ? $t('في فريقك') : $t('ذهب') }}</span>
         </div>
       </section>

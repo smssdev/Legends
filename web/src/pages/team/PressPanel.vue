@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // [UP12] The press conference before my match (the owner's spec 6): the chances of each side, a reading of where each
 // is strong and weak, and my one statement (it lifts my team's morale in this match). It opens half an hour before.
-import { intlLocale } from '../../lib/i18n'
+import { intlLocale, t } from '../../lib/i18n'
+import { act, busy } from '../../lib/action'
 import { onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
 
 const props = defineProps<{ leagueId: number; fixtureId: number; home: string; away: string }>()
 type Press = { open: boolean; opens_at: string; chances: { home: number; draw: number; away: number }; reading: { home: string; away: string };
@@ -22,14 +23,13 @@ async function load() {
     error.value = asApiError(e).message
   }
 }
-async function say(kind: string) {
-  error.value = ''
-  try {
-    await ensureCsrf()
-    press.value = ((await api.POST('/leagues/{league}/press/{fixture}', { ...path(), body: { kind: kind as 'calm' } })).data as any).press
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
+// [X92] Through lib/action: one statement a match and it stakes on the result, so it asks first.
+async function say(st: Press['statements'][number]) {
+  const r = await act('press', () => api.POST('/leagues/{league}/press/{fixture}', { ...path(), body: { kind: st.kind as 'calm' } }), {
+    confirm: { title: t('تعتمد هذا التصريح؟'), text: `«${t(st.text)}» · ${t('تصريح واحد للمباراة، ولا يتغير بعده.')}`, action: t('اعتمده'), tone: 'gold' },
+    success: t('سُجّل تصريحك، ومعنويات لاعبيك أعلى في هذه المباراة.'),
+  })
+  if (r?.data) press.value = (r.data as any).press
 }
 const time = (iso: string) => new Date(iso).toLocaleTimeString(intlLocale(), { hour: 'numeric', minute: '2-digit' })
 onMounted(load)
@@ -53,7 +53,7 @@ onMounted(load)
       </p>
       <template v-else-if="press.open">
         <p class="text-sm font-bold">{{ $t('اختر تصريحك الرسمي قبل المباراة:') }}</p>
-        <button v-for="s in press.statements" :key="s.kind" type="button" class="min-h-touch rounded-lg bg-surface-sunk px-3 py-2 text-start text-sm hover:bg-surface-raised" @click="say(s.kind)">«{{ $t(s.text) }}»
+        <button v-for="s in press.statements" :key="s.kind" type="button" class="min-h-touch rounded-lg bg-surface-sunk px-3 py-2 text-start text-sm hover:bg-surface-raised disabled:opacity-40" :disabled="busy('press')" @click="say(s)">«{{ $t(s.text) }}»
           <!-- [X61 E9] What it stakes on the result. -->
           <span v-if="s.stakes" class="mt-1 flex flex-wrap gap-x-3 font-numbers text-xs" dir="ltr">
             <span v-for="(v, k) in { win: 'فوز', draw: 'تعادل', loss: 'خسارة' }" :key="k" :class="s.stakes[k] > 0 ? 'text-success' : s.stakes[k] < 0 ? 'text-danger' : 'text-text-muted'">{{ $t(v) }} {{ s.stakes[k] > 0 ? '+' : '' }}{{ s.stakes[k] }}</span>

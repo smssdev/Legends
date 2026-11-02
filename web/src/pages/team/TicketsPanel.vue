@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // Tickets [X25]: go to the other clubs' coming matches and cheer one side; each ticket lifts that side's morale
 // for the match. One per match, club money, until the lock.
-import { intlLocale } from '../../lib/i18n'
+import { intlLocale, t } from '../../lib/i18n'
+import { act, busy } from '../../lib/action'
 import { onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import ClubCrest from '../../components/ui/ClubCrest.vue'
 import { money } from '../../lib/format'
@@ -11,7 +12,6 @@ import { money } from '../../lib/format'
 type Tickets = components['responses']['Tickets']['content']['application/json']
 const props = defineProps<{ leagueId: number }>()
 const data = ref<Tickets | null>(null)
-const busy = ref<number | null>(null)
 const message = ref('')
 
 onMounted(async () => {
@@ -21,17 +21,12 @@ onMounted(async () => {
     message.value = asApiError(e).message
   }
 })
+// [X92] Through lib/action: the side tapped waits, the result in a toast.
 async function buy(fixture: number, side: 'home' | 'away') {
-  busy.value = fixture
-  message.value = ''
-  try {
-    await ensureCsrf()
-    data.value = (await api.POST('/leagues/{league}/tickets', { params: { path: { league: props.leagueId } }, body: { fixture_id: fixture, side } })).data!
-    message.value = 'حجزت تذكرتك، وجمهورك يشجع.'
-  } catch (e) {
-    message.value = asApiError(e).message
-  }
-  busy.value = null
+  const r = await act(`ticket:${fixture}`, () => api.POST('/leagues/{league}/tickets', { params: { path: { league: props.leagueId } }, body: { fixture_id: fixture, side } }), {
+    success: t('حجزت تذكرتك، وجمهورك يشجع.'),
+  })
+  if (r?.data) data.value = r.data
 }
 const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekday: 'short', hour: 'numeric', minute: '2-digit' })
 </script>
@@ -53,7 +48,7 @@ const when = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { weekd
             type="button"
             class="flex min-h-touch items-center gap-2 rounded-lg border px-2 py-1.5 text-start disabled:opacity-50"
             :class="f.mine === s ? 'border-gold bg-gold/15' : 'border-transparent bg-surface'"
-            :disabled="!!f.mine || busy === f.id"
+            :disabled="!!f.mine || busy(`ticket:${f.id}`)"
             :aria-pressed="f.mine === s"
             @click="buy(f.id, s)"
           >
