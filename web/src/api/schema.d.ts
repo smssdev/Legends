@@ -13375,6 +13375,10 @@ export interface components {
              * @enum {string|null}
              */
             kit_pattern?: "plain" | "stripes" | "hoops" | "halves" | "sash" | null;
+            /** @description [Sprint 34 V1] The change kit's shirt colour (#RRGGBB), null for none */
+            away_color?: string | null;
+            /** @enum {string|null} */
+            away_pattern?: "plain" | "stripes" | "hoops" | "halves" | "sash" | null;
         };
         Contracts: {
             players: {
@@ -14403,7 +14407,7 @@ export interface components {
             score?: Record<string, never>;
             formations?: string[];
             timing?: Record<string, never>;
-            /** @description home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain) */
+            /** @description home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain), and [Sprint 34 V1] its change kit (away_kit: {color, pattern}, or null) */
             clubs?: Record<string, never>;
             /** @description The coaches' names in a match between friends: {home, away} */
             coaches?: Record<string, never>;

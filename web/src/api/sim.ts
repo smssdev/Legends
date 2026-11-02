@@ -31,6 +31,8 @@ export interface Club {
   logo?: string | null
   /** [X76] The kit's pattern (stripes, hoops, halves, sash), null for plain. */
   pattern?: string | null
+  /** [Sprint 34 V1] Its change kit, when set in the data editor. */
+  away_kit?: { color: string; pattern?: string | null } | null
 }
 
 export interface TeamPlayer {

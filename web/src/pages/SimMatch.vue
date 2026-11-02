@@ -384,8 +384,8 @@ const minuteText = computed(() => (minute.value[1] ? `${minute.value[0]}+${minut
 // The feed's kits: shirt, the ink on it and the trim, per side.
 const feedKits = computed(() => ({
   // [X76] And each club's kit pattern, drawn in its trim colour.
-  home: { kit: bkits.value.home.shirt, ink: bkits.value.home.text, trim: bkits.value.home.trim, name: bkits.value.home.name, pattern: view.value?.clubs.home.pattern ?? null },
-  away: { kit: bkits.value.away.shirt, ink: bkits.value.away.text, trim: bkits.value.away.trim, name: bkits.value.away.name, pattern: view.value?.clubs.away.pattern ?? null },
+  home: { kit: bkits.value.home.shirt, ink: bkits.value.home.text, trim: bkits.value.home.trim, name: bkits.value.home.name, pattern: bkits.value.home.pattern },
+  away: { kit: bkits.value.away.shirt, ink: bkits.value.away.text, trim: bkits.value.away.trim, name: bkits.value.away.name, pattern: bkits.value.away.pattern },
 }))
 // Score bug and stats colours follow the kits (with the away change kit on a clash).
 const kits = computed(() => ({ home: bkits.value.home.shirt, homeText: bkits.value.home.text, away: bkits.value.away.shirt, awayText: bkits.value.away.text }))
@@ -401,12 +401,15 @@ const bkits = computed(() => {
   // Two similar shirts (Arsenal and Liverpool are both red): the away side changes to its second colour, or to white or navy.
   const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
   const far = (x: string, y: string) => rgb(x).reduce((d, v, i) => d + Math.abs(v - rgb(y)[i]), 0) > 160
-  let away = a.primary, awayTrim = a.secondary
+  let away = a.primary, awayTrim = a.secondary, awayPattern = view.value?.clubs.away.pattern ?? null
   if (!far(h.primary, away)) {
-    away = far(h.primary, a.secondary) ? a.secondary : far(h.primary, '#F3F0E6') ? '#F3F0E6' : '#1C2333'
+    // [Sprint 34 V1] Its own change kit first, when the data editor has one far enough from the home shirt.
+    const alt = view.value?.clubs.away.away_kit
+    away = alt && far(h.primary, alt.color) ? alt.color : far(h.primary, a.secondary) ? a.secondary : far(h.primary, '#F3F0E6') ? '#F3F0E6' : '#1C2333'
     awayTrim = a.primary
+    awayPattern = alt && away === alt.color ? alt.pattern ?? null : null
   }
-  return { home: make('home', h.primary, h.secondary, '#2E8B57'), away: make('away', away, awayTrim, '#E9D70B') }
+  return { home: { ...make('home', h.primary, h.secondary, '#2E8B57'), pattern: view.value?.clubs.home.pattern ?? null }, away: { ...make('away', away, awayTrim, '#E9D70B'), pattern: awayPattern } }
 })
 let pendingScore: Record<Side, number> | null = null
 function onCue(name: string) {

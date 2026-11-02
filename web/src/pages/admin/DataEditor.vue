@@ -23,12 +23,12 @@ const form = reactive<Row>({})
 const busy = ref(false)
 const toast = useToast()
 const PLAYER = ['name', 'position', 'line', 'age', 'nationality', 'overall', 'potential', 'value', 'master_club_id'] as const
-const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern'] as const
+const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern', 'away_color', 'away_pattern'] as const
 // [X76] The kit's pattern, in the club's two colours (none set is plain).
 const PATTERNS = [['plain', 'سادة'], ['stripes', 'خطوط طولية'], ['hoops', 'خطوط عرضية'], ['halves', 'نصفان'], ['sash', 'حزام مائل']]
 const NUM = ['age', 'overall', 'potential', 'value', 'master_club_id']
 const LABEL: Record<string, string> = { name: 'الاسم', position: 'المركز', line: 'الخط', age: 'العمر', nationality: 'الجنسية', overall: 'القوة', potential: 'الإمكانية',
-  value: 'القيمة', master_club_id: 'رقم النادي', code: 'الرمز', league_name: 'الدوري', color_primary: 'اللون الأول', color_secondary: 'اللون الثاني', kit_pattern: 'نقش القميص' }
+  value: 'القيمة', master_club_id: 'رقم النادي', code: 'الرمز', league_name: 'الدوري', color_primary: 'اللون الأول', color_secondary: 'اللون الثاني', kit_pattern: 'نقش القميص', away_color: 'لون الطقم الاحتياطي', away_pattern: 'نقش الطقم الاحتياطي' }
 const fields = () => (kind.value === 'players' ? PLAYER : CLUB)
 
 async function search() {
@@ -36,7 +36,8 @@ async function search() {
 }
 function open(row: Row | null) {
   for (const k of Object.keys(form)) delete form[k]
-  for (const f of fields()) form[f] = row ? row[f] ?? (f === 'kit_pattern' ? 'plain' : '') : f === 'line' ? 'mid' : f === 'kit_pattern' ? 'plain' : ''
+  const plain = (f: string) => f === 'kit_pattern' || f === 'away_pattern'
+  for (const f of fields()) form[f] = row ? row[f] ?? (plain(f) ? 'plain' : '') : f === 'line' ? 'mid' : plain(f) ? 'plain' : ''
   editing.value = row
   creating.value = !row
 }
@@ -45,7 +46,7 @@ async function save() {
   const body: Row = {}
   for (const f of fields()) {
     if (form[f] === '' || form[f] === null) continue
-    if (editing.value && String(editing.value[f] ?? (f === 'kit_pattern' ? 'plain' : '')) === String(form[f])) continue
+    if (editing.value && String(editing.value[f] ?? (f === 'kit_pattern' || f === 'away_pattern' ? 'plain' : '')) === String(form[f])) continue
     body[f] = NUM.includes(f) ? Number(form[f]) : form[f]
   }
   try {
@@ -116,7 +117,7 @@ onMounted(() => Promise.all([search(), loadLeagues()]))
       <form class="grid grid-cols-2 gap-2" @submit.prevent="save">
         <label v-for="f in fields()" :key="f" class="flex flex-col gap-1 text-xs text-text-muted" :class="f === 'name' ? 'col-span-2' : ''">{{ $t(LABEL[f]) }}
           <select v-if="f === 'line'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text"><option v-for="l in ['gk', 'def', 'mid', 'att']" :key="l" :value="l">{{ l }}</option></select>
-          <select v-else-if="f === 'kit_pattern'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text"><option v-for="[v, l] in PATTERNS" :key="v" :value="v">{{ $t(l) }}</option></select>
+          <select v-else-if="f === 'kit_pattern' || f === 'away_pattern'" v-model="form[f]" class="h-11 rounded-md bg-surface-sunk px-2 text-text"><option v-for="[v, l] in PATTERNS" :key="v" :value="v">{{ $t(l) }}</option></select>
           <input v-else v-model="form[f]" :type="NUM.includes(f) ? 'number' : 'text'" class="h-11 rounded-md bg-surface-sunk px-2 text-sm text-text" :dir="f === 'name' ? 'auto' : 'ltr'" />
         </label>
         <div class="col-span-2 mt-2 flex gap-2"><UiButton type="submit" block :loading="busy">{{ $t('احفظ') }}</UiButton><UiButton variant="quiet" @click="editing = null; creating = false">{{ $t('إلغاء') }}</UiButton></div>
