@@ -45,7 +45,7 @@ class ChoreographyTest extends TestCase
     {
         $busy = $quiet = 0;
         foreach ($this->minutes(11) as [$out, $frames]) {
-            $chance = collect($out['events'])->contains(fn ($e) => in_array($e['type'], ['corner', 'goal'], true)
+            $chance = collect($out['events'])->contains(fn ($e) => in_array($e['type'], ['corner', 'goal', 'free_kick', 'penalty'], true)
                 || ($e['type'] === 'attack' && in_array($e['result'] ?? null, ['goal', 'saved', 'missed', 'blocked'], true)));
             $this->assertCount($chance ? 10 : 6, $frames, 'tick '.$out['tick']);
             $chance ? $busy++ : $quiet++;
@@ -99,5 +99,57 @@ class ChoreographyTest extends TestCase
         }
         // Defenders are near an opponent most of the time.
         $this->assertGreaterThan($farther, $closer);
+    }
+
+    /** [Sprint 33 B1] A pass in flight belongs to no one, and the ball is carried before it is passed. */
+    public function test_a_pass_in_flight_has_no_holder_and_the_ball_is_carried_before(): void
+    {
+        $flying = $carried = 0;
+        foreach ($this->minutes(17) as [, $frames]) {
+            foreach ($frames as $f) {
+                $f['h'] === null ? $flying++ : $carried++;
+            }
+        }
+        $this->assertGreaterThan(50, $flying);
+        $this->assertGreaterThan(50, $carried);
+    }
+
+    /** [Sprint 33 B2, B3] Set pieces, the kick-off and the back line. */
+    public function test_set_pieces_the_kick_off_and_the_back_line(): void
+    {
+        $state = $this->state(3);
+        $state['out'] = ['tick' => 30, 'events' => [['type' => 'penalty', 'team' => 'home', 'scored' => true]]];
+        $frames = MatchChoreographer::frames($state, $state['out'], [700, 340])['frames'];
+        $this->assertCount(10, $frames);
+        // At the spot: everyone but the taker and the keepers outside the box (the home side attacks x = 1050).
+        $atSpot = collect($frames)->sortBy(fn ($f) => abs($f['b'][0] - 940) + abs($f['b'][1] - 340))->first();
+        $this->assertLessThan(60, abs($atSpot['b'][0] - 940) + abs($atSpot['b'][1] - 340), 'a Keyframe at the spot');
+        foreach ($atSpot['p'] as $id => [$x, $y]) {
+            if ($id !== $atSpot['h'] && $id % 100 !== 0) {
+                $this->assertLessThan(885, $x, "player {$id} outside the box");
+            }
+        }
+
+        $state['out'] = ['tick' => 31, 'events' => [['type' => 'goal', 'team' => 'home']]];
+        $frames = MatchChoreographer::frames($state, $state['out'], [1048, 340])['frames'];
+        $last = end($frames);
+        $this->assertSame([525, 340, 0], $last['b']);
+        foreach ($last['p'] as $id => [$x]) {
+            $id < 200 ? $this->assertLessThanOrEqual(510, $x, "home {$id} in its half") : $this->assertGreaterThanOrEqual(540, $x, "away {$id} in its half");
+        }
+
+        // The back line: the defenders of the side without the ball level with one another.
+        $levels = 0;
+        foreach ($this->minutes(9) as [, $frames]) {
+            foreach ($frames as $f) {
+                if ($f['h'] === null) {
+                    continue;
+                }
+                $def = $f['h'] < 200 ? [202, 203, 204, 205] : [102, 103, 104, 105];
+                $xs = array_unique(array_map(fn ($id) => $f['p'][$id][0] ?? -1, $def));
+                $levels += count($xs) === 1 ? 1 : 0;
+            }
+        }
+        $this->assertGreaterThan(20, $levels);
     }
 }

@@ -14408,7 +14408,7 @@ export interface components {
         };
         /** @description One of the Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json). */
         Keyframe: {
-            /** @description Its place among the minute's Keyframes from 0: six, or ten in a minute with a chance, a corner or a goal (Sprint 32 R4) */
+            /** @description Its place among the minute's Keyframes from 0: six, or ten in a minute with a chance, a corner, a free kick, a penalty or a goal (Sprint 32 R4) */
             t: number;
             /** @description The ball: x, y and its height */
             b: number[];
@@ -14416,7 +14416,7 @@ export interface components {
             p: {
                 [key: string]: number[];
             };
-            /** @description The player on the ball */
+            /** @description The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1) */
             h?: number | null;
             /** @description [Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none */
             r?: number[][];

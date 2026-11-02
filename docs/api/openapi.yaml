@@ -6620,10 +6620,10 @@ components:
       description: 'One of the Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json).'
       required: [t, b, p]
       properties:
-        t: { type: integer, description: 'Its place among the minute''s Keyframes from 0: six, or ten in a minute with a chance, a corner or a goal (Sprint 32 R4)' }
+        t: { type: integer, description: 'Its place among the minute''s Keyframes from 0: six, or ten in a minute with a chance, a corner, a free kick, a penalty or a goal (Sprint 32 R4)' }
         b: { type: array, items: { type: integer }, minItems: 2, maxItems: 3, description: 'The ball: x, y and its height' }
         p: { type: object, additionalProperties: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, description: Every player on the pitch by id, his x and y }
-        h: { type: [integer, 'null'], description: The player on the ball }
+        h: { type: [integer, 'null'], description: 'The player on the ball; null while it is in flight (a pass or a shot, Sprint 33 B1)' }
         r: { type: array, items: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: 3, description: '[Sprint 31 D1] The officials: the referee, the far assistant (outside the far touchline, right half) and the near one (outside the near touchline, left half). They follow the ball only. Older recordings have none' }
     LiveSync:
       type: object
