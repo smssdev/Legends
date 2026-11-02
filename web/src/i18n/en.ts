@@ -2667,4 +2667,12 @@ export const EN: Record<string, string> = {
   'جدّدت عقد {v0} ({v1} نجوم)، ويبدأ حين ينتهي الحالي.': 'You renewed {v0} ({v1} stars); it starts when the current one ends.',
   'تعاقدت مع {v0} ({v1} نجوم) لمدة {v2} أيام.': 'You signed {v0} ({v1} stars) for {v2} days.',
   'بدأ الجزء {v0} من المرحلة {v1} في {v2}.': 'Part {v0} of stage {v1} started in {v2}.',
+  // [X88] Done in place.
+  'درّبه الآن': 'Train him now',
+  'بدأ {v0} التدريب في خانة خطه.': '{v0} started training in his line\'s slot.',
+  '{v0} يتدرب الآن.': '{v0} is training already.',
+  'استلمت مكافأة اليوم.': 'You took today\'s reward.',
+  'بدأ التدريب في {v0} خانات.': 'Training started in {v0} slots.',
+  'لا لاعب موصى به للخانات الفارغة الآن.': 'No recommended player for the empty slots now.',
+  'املأها بالموصى بهم': 'Fill with the recommended',
 }

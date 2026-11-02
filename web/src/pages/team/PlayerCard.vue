@@ -8,6 +8,10 @@ import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
 import SellPanel from './market/SellPanel.vue'
+import { act, busy as isBusy } from '../../lib/action'
+import { useToast } from '../../stores/toast'
+import { t } from '../../lib/i18n'
+import { nm } from '../../lib/names'
 import Icon from '../../components/Icon.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
@@ -39,6 +43,21 @@ async function openSale() {
   }
   loadingSale.value = false
 }
+// [X88] Training him from his card: the line's slot is his now; the one he replaced keeps his progress, and «تراجع»
+// brings him back.
+async function trainNow() {
+  const league = await currentLeague()
+  if (!league) return
+  const view = (await api.GET('/leagues/{league}/training', { params: { path: { league } } }).catch(() => ({ data: undefined }))).data
+  const before = view?.slots.find((s) => s.line === props.player.line)?.player?.id
+  if (before === props.player.id) return useToast().show(t('{v0} يتدرب الآن.', { v0: nm(props.player.name) }))
+  await act(`train-card:${props.player.id}`, () => api.POST('/leagues/{league}/training', { params: { path: { league } }, body: { player_id: props.player.id, replace: true } }), {
+    success: t('بدأ {v0} التدريب في خانة خطه.', { v0: nm(props.player.name) }),
+    undo: () => (before ? api.POST('/leagues/{league}/training', { params: { path: { league } }, body: { player_id: before, replace: true } })
+      : api.DELETE('/leagues/{league}/training/{line}', { params: { path: { league, line: props.player.line as never } } })),
+  })
+}
+
 // [X84] Opened from the squad's «معروض للبيع» mark: straight to withdraw or keep.
 onMounted(() => { if (props.sell) void openSale() })
 const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' } as const
@@ -87,7 +106,9 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       </p>
       <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 39 S1]. -->
       <div class="grid grid-cols-2 gap-2">
-        <RouterLink :to="{ name: 'training' }" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold" @click="$emit('close')">{{ $t('درّبه') }}</RouterLink>
+        <!-- [X88] Trained from here: in his line's slot at once (in place of whoever was there, «تراجع» puts him back). -->
+        <button type="button" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold disabled:opacity-40" :disabled="isBusy(`train-card:${player.id}`)" @click="trainNow">
+          {{ isBusy(`train-card:${player.id}`) ? '...' : $t('درّبه الآن') }}</button>
         <button type="button" class="flex h-12 items-center justify-center rounded-lg font-bold disabled:opacity-40" :class="player.listed ? 'bg-gold/15 text-gold' : 'border border-warning/60 text-warning'" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : player.listed ? $t('معروض للبيع ✓') : $t('بيع اللاعب') }}</button>
       </div>
       <p v-if="sellError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(sellError) }}</p>
