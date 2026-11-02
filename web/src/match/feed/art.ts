@@ -13,6 +13,9 @@ export function setKits(k) { KITS = k }
 // The smooth mode [X30]: no glow filter (redrawn every frame on the phone's processor for every line and trail) and a third of the crowd.
 let SMOOTH = false
 export function setSmooth(v) { SMOOTH = !!v }
+// [Sprint 36 F3] The match's rain (the live pitch's, from its seed) falls in the scenes too.
+let RAIN = false
+export function setRain(v) { RAIN = !!v }
 const K = (s) => KITS[s] ?? KITS.home
 const other = (s) => (s === 'home' ? 'away' : 'home')
 export const lum = (hex) => { const n = parseInt(String(hex).slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255) }
@@ -104,7 +107,7 @@ function stage(side) {
   <g fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
   <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/>
   </g>
-  <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>`
+  <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>${RAIN ? `<style>.rain{animation:rainfall .5s linear infinite}@keyframes rainfall{to{transform:translate(-5px,30px)}}@media (prefers-reduced-motion:reduce){.rain{animation:none}}</style><g class="rain" stroke="rgba(200,215,235,.45)" stroke-width="1.1">${Array.from({ length: SMOOTH ? 30 : 90 }, (_, i) => `<line x1="${(i * 73) % 680}" y1="${(i * 41) % 360 - 20}" x2="${(i * 73) % 680 - 5}" y2="${(i * 41) % 360 + 10}"/>`).join('')}</g><rect width="640" height="340" fill="rgba(40,55,75,.18)"/>` : ''}`
   svg.dataset.id = id
   svg.world = svg.querySelector('[data-world]')
   return svg
@@ -371,6 +374,7 @@ function openPlay(e, outcome, KT) {
   const path = [strike, [(strike[0] + target[0]) / 2 + side * (R() - 0.3) * 40, Math.min(strike[1], target[1]) - loft], target]
   const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
   const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
+  const party = outcome === 'goal' ? pick(['corner', 'slide', 'leap', 'crowd', 'pile']) : null
   const out = side > 0 ? 1 : -1
   let landed = null
 
@@ -397,9 +401,22 @@ function openPlay(e, outcome, KT) {
     if (finish === 'round') sx -= side * 36 * ease(seg(t, tS - 0.5, tS - 0.05))
     put(sh, sx, sy, q === 'header' ? -side * 8 * seg(t, tS - 0.3, tS) : 0, 1, lift)
     if (t > KT + 0.5 && outcome === 'goal') {
-      // Away to the corner flag, arms out; the team-mate follows him.
-      const c = ease(seg(t, KT + 0.5, KT + 2.6)); put(sh, lerp(spot[0], spot[0] + out * 150, c), lerp(spot[1], spot[1] + 30, c)); sh.celebrate(t)
-      put(mate, lerp(640 - lx - side * 10, spot[0] + out * 120, c), lerp(214, spot[1] + 34, c)); mate.celebrate(t + 0.4)
+      // [Sprint 36 F1] The celebration, one of five (from the scene's seed): away to the corner flag arms out, a
+      // slide on his knees, a leap punching the air, arms wide towards the crowd, or his team-mates piling on him.
+      const c = ease(seg(t, KT + 0.5, KT + 2.6))
+      if (party === 'slide') {
+        const sl = ease(seg(t, KT + 0.7, KT + 1.6)); put(sh, lerp(spot[0], spot[0] + out * 120, c), lerp(spot[1], spot[1] + 40, c), -out * 18 * sl, 1, -10 * sl); sh.pose(70, 70, 140, -140)
+      } else if (party === 'leap') {
+        const up = Math.abs(Math.sin((t - KT) * 5)) * 22 * seg(t, KT + 0.6, KT + 0.9); put(sh, lerp(spot[0], spot[0] + out * 40, c), spot[1] + 10, 0, 1, up); sh.pose(10, -10, 175, -20)
+      } else if (party === 'crowd') {
+        put(sh, lerp(spot[0], 320 + out * 30, c), lerp(spot[1], 300, c), 0, 1.15); sh.face?.('front'); sh.pose(6, -6, 95, -95)
+      } else if (party === 'pile') {
+        put(sh, lerp(spot[0], spot[0] + out * 60, c), lerp(spot[1], spot[1] + 20, c)); sh.celebrate(t)
+      } else { put(sh, lerp(spot[0], spot[0] + out * 150, c), lerp(spot[1], spot[1] + 30, c)); sh.celebrate(t) }
+      // The team-mates: the one nearest runs to him, and in a pile-on the passer too, arms around him.
+      const near = party === 'pile' ? 0.92 : 0.8
+      put(mate, lerp(640 - lx - side * 10, lerp(spot[0], spot[0] + out * 150, c) - out * 18 * (1 - near), c), lerp(214, spot[1] + 30, c)); mate.celebrate(t + 0.4)
+      if (party === 'pile') { const pc = ease(seg(t, KT + 0.8, KT + 2.4)); put(passer, lerp(spot[0] - side * 60, spot[0] + out * 66, pc), lerp(spot[1] + 30, spot[1] + 26, pc)); passer.pose(6, -6, 120, -60) }
     } else if (t > KT + 0.3 && outcome !== 'goal') sh.despair()
     else if (q === 'header' && t > tS - 0.35) sh.pose(10, -10, 60, -60, 0.4, 0.4)
     else if (t > tS - 0.32 && t < tS + 0.3) sh.kick(seg(t, tS - 0.32, tS + 0.12))
@@ -506,12 +523,20 @@ export const SCENES = {
     const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'IBM Plex Sans Arabic, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
     const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
     const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1
+    // [Sprint 36 F2] The face-off before the kick, as on TV: the taker and the keeper in two panels, eye to eye.
+    const vs = el('g', { opacity: 0 }, svg)
+    vs.innerHTML = `<rect x="0" y="50" width="320" height="250" fill="${K(e.side).kit}" opacity=".9"/><rect x="320" y="50" width="320" height="250" fill="${keeperKit(other(e.side))}" opacity=".9"/>`
+      + `<path d="M300 50 L340 50 L320 300 L280 300 Z" fill="#071733"/><text x="310" y="186" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-style="italic" font-weight="800" font-size="44" fill="#F5B82E">VS</text>`
+    const fT = player(vs, K(e.side).kit, e.no, 2.2, { look: Math.floor(R() * 40) }), fK = player(vs, keeperKit(other(e.side)), 1, 2.2, { gloves: '#E4FF5A', look: Math.floor(R() * 40), shorts: '#111827' })
     const target = e.scored ? [320 + dir * (48 + R() * 12), R() < 0.5 ? 140 : 90] : [320 + dir * (30 + R() * 20), 110 + R() * 30]
     const kAim = e.scored ? (R() < 0.6 ? [640 - target[0], target[1]] : [lerp(320, target[0], 0.7), target[1] + 8]) : target
     const spot = [320, 207], path = [[spot[0], spot[1]], [lerp(spot[0], target[0], 0.5), Math.min(spot[1], target[1]) - 18], target]
     return { dur: 5.6, svg, update(t) {
       cam(svg, 1.15 + 0.1 * inout(seg(t, 0.3, tS)), 320, 160)
       sa(hush, 'opacity', seg(t, 0.2, 0.6) * (1 - seg(t, 2, 2.3)))
+      const v = SMOOTH ? 0 : seg(t, 0.05, 0.25) * (1 - seg(t, 1.0, 1.2))
+      sa(vs, 'opacity', v)
+      if (v > 0) { fT.face?.('side', 1); fT.at(170 + (1 - ease(seg(t, 0.05, 0.4))) * -60, 180, 0, 1.9); fT.pose(4, -4, 14, -14); fK.face?.('side', -1); fK.at(470 + (1 - ease(seg(t, 0.05, 0.4))) * 60, 180, 0, 1.9); fK.pose(12, -12, 50, -50) }
       // The run-up from the edge of the box, a stutter, then the kick.
       const f = inout(seg(t, 1.1, tS)); put(tk, lerp(352, 324, f), lerp(256, spot[1] + 6, f))
       if (t < 1.1) tk.pose(4, -4, 8, -8); else if (t < tS - 0.3) tk.run(t * 11, 0.8); else tk.kick(seg(t, tS - 0.3, tS + 0.12))

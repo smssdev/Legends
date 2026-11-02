@@ -94,7 +94,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setSmooth } from './art'
+import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setRain, setSmooth } from './art'
 import { figure } from './figure'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample, segment } from '../frames'
@@ -951,6 +951,8 @@ function tickClock(tick, u) {
 }
 watch(() => props.kits, () => buildPitch(), { deep: true })
 watch(() => props.kickoff, () => buildPitch())
+// [Sprint 36 F3] The rain of the live pitch falls in the scenes too.
+watch(() => props.seed, () => setRain(rainy()), { immediate: true })
 onMounted(buildPitch)
 onMounted(() => {
   raf = requestAnimationFrame((n) => { last = n; frame(n) })
