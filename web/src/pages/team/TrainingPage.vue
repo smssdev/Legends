@@ -7,7 +7,7 @@
 import { t } from '../../lib/i18n'
 import AdReward from '../../components/ads/AdReward.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PriceTag from '../../components/ui/PriceTag.vue'
@@ -17,6 +17,8 @@ import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 import { count, type Line } from '../../lib/format'
 import TrainingPicker from './TrainingPicker.vue'
+import { act, busy as isBusy } from '../../lib/action'
+import { nm } from '../../lib/names'
 
 type View = components['schemas']['TrainingView']
 // The "?" texts [X19].
@@ -24,8 +26,6 @@ const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const notice = ref('')
-const busy = ref(false)
 const line = ref<Line>('mid')
 const now = ref(Date.now())
 let skew = 0   // the game clock minus this device's clock (clock:travel in development)
@@ -60,28 +60,30 @@ async function load() {
   loaded.value = true
 }
 
-async function act(run: () => Promise<{ data?: View }>, done: string) {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    const { data } = await run()
-    v.value = data!
-    notice.value = done
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+// [X87] Every tap through lib/action: only its own button waits, the result in a toast (with «تراجع» where it can be
+// undone), coins asked once from 10 up. The view comes back with each answer.
+async function run(key: string, call: () => Promise<{ data?: View }>, o: Parameters<typeof act>[2] = {}) {
+  error.value = ''
+  const r = await act(key, call, { ...o, onError: (m) => (error.value = m) })
+  if (r?.data) v.value = r.data
+  return !!r
 }
 
 // Finish a session now for coins [Sprint 34].
 const wallet = useWallet()
-const finish = (l: string) => act(() => api.POST('/leagues/{league}/training/{line}/finish', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
-  'انتهت الجلسة الآن.').then(() => wallet.load())
+const finish = (l: string) => run(`finish:${l}`, () => api.POST('/leagues/{league}/training/{line}/finish', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
+  { success: t('انتهت الجلسة الآن.'), coins: wallet.price('finish_training') }).then(() => wallet.load())
 
 // [X83] replace: the line's player in training makes room in the same step (he keeps his progress).
-const train = (id: number, name: string, replace = false) => act(() => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id, replace } }) as any,
-  t('بدأ {v0} التدريب. أول جلسة بعد {v1} ساعات.', { v0: name, v1: Math.round((v.value?.interval_minutes ?? 0) / 60) })).then(() => { if (!error.value) picking.value = null })
+const train = (id: number, name: string, replace = false) => {
+  const line = v.value?.players.find((p) => p.id === id)?.line ?? 'mid'
+  // Replacing someone: «تراجع» puts him back (he kept his progress).
+  const before = replace ? v.value?.slots.find((s) => s.line === line)?.player?.id : undefined
+  return run(`train:${line}`, () => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id, replace } }) as any, {
+    success: t('بدأ {v0} التدريب. أول جلسة بعد {v1} ساعات.', { v0: nm(name), v1: Math.round((v.value?.interval_minutes ?? 0) / 60) }),
+    undo: before ? () => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: before, replace: true } }).then(load) : undefined,
+  }).then((ok) => { if (ok) picking.value = null })
+}
 // [X83] The picker, opened from a slot: its line's players to choose from.
 const picking = ref<Line | null>(null)
 function pick(l: Line) {
@@ -94,14 +96,20 @@ const emptyRecommended = computed(() => Object.values(v.value?.recommended ?? {}
 async function fillPlan() {
   const ids = [...emptyRecommended.value]
   const names = ids.map((id) => v.value?.players.find((p) => p.id === id)?.name ?? '').filter(Boolean)
-  await act(async () => {
+  await run('plan', async () => {
     let last: any = null
     for (const id of ids) last = await api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: id } })
     return last
-  }, t('بدأ التدريب: {v0}.', { v0: names.join('، ') }))
+  }, { success: t('بدأ التدريب: {v0}.', { v0: names.map(nm).join('، ') }) })
 }
-const stop = (l: string) => act(() => api.DELETE('/leagues/{league}/training/{line}', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any,
-  'فرغت الخانة، واللاعب يحتفظ بتقدمه.')
+// Emptying a slot can be undone: «تراجع» puts the same player back (his progress was kept).
+const stop = (l: string) => {
+  const who = v.value?.slots.find((s) => s.line === l)?.player?.id
+  return run(`stop:${l}`, () => api.DELETE('/leagues/{league}/training/{line}', { params: { path: { league: leagueId.value!, line: l as Line } } }) as any, {
+    success: t('فرغت الخانة، واللاعب يحتفظ بتقدمه.'),
+    undo: who ? () => api.POST('/leagues/{league}/training', { params: { path: { league: leagueId.value! } }, body: { player_id: who } }).then(load) : undefined,
+  })
+}
 
 onMounted(() => {
   load()
@@ -126,7 +134,6 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
       <span v-if="v" class="rounded-pill bg-surface px-3 py-1.5 text-xs text-text-muted">{{ $t('الجلسة') }} <b class="font-numbers text-text" dir="ltr">{{ count(v.cost) }}</b></span>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
@@ -160,9 +167,9 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
             </div>
             <div class="flex gap-2">
               <button type="button" class="h-touch flex-1 rounded-md bg-surface-sunk px-3 text-sm font-bold" @click="pick(s.line as Line)">{{ $t('استبدل اللاعب') }}</button>
-              <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="busy" @click="finish(s.line)"
+              <button v-if="wallet.open(leagueId)" type="button" class="flex h-touch items-center gap-1 rounded-md bg-gold/15 px-3 text-sm font-bold text-gold" :disabled="isBusy(`finish:${s.line}`)" @click="finish(s.line)"
                 :title="$t('أنهِ الجلسة الآن')">{{ $t('الآن ·') }} <PriceTag :amount="wallet.price('finish_training')" currency="coins" /></button>
-              <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="busy" @click="stop(s.line)">{{ $t('إفراغ') }}</button>
+              <button type="button" class="h-touch rounded-md px-3 text-sm text-text-muted hover:text-text" :disabled="isBusy(`stop:${s.line}`)" @click="stop(s.line)">{{ isBusy(`stop:${s.line}`) ? '...' : $t('إفراغ') }}</button>
             </div>
             <!-- [Sprint 20 S4] A game ad cuts the next session's wait. -->
             <div v-if="leagueId && s.ads.enabled" class="flex flex-wrap items-center gap-2">
@@ -195,7 +202,7 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <UiTabs v-model="line" :items="(Object.keys(LINE_NAMES) as Line[]).map((key) => ({ key, label: LINE_NAMES[key] }))" label="الخط" size="sm" class="ms-auto max-w-full" />
         </div>
         <!-- [Sprint 30 G5] The ready plan: every empty slot filled with its line's recommended player, in one tap. -->
-        <button v-if="emptyRecommended.length" type="button" class="flex min-h-touch items-center justify-center gap-2 rounded-lg border border-gold/40 bg-gold/10 px-3 font-bold text-gold disabled:opacity-40" :disabled="busy" @click="fillPlan">
+        <button v-if="emptyRecommended.length" type="button" class="flex min-h-touch items-center justify-center gap-2 rounded-lg border border-gold/40 bg-gold/10 px-3 font-bold text-gold disabled:opacity-40" :disabled="isBusy('plan')" @click="fillPlan">
           {{ $t('خطة جاهزة: املأ {v0} خانات بالموصى بهم', { v0: emptyRecommended.length }) }}</button>
         <div class="hidden grid-cols-[1fr_3rem_3rem_3rem_5rem_6rem] gap-2 px-2 text-xs text-text-muted sm:grid">
           <span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('السن') }}</span><span class="text-center">{{ $t('القوة') }}</span><span class="text-center">{{ $t('السقف') }}</span><span class="text-center">{{ $t('جلسات للـ +1') }}</span><span />
@@ -209,14 +216,14 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
           <span class="hidden text-center font-numbers sm:block" :class="p.over_potential ? 'text-warning' : 'text-success'" :title="p.over_potential ? $t('تجاوز إمكانيته: يتطور أبطأ، حتى 99') : undefined">{{ p.potential }}</span>
           <span class="hidden text-center font-numbers text-text-muted sm:block">~{{ p.sessions }}</span>
           <!-- [X83] A taken slot no longer blocks: the player takes its place in one tap (the other keeps his progress). -->
-          <button v-if="!p.maxed" type="button" class="h-touch rounded-md px-3 text-sm font-bold disabled:opacity-40" :class="lineBusy ? 'bg-gold text-on-gold' : 'bg-brand'" :disabled="busy"
+          <button v-if="!p.maxed" type="button" class="h-touch rounded-md px-3 text-sm font-bold disabled:opacity-40" :class="lineBusy ? 'bg-gold text-on-gold' : 'bg-brand'" :disabled="isBusy(`train:${p.line}`)"
             :title="lineBusy ? $t('يأخذ مكان من يتدرب الآن، ويحتفظ ذاك بتقدمه') : undefined" @click="train(p.id, p.name, lineBusy)">{{ lineBusy ? $t('استبدل به') : $t('درّب') }}</button>
           <span v-else class="text-center text-xs text-text-muted">{{ $t('بلغ سقفه') }}</span>
         </div>
         <p v-if="!candidates.length" class="px-1 text-sm text-text-muted">{{ $t('لا لاعبين آخرين في هذا الخط.') }}</p>
       </section>
 
-      <TrainingPicker v-if="picking" :view="v" :line="picking" :busy="busy" :error="error" @close="picking = null" @line="(l: Line) => pick(l)" @pick="(p, replace) => train(p.id, p.name, replace)" />
+      <TrainingPicker v-if="picking" :view="v" :line="picking" :busy="isBusy(`train:${picking}`)" :error="error" @close="picking = null" @line="(l: Line) => pick(l)" @pick="(p, replace) => train(p.id, p.name, replace)" />
 
       <section :aria-label="$t('منشأة التدريب')" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4">
         <div class="flex-1"><b class="block">{{ $t('منشأة التدريب') }}</b><span class="text-sm text-text-muted">{{ $t('كل مرحلة منها تسرّع التقدم في كل الخانات، وتُطوَّر من صفحة الملعب.') }}</span></div>

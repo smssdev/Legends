@@ -8,5 +8,5 @@ const c = useConfirm()
 
 <template>
   <ConfirmDangerDialog :open="!!c.current" :title="c.current?.title ?? ''" :text="c.current?.text" :expected="c.current?.expected" :action="c.current?.action ?? ''"
-    @close="c.settle(false)" @confirm="c.settle(true)" />
+    :tone="c.current?.tone" :remember="!!c.current?.remember" @close="c.settle(false)" @confirm="(r: boolean) => c.settle(true, r)" />
 </template>

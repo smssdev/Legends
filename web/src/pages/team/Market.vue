@@ -172,7 +172,7 @@ function openSell(p: Mine) {
 }
 async function sold(text: string) {
   error.value = ''
-  notice.value = text
+  if (text) notice.value = text
   open.value = null
   await load()
 }
@@ -182,6 +182,11 @@ watch(tab, (t) => { if (t === 'list') void loadList(); if (t === 'done') void lo
 let clock = 0
 onMounted(() => { void load(); clock = window.setInterval(() => { now.value = Date.now(); if (list.value?.renews_at && new Date(list.value.renews_at).getTime() <= now.value - 3000 && tab.value === 'list') { list.value.renews_at = null; void loadList() } }, 1000) })
 onBeforeUnmount(() => clearInterval(clock))
+// [X87] A change made from a toast's «تراجع» after the panel closed: the market again.
+let again = 0
+const changed = () => { clearTimeout(again); again = window.setTimeout(() => load(), 450) }
+onMounted(() => window.addEventListener('glm:league-changed', changed))
+onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 </script>
 
 <template>

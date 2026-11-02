@@ -4,9 +4,11 @@
 // on the server's clock, and the renewal in its last day. No draft of its own: the stadium's cards.
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { api, asApiError, ensureCsrf } from '../../api/client'
+import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import PriceTag from '../../components/ui/PriceTag.vue'
+import { act, busy as isBusy } from '../../lib/action'
+import { t } from '../../lib/i18n'
 
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
@@ -18,8 +20,6 @@ const leagueId = ref<number | null>(null)
 const v = ref<View | null>(null)
 const loaded = ref(false)
 const error = ref('')
-const notice = ref('')
-const busy = ref(false)
 const now = ref(Date.now())
 let skew = 0
 let tick = 0
@@ -64,21 +64,15 @@ async function load() {
   loaded.value = true
 }
 
-async function hire(s: Spec) {
-  busy.value = true
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    const stars = chosen(s)
-    const renewing = !!s.ends_at
-    const { data } = await api.POST('/leagues/{league}/specialists', { params: { path: { league: leagueId.value! } }, body: { type: s.type, stars, idempotency_key: crypto.randomUUID() } })
-    v.value = data!
-    useWallet().load()
-    notice.value = renewing ? `جدّدت عقد ${s.name} (${stars} نجوم)، ويبدأ حين ينتهي الحالي.` : `تعاقدت مع ${s.name} (${stars} نجوم) لمدة ${data!.days} أيام.`
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = false
+// [X87] Through lib/action: only this card's button waits, the result in a toast, coins asked once from 10 up.
+function hire(s: Spec) {
+  const stars = chosen(s)
+  const renewing = !!s.ends_at
+  const o = offer(s)
+  return act(`hire:${s.type}`, () => api.POST('/leagues/{league}/specialists', { params: { path: { league: leagueId.value! } }, body: { type: s.type, stars, idempotency_key: crypto.randomUUID() } }), {
+    coins: o.currency === 'coins' ? o.cost : undefined, onError: (m) => (error.value = m),
+    success: (r) => renewing ? t('جدّدت عقد {v0} ({v1} نجوم)، ويبدأ حين ينتهي الحالي.', { v0: t(s.name), v1: stars }) : t('تعاقدت مع {v0} ({v1} نجوم) لمدة {v2} أيام.', { v0: t(s.name), v1: stars, v2: r.data!.days }),
+  }).then((r) => { if (r?.data) { v.value = r.data; useWallet().load() } })
 }
 
 // [X61] From training («تعاقد مع مدرب الآن»): ?line=gk|def|mid|att opens on that line's coach, lit for a moment.
@@ -110,7 +104,6 @@ onBeforeUnmount(() => clearInterval(tick))
       <!-- [X85] The club's money is on the top bar, for this slot's club only. -->
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
-    <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>
     <p v-if="!loaded" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
     <p v-else-if="!leagueId" class="rounded-xl bg-surface p-6 text-text-muted">{{ $t('ليس لديك فريق بعد.') }} <RouterLink :to="{ name: 'leagues' }" class="font-bold text-gold">{{ $t('دورياتي') }}</RouterLink></p>
 
@@ -138,7 +131,7 @@ onBeforeUnmount(() => clearInterval(tick))
               <div class="flex items-center gap-1" role="radiogroup" :aria-label="$t('نجوم {v0}', { v0: s.name })">
                 <button v-for="n in 5" :key="n" type="button" role="radio" :aria-checked="chosen(s) === n" :aria-label="$t('{v0} نجوم', { v0: n })" class="grid h-touch flex-1 place-items-center rounded-lg text-xl transition-colors" :class="n <= chosen(s) ? 'bg-gold/15 text-gold' : 'bg-surface-sunk text-text/25'" @click="pick[s.type] = n">★</button>
               </div>
-              <button type="button" class="h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40" :disabled="busy || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
+              <button type="button" class="h-12 rounded-md bg-brand px-4 font-display font-bold disabled:opacity-40" :disabled="isBusy(`hire:${s.type}`) || (offer(s).currency === 'money' && offer(s).cost > v.balance)" @click="hire(s)">
                 {{ s.ends_at ? $t('جدّد العقد') : $t('تعاقد') }} · {{ chosen(s) }} ★ · <PriceTag :amount="offer(s).cost" :currency="offer(s).currency" /></button>
             </template>
           </article>

@@ -4,17 +4,21 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export type ConfirmAsk = { title: string; text?: string; action: string; expected?: string }
+// [X87] tone: 'gold' for paying coins (not a danger, a spend); remember: a device key that, once «لا تسألني مرة أخرى» is
+// ticked, answers yes without asking again.
+export type ConfirmAsk = { title: string; text?: string; action: string; expected?: string; tone?: 'danger' | 'gold'; remember?: string }
 
 export const useConfirm = defineStore('confirm', () => {
   const current = ref<ConfirmAsk | null>(null)
   let answer: ((ok: boolean) => void) | null = null
   function ask(q: ConfirmAsk): Promise<boolean> {
+    try { if (q.remember && localStorage.getItem(q.remember) === '1') return Promise.resolve(true) } catch {}
     answer?.(false)
     current.value = q
     return new Promise((resolve) => { answer = resolve })
   }
-  function settle(ok: boolean) {
+  function settle(ok: boolean, remember = false) {
+    if (ok && remember && current.value?.remember) try { localStorage.setItem(current.value.remember, '1') } catch {}
     answer?.(ok)
     answer = null
     current.value = null

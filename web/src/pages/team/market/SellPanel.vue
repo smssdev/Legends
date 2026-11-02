@@ -4,19 +4,19 @@
 // him at his value; or at my price on a slider between his floor and his cap, with the server's estimate of the wait.
 // Prices, fees and limits come from the API (GET /market's `mine`); buying stays in the market only.
 // [X84] A player is listed once: once listed, the panel offers only withdraw him (back to the choices) or keep him.
-import { ref, watch } from 'vue'
-import { api, asApiError, ensureCsrf } from '../../../api/client'
+import { computed, ref, watch } from 'vue'
+import { act, busy as isBusy } from '../../../lib/action'
+import { nm } from '../../../lib/names'
+import { api } from '../../../api/client'
 import type { components } from '../../../api/schema'
 import UiSlider from '../../../components/ui/UiSlider.vue'
 import { intlLocale, t } from '../../../lib/i18n'
 import { money } from '../../../lib/format'
-import { useConfirm } from '../../../stores/confirm'
 
 type Mine = components['schemas']['Market']['mine'][number]
 const props = defineProps<{ leagueId: number; player: Mine }>()
 const emit = defineEmits<{ done: [notice: string]; error: [message: string]; keep: [] }>()
 
-const busy = ref(false)
 const price = ref<number | ''>(props.player.listed?.price ?? props.player.value)
 const quote = ref<{ ok: boolean; wait_hours: number } | null>({ ok: true, wait_hours: props.player.wait_hours.value })
 let quoting = 0
@@ -37,32 +37,32 @@ const fee = () => (p.quick.fee.currency === 'coins' ? t('{v0} كوينز', { v0:
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', hour: 'numeric', minute: '2-digit' }) : '')
 const hours = (h: number) => (h <= 1 ? t('ساعة تقريباً') : h === 2 ? t('ساعتين تقريباً') : h <= 10 ? t('{v0} ساعات تقريباً', { v0: h }) : t('{v0} ساعة تقريباً', { v0: h }))
 
-async function run(fn: () => Promise<string>) {
-  busy.value = true
-  try {
-    await ensureCsrf()
-    emit('done', await fn())
-  } catch (e) {
-    emit('error', asApiError(e).message)
-  }
-  busy.value = false
+// [X87] Through lib/action: the result in a toast (with «تراجع» for a withdrawal), only the pressed button waits; the
+// parent hears «done» (with no words of its own to repeat) to load the squad again.
+const busy = computed(() => isBusy(`sell:${p.id}`))
+async function run(call: () => Promise<unknown>, o: Parameters<typeof act>[2]) {
+  const r = await act(`sell:${p.id}`, call, { ...o, onError: (m) => emit('error', m) })
+  if (r !== undefined) emit('done', '')
 }
 
-async function sellNow() {
-  if (!(await useConfirm().ask({ title: t('بيع {v0} الآن؟', { v0: p.name }), text: t('تحصل على {v0} مقابل {v1}، ولا تراجع بعد البيع.', { v0: money(p.quick.pays), v1: fee() }), action: t('بع الآن') }))) return
-  await run(async () => {
-    await api.POST('/leagues/{league}/market/sell', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID() } })
-    return t('بِيع {v0} الآن.', { v0: p.name })
+function sellNow() {
+  return run(() => api.POST('/leagues/{league}/market/sell', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID() } }), {
+    confirm: { title: t('بيع {v0} الآن؟', { v0: nm(p.name) }), text: t('تحصل على {v0} مقابل {v1}، ولا تراجع بعد البيع.', { v0: money(p.quick.pays), v1: fee() }), action: t('بع الآن') },
+    success: t('بِيع {v0} الآن.', { v0: nm(p.name) }),
   })
 }
-const listAt = (at: number) => run(async () => {
-  await api.POST('/leagues/{league}/transfers/listings', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, price: at } })
-  return t('عُرض {v0} للبيع بـ {v1}. لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري في موعده.', { v0: p.name, v1: money(at) })
+const listAt = (at: number) => run(() => api.POST('/leagues/{league}/transfers/listings', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, price: at } }), {
+  success: t('عُرض {v0} للبيع بـ {v1}. لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري في موعده.', { v0: nm(p.name), v1: money(at) }),
+  undo: () => api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: props.leagueId, player: p.id } } }).then(() => emit('done', '')),
 })
-const unlist = () => run(async () => {
-  await api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: props.leagueId, player: p.id } } })
-  return t('سُحب {v0} من البيع.', { v0: p.name })
-})
+// Withdrawn by mistake: «تراجع» lists him again at the same price.
+const unlist = () => {
+  const at = p.listed?.price ?? p.value
+  return run(() => api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: props.leagueId, player: p.id } } }), {
+    success: t('سُحب {v0} من البيع.', { v0: nm(p.name) }),
+    undo: () => api.POST('/leagues/{league}/transfers/listings', { params: { path: { league: props.leagueId } }, body: { player_id: p.id, price: at } }).then(() => emit('done', '')),
+  })
+}
 </script>
 
 <template>

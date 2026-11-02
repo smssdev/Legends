@@ -2658,4 +2658,13 @@ export const EN: Record<string, string> = {
   'الإعلانات والأوسمة والترتيب': 'News, badges and rankings',
   'و{v0} فتحات مقفلة أخرى': 'and {v0} more locked slots',
   'التالية: {v0}': 'Next: {v0}',
+  // [X87] One way to act.
+  'تدفع {v0} كوينز؟': 'Pay {v0} coins?',
+  'تُخصم من كوينزك الآن.': 'They come off your coins now.',
+  'ادفع {v0} كوينز': 'Pay {v0} coins',
+  'تراجعت عنه.': 'Undone.',
+  'لا تسألني مرة أخرى': 'Do not ask me again',
+  'جدّدت عقد {v0} ({v1} نجوم)، ويبدأ حين ينتهي الحالي.': 'You renewed {v0} ({v1} stars); it starts when the current one ends.',
+  'تعاقدت مع {v0} ({v1} نجوم) لمدة {v2} أيام.': 'You signed {v0} ({v1} stars) for {v2} days.',
+  'بدأ الجزء {v0} من المرحلة {v1} في {v2}.': 'Part {v0} of stage {v1} started in {v2}.',
 }
