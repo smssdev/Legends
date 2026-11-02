@@ -101,7 +101,7 @@
             <div v-if="halftime && league" class="flex h-24 w-full max-w-md items-center justify-center rounded-lg border border-dashed border-text/20 text-xs text-text-muted" aria-hidden="true">{{ $t('مساحة إعلانية') }}</div>
           </div>
 
-          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" @done="replayTick = null" />
+          <GoalReplay v-if="replayTick" :key="replayTick.tick" :tick="replayTick" :players="playersById" :clubs="{ home: view.clubs.home.name, away: view.clubs.away.name }" :seed="view.seed" :tag="replayMissed ? $t('فاتك · {v0}', { v0: replayTick.minute[0] + `'` }) : undefined" @done="nextReplay" />
           <!-- [E8.5] Back after a gap (a hidden tab, a lost connection, joining late): now, with what was missed. -->
           <button v-if="caught" type="button" class="absolute inset-x-3 top-24 z-30 flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg bg-surface-raised/95 px-3 py-2 text-center text-sm font-bold" role="status" @click="caught = null">
             <span>{{ $t('عدت إلى الوقت الحالي: فاتتك {v0} دقيقة', { v0: caught.minutes }) }}</span>
@@ -474,6 +474,23 @@ function skipMoment() {
 const say = (e: MatchEvent) => e.text ?? line(e, nameOf, clubName)
 // The goal replay (live) and its players by id.
 const replayTick = shallowRef<Tick | null>(null)
+// [X83] Back after a gap: the goals missed, one after another in the small frame, while the match plays on live.
+const replayMissed = ref(false)
+const reel: Tick[] = []
+function nextReplay() {
+  const t = reel.shift() ?? null
+  replayMissed.value = !!t
+  replayTick.value = t
+}
+/** A minute with a goal that was over before this screen saw it: into the reel (its scene from its events alone). */
+function missedGoal(t: { tick: number; minute: number | [number, number]; events: MatchEvent[] }) {
+  const goal = t.events.find((e) => e.type === 'goal')
+  if (!goal || reel.some((x) => x.tick === t.tick)) return
+  const kind = ({ penalty: 'penalty', free_kick: 'free_kick' } as Record<string, string>)[(goal as any).kind ?? 'open'] ?? 'goal'
+  reel.push({ ...(t as any), minute: Array.isArray(t.minute) ? t.minute : [t.minute, 0], score: score.value, moment: { kind, ms: 0 } })
+  reel.sort((a, b) => a.tick - b.tick)
+  if (!replayTick.value) nextReplay()
+}
 let lastGoal: Tick | null = null
 const LOW_END = (navigator.hardwareConcurrency ?? 8) <= 4
 const playersById = computed(() => {
@@ -638,14 +655,15 @@ function show(t: Tick, animate = true, startAt?: number) {
   if (t.moment && KEY_KINDS.includes(t.moment.kind) && (t.moment.kind !== 'save' || t.events.some((e) => e.type === 'attack' && e.quality === 'big'))) keyTicks.push(t)
   // Live: the goal again in a small frame while the next minute plays (not on a slow phone).
   // Not after a goal whose long minute already played its replay [X41].
-  if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END) replayTick.value = lastGoal
+  if (live.value && animate && lastGoal && (lastGoal.moment?.ms ?? 0) < 15000 && !t.events.some((e) => e.type === 'period') && !LOW_END && !replayMissed.value) replayTick.value = lastGoal
   lastGoal = live.value && t.events.some((e) => e.type === 'goal' && (e.kind ?? 'open') === 'open') ? t : null
   sound.danger(t.danger)
   // The stands sing: after a goal, and now and then in a quiet spell (every 13 minutes of play) [Sprint 35].
   if (animate && t.events.some((e) => e.type === 'goal')) sound.chant(6)
   else if (animate && t.moment?.kind === 'quiet' && t.minute?.[0] % 13 === 7) sound.chant()
   pendingReveal = () => tell(t, animate)
-  shownAt = performance.now()
+  // [X82] A minute that started before it was shown (back on the page) counts from its real start.
+  shownAt = startAt ?? performance.now()
   if (animate) pitch.value?.play(t, startAt)
   else reveal()
 }
@@ -693,7 +711,7 @@ function tell(t: Tick, animate: boolean) {
 function startHalftime() {
   halftime.value = true
   // Live: the clock ticker counts down to the second half from the server's time.
-  if (live.value) return
+  if (live.value) return clockTick()
   halftimeLeft.value = Math.round((view.value!.timing.halftime_seconds || 30) / speed.value)
   clearInterval(htTimer)
   htTimer = window.setInterval(() => {
@@ -837,8 +855,7 @@ function catchUp() {
     clearTimeout(id)
     playTimers.delete(id)
     const { t, startAt } = late[i][1]
-    if (i < late.length - 1) show(t, false)
-    else show(t, true, startAt)
+    if (i < late.length - 1) { show(t, false); missedGoal(t) } else show(t, true, startAt)
   })
 }
 
@@ -877,6 +894,7 @@ function handleSync(r: LiveSync): number {
   for (const m of r.missed ?? []) {
     if (m.tick <= seen) continue
     seen = m.tick
+    missedGoal(m as any)
     for (const e of m.events) {
       const text = say(e)
       if (text) feed.value.unshift({ minute: `${m.minute}'`, text, important: ['goal', 'card', 'penalty', 'period', 'sub'].includes(e.type) })
@@ -894,7 +912,7 @@ function handleSync(r: LiveSync): number {
     const delay = at - serverNow()
     const next = fresh[i + 1]
     // Already over (a locked screen, a slow phone): its result at once, no scene. Only the minute playing now animates.
-    if (next?.at !== undefined && next.at <= serverNow()) return show(t, false)
+    if (next?.at !== undefined && next.at <= serverNow()) { show(t, false); return missedGoal(t) }
     const startAt = performance.now() + delay
     if (delay <= 0) return show(t, true, startAt)
     const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)
@@ -1053,6 +1071,11 @@ onMounted(async () => {
         rerun.value = true
         rerunTicks = r.ticks
         startRerun()
+        // [X82] A finished match opens at its end (the score, the stats, the timeline), not played again from the
+        // kick-off: «شاهدها من جديد» and the highlights play it on demand.
+        intro.value = false
+        while (buffer.length) show(buffer.shift()!, false)
+        return
       } else {
         oldEngine.value = true
       }
@@ -1060,7 +1083,9 @@ onMounted(async () => {
     if (live.value) {
       intro.value = !view.value.started || view.value.tick === 0
       started.value = view.value.started
-      seen = view.value.tick
+      // [X82] Back on the page (closed by mistake, reloaded): from the first minute, so the screen comes back where the
+      // match is (the minute, the half-time or a window, the feed with what was missed), not at a kick-off.
+      seen = 0
       clockTimer = window.setInterval(clockTick, 250)
       keepAwake()
       return poll()
@@ -1077,7 +1102,7 @@ onMounted(async () => {
 // bar the score and the minute; the bar brings the coach back or mutes it. A finished match leaves the bar soon after.
 const broadcast = useBroadcast()
 // This page's own address, taken now: the route object follows the coach to the other screens.
-const ownPath = route.fullPath.split('?')[0]
+const ownPath = route.path
 watch(() => [view.value, score.value.home, score.value.away, minuteText.value, finished.value] as const, () => {
   if (!view.value) return
   broadcast.update({

@@ -295,6 +295,7 @@ export const EN: Record<string, string> = {
   'دوريات خاصة بكود مع أصحابك': 'Private leagues with a code among friends',
   'أندية ولاعبون حقيقيون، ودوري وكأس كل موسم': 'Real clubs and players, with a league and a cup every season',
   'إعادة الهدف: {v0}': 'Goal replay: {v0}',
+  'فاتك · {v0}': 'Missed · {v0}',
   'عرض الخطة من أعلى': 'View the formation from above',
   'كاميرا البث': 'Broadcast camera',
   'الخطة': 'Formation',

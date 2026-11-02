@@ -20,7 +20,8 @@ class MomentClock
             if ($kind === 'shootout') {
                 return ['kind' => $kind, 'ms' => (int) $match['shootout_ms']];
             }
-            if (self::brief($kind, $events)) {
+            // [X83] And the kinds the highlights broadcast always tells as a card (broadcast_brief).
+            if (self::brief($kind, $events) || (in_array($kind, $match['broadcast_brief'] ?? [], true) && ! self::scored($events))) {
                 return ['kind' => $kind, 'ms' => (int) $table['brief'], 'brief' => true];
             }
             $key = in_array($kind, ['free_kick', 'penalty'], true) && self::scored($events) ? $kind.'_goal' : $kind;
