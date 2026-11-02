@@ -5838,8 +5838,9 @@ components:
         players: { type: array, items: { $ref: '#/components/schemas/TrainingPlayer' } }
     SquadPlayer:
       type: object
-      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role, place_bp]
+      required: [id, name, position, line, age, overall, potential, value, fitness, injured_matches, suspended_matches, available, attributes, role, place_bp, listed]
       properties:
+        listed: { type: [integer, 'null'], description: '[X84] His price on the transfer list, null when he is not listed' }
         place_bp:
           type: object
           description: '[Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000'

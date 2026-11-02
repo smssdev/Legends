@@ -2644,4 +2644,13 @@ export const EN: Record<string, string> = {
   'لا لاعب بهذا الاسم في هذا الخط.': 'No player by that name in this line.',
   'لا لاعبين آخرين في هذا الخط يمكن تدريبهم الآن.': 'No other player in this line can train now.',
   '{v0} سنة': '{v0} yrs',
+  // [X84] A player listed once, with withdraw or keep.
+  'معروض للبيع': 'Listed for sale',
+  'معروض للبيع ✓': 'Listed ✓',
+  'معروض للبيع: اسحبه أو اتركه': 'Listed for sale: withdraw or keep him',
+  'بسعر': 'At',
+  'اسحبه من قائمة الانتقالات': 'Withdraw from the transfer list',
+  'اتركه كما هو': 'Keep him listed',
+  'لعرض لاعب للبيع: تبويب «بيع لاعبيّ» في السوق، أو بطاقة اللاعب في صفحة الفريق.': 'To list a player: the market\'s «Sell my players» tab, or his card on the squad page.',
+  'هذا اللاعب معروض للبيع بالفعل. اسحبه من قائمة الانتقالات أولاً إن أردت سعراً آخر.': 'This player is already listed. Withdraw him from the transfer list first for another price.',
 }

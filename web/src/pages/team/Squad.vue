@@ -39,6 +39,11 @@ function setView(v: 'list' | 'cards') {
 onMounted(load)
 // [Sprint 39 S1] A player sold or listed from his card: the word, and the squad again.
 const toast = useToast()
+const saleOpen = ref(false)
+function openSale(p: SquadPlayer) {
+  saleOpen.value = true
+  open.value = p
+}
 async function sold(text: string) {
   open.value = null
   toast.show(text)
@@ -60,6 +65,8 @@ function status(p: SquadPlayer) {
   if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-danger' }
   if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-danger' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
+  // [X84] On the transfer list.
+  if (p.listed) return { text: 'معروض للبيع', tone: 'text-gold' }
   // The fatigue lines [Sprint 39 E2]: from 90% full, from 75% slower, under 75% a sharp drop and twice the injuries.
   if (p.fitness < 75) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
   if (p.fitness < 90) return { text: 'متعب', tone: 'text-warning' }
@@ -171,7 +178,12 @@ function status(p: SquadPlayer) {
               <button type="button" class="grid min-h-16 w-full grid-cols-[2.5rem_minmax(0,1fr)_3rem] items-center gap-3 px-3 py-2 text-start transition-colors hover:bg-surface-raised md:grid-cols-[2.5rem_minmax(0,1fr)_3.5rem_8rem_9rem_5.5rem_3.5rem]" @click="open = p">
                 <LineBadge :line="p.line as Line" />
                 <span class="min-w-0">
-                  <span class="block truncate font-display text-base font-extrabold md:text-lg">{{ $nm(p.name) }}</span>
+                  <span class="flex items-center gap-1.5">
+                    <span class="truncate font-display text-base font-extrabold md:text-lg">{{ $nm(p.name) }}</span>
+                    <!-- [X84] On the transfer list: a mark, and a tap on it opens withdraw or keep. -->
+                    <span v-if="p.listed" role="button" tabindex="0" class="shrink-0 rounded-pill bg-gold/20 px-2 py-0.5 text-[11px] font-bold text-gold" :aria-label="$t('معروض للبيع: اسحبه أو اتركه')"
+                      @click.stop="openSale(p)" @keydown.enter.stop.prevent="openSale(p)">{{ $t('معروض للبيع') }}</span>
+                  </span>
                   <span class="flex items-center gap-2 text-xs text-text-muted">
                     <span dir="ltr">{{ p.position }}</span>
                     <span class="md:hidden">· {{ $t('{n} سنة', { n: p.age }) }}</span>
@@ -193,7 +205,7 @@ function status(p: SquadPlayer) {
       </div>
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
-    <PlayerCard v-if="open" :player="open" @close="open = null" @sold="sold" />
+    <PlayerCard v-if="open" :player="open" :sell="saleOpen" @close="open = null; saleOpen = false" @sold="sold" />
     <ClubSquadDialog v-if="otherClub && board.league" :league-id="board.league" :club-id="otherClub" @close="otherClub = null" />
   </div>
 </template>

@@ -13352,6 +13352,8 @@ export interface components {
             players: components["schemas"]["TrainingPlayer"][];
         };
         SquadPlayer: {
+            /** @description [X84] His price on the transfer list, null when he is not listed */
+            listed: number | null;
             /** @description [Sprint 27 X2] What he gives in each line (bp of his ability), as the engine plays him: his rating at a place is overall × bp / 10000 */
             place_bp: {
                 gk: number;

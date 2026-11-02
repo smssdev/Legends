@@ -48,11 +48,7 @@ async function run(label: string, fn: () => Promise<unknown>) {
   busy.value = false
 }
 
-// ---------------------------------------------------------------- the transfer list
-const listPrice = reactive<Record<number, number>>({})
-const listed = computed(() => new Map((t.value?.listings ?? []).filter((l) => l.mine).map((l) => [l.player.id, l.price])))
-const list = (p: Mine) => run(`عُرض ${p.name} للبيع.`, () => api.POST('/leagues/{league}/transfers/listings', { params: path.value, body: { player_id: p.id, price: listPrice[p.id] || p.value } }))
-const unlist = (p: Mine) => run(`سُحب ${p.name} من القائمة.`, () => api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: props.leagueId, player: p.id } } }))
+// [X84] Listing a player is in «بيع لاعبيّ» only (SellPanel.vue).
 
 // ---------------------------------------------------------------- the composer
 type Squad = { id: number; name: string; position: string; line: string; overall: number; value: number }
@@ -111,23 +107,8 @@ onMounted(load)
           </li>
         </ul>
       </section>
-      <section :aria-label="$t('اعرض لاعبيك')" class="rounded-xl bg-surface p-2">
-        <h2 class="px-2 pt-2 font-display text-lg font-bold">{{ $t('اعرض لاعبيك') }}</h2>
-        <ul>
-          <li v-for="p in mine" :key="p.id" class="flex flex-wrap items-center gap-3 border-t border-text/5 px-2 py-2">
-            <LineBadge :line="p.line as Line" />
-            <span class="min-w-0 flex-1"><b class="block truncate" dir="auto">{{ $nm(p.name) }}</b><span class="text-xs text-text-muted">{{ $t('قيمته {v0}', { v0: money(p.value) }) }}</span></span>
-            <template v-if="listed.has(p.id)">
-              <span class="rounded-pill bg-gold/15 px-3 py-1 font-numbers text-sm text-gold" dir="ltr">{{ money(listed.get(p.id)!) }}</span>
-              <button type="button" class="h-touch rounded-md bg-surface-raised px-3 text-sm" :disabled="busy" @click="unlist(p)">{{ $t('اسحب') }}</button>
-            </template>
-            <template v-else>
-              <input v-model.number="listPrice[p.id]" type="number" inputmode="numeric" :placeholder="String(p.value)" :aria-label="$t('سعر {v0}', { v0: p.name })" class="h-touch w-32 rounded-md bg-surface-sunk px-2 font-numbers" dir="ltr" />
-              <button type="button" class="h-touch rounded-md border border-gold/60 px-3 text-sm font-bold text-gold disabled:opacity-40" :disabled="busy || !!t.closed" @click="list(p)">{{ $t('اعرض') }}</button>
-            </template>
-          </li>
-        </ul>
-      </section>
+      <!-- [X84] Listing a player is in «بيع لاعبيّ» only (once, with withdraw or keep): one way to do one thing. -->
+      <p class="rounded-xl bg-surface px-4 py-3 text-sm text-text-muted">{{ $t('لعرض لاعب للبيع: تبويب «بيع لاعبيّ» في السوق، أو بطاقة اللاعب في صفحة الفريق.') }}</p>
     </template>
 
     <template v-if="t && view === 'offers'">

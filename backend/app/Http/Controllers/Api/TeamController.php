@@ -399,6 +399,8 @@ class TeamController extends Controller
     /** Each player's card: attributes, potential, fitness, value, and whether he can play [PLAN 2.15]. */
     private function players(Club $club)
     {
+        // [X84] Who is on the transfer list, and at what price: the squad marks him, and his card offers withdraw or keep.
+        $listed = DB::table('transfer_listings')->where('club_id', $club->id)->pluck('price', 'player_id');
 
         return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')->where('players.club_id', $club->id)
             ->select('players.*', 'master_players.name', 'master_players.position', 'master_players.alt_positions', 'master_players.line', 'master_players.age',
@@ -416,6 +418,7 @@ class TeamController extends Controller
                 // [Sprint 27 X2] What he gives in each line, as the engine plays him (bp of his ability): the screens show
                 // his rating at any place from it, the server's own number, in the web and the app alike.
                 'place_bp' => TeamSheet::placeBp($p->line, $p->position, $p->alt_positions),
+                'listed' => isset($listed[$p->id]) ? (int) $listed[$p->id] : null,
                 'attributes' => $p->line === 'gk'
                     ? ['diving' => $p->gk_diving, 'handling' => $p->gk_handling, 'kicking' => $p->gk_kicking, 'positioning' => $p->gk_positioning, 'reflexes' => $p->gk_reflexes]
                     : ['pac' => $p->pac, 'sho' => $p->sho, 'pas' => $p->pas, 'dri' => $p->dri, 'def' => $p->def, 'phy' => $p->phy],

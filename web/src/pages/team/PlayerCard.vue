@@ -3,18 +3,19 @@
 // fitness, room to grow and value. [Sprint 20 W9] A sheet from the bottom on the phone, a panel from the side on the
 // computer, so the list behind stays where it was; and its actions: train him, or sell him. [Sprint 39 S1] Selling is
 // right here (the market's own panel, market/SellPanel.vue), without going to the market; buying stays in the market.
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { api, asApiError } from '../../api/client'
 import type { components } from '../../api/schema'
 import { currentLeague } from '../../lib/currentLeague'
 import SellPanel from './market/SellPanel.vue'
+import Icon from '../../components/Icon.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import UiChip from '../../components/ui/UiChip.vue'
 import { fitnessTone, money, type Line } from '../../lib/format'
 import { ATTRIBUTES, barColor, type SquadPlayer } from './team'
 
-const props = defineProps<{ player: SquadPlayer }>()
+const props = defineProps<{ player: SquadPlayer; sell?: boolean }>()
 const emit = defineEmits<{ close: []; sold: [notice: string] }>()
 
 // The sale's terms for this player (the market's `mine`), asked when the coach opens the panel.
@@ -38,6 +39,8 @@ async function openSale() {
   }
   loadingSale.value = false
 }
+// [X84] Opened from the squad's «معروض للبيع» mark: straight to withdraw or keep.
+onMounted(() => { if (props.sell) void openSale() })
 const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' } as const
 </script>
 
@@ -48,7 +51,7 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
         <h2 class="font-display text-2xl font-extrabold">{{ $t('بطاقة اللاعب') }}</h2>
         <div class="flex items-center gap-2">
           <UiChip :tone="player.role === 'starter' ? 'win' : 'neutral'">{{ $t(ROLE[player.role]) }}</UiChip>
-          <button type="button" class="flex size-touch items-center justify-center rounded-lg bg-surface text-xl" :aria-label="$t('إغلاق')" @click="$emit('close')">×</button>
+          <button type="button" class="flex size-touch items-center justify-center rounded-lg bg-surface" :aria-label="$t('إغلاق')" @click="$emit('close')"><Icon name="close" /></button>
         </div>
       </header>
 
@@ -85,10 +88,10 @@ const ROLE = { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج 
       <!-- Selling one's own players [X6]: at once, at his value, or at my price up to his cap, here on the card [Sprint 39 S1]. -->
       <div class="grid grid-cols-2 gap-2">
         <RouterLink :to="{ name: 'training' }" class="flex h-12 items-center justify-center rounded-lg bg-gold font-bold text-on-gold" @click="$emit('close')">{{ $t('درّبه') }}</RouterLink>
-        <button type="button" class="flex h-12 items-center justify-center rounded-lg border border-warning/60 font-bold text-warning disabled:opacity-40" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : $t('بيع اللاعب') }}</button>
+        <button type="button" class="flex h-12 items-center justify-center rounded-lg font-bold disabled:opacity-40" :class="player.listed ? 'bg-gold/15 text-gold' : 'border border-warning/60 text-warning'" :aria-expanded="!!selling" :disabled="loadingSale" @click="openSale">{{ loadingSale ? '...' : player.listed ? $t('معروض للبيع ✓') : $t('بيع اللاعب') }}</button>
       </div>
       <p v-if="sellError" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(sellError) }}</p>
-      <SellPanel v-if="selling" :league-id="selling.league" :player="selling.mine" @done="(n: string) => emit('sold', n)" @error="(e: string) => (sellError = e)" />
+      <SellPanel v-if="selling" :league-id="selling.league" :player="selling.mine" @done="(n: string) => emit('sold', n)" @error="(e: string) => (sellError = e)" @keep="selling = null" />
     </section>
   </UiDialog>
 </template>

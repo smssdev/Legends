@@ -209,8 +209,11 @@ class MarketTest extends TestCase
         }
         $this->postJson($tr, ['player_id' => $mine[4]->id, 'price' => (int) $mine[4]->value])->assertUnprocessable()
             ->assertJsonPath('message', 'تعرض 4 لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.');
-        // A new price for one listed already is fine.
-        $this->postJson($tr, ['player_id' => $mine[0]->id, 'price' => (int) $mine[0]->value + 1])->assertOk();
+        // [X84] Listed once only: again, at any price, is refused until he is withdrawn.
+        $this->postJson($tr, ['player_id' => $mine[0]->id, 'price' => (int) $mine[0]->value + 1])->assertStatus(409)
+            ->assertJsonPath('message', 'هذا اللاعب معروض للبيع بالفعل. اسحبه من قائمة الانتقالات أولاً إن أردت سعراً آخر.');
+        $this->assertSame(1, DB::table('transfer_listings')->where('player_id', $mine[0]->id)->count());
+        $this->assertSame((int) $mine[0]->value, (int) DB::table('transfer_listings')->where('player_id', $mine[0]->id)->value('price'));
         $this->deleteJson("{$tr}/{$mine[3]->id}")->assertOk();
         $this->postJson($tr, ['player_id' => $mine[4]->id, 'price' => (int) $mine[4]->value])->assertOk();
 
