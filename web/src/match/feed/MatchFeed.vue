@@ -162,7 +162,7 @@ let pitchReplay = false
 let mainScene: any = null, cutScene: any = null
 /**
  * [Sprint 35 C1] The director: which cutaways follow the scene, as on a broadcast. A goal: the scorers' fans, their
- * coach's joy, then the other coach. A red card: the sent-off player's coach. A big chance missed or saved: the
+ * coach's joy, then the other coach. A red card: the players squaring up, then the sent-off player's coach. A big chance missed or saved: the
  * shooter's coach. The moods are the server's (tick.moods) when it has an expressive one. None at the lowest tier,
  * one at the middle, up to three at the full one; and only what fits in the minute before its replay and close.
  */
@@ -175,7 +175,8 @@ function director(s, tick, total, sceneT) {
   const crowdCut = () => ({ name: 'crowd', data: { side: s.side, v: (props.seed || 1) * 7 + tick.tick, count: tier.value === 'high' ? 110 : 60, flares: tier.value === 'high' }, dur: SCENE_TIME.crowd[0] })
   let list = []
   if (s.goal) list = [crowdCut(), coach(s.side, 'joy'), coach(other, 'angry')]
-  else if (s.scene === 'card') list = s.data.type === 'red' ? [coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
+  // [Sprint 35 C2] A red card: tempers flare first (both sides squaring up), then the coach.
+  else if (s.scene === 'card') list = s.data.type === 'red' ? [{ name: 'brawl', data: { side: s.side, v: (props.seed || 1) * 13 + tick.tick }, dur: SCENE_TIME.brawl[0] }, coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
   else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
   list = list.slice(0, tier.value === 'high' ? 3 : 1)
   // What fits: a goal keeps room for its replay (4.5 s), the rest for the commentator's line (1.2 s).
