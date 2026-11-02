@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// The admin panel (Sprint 37 B2, PLAN 2.17 and 2.22; rebuilt in Sprint 21 E7): the admin only, after the two-step code
-// when it is asked. A side list of sections (a scrolling row on the phone), each one page of its own: the overview,
+// The admin panel (Sprint 37 B2, PLAN 2.17 and 2.22; rebuilt in Sprint 21 E7): the admin only, with the password alone (Sprint 38 A1)
+// A side list of sections (a scrolling row on the phone), each one page of its own: the overview,
 // the activity day by day, the accounts (admins apart, search by number, suspend, delete), the leagues, the
 // announcements (each opened whole with its sender and time), the holidays, the conversations with the coaches,
 // the alliances, the backups and the commentary templates.
@@ -21,9 +21,7 @@ import { useToast } from '../stores/toast'
 
 type S = components['schemas']
 type AdminUser = S['AdminUser']
-const state = ref<S['AdminTwoFactor'] | null>(null)
-const secret = ref<{ secret: string; uri: string } | null>(null)
-const code = ref('')
+const state = ref<S['AdminAccess'] | null>(null)
 const error = ref('')
 const notice = ref('')
 const auth = useAuth()
@@ -132,8 +130,8 @@ const allianceNote = ref<Record<number, string>>({})
 const backups = ref<S['AdminBackups']['backups']>([])
 const commentary = ref<{ key: string; count: number; lines: string[] }[]>([])
 
-// [X46] The panel opens at once when the code is not asked.
-const open = computed(() => state.value?.passed && (!state.value.required || state.value.enabled))
+// [Sprint 38 A1] The panel opens once the admin's access is read: the password alone, no two-step code.
+const open = computed(() => !!state.value)
 const size = (b: number) => (b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.ceil(b / 1024) + ' KB')
 const day = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso))
 const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
@@ -151,22 +149,7 @@ async function run(fn: () => Promise<void>) {
 }
 
 const load = () => run(async () => {
-  state.value = (await api.GET('/admin/2fa')).data!
-  if (open.value) await show('overview')
-})
-const setup = () => run(async () => { secret.value = (await api.POST('/admin/2fa/setup')).data! })
-// [Sprint 30 Q11] The recovery codes, shown once (on confirming, or when made anew), to keep off the phone.
-const recoveryCodes = ref<string[]>([])
-const newRecovery = () => run(async () => {
-  if (!(await useConfirm().ask({ title: 'رموز استرداد جديدة؟', text: 'تتوقف الرموز القديمة عن العمل.', action: 'أنشئها' }))) return
-  recoveryCodes.value = (await api.POST('/admin/2fa/recovery')).data!.recovery_codes
-})
-const prove = () => run(async () => {
-  const path = state.value?.enabled ? '/admin/2fa/verify' : '/admin/2fa/confirm'
-  state.value = (await api.POST(path, { body: { code: code.value.trim() } })).data!
-  recoveryCodes.value = state.value.recovery_codes ?? []
-  code.value = ''
-  secret.value = null
+  state.value = (await api.GET('/admin/access')).data!
   if (open.value) await show('overview')
 })
 
@@ -432,36 +415,6 @@ onMounted(load)
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ notice }}</p>
     <p v-if="!state && !error" class="text-text-muted">{{ $t('جارٍ التحميل...') }}</p>
-
-    <section v-if="state && !open" :aria-label="$t('التحقق بخطوتين')" class="flex max-w-md flex-col gap-3 rounded-xl bg-surface p-5">
-      <h2 class="font-display text-lg font-bold">{{ $t('التحقق بخطوتين') }}</h2>
-      <template v-if="!state.enabled && !secret">
-        <p class="text-sm text-text-muted">{{ $t('اللوحة تحتاج رمزاً من تطبيق مصادقة على جوالك (Google Authenticator أو Microsoft Authenticator أو غيرهما، مجاناً).') }}</p>
-        <button type="button" class="h-12 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy" @click="setup">{{ $t('فعّل التحقق بخطوتين') }}</button>
-      </template>
-      <template v-else>
-        <div v-if="secret" class="flex flex-col gap-2 text-sm">
-          <p class="text-text-muted">{{ $t('في التطبيق: «إضافة حساب» ثم «إدخال مفتاح يدوياً»، واكتب هذا المفتاح:') }}</p>
-          <code class="select-all break-all rounded-md bg-surface-sunk p-3 font-numbers text-base" dir="ltr">{{ secret.secret }}</code>
-          <a :href="secret.uri" class="text-gold underline">{{ $t('أو افتحه في تطبيق المصادقة على هذا الجهاز') }}</a>
-        </div>
-        <p v-else class="text-sm text-text-muted">{{ $t('اكتب الرمز الظاهر الآن في تطبيق المصادقة.') }}</p>
-        <form class="flex gap-2" @submit.prevent="prove">
-          <input v-model="code" autocomplete="one-time-code" maxlength="11" dir="ltr" placeholder="000000" :aria-label="$t('الرمز أو رمز الاسترداد')"
-                 class="h-12 w-36 rounded-md bg-surface-sunk px-3 text-center font-numbers text-xl tracking-widest" />
-          <button type="submit" class="h-12 flex-1 rounded-md bg-gold font-display font-bold text-on-gold disabled:opacity-40" :disabled="busy || code.length < 6">{{ $t('تحقق') }}</button>
-        </form>
-        <p v-if="state.enabled" class="text-xs text-text-muted">{{ $t('ضاع جوالك؟ اكتب أحد رموز الاسترداد (مثل 1a2b3-c4d5e) مكان الرمز.') }}</p>
-      </template>
-    </section>
-
-    <!-- [Sprint 30 Q11] Shown once: written down or saved somewhere off the phone. -->
-    <section v-if="recoveryCodes.length" class="flex max-w-md flex-col gap-2 rounded-xl border border-gold/50 bg-gold/10 p-4" role="alert">
-      <h2 class="font-display text-lg font-bold">{{ $t('رموز الاسترداد') }}</h2>
-      <p class="text-sm">{{ $t('احفظها في مكان آمن بعيداً عن جوالك: كل رمز يفتح اللوحة مرة واحدة إن ضاع تطبيق المصادقة. لن تظهر مرة أخرى.') }}</p>
-      <code class="grid select-all grid-cols-2 gap-1 rounded-md bg-surface-sunk p-3 font-numbers text-base" dir="ltr"><span v-for="c in recoveryCodes" :key="c">{{ c }}</span></code>
-      <button type="button" class="h-11 self-start rounded-md bg-surface-raised px-4 font-bold" @click="recoveryCodes = []">{{ $t('حفظتها') }}</button>
-    </section>
 
     <div v-if="open" class="grid gap-4 lg:grid-cols-[13rem_minmax(0,1fr)]">
       <!-- The sections: a side list on the computer, a scrolling row on the phone. -->
@@ -877,11 +830,6 @@ onMounted(load)
           </article>
         </template>
 
-        <!-- [Sprint 30 Q11] The two-step code's recovery codes: how many are left, and new ones. -->
-        <section v-if="tab === 'overview' && state?.enabled" class="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-4" :aria-label="$t('رموز الاسترداد')">
-          <span class="min-w-0 flex-1 text-sm">{{ $t('رموز الاسترداد الباقية: {v0} من 8', { v0: state.recovery_left }) }}</span>
-          <button type="button" class="h-11 rounded-md border border-gold/40 px-4 text-sm font-bold text-gold" :disabled="busy" @click="newRecovery">{{ $t('رموز جديدة') }}</button>
-        </section>
         <!-- [Sprint 30 G6] The groups' moderation: each reported message once, with how many reported it and why. -->
         <section v-if="tab === 'reports'" class="flex flex-col gap-2" :aria-label="$t('البلاغات')">
           <p v-if="!reports.length" class="rounded-xl bg-surface p-4 text-text-muted">{{ $t('لا بلاغات تنتظر.') }}</p>

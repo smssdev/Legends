@@ -79,7 +79,7 @@ onMounted(load)
     <p v-if="error" class="rounded-lg bg-live/15 px-3 py-2 text-sm text-danger" role="alert">{{ $t(error) }}</p>
 
     <div v-if="!app" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3 text-sm">
-      <b>{{ $t('ثبّت المدرب الأسطورة على شاشتك الرئيسية') }}</b>
+      <b>{{ $t('ثبّت Game Legend Manager على شاشتك الرئيسية') }}</b>
       <span class="text-text-muted">{{ $t('يفتح كتطبيق بملء الشاشة، وتصلك الإشعارات.') }}</span>
       <button v-if="installable" type="button" class="h-touch rounded-md bg-gold font-bold text-on-gold" @click="install">{{ $t('ثبّت الآن') }}</button>
       <ol v-else-if="ios" class="list-decimal ps-5 text-text-muted">
@@ -91,7 +91,7 @@ onMounted(load)
     </div>
 
     <!-- [Sprint 21 E3.6] The game's own tone when a message arrives, on this device. -->
-    <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة المدرب الأسطورة حين تصلك رسالة واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
+    <UiToggle class="rounded-lg px-1" :model-value="toneOn" :label="$t('نغمة الإشعارات')" :hint="$t('نغمة قصيرة حين يُباع لاعبك، أو يصلك عرض أو رسالة أو كود، أو تبدأ مباراتك أو تنتهي، واللعبة مفتوحة')" @update:model-value="(on: boolean) => setTone(on)" />
 
     <template v-if="settings">
       <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>

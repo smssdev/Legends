@@ -6,10 +6,8 @@
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
 import UiButton from '../../components/ui/UiButton.vue'
 import { useEscape } from '../../lib/escape'
-import UiSlider from '../../components/ui/UiSlider.vue'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import EmptyState from '../../components/ui/EmptyState.vue'
-import { intlLocale } from '../../lib/i18n'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
@@ -20,6 +18,7 @@ import EventsBar from '../../components/ui/EventsBar.vue'
 import UiTabs from '../../components/ui/UiTabs.vue'
 import AcademyPanel from './market/AcademyPanel.vue'
 import LoansPanel from './market/LoansPanel.vue'
+import SellPanel from './market/SellPanel.vue'
 import Trades from './Trades.vue'
 import ScoutPage from './ScoutPage.vue'
 import { useWallet } from '../../stores/wallet'
@@ -165,82 +164,18 @@ async function load() {
   loaded.value = true
 }
 
-async function act(kind: 'buy' | 'sell', id: number, name: string) {
-  if (!leagueId.value) return
-  busy.value = id
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    const body = { player_id: id, idempotency_key: crypto.randomUUID() }
-    const { data } = kind === 'buy'
-      ? await api.POST('/leagues/{league}/market/buy', { params: { path: { league: leagueId.value } }, body })
-      : await api.POST('/leagues/{league}/market/sell', { params: { path: { league: leagueId.value } }, body })
-    notice.value = kind === 'buy' ? `انضم ${name} إلى فريقك.` : `بِيع ${name} الآن بقيمته الكاملة.`
-    await load()
-    if (m.value) m.value.balance = data!.balance
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = null
-}
-
-// Selling [X6]: one open player at a time, with his price and the server's estimate of the wait.
+// Selling [X6]: one open player at a time, in the shared panel (market/SellPanel.vue).
 type Mine = Market['mine'][number]
 const open = ref<number | null>(null)
-const price = ref<number | ''>('')
-const quote = ref<{ ok: boolean; wait_hours: number } | null>(null)
-let quoting = 0
 function openSell(p: Mine) {
   open.value = open.value === p.id ? null : p.id
-  price.value = p.listed?.price ?? p.value
-  quote.value = { ok: true, wait_hours: p.wait_hours.value }
 }
-watch(price, (v) => {
-  clearTimeout(quoting)
-  if (!leagueId.value || !open.value || !v) return (quote.value = null)
-  quoting = window.setTimeout(async () => {
-    const { data } = await api.GET('/leagues/{league}/market/quote', { params: { path: { league: leagueId.value! }, query: { player_id: open.value!, price: Number(v) } } })
-    quote.value = data ?? null
-  }, 250)
-})
-// About a hundred stops between the floor and the cap, each a round thousand.
-function stepOf(p: Mine) {
-  return Math.max(1000, Math.round((p.cap - p.floor) / 100 / 1000) * 1000)
+async function sold(text: string) {
+  error.value = ''
+  notice.value = text
+  open.value = null
+  await load()
 }
-function nudge(p: Mine, dir: 1 | -1) {
-  price.value = Math.min(p.cap, Math.max(p.floor, (Number(price.value) || p.value) + dir * stepOf(p)))
-}
-async function listAt(p: Mine, at: number) {
-  if (!leagueId.value) return
-  busy.value = p.id
-  error.value = notice.value = ''
-  try {
-    await ensureCsrf()
-    await api.POST('/leagues/{league}/transfers/listings', { params: { path: { league: leagueId.value } }, body: { player_id: p.id, price: at } })
-    notice.value = `عُرض ${p.name} للبيع بـ ${money(at)}. لو لم يشتره مدرب، يشتريه نادٍ من خارج الدوري في موعده.`
-    open.value = null
-    await load()
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = null
-}
-async function unlist(p: Mine) {
-  if (!leagueId.value) return
-  busy.value = p.id
-  try {
-    await ensureCsrf()
-    await api.DELETE('/leagues/{league}/transfers/listings/{player}', { params: { path: { league: leagueId.value, player: p.id } } })
-    notice.value = `سُحب ${p.name} من البيع.`
-    await load()
-  } catch (e) {
-    error.value = asApiError(e).message
-  }
-  busy.value = null
-}
-const fee = (p: Mine) => (p.quick.fee.currency === 'coins' ? `${p.quick.fee.amount} كوينز` : `${money(p.quick.fee.amount)} من أموال النادي`)
-const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(intlLocale(), { weekday: 'long', hour: 'numeric', minute: '2-digit' }) : '')
-const hours = (h: number) => (h <= 1 ? 'ساعة تقريباً' : h === 2 ? 'ساعتين تقريباً' : h <= 10 ? `${h} ساعات تقريباً` : `${h} ساعة تقريباً`)
 
 watch(line, () => loadList())
 watch(tab, (t) => { if (t === 'list') void loadList(); if (t === 'done') void loadDone() })
@@ -427,38 +362,8 @@ onBeforeUnmount(() => clearInterval(clock))
               <span class="w-10 text-center font-numbers text-xl">{{ p.overall }}</span>
               <button type="button" class="h-touch min-w-20 rounded-md border border-warning/60 px-3 font-bold text-warning disabled:opacity-40" :aria-expanded="open === p.id" :disabled="!!m.closed" @click="openSell(p)">{{ $t('بيع') }}</button>
             </div>
-            <div v-if="open === p.id" class="mt-2 flex flex-col gap-3 rounded-lg bg-surface-sunk p-3 text-sm">
-              <div v-if="p.listed" class="flex flex-wrap items-center gap-2">
-                <span>{{ $t('معروض بـ') }} <b dir="ltr" class="font-numbers">{{ money(p.listed.price) }}</b><template v-if="p.listed.sells_at">{{ $t('، ويُباع {v0} إن لم يشتره مدرب.', { v0: when(p.listed.sells_at) }) }}</template></span>
-                <button type="button" class="h-touch rounded-md bg-surface-raised px-3" :disabled="busy !== null" @click="unlist(p)">{{ $t('اسحبه من البيع') }}</button>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="inline-flex flex-wrap items-center"><b>{{ $t('بيع فوري') }}</b></span><span>{{ $t(': تحصل الآن على') }} <b dir="ltr" class="font-numbers text-success">{{ money(p.quick.pays) }}</b> {{ $t('مقابل {v0}.', { v0: fee(p) }) }}</span>
-                <button type="button" class="h-touch rounded-md bg-warning px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null" @click="act('sell', p.id, p.name)">{{ busy === p.id ? '...' : $t('بع الآن') }}</button>
-              </div>
-              <!-- [Sprint 23] At his value, while the season's profit room allows it. -->
-              <div v-if="p.value <= p.cap" class="flex flex-wrap items-center justify-between gap-2">
-                <span><b>{{ $t('بقيمته') }}</b> <b dir="ltr" class="font-numbers">{{ money(p.value) }}</b> {{ $t('بلا رسوم، ويُباع خلال {v0}.', { v0: hours(p.wait_hours.value) }) }}</span>
-                <button type="button" class="h-touch rounded-md border border-gold/60 px-4 font-bold text-gold disabled:opacity-40" :disabled="busy !== null" @click="listAt(p, p.value)">{{ $t('اعرضه بقيمته') }}</button>
-              </div>
-              <!-- [Sprint 21 E5.1] The price on a slider between the floor and the cap, with a step down and a step up. -->
-              <form class="flex flex-col gap-2" @submit.prevent="price && listAt(p, Number(price))">
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <b>{{ $t('بسعرك') }}</b>
-                  <b dir="ltr" class="font-numbers text-lg text-gold">{{ money(Number(price) || p.value) }}</b>
-                </div>
-                <div class="flex items-center gap-2" dir="ltr">
-                  <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) <= p.floor" :aria-label="$t('أنقص السعر')" @click="nudge(p, -1)">−</button>
-                  <UiSlider :model-value="Number(price) || p.value" dir="ltr" :min="p.floor" :max="p.cap" :step="stepOf(p)" :label="$t('سعر {v0}', { v0: p.name })" class="min-w-0 flex-1" @update:model-value="(v: number) => (price = v)" />
-                  <button type="button" class="size-touch shrink-0 rounded-md bg-surface-raised text-xl font-bold disabled:opacity-40" :disabled="Number(price) >= p.cap" :aria-label="$t('زد السعر')" @click="nudge(p, 1)">+</button>
-                </div>
-                <div class="flex justify-between text-xs text-text-muted" dir="ltr"><span class="font-numbers">{{ money(p.floor) }}</span><span class="font-numbers">{{ money(p.cap) }}</span></div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <button type="submit" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold disabled:opacity-40" :disabled="busy !== null || !quote?.ok">{{ $t('اعرضه بهذا السعر') }}</button>
-                  <span v-if="quote" class="text-xs" :class="quote.ok ? 'text-text-muted' : 'text-danger'">{{ quote.ok ? $t('يُباع خلال {v0}', { v0: hours(quote.wait_hours) }) : $t('خارج حدود سعره') }}</span>
-                </div>
-              </form>
-            </div>
+            <!-- [Sprint 38 S1] The same panel as the player's card on the squad page. -->
+            <SellPanel v-if="open === p.id" class="mt-2" :league-id="leagueId!" :player="p" @done="sold" @error="(e: string) => (error = e)" />
           </li>
         </ul>
       </section>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { REFEREE } from '../../lib/format'
 // The next match (Sprint 17 W1): when and where, the referee once drawn, and the countdown to the lock.
 // After the lock: my frozen sheet (and who came in for an injured starter), and the opponent's eleven,
 // formation and the four tactics he may be seen with. The live match comes in Sprints 18 to 20.
@@ -26,7 +27,6 @@ const error = ref('')
 const now = ref(Date.now())
 const leagueId = ref<number | null>(null)
 
-const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
 const PLANS: Record<string, string> = { counter: 'هجوم مرتد', shots: 'تسديد عن بعد', long: 'كرات طويلة', passing: 'تمريرات', wings: 'لعب على الأجنحة' }
 const TACKLING = ['قانوني', 'عادي', 'حماس', 'خشونة']
 const when = (iso: string) => new Intl.DateTimeFormat(intlLocale(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))

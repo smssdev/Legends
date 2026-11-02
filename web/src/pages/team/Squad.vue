@@ -7,13 +7,14 @@ import { computed, onMounted, ref } from 'vue'
 import LineBadge from '../../components/ui/LineBadge.vue'
 import PlayerTile from '../../components/ui/PlayerTile.vue'
 import RatingRing from '../../components/ui/RatingRing.vue'
-import { LINES, money, strength, type Line } from '../../lib/format'
+import { LINES, fitnessTone, money, strength, type Line } from '../../lib/format'
 import PlayerCard from './PlayerCard.vue'
 import { useTeam, type SquadPlayer } from './team'
 import { t } from '../../lib/i18n'
 import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import { api } from '../../api/client'
 import { useBoard } from '../../stores/board'
+import { useToast } from '../../stores/toast'
 
 const board = useBoard()
 const others = ref<{ id: number; name: string }[]>([])
@@ -36,6 +37,13 @@ function setView(v: 'list' | 'cards') {
   try { localStorage.setItem('legends.squadView', v) } catch {}
 }
 onMounted(load)
+// [Sprint 38 S1] A player sold or listed from his card: the word, and the squad again.
+const toast = useToast()
+async function sold(text: string) {
+  open.value = null
+  toast.show(text)
+  await load()
+}
 
 const players = computed(() => (team.value?.players ?? []).filter((p) => line.value === 'all' || p.line === line.value))
 const count = (l: Line) => (team.value?.players ?? []).filter((p) => p.line === l).length
@@ -44,15 +52,17 @@ const starters = computed(() => (team.value?.players ?? []).filter((p) => p.role
 const average = computed(() => (starters.value.length ? Math.round(starters.value.reduce((n, p) => n + p.overall, 0) / starters.value.length) : null))
 const best = computed(() => [...(team.value?.players ?? [])].sort((a, b) => b.overall - a.overall)[0] ?? null)
 // [Sprint 21 E3.5] The list by line, each under its own heading: keepers, defenders, midfield, attack.
+// [Sprint 38 S2] Each line's divider: its name and its letters, as the coach knows them.
+const LINE_TITLE = { gk: 'حراسة المرمى · GK', def: 'خط الدفاع · DEF', mid: 'خط الوسط · MID', att: 'خط الهجوم · FWD' } as const
 const groups = computed(() => (['gk', 'def', 'mid', 'att'] as const).map((l) => ({ line: l, players: players.value.filter((p) => p.line === l) })).filter((g) => g.players.length))
 
 function status(p: SquadPlayer) {
   if (p.injured_matches) return { text: t('مصاب · {n} مباريات', { n: p.injured_matches }), tone: 'text-danger' }
   if (p.suspended_matches) return { text: t('موقوف · {n}', { n: p.suspended_matches }), tone: 'text-danger' }
   if (p.id === captain.value) return { text: 'القائد', tone: 'text-gold' }
-  // The fatigue lines [X21]: from 75% full, from 55% slower, under 55% a sharp drop and three times the injuries.
-  if (p.fitness < 55) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
-  if (p.fitness < 75) return { text: 'متعب', tone: 'text-warning' }
+  // The fatigue lines [Sprint 38 E2]: from 90% full, from 75% slower, under 75% a sharp drop and twice the injuries.
+  if (p.fitness < 75) return { text: 'مرهق: خطر إصابة', tone: 'text-danger' }
+  if (p.fitness < 90) return { text: 'متعب', tone: 'text-warning' }
   return { text: { starter: 'أساسي', bench: 'احتياط', reserve: 'خارج القائمة' }[p.role], tone: p.role === 'starter' ? 'text-success' : 'text-text-muted' }
 }
 </script>
@@ -127,14 +137,23 @@ function status(p: SquadPlayer) {
       </div>
       </div>
 
-      <!-- The cards, five or six a row on the computer. -->
-      <ul v-if="view === 'cards'" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        <li v-for="p in players" :key="p.id" class="v-card">
-          <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
-            <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
-          </button>
-        </li>
-      </ul>
+      <!-- The cards, five or six a row on the computer. [Sprint 38 S2] By line like the list: keepers, defence,
+           midfield, attack, each under its own divider. -->
+      <div v-if="view === 'cards'" class="flex flex-col gap-5">
+        <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-2" :aria-label="$t(LINES[grp.line].plural)">
+          <h2 class="line-divider flex items-center gap-2 text-sm font-bold" :style="{ '--line': `var(--color-line-${grp.line})` }">
+            <LineBadge :line="grp.line" />{{ $t(LINE_TITLE[grp.line]) }}
+            <span class="font-numbers text-text-muted">{{ grp.players.length }}</span>
+          </h2>
+          <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <li v-for="p in grp.players" :key="p.id" class="v-card">
+              <button type="button" class="block w-full text-start" :aria-label="p.name" @click="open = p">
+                <PlayerTile :name="p.name" :line="p.line as Line" :position="p.position" :overall="p.overall" :value="p.value" :fitness="p.fitness" :status="status(p).text" :status-tone="status(p).tone" :attributes="p.attributes as Record<string, number | null>" />
+              </button>
+            </li>
+          </ul>
+        </section>
+      </div>
 
       <!-- [Sprint 21 E3.5] The list: by line, compact rows that read across, and on a computer columns with their
            headings (position, age, fitness, status, value, rating). -->
@@ -143,8 +162,8 @@ function status(p: SquadPlayer) {
           <span /><span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('العمر') }}</span><span>{{ $t('اللياقة') }}</span><span>{{ $t('الحالة') }}</span><span class="text-end">{{ $t('القيمة') }}</span><span class="text-center">{{ $t('القوة') }}</span>
         </div>
         <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-1.5" :aria-label="$t(LINES[grp.line].plural)">
-          <h2 class="flex items-center gap-2 px-1 text-sm font-bold">
-            <span class="h-4 w-1 rounded-full" :style="{ background: `var(--color-line-${grp.line})` }" />{{ $t(LINES[grp.line].plural) }}
+          <h2 class="line-divider flex items-center gap-2 px-1 text-sm font-bold" :style="{ '--line': `var(--color-line-${grp.line})` }">
+            <LineBadge :line="grp.line" />{{ $t(LINE_TITLE[grp.line]) }}
             <span class="font-numbers text-text-muted">{{ grp.players.length }}</span>
           </h2>
           <ul class="flex flex-col overflow-hidden rounded-xl bg-surface">
@@ -161,7 +180,7 @@ function status(p: SquadPlayer) {
                 </span>
                 <span class="hidden text-center font-numbers text-text-soft md:block">{{ p.age }}</span>
                 <span class="hidden items-center gap-2 md:flex">
-                  <span class="h-1.5 flex-1 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="p.fitness >= 75 ? 'bg-success' : p.fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: `${p.fitness}%` }" /></span>
+                  <span class="h-1.5 flex-1 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="fitnessTone(p.fitness)" :style="{ width: `${p.fitness}%` }" /></span>
                   <span class="w-8 text-end font-numbers text-xs text-text-soft">{{ p.fitness }}</span>
                 </span>
                 <span class="hidden truncate text-sm md:block" :class="status(p).tone">{{ $t(status(p).text) }}</span>
@@ -174,7 +193,13 @@ function status(p: SquadPlayer) {
       </div>
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
-    <PlayerCard v-if="open" :player="open" @close="open = null" />
+    <PlayerCard v-if="open" :player="open" @close="open = null" @sold="sold" />
     <ClubSquadDialog v-if="otherClub && board.league" :league-id="board.league" :club-id="otherClub" @close="otherClub = null" />
   </div>
 </template>
+
+<style scoped>
+/* [Sprint 38 S2] A line's divider: its colour first, then a hairline across to the end. */
+.line-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--line)); opacity: 0.5; }
+:dir(rtl) .line-divider::after { background: linear-gradient(to right, transparent, var(--line)); }
+</style>

@@ -32,7 +32,7 @@ onMounted(check)
 
 <template>
   <div class="splash" :class="state === 'leaving' ? 'is-leaving' : ''" role="status" aria-live="polite">
-    <img :src="loaderSrc" :alt="$t('لعبة المدرب الأسطورة')" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" />
+    <img :src="loaderSrc" alt="Game Legend Manager" class="splash-mark" :class="state === 'checking' ? 'is-turning' : ''" />
     <template v-if="state === 'failed'">
       <p class="max-w-xs text-center text-sm leading-relaxed text-text-soft">{{ $t('تعذر الاتصال بالخادم، يرجى التحقق من اتصالك بالإنترنت') }}</p>
       <button type="button" class="h-touch rounded-lg bg-gold px-6 font-bold text-on-gold" @click="check">{{ $t('إعادة المحاولة') }}</button>

@@ -22,7 +22,6 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <!-- [Sprint 30 P1] On by default; the admin tests that are not about it run without it. -->
-        <env name="ADMIN_TWO_FACTOR" value="false"/>
         <!-- [X72] Google off in the tests unless one asks for it. -->
         <env name="ADSENSE_CLIENT" value=""/>
         <env name="BROADCAST_CONNECTION" value="null"/>

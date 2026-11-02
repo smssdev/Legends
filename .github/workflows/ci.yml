@@ -159,7 +159,7 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: composer install --no-interaction --prefer-dist --no-progress
         working-directory: backend
-      - run: cp .env.example .env && sed -i 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env && echo 'ADMIN_TWO_FACTOR=false' >> .env && php artisan key:generate && touch database/legends.sqlite database/database.sqlite && php artisan migrate --force && php artisan data:import
+      - run: cp .env.example .env && sed -i 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' .env && php artisan key:generate && touch database/legends.sqlite database/database.sqlite && php artisan migrate --force && php artisan data:import
         working-directory: backend
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: web

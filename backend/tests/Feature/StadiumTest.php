@@ -95,7 +95,7 @@ class StadiumTest extends TestCase
         $this->assertSame(5, DB::table('messages')->where('user_id', $this->owner->id)->where('type', 'stadium_part')->count());
         $this->assertSame('اكتملت مرحلة في الملعب', $this->getJson('/api/v1/messages')->json('messages.0.title'));
         $this->getJson($this->url())->assertJsonPath('sections.1.stage', 1)->assertJsonPath('sections.1.next.stage', 2)
-            ->assertJsonPath('facts.parts_done', 5)->assertJsonPath('facts.home_bp', 600);
+            ->assertJsonPath('facts.parts_done', 5)->assertJsonPath('facts.home_bp', 700);
     }
 
     public function test_seats_bring_more_seats_and_more_from_each_home_match(): void
@@ -137,7 +137,7 @@ class StadiumTest extends TestCase
             $this->assertGreaterThan($abilities[$stage - 1], $abilities[$stage]);
         }
         $raw = Ability::lines($base['teams']['home'], 'build', Ability::LINES['passing']);
-        $this->assertSame(intdiv($raw * 800, 10000) - intdiv($raw * 500, 10000), $abilities[3] - $abilities[0]);
+        $this->assertSame(intdiv($raw * 1100, 10000) - intdiv($raw * 500, 10000), $abilities[3] - $abilities[0]);
     }
 
     public function test_the_training_section_makes_every_session_faster(): void

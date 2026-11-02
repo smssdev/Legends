@@ -13,7 +13,7 @@ import SupportLinks from './SupportLinks.vue'
         <RouterLink to="/terms" class="flex min-h-touch items-center">{{ $t('الشروط والأحكام') }}</RouterLink>
       </nav>
       <SupportLinks compact />
-      <p class="text-xs text-text-muted">{{ $t('المدرب الأسطورة لعبة مستقلة، غير تابعة لأي نادٍ أو دوري أو اتحاد كرة قدم.') }} © <span class="font-numbers" dir="ltr">2026</span> {{ $t('المدرب الأسطورة') }}</p>
+      <p class="text-xs text-text-muted">{{ $t('المدرب الأسطورة لعبة مستقلة، غير تابعة لأي نادٍ أو دوري أو اتحاد كرة قدم.') }} © <span class="font-numbers" dir="ltr">2026</span> <span dir="ltr">Game Legend Manager</span></p>
     </div>
   </footer>
 </template>

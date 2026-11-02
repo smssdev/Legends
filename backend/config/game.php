@@ -37,7 +37,7 @@ return [
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
         'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
-        'home_pitch_bp' => [0, 100, 200, 300],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9، السبرنت 29]
+        'home_pitch_bp' => [0, 200, 400, 600],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9]: +2% و+4% و+6% [Sprint 38 E6]
         // [X35] The live broadcast's pace, the owner's (2026-10-25): 18 minutes of football in one real minute, so a minute
         // lasts 60000/18 ms and a half two and a half minutes, the clock running on screen as on TV; an extra-time half
         // half a minute (15 minutes of 2000 ms) and the whole shootout half a minute. A match made with these keys plays
@@ -301,7 +301,7 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 11,
+        'version' => 12,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -320,13 +320,30 @@ return [
         // match (pressing and tempo at 50), about 24% with the press and the tempo high. Under tired_fit the
         // injuries come tired_injury_bp as often.
         'fitness_drain_base' => 12, 'fitness_drain_pressing_max' => 20, 'fitness_drain_tempo_max' => 8,
-        'tired_fit' => 5500, 'tired_injury_bp' => 30000,
+        // [Sprint 38 E2] Under 75% the injuries rise (the owner's simulation file); the fitness effect is in App\Engine\Ability.
+        'tired_fit' => 7500, 'tired_injury_bp' => 20000,
         'red_card_drain_bp' => 11500,
         // Chemistry [X22]: from chemistry_high the phases (passing, counters, cover) gain chemistry_high_bp, from
         // the first value at the line up to the second at 100; under chemistry_low they lose up to chemistry_low_bp at 0.
         // Morale [X25]: each point over or under 50 moves the progress and the chance creation by this much, the
         // attack's against the defence's. A side without a reading (the simulator) is neutral.
         'morale_bp' => 6,
+        // [Sprint 38 E3] Morale in the finish: each point over or under 50 moves a shot's goal chance by this much (of
+        // 10000); and each point under 50 gives a penalty at the box morale_penalty_bp more often (of 10000).
+        'morale_finish_bp' => 4, 'morale_penalty_bp' => 60,
+        // [Sprint 38 E4] The plan and the formation built for it (App\Engine\MatchEngine::synergy), in basis points of
+        // the progress and the chance: fit (100%), near (95%: a back three with the wings or passing), clash.
+        'synergy_bp' => ['fit' => 300, 'near' => 150, 'clash' => -300],
+        // [Sprint 38 E4] The golden triangle (MatchEngine::gaps): pressing and style more than spread points apart give
+        // the opponent's progress per_point_bp a point; a back five in a high press and attack, or a back three sitting
+        // deep, more; at most max_bp. A counter side loses its counter bonus by 3% a point of pressing over counter_press_from.
+        'gaps' => ['spread' => 35, 'per_point_bp' => 15, 'five_open_bp' => 400, 'three_deep_bp' => 300, 'max_bp' => 800],
+        'counter_press_from' => 55,
+        // [Sprint 38 E5] The trap with a high back three (and pressing 60+) springs this much more often, with a deep back
+        // four or five (pressing under 50) this much less, and broken there it leaves trap_deep_fail_cp more on top.
+        'trap_line_bp' => 1000, 'trap_deep_fail_cp' => 300,
+        // [Sprint 38 E5] Marking against the forwards (MatchEngine::markingMod), in rating centi-points of the defence.
+        'marking_cp' => ['zone_outnumbered' => -100, 'man_fit' => 150, 'man_beaten' => -150],
         // A bought referee [X28]: the briber's own cards at this share of the usual, its opponent's at this, and the
         // penalties it is given at this.
         'bribe_own_card_bp' => 5000, 'bribe_rival_card_bp' => 16000, 'bribe_penalty_bp' => 30000,
@@ -349,9 +366,11 @@ return [
         'tempo_precision_cp' => 3,           // own precision loss per tempo point above 50
         'counter_base_bp' => 3200, 'counter_plan_bp' => 1600, 'counter_bonus_cp' => 150,
         'trap_base_bp' => 3500, 'trap_fail_bonus_cp' => 600,
-        'foul_bp' => [800, 1300, 1900, 2700], // per lost duel, by tackling level
-        'card_bp' => [1300, 1950, 2850, 3900], // per foul, by tackling level
-        'referee_bp' => [7000, 10000, 13500], // soft, medium, strict
+        // [Sprint 38 E7] Fouls and cards = the referee's strictness (1 to 5) × the tackling level (1 to 4), the owner's
+        // simulation file: both in proportion, the normal tackle and the medium referee as before.
+        'foul_bp' => [650, 1300, 1950, 2600], // per lost duel, by tackling level
+        'card_bp' => [975, 1950, 2925, 3900], // per foul, by tackling level
+        'referee_bp' => [3333, 6667, 10000, 13333, 16667], // very lenient, lenient, medium, strict, very strict
         'dogso_red_bp' => 120,
         'second_yellow_spare_bp' => 8000,    // a booked player's next yellow is let go this often
         'midfield_foul_bp' => 2300,          // per quiet minute: ordinary fouls away from danger
@@ -371,7 +390,9 @@ return [
     'clock' => ['dev_round_minutes' => 1, 'file' => env('GAME_CLOCK_FILE', storage_path('app/game-clock.json'))],
     'simulator' => ['enabled' => (bool) env('SIMULATOR_ENABLED', env('APP_ENV', 'production') !== 'production')],
     // The game's names (owner's decision, 2026-10-26, X44): لعبة المدرب الأسطورة (GLM, Game Legend Manager), and its premium currency الكوينز.
-    'brand' => ['name' => 'لعبة المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
+    // [Sprint 38 B1] The official name everywhere is Game Legend Manager (the owner's request, 2026-11-02); in Arabic
+    // «المدرب الأسطورة» follows it.
+    'brand' => ['name' => 'Game Legend Manager', 'name_ar' => 'المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     // [X61] The oldest app still served comes from the same source as the game's version (APP_VERSION), not a number of
     // its own: the server said 0.1.0 and asked for apps from 1.0.0 at once. MIN_APP_VERSION raises it when an app ships.
     'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30],
@@ -452,9 +473,8 @@ return [
         'training_speed_bp' => [[0, 0], [0, 1000], [500, 2000], [1000, 3000]]],
     // Backups off this machine [PLAN 2.19, Sprint 37]: an rclone remote to Google Drive (rclone config, once).
     'backup' => ['rclone_remote' => env('BACKUP_RCLONE_REMOTE')],
-    // The admin panel [PLAN 2.17, Sprint 37]: a code from the authenticator is asked again after these hours.
-    // [Sprint 30 P1] The two-step code for the admin panel: asked of every admin by default (the owner's report,
-    // 2026-11-01, over X46). Only ADMIN_TWO_FACTOR=false on the server turns it off.
+    // [Sprint 38 A1] The admin panel opens with the account's email (or username) and password alone: the two-step
+    // code is gone (the owner's request, 2026-11-02; its columns stay on users, unused).
     // [Sprint 21 E9] Rewarded videos: each one the provider verifies cuts minutes_per_video off a training slot's next
     // session or a stadium part, up to max_per_item for the same task. Off, with no provider, until the owner picks one
     // (README section 11): no paid or account-bound SDK is in the game.
@@ -486,7 +506,7 @@ return [
     // Google for test ads (ADSENSE_TEST) until H5 Games Ads approves the site.
     // [X72] The game's own AdSense account by default (the owner's, 2026-11-01): its publisher id is public, so it sits
     // here; ADSENSE_CLIENT on the server still replaces it, and an empty one turns Google's ads off.
-    'adsense' => ['client' => env('ADSENSE_CLIENT', 'ca-pub-9280036306568581'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
+    'adsense' => ['client' => env('ADSENSE_CLIENT', 'ca-pub-3803730964219444'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
         'test' => (bool) env('ADSENSE_TEST', false), 'adsense_seconds' => 10],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
@@ -508,7 +528,7 @@ return [
         'support' => ['overview', 'activity', 'users', 'conversations', 'vacations', 'alliances', 'leagues', 'reports'],
         'content' => ['overview', 'announcements', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
         'finance' => ['overview', 'activity', 'coins', 'leagues'],
-    ], 'two_factor' => (bool) env('ADMIN_TWO_FACTOR', true), 'two_factor_hours' => 12, 'users_per_page' => 100,
+    ], 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
         'coins_max' => 100000],
     // [Sprint 28] The coaches' suggestions to the developers and the polls on what to build next: how many

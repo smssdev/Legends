@@ -8,7 +8,7 @@ namespace App\Messages;
  */
 class MessageTextEn
 {
-    private const STRICTNESS = ['lenient' => 'lenient', 'medium' => 'medium', 'strict' => 'strict'];
+    private const STRICTNESS = ['very_lenient' => 'very lenient', 'lenient' => 'lenient', 'medium' => 'medium', 'strict' => 'strict', 'very_strict' => 'very strict'];
 
     private const SECTION = ['seats' => 'Tickets and seats', 'pitch' => 'The pitch', 'training' => 'Training facility'];
 
@@ -43,7 +43,7 @@ class MessageTextEn
             'referee' => [
                 'title' => 'Your next match\'s referee',
                 'body' => sprintf('Your match against %s in %s has a %s referee. %s', $p['opponent'] ?? '', $league, self::STRICTNESS[$p['strictness'] ?? 'medium'] ?? '',
-                    ($p['strictness'] ?? '') === 'strict' ? 'A strict referee shows more cards, so review your tackling before the lock.' : 'Review your lineup and tactics before the lock.'),
+                    in_array($p['strictness'] ?? '', ['strict', 'very_strict'], true) ? 'A strict referee shows more cards, so review your tackling before the lock.' : 'Review your lineup and tactics before the lock.'),
                 'link' => '/match',
             ],
             'absence_warning' => [

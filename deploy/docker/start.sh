@@ -19,6 +19,10 @@ fi
 
 # Real emails [X8]: Gmail's SMTP (GMAIL_ADDRESS and its app password), or over HTTPS with BREVO_API_KEY (free, 300 a
 # day) or RESEND_API_KEY (free, needs a domain of ours). Without any of them the emails go to the log.
+# [Sprint 38 M1] The game's own Gmail by default (an address, not a secret): only its app password is set on the server
+# (legends-set GMAIL_APP_PASSWORD), and every email goes out from it under the game's name.
+export GMAIL_ADDRESS="${GMAIL_ADDRESS:-game.legend.manager@gmail.com}"
+export MAIL_FROM_NAME="${MAIL_FROM_NAME:-Game Legend Manager}"
 if [ -n "${BREVO_API_KEY:-}" ]; then
   export MAIL_MAILER=brevo MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-${GMAIL_ADDRESS:-}}"
 elif [ -n "${RESEND_API_KEY:-}" ]; then

@@ -15,6 +15,10 @@ COPY data/names ./data/names
 COPY data/arab/arab_players.csv ./data/arab/arab_players.csv
 # The RenderFrame golden vectors, checked before the build [Sprint 21 E8.4].
 COPY docs/api/frame-golden.json ./docs/api/frame-golden.json
+# [Sprint 38 B3] The site's address (PUBLIC_URL on the server, deploy/vps/compose.yml) goes into the canonical links, the
+# sitemap and the cards; nesr.site when built without it.
+ARG PUBLIC_URL=https://nesr.site
+ENV VITE_SITE_URL=$PUBLIC_URL
 RUN cd web && npm run build
 
 FROM composer:2 AS vendor

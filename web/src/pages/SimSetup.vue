@@ -115,13 +115,13 @@ const plans = [
 ]
 const blank = () => ({ league: '', q: '', results: [] as Club[], club: null as Club | null, squad: null as any, control: 'cpu' as 'me' | 'cpu', plan: 'passing' })
 const pick = reactive({ home: { ...blank(), control: 'me' as 'me' | 'cpu' }, away: blank() })
-const settings = reactive<Record<string, any>>({ mode: 'solo', referee: 1, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
+const settings = reactive<Record<string, any>>({ mode: 'solo', referee: 2, competition: 'league', venue: 'home', speed: 1, seed: Math.floor(Math.random() * 999999) + 1 })
 const modes = [
   { v: 'solo', label: 'ضد الحاسوب', hint: 'على هذا الجهاز، مع السرعة والإيقاف والتخطي' },
   { v: 'live', label: 'ضد صديق', hint: 'غرفة: تكتب اسمك وتختار فريقك، وصديقك كذلك من جهازه' },
 ] as const
 const groups = [
-  { key: 'referee', label: 'الحكم', options: [{ v: 0, label: 'متساهل' }, { v: 1, label: 'متوسط' }, { v: 2, label: 'صارم' }] },
+  { key: 'referee', label: 'الحكم', options: [{ v: 0, label: 'متساهل جداً' }, { v: 1, label: 'متساهل' }, { v: 2, label: 'متوسط' }, { v: 3, label: 'صارم' }, { v: 4, label: 'صارم جداً' }] },
   { key: 'competition', label: 'المسابقة', options: [{ v: 'league', label: 'دوري' }, { v: 'cup', label: 'كأس' }] },
   { key: 'venue', label: 'الملعب', options: [{ v: 'home', label: 'أرض الفريق 1' }, { v: 'neutral', label: 'محايد' }] },
   { key: 'speed', label: 'السرعة', options: [{ v: 1, label: '×1' }, { v: 2, label: '×2' }, { v: 4, label: '×4' }] },

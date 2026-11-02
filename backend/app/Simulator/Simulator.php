@@ -39,7 +39,7 @@ class Simulator
             'options' => [
                 'seed' => $seed,
                 'competition' => $in['competition'] ?? 'league',
-                'referee' => (int) ($in['referee'] ?? 1),
+                'referee' => (int) ($in['referee'] ?? 2),
                 'venue' => $in['venue'] ?? 'home',
             ],
             'overrides' => [

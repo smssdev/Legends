@@ -17,11 +17,11 @@ class Golden
 
     /** The cases: seed, competition (cup reaches extra time and penalties more often), referee, home tactics. */
     public const CASES = [
-        [1, 'league', 1, []],
+        [1, 'league', 2, []],
         [42, 'league', 0, ['plan' => 'counter', 'pressing' => 90, 'tackling' => 3]],
-        [48213, 'league', 2, ['plan' => 'shots', 'tempo' => 80, 'trap' => 1]],
+        [48213, 'league', 4, ['plan' => 'shots', 'tempo' => 80, 'trap' => 1]],
         [7, 'cup', 1, ['plan' => 'wings', 'style' => 20]],
-        [99, 'cup', 2, ['plan' => 'long', 'marking' => 'man']],
+        [99, 'cup', 3, ['plan' => 'long', 'marking' => 'man']],
     ];
 
     public static function squad(int $base, int $ovr): array

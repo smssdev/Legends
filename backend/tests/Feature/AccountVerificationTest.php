@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Admin\TwoFactor;
 use App\Auth\GoogleIdentity;
 use App\Auth\GoogleLinker;
 use App\Models\User;
@@ -23,13 +22,12 @@ class AccountVerificationTest extends TestCase
         $this->assertArrayNotHasKey('whatsapp', $me);
         $this->assertSame(0, Wallet::balance($coach->id));
 
-        // A developer issues the code from the admin panel, after the second step.
+        // A developer issues the code from the admin panel, signed in (Sprint 38 A1: no second step).
         $admin = User::factory()->create(['role' => 'admin']);
         // The admin panel is the site's: a request from it carries a session (Sanctum's stateful domains).
         $this->withHeader('Referer', config('app.url'));
         $this->actingAs($coach)->postJson("/api/v1/admin/users/{$coach->id}/verification-code")->assertForbidden();
-        $secret = $this->actingAs($admin)->postJson('/api/v1/admin/2fa/setup')->json('secret');
-        $this->postJson('/api/v1/admin/2fa/confirm', ['code' => TwoFactor::engine()->getCurrentOtp($secret)])->assertOk();
+        $this->actingAs($admin);
         $old = $this->postJson("/api/v1/admin/users/{$coach->id}/verification-code")->assertOk()->json('code');
         $code = $this->postJson("/api/v1/admin/users/{$coach->id}/verification-code")->assertOk()->assertJsonPath('username', 'karim')->json('code');
         $this->assertMatchesRegularExpression('/^\d{6}$/', $code);

@@ -34,7 +34,7 @@ class MatchPrep
             ->where(fn ($q) => $q->where(fn ($q) => $q->whereNull('lock_at')->where('scheduled_at', '<=', $now->copy()->addMinutes($before)))
                 ->orWhere(fn ($q) => $q->whereNotNull('lock_at')->where('lock_at', '<=', $now->copy()->addMinutes($before - $lock))))->pluck('id');
         foreach ($due as $id) {
-            $strictness = Tactics::REFEREES[random_int(0, 2)];
+            $strictness = Tactics::REFEREES[random_int(0, 4)];
             $drawn = DB::table('fixtures')->where('id', $id)->whereNull('referee_strictness')
                 ->update(['referee_strictness' => $strictness, 'referee_at' => $now, 'updated_at' => $now]);
             $refs += $drawn;
@@ -175,7 +175,7 @@ class MatchPrep
             $changed = DB::table('fixtures')->where('id', $fixtureId)->where('status', 'scheduled')
                 ->update(['status' => 'locked', 'locked_at' => $now, 'updated_at' => $now,
                     // A match locked without its 30-minute call (the server was off) still gets a referee.
-                    'referee_strictness' => $fixture->referee_strictness ?? Tactics::REFEREES[random_int(0, 2)]]);
+                    'referee_strictness' => $fixture->referee_strictness ?? Tactics::REFEREES[random_int(0, 4)]]);
             if ($changed !== 1) {
                 return false;
             }

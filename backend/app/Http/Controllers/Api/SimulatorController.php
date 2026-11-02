@@ -47,7 +47,7 @@ class SimulatorController extends Controller
             'away_id' => 'required|integer|exists:master_clubs,id|different:home_id',
             'seed' => 'nullable|integer|min:1|max:999999999',
             'competition' => 'nullable|in:league,cup',
-            'referee' => 'nullable|integer|between:0,2',
+            'referee' => 'nullable|integer|between:0,4',
             'venue' => 'nullable|in:home,neutral',
             'mode' => 'nullable|in:solo,live',
             'control.home' => 'nullable|in:me,cpu',

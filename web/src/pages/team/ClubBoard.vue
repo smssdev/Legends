@@ -6,7 +6,7 @@
 import { computed, onMounted } from 'vue'
 import Icon from '../../components/Icon.vue'
 import { countdown, useNow } from '../../lib/clock'
-import { money } from '../../lib/format'
+import { REFEREE, money } from '../../lib/format'
 import { useBoard } from '../../stores/board'
 import { useSlot } from '../../stores/slot'
 import { LINE_NAMES, SECTION_NAMES } from '../../components/shell/agenda'
@@ -18,7 +18,6 @@ const b = computed(() => store.board)
 onMounted(() => store.load(slot.current?.league?.id ?? store.league, true))
 const strength = (cp: number) => Math.round(cp / 100)
 const FORM: Record<string, [string, string]> = { W: ['ف', 'bg-success text-on-gold'], D: ['ت', 'bg-surface-raised'], L: ['خ', 'bg-live text-white'] }
-const REFEREE: Record<string, string> = { lenient: 'متساهل', medium: 'متوسط', strict: 'صارم' }
 const MOOD: Record<string, [string, string, string]> = {
   calm: ['هادئة', 'تنتظر بداية الموسم', 'bg-surface-raised text-text-soft'],
   happy: ['مسرورة', 'أنت في الهدف أو أعلى', 'bg-success/20 text-success'],

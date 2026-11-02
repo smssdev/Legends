@@ -2,7 +2,7 @@
 // A player as a card [X29], in the spirit of the football games' collectible cards but drawn for Legends: the rating
 // and position large in the corner, the line's colour along the top, the name, and a fitness bar at the foot.
 import { computed } from 'vue'
-import { LINES, money, type Line } from '../../lib/format'
+import { LINES, fitnessTone, money, type Line } from '../../lib/format'
 import { nm } from '../../lib/names'
 
 const props = defineProps<{ name: string; line: Line; position: string; overall: number; value: number; fitness?: number; price?: number; status?: string; statusTone?: string; selected?: boolean; attributes?: Record<string, number | null> }>()
@@ -39,7 +39,7 @@ const shortName = computed(() => {
     <div class="mt-auto flex flex-col gap-1.5">
       <b class="truncate text-center font-display text-base leading-tight" :title="name"><bdi>{{ shortName }}</bdi></b>
       <span v-if="status" class="truncate text-center text-[11px]" :class="statusTone">{{ $t(status) }}</span>
-      <div v-if="fitness !== undefined" class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="$t('اللياقة {v0}%', { v0: fitness })"><span class="block h-full rounded-pill" :class="fitness >= 75 ? 'bg-success' : fitness >= 55 ? 'bg-gold' : 'bg-live'" :style="{ width: fitness + '%' }" /></div>
+      <div v-if="fitness !== undefined" class="h-1.5 overflow-hidden rounded-pill bg-bg/60" :aria-label="$t('اللياقة {v0}%', { v0: fitness })"><span class="block h-full rounded-pill" :class="fitnessTone(fitness)" :style="{ width: fitness + '%' }" /></div>
       <span class="text-center font-numbers text-xs text-text-muted" dir="ltr">{{ money(value) }}</span>
       <b v-if="price !== undefined" class="text-center font-numbers text-base text-gold" dir="ltr">{{ money(price) }}</b>
       <slot />
