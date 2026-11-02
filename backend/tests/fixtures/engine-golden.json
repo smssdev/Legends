@@ -87,7 +87,8 @@
                 "free_kick": 11000,
                 "free_kick_goal": 19000,
                 "penalty": 14000,
-                "penalty_goal": 20000
+                "penalty_goal": 20000,
+                "var": 16000
             },
             "moment_ms": {
                 "quiet": 450,
@@ -108,7 +109,8 @@
                 "penalty": 6600,
                 "penalty_goal": 7400,
                 "sub": 3800,
-                "injury": 3800
+                "injury": 3800,
+                "var": 8600
             }
         },
         "engine": {

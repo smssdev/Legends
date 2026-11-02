@@ -791,5 +791,71 @@
     "مُحاوَلَةٌ لِبِناءِ الهَجْمَة."
    ]
   }
+ },
+ "var_offside": {
+  "pre": {
+   "en": [
+    "{p} is through... and it's in!"
+   ],
+   "ar": [
+    "يَنْطَلِقُ... وَالْكُرَةُ فِي الشِّبَاك!"
+   ]
+  },
+  "key": {
+   "x": 0,
+   "en": [
+    "But VAR has a look... offside! The goal is ruled out.",
+    "Wait... the referee goes to the screen. Offside, no goal!"
+   ],
+   "ar": [
+    "لَكِنَّ الْحَكَمَ يَعُودُ لِلْفَار... تَسَلُّل! الْهَدَفُ مُلْغًى.",
+    "انْتَظِر... الْفَار يَتَدَخَّل. تَسَلُّل، لا هَدَف!"
+   ]
+  },
+  "post": {
+   "en": [
+    "So close, but he was a fraction ahead of the last defender."
+   ],
+   "ar": [
+    "كانَ مُتَقَدِّمًا بِخُطْوَةٍ عَلَى آخِرِ مُدافِع."
+   ]
+  },
+  "bubble": [
+   "هدف ملغى! الفار يكشف تسلل {p}.",
+   "الحكم يلغي هدف {p} بعد العودة للفار: تسلل."
+  ]
+ },
+ "var_foul": {
+  "pre": {
+   "en": [
+    "{p} gets the shot away... it's in!"
+   ],
+   "ar": [
+    "تَسْدِيدَة... وَالْكُرَةُ فِي الشِّبَاك!"
+   ]
+  },
+  "key": {
+   "x": 0,
+   "en": [
+    "VAR is checking... a foul in the build-up! No goal.",
+    "The referee watches the screen... foul! The goal is ruled out."
+   ],
+   "ar": [
+    "الْفَار يُرَاجِع... خَطَأٌ قَبْلَ الْهَدَف! لا هَدَف.",
+    "الْحَكَمُ أَمَامَ الشّاشَة... خَطَأ! الْهَدَفُ مُلْغًى."
+   ]
+  },
+  "post": {
+   "en": [
+    "A push in the build-up, and the goal goes."
+   ],
+   "ar": [
+    "دَفْعٌ قَبْلَ التَّسْدِيد، وَيَضِيعُ الْهَدَف."
+   ]
+  },
+  "bubble": [
+   "هدف ملغى! خطأ قبل تسديدة {p} بعد العودة للفار.",
+   "الفار يلغي هدف {p}: خطأ في بناء الهجمة."
+  ]
  }
 }

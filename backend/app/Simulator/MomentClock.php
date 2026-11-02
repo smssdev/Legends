@@ -25,6 +25,9 @@ class MomentClock
             }
             $key = in_array($kind, ['free_kick', 'penalty'], true) && self::scored($events) ? $kind.'_goal' : $kind;
             $ms = (int) ($table[$key] ?? $table[$kind]);
+            if ($kind === 'var') {
+                return ['kind' => $kind, 'ms' => $ms, 'var' => self::varReason($events)];
+            }
             // Extra time runs faster: its half is a quarter of an hour.
             if ($period >= 3 && in_array($kind, ['quiet', 'attack'], true)) {
                 $ms = intdiv($ms * 2, 3);
@@ -36,7 +39,7 @@ class MomentClock
         if (isset($match['minute_ms'])) {
             $ms = $kind === 'shootout' ? $match['shootout_ms'] : ($period >= 3 ? $match['extra_minute_ms'] : $match['minute_ms']);
 
-            return ['kind' => $kind, 'ms' => (int) $ms];
+            return ['kind' => $kind, 'ms' => (int) $ms] + ($kind === 'var' ? ['var' => self::varReason($events)] : []);
         }
         $table = $match['moment_ms'] ?? null;
         if ($table === null) {
@@ -46,7 +49,35 @@ class MomentClock
         // A breath after every scene: the timeline and the clock before the next one.
         $gap = in_array($kind, ['quiet', 'attack'], true) ? 0 : (int) ($match['scene_gap_ms'] ?? 0);
 
-        return ['kind' => $kind, 'ms' => (int) ($table[$key] ?? $table[$kind]) + $gap];
+        return ['kind' => $kind, 'ms' => (int) ($table[$key] ?? $table[$kind] ?? $table['offside']) + $gap] + ($kind === 'var' ? ['var' => self::varReason($events)] : []);
+    }
+
+    /**
+     * [Sprint 35 C3] Why a minute is told as a goal ruled out by VAR: 'offside' for one offside in three (the ball over
+     * the top went in, and the check finds the runner ahead; which ones from the attack's own players and lane, so the
+     * same everywhere), 'foul' when the attacking side fouled in the same minute of a chance that came to nothing, or
+     * null. From the events only, so every screen and the replay tell the same.
+     */
+    public static function varReason(array $events): ?string
+    {
+        $attack = self::first($events, 'attack');
+        if (! $attack) {
+            return null;
+        }
+        if (($attack['result'] ?? '') === 'offside') {
+            $key = implode(':', [$attack['team'] ?? '', $attack['carrier'] ?? '', $attack['receiver'] ?? '', $attack['lane'] ?? '']);
+
+            return crc32('var:'.$key) % 3 === 0 ? 'offside' : null;
+        }
+        if (in_array($attack['result'] ?? '', ['missed', 'blocked', 'saved'], true)) {
+            foreach ($events as $e) {
+                if ($e['type'] === 'foul' && ($e['team'] ?? null) === $attack['team'] && ! ($e['penalty'] ?? false)) {
+                    return 'foul';
+                }
+            }
+        }
+
+        return null;
     }
 
     /** [X41] A moment too small for its own scene on the broadcast: its card and one line only. */
@@ -82,6 +113,11 @@ class MomentClock
             return $card['color'] === 'red' ? 'red' : 'yellow';
         }
         $attack = self::first($events, 'attack');
+        // [Sprint 35 C3] A goal ruled out after a look at VAR: a big chance that ended offside, or one the attacking
+        // side fouled in. Told as the ball in the net, the check, and no goal; the result is the engine's all the same.
+        if (self::varReason($events)) {
+            return 'var';
+        }
         if ($attack) {
             $kind = match ($attack['result']) {
                 'saved', 'corner' => 'save', 'missed', 'blocked' => 'miss', 'offside' => 'offside', default => null,

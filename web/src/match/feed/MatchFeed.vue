@@ -178,6 +178,8 @@ function director(s, tick, total, sceneT) {
   // [Sprint 35 C2] A red card: tempers flare first (both sides squaring up), then the coach.
   else if (s.scene === 'card') list = s.data.type === 'red' ? [{ name: 'brawl', data: { side: s.side, v: (props.seed || 1) * 13 + tick.tick }, dur: SCENE_TIME.brawl[0] }, coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
   else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
+  // [Sprint 35 C3] A goal ruled out by VAR: the coach who thought his side had scored, then the relieved one.
+  else if (s.scene === 'var') list = [coach(s.side, 'angry'), coach(other, 'joy')]
   list = list.slice(0, tier.value === 'high' ? 3 : 1)
   // What fits: a goal keeps room for its replay (4.5 s), the rest for the commentator's line (1.2 s).
   const keep = s.goal ? 4.5 : 1.2
@@ -270,7 +272,7 @@ defineExpose({ play, skip, react })
 const SOUNDS = {
   goal: [[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']], save: [[0.3, 'kick'], ['key', 'groan']], miss: [[0.3, 'kick'], ['key', 'groan']], blocked: [['key', 'thud'], ['key', 'groan']],
   penalty: [[0.05, 'whistle-long'], [0.2, 'heart'], [0.3, 'heart'], [0.4, 'heart'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], [0.25, 'heart'], [0.37, 'heart'], ['key', 'kick'], ['key', 'roar']],
-  card: [[0.05, 'whistle'], ['key', 'murmur']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
+  card: [[0.05, 'whistle'], ['key', 'murmur']], var: [[0.32, 'kick'], [0.37, 'roar'], [0.52, 'whistle'], ['key', 'whistle'], ['key', 'groan']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.1, 'beep']], board: [[0.1, 'beep']], injury: [[0.1, 'whistle']],
 }
 // [X41] A hidden page gets no animation frames, but the broadcast plays on (the commentator and the crowd): a timer
 // steps the minute instead, so its lines and sounds still come on time. Browsers let a page that plays sound run.

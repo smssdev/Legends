@@ -14446,6 +14446,8 @@ export interface components {
             /** @description Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant */
             ticks?: {
                 frames?: components["schemas"]["Keyframe"][];
+                /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul */
+                moment?: Record<string, never>;
             }[];
             /** @description The last few seconds of reactions */
             reactions?: components["schemas"]["Reaction"][];
