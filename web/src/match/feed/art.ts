@@ -765,6 +765,31 @@ export const SCENES = {
       no(seg(t, 6.4, 6.8)); sa(sub, 'opacity', seg(t, 6.6, 7.0))
     } }
   },
+  // [Sprint 36 F5] Half time: both teams walk off towards the tunnel at the side, the camera following them.
+  tunnel(e) {
+    const svg = stage('home'), w = svg.world, R = rnd(5)
+    const walkers = [0, 1, 2, 3, 4, 5].map((i) => ({ p: player(w, K(i % 2 ? 'away' : 'home').kit, '', 1.2, { look: Math.floor(R() * 40) }), x: 140 + i * 52, y: 200 + (i % 3) * 18, ph: i }))
+    el('rect', { x: 560, y: 120, width: 90, height: 120, rx: 6, fill: '#0B1626' }, w); el('rect', { x: 570, y: 130, width: 70, height: 110, fill: '#040B1C' }, w)
+    const tt = title(svg, tr('إلى غرف الملابس'))
+    return { dur: 2.8, svg, update(t) {
+      cam(svg, 1.05, 380, 200)
+      for (const q of walkers) { q.p.face?.('side', 1); q.p.at(q.x + t * 60, q.y, 0, 1.2); q.p.run(t * 7 + q.ph, 0.25) }
+      tt(seg(t, 0.2, 0.6))
+    } }
+  },
+  // [Sprint 36 F5] Full time: the two teams pass each other in a line, shaking hands.
+  handshake(e) {
+    const svg = stage('home'), w = svg.world, R = rnd(9)
+    const a = [0, 1, 2, 3].map(() => player(w, K('home').kit, '', 1.3, { look: Math.floor(R() * 40) }))
+    const b = [0, 1, 2, 3].map(() => player(w, K('away').kit, '', 1.3, { look: Math.floor(R() * 40) }))
+    const tt = title(svg, tr('المصافحة'))
+    return { dur: 3.0, svg, update(t) {
+      cam(svg, 1.1, 320, 200)
+      a.forEach((p, i) => { const x = 60 + i * 80 + t * 70; p.face?.('side', 1); p.at(x, 196, 0, 1.3); const near = b.some((_, j) => Math.abs(x - (580 - j * 80 - t * 70)) < 40); near ? p.pose(3, -3, 10, -80) : p.run(t * 6 + i, 0.2) })
+      b.forEach((p, i) => { const x = 580 - i * 80 - t * 70; p.face?.('side', -1); p.at(x, 214, 0, 1.3); const near = a.some((_, j) => Math.abs(x - (60 + j * 80 + t * 70)) < 40); near ? p.pose(3, -3, 10, -80) : p.run(t * 6 + i, 0.2) })
+      tt(seg(t, 0.2, 0.6))
+    } }
+  },
   // ------------------------------------------------------------ [Sprint 35 C1] the director's cutaways
   // The crowd behind the goal on its feet: the scoring side's fans jumping with their arms and scarves up, two big
   // flags waving, and (the full tier) flares and paper raining down. e.side: whose fans; e.count: how many to draw.

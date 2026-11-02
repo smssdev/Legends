@@ -73,7 +73,7 @@
                 "attack": 2800,
                 "brief": 4200,
                 "stoppage": 5000,
-                "whistle": 6500,
+                "whistle": 10000,
                 "coach": 5000,
                 "sub": 6000,
                 "injury": 6000,
