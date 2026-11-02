@@ -12,7 +12,7 @@
 $public = realpath(__DIR__.'/public') ?: __DIR__.'/public';
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/');
 
-// [X70] One address for the game: a request on another public name (the old srv2100776.hstgr.cloud, www.nesr.site)
+// [X70] One address for the game: a request on another public name (the old srv2100776.hstgr.cloud, www.gamelegendmanager.online)
 // goes to the site's own (APP_URL, from PUBLIC_URL), permanently, the same path and query. The machine's own names
 // (localhost, 127.0.0.1, an IP: the health checks inside the server) are left alone.
 $site = parse_url((string) getenv('APP_URL'), PHP_URL_HOST);

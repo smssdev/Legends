@@ -15,22 +15,22 @@
 
 نقرة مزدوجة على `deploy\vps\Deploy-GLM.cmd` حين تقول لوحة الإدارة «آمن للنشر». ثم افتح للتأكد:
 
-- https://nesr.site/sitemap.xml
-- https://nesr.site/robots.txt
-- عرض مصدر صفحة https://nesr.site/register: يظهر فيه عنوان «إنشاء حساب مجاني | المدرب الأسطورة».
+- https://gamelegendmanager.online/sitemap.xml
+- https://gamelegendmanager.online/robots.txt
+- عرض مصدر صفحة https://gamelegendmanager.online/register: يظهر فيه عنوان «إنشاء حساب مجاني | المدرب الأسطورة».
 
 ### ٢. Google Search Console
 
 1. افتح https://search.google.com/search-console بحساب جوجل.
-2. «إضافة موقع» ← «بادئة عنوان URL» ← `https://nesr.site`.
+2. «إضافة موقع» ← «بادئة عنوان URL» ← `https://gamelegendmanager.online`.
 3. التحقق: اختر «وسم HTML»، وانسخ الوسم وأرسله لـ Claude ليضيفه إلى `web/index.html`، ثم انشر واضغط «تحقق». (أو بطريقة DNS إن كانت متاحة).
 4. من القائمة: «ملفات Sitemap» ← اكتب `sitemap.xml` ← «إرسال».
 5. «فحص عنوان URL» ← الصفحة الرئيسية ← «طلب الفهرسة». وكرّرها لصفحة التسجيل.
 6. بعد أيام: «الصفحات» و«الأداء» يعرضان ما فُهرس والعبارات التي جاء الناس منها.
 
-### ٣. دومين اللعبة ✅
+### ٣. دومين اللعبة
 
-صار للعبة دومينها `https://nesr.site` (X70، 2026-11-01): `SITE_URL` في `web/src/content/seo.ts`، والبيانات المنظمة في `web/index.html`، و`PUBLIC_URL` على السيرفر. والعنوان القديم يحوّل إليه تحويلاً دائماً، فيفهم جوجل أنه نفس الموقع. وفي Search Console تُضاف خاصية `https://nesr.site` وتُرسل خريطتها.
+صار للعبة دومينها `https://gamelegendmanager.online` (X77، 2026-11-02، بدل `nesr.site` الذي أُلغي كلياً): `SITE_URL` في `web/src/content/seo.ts`، والبيانات المنظمة في `web/index.html`، و`PUBLIC_URL` على السيرفر. والعنوان القديم يحوّل إليه تحويلاً دائماً، فيفهم جوجل أنه نفس الموقع. وفي Search Console تُضاف خاصية `https://gamelegendmanager.online` وتُرسل خريطتها.
 
 ## تعديل الكلمات والوصف لاحقاً
 

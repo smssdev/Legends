@@ -16,7 +16,7 @@
 param([switch]$Force)
 $ErrorActionPreference = 'Stop'
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$Site = 'https://nesr.site'   # [X70] the game's own domain
+$Site = 'https://gamelegendmanager.online'   # [X77] the game's own domain (nesr.site retired, 2026-11-02)
 Set-Location $Root
 
 function Step($text) { Write-Host ''; Write-Host "== $text" -ForegroundColor Cyan }
