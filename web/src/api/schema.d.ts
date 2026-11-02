@@ -1157,6 +1157,16 @@ export interface paths {
                                 /** @description Google's test ads */
                                 test: boolean;
                             } | null;
+                            /** @description [X81] The site's measurement for the web, null when both are off */
+                            analytics?: {
+                                /**
+                                 * @description Google Analytics 4 measurement id
+                                 * @example G-XXXXXXXXXX
+                                 */
+                                ga: string | null;
+                                /** @description Meta Pixel id */
+                                pixel: string | null;
+                            } | null;
                         };
                     };
                 };

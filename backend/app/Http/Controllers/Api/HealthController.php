@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Ads\AdSense;
+use App\Analytics\Tracking;
 use App\Events\ServerPing;
 use App\Http\Controllers\Controller;
 use App\Support\GameClock;
@@ -28,6 +29,8 @@ class HealthController extends Controller
             'support' => self::support(),
             // [X57] Google AdSense for the web, null until the owner's account is set on the server.
             'adsense' => AdSense::config(),
+            // [X81] The site's measurement (Google Analytics 4, the Meta Pixel), null when both are off.
+            'analytics' => Tracking::config(),
         ]);
     }
 

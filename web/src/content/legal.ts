@@ -39,15 +39,22 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'في المنطقة الاقتصادية الأوروبية والمملكة المتحدة وسويسرا تطلب Google موافقتك قبل أي إعلان مخصص، ويمكنك تغيير اختيارك متى شئت.',
         'وفيديوهات المكافأة اختيارية تماماً، واللعبة كاملة بدونها.',
       ] },
+      { h: 'قياس الزيارات (Google Analytics وMeta Pixel)', p: [
+        'نقيس كيف تُستعمل اللعبة لنحسّنها: الصفحات التي تُفتح، ونوع الجهاز والمتصفح والبلد التقريبي، ولحظات مثل إنشاء حساب أو دوري أو الانضمام إليه. ونستعمل لذلك Google Analytics، وإن فعّلناه Meta Pixel لقياس إعلاناتنا على فيسبوك وإنستغرام.',
+        'لا نرسل إليهما اسمك ولا اسم المستخدم ولا بريدك ولا رسائلك، ولا نقيس شيئاً في لوحة الإدارة.',
+        'في المنطقة الاقتصادية الأوروبية والمملكة المتحدة وسويسرا لا يُخزَّن شيء للقياس قبل موافقتك في رسالة Google، ويعمل Meta Pixel هناك فقط بموافقتك.',
+        'يمكنك منع القياس بإضافة Google Analytics Opt-out (tools.google.com/dlpage/gaoptout)، وإعداداتك في فيسبوك (facebook.com/adpreferences).',
+      ] },
       { h: 'الكوكيز والتخزين في المتصفح', p: [
         'نستخدم كوكيز ضرورية لتسجيل دخولك وحماية النماذج (الجلسة وXSRF)، ولا تعمل اللعبة بدونها.',
         'ونحفظ في متصفحك اختياراتك (اللغة والمظهر والصوت) ليبقى شكل اللعبة كما تحب.',
         'وإن ضغطت «احفظ وتابع لاحقاً» في المدرب المساعد تبقى آخر محادثة معه في متصفحك وحده، لا عندنا، حتى تبدأ من جديد.',
-        'وكوكيز الإعلانات من Google كما في القسم السابق.',
+        'وكوكيز الإعلانات وقياس الزيارات من Google (وMeta إن فعّلناه) كما في القسمين السابقين.',
       ] },
       { h: 'من يعالج البيانات معنا', p: [
         'الاستضافة: خادمنا لدى Hostinger، وعليه قاعدة البيانات ونسخها الاحتياطية.',
-        'Google: الدخول بحساب Google، والإعلانات (AdSense)، والمدرب المساعد (Gemini) الذي يُرسل إليه سؤالك وأرقام فريقك اللازمة للإجابة فقط، بلا اسمك ولا بريدك.',
+        'Google: الدخول بحساب Google، والإعلانات (AdSense)، وقياس الزيارات (Analytics)، والمدرب المساعد (Gemini) الذي يُرسل إليه سؤالك وأرقام فريقك اللازمة للإجابة فقط، بلا اسمك ولا بريدك.',
+        'Meta: قياس إعلاناتنا على فيسبوك وإنستغرام (Meta Pixel)، إن فعّلناه، وبموافقتك في أوروبا.',
         'البريد: خدمة إرسال البريد (Gmail من Google) التي توصل رسائل التوثيق واستعادة كلمة المرور، وملخص مبارياتك بالبريد إن فعّلته بنفسك من «حسابي» ← الإشعارات (متوقف حتى تفعّله، وتوقفه متى شئت).',
       ] },
       { h: 'مدة الاحتفاظ', p: [
@@ -94,15 +101,22 @@ const PRIVACY: Record<Locale, LegalDoc> = {
         'In the European Economic Area, the UK and Switzerland, Google asks for your consent before any personalised ad, and you can change your choice at any time.',
         'Rewarded videos are entirely optional; the whole game works without them.',
       ] },
+      { h: 'Measuring visits (Google Analytics and the Meta Pixel)', p: [
+        'We measure how the game is used to make it better: the pages opened, the kind of device and browser and the rough country, and moments such as creating an account or a league or joining one. We use Google Analytics for it and, once we turn it on, the Meta Pixel to measure our ads on Facebook and Instagram.',
+        'We never send them your name, username, email or messages, and we measure nothing in the admin panel.',
+        'In the European Economic Area, the UK and Switzerland nothing is stored for measurement until you agree in Google\'s consent message, and the Meta Pixel runs there only with your consent.',
+        'You can block the measurement with the Google Analytics Opt-out add-on (tools.google.com/dlpage/gaoptout), and in your Facebook settings (facebook.com/adpreferences).',
+      ] },
       { h: 'Cookies and browser storage', p: [
         'We use essential cookies to keep you signed in and to protect forms (session and XSRF); the game cannot work without them.',
         'We keep your choices (language, look and sound) in your browser so the game stays the way you like it.',
         'If you tap "Save and continue later" in the Assistant Coach, your last conversation with him stays in your browser only, not with us, until you start again.',
-        'And Google\'s advertising cookies, as in the previous section.',
+        'And the advertising and measurement cookies of Google (and Meta, once turned on), as in the two previous sections.',
       ] },
       { h: 'Who processes data with us', p: [
         'Hosting: our server at Hostinger, with the database and its backups.',
-        'Google: Google sign-in, ads (AdSense), and the Assistant Coach (Gemini), which receives your question and only the numbers about your team it needs to answer, without your name or email.',
+        'Google: Google sign-in, ads (AdSense), measuring visits (Analytics), and the Assistant Coach (Gemini), which receives your question and only the numbers about your team it needs to answer, without your name or email.',
+        'Meta: measuring our ads on Facebook and Instagram (the Meta Pixel), once we turn it on, and with your consent in Europe.',
         'Email: the sending service (Gmail, from Google) that delivers verification and password reset emails, and your match summaries by email if you turn them on yourself in My account, then Notifications (off until you do, and you can turn them off at any time).',
       ] },
       { h: 'How long we keep it', p: [
