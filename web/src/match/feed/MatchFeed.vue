@@ -94,7 +94,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, keeperKit, officialKit, setKits, setRain, setSmooth } from './art'
+import { ICON, SCENES, crest, keeperKit, mix, officialKit, setKits, setRain, setSmooth } from './art'
 import { figure } from './figure'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
@@ -453,8 +453,11 @@ function paintTvPitch(c) {
   const L = night ? LOOK.night : LOOK.day
   c.fillStyle = rainy() ? '#33414F' : L.sky; c.fillRect(-900, -200, 2440, 700)
   // The stand behind the far touchline (its crowd is drawn every frame, crowd()).
-  for (let r = 0; r < 4; r++) { c.fillStyle = L.rows[r % 2]; c.fillRect(-900, 8 + r * 13, 2440, 11) }
+  // [Sprint 37 N5] The home club's stadium: its seats take a little of its colour, and a band of its trim runs under them.
+  const hk = props.kits.home?.kit ?? '#14304A'
+  for (let r = 0; r < 4; r++) { c.fillStyle = mix(L.rows[r % 2], hk, 0.28); c.fillRect(-900, 8 + r * 13, 2440, 11) }
   c.fillStyle = '#0A1A2B'; c.fillRect(-900, 52, 2440, 12)
+  c.fillStyle = props.kits.home?.trim ?? '#F5B82E'; c.globalAlpha = 0.55; c.fillRect(-900, 52, 2440, 1.5); c.globalAlpha = 1
   const quad = (x0, x1, y0, y1, fill) => { const a = proj(x0, y0), b = proj(x1, y0), d = proj(x1, y1), e = proj(x0, y1); c.fillStyle = fill; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(d[0], d[1]); c.lineTo(e[0], e[1]); c.closePath(); c.fill() }
   // The grass around the pitch, then the mown stripes, and finer cuts across them.
   quad(-900, 1950, -40, 680 + 400, L.grass[0])
