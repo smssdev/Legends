@@ -30,6 +30,8 @@ export const SCENE_TIME = {
   offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
   // [Sprint 35 C1] The director's cutaways after a scene.
   crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2],
+  // [Sprint 35 C3] A goal ruled out by VAR: the ball in at 3.0 s, the check, no goal at 6.4 s.
+  var: [8.2, 6.4],
 }
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 
@@ -149,6 +151,15 @@ export function story(tick, ctx) {
     before(t('تسديدة'), nm(attack.shooter), club(s))
     speak(blocked ? 'blocked' : how === 'post' ? 'post' : 'miss', { key: 0.4, post: 0.68 })
     item(s, 'miss', nm(attack.shooter), blocked ? t('تسديدة محجوبة') : how === 'post' ? t('القائم') : t('فرصة ضائعة'))
+  } else if (kind === 'var' && attack) {
+    // [Sprint 35 C3] The server's: a goal ruled out after a look at VAR (tick.moment.var: offside or foul).
+    const s = attack.team, who = attack.shooter ?? attack.receiver, reason = tick.moment?.var === 'foul' ? 'foul' : 'offside'
+    Object.assign(vars, { p: who, A: s })
+    set('var', s, { no: no(who), passNo: attack.creator !== who ? no(attack.creator) : '', defNo: no(attack.defender), lane: attack.lane, quality: attack.quality, reason, v: seed() },
+      t('هدف ملغى'), nm(who), reason === 'offside' ? t('تسلل بعد العودة للفار') : t('خطأ قبل الهدف بعد العودة للفار'))
+    before(t('هدف!'), nm(who), club(s))
+    speak('var_' + reason, { key: 0.78, post: 0.9 })
+    item(s, 'flag', nm(who), reason === 'offside' ? t('هدف ملغى · تسلل (الفار)') : t('هدف ملغى · خطأ (الفار)'))
   } else if (kind === 'offside' && attack) {
     const s = attack.team, who = attack.receiver ?? attack.shooter
     Object.assign(vars, { p: who, A: s })

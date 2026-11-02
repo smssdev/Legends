@@ -6634,5 +6634,5 @@ components:
         server_now: { type: integer, description: Server clock in ms }
         next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
         gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
-        ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
+        ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } }, moment: { type: object, description: 'The minute''s shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul' } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
         reactions: { type: array, items: { $ref: '#/components/schemas/Reaction' }, description: The last few seconds of reactions }

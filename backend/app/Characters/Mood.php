@@ -2,6 +2,8 @@
 
 namespace App\Characters;
 
+use App\Simulator\MomentClock;
+
 /**
  * The characters' mood [Sprint 26 B1]: what the coach on the touchline, the mascot and the assistant feel about what
  * just happened, decided here so every screen (the web, the app, Unity) only draws it. The nine moods are the owner's
@@ -41,6 +43,11 @@ final class Mood
                 } elseif ($type === 'injury' && $team === $side && $mood === null) {
                     $mood = 'worried';
                 }
+            }
+            // [Sprint 35 C3] A goal ruled out by VAR: anger on the side that thought it had scored, relief on the other.
+            if ($mood === null && ($reason = MomentClock::varReason($events))) {
+                $attack = array_values(array_filter($events, fn ($e) => ($e['type'] ?? '') === 'attack'))[0] ?? [];
+                $mood = ($attack['team'] ?? null) === $side ? 'angry' : 'joy';
             }
             $moods[$side] = $mood ?? ($lead < 0 ? 'worried' : 'idle');
         }

@@ -52,6 +52,8 @@ return [
             'sub' => 6000, 'injury' => 6000, 'offside' => 4200, 'corner' => 8000, 'miss' => 10000, 'save' => 11000,
             'goal' => 20000, 'yellow' => 8500, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
             'penalty' => 14000, 'penalty_goal' => 20000,
+            // [Sprint 35 C3] A goal ruled out by VAR: the ball in, the check, no goal, and the coaches.
+            'var' => 16000,
         ],
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
@@ -59,7 +61,7 @@ return [
             'quiet' => 450, 'attack' => 1100, 'stoppage' => 2200, 'shootout' => 2600, 'whistle' => 3200, 'coach' => 4200,
             'offside' => 4000, 'miss' => 7000, 'save' => 7600, 'corner' => 4200, 'goal' => 8400,
             'yellow' => 4400, 'red' => 5600, 'free_kick' => 5800, 'free_kick_goal' => 7000,
-            'penalty' => 6600, 'penalty_goal' => 7400, 'sub' => 3800, 'injury' => 3800,
+            'penalty' => 6600, 'penalty_goal' => 7400, 'sub' => 3800, 'injury' => 3800, 'var' => 8600,
         ],
     ],
     'league' => [

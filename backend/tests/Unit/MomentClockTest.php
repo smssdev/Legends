@@ -2,9 +2,11 @@
 
 namespace Tests\Unit;
 
+use App\Characters\Mood;
 use App\Engine\MatchSetup;
 use App\Simulator\MomentClock;
 use App\Simulator\Runner;
+use App\Simulator\Voice;
 use Tests\TestCase;
 
 class MomentClockTest extends TestCase
@@ -107,5 +109,31 @@ class MomentClockTest extends TestCase
         $half = intdiv($ms, $halves);
         $this->assertGreaterThan(165000, $half);
         $this->assertLessThan(255000, $half);
+    }
+
+    /** [Sprint 35 C3] A goal ruled out by VAR: a big chance offside, or one the attackers fouled in; with its reason. */
+    public function test_a_goal_ruled_out_by_var(): void
+    {
+        $attack = fn ($result, $quality = 'big', $receiver = 1) => ['type' => 'attack', 'team' => 'home', 'result' => $result, 'quality' => $quality, 'carrier' => 5, 'receiver' => $receiver, 'lane' => 'center'];
+        // One offside in three (by the attack's own players), the same every time.
+        $kinds = array_map(fn ($r) => MomentClock::kind([$attack('offside', null, $r)]), range(1, 30));
+        $vars = count(array_filter($kinds, fn ($k) => $k === 'var'));
+        $this->assertGreaterThan(4, $vars);
+        $this->assertLessThan(20, $vars);
+        $this->assertSame($kinds, array_map(fn ($r) => MomentClock::kind([$attack('offside', null, $r)]), range(1, 30)));
+        $r = array_search('var', $kinds, true) + 1;
+        $this->assertSame('offside', MomentClock::varReason([$attack('offside', null, $r)]));
+        $foul = [$attack('missed'), ['type' => 'foul', 'team' => 'home', 'penalty' => false]];
+        $this->assertSame('var', MomentClock::kind($foul));
+        $this->assertSame('foul', MomentClock::varReason($foul));
+        $this->assertSame('miss', MomentClock::kind([$attack('missed'), ['type' => 'foul', 'team' => 'away']]), 'the defenders\' foul rules nothing out');
+        // A card still has its own scene.
+        $this->assertSame('yellow', MomentClock::kind([...$foul, ['type' => 'card', 'team' => 'home', 'color' => 'yellow']]));
+        $m = MomentClock::moment($foul, config('game.match'));
+        $this->assertSame(['kind' => 'var', 'ms' => (int) config('game.match.broadcast_ms.var'), 'var' => 'foul'], $m);
+        $voice = Voice::for($foul, 'var', 3, 10);
+        $this->assertSame('var_foul', $voice['line']);
+        $moods = Mood::forTick([$attack('offside', null, $r)], ['home' => 0, 'away' => 0], 30);
+        $this->assertSame(['home' => 'angry', 'away' => 'joy'], $moods);
     }
 }

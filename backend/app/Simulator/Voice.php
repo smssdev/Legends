@@ -80,6 +80,11 @@ class Voice
                 $how = ['wide', 'wide', 'over', 'post'][$draw('how', 4)];
                 $line = $how === 'post' ? 'post' : 'miss';
             }
+        } elseif ($kind === 'var' && $attack) {
+            // [Sprint 35 C3] A goal ruled out by VAR.
+            $vars['p'] = $attack['shooter'] ?? $attack['receiver'] ?? null;
+            $vars['A'] = $attack['team'];
+            $line = 'var_'.(MomentClock::varReason($events) ?? 'offside');
         } elseif ($kind === 'offside' && $attack) {
             $vars['p'] = $attack['receiver'] ?? $attack['shooter'] ?? null;
             $vars['A'] = $attack['team'];
