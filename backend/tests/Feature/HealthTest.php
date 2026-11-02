@@ -73,10 +73,10 @@ class HealthTest extends TestCase
         $this->assertSame('https://t.me/legends_help', $support['telegram']);
     }
 
-    /** [X81] The site's measurement: the game's GA4 property by default, the Pixel once set, nothing malformed. */
+    /** [X81] The site's measurement: the game's GA4 property and Meta Pixel by default, nothing malformed. */
     public function test_health_gives_the_measurement_ids(): void
     {
-        $this->getJson('/api/v1/health')->assertJsonPath('analytics', ['ga' => 'G-7LGSS5ELEH', 'pixel' => null]);
+        $this->getJson('/api/v1/health')->assertJsonPath('analytics', ['ga' => 'G-7LGSS5ELEH', 'pixel' => '4663481683975719']);
         config(['game.analytics.pixel' => '123456789012345', 'game.analytics.ga' => '<script>']);
         $this->getJson('/api/v1/health')->assertJsonPath('analytics', ['ga' => null, 'pixel' => '123456789012345']);
         config(['game.analytics.pixel' => '']);

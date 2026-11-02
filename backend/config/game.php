@@ -508,9 +508,10 @@ return [
     // here; ADSENSE_CLIENT on the server still replaces it, and an empty one turns Google's ads off.
     'adsense' => ['client' => env('ADSENSE_CLIENT', 'ca-pub-3803730964219444'), 'slot' => env('ADSENSE_SLOT'), 'rewarded' => (bool) env('ADSENSE_REWARDED', false),
         'test' => (bool) env('ADSENSE_TEST', false), 'adsense_seconds' => 10],
-    // [X81] The site's measurement (App\Analytics\Tracking): Google Analytics 4, the game's property by default (its id is
-    // public; GA_MEASUREMENT_ID on the server replaces it, an empty one turns it off), and the Meta Pixel (META_PIXEL_ID).
-    'analytics' => ['ga' => env('GA_MEASUREMENT_ID', 'G-7LGSS5ELEH'), 'pixel' => env('META_PIXEL_ID')],
+    // [X81] The site's measurement (App\Analytics\Tracking): Google Analytics 4 and the Meta Pixel, the game's own by default
+    // (the owner's, 2026-11-02; both ids are public). GA_MEASUREMENT_ID and META_PIXEL_ID on the server replace them, and
+    // an empty one turns it off.
+    'analytics' => ['ga' => env('GA_MEASUREMENT_ID', 'G-7LGSS5ELEH'), 'pixel' => env('META_PIXEL_ID', '4663481683975719')],
     'ads' => ['enabled' => (bool) env('ADS_ENABLED', true), 'driver' => env('ADS_DRIVER', 'house'), 'minutes_per_video' => 30, 'max_per_item' => 5,
         'house_seconds' => 30, 'house_defaults' => [
             ['title' => 'ادعُ صديقاً واربح 100 كوينز', 'body' => 'انسخ رابط الدعوة من «حسابي». كل صديق يسجّل منه ويوثّق حسابه يعطيك 100 كوينز، حتى 10 أصدقاء.',
