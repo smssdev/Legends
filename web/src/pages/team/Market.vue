@@ -194,7 +194,7 @@ onBeforeUnmount(() => clearInterval(clock))
           <template v-else-if="m">{{ $t('مفتوح حتى الجولة {v0} · صفقات جديدة كل بضع ساعات، من كل الدوريات وبقوة دوريك', { v0: m.open_until_round }) }}</template>
         </p>
       </div>
-      <span v-if="m" class="money-box flex h-11 items-center gap-2 px-4 text-sm"><span class="text-text-muted">{{ $t('أموال النادي') }}</span><b class="font-numbers text-lg" :class="m.balance < 0 ? 'text-warning' : ''" dir="ltr">{{ money(Math.abs(m.balance)) }}</b></span>
+      <!-- [X85] The club's money is on the top bar, for this slot's club only. -->
     </header>
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>

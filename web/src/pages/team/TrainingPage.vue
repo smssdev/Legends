@@ -15,7 +15,7 @@ import EventsBar from '../../components/ui/EventsBar.vue'
 import UiTabs from '../../components/ui/UiTabs.vue'
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
-import { count, money, type Line } from '../../lib/format'
+import { count, type Line } from '../../lib/format'
 import TrainingPicker from './TrainingPicker.vue'
 
 type View = components['schemas']['TrainingView']
@@ -122,11 +122,8 @@ const TIER = { gold: 'border-gold/50 from-gold/25 to-surface', silver: 'border-t
       <div class="flex-1">
         <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('التدريب') }}</h1><!-- [Sprint 20 W12] --> <RouterLink :to="{ name: 'team' }" class="ms-2 flex h-9 items-center rounded-pill bg-surface px-3 text-xs font-bold text-brand-light">{{ $t('الفريق ›') }}</RouterLink></span>
       </div>
-      <div v-if="v" class="money-box px-4 py-2 text-end">
-        <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
-        <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
-        <span class="block text-xs text-text-muted">{{ $t('الجلسة') }} <span class="font-numbers" dir="ltr">{{ count(v.cost) }}</span></span>
-      </div>
+      <!-- [X85] The club's money is on the top bar; here only what a session costs. -->
+      <span v-if="v" class="rounded-pill bg-surface px-3 py-1.5 text-xs text-text-muted">{{ $t('الجلسة') }} <b class="font-numbers text-text" dir="ltr">{{ count(v.cost) }}</b></span>
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>

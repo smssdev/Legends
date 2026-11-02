@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 import { api, asApiError, ensureCsrf } from '../../api/client'
 import type { components } from '../../api/schema'
 import PriceTag from '../../components/ui/PriceTag.vue'
-import { money } from '../../lib/format'
+
 import { useWallet } from '../../stores/wallet'
 import { currentLeague } from '../../lib/currentLeague'
 
@@ -107,10 +107,7 @@ onBeforeUnmount(() => clearInterval(tick))
       <div class="flex-1">
         <span class="flex flex-wrap items-center gap-1"><h1 class="font-display text-3xl font-extrabold">{{ $t('الجهاز الفني') }}</h1></span>
       </div>
-      <div v-if="v" class="money-box px-4 py-2 text-end">
-        <span class="block text-xs text-text-muted">{{ $t('أموال النادي') }}</span>
-        <b class="font-numbers text-xl" dir="ltr">{{ money(v.balance) }}</b>
-      </div>
+      <!-- [X85] The club's money is on the top bar, for this slot's club only. -->
     </header>
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error) }}</p>
     <p v-if="notice" class="rounded-lg bg-success/15 px-4 py-3 text-sm text-success" role="status">{{ $t(notice) }}</p>

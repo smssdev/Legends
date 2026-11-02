@@ -42,7 +42,13 @@ const session: Middleware = {
     return request
   },
   async onResponse({ request, response }) {
-    if (response.ok) return response
+    if (response.ok) {
+      // [X85] A tap that changed something in a league (a sale, a session, a part, a contract…): the club's money
+      // on the top bar is asked again (stores/board.ts listens), so it is right the moment the coach looks at it.
+      const league = request.method !== 'GET' && /\/leagues\/(\d+)\//.exec(new URL(request.url).pathname)?.[1]
+      if (league && typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('glm:league-changed', { detail: Number(league) }))
+      return response
+    }
     // [X50] The session ended under the page (a deploy, a restart): a new XSRF token, then the same request again.
     // The remember-me cookie signs the coach back in on it, so the tap still does what it should.
     const again = unsent.get(request)
