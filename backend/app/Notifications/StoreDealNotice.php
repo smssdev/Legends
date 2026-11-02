@@ -37,10 +37,15 @@ class StoreDealNotice extends Notification
         $url = rtrim((string) config('app.url'), '/').$this->path;
         $button = $this->en ? 'See the offers' : 'شاهد العروض';
 
+        $site = rtrim((string) config('app.url'), '/');
+
         return (new MailMessage)
             ->subject($this->subject)
+            // [X80] One tap to stop these in the mail app (Gmail shows it beside the sender).
+            ->withSymfonyMessage(fn ($m) => $m->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:'.config('mail.from.address').'?subject=unsubscribe>, <'.$site.'/profile>'))
             ->action($button, $url)
-            ->view('mail.store-deal', ['en' => $this->en, 'title' => $this->title, 'lead' => $this->lead, 'packs' => $this->packs,
-                'until' => $this->until, 'button' => $button, 'url' => $url]);
+            ->view(['html' => 'mail.store-deal', 'text' => 'mail.text'], ['en' => $this->en, 'title' => $this->title, 'lead' => $this->lead, 'packs' => $this->packs,
+                'until' => $this->until, 'button' => $button, 'url' => $url, 'heading' => $this->title,
+                'lines' => array_merge([$this->lead], array_map(fn ($p) => "{$p['name']} ({$p['gives']}): {$p['price']}", $this->packs))]);
     }
 }

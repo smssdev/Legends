@@ -24,9 +24,11 @@ class AccountCodeNotice extends Notification
         $en = ($this->user->locale ?? app()->getLocale()) === 'en';
 
         return (new MailMessage)
-            ->subject($en ? "{$this->code} is your Game Legend Manager code" : "{$this->code} هو كود توثيق حسابك في لعبة المدرب الأسطورة")
-            ->view('mail.account-code', ['en' => $en, 'name' => $this->user->name, 'username' => $this->user->username,
+            ->subject($en ? "{$this->code} is your Game Legend Manager code" : "{$this->code} هو كود توثيق حسابك في Game Legend Manager")
+            ->view(['html' => 'mail.account-code', 'text' => 'mail.text'], ['en' => $en, 'name' => $this->user->name, 'username' => $this->user->username,
                 'accountNo' => $this->user->account_no, 'code' => $this->code, 'minutes' => $this->minutes,
-                'url' => rtrim((string) config('app.url'), '/').'/profile']);
+                'url' => $url = rtrim((string) config('app.url'), '/').'/profile', 'button' => $en ? 'Open my account' : 'افتح حسابي',
+                'heading' => $en ? "Your code: {$this->code}" : "كودك: {$this->code}",
+                'lines' => [$en ? "Valid for {$this->minutes} minutes, and only once. Never share it: the game's team will never ask you for it." : "صالح {$this->minutes} دقيقة ولمرة واحدة. لا تشاركه مع أحد: فريق اللعبة لن يطلبه منك أبداً."]]);
     }
 }

@@ -25,18 +25,15 @@ class VerifyEmailNotice extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $url = self::url($notifiable);
         if (($notifiable->locale ?? app()->getLocale()) === 'en') {
-            return (new MailMessage)
-                ->subject('Confirm your email in Game Legend Manager')
-                ->action('Confirm email', self::url($notifiable))
-                ->view('mail.action', ['en' => true, 'title' => 'Confirm your email in Game Legend Manager', 'greeting' => 'Hello '.$notifiable->name,
-                    'lines' => ['Press the button to confirm your email and activate your account.'], 'button' => 'Confirm email', 'url' => self::url($notifiable), 'after' => 'The link is valid for 24 hours. If you did not create a Game Legend Manager account, ignore this message.']);
+            return ActionMail::make(true, 'Confirm your email for Game Legend Manager', 'Welcome aboard', 'Confirm your email',
+                'Hello '.$notifiable->name.',', ['One tap and your account is active: your league, your club and your coins are waiting.'],
+                'Confirm my email', $url, 'The link is valid for 24 hours. Did not create a Game Legend Manager account? Ignore this email.');
         }
 
-        return (new MailMessage)
-            ->subject('أكّد بريدك في لعبة المدرب الأسطورة')
-            ->action('تأكيد البريد', self::url($notifiable))
-            ->view('mail.action', ['en' => false, 'title' => 'أكّد بريدك في لعبة المدرب الأسطورة', 'greeting' => 'أهلاً '.$notifiable->name,
-                'lines' => ['اضغط الزر لتأكيد بريدك وتفعيل حسابك.'], 'button' => 'تأكيد البريد', 'url' => self::url($notifiable), 'after' => 'الرابط صالح 24 ساعة. إن لم تنشئ حساباً في لعبة المدرب الأسطورة فتجاهل هذه الرسالة.']);
+        return ActionMail::make(false, 'أكّد بريدك في Game Legend Manager', 'أهلاً بك في اللعبة', 'أكّد بريدك',
+            'أهلاً '.$notifiable->name.'،', ['ضغطة واحدة ويُفعَّل حسابك: دوريك وناديك وكوينزك بانتظارك.'],
+            'تأكيد البريد', $url, 'الرابط صالح 24 ساعة. لم تنشئ حساباً في Game Legend Manager؟ تجاهل هذه الرسالة.');
     }
 }
