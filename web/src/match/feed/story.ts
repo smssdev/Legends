@@ -28,6 +28,8 @@ const first = (events, type) => events.find((e) => e.type === type)
 export const SCENE_TIME = {
   goal: [6.0, 3.0], save: [5.4, 2.9], penalty: [5.6, 2.85], freekick: [5.2, 2.65], card: [4.4, 1.1], coach: [4.6, 1.0], sub: [4.2, 0.8],
   offside: [4.2, 1.5], corner: [4.6, 1.75], injury: [3.8, 0.4], whistle: [3.6, 0.6], miss: [5.0, 2.9], blocked: [4.8, 2.6], board: [3.0, 0.5],
+  // [Sprint 35 C1] The director's cutaways after a scene.
+  crowd: [2.6, 0.3], coachReact: [2.4, 0.2],
 }
 const TACTIC_NAMES = { pressing: 'الضغط', style: 'الأسلوب', tempo: 'الإيقاع', plan: 'خطة اللعب', att: 'تمركز المهاجمين', mid: 'تمركز الوسط', def: 'تمركز الدفاع', trap: 'مصيدة التسلل', marking: 'الرقابة', tackling: 'قطع الكرة' }
 

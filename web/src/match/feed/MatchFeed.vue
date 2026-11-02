@@ -101,7 +101,7 @@ import { sample, segment } from '../frames'
 import { SCENE_TIME, story } from './story'
 import { voiceLine, type Lang } from '../voice'
 
-const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; kickoff?: string | null; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
+const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; kickoff?: string | null; looks?: Partial<Record<'home' | 'away', string>> | null; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; near: [closeness: number]; introDone: [] }>()
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), pitchHost = ref<HTMLElement>()
@@ -158,6 +158,33 @@ const compare = computed(() => [
 // ---------------------------------------------------------------- playing a minute
 // [Sprint 34 V4] The goal's replay is playing on the live pitch.
 let pitchReplay = false
+// [Sprint 35 C1] The minute's own scene (for its replay) and the cutaway playing now.
+let mainScene: any = null, cutScene: any = null
+/**
+ * [Sprint 35 C1] The director: which cutaways follow the scene, as on a broadcast. A goal: the scorers' fans, their
+ * coach's joy, then the other coach. A red card: the sent-off player's coach. A big chance missed or saved: the
+ * shooter's coach. The moods are the server's (tick.moods) when it has an expressive one. None at the lowest tier,
+ * one at the middle, up to three at the full one; and only what fits in the minute before its replay and close.
+ */
+function director(s, tick, total, sceneT) {
+  if (!s.scene || tier.value === 'low') return []
+  const other = s.side === 'home' ? 'away' : 'home', moods = tick.moods ?? {}
+  const look = (side) => props.looks?.[side] ?? (side === 'home' ? 'C1' : 'C2')
+  const felt = (side, fallback) => (['joy', 'cheer', 'angry', 'worried', 'sad', 'surprise'].includes(moods[side]) ? moods[side] : fallback)
+  const coach = (side, fallback) => ({ name: 'coachReact', data: { side, look: look(side), mood: felt(side, fallback) }, dur: SCENE_TIME.coachReact[0] })
+  const crowdCut = () => ({ name: 'crowd', data: { side: s.side, v: (props.seed || 1) * 7 + tick.tick, count: tier.value === 'high' ? 110 : 60, flares: tier.value === 'high' }, dur: SCENE_TIME.crowd[0] })
+  let list = []
+  if (s.goal) list = [crowdCut(), coach(s.side, 'joy'), coach(other, 'angry')]
+  else if (s.scene === 'card') list = s.data.type === 'red' ? [coach(s.side, 'angry')] : tier.value === 'high' ? [coach(s.side, 'angry')] : []
+  else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
+  list = list.slice(0, tier.value === 'high' ? 3 : 1)
+  // What fits: a goal keeps room for its replay (4.5 s), the rest for the commentator's line (1.2 s).
+  const keep = s.goal ? 4.5 : 1.2
+  const fit = []
+  let used = 0
+  for (const c of list) { if (sceneT + used + c.dur + keep <= total) { fit.push(c); used += c.dur } }
+  return fit
+}
 let raf = 0, last = 0, t = 0, plan: any = null, scene: any = null, keySeq = 0, drawn = 0, pitchDrawn = 0
 // startAt (live): when the minute starts on performance.now(). The scene follows that clock
 // instead of counting frames, so two screens stay on the same instant even if one is slow.
@@ -169,11 +196,14 @@ function play(tick, startAt = null) {
   // The scene takes most of the minute; the commentator sums it up after.
   // At the broadcast's fixed pace a minute is 3.3 s [X35]: the scene takes up to nine tenths of it, a little faster.
   const sceneT = s.scene ? Math.min(nominal, total * (tick.moment?.ms <= 3400 ? 0.9 : 0.72)) : 0
-  // [X41] A goal on the broadcast's long minute: after the celebration, the replay in slow motion, as on TV.
-  const room = total - sceneT - 3.2, slow = s.goal && s.scene ? nominal / room : 1
-  // [Sprint 33 Q1] No slow-motion replay at the lowest tier: the weak phone rests after the goal's scene.
-  const replay = slow >= 0.4 && slow <= 0.8 && !smooth.value ? { at: sceneT + 2.6, rate: slow } : null
-  plan = { s, total, sceneT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
+  // [Sprint 35 C1] The director's cutaways after the scene (the crowd, the coaches), as many as the tier and the
+  // minute's length allow; then [X41] a goal's replay in slow motion, as on TV.
+  const cuts = director(s, tick, total, sceneT), cutT = cuts.reduce((a, c) => a + c.dur, 0)
+  const at = sceneT + (cuts.length ? cutT + 0.5 : 2.6), room = total - at - 0.8
+  // [Sprint 33 Q1] No replay at the lowest tier. Too little room for the whole scene slowed: its last part, the shot.
+  const rate = s.goal && s.scene && room > 1.6 && !smooth.value ? Math.max(0.4, Math.min(0.8, nominal / room)) : 0
+  const replay = rate ? { at, rate, off: Math.max(0, nominal - room * rate) } : null
+  plan = { s, total, sceneT, cuts, cutT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   revealed.value = !s.pre
@@ -189,6 +219,7 @@ function play(tick, startAt = null) {
   } catch (e) { console.error(e); made = null }
   if (made) {
     scene = made
+    mainScene = made
     sceneAt = performance.now()
     stage.value.replaceChildren(scene.svg)
     sceneOn.value = true
@@ -225,6 +256,7 @@ function finish() {
   sceneOn.value = false
   replaying.value = false
   pitchReplay = false
+  cutScene = null
   tense.value = false
   party.value = null
   addItems(false)
@@ -270,10 +302,21 @@ function step(now) {
       emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
       party.value = { side: s.side, who: s.who }
     })
-    if (scene && t >= sceneT) fire('end', () => { sceneOn.value = false; party.value = null; addItems(); showBubble() })
+    // [Sprint 35 C1] After the scene, the director cuts away (each cutaway built as it starts), then the cards.
+    if (scene && t >= sceneT) {
+      let c0 = sceneT, cut = null, n = 0
+      for (const [i, c] of plan.cuts.entries()) { if (t >= c0 && t < c0 + c.dur) { cut = c; n = i; break } c0 += c.dur }
+      if (cut) {
+        fire('cut' + n, () => {
+          party.value = null
+          try { cutScene = SCENES[cut.name](cut.data); cutScene.update(0); stage.value.replaceChildren(cutScene.svg); sceneOn.value = true } catch (e) { console.error(e); cutScene = null }
+        })
+        if (cutScene && (!smooth.value || now - drawn >= 32)) { drawn = now; try { cutScene.update(t - c0) } catch (e) { console.error(e); cutScene = null } }
+      } else if (t >= sceneT + plan.cutT) fire('end', () => { sceneOn.value = false; party.value = null; cutScene = null; addItems(); showBubble() })
+    }
     const rp = plan.replay
     if (scene && rp && t >= rp.at) {
-      const u = (t - rp.at) * rp.rate
+      const u = (rp.off ?? 0) + (t - rp.at) * rp.rate
       const len = SCENE_TIME[s.scene][0]
       // [Sprint 34 V4] At the middle and full tiers the replay is the live pitch itself: the last Keyframes before the
       // ball went in, slower and closer, then back. The lowest tier has no replay (Sprint 33 Q1).
@@ -282,7 +325,7 @@ function step(now) {
       frames.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(frames[g].b[0] - 525)) g = n })
       const onPitch = frames.length > 2 && Math.abs(frames[g].b[0] - 525) > 470
       if (u < len) {
-        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = !onPitch; pitchReplay = onPitch })
+        fire('replay', () => { bubbleOn.value = false; replaying.value = true; sceneOn.value = !onPitch; pitchReplay = onPitch; if (!onPitch && mainScene) { scene = mainScene; stage.value.replaceChildren(mainScene.svg) } })
         if (onPitch) {
           const n = frames.length - 1, from = Math.max(0, g - 3) / n, to = Math.min(1, (g + 0.4) / n)
           if (!smooth.value || now - pitchDrawn >= 32) { pitchDrawn = now; drawPitch(plan.tick, from + (to - from) * (u / len)) }
@@ -290,7 +333,7 @@ function step(now) {
       } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; pitchReplay = false; showBubble() })
     }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
-    if (!plan.replay && t >= (scene ? Math.min(total, sceneT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
+    if (!plan.replay && t >= (scene ? Math.min(total, sceneT + plan.cutT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
   }
 }
 
@@ -659,6 +702,22 @@ function fitness(tick) {
   return fitMap
 }
 let ballTurn = 0, lastBall = [525, 340], coaches = {}
+// [Sprint 35 C1] The coaches' pictures, loaded once each (an animated picture: the browser plays it).
+const coachPics = new Map()
+function coachDrawer(look, mood) {
+  const key = `${look}-${mood}`
+  let img = coachPics.get(key)
+  if (!img) { img = new Image(); img.decoding = 'async'; img.src = `/characters/${key}.webp`; coachPics.set(key, img) }
+  const idle = coachPics.get(`${look}-idle`) ?? img
+  return {
+    draw(c, x, y, r, k) {
+      const pic = img.complete && img.naturalWidth ? img : idle.complete && idle.naturalWidth ? idle : null
+      if (!pic) return
+      const h = 128 * k, w = (h * 340) / 442
+      c.drawImage(pic, x - w / 2, y + 58 * k - h, w, h)
+    },
+  }
+}
 let tvLast = 0
 function drawTv(tick, u) {
   if (!ctx || !fit()) return
@@ -766,22 +825,17 @@ function drawTv(tick, u) {
     if (call?.card) t.f.showCard(call.card)
     drawn.push(t)
   }
-  // [Sprint 34 V2] The two coaches in their technical areas on the near touchline, seen from behind, watching: how
-  // each feels is the server's (the minute's moods), the screen only draws it.
+  // [Sprint 34 V2, Sprint 35 C1] The two coaches in their technical areas on the near touchline: the approved 3D
+  // models of their looks (C1 a suit and tie, C2 a tracksuit, C3 a jacket and hijab), each in the mood the server
+  // gives (the minute's moods); the screen only shows it. The lowest tier keeps them calm (one picture each).
   for (const side of ['home', 'away']) {
     let c = coaches[side]
-    if (!c) c = coaches[side] = { f: figure('#1C2B48', '', { look: side === 'home' ? 12 : 30, shorts: '#141C2E', socks: '#141C2E', trim: '#F5B82E', build: 1 }), ph: side === 'home' ? 0 : 2, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0 }
-    const mood = tick.moods?.[side] ?? 'idle', pace = smooth.value ? 0 : Math.sin(now / 1400 + c.ph) * 14
+    if (!c) c = coaches[side] = { f: null, ph: side === 'home' ? 0 : 2, sx: 0, sy: 0, scale: 1, bob: 0, face: 'back', mirror: 1, lean: 0, side }
+    const look = String(props.looks?.[side] ?? (side === 'home' ? 'C1' : 'C2')).toLowerCase()
+    const mood = smooth.value ? 'idle' : (tick.moods?.[side] ?? 'idle'), pace = smooth.value ? 0 : Math.sin(now / 1400 + c.ph) * 14
     const [sx, sy, sc] = proj((side === 'home' ? 445 : 605) + pace, 712)
     c.sx = sx; c.sy = sy; c.scale = sc * 0.5; c.bob = 0; c.lean = 0
-    c.f.face('back', 1)
-    if (smooth.value) c.f.pose()
-    else if (mood === 'joy' || mood === 'cheer') { c.f.celebrate(now / 1000 + c.ph); c.bob = Math.abs(Math.sin(now / 200)) * 4 }
-    else if (mood === 'angry') c.f.pose(6, -6, 95 + Math.sin(now / 160) * 20, -95 - Math.sin(now / 160) * 20)
-    else if (mood === 'worried' || mood === 'surprise') c.f.handsOnHead()
-    else if (mood === 'sad') c.f.hangHead()
-    else if (mood === 'think') c.f.pose(3, -3, 12, -150)
-    else { c.ph += dts * 1.6; c.f.idle(c.ph) }
+    c.f = coachDrawer(look, mood)
     drawn.push(c)
   }
   // [Sprint 33 L3] The player taken off walks from where he was to the near touchline, and leaves.
