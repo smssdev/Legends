@@ -3,7 +3,6 @@
 // common questions, all readable before signing in, as Google AdSense asks of a site, and as a visitor deserves.
 // Every number in it is the game's own (the slots, the guide); nothing here is a rule, only a description.
 // [Sprint 26 W4] The three mascots welcome the visitor under the two ways in.
-import PublicFooter from '../components/PublicFooter.vue'
 import Character from '../components/characters/Character.vue'
 import { emblemSrc, locale } from '../lib/i18n'
 
@@ -113,7 +112,7 @@ const FAQ = [
         <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{ $t('أنشئ حسابك مجاناً') }}</RouterLink>
       </section>
     </div>
-    <PublicFooter />
+    <!-- [X90] The footer comes from the frame (AppShell.vue), as on every screen. -->
   </div>
 </template>
 

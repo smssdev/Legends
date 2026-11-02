@@ -18,6 +18,7 @@ import CountUp from '../components/ui/CountUp.vue'
 import AfterRound from '../components/shell/AfterRound.vue'
 import ManagerBot from '../components/assistant/ManagerBot.vue'
 import SoundToggle from '../components/shell/SoundToggle.vue'
+import PublicFooter from '../components/PublicFooter.vue'
 import SoundPrompt from '../components/shell/SoundPrompt.vue'
 import { playTone } from '../lib/tone'
 import { useToast } from '../stores/toast'
@@ -230,6 +231,9 @@ onBeforeUnmount(() => sizer?.disconnect())
         </RouterView>
       </main>
     </div>
+    <!-- [X90] The game's footer on every screen of the frame (the owner's request 2026-11-02); inside a slot on the phone
+         it keeps clear of the bottom bar. -->
+    <PublicFooter :class="inSlot ? 'shell-foot-slot' : ''" />
 
     <!-- [W6] Inside a slot on the phone: «النادي» first, then the four portals. -->
     <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
@@ -408,8 +412,10 @@ onBeforeUnmount(() => sizer?.disconnect())
 }
 /* [Sprint 30 P8] Inside a slot on the phone the page ends above the bottom bar and the Assistant Coach's button, the
    phone's home bar included (safe area); on the computer as before. */
-.shell-main-slot { padding-bottom: calc(7.5rem + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) { .shell-main-slot { padding-bottom: 2.5rem; } }
+.shell-main-slot { padding-bottom: 2.5rem; }
+/* [X90] The footer ends the page above the phone's bottom bar. */
+.shell-foot-slot { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .shell-foot-slot { padding-bottom: 0; } }
 /* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
 .shell-tabs {
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));

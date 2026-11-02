@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// [X59, X82] The foot of the public pages (the landing, the guide, the privacy policy and the terms): the game and its
+// [X59, X82] The foot of every page [X90: the game's frame, the sign-in screens, the guide and the legal pages]: the game and its
 // mark, its quick links (the public pages that exist: router.ts), its social accounts and the support, then the
 // copyright (this year, from the device) and the credit line. The accounts and the team come from content/site.ts:
 // an account without its real address shows no button. Arabic first, right to left; one column on the phone.
@@ -7,17 +7,27 @@ import { computed } from 'vue'
 import SupportLinks from './SupportLinks.vue'
 import SocialIcon from './SocialIcon.vue'
 import { EMAIL, SOCIALS, TEAM } from '../content/site'
+import { useAuth } from '../stores/auth'
 
 const year = new Date().getFullYear()
 const socials = computed(() => SOCIALS.filter((s) => s.url))
 const teamInside = TEAM.url.startsWith('/')
-const LINKS = [
+// [X90] A visitor's links (to sign up), or a signed-in coach's own (his teams, leagues, account and ideas).
+const auth = useAuth()
+const LINKS = computed(() => auth.user ? [
+  { to: '/', label: 'فرقي' },
+  { to: '/leagues', label: 'دورياتي' },
+  { to: '/profile', label: 'حسابي' },
+  { to: '/guide', label: 'طريقة اللعب' },
+  { to: '/ideas', label: 'اقتراحات التطوير' },
+  { to: '/developers', label: 'فريق التطوير' },
+] : [
   { to: '/', label: 'الرئيسية' },
   { to: '/guide', label: 'طريقة اللعب' },
   { to: '/register', label: 'إنشاء حساب مجاني' },
   { to: '/login', label: 'تسجيل الدخول' },
   { to: '/developers', label: 'فريق التطوير' },
-]
+])
 const LEGAL = [
   { to: '/privacy', label: 'سياسة الخصوصية' },
   { to: '/terms', label: 'الشروط والأحكام' },
@@ -34,7 +44,7 @@ const LEGAL = [
         <p class="max-w-sm text-sm leading-7 text-text-soft">
           {{ $t('لعبة مدرب كرة قدم عربية مجانية أونلاين: اختر ناديك، وكوّن دورياً خاصاً مع أصحابك، وأدر كل مباراة حية بالتكتيك والتبديلات.') }}
         </p>
-        <RouterLink to="/register" class="foot-cta flex h-touch w-fit items-center gap-2 rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('ابدأ مجاناً') }}</RouterLink>
+        <RouterLink v-if="!auth.user" to="/register" class="foot-cta flex h-touch w-fit items-center gap-2 rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('ابدأ مجاناً') }}</RouterLink>
       </section>
 
       <!-- The quick links: the game's public pages. -->
@@ -61,7 +71,7 @@ const LEGAL = [
         <a :href="`mailto:${EMAIL}`" class="foot-link w-fit gap-2 text-sm" dir="ltr">
           <svg viewBox="0 0 24 24" class="size-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6" /></svg>{{ EMAIL }}
         </a>
-        <SupportLinks compact />
+        <SupportLinks compact no-whatsapp />
       </section>
     </div>
 
