@@ -6613,7 +6613,7 @@ components:
         clubs: { type: object, description: 'home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain)' }
         coaches: { type: object, description: "The coaches' names in a match between friends: {home, away}" }
         coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
-        teams: { type: object }
+        teams: { type: object, description: 'home and away: formation, tactics (your side only), subs, stats, captain (the armband, Sprint 34 V3) and players (each with fit and pac, his pace for the drawing, Sprint 34 K4)' }
         slots: { type: object }
     Keyframe:
       type: object

@@ -371,10 +371,14 @@ class Simulator
                 'subs_used' => $t['subs_used'],
                 'subs_max' => $t['subs_max'],
                 'stats' => $t['stats'],
+                // [Sprint 34 V3] The captain, for his armband on the pitch (as on any team sheet, not hidden).
+                'captain' => $t['takers']['captain'] ?? null,
                 'players' => array_map(fn ($p) => [
                     'id' => $p['id'], 'name' => $p['name'], 'no' => $p['no'], 'pos' => $p['pos'], 'line' => $p['line'],
                     'slot' => $p['slot'], 'slot_line' => $p['slot_line'], 'on' => $p['on'], 'out' => $p['out'],
                     'fit' => intdiv($p['fit'], 100), 'yc' => $p['yc'], 'ovr' => $p['a']['ovr'], 'rating' => $p['st']['r'],
+                    // [Sprint 34 K4] His pace, for how fast he is drawn running (public, as in the squad's screens).
+                    'pac' => (int) ($p['a']['pac'] ?? 50),
                 ], $t['players']),
             ];
         }

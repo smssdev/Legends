@@ -14409,6 +14409,7 @@ export interface components {
             coaches?: Record<string, never>;
             /** @description [Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?} */
             coach_looks?: Record<string, never>;
+            /** @description home and away: formation, tactics (your side only), subs, stats, captain (the armband, Sprint 34 V3) and players (each with fit and pac, his pace for the drawing, Sprint 34 K4) */
             teams?: Record<string, never>;
             slots?: Record<string, never>;
         };
