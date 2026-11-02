@@ -57,4 +57,22 @@ class DataEditorTest extends TestCase
         $leagues = collect($this->getJson('/api/v1/admin/data/leagues')->assertOk()->json('leagues'))->keyBy('name');
         $this->assertTrue($leagues['دوري جديد']['too_small']);
     }
+
+    /** [X76] A club's kit pattern: set in the editor (only the known ones), logged, and drawn in its matches. */
+    public function test_a_clubs_kit_pattern_is_set_in_the_editor_and_reaches_its_matches(): void
+    {
+        $this->template(full: true);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->withHeader('Referer', config('app.url'))->actingAs($admin);
+        [$home, $away] = DB::table('master_clubs')->orderBy('id')->limit(2)->pluck('id')->all();
+
+        $this->patchJson("/api/v1/admin/data/clubs/{$home}", ['kit_pattern' => 'polka'])->assertJsonValidationErrors('kit_pattern');
+        $this->patchJson("/api/v1/admin/data/clubs/{$home}", ['kit_pattern' => 'stripes'])->assertOk()->assertJsonPath('row.kit_pattern', 'stripes');
+        $this->assertSame(['before' => ['kit_pattern' => null], 'after' => ['kit_pattern' => 'stripes']],
+            json_decode(DB::table('data_edits')->where('target_id', $home)->value('changes'), true));
+
+        $view = $this->postJson('/api/v1/sim/matches', ['home_id' => $home, 'away_id' => $away, 'seed' => 5])->assertCreated()->json();
+        $this->assertSame('stripes', $view['clubs']['home']['pattern']);
+        $this->assertNull($view['clubs']['away']['pattern']);
+    }
 }

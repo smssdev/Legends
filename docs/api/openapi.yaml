@@ -5769,7 +5769,7 @@ components:
       properties: { name: { type: string }, position: { type: string }, line: { type: string, enum: [gk, def, mid, att] }, age: { type: integer }, nationality: { type: string, nullable: true }, overall: { type: integer }, potential: { type: integer }, value: { type: integer }, master_club_id: { type: integer } }
     EditClub:
       type: object
-      properties: { name: { type: string }, code: { type: string }, league_name: { type: string }, color_primary: { type: string }, color_secondary: { type: string } }
+      properties: { name: { type: string }, code: { type: string }, league_name: { type: string }, color_primary: { type: string }, color_secondary: { type: string }, kit_pattern: { type: [string, 'null'], enum: [plain, stripes, hoops, halves, sash, null], description: '[X76] The kit''s pattern in the club''s two colours; null or plain is a plain shirt' } }
     Contracts:
       type: object
       required: [players, wages_per_round, cap_per_round, room, rounds_left, season, max_seasons]
@@ -6610,7 +6610,7 @@ components:
         score: { type: object }
         formations: { type: array, items: { type: string } }
         timing: { type: object }
-        clubs: { type: object }
+        clubs: { type: object, description: 'home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain)' }
         coaches: { type: object, description: "The coaches' names in a match between friends: {home, away}" }
         coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
         teams: { type: object }

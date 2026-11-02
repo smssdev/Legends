@@ -13370,6 +13370,11 @@ export interface components {
             league_name?: string;
             color_primary?: string;
             color_secondary?: string;
+            /**
+             * @description [X76] The kit's pattern in the club's two colours; null or plain is a plain shirt
+             * @enum {string|null}
+             */
+            kit_pattern?: "plain" | "stripes" | "hoops" | "halves" | "sash" | null;
         };
         Contracts: {
             players: {
@@ -14398,6 +14403,7 @@ export interface components {
             score?: Record<string, never>;
             formations?: string[];
             timing?: Record<string, never>;
+            /** @description home and away: the club (id, name, code, primary, secondary, logo) and [X76] its kit pattern (pattern: stripes, hoops, halves, sash, or null for plain) */
             clubs?: Record<string, never>;
             /** @description The coaches' names in a match between friends: {home, away} */
             coaches?: Record<string, never>;

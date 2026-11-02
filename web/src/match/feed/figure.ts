@@ -20,6 +20,13 @@ function rr(c, x, y, w, h, r) {
   c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); c.fill()
 }
 const dot = (c, x, y, r, fill) => { c.fillStyle = fill; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill() }
+// [X76] A kit pattern over the shirt's box (-15..15 across, -15..24 down), clipped to the shirt by the caller.
+export function kitPattern(c, p) {
+  if (p === 'stripes') for (let x = -12; x <= 12; x += 8) c.fillRect(x - 2, -16, 4, 42)
+  else if (p === 'hoops') for (let y = -8; y <= 22; y += 9) c.fillRect(-16, y - 2.2, 32, 4.4)
+  else if (p === 'halves') c.fillRect(0, -16, 16, 42)
+  else if (p === 'sash') { c.beginPath(); c.moveTo(-16, -6); c.lineTo(-9, -16); c.lineTo(16, 16); c.lineTo(16, 25); c.closePath(); c.fill() }
+}
 // The sprite's box in the figure's units, and its resolution.
 const BOX = { x: -17, y: -34, w: 34, h: 67 }, RES = 3
 
@@ -39,6 +46,8 @@ export function figure(kit, no, o = {}) {
     if (f === 'side') c.scale(0.72, 1)
     c.fillStyle = shorts; c.fill(P.shorts)
     c.fillStyle = kit; c.fill(P.shirt)
+    // [X76] The club's pattern on the shirt, in its trim colour.
+    if (o.pattern) { c.save(); c.clip(P.shirt); c.fillStyle = o.patternColour ?? trim; kitPattern(c, o.pattern); c.restore() }
     c.fillStyle = 'rgba(0,0,0,.08)'; c.fill(P.fold)
     c.strokeStyle = trim; c.lineWidth = 2; c.stroke(P.collar)
     c.fillStyle = ink; c.textAlign = 'center'

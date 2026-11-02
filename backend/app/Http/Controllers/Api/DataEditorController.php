@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\KitPattern;
 use App\Http\Controllers\Controller;
 use App\Rules\NotJunk;
 use App\Support\GameClock;
@@ -20,7 +21,7 @@ class DataEditorController extends Controller
 {
     private const PLAYER = ['name', 'position', 'line', 'age', 'nationality', 'overall', 'potential', 'value', 'master_club_id'];
 
-    private const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary'];
+    private const CLUB = ['name', 'code', 'league_name', 'color_primary', 'color_secondary', 'kit_pattern'];
 
     private static function version(): string
     {
@@ -151,6 +152,8 @@ class DataEditorController extends Controller
         return [
             'name' => [$r, 'string', 'min:2', 'max:60', $unique, new NotJunk], 'code' => [$r, 'string', 'between:2,4'], 'league_name' => [$r, 'string', 'min:2', 'max:80', new NotJunk],
             'color_primary' => [$r, 'regex:/^#[0-9A-Fa-f]{6}$/'], 'color_secondary' => [$r, 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            // [X76] The kit's pattern in the club's two colours.
+            'kit_pattern' => ['sometimes', 'nullable', Rule::in(KitPattern::ALL)],
         ];
     }
 }
