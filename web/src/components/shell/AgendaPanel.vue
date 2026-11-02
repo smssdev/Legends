@@ -10,6 +10,10 @@ import Icon from '../Icon.vue'
 import { countdown, useNow } from '../../lib/clock'
 import { useBoard } from '../../stores/board'
 import { useInbox } from '../../stores/inbox'
+import { useWallet } from '../../stores/wallet'
+import { api } from '../../api/client'
+import { act, busy } from '../../lib/action'
+import { t } from '../../lib/i18n'
 import { LINE_NAMES, PENDING, SECTION_NAMES, SEVERITY, TIMER } from './agenda'
 
 const props = defineProps<{ kind: 'timers' | 'pending' }>()
@@ -24,6 +28,20 @@ const go = (to: string) => {
   emit('close')
   router.push(to)
 }
+
+// [X88] Done from here, without opening the screen: the daily reward taken, the empty training slots filled with
+// their recommended players (the server's), each through lib/action (its button waits, the result in a toast).
+const wallet = useWallet()
+const claimDaily = () => act('daily', () => api.POST('/wallet/daily'), { success: t('استلمت مكافأة اليوم.') })
+  .then((r) => { if (r) { wallet.load(); store.refresh() } })
+const fillTraining = () => act('fill-training', async () => {
+  const league = store.league!
+  const view = (await api.GET('/leagues/{league}/training', { params: { path: { league } } })).data!
+  const empty = new Set(view.slots.filter((s) => !s.player).map((s) => s.line))
+  const ids = Object.entries((view.recommended ?? {}) as Record<string, number | null>).filter(([l, id]) => empty.has(l as never) && id).map(([, id]) => id!)
+  for (const id of ids) await api.POST('/leagues/{league}/training', { params: { path: { league } }, body: { player_id: id } })
+  return ids.length
+}, { success: (n) => (n ? t('بدأ التدريب في {v0} خانات.', { v0: n }) : t('لا لاعب موصى به للخانات الفارغة الآن.')) }).then(() => store.refresh())
 </script>
 
 <template>
@@ -35,8 +53,14 @@ const go = (to: string) => {
     </h2>
     <p v-if="!b" class="py-4 text-center text-sm text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
     <ul v-else-if="props.kind === 'timers'" class="flex flex-col gap-1.5">
-      <li v-for="(t, i) in b.timers" :key="i">
-        <button type="button" class="agenda-row" @click="go(TIMER[t.kind].to)">
+      <li v-for="(t, i) in b.timers" :key="i" class="flex items-center gap-1.5">
+        <!-- [X88] The daily reward, ready: taken here in one tap. -->
+        <button v-if="t.kind === 'daily' && !(t.at && countdown(t.at, now))" type="button" class="agenda-row" :disabled="busy('daily')" @click="claimDaily">
+          <Icon :name="TIMER[t.kind].icon as never" :size="18" class="shrink-0 text-text-muted" />
+          <span class="min-w-0 flex-1 text-start"><b class="block truncate text-sm">{{ $t(TIMER[t.kind].label) }}</b><span class="block truncate text-xs text-text-muted">{{ $t('{v0} كوينز', { v0: t.amount }) }}</span></span>
+          <span class="shrink-0 rounded-pill bg-gold px-3 py-1 text-xs font-bold text-on-gold">{{ busy('daily') ? '...' : $t('خذها') }}</span>
+        </button>
+        <button v-else type="button" class="agenda-row" @click="go(TIMER[t.kind].to)">
           <Icon :name="TIMER[t.kind].icon as never" :size="18" class="shrink-0 text-text-muted" />
           <span class="min-w-0 flex-1 text-start">
             <b class="block truncate text-sm">{{ $t(TIMER[t.kind].label) }}</b>
@@ -62,8 +86,8 @@ const go = (to: string) => {
             <Icon name="more" :size="16" class="shrink-0 text-text-muted rtl:rotate-180" />
           </button>
         </li>
-        <li v-for="(p, i) in b.pending" :key="i">
-          <button type="button" class="agenda-row" :style="{ boxShadow: `inset -3px 0 0 ${SEVERITY[p.severity]}` }" @click="go(PENDING[p.kind].to(p, store.league))">
+        <li v-for="(p, i) in b.pending" :key="i" class="flex items-center gap-1.5">
+          <button type="button" class="agenda-row min-w-0 flex-1" :style="{ boxShadow: `inset -3px 0 0 ${SEVERITY[p.severity]}` }" @click="go(PENDING[p.kind].to(p, store.league))">
             <span class="min-w-0 flex-1 text-start">
               <b class="block truncate text-sm">{{ $t(PENDING[p.kind].label) }}<template v-if="p.count"> ({{ p.count }})</template></b>
               <span v-if="p.players?.length" class="block truncate text-xs text-text-muted">
@@ -72,6 +96,10 @@ const go = (to: string) => {
               <span v-else-if="p.lines?.length" class="block truncate text-xs text-text-muted">{{ p.lines.map((l) => $t(LINE_NAMES[l] ?? l)).join('، ') }}</span>
             </span>
             <Icon name="more" :size="16" class="shrink-0 text-text-muted rtl:rotate-180" />
+          </button>
+          <!-- [X88] The empty training slots, filled here with their recommended players. -->
+          <button v-if="p.kind === 'training_empty'" type="button" class="min-h-touch shrink-0 rounded-lg bg-gold px-3 text-xs font-bold text-on-gold disabled:opacity-40" :disabled="busy('fill-training')" @click="fillTraining">
+            {{ busy('fill-training') ? '...' : $t('املأها بالموصى بهم') }}
           </button>
         </li>
       </ul>
