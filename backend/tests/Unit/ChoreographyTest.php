@@ -152,4 +152,23 @@ class ChoreographyTest extends TestCase
         }
         $this->assertGreaterThan(20, $levels);
     }
+
+    /** [Sprint 33 B4] The players the commentary names have the ball on the pitch: the shooter is seen shooting when he is near. */
+    public function test_the_named_shooter_has_the_ball(): void
+    {
+        $shots = $seen = 0;
+        foreach ([4, 8, 15] as $seed) {
+            foreach ($this->minutes($seed) as [$out, $frames]) {
+                foreach ($out['events'] as $e) {
+                    if ($e['type'] === 'attack' && isset($e['shooter']) && in_array('shot', array_column($e['phases'], 'n'), true)) {
+                        $shots++;
+                        $seen += in_array($e['shooter'], array_column($frames, 'h'), true) ? 1 : 0;
+                    }
+                }
+            }
+        }
+        $this->assertGreaterThan(5, $shots);
+        // Only when he is close enough to reach it without a jump (25 m): about a third of the time.
+        $this->assertGreaterThan($shots / 4, $seen, "{$seen} of {$shots} shooters on the ball");
+    }
 }

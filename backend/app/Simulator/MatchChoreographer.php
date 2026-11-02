@@ -43,14 +43,14 @@ class MatchChoreographer
                 array_push($path, ...self::attackPath($e, $rng));
             } elseif ($e['type'] === 'corner') {
                 $dir = $e['team'] === 'home' ? 1 : -1;
-                $path[] = [self::wx(1040, $dir), $rng->chance(5000) ? 20 : 660, 0, $e['team'], 'corner'];
+                $path[] = [self::wx(1040, $dir), $rng->chance(5000) ? 20 : 660, 0, $e['team'], 'corner', $e['taker'] ?? null];
                 $path[] = [self::wx(990, $dir), 340, 25, $e['team'], 'pass'];
             } elseif ($e['type'] === 'free_kick' || $e['type'] === 'penalty') {
                 // [B2] The kick from its spot (a free kick around 22 m out, a penalty from the spot), then at goal.
                 $dir = $e['team'] === 'home' ? 1 : -1;
                 $y = fn (int $v) => $dir === 1 ? $v : 680 - $v;
                 $pen = $e['type'] === 'penalty';
-                $path[] = [self::wx($pen ? 940 : 820 + $rng->int(40), $dir), $y($pen ? 340 : 270 + $rng->int(140)), 0, $e['team'], $pen ? 'pen' : 'fk'];
+                $path[] = [self::wx($pen ? 940 : 820 + $rng->int(40), $dir), $y($pen ? 340 : 270 + $rng->int(140)), 0, $e['team'], $pen ? 'pen' : 'fk', $e['taker'] ?? null];
                 $path[] = $e['scored'] ?? false
                     ? [self::wx(1048, $dir), $y(310 + $rng->int(60)), $pen ? 4 : 14, $e['team'], 'kick']
                     : [self::wx(1008, $dir), $y(300 + $rng->int(80)), $pen ? 0 : 10, $e['team'], 'kick'];
@@ -113,7 +113,15 @@ class MatchChoreographer
                 'shot', 'corner' => [900 + $rng->int(50), 280 + $rng->int(120)],
                 default => [525, 340],
             };
-            $points[] = [self::wx($ax, $dir), $y($ay), $height($phase['n']), $e['team'], $phase['n'] === 'offside' ? 'offside' : ($phase['n'] === 'shot' ? 'shot' : 'pass')];
+            // [Sprint 33 B4] Who has the ball there: the attack's own players, as the commentary names them.
+            $who = match ($phase['n']) {
+                'build' => $e['carrier'] ?? null,
+                'progress', 'offside' => $e['receiver'] ?? null,
+                'create' => $e['creator'] ?? null,
+                'shot' => $e['shooter'] ?? null,
+                default => null,
+            };
+            $points[] = [self::wx($ax, $dir), $y($ay), $height($phase['n']), $e['team'], $phase['n'] === 'offside' ? 'offside' : ($phase['n'] === 'shot' ? 'shot' : 'pass'), $who];
         }
 
         $end = match ($e['result']) {
@@ -161,7 +169,7 @@ class MatchChoreographer
                 $b[2],
                 $b[3] ?? $a[3],
                 // [Sprint 33 B1] The leg of the path it is on: from what, to what, and how far along (per mille).
-                ['from' => $a[4] ?? 'pass', 'to' => $b[4] ?? 'pass', 'at' => intdiv($f * 1000, $span), 'end' => [$b[0], $b[1]]],
+                ['from' => $a[4] ?? 'pass', 'to' => $b[4] ?? 'pass', 'at' => intdiv($f * 1000, $span), 'end' => [$b[0], $b[1]], 'passer' => $a[5] ?? null, 'receiver' => $b[5] ?? null],
             ];
         }
 
@@ -364,12 +372,24 @@ class MatchChoreographer
                     $recv = $id;
                 }
             }
+            // [B4] The named receiver when he is on the pitch for the side on the ball, and near where it lands (30 m).
+            $named = $leg['receiver'] ?? null;
+            if ($named !== null && ($sides[$named] ?? null) === $possession && abs($positions[$named][0] - $ex) + abs($positions[$named][1] - $ey) < 300) {
+                $recv = $named;
+            }
             if ($recv !== null) {
                 [$x, $y] = $positions[$recv];
                 $positions[$recv] = [$x + intdiv(($ex - $x) * $at, 1000), $y + intdiv(($ey - $y) * $at, 1000)];
             }
 
             return ['p' => $positions, 'h' => null, 'sides' => $sides];
+        }
+        // [B4] Carrying: the named passer (or, arriving at the waypoint, its own named player), else the nearest.
+        $named = $at >= 900 ? ($leg['receiver'] ?? null) : ($leg['passer'] ?? null);
+        // Only one close enough (25 m) to reach the ball without a jump.
+        if ($possession && $named !== null && ($sides[$named] ?? null) === $possession && ($lines[$named] ?? 'gk') !== 'gk'
+            && abs($positions[$named][0] - $bx) + abs($positions[$named][1] - $by) < 250) {
+            $best[$possession] = [0, $named];
         }
         if ($possession && isset($best[$possession])) {
             $holder = $best[$possession][1];
