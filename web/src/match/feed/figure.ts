@@ -54,7 +54,7 @@ export function figure(kit, no, o = {}) {
   }
   // [Sprint 31 D2] His build (slim, medium or strong: the shirt's width) and height, from the caller (his id).
   const bw = [0.88, 1, 1.14][o.build ?? 1] ?? 1, bh = o.tall ?? 1
-  let facing = 'back', mirror = 1
+  let facing = 'back', mirror = 1, card = null
   const legs = [{ x: -6, r: 3, lift: 0 }, { x: 6, r: -3, lift: 0 }], arms = [{ x: -14.5, r: 10 }, { x: 14.5, r: -10 }]
   function leg(c, l) {
     c.save(); c.translate(l.x * bw * (facing === 'side' ? 0.45 : 1), 25); c.rotate((l.r * Math.PI) / 180); c.scale(1, 1 - 0.45 * l.lift)
@@ -69,6 +69,8 @@ export function figure(kit, no, o = {}) {
     c.fillStyle = o.gloves ? kit : skin; rr(c, -3.4, 10, 6.8, 13, 3.4)
     if (o.gloves) { c.fillStyle = o.gloves; rr(c, -5, 20, 10, 9, 3.5) }
     // [Sprint 31 D1] An assistant referee's flag in his right hand.
+    // [Sprint 33 L2] The referee's card held up in his right hand.
+    if (card && a === arms[1]) { c.fillStyle = card; c.fillRect(-3, 22, 6, 8.5); c.strokeStyle = 'rgba(0,0,0,.4)'; c.lineWidth = 0.6; c.strokeRect(-3, 22, 6, 8.5) }
     if (o.flag && a === arms[1]) { c.fillStyle = '#2B2B2B'; c.fillRect(-0.7, 18, 1.4, 16); c.fillStyle = o.flag; c.fillRect(0.7, 18, 9, 7); c.fillStyle = '#D3122F'; c.fillRect(0.7, 18, 4.5, 3.5); c.fillRect(5.2, 21.5, 4.5, 3.5) }
     c.restore()
   }
@@ -91,6 +93,15 @@ export function figure(kit, no, o = {}) {
     slide() { api.pose(78, 18, -50, 30, 0, 0.4) },
     // A keeper's dive: the arms stretched over the head (the caller lays him out towards the ball).
     dive(f) { const a = 60 + 110 * Math.min(1, f * 1.6); api.pose(10, -24, a, -a, 0, 0.2) },
+    // [Sprint 33 L1] The keeper: the ball gathered into the chest, then thrown out overarm.
+    gather() { api.pose(12, -12, 70, -70) },
+    throwOut(f) { const a = f < 0.5 ? 160 : 160 - 220 * (f - 0.5); api.pose(4, -18, 20, -a, 0, 0.2) },
+    // [Sprint 33 L2] Down after a foul (the caller lays him on the grass), and the referee's arm raised with a card.
+    fallen() { api.pose(30, 50, 120, -40, 0, 0) },
+    showCard(colour) { card = colour; api.pose(3, -3, 12, colour ? -168 : -10) },
+    // [Sprint 33 L4] Hands on the head after a chance missed, and the head down after a goal conceded.
+    handsOnHead() { api.pose(3, -3, 150, -150) },
+    hangHead() { api.pose(2, -2, 4, -4) },
     // Arms up, waving.
     celebrate(t) { const w = Math.sin(t * 9) * 12; api.pose(8, -8, 150 + w, -150 - w) },
     /** The figure with its centre at (x, y), turned r degrees, at scale k; shadow false leaves out its own shadow. */

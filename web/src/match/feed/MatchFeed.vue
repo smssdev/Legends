@@ -554,19 +554,52 @@ function actions(tick, f, u) {
     for (const id in A.p) if (gks.has(String(id))) { const d = Math.abs(A.p[id][0] - end); if (d < gd) { gd = d; gk = id } }
     if (gk && gd < 120) by[gk] = { kind: 'dive', f: (k - 0.45) / 0.55, dir: B.b[1] > A.p[gk][1] ? 1 : -1 }
   }
-  // The goal: from the Keyframe where the ball is in the net, the scorers' side celebrates.
-  const goal = (tick.events ?? []).find((e) => e.type === 'goal')
-  if (goal) {
-    // The Keyframe nearest a goal line (the path need not land on the line itself).
-    let g = 0
-    f.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(f[g].b[0] - 525)) g = n })
-    if (Math.abs(f[g].b[0] - 525) > 470 && u * (f.length - 1) >= g) {
-      say('net', 'net')
-      for (const id in B.p) if (sideOf(id) === goal.team && !gks.has(String(id))) by[id] = { kind: 'party' }
+  const ev = tick.events ?? [], at = u * (f.length - 1)
+  // The Keyframe nearest a goal line (the path need not land on the line itself): where a shot ends.
+  let g = 0
+  f.forEach((x, n) => { if (Math.abs(x.b[0] - 525) > Math.abs(f[g].b[0] - 525)) g = n })
+  const shotEnd = Math.abs(f[g].b[0] - 525) > 440 ? g : -1
+  // The goal: from the Keyframe where the ball is in the net, the scorers' side celebrates and the other hangs its head.
+  const goal = ev.find((e) => e.type === 'goal')
+  if (goal && shotEnd >= 0 && Math.abs(f[g].b[0] - 525) > 470 && at >= shotEnd) {
+    say('net', 'net')
+    for (const id in B.p) if (!gks.has(String(id))) by[id] = sideOf(id) === goal.team ? { kind: 'party' } : { kind: 'down' }
+  }
+  // [Sprint 33 L4] A chance missed: the shooter's hands on his head once the ball has gone wide.
+  const miss = ev.find((e) => e.type === 'attack' && e.result === 'missed')
+  if (miss?.shooter != null && shotEnd >= 0 && at >= shotEnd) by[miss.shooter] = { kind: 'head-hands' }
+  // [Sprint 33 L1] A save: from the Keyframe of the save the keeper holds the ball, then throws it out.
+  const saved = ev.find((e) => (e.type === 'attack' && e.result === 'saved') || ((e.type === 'free_kick' || e.type === 'penalty') && !e.scored))
+  if (saved && shotEnd >= 0 && at >= shotEnd) {
+    const S = f[shotEnd], end = S.b[0] < 525 ? 0 : 1050
+    let gk = null, gd = 1e9
+    for (const id in S.p) if (gks.has(String(id))) { const d = Math.abs(S.p[id][0] - end); if (d < gd) { gd = d; gk = id } }
+    if (gk) {
+      const after = i === shotEnd && B !== A ? k : shotEnd === f.length - 1 ? 0 : 1
+      if (after < 0.3) by[gk] = { kind: 'gather' }
+      else if (after < 0.7) { by[gk] = { kind: 'throw', f: (after - 0.3) / 0.4 }; if (after > 0.5) say('gk', 'touch') }
     }
   }
-  return { by, holder: k < 0.5 ? A.h : B.h }
+  // [Sprint 33 L2] A foul: the fouled player goes down where he had the ball (or mid-minute), the whistle, the
+  // referee runs over and, when the minute has a card for the fouler, holds it up.
+  const fouled = ev.find((e) => e.type === 'foul')
+  let call = null
+  if (fouled?.victim != null) {
+    const n = f.findIndex((x) => String(x.h) === String(fouled.victim))
+    const from = n >= 0 ? n / (f.length - 1) : 0.4
+    if (u >= from && u < from + 0.32) {
+      const w = (u - from) / 0.32
+      by[fouled.victim] = { kind: 'fallen', f: w }
+      say('foul', 'whistle')
+      const card = ev.find((e) => e.type === 'card' && String(e.player) === String(fouled.player))
+      call = { at: fouled.victim, card: card && w > 0.35 ? (card.color === 'red' ? '#D3122F' : '#F2E205') : null, w }
+    }
+  }
+  return { by, holder: k < 0.5 ? A.h : B.h, call }
 }
+// [Sprint 33 L3] Where each player was last drawn (for the one taken off), and how much of the minute a substitution's
+// walk takes.
+const lastSeen = new Map(), SUB_WALK = 0.45
 let tvLast = 0
 function drawTv(tick, u) {
   if (!ctx || !fit()) return
@@ -606,11 +639,16 @@ function drawTv(tick, u) {
   const drawn = []
   let near = null, nearD = 1e9
   const act = actions(tick, f, u)
+  const subs = (tick.events ?? []).filter((e) => e.type === 'sub'), subIn = new Set(subs.map((e) => String(e.in)))
   for (const id in R.players) {
     const side = players.value[id]?.side
     if (!side) continue
-    const [wx, wy] = R.players[id], t = tvFor(id, side)
-    const nx = R2.players[id]?.[0] ?? wx, ny = R2.players[id]?.[1] ?? wy
+    let [wx, wy] = R.players[id]
+    const t = tvFor(id, side)
+    let nx = R2.players[id]?.[0] ?? wx, ny = R2.players[id]?.[1] ?? wy
+    // [Sprint 33 L3] A substitute comes on from the near touchline over the first part of his minute.
+    if (subIn.has(String(id)) && u < SUB_WALK) { const w = u / SUB_WALK; wy = 700 + (wy - 700) * w; ny = wy + 3 }
+    lastSeen.set(String(id), [wx, wy])
     // His speed in decimetres a second of the broadcast (u runs over the minute's span), 0 once the minute holds.
     const vx = u >= 1 ? 0 : (nx - wx) / (du * span), vy = u >= 1 ? 0 : (ny - wy) / (du * span), speed = Math.hypot(vx, vy)
     const moving = speed > 12
@@ -636,6 +674,12 @@ function drawTv(tick, u) {
       else if (a.kind === 'slide') { t.f.slide(); t.lean = (t.face === 'side' ? t.mirror : 1) * 62 * Math.min(1, a.f * 2.5); t.bob = -16 * Math.min(1, a.f * 2.5) }
       else if (a.kind === 'dive') { t.f.dive(a.f); t.lean = a.dir * 82 * Math.min(1, a.f * 1.4); t.bob = Math.sin(Math.min(1, a.f * 1.4) * Math.PI) * 10 - 18 * Math.min(1, a.f * 1.4) }
       else if (a.kind === 'party' && !smooth.value) { t.f.celebrate(now / 1000 + t.ph); t.bob = Math.abs(Math.sin(now / 180 + t.ph)) * 6 }
+      // [Sprint 33 L1, L2, L4]
+      else if (a.kind === 'down') t.f.hangHead()
+      else if (a.kind === 'head-hands') t.f.handsOnHead()
+      else if (a.kind === 'gather') t.f.gather()
+      else if (a.kind === 'throw') t.f.throwOut(a.f)
+      else if (a.kind === 'fallen') { const d = Math.min(1, a.f * 4); t.f.fallen(); t.lean = (t.face === 'side' ? t.mirror : 1) * 84 * d; t.bob = -20 * d }
     }
     drawn.push(t)
     const d = Math.hypot(wx - bx, wy - by)
@@ -647,9 +691,26 @@ function drawTv(tick, u) {
     if (!t) t = refs[n] = { f: figure(officialKit(), '', { look: 9 + n * 11, flag: n ? '#F2E205' : undefined, shorts: '#111827', socks: '#111827', trim: '#F5B82E', build: 1 }), ph: n, sx: 0, sy: 0, scale: 1, bob: 0, face: 'front', mirror: 1, lean: 0 }
     const nx = R2.officials?.[n]?.[0] ?? o[0], ny = R2.officials?.[n]?.[1] ?? o[1], speed = u >= 1 ? 0 : Math.hypot(nx - o[0], ny - o[1]) / (du * span)
     if (speed > 12) facing(t, nx - o[0], ny - o[1]); else facing(t, bx - o[0], by - o[1])
-    const [sx, sy, sc] = proj(o[0], o[1])
+    // [Sprint 33 L2] At a foul the referee runs over to it (stopping 3 m short) and holds up the card.
+    let ox = o[0], oy = o[1]
+    const call = n === 0 ? act.call : null, at = call ? R.players[call.at] : null
+    if (at) { const w = Math.min(1, call.w * 2.2), d = Math.hypot(at[0] - ox, at[1] - oy) || 1, stop = Math.max(0, 1 - 30 / d); ox += (at[0] - ox) * stop * w; oy += (at[1] - oy) * stop * w; facing(t, at[0] - ox, at[1] - oy) }
+    const [sx, sy, sc] = proj(ox, oy)
     t.sx = sx; t.sy = sy; t.scale = sc * 0.46; t.f.face(t.face, t.mirror); t.bob = 0
-    if (!smooth.value) { if (speed > 12) { t.ph += dts * 9; t.f.run(t.ph, 0.6); t.bob = Math.abs(Math.sin(t.ph)) * 1.4 } else { t.ph += dts * 2; t.f.idle(t.ph) } } else t.f.pose()
+    t.f.showCard(null)
+    if (!smooth.value) { if (speed > 12 || (at && call.w < 0.45)) { t.ph += dts * 9; t.f.run(t.ph, 0.6); t.bob = Math.abs(Math.sin(t.ph)) * 1.4 } else { t.ph += dts * 2; t.f.idle(t.ph) } } else t.f.pose()
+    if (call?.card) t.f.showCard(call.card)
+    drawn.push(t)
+  }
+  // [Sprint 33 L3] The player taken off walks from where he was to the near touchline, and leaves.
+  for (const e of subs) {
+    const last = lastSeen.get(String(e.out)), side = players.value[e.out]?.side
+    if (!last || !side || R.players[e.out] || u >= SUB_WALK) continue
+    const t = tvFor(String(e.out), side), w = u / SUB_WALK, ox = last[0], oy = last[1] + (700 - last[1]) * w
+    const [sx, sy, sc] = proj(ox, oy)
+    t.sx = sx; t.sy = sy; t.scale = sc * 0.48; t.lean = 0; facing(t, 0, 1); t.f.face(t.face, t.mirror)
+    t.bob = 0
+    if (!smooth.value) { t.ph += dts * 5; t.f.run(t.ph, 0.3) } else t.f.pose()
     drawn.push(t)
   }
   let [px, py, ps] = proj(bx, by)
