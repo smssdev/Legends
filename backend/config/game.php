@@ -77,12 +77,15 @@ return [
         // or at once, in order, for unlock_coins (by slot number; the owner's first model, 2026-10-29). Teams held before it all stay.
         'slots' => ['open' => 2, 'every_days' => 10, 'unlock_coins' => [3 => 50, 4 => 100, 5 => 150, 6 => 200, 7 => 250, 8 => 300]],
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
-        'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
+        // [Sprint 40 B2] A league or a cup from two teams (the owner's, 2026-11-03): any number from two.
+        'min_teams' => 2, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
         // What the owner may choose [PLAN 2.3]. [UP9, UP17] The owner's spec (2026-10-26): one round a day; two days
         // to get ready in a free league, four or six in a customized one; at least half the real league's clubs.
-        'prep_days' => [2, 6], 'prep_days_options' => [2, 4, 6], 'free_prep_days' => 2, 'rounds_per_day' => [1, 1], 'starts_within_days' => 7,
-        'min_teams_share_bp' => 5000,
+        // [Sprint 40 B1] Or no preparation at all (0 days): the first round on the first day at its time after the start.
+        'prep_days' => [0, 6], 'prep_days_options' => [0, 2, 4, 6], 'free_prep_days' => 2, 'rounds_per_day' => [1, 1], 'starts_within_days' => 7,
+        // [Sprint 40 B2] No share of the real league's clubs any more: any number from min_teams.
+        'min_teams_share_bp' => 0,
         // [UP9] A league with the free settings costs nothing; a customized one this many coins per club, once. Its
         // rounds start at default_kickoff in the creator's own time zone unless the owner picks the hour (customized).
         'custom_coins_per_club' => 20, 'default_kickoff' => '21:00',

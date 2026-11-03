@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
+use App\Chat\ChatGroups;
 use App\Http\Controllers\Controller;
 use App\League\CoachSlots;
 use App\League\CupBracket;
@@ -65,6 +66,8 @@ class LeagueController extends Controller
         $data = $this->settings($request, true);
         self::slotsFit($data['round_times'] ?? [], $data['second_slot_minutes'] ?? null);
         $league = LeagueFactory::create($request->user(), $data);
+        // [Sprint 40 B3] The league's group from its first minute, while the coaches gather.
+        ChatGroups::forLeague($league);
 
         return response()->json(['league' => $this->leagueData($league->load('season', 'owner'), $request->user())], 201);
     }
@@ -425,7 +428,7 @@ class LeagueController extends Controller
         // A development league (never in production) is the developers' tool for a season in minutes: free, and with
         // the old freedom (a few clubs, one day to get ready, two rounds a day) so the clock can be raced.
         $dev = ! app()->isProduction() && ($creating ? $request->boolean('is_dev') : (bool) $request->route('league')?->is_dev);
-        $prep = $dev ? ['between:1,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
+        $prep = $dev ? ['between:0,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
         // [UP9] Every setting may be left out: the free league's own value takes its place (LeagueTiers).
         $rules = [
             'name' => ['nullable', 'string', 'max:60', new NotJunk],
@@ -479,7 +482,7 @@ class LeagueController extends Controller
             $full = $free['team_count'];
             $least = $dev ? (int) $c['min_teams'] : LeagueTiers::minClubs($full);
             if ($full > 0 && isset($data['team_count']) && ($data['team_count'] < $least || $data['team_count'] > $full)) {
-                throw ValidationException::withMessages(['team_count' => "عدد الأندية من {$least} إلى {$full}: نصف أندية الدوري الأصلي على الأقل."]);
+                throw ValidationException::withMessages(['team_count' => "عدد الأندية من {$least} إلى {$full}."]);
             }
             $changed = LeagueTiers::changed($data, $free);
             $data += $free;

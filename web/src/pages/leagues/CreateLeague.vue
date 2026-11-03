@@ -55,8 +55,8 @@ const loadError = ref('')
 const sending = ref(false)
 
 const fullTeams = computed(() => Math.min(20, templates.value.find((t) => t.name === template.value)?.clubs ?? 20))
-/** At least half the real league's clubs [UP9]. */
-const minTeams = computed(() => Math.min(fullTeams.value, Math.max(4, Math.ceil(fullTeams.value / 2))))
+/** [Sprint 40 B2] From two clubs (no share of the real league's any more). */
+const minTeams = computed(() => Math.min(fullTeams.value, 2))
 const count = computed(() => (custom.value ? teams.value : fullTeams.value))
 const rounds = computed(() => roundsFor(count.value))
 const lockFrom = computed(() => lockFromRound(rounds.value))
@@ -219,14 +219,15 @@ const field = (name: string) => error.value?.field(name) ?? ''
                   <output class="font-numbers text-4xl font-bold text-gold" aria-live="polite">{{ teams }}</output>
                   <button type="button" class="flex size-12 items-center justify-center rounded-lg bg-surface-raised text-2xl" :aria-label="$t('أكثر')" :disabled="teams >= fullTeams" @click="teams++">+</button>
                 </div>
-                <span class="text-xs text-text-muted">{{ $t('من {v0} (نصف أندية الدوري) إلى {v1}', { v0: minTeams, v1: fullTeams }) }}</span>
+                <span class="text-xs text-text-muted">{{ $t('من {v0} إلى {v1}', { v0: minTeams, v1: fullTeams }) }}</span>
                 <span v-if="field('team_count')" class="text-sm text-danger">{{ field('team_count') }}</span>
               </div>
               <fieldset class="flex flex-col gap-1.5">
                 <legend class="mb-1.5 text-sm font-bold">{{ $t('فترة الإعداد') }}</legend>
-                <div class="grid grid-cols-3 gap-1 rounded-lg bg-surface-sunk p-1">
-                  <button v-for="d in [2, 4, 6]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
-                    {{ d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}
+                <!-- [Sprint 40 B1] Or none: the first round on the first day after the start. -->
+                <div class="grid grid-cols-4 gap-1 rounded-lg bg-surface-sunk p-1">
+                  <button v-for="d in [0, 2, 4, 6]" :key="d" type="button" class="h-11 rounded-md font-bold" :class="prepDays === d ? 'bg-gold text-on-gold' : 'text-text-soft'" :aria-pressed="prepDays === d" @click="prepDays = d">
+                    {{ d === 0 ? $t('بلا إعداد') : d === 2 ? $t('يومان') : $t('{v0} أيام', { v0: d }) }}
                   </button>
                 </div>
               </fieldset>

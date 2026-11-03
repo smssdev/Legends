@@ -2724,4 +2724,6 @@ export const EN: Record<string, string> = {
   '10 مباريات': '10 matches',
   '100 فوز': '100 wins',
   '5 ألقاب': '5 titles',
+  'انتهى الدوري، وجروبه للقراءة فقط.': 'The league is over; its group is read-only.',
+  'بلا إعداد': 'No preparation',
 }

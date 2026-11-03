@@ -51,8 +51,8 @@ class LeagueTiersTest extends TestCase
     public function test_a_customized_league_costs_its_clubs_times_twenty_once_and_nothing_without_the_coins(): void
     {
         $owner = User::factory()->create();
-        // 9 of 18 clubs: the half is allowed, 8 is not.
-        $this->create($owner, ['team_count' => 8])->assertUnprocessable()->assertJsonValidationErrors('team_count');
+        // [Sprint 40 B2] Any number from two: one is not a league.
+        $this->create($owner, ['team_count' => 1])->assertUnprocessable()->assertJsonValidationErrors('team_count');
         $this->create($owner, ['team_count' => 9, 'prep_days' => 4])->assertConflict()->assertJsonPath('message', 'رصيد الكوينز لا يكفي.');
         $this->assertSame(0, DB::table('leagues')->count());
         Wallet::post($owner->id, 'daily', 500, 'seed');

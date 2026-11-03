@@ -280,7 +280,9 @@ const members = computed(() => (group.value?.members ?? []).map((m) => m.name).s
       <span class="min-w-0 flex-1 truncate border-s-2 border-gold-light ps-2 text-text-muted">{{ replyTo.body || (replyTo.kind === 'image' ? $t('صورة') : replyTo.kind === 'audio' ? $t('رسالة صوتية') : '') }}</span>
       <button class="size-9" :aria-label="$t('إلغاء الرد')" @click="replyTo = null">✕</button>
     </div>
-    <form class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3" @submit.prevent="send">
+    <!-- [Sprint 40 B3] A finished league's group: kept to read, no more messages. -->
+    <p v-if="group?.closed" class="bg-panel p-4 text-center text-sm text-text-muted pb-[max(1rem,env(safe-area-inset-bottom))]" role="status">{{ $t('انتهى الدوري، وجروبه للقراءة فقط.') }}</p>
+    <form v-else class="flex items-end gap-2 bg-panel p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pe-20 md:pe-3" @submit.prevent="send">
       <template v-if="recording">
         <button type="button" class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-sunk" :aria-label="$t('ألغِ التسجيل')" @click="dropRecording">✕</button>
         <span class="flex min-h-touch flex-1 items-center gap-2 rounded-3xl bg-surface-sunk px-4" role="status">
