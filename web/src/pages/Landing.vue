@@ -38,13 +38,14 @@ const FAQ = [
     <section class="hero theme-night relative overflow-hidden px-4 py-14 text-center md:py-24">
       <div class="relative mx-auto flex max-w-3xl flex-col items-center gap-5">
         <img :src="emblemSrc" alt="Game Legend Manager" class="size-28 drop-shadow-[0_10px_30px_rgba(245,184,46,0.35)] md:size-36" />
-        <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. -->
-        <p class="flex flex-col items-center leading-tight">
+        <!-- [Sprint 39 B1] The official name over the promise, the Arabic one under it in Arabic. [X97] The name is the
+             page's heading (what Google weighs most), the promise under it a paragraph: the same look. -->
+        <h1 class="flex flex-col items-center leading-tight">
           <span class="font-display text-2xl font-extrabold uppercase tracking-[0.12em] md:text-3xl" dir="ltr">Game Legend <span class="text-gold">Manager</span></span>
           <span v-if="locale === 'ar'" class="text-sm font-bold text-text-soft">المدرب الأسطورة</span>
-        </p>
+        </h1>
         <span class="rounded-pill bg-gold/15 px-4 py-1 text-sm font-bold text-gold">{{ $t('لعبة إدارة كرة قدم عربية مجانية') }}</span>
-        <h1 class="font-display text-4xl font-extrabold leading-tight md:text-6xl">{{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span></h1>
+        <p class="font-display text-4xl font-extrabold leading-tight md:text-6xl">{{ $t('دوريك. فريقك.') }} <span class="text-gold">{{ $t('أسطورتك.') }}</span></p>
         <p class="max-w-xl text-lg text-text-soft">{{ $t('درّب ناديك المفضل ضد أصحابك في دوريات خاصة، وأدر كل مباراة مباشرة لحظة بلحظة، من الجوال أو الكمبيوتر.') }}</p>
         <div class="flex flex-wrap justify-center gap-3">
           <RouterLink to="/register" class="flex h-12 items-center rounded-lg bg-gold px-7 text-lg font-bold text-on-gold">{{ $t('ابدأ مجاناً') }}</RouterLink>

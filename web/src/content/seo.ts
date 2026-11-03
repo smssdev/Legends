@@ -19,6 +19,8 @@ export interface PageSeo {
   title: { ar: string; en: string }
   description: { ar: string; en: string }
   keywords: { ar: string[]; en: string[] }
+  /** The page's own heading in the HTML the crawlers read first [X97]; the title when absent. */
+  heading?: { ar: string; en: string }
   /** Its place in sitemap.xml; a page without it is not indexed. */
   sitemap?: { priority: string; changefreq: 'daily' | 'weekly' | 'monthly' }
 }
@@ -27,7 +29,8 @@ export interface PageSeo {
 // [Sprint 39 B2] The owner's words first (simple and compound searches), in both languages on every page: a search in
 // either language finds the game.
 const COMMON = {
-  ar: ['Game Legend Manager', 'المدرب الأسطورة', 'لعبة المدرب الأسطورة', 'لعبة مدرب كرة قدم', 'المدرب الأفضل', 'لعبة كرة قدم تكتيكية', 'تدريب أندية أونلاين',
+  // [X97] The name as people type it: with and without the hamza, with ه for ة, and the short name GLM.
+  ar: ['Game Legend Manager', 'المدرب الأسطورة', 'المدرب الاسطورة', 'المدرب الاسطوره', 'لعبة المدرب الأسطورة', 'لعبة المدرب الاسطوره', 'GLM', 'لعبة GLM', 'لعبة مدرب كرة قدم', 'المدرب الأفضل', 'لعبة كرة قدم تكتيكية', 'تدريب أندية أونلاين',
     'بيع وشراء لاعبين', 'لعبة إدارة كرة القدم', 'مدير كرة القدم', 'لعبة كرة قدم أونلاين', 'لعبة كورة اون لاين', 'لعبة كرة قدم عربية', 'لعبة مدرب كورة',
     'Football Manager Web', 'Soccer Simulation Game', 'Best Online Football Tactics'],
   en: ['Game Legend Manager', 'GLM', 'Football Manager Web', 'Soccer Simulation Game', 'Best Online Football Tactics', 'football manager game',
@@ -40,12 +43,13 @@ export const PAGES: Record<string, PageSeo> = {
   home: {
     path: '/',
     title: {
-      ar: 'Game Legend Manager · المدرب الأسطورة: لعبة مدرب كرة قدم أونلاين مع أصحابك',
-      en: 'Game Legend Manager: the online football manager and soccer simulation game',
+      ar: 'Game Legend Manager (GLM) · المدرب الأسطورة: لعبة مدرب كرة قدم أونلاين مع أصحابك',
+      en: 'Game Legend Manager (GLM): the online football manager and soccer simulation game',
     },
+    heading: { ar: 'المدرب الأسطورة · Game Legend Manager (GLM)', en: 'Game Legend Manager (GLM) · المدرب الأسطورة' },
     description: {
-      ar: 'Game Legend Manager (المدرب الأسطورة) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: اختر ناديك الحقيقي، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية بالتكتيك والتبديلات، مع بيع وشراء اللاعبين والتدريب والملعب.',
-      en: 'Game Legend Manager is a free online football manager: pick a real club, start a private league with your friends, and run every match live with tactics and substitutions, plus the market, training and the stadium.',
+      ar: 'المدرب الأسطورة (Game Legend Manager، واختصاره GLM) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: اختر ناديك الحقيقي، وكوّن دورياً خاصاً مع أصحابك، وأدر المباراة حية بالتكتيك والتبديلات، مع بيع وشراء اللاعبين والتدريب والملعب.',
+      en: 'Game Legend Manager (GLM, المدرب الأسطورة) is a free online football manager: pick a real club, start a private league with your friends, and run every match live with tactics and substitutions, plus the market, training and the stadium.',
     },
     keywords: {
       ar: ['دوري خاص مع الأصدقاء', 'مباراة مباشرة', 'تكتيك كرة القدم', 'سوق الانتقالات', 'أندية حقيقية', 'لعبة مجانية', 'محاكاة مباريات كرة القدم'],
@@ -163,6 +167,25 @@ export function seoHead(page: PageSeo): string {
     `<meta name="twitter:description" content="${esc(description)}" />`,
     `<meta name="twitter:image" content="${SITE_URL}/brand/og-invite.png" />`,
   ].join('\n    ')
+}
+
+/**
+ * [X97] What a crawler reads in a page's HTML before the app starts: its heading, its description, and links to the
+ * other public pages (written into <div id="app"> by the build; the app replaces it when it mounts, so a visitor sees
+ * it only for the instant the game loads). The same words as the page itself, nothing hidden.
+ */
+export function seoBody(page: PageSeo): string {
+  const l = 'ar'
+  const links = Object.values(PAGES).filter((p) => p.sitemap && p.path !== page.path)
+    .map((p) => `<a href="${p.path}">${esc(p.title[l].split(/ \| |: /)[0])}</a>`).join(' · ')
+  return [
+    `<main class="seo-static">`,
+    `<img src="/icon-192.png" alt="المدرب الأسطورة · Game Legend Manager" width="96" height="96" />`,
+    `<h1>${esc((page.heading ?? page.title)[l])}</h1>`,
+    `<p>${esc(page.description[l])}</p>`,
+    `<nav>${links}</nav>`,
+    `</main>`,
+  ].join('')
 }
 
 /** sitemap.xml: the public pages, each with its English twin. */
