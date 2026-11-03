@@ -618,7 +618,10 @@ return [
     // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
     // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
     // clash_minutes of another match of its clubs.
-    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [2, 7], 'default_size' => 5],
+    // [Sprint 40 D1, D2] The owner's (2026-11-03): two to ten teams in all, two equal alliances (1 to 5 each); planned as the
+    // league is made it is formed this many minutes before its first round; the coach who goes on swaps up to swap_max.
+    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [1, 5], 'default_size' => 2,
+        'form_minutes' => 30, 'swap_max' => 3],
     // A round in two time slots [X31]: the league's gap to the second slot (min..max minutes; dev_minutes in a
     // development league), and the reminder to each coach remind_minutes before the round's one lock.
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],

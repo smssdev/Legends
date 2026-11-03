@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Auth\Username;
 use App\Chat\ChatGroups;
 use App\Http\Controllers\Controller;
+use App\League\Alliance;
 use App\League\CoachSlots;
 use App\League\CupBracket;
 use App\League\Integrity;
@@ -66,7 +67,17 @@ class LeagueController extends Controller
     {
         $data = $this->settings($request, true);
         self::slotsFit($data['round_times'] ?? [], $data['second_slot_minutes'] ?? null);
-        $league = LeagueFactory::create($request->user(), $data);
+        $alliance = $data['alliance'] ?? null;
+        unset($data['alliance']);
+        $league = DB::transaction(function () use ($request, $data, $alliance) {
+            $league = LeagueFactory::create($request->user(), $data);
+            // [Sprint 40 D1] Its alliance tournament, planned now and formed before its first round.
+            if ($alliance) {
+                Alliance::plan($league->load('season'), $request->user(), $alliance);
+            }
+
+            return $league;
+        });
         // [Sprint 40 B3] The league's group from its first minute, while the coaches gather.
         ChatGroups::forLeague($league);
 
@@ -470,6 +481,16 @@ class LeagueController extends Controller
                 'draw_users' => ['sometimes', 'array', 'max:'.$c['max_teams']],
                 'draw_users.*' => ['string', 'max:40', 'distinct'],
                 'draw_at' => ['sometimes', 'nullable', 'date'],
+                // [Sprint 40 D1] The alliance tournament planned with it: 1 to 5 teams an alliance, by the draw or the maker's split.
+                'alliance' => ['sometimes', 'nullable', 'array'],
+                'alliance.size' => ['required_with:alliance', 'integer', 'between:'.implode(',', config('game.alliance.sizes'))],
+                'alliance.assign' => ['sometimes', Rule::in(['draw', 'pick'])],
+                'alliance.a' => ['sometimes', 'array'],
+                'alliance.a.*' => ['string', 'max:40'],
+                'alliance.b' => ['sometimes', 'array'],
+                'alliance.b.*' => ['string', 'max:40'],
+                'alliance.first_round_at' => ['sometimes', 'nullable', 'date'],
+                'alliance.name' => ['sometimes', 'nullable', 'string', 'max:40'],
             ];
         }
         $data = $request->validate($rules);
