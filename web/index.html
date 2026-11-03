@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0B1A2C" />
     <!-- [Sprint 39 B1] The game's icons in every standard size and format, from the crest (brand/current). -->
-    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <!-- [X97] Google shows a site's favicon in its results only at 48 px or a multiple of it (48, 96, 192...): those first. -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -63,7 +67,7 @@
             "@type": "WebSite",
             "@id": "%VITE_SITE_URL%/#website",
             "name": "Game Legend Manager",
-            "alternateName": ["المدرب الأسطورة", "لعبة المدرب الأسطورة", "GLM"],
+            "alternateName": ["المدرب الأسطورة", "GLM", "Game Legend Manager (GLM)", "لعبة المدرب الأسطورة", "المدرب الاسطورة", "المدرب الاسطوره"],
             "url": "%VITE_SITE_URL%/",
             "inLanguage": ["ar", "en"]
           },
@@ -84,12 +88,12 @@
             "@type": "VideoGame",
             "@id": "%VITE_SITE_URL%/#game",
             "name": "Game Legend Manager",
-            "alternateName": ["المدرب الأسطورة", "GLM"],
-            "description": "Game Legend Manager (المدرب الأسطورة) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: دوريات خاصة مع الأصدقاء، ومباريات تُدار حية بالتكتيك والتبديلات، وبيع وشراء اللاعبين، وتدريب وملعب. A free online football manager and soccer simulation game.",
+            "alternateName": ["المدرب الأسطورة", "GLM", "لعبة المدرب الأسطورة", "المدرب الاسطورة"],
+            "description": "المدرب الأسطورة (Game Legend Manager، واختصاره GLM) لعبة مدرب كرة قدم تكتيكية مجانية أونلاين: دوريات خاصة مع الأصدقاء، ومباريات تُدار حية بالتكتيك والتبديلات، وبيع وشراء اللاعبين، وتدريب وملعب. A free online football manager and soccer simulation game.",
             "url": "%VITE_SITE_URL%/",
             "image": "%VITE_SITE_URL%/brand/og-invite.png",
             "publisher": { "@id": "%VITE_SITE_URL%/#org" },
-            "keywords": "Game Legend Manager, لعبة مدرب كرة قدم, المدرب الأفضل, لعبة كرة قدم تكتيكية, تدريب أندية أونلاين, بيع وشراء لاعبين, Football Manager Web, Soccer Simulation Game, Best Online Football Tactics",
+            "keywords": "Game Legend Manager, GLM, المدرب الأسطورة, لعبة المدرب الأسطورة, لعبة مدرب كرة قدم, المدرب الأفضل, لعبة كرة قدم تكتيكية, تدريب أندية أونلاين, بيع وشراء لاعبين, Football Manager Web, Soccer Simulation Game, Best Online Football Tactics",
             "genre": ["Sports", "Football manager", "Simulation", "Strategy"],
             "gamePlatform": ["Web browser", "Android", "iOS"],
             "applicationCategory": "GameApplication",
@@ -102,6 +106,16 @@
         ]
       }
     </script>
+    <!-- [X97] The page's own words, written into #app by the build for the crawlers (seoBody in src/content/seo.ts): a
+         calm loading screen for the instant before the app replaces them. -->
+    <style>
+      .seo-static { max-width: 36rem; margin: 14vh auto 0; padding: 0 1rem; text-align: center; line-height: 1.7; color: #C9D2E1; }
+      .seo-static h1 { margin: 0.75rem 0; font-size: 1.5rem; font-weight: 800; }
+      .seo-static nav { margin-top: 1rem; font-size: 0.9rem; }
+      .seo-static a { color: #F5B82E; }
+      html.light .seo-static { color: #2D4055; }
+      html.light .seo-static a { color: #7F5700; }
+    </style>
   </head>
   <body>
     <div id="app"></div>
