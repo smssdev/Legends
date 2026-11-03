@@ -61,6 +61,10 @@ class HomeController extends Controller
     public function achievements(Request $request): JsonResponse
     {
         $id = (int) ($request->validate(['user' => ['sometimes', 'integer', 'exists:users,id']])['user'] ?? $request->user()->id);
+        // [Sprint 40 A1] The coach's own: what he reached is paid before it is shown.
+        if ($id === $request->user()->id) {
+            Achievements::award($id);
+        }
 
         return response()->json(['achievements' => Achievements::of($id)]);
     }

@@ -53,7 +53,17 @@ class HomeDashboardTest extends TestCase
         $this->assertSame((int) config('game.rating.tiers.legend'), $all->firstWhere('key', 'legend')['goal']);
         DB::table('suggestions')->insert(['user_id' => $coach->id, 'title' => 'فكرة', 'body' => 'نص', 'status' => 'accepted', 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
         $idea = collect($this->getJson('/api/v1/home/achievements')->json('achievements'))->firstWhere('key', 'idea');
-        $this->assertSame(['key' => 'idea', 'goal' => 1, 'progress' => 1, 'earned' => true], $idea);
+        $this->assertSame(['key' => 'idea', 'goal' => 1, 'progress' => 1, 'earned' => true, 'tier' => 'beginner', 'reward' => 10, 'paid' => true], $idea);
+        // [Sprint 40 A1] Its coins once, with a message, however often the badges are looked at.
+        $this->getJson('/api/v1/home/achievements')->assertOk();
+        $this->assertSame(10, Wallet::balance($coach->id));
+        $this->assertSame(1, DB::table('wallet_transactions')->where('user_id', $coach->id)->where('type', 'achievement')->count());
+        $this->assertSame(1, DB::table('messages')->where('user_id', $coach->id)->where('type', 'achievement')->count());
+        // Every badge has a level and the level's coins.
+        foreach ($all as $b) {
+            $this->assertSame(config('game.achievement_rewards.'.$b['tier']), $b['reward'], $b['key']);
+        }
+        $this->assertEqualsCanonicalizing(['beginner', 'intermediate', 'pro'], $all->pluck('tier')->unique()->values()->all());
         // Another coach's, public like the ranking.
         $this->getJson('/api/v1/home/achievements?user='.$coach->id)->assertOk()->assertJsonCount(count(config('game.achievements')), 'achievements');
     }

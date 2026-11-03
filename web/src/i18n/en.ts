@@ -2717,4 +2717,11 @@ export const EN: Record<string, string> = {
   'توقّع مع {v0}؟': 'Sign {v0}?',
   'يُخصم {v0} من أموال النادي، ويُحسب من توقيعات الموسم.': '{v0} is taken from club money, and it counts toward this season\'s signings.',
   'أُرسل عرضك لمدرب {v0}. تابعه في المفاوضات.': 'Your offer was sent to {v0}\'s coach. Follow it in Negotiations.',
+  'مستوى {v0}': '{v0} level',
+  '{v0} كوينز للوسام': '{v0} coins a badge',
+  'المبتدئ': 'Beginner',
+  'المتوسط': 'Intermediate',
+  '10 مباريات': '10 matches',
+  '100 فوز': '100 wins',
+  '5 ألقاب': '5 titles',
 }
