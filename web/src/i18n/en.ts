@@ -2722,4 +2722,12 @@ export const EN: Record<string, string> = {
   'والحكم يحتسب خطأ': 'and the referee gives the foul',
   'عرقلة من {v0}': 'Tripped by {v0}',
   'خطأ على {v0}': 'Foul on {v0}',
+  'أنقذها من على الخط!': 'Cleared off the line!',
+  'مصيدة التسلل!': 'Offside trap!',
+  'المدرب غاضب!': 'The coach is furious!',
+  'انزلاق!': 'Slip!',
+  'والكرة لـ{v0}': 'and {v0} takes the ball',
+  'انزلق في المطر': 'Slipped in the rain',
+  'تصدٍّ مزدوج!': 'Double save!',
+  'المدرب ينفجر!': 'The coach explodes!',
 }

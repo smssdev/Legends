@@ -54,7 +54,10 @@ return [
             // injury and a sub too (they were a card and one line since X94). A foul is one in three (MomentClock::foul).
             'quiet' => 1000, 'attack' => 1200, 'brief' => 2600, 'stoppage' => 2600, 'whistle' => 10000, 'coach' => 2600,
             'sub' => 7000, 'injury' => 8000, 'offside' => 2600, 'corner' => 2600, 'miss' => 8000, 'save' => 8000,
-            'goal' => 20000, 'yellow' => 9500, 'red' => 13000, 'foul' => 7500, 'free_kick' => 11000, 'free_kick_goal' => 19000,
+            'goal' => 20000, 'yellow' => 9500, 'red' => 13000, 'foul' => 7500,
+            // [Sprint 40 F] The second set's gags, each a short scene (3 to 5 s): a clearance off the line, the offside
+            // trap, the coach's megaphone, a slip in the rain.
+            'clearance' => 6000, 'trap' => 5200, 'rant' => 5200, 'slip' => 5200, 'free_kick' => 11000, 'free_kick_goal' => 19000,
             'penalty' => 15000, 'penalty_goal' => 21000,
             // [Sprint 36 F5] A half's end (whistle, 10 s): its board, then the walk to the tunnel or the handshakes.
             // [Sprint 35 C3] A goal ruled out by VAR: the ball in, the check, no goal, and the coaches.

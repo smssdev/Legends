@@ -317,7 +317,7 @@ class MatchRunner
         // The engine's debug values are for the simulator's developer panel only. A rejected order reaches
         // its own coach only (Simulator::redact), never the broadcast.
         $tick = array_diff_key(Commentary::annotate($state, $state['out']), ['debug' => 1]) + ['frames' => $choreo['frames'], 'teams' => Simulator::teams($state),
-            'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1)),
+            'moment' => $m = MomentClock::moment($state['out']['events'], $state['cfg']['match'], (int) ($state['out']['period'] ?? 1), (int) $state['seed']),
             'voice' => Voice::for($state['out']['events'], $m['kind'], (int) $state['seed'], (int) $state['out']['tick']),
             // [X42] Play stops after this minute: the coach's window.
             'window' => CoachWindows::window($state['out'], $state['cfg']['match']),

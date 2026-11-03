@@ -28,6 +28,9 @@ check(director({ scene: 'card', side: 'away', data: { type: 'yellow' } }, tick, 
 // [Sprint 40] A red card told as a fight or a spit already has its tempers: no brawl cutaway after it, only the coach.
 for (const drama of ['brawl', 'spit']) check(names(director({ scene: 'card', side: 'away', data: { type: 'red', drama } }, tick, 30, 6.6, { tier: 'high' })) === 'coachReact', `a red card told as ${drama}: the coach only`)
 check(names(director({ scene: 'card', side: 'away', data: { type: 'red', drama: 'tackle' } }, tick, 30, 6.6, { tier: 'high' })) === 'brawl,coachReact', 'a red card after a plain tackle: the brawl, then the coach')
+// [Sprint 40 F6] A big chance blasted over the bar: the coach's meltdown; a miss wide: his worry, as before.
+check(names(director({ scene: 'miss', side: 'home', data: { how: 'over' } }, tick, 30, 5, { tier: 'mid' })) === 'meltdown', 'a chance over the bar: the meltdown')
+check(names(director({ scene: 'miss', side: 'home', data: { how: 'wide' } }, tick, 30, 5, { tier: 'mid' })) === 'coachReact', 'a chance wide: the worried coach')
 check(names(director({ scene: 'whistle', side: 'home', data: { name: 'halftime' } }, tick, 30, 3.6, { tier: 'high' })) === 'tunnel', 'half time: the tunnel')
 check(names(director({ scene: 'whistle', side: 'home', data: { name: 'fulltime' } }, tick, 30, 3.6, { tier: 'high' })) === 'handshake,coachReact,coachReact', 'full time: the handshake, then the coaches')
 check(names(director({ scene: 'var', side: 'home', data: {} }, tick, 30, 8.2, { tier: 'high' })) === 'coachReact,coachReact', 'VAR: both coaches')

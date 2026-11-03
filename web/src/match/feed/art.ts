@@ -370,8 +370,8 @@ function boom(svg, p = svg.world, word = 'POW!', fill = '#FFD400', ink = '#B91C1
   return (x, y, f) => { const on = f > 0 && f < 1; sa(g, 'opacity', on ? 1 - seg(f, 0.6, 1) : 0); if (on) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(0.3 + ease(Math.min(1, f * 2.2)) * 0.9).toFixed(2)}) rotate(${Math.round(f * 20)})`) }
 }
 // A puff of dust on the grass (a slide, a fall, the medics' sprint).
-function dust(svg, p = svg.world, n = 8) {
-  const ps = Array.from({ length: n }, () => el('circle', { fill: '#D9C9A8', opacity: 0 }, p))
+function dust(svg, p = svg.world, n = 8, color = '#D9C9A8') {
+  const ps = Array.from({ length: n }, (_, i) => el('circle', { fill: Array.isArray(color) ? color[i % color.length] : color, opacity: 0 }, p))
   return (x, y, f) => ps.forEach((c, i) => {
     const on = f > 0 && f < 1, a = (i / n) * Math.PI * 2, d = 8 + ease(f) * 28
     sa(c, 'opacity', on ? (0.75 * (1 - f)).toFixed(2) : 0)
@@ -383,6 +383,13 @@ function dizzy(svg, p = svg.world) {
   const g = el('g', { opacity: 0 }, p)
   const items = Array.from({ length: 5 }, (_, i) => { const e = el('g', {}, g); e.innerHTML = i % 2 ? '<path d="M-5 0 Q-2.5 -4 0 0 Q2.5 -4 5 0" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>' : '<polygon points="0,-5 1.5,-1.5 5,-1.5 2.2,1 3.2,4.8 0,2.6 -3.2,4.8 -2.2,1 -5,-1.5 -1.5,-1.5" fill="#FFD400"/>'; return e })
   return (x, y, t, on) => { sa(g, 'opacity', on ? 1 : 0); if (on) items.forEach((e, i) => { const a = t * 5 + (i * Math.PI * 2) / items.length; sa(e, 'transform', `translate(${(x + Math.cos(a) * 20).toFixed(1)} ${(y + Math.sin(a) * 6).toFixed(1)})`) }) }
+}
+// [Sprint 40 F] The classic cartoon shock: the eyes pop out of the head on stalks, looking dir (-1 left, 1 right).
+function popEyes(svg, p = svg.world) {
+  const g = el('g', { opacity: 0 }, p)
+  g.innerHTML = [-6, 6].map((dx) => `<path d="M${dx * 0.4} 6 Q${dx} -4 ${dx * 1.6} -14" stroke="#C99A78" stroke-width="2" fill="none"/><g transform="translate(${dx * 1.6} -18)"><circle r="7" fill="#fff" stroke="#111" stroke-width="1.4"/><circle data-pupil="1" r="3.2" fill="#111"/></g>`).join('')
+  const pupils = [...g.querySelectorAll('[data-pupil]')]
+  return (x, y, f, dir = 1) => { sa(g, 'opacity', f > 0 ? 1 : 0); if (f > 0) { sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(0.4 + 0.8 * ease(Math.min(1, f))).toFixed(2)})`); pupils.forEach((pu) => sa(pu, 'cx', dir * 3)) } }
 }
 // A speech bubble of comic swearing (or a scream); k scales it.
 function bubbleOf(svg, p = svg.world, text = '#@!%&!', ink = '#D21F1F') {
@@ -535,6 +542,14 @@ function openPlay(e, outcome, KT) {
   const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
   const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
   const party = outcome === 'goal' ? pick(['corner', 'slide', 'leap', 'crowd', 'pile']) : null
+  // [Sprint 40 F] The server's telling of the move (e.drama): a nutmeg on the marker before the shot, a no-look pass
+  // that pops the defenders' eyes out, a bicycle kick from the cross; a double save keeps the ball alive (a parry).
+  const drama = e.drama, nut = drama === 'nutmeg' && (q === 'big' || q === 'normal'), look = drama === 'nolook', bike = drama === 'bicycle' && q === 'header'
+  if (drama === 'double' && outcome === 'save') after = 'parry'
+  const tN = lerp(tP1, tS, 0.45)
+  const aura = nut ? el('circle', { r: 22, fill: 'none', stroke: '#FFD36B', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, w) : null
+  const daze = nut ? dizzy(svg) : null
+  const pop = look ? [popEyes(svg), popEyes(svg)] : null
   const out = side > 0 ? 1 : -1
   let landed = null
 
@@ -551,17 +566,21 @@ function openPlay(e, outcome, KT) {
     const pt = seg(t, 0, tP0), fw = ease(seg(t, tP0 + 0.25, KT + 1)) * 0.35
     put(passer, lerp(lerp(pFrom[0] + side * 18, pFrom[0], ease(pt)), spot[0], fw), lerp(pFrom[1], spot[1] + 20, fw))
     if (t < tP0 - 0.15) passer.run(t * 12); else if (t < tP0 + 0.25) passer.kick(seg(t, tP0 - 0.15, tP0 + 0.15)); else passer.run(t * 12, fw < 0.35 ? 0.8 : 0.1)
+    // The no-look pass: he looks hard the other way while the ball goes this way.
+    if (look) passer.face?.(t < tP0 + 0.4 ? 'side' : 'back', recv[0] > pFrom[0] ? -1 : 1)
 
     // The shooter: runs onto it, a touch to set himself, the strike (or the leap for a header).
     let sx, sy, lift = 0
     if (t < tP1) { const f = inout(seg(t, 0.1, tP1)); sx = lerp(sFrom[0], recv[0], f); sy = lerp(sFrom[1], recv[1], f) }
     else { const f = inout(seg(t, tP1, tS)); sx = lerp(recv[0], spot[0], f); sy = lerp(recv[1], spot[1], f) }
-    if (q === 'header') lift = 26 * Math.sin(Math.PI * seg(t, tS - 0.32, tS + 0.3))
+    if (q === 'header') lift = (bike ? 44 : 26) * Math.sin(Math.PI * seg(t, tS - (bike ? 0.45 : 0.32), tS + 0.3))
     // [Sprint 40 C1] A dangerous run: he weaves past his man in a zig-zag before the shot.
     if ((q === 'big' || q === 'normal') && t > tP1 - 0.1 && t < tS) sx += Math.sin((t - tP1) * 15) * 10 * seg(t, tP1 - 0.1, tP1 + 0.15) * (1 - seg(t, tS - 0.3, tS - 0.08))
     // Round the keeper: a touch past him to the side, then the finish.
     if (finish === 'round') sx -= side * 36 * ease(seg(t, tS - 0.5, tS - 0.05))
-    put(sh, sx, sy, q === 'header' ? -side * 8 * seg(t, tS - 0.3, tS) : 0, 1, lift)
+    // The bicycle kick: he turns right over in the air, his back to the goal, and lands.
+    const flip = bike ? 190 * inout(seg(t, tS - 0.45, tS)) * (1 - inout(seg(t, tS + 0.1, tS + 0.45))) : 0
+    put(sh, sx, sy, bike ? -side * flip : q === 'header' ? -side * 8 * seg(t, tS - 0.3, tS) : 0, 1, lift)
     if (t > KT + 0.5 && outcome === 'goal') {
       // [Sprint 36 F1] The celebration, one of five (from the scene's seed): away to the corner flag arms out, a
       // slide on his knees, a leap punching the air, arms wide towards the crowd, or his team-mates piling on him.
@@ -580,6 +599,7 @@ function openPlay(e, outcome, KT) {
       put(mate, lerp(640 - lx - side * 10, lerp(spot[0], spot[0] + out * 150, c) - out * 18 * (1 - near), c), lerp(214, spot[1] + 30, c)); mate.celebrate(t + 0.4)
       if (party === 'pile') { const pc = ease(seg(t, KT + 0.8, KT + 2.4)); put(passer, lerp(spot[0] - side * 60, spot[0] + out * 66, pc), lerp(spot[1] + 30, spot[1] + 26, pc)); passer.pose(6, -6, 120, -60) }
     } else if (t > KT + 0.3 && outcome !== 'goal') sh.despair()
+    else if (bike && t > tS - 0.45 && t < tS + 0.45) sh.pose(30, -150 * Math.sin(Math.PI * seg(t, tS - 0.3, tS + 0.1)), 120, -120, 0.2, 0)
     else if (q === 'header' && t > tS - 0.35) sh.pose(10, -10, 60, -60, 0.4, 0.4)
     else if (t > tS - 0.32 && t < tS + 0.3) sh.kick(seg(t, tS - 0.32, tS + 0.12))
     else sh.run(t * 13, t < tS ? 1 : 0.2)
@@ -589,8 +609,27 @@ function openPlay(e, outcome, KT) {
     let mx = lerp(sFrom[0] + side * 30, sx + side * 16, mk), my = lerp(sFrom[1] - 12, sy - 8, mk), mr = 0
     let low = 0
     if (outcome === 'blocked') { const sl = ease(seg(t, tS - 0.3, KT)); mx = lerp(mx, target[0] + side * 10, sl); my = lerp(my, target[1] + 6, sl); mr = -side * 72 * sl; low = -30 * persp(my) * sl }
-    put(marker, mx, my, mr, 1, low); outcome === 'blocked' && t > tS - 0.3 ? marker.pose(30, -30, 80, -40) : marker.run(t * 12.5, mk < 1 ? 1 : 0.3)
-    if (outcome === 'goal' && t > KT + 0.4) marker.despair()
+    // The nutmeg: the marker squares up in front of him, the ball goes through his legs, his legs twist round in a
+    // corkscrew and he goes down on his back with stars round his head.
+    if (nut && t > tN - 0.45) { const st = ease(seg(t, tN - 0.45, tN - 0.2)); mx = lerp(mx, sx - side * 16, st); my = lerp(my, sy - 16, st) }
+    // The close-up on the feet for the nutmeg, then back out for the shot.
+    if (nut) { const z = ease(seg(t, tN - 0.4, tN - 0.15)) * (1 - ease(seg(t, tN + 0.55, tN + 0.85))); if (z > 0) cam(svg, lerp(1.18, 1.9, z), lerp(320, sx, z), lerp(168, sy - 14, z)) }
+    const twist = nut ? seg(t, tN, tN + 0.35) : 0, down = nut ? ease(seg(t, tN + 0.3, tN + 0.55)) : 0
+    put(marker, mx, my, nut ? -side * (twist * 540 * (1 - down) + 90 * down) : mr, 1, nut ? -24 * persp(my) * down : low)
+    if (nut && t > tN) marker.pose(-20 + 40 * Math.sin(t * 30) * (1 - down), 20 - 40 * Math.sin(t * 30) * (1 - down), 60, -60)
+    else { outcome === 'blocked' && t > tS - 0.3 ? marker.pose(30, -30, 80, -40) : marker.run(t * 12.5, mk < 1 ? 1 : 0.3) }
+    if (outcome === 'goal' && t > KT + 0.4 && !nut) marker.despair()
+    if (nut) {
+      daze(mx + side * 14 * persp(my), my - 20 * persp(my), t, t > tN + 0.5)
+      const on = seg(t, tN - 0.05, tN + 0.1) * (1 - seg(t, tS - 0.1, tS + 0.2)), s0 = persp(sy)
+      sa(aura, 'opacity', on); if (on > 0) sa(aura, 'transform', `translate(${sx.toFixed(1)} ${(sy - 30 * s0).toFixed(1)}) scale(${(s0 * (1.6 + 0.15 * Math.sin(t * 16))).toFixed(2)} ${(s0 * 2.4).toFixed(2)})`)
+    }
+    // The no-look pass: both defenders' eyes pop out on stalks, following the ball the wrong way.
+    if (look) {
+      const f = seg(t, tP0, tP0 + 0.12) * (1 - seg(t, tP0 + 0.85, tP0 + 1.0)), dir = recv[0] > pFrom[0] ? 1 : -1
+      const cx = lerp(320 - side * 40, lerp(spot[0], 320, 0.55), ease(seg(t, 0.3, tS))), cy = lerp(204, 196, ease(seg(t, 0.3, tS)))
+      pop[0](cx, cy - 80 * persp(cy), f, dir); pop[1](mx, my - 80 * persp(my), f, dir)
+    }
 
     // The keeper: on his line (or rushing out one on one), then the dive.
     const ky = LINE + 2 + kRush * ease(seg(t, tP0, tS))
@@ -616,6 +655,8 @@ function openPlay(e, outcome, KT) {
     } else if (t < tS) {
       if (q === 'header') { bx = recv[0]; by = recv[1] - 46; gr = recv[1] }
       else { bx = sx + side * -3 + Math.sin(t * 13) * 2; by = sy + 2; gr = by }
+      // Through his legs, and collected on the other side.
+      if (nut && t > tN - 0.15 && t < tN + 0.25) { const f = seg(t, tN - 0.15, tN + 0.25); by = lerp(sy + 2, sy - 30, Math.sin(Math.PI * f) * 0.9); gr = by }
     } else if (t < KT) {
       const f = seg(t, tS, KT), from = q === 'header' ? [spot[0], spot[1] - 46] : strike
       const p = bez([from, path[1], target], f); bx = p[0]; by = p[1]; gr = groundOf(f)
@@ -639,7 +680,7 @@ function openPlay(e, outcome, KT) {
     // [Sprint 40 C2] The net stretches far back, as in a cartoon; the woodwork wobbles hard.
     if (after === 'net') G.bulge(target[0], target[1] - 8, 1.9 * seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.3, KT + 1.3)))
     if (after === 'post') { const wob = seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 1.0)); sa(G.frame, 'transform', `translate(${(Math.sin(t * 70) * 4.5 * wob).toFixed(1)} ${(Math.cos(t * 55) * 1.5 * wob).toFixed(1)})`) }
-    return { target, sx, sy, tS, dir: [spot[0] - sFrom[0], spot[1] - sFrom[1]], ball: [bx, by], sh, kp, glove, after }
+    return { target, sx, sy, tS, tN, dir: [spot[0] - sFrom[0], spot[1] - sFrom[1]], ball: [bx, by], sh, kp, glove, after, b, mate, trl }
   } }
 }
 
@@ -648,21 +689,46 @@ function openPlay(e, outcome, KT) {
 export const SCENES = {
   goal(e) {
     const KT = 3.0, { svg, go } = openPlay(e, 'goal', KT), dg = danger(svg), cf2 = confetti(svg)
+    const bike = e.drama === 'bicycle' && e.quality === 'header', dark = e.drama === 'blackout'
+    // [Sprint 40 F5] The bicycle kick in slow motion: the build-up quicker, the flip and the strike slower, the ball in
+    // at the same instant (KT), with a trail of fire and black bars as at the cinema.
+    const warp = (t) => { if (!bike || t <= 0.4 || t >= KT) return t; const s = (t - 0.4) / (KT - 0.4); return 0.4 + (KT - 0.4) * (s < 0.5 ? s * 1.3 : 0.65 + (s - 0.5) * 0.7) }
+    const fire = bike ? flame(svg) : null, bars = bike ? el('g', { opacity: 0 }, svg) : null
+    if (bars) bars.innerHTML = '<rect width="640" height="38" fill="#000"/><rect y="302" width="640" height="38" fill="#000"/>'
+    // [Sprint 40 F9] The blackout: the lights go just before the shot, only eyes in the dark, a click, and the lights
+    // come back with the ball in the net.
+    const black = dark ? el('g', { opacity: 0 }, svg) : null
+    if (black) black.innerHTML = '<rect width="640" height="340" fill="#02030A"/>' + [[320, 120], [250, 210], [400, 200], [180, 250], [470, 260], [330, 230]].map(([x, y], i) => `<g data-eyes="${i}" transform="translate(${x} ${y})"><ellipse cx="-6" rx="4.5" ry="5.5" fill="#fff"/><ellipse cx="6" rx="4.5" ry="5.5" fill="#fff"/><circle data-p="1" cx="-6" r="2" fill="#000"/><circle data-p="1" cx="6" r="2" fill="#000"/></g>`).join('') + '<text data-click="1" x="320" y="70" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="34" fill="#FFD400" opacity="0">*CLICK*</text>'
+    const pupils = black ? [...black.querySelectorAll('[data-p]')] : [], click = black?.querySelector('[data-click]')
     const num = bigNumber(svg, e.no, K(e.side).kit), fl = flash(svg), cf = flashes(svg), tt = title(svg, tr('هدف!'))
+    let last = null
     return { dur: 6.0, svg, update(t) {
-      const r = go(t); dg(t, r); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
+      const u = warp(t), r = go(u); dg(u, r); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
       fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16)
       // [Sprint 40 C2] The net stretches, the screen shakes, and the confetti rains on the celebration.
       shakeIt(svg, 7 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.6)), t)
       cf2(t - KT - 0.3)
-      tt(seg(t, KT + 0.2, KT + 0.6))
+      if (bike) {
+        sa(bars, 'opacity', seg(t, 1.6, 1.9) * (1 - seg(t, KT + 0.2, KT + 0.5)))
+        fire(r.ball[0], r.ball[1], last ? r.ball[0] - last[0] : 1, last ? r.ball[1] - last[1] : 0, u > r.tS && u < KT)
+        last = r.ball
+      }
+      if (dark) {
+        const off = seg(t, r.tS - 0.25, r.tS - 0.15) * (1 - seg(t, KT + 0.6, KT + 1.0))
+        sa(black, 'opacity', off.toFixed(2))
+        // The eyes blink and dart about in the dark.
+        pupils.forEach((p, i) => sa(p, 'transform', `translate(${(Math.sin(t * 5 + i) * 2).toFixed(1)} 0)`))
+        sa(click, 'opacity', seg(t, KT + 0.4, KT + 0.45) * (1 - seg(t, KT + 0.8, KT + 1.0)))
+      }
+      tt(seg(t, dark ? KT + 0.9 : KT + 0.2, dark ? KT + 1.3 : KT + 0.6))
     } }
   },
   save(e) {
     const KT = 2.9, { svg, go } = openPlay(e, 'save', KT), dg = danger(svg), fire = flame(svg), pow = boom(svg, svg.world, 'BOOM!')
+    const double = e.drama === 'double', pow2 = double ? boom(svg, svg.world, 'BOOM!') : null, blue = double ? tint(svg, '#3B82F6') : null
     const ring = el('circle', { r: 26, fill: 'none', stroke: '#2BB673', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, svg.world)
-    const tt = title(svg, tr('تصدٍّ رائع'), '#2BB673')
-    let last = null
+    const tt = title(svg, double ? tr('تصدٍّ مزدوج!') : tr('تصدٍّ رائع'), '#2BB673')
+    let last = null, land = null
     return { dur: 5.4, svg, update(t) {
       const r = go(t), { target } = r; dg(t, r)
       // [Sprint 40 C3] The shot a fireball to the top corner; the keeper's fingertips go BOOM.
@@ -670,9 +736,31 @@ export const SCENES = {
       fire(r.ball[0], r.ball[1], last ? r.ball[0] - last[0] : 1, last ? r.ball[1] - last[1] : 0, fly)
       last = r.ball
       pow(target[0], target[1], seg(t, KT - 0.02, KT + 0.7))
-      shakeIt(svg, 4 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.4)), t)
+      shakeIt(svg, 4 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.4)) + (double ? 4 * seg(t, KT + 1.35, KT + 1.38) * (1 - seg(t, KT + 1.4, KT + 1.7)) : 0), t)
       const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
-      tt(seg(t, KT + 0.3, KT + 0.7))
+      // [Sprint 40 F2] The double save: the rebound falls to a team-mate who hits it at once; the keeper, still on the
+      // ground, pushes off with one hand and flings himself across to block it with his foot.
+      if (double) {
+        const dx = Math.sign(target[0] - 320) || 1, reb = [target[0] + dx * 96, 196], aim = [320 - dx * 34, 128]
+        if (t < KT + 0.9) land = r.glove ?? land
+        const L = land ?? [target[0], LINE - 6]
+        if (t > KT + 0.3) {
+          const run = ease(seg(t, KT + 0.3, KT + 0.85)); put(r.mate, lerp(reb[0] + dx * 40, reb[0] + dx * 10, run), reb[1] + 36)
+          t > KT + 0.8 && t < KT + 1.1 ? r.mate.kick(seg(t, KT + 0.8, KT + 1.05)) : t > KT + 1.5 ? r.mate.pose(3, -3, 150, -150) : r.mate.run(t * 13, 1 - run)
+        }
+        if (t > KT + 0.95) {
+          const f = seg(t, KT + 0.95, KT + 1.35), up = Math.sin(Math.PI * Math.min(1, f * 1.1)), s0 = persp(LINE)
+          const kx = lerp(L[0], aim[0] + dx * 10, ease(f)), ky = lerp(L[1] + 20 * s0, aim[1] + 30, ease(f)) - up * 26
+          r.kp.at(kx, ky, -dx * (90 + 300 * ease(f)), s0); r.kp.pose(lerp(10, 80, f), -lerp(10, 110, f), 40 + 60 * (1 - f), -150)
+          let p, gr
+          if (t < KT + 1.35) { const g = seg(t, KT + 1.0, KT + 1.35); p = bez([reb, [lerp(reb[0], aim[0], 0.5), 150], aim], g); gr = lerp(reb[1], LINE, g) }
+          else { const g = ease(seg(t, KT + 1.35, KT + 2.1)); p = bez([aim, [aim[0] - dx * 60, 60], [aim[0] - dx * 190, 150]], g); gr = lerp(LINE, 150, g) }
+          r.b.set(p[0], p[1], gr, t * 1800, 1 - seg(t, KT + 1.9, KT + 2.1))
+          pow2(aim[0], aim[1], seg(t, KT + 1.33, KT + 2.0))
+          blue(0.3 * seg(t, KT + 1.35, KT + 1.42) * (1 - seg(t, KT + 1.55, KT + 1.9)))
+        }
+      }
+      tt(seg(t, double ? KT + 1.5 : KT + 0.3, double ? KT + 1.9 : KT + 0.7))
     } }
   },
   miss(e) {
@@ -1129,6 +1217,197 @@ export const SCENES = {
       mate.face?.('front'); mate.mood('sad'); mate.at(420, 196, 0, 1.3)
       if (t < 1.3) { const wv = Math.sin(t * 12) * 24; mate.pose(3, -3, 150 + wv, -150 - wv) } else if (t > 3.0 && t < 3.6) { mate.mood('shock'); mate.pose(3, -3, 40, -40) } else mate.despair()
       tt(seg(t, 0.2, 0.6))
+    } }
+  },
+  // [Sprint 40 F1] Cleared off the line: the shot beats the diving keeper and rolls slowly towards the empty net; a
+  // defender comes from nowhere in a slide and a cloud of dust and kicks it off the line. A "!" over the striker,
+  // and the camera pulls back on his team-mates' despair.
+  clearance(e) {
+    const R = rnd(e.v ?? (e.no ?? 9) * 53), svg = stage(e.side), w = svg.world, G = goalFrame(svg), atk = K(e.side).kit, dfk = K(other(e.side)).kit
+    const kp = keeper(svg, other(e.side), Math.floor(R() * 40))
+    const mates = [0, 1].map(() => player(w, atk, '', 1, { look: Math.floor(R() * 40) }))
+    const sh = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) }), df = player(w, dfk, e.defNo ?? '', 1, { look: Math.floor(R() * 40) })
+    const b = ball(svg), sl = speedLines(svg, w, 7), dst = dust(svg, w, 10), kick = boom(svg, w, 'WHACK!', '#E9EEF6', '#1E3A8A')
+    const bang = el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 34, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, w); bang.textContent = '!'
+    const tt = title(svg, tr('أنقذها من على الخط!'), '#7FB4FF')
+    const KT = 2.4, dir = R() < 0.5 ? -1 : 1, from = [320 + dir * 30, 236], line = [320 - dir * 20, LINE + 4], away = [320 + dir * 230, 120]
+    return { dur: 4.2, svg, update(t) {
+      // The camera on the goal, then pulled back for the despair.
+      const back = ease(seg(t, KT + 0.2, KT + 1.2)); cam(svg, lerp(1.22, 0.96, back), 320, lerp(170, 200, back))
+      // The striker shoots past the keeper (0.5), then stands there, hands on his head.
+      put(sh, from[0] + dir * 6, from[1] + 10)
+      if (t < 0.35) sh.run(t * 12, 0.6); else if (t < 0.65) sh.kick(seg(t, 0.35, 0.6)); else if (t < KT) sh.pose(3, -3, 30, -30); else { sh.face?.('front'); sh.mood('shock'); sh.pose(3, -3, 150, -150) }
+      const [hx, hy] = [from[0] + dir * 6, from[1] + 10 - 100 * persp(from[1] + 10)]
+      sa(bang, 'opacity', seg(t, KT + 0.05, KT + 0.15)); sa(bang, 'x', hx); sa(bang, 'y', hy - Math.abs(Math.sin(t * 9)) * 4)
+      // The keeper dives the wrong way and stays down.
+      if (t < 0.55) ready(kp, 320, LINE + 2, t, 1.3); else dive(kp, 320, LINE + 2, 320 + dir * 70, 120, seg(t, 0.55, 0.95), seg(t, 1.0, 1.5))
+      // The ball: a slow, slow roll towards the line, then kicked away.
+      let p, gr
+      if (t < 0.6) { p = [from[0] - dir * 4, from[1] + 2]; gr = p[1] }
+      else if (t < KT) { const f = 1 - Math.pow(1 - seg(t, 0.6, KT), 1.6); p = [lerp(from[0], line[0], f), lerp(from[1], line[1], f)]; gr = p[1] }
+      else { const f = ease(seg(t, KT, KT + 0.8)); p = bez([line, [lerp(line[0], away[0], 0.5), 60], away], f); gr = lerp(line[1], 200, f) }
+      b.set(p[0], p[1], gr, t * (t < KT ? 300 : 2200), 1 - seg(t, KT + 0.7, KT + 0.85))
+      // The defender: from nowhere, a slide at full speed along the line, dust everywhere.
+      const s = seg(t, 1.75, KT), dx = lerp(320 - dir * 260, line[0] - dir * 4, ease(s))
+      if (t < 1.75) sa(df.g, 'opacity', 0)
+      else {
+        sa(df.g, 'opacity', 1); put(df, dx, line[1] + 6, dir * 70, 1, -14 * persp(line[1])); df.pose(6, -6, -30, -120)
+        sl(dx, line[1] - 12, dir, 0, s < 1 ? 1 : 1 - seg(t, KT, KT + 0.3), t)
+      }
+      dst(line[0] - dir * 6, line[1] + 10, seg(t, KT - 0.2, KT + 0.9))
+      kick(line[0], line[1] - 14, seg(t, KT - 0.02, KT + 0.6))
+      shakeIt(svg, 4 * seg(t, KT, KT + 0.03) * (1 - seg(t, KT + 0.05, KT + 0.4)), t)
+      // His team-mates, seen as the camera pulls back: arms up, then heads in hands.
+      mates.forEach((m, i) => { put(m, 320 + (i ? 120 : -130) * dir, 300 + i * 12); if (t < KT) m.run(t * 10, 0.5); else { m.face?.('front'); m.mood('sad'); m.pose(3, -3, 150, -150) } })
+      tt(seg(t, KT + 0.3, KT + 0.7))
+    } }
+  },
+  // [Sprint 40 F3] The offside trap: the through ball is played, and in one step the whole back line jumps forward
+  // together. The striker stops dead, white dashed lines appear on the grass, and the assistant's flag waves in the
+  // corner of the screen with a sharp whistle.
+  trap(e) {
+    const R = rnd((e.no || 9) * 61), svg = stage(e.side), w = svg.world, atk = K(e.side).kit, dfk = K(other(e.side)).kit
+    const defs = [214, 282, 358, 426].map(() => player(w, dfk, '', 1, { look: Math.floor(R() * 40) }))
+    const st = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) }), pm = player(w, atk, '', 1, { look: Math.floor(R() * 40) }), b = ball(svg)
+    const lines = el('g', { stroke: '#FFFFFF', 'stroke-width': 2, 'stroke-dasharray': '10 7', fill: 'none', opacity: 0 }, w)
+    lines.innerHTML = `<path data-l="d" d="M110 0 H530"/><path data-l="a" d="M110 0 H530" stroke="#FFD36B"/>`
+    const lD = lines.querySelector('[data-l="d"]'), lA = lines.querySelector('[data-l="a"]')
+    const skid = dust(svg, w, 6), blow = burst(svg, w)
+    // The assistant's flag in the corner of the screen.
+    const flag = el('g', { opacity: 0 }, svg)
+    flag.innerHTML = '<rect x="520" y="78" width="104" height="104" rx="10" fill="rgba(4,11,28,.8)" stroke="#F5B82E" stroke-width="2"/><path d="M552 170 V96" stroke="#C9D2E1" stroke-width="4" stroke-linecap="round"/><path data-flag="1" fill="#EF4444" stroke="#B91C1C" stroke-width="1"/>'
+    const cloth = flag.querySelector('[data-flag]')
+    const tt = title(svg, tr('مصيدة التسلل!'), '#EF4444')
+    const KT = 1.5
+    return { dur: 3.6, svg, update(t) {
+      cam(svg, 1.08, 320, 210)
+      // The back line: level, then all four step up at once (a little hop) at 0.95 s.
+      const up = inout(seg(t, 0.95, 1.25)), hop = Math.sin(Math.PI * seg(t, 0.95, 1.25)) * 8
+      const dy = lerp(214, 250, up)
+      defs.forEach((d, i) => { const x = [214, 282, 358, 426][i]; put(d, x, dy, 0, 1, hop * persp(dy)); d.face?.('front'); t > 0.95 && t < 1.25 ? d.pose(10, -10, 40, -40, 0.4, 0.4) : t > 1.3 ? (d.mood('joy'), d.pose(3, -3, i % 2 ? 150 : 14, i % 2 ? -14 : -150)) : d.run(t * 9, 0.3) })
+      // The striker sets off for the ball, and stops dead, skidding.
+      const go = ease(seg(t, 0.8, 1.3)), sy = lerp(222, 196, go)
+      put(st, 330, sy); t < 1.3 ? st.run(t * 13, 0.3 + go) : (st.face?.('front'), st.mood('shock'), st.pose(20, -20, 60, -60))
+      skid(330, sy + 4, seg(t, 1.3, 1.9))
+      // The playmaker plays it through at 0.85 s.
+      put(pm, 300, 300); t < 0.7 ? pm.run(t * 10, 0.4) : pm.kick(seg(t, 0.7, 0.95))
+      const f = seg(t, 0.85, 1.6), p = [lerp(300, 344, f), lerp(296, 168, ease(f))]
+      b.set(p[0], p[1], p[1], t * 900)
+      // The lines on the grass: the defence's, and the striker beyond it.
+      sa(lines, 'opacity', seg(t, KT, KT + 0.15))
+      sa(lD, 'transform', `translate(0 ${dy + 58 * persp(dy) * 0 + 2})`); sa(lA, 'transform', `translate(0 ${sy + 2})`)
+      sa(flag, 'opacity', seg(t, KT, KT + 0.1))
+      const wv = Math.sin(t * 18) * 6
+      sa(cloth, 'd', `M554 98 Q574 ${98 + wv} 596 98 L596 128 Q574 ${128 - wv} 554 128 Z`)
+      const [hx, hy] = headOf(320, 186, 1)
+      blow(hx + 220, hy - 40, seg(t, KT, KT + 0.4))
+      tt(seg(t, KT + 0.25, KT + 0.6))
+    } }
+  },
+  // [Sprint 40 F7] The coach's megaphone: play stops for a moment, he stands on the line and shouts through a huge
+  // megaphone; angry letters and symbols fly out and bounce off his players, who shake and sweat. No instruction is
+  // shown (the other side's stay private).
+  rant(e) {
+    const R = rnd(e.v ?? 37), svg = stage(e.side), w = svg.world, kit = K(e.side).kit
+    const pls = [0, 1, 2].map(() => player(w, kit, '', 1.1, { look: Math.floor(R() * 40) }))
+    const co = player(w, '#1F2937', '', 1.7, { look: Math.floor(R() * 40), shorts: '#1F2937', socks: '#111827', trim: kit })
+    const mega = el('g', {}, w)
+    mega.innerHTML = '<path d="M0 -6 L34 -22 L34 22 L0 6 Z" fill="#F5B82E" stroke="#8A5A00" stroke-width="2"/><rect x="-8" y="-6" width="10" height="12" rx="2" fill="#333"/><ellipse cx="34" cy="0" rx="5" ry="22" fill="#FFD36B" stroke="#8A5A00" stroke-width="2"/>'
+    const SYM = ['#@!', '!!', '%&$', '?!', '@#!', '!!!']
+    const sym = SYM.map((x) => { const e2 = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 22, fill: '#EF4444', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); e2.textContent = x; return e2 })
+    const waves = burst(svg, w, '#FFD36B', 6), vn = vein(svg)
+    const drops = pls.map(() => el('path', { d: 'M0 -5 Q4 1 0 3 Q-4 1 0 -5 Z', fill: '#9AD4FF', opacity: 0 }, w))
+    const tt = title(svg, tr('المدرب غاضب!'), '#EF4444')
+    return { dur: 3.6, svg, update(t) {
+      cam(svg, 1.04, 320, 200)
+      co.face?.('side', 1); co.mood('angry'); co.at(120, 214 + Math.sin(t * 30) * 1.5, 0, 1.7); co.pose(4, -4, 20, -95 + Math.sin(t * 20) * 6)
+      const [hx, hy] = headOf(120, 214, 1.7), mx = hx + 22, my = hy + 6
+      sa(mega, 'transform', `translate(${mx} ${my}) rotate(${(-6 + Math.sin(t * 20) * 4).toFixed(1)}) scale(${(1 + 0.08 * Math.sin(t * 30)).toFixed(2)})`)
+      vn(hx - 8, hy - 18, seg(t, 0.2, 0.3), t)
+      waves(mx + 40, my, ((t * 3) % 1), 18)
+      // The words fly out of the megaphone to the players and bounce off them.
+      sym.forEach((x, i) => {
+        const ph = ((t - 0.3) * 1.1 + i / SYM.length) % 1, on = t > 0.3 && t < 3.3, to = [400 + (i % 3) * 70, 150]
+        const px = lerp(mx + 40, to[0], ph), py = lerp(my, to[1], ph) - Math.sin(Math.PI * ph) * 40
+        sa(x, 'opacity', on ? (ph < 0.85 ? 1 : (1 - ph) * 6.6).toFixed(2) : 0); sa(x, 'x', px.toFixed(1)); sa(x, 'y', py.toFixed(1)); sa(x, 'font-size', (16 + ph * 14).toFixed(1))
+      })
+      pls.forEach((p, i) => {
+        const x = 400 + i * 70, y = 196 + (i % 2) * 14, sh = t > 0.6 ? Math.sin(t * 50 + i) * 2.5 : 0
+        p.face?.('front'); p.mood(t > 0.6 ? 'shock' : 'idle'); p.at(x + sh, y, 0, 1.1); p.pose(4, -4, t > 0.6 ? 40 : 10, t > 0.6 ? -40 : -10)
+        sa(drops[i], 'opacity', t > 0.7 ? 0.9 : 0); sa(drops[i], 'transform', `translate(${x + 12} ${(y - 30 + ((t * 40 + i * 5) % 14)).toFixed(1)})`)
+      })
+      tt(seg(t, 0.3, 0.7))
+    } }
+  },
+  // [Sprint 40 F8] A slip in the rain: a downpour, he runs with the ball, loses his feet and slides a long way on his
+  // belly like a penguin in a spray of water and mud, the ball stops where he left it, and the other side takes it.
+  slip(e) {
+    const R = rnd((e.no || 7) * 67), svg = stage(e.side), w = svg.world, k = 1.4
+    const pl = player(w, K(e.side).kit, e.no, k, { look: Math.floor(R() * 40) }), df = player(w, K(other(e.side)).kit, e.defNo ?? '', k, { look: Math.floor(R() * 40) }), b = ball(svg)
+    const rain = el('g', { stroke: 'rgba(200,220,245,.75)', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, svg)
+    const dropsR = Array.from({ length: SMOOTH ? 40 : 110 }, (_, i) => el('line', {}, rain))
+    el('rect', { width: 640, height: 340, fill: 'rgba(40,60,90,.22)', 'pointer-events': 'none' }, svg)
+    const splash = dust(svg, w, 10, ['#7FB4FF', '#5B3A1E', '#A7D3FF', '#6B4A2A']), splash2 = dust(svg, w, 8, ['#A7D3FF', '#5B3A1E'])
+    const tt = title(svg, tr('انزلاق!'), '#7FB4FF')
+    const KT = 1.0
+    return { dur: 3.6, svg, update(t) {
+      cam(svg, 1.06, 320, 210)
+      dropsR.forEach((l, i) => { const x = (i * 73) % 680 - 20, y = ((i * 41 + t * 700) % 380) - 30; sa(l, 'x1', x); sa(l, 'y1', y.toFixed(0)); sa(l, 'x2', x - 6); sa(l, 'y2', (y + 18).toFixed(0)) })
+      // He runs with it, his feet go (1.0), up in the air, then a long slide on his belly.
+      let x, y, r = 0, lift = 0
+      if (t < KT) { x = lerp(80, 280, seg(t, 0, KT)); y = 200; pl.face?.('side', 1); pl.mood('focus'); pl.run(t * 14, 1) }
+      else if (t < KT + 0.3) { const f = seg(t, KT, KT + 0.3); x = lerp(280, 320, f); y = lerp(200, 262, f) - Math.sin(Math.PI * f) * 40; r = f * 90; pl.mood('shock'); pl.pose(-60, 40, -160, -160) }
+      else { const f = 1 - Math.pow(1 - seg(t, KT + 0.3, 2.6), 2); x = lerp(320, 560, f); y = 262; r = 90; pl.mood('shock'); pl.pose(4, -4, -170, -170) }
+      pl.at(x, y, r, k)
+      splash(x + 30, 282, t > KT + 0.3 && t < 2.7 ? ((t - KT) % 0.32) / 0.32 : 0)
+      splash2(300, 282, seg(t, KT + 0.25, KT + 0.9))
+      // The ball stops where he left it; the defender comes in and takes it away.
+      let bx = t < KT ? x + 14 : lerp(294, 300, seg(t, KT, KT + 0.4)), by = 284 - 0
+      const take = seg(t, 1.9, 2.4), dx = t < 1.9 ? lerp(-60, 260, seg(t, 1.2, 1.9)) : lerp(290, -60, seg(t, 2.4, 3.6))
+      df.face?.('side', t < 2.4 ? 1 : -1); df.mood(t > 2.0 ? 'joy' : 'focus'); df.at(dx, 200, 0, k); df.run(t * 13, t > 1.2 ? 1 : 0)
+      if (t > 2.4) bx = dx - 16
+      b.set(bx, by, by, t < KT ? t * 900 : t > 2.4 ? t * 900 : 0)
+      tt(seg(t, KT + 0.4, KT + 0.8))
+    } }
+  },
+  // [Sprint 40 F6] The coach's meltdown after a chance blasted over: hands on his head, he pulls his hair, kicks the
+  // bench away, throws his jacket down, fire coming out of his eyes.
+  meltdown(e) {
+    const R = rnd(e.v ?? 71), svg = stage(e.side), w = svg.world, kit = K(e.side).kit
+    el('rect', { x: -80, y: 236, width: 800, height: 110, fill: 'rgba(4,11,28,.55)' }, w)
+    const bench = el('g', {}, w)
+    bench.innerHTML = '<rect x="-60" y="-24" width="120" height="10" rx="3" fill="#0B1626" stroke="#4A5A78"/><rect x="-60" y="-14" width="120" height="6" fill="#16243A"/><rect x="-54" y="-8" width="6" height="22" fill="#4A5A78"/><rect x="48" y="-8" width="6" height="22" fill="#4A5A78"/>'
+    const co = player(w, '#1F2937', '', 1.8, { look: Math.floor(R() * 40), shorts: '#1F2937', socks: '#111827', trim: kit })
+    const jacket = el('path', { d: 'M-16 -14 L16 -14 L20 18 L-20 18 Z', fill: '#1F2937', stroke: kit, 'stroke-width': 2, opacity: 0 }, w)
+    const fireL = el('g', { opacity: 0 }, w)
+    fireL.innerHTML = '<path data-f="1" stroke="#FF7A1A" stroke-width="4" stroke-linecap="round"/><path data-f="1" stroke="#FFD400" stroke-width="2" stroke-linecap="round"/><path data-f="2" stroke="#FF7A1A" stroke-width="4" stroke-linecap="round"/><path data-f="2" stroke="#FFD400" stroke-width="2" stroke-linecap="round"/>'
+    const hairs = el('g', { stroke: '#2A1A10', 'stroke-width': 1.6, opacity: 0 }, w)
+    hairs.innerHTML = Array.from({ length: 6 }, (_, i) => `<path d="M${-10 + i * 4} 0 q2 -6 0 -10"/>`).join('')
+    const redT = tint(svg, '#FF1E1E'), boomB = boom(svg, w, 'BANG!'), vn = vein(svg)
+    const tt = title(svg, tr('المدرب ينفجر!'), '#EF4444')
+    return { dur: 2.8, svg, update(t) {
+      cam(svg, 1.1, 320, 190)
+      redT(0.18 * seg(t, 0.05, 0.15) * (1 - seg(t, 0.6, 1.2)))
+      const kick = seg(t, 0.9, 1.15), thr = seg(t, 1.5, 1.8)
+      co.face?.('front'); co.mood('angry'); co.at(300, 190, 0, 1.8)
+      if (t < 0.9) { const p = Math.sin(t * 28) * 10; co.pose(4, -4, 150 + p, -150 - p) }
+      else if (t < 1.3) co.kick(kick)
+      else if (t < 1.9) co.pose(4, -4, lerp(150, 60, thr), -lerp(150, 60, thr))
+      else { const p = Math.sin(t * 20) * 8; co.pose(6, -6, 150 + p, -150 - p) }
+      const [hx, hy] = headOf(300, 190, 1.8)
+      vn(hx + 16, hy - 20, 1, t)
+      // Tufts of hair pulled out, flying.
+      sa(hairs, 'opacity', t > 0.3 && t < 1.0 ? 1 : 0); sa(hairs, 'transform', `translate(${hx} ${(hy - 20 - (t - 0.3) * 40).toFixed(1)}) rotate(${Math.round(t * 200)})`)
+      // Fire from his eyes.
+      const fl = Math.sin(t * 40) * 3, on = t > 0.25
+      sa(fireL, 'opacity', on ? 1 : 0)
+      for (const [i, e2] of [...fireL.children].entries()) { const sx = hx + (i < 2 ? -6 : 6), sy = hy + 0, d = i < 2 ? -1 : 1; sa(e2, 'd', `M${sx} ${sy} L${sx + d * (26 + fl)} ${sy - 8 + fl}`) }
+      // The bench kicked away, spinning.
+      const bf = ease(seg(t, 1.05, 1.9)); sa(bench, 'transform', `translate(${lerp(420, 700, bf).toFixed(1)} ${(250 - Math.sin(Math.PI * bf) * 90).toFixed(1)}) rotate(${Math.round(bf * 540)})`)
+      boomB(430, 228, seg(t, 1.05, 1.6))
+      // The jacket thrown to the ground.
+      const jf = ease(seg(t, 1.7, 2.1)); sa(jacket, 'opacity', t > 1.7 ? 1 : 0); sa(jacket, 'transform', `translate(${lerp(300, 230, jf).toFixed(1)} ${lerp(150, 280, jf).toFixed(1)}) rotate(${Math.round(jf * 200)}) scale(${lerp(1.4, 1, jf).toFixed(2)} ${lerp(1.4, 0.35, jf).toFixed(2)})`)
+      tt(seg(t, 0.15, 0.5))
     } }
   },
   coach(e) {

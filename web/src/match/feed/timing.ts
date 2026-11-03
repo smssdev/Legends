@@ -10,4 +10,7 @@ export const SCENE_TIME = {
   crowd: [2.6, 0.3], coachReact: [2.4, 0.2], brawl: [2.8, 0.2], tunnel: [2.8, 0.2], handshake: [3.0, 0.2],
   // [Sprint 35 C3] A goal ruled out by VAR: the ball in at 3.0 s, the check, no goal at 6.4 s.
   var: [8.2, 6.4],
+  // [Sprint 40 F] The second set, 3 to 5 s each: a clearance off the line (kicked off at 2.4 s), the offside trap (the
+  // flag at 1.5 s), the coach's megaphone, a slip in the rain, and the coach's meltdown after a chance blasted over.
+  clearance: [4.2, 2.4], trap: [3.6, 1.5], rant: [3.6, 0.6], slip: [3.6, 1.0], meltdown: [2.8, 0.3],
 }

@@ -59,7 +59,8 @@ class Voice
 
         if ($kind === 'goal' && $goal) {
             $vars = ['p' => $goal['scorer'] ?? null, 'q' => $goal['assist'] ?? null, 'A' => $goal['team']];
-            $line = ($attack['quality'] ?? null) === 'header' ? 'header' : 'goal';
+            // [Sprint 40 F5] A cross put away with a bicycle kick is no header: the goal's own line.
+            $line = ($attack['quality'] ?? null) === 'header' && MomentClock::drama('goal', $events) !== 'bicycle' ? 'header' : 'goal';
         } elseif (in_array($kind, ['penalty', 'free_kick'], true) && ($pen || $fk)) {
             $sp = $pen ?? $fk;
             $vars = ['p' => $sp['taker'] ?? null, 'q' => $sp['keeper'] ?? null, 'A' => $sp['team']];
