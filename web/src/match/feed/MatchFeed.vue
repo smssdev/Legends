@@ -5,7 +5,7 @@
     <div class="sb">
       <div class="sb-in">
         <div class="side" :style="{ '--c': kits.home.kit }"><span class="crest" v-html="crestOf('home')" /><span class="nm"><b>{{ $nm(clubs.home) }}</b><small>{{ coachLine('home') }}</small></span></div>
-        <div class="mid"><span class="score" :class="{ pop }" dir="ltr"><FlipNumber :value="score.away" /> - <FlipNumber :value="score.home" /></span><span class="live" :class="{ frozen }" dir="ltr"><i />{{ clock || minute }}</span></div>
+        <div class="mid"><span class="score" :class="{ pop }" dir="ltr"><FlipNumber :value="score.away" /> - <FlipNumber :value="score.home" /></span><span class="live" :class="{ frozen }" dir="ltr"><i /><span ref="clockA" class="ct" /></span></div>
         <div class="side away" :style="{ '--c': kits.away.kit }"><span class="crest" v-html="crestOf('away')" /><span class="nm"><b>{{ $nm(clubs.away) }}</b><small>{{ coachLine('away') }}</small></span></div>
       </div>
       <div class="mom" dir="ltr"><i :style="{ width: 100 - mom + '%', background: kits.away.kit }" /><i :style="{ width: mom + '%', background: kits.home.kit }" /></div>
@@ -19,8 +19,8 @@
       <div ref="studioHost" class="studio" aria-hidden="true" />
       <span class="bug" dir="ltr">GLM TV</span>
       <span class="onair"><i />{{ $t('مباشر') }}</span>
-      <span class="strap"><b>{{ half }}</b><span dir="ltr">{{ clock || minute }}</span><em>{{ frozen ? $t('توقف الوقت · لقطة') : $t('الوقت يمشي') }}</em></span>
-      <span class="prog" dir="ltr" aria-hidden="true"><i :style="{ width: progress + '%' }" /></span>
+      <span class="strap"><b>{{ half }}</b><span ref="clockB" class="ct" dir="ltr" /><em>{{ frozen ? $t('توقف الوقت · لقطة') : $t('الوقت يمشي') }}</em></span>
+      <span class="prog" dir="ltr" aria-hidden="true"><i ref="progBar" /></span>
     </div>
 
     <div class="tl" :aria-label="$t('مجريات المباراة')" aria-live="polite">
@@ -43,7 +43,7 @@
         <span v-if="replaying" class="replay">{{ replayAngle === 2 ? $t('إعادة · زاوية أخرى') : $t('إعادة') }}</span>
         <!-- The goal: the scorer's name in his colours and confetti, after the ball is in. -->
         <div v-if="party" class="party" :style="{ '--c': kits[party.side].kit, '--t': kits[party.side].trim }" aria-hidden="true">
-          <i v-for="c in (smooth ? confetti.slice(0, 14) : confetti)" :key="c.i" :style="c.style" />
+          <i v-for="c in (tier === 'high' ? confetti : confetti.slice(0, 12))" :key="c.i" :style="c.style" />
           <span class="burst"><b>{{ party.who }}</b><small>{{ $nm(clubs[party.side]) }}</small></span>
         </div>
         <div class="lower" :style="{ '--c': barKit }">
@@ -98,7 +98,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, setKits, setRain, setSmooth, studio } from './art'
+import { ICON, SCENES, crest, setKits, setRain, setRich, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
@@ -110,12 +110,26 @@ const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [lin
 
 const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), studioHost = ref<HTMLElement>()
 // [X35] The broadcast clock, minutes and seconds running through each minute as on TV ('' between minutes: the parent's).
-const clock = ref('')
+// [Sprint 42 I1] Written straight into its two places (the scorebar and the strap), never through the template: it
+// changes almost every frame while a quiet minute runs, and a render of the whole feed for it is what made it stutter.
+let clock = ''
+const clockA = ref<HTMLElement>(), clockB = ref<HTMLElement>(), progBar = ref<HTMLElement>()
+let clockShown = '', clockAt = 0
+function showClock(text: string, force = false) {
+  const now = performance.now()
+  // At most a dozen times a second: a quiet minute passes in one second, so its seconds are a blur anyway.
+  if (text === clockShown || (!force && now - clockAt < 80)) return
+  clockShown = text; clockAt = now
+  for (const e of [clockA.value, clockB.value]) if (e) e.textContent = text
+}
+watch(() => props.minute, (m) => { if (!clock) showClock(m, true) })
+onMounted(() => showClock(clock || props.minute, true))
 // [Sprint 42 E1] The owner's (2026-11-03): the clock runs, and at the moment's second it stops dead while the cartoon
 // plays (and its cutaways), then runs on to the end of the minute.
 const frozen = ref(false)
 // [Sprint 42 G1] The half and how far the match has gone, under the clock.
-const half = ref(''), progress = ref(0)
+const half = ref('')
+let progShown = -1
 const items = ref<any[]>([])
 const cur = ref<any>(null)
 const sceneOn = ref(false), bubbleOn = ref(false), shake = ref(false), pop = ref(false), replaying = ref(false)
@@ -145,6 +159,7 @@ const coachLine = (s) => [props.coaches?.[s] ?? (props.mine === s ? tr('أنت')
 watch(() => props.kits, (k) => setKits(k), { immediate: true, deep: true })
 // The smooth mode for weak phones [X30]: the scenes drawn from now on leave out the costly parts.
 watch(smooth, (v) => setSmooth(v), { immediate: true })
+watch(tier, (v) => setRich(v === 'high'), { immediate: true })
 watch(() => [props.score.home, props.score.away], () => { pop.value = false; requestAnimationFrame(() => (pop.value = true)) })
 
 // Every player of the match by id, for names and shirt numbers.
@@ -185,7 +200,7 @@ function play(tick, startAt = null) {
   // [Sprint 33 Q1] No replay at the lowest tier. Too little room for the whole scene slowed: its last part, the shot.
   const rate = s.goal && s.scene && room > 1.6 && !smooth.value ? Math.max(0.4, Math.min(0.8, nominal / room)) : 0
   const replay = rate ? { at, rate, off: Math.max(0, nominal - room * rate) } : null
-  plan = { s, total, sceneT, cuts, cutT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
+  plan = { s, total, sceneT, cuts, cutT, rate: s.scene ? nominal / sceneT : 1, replay, fired: new Set(), built: [], itemsAdded: false, score: scoreText(tick.score.home, tick.score.away), startAt, tick }
   mom.value = Math.max(15, Math.min(85, 50 + (tick.danger ?? 0) * 7))
   cur.value = s
   revealed.value = !s.pre
@@ -196,22 +211,43 @@ function play(tick, startAt = null) {
   let made: any = null
   // A scene that breaks is skipped with its minute's cards still shown: the match never stops on one drawing.
   if (s.scene) try {
-    made = SCENES[s.scene]({ ...s.data, side: s.side })
+    // [Sprint 42 I1] Drawn ahead by prepare() when the minute was known early (the same story: the same scene).
+    made = ready?.tick === tick.tick && ready.scene === s.scene && ready.made ? ready.made : SCENES[s.scene]({ ...s.data, side: s.side })
+    dropStashed(made.svg)
+    ready = null
     made.update(0)
   } catch (e) { console.error(e); made = null }
   angleWrap = null; replayAngle.value = 1
+  // [Sprint 42 I1] The cutaways are drawn ahead, in the quiet moments between frames while the scene plays, not at the
+  // instant they start: building one was a hitch of a few frames right on the cut.
+  const mine = plan
+  cuts.forEach((c, i) => idle(() => { if (plan !== mine || mine.built[i]) return; try { mine.built[i] = SCENES[c.name](c.data); mine.built[i].update(0); stash(mine.built[i].svg) } catch (e) { console.error(e) } }, 400 + i * 300))
   if (made) {
     scene = made
     mainScene = made
-    stage.value.replaceChildren(scene.svg)
+    showSvg(scene.svg)
     sceneOn.value = true
   } else {
     scene = null
+    dropStashed(null)
     addItems()
     if (s.bubble && s.items.length) showBubble()
   }
 }
 // One frame of the scene; a frame that throws ends the scene there and the minute goes on without it.
+// [Sprint 42 I1] A scene drawn ahead waits in the stage, hidden: its styles and layout are done in idle time too, and
+// showing it is only making it visible. Showing one takes away the one shown before (the hidden ones stay).
+function stash(svg) { if (!stage.value || svg.parentNode === stage.value) return; svg.dataset.stash = '1'; svg.style.visibility = 'hidden'; stage.value.appendChild(svg) }
+function showSvg(svg) {
+  if (!stage.value) return
+  for (const c of [...stage.value.children]) if (c !== svg && !(c as any).dataset?.stash) c.remove()
+  delete svg.dataset.stash; svg.style.visibility = ''
+  if (svg.parentNode !== stage.value) stage.value.appendChild(svg)
+}
+// Hidden scenes no longer wanted (another minute came): away, so the stage holds only what may still be shown.
+function dropStashed(keep) { if (stage.value) for (const c of [...stage.value.children]) if ((c as any).dataset?.stash && c !== keep) c.remove() }
+// Work for the browser's idle time (or after a while at the latest, so it is done before it is needed).
+const idle = (fn, timeout) => ((window as any).requestIdleCallback ? (window as any).requestIdleCallback(fn, { timeout }) : setTimeout(fn, 50))
 function draw(u) {
   try { scene.update(u) } catch (e) { console.error(e); scene = null; sceneOn.value = false; addItems(); showBubble() }
 }
@@ -246,7 +282,23 @@ function finish() {
   plan = null
 }
 function skip() { finish() }
-defineExpose({ play, skip, react })
+// [Sprint 42 I1] The next minute, known before it plays (the page's buffer, or a live minute sent early): its scene is
+// built now, in idle time, so starting it costs nothing. The minute's story is pure, so play() gets the same scene.
+let ready: any = null
+function prepare(tick) {
+  if (!tick || ready?.tick === tick.tick) return
+  const job = { tick: tick.tick, scene: null, made: null }
+  ready = job
+  idle(() => {
+    if (ready !== job) return
+    try {
+      const s = story(tick, { players: players.value, clubs: props.clubs, seed: props.seed, mine: props.mine })
+      if (!s.scene) return
+      job.scene = s.scene; job.made = SCENES[s.scene]({ ...s.data, side: s.side }); job.made.update(0); stash(job.made.svg)
+    } catch (e) { console.error(e) }
+  }, 800)
+}
+defineExpose({ play, skip, react, prepare })
 
 const SOUNDS = {
   goal: [[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']], save: [[0.3, 'kick'], ['key', 'groan']], miss: [[0.3, 'kick'], ['key', 'groan']], blocked: [['key', 'thud'], ['key', 'groan']],
@@ -306,7 +358,7 @@ function step(now) {
       if (cut) {
         fire('cut' + n, () => {
           party.value = null
-          try { cutScene = SCENES[cut.name](cut.data); cutScene.update(0); stage.value.replaceChildren(cutScene.svg); sceneOn.value = true } catch (e) { console.error(e); cutScene = null }
+          try { cutScene = plan.built[n] ?? SCENES[cut.name](cut.data); cutScene.update(0); showSvg(cutScene.svg); sceneOn.value = true } catch (e) { console.error(e); cutScene = null }
         })
         if (cutScene && (!smooth.value || now - drawn >= 32)) { drawn = now; try { cutScene.update(t - c0) } catch (e) { console.error(e); cutScene = null } }
       } else if (t >= sceneT + plan.cutT) fire('end', () => { sceneOn.value = false; party.value = null; cutScene = null; addItems(); showBubble() })
@@ -320,7 +372,7 @@ function step(now) {
         fire('replay', () => {
           bubbleOn.value = false; replaying.value = true; sceneOn.value = true
           if (mainScene) {
-            scene = mainScene; stage.value.replaceChildren(mainScene.svg)
+            scene = mainScene; showSvg(mainScene.svg)
             // The scene's world in a frame the second angle can turn round.
             const w = mainScene.svg.world
             if (w && !angleWrap) { angleWrap = document.createElementNS('http://www.w3.org/2000/svg', 'g'); w.parentNode.insertBefore(angleWrap, w); angleWrap.appendChild(w) }
@@ -351,10 +403,11 @@ function buildStudio() {
 }
 function drawStudio(now, force = false) {
   // Behind a clip nobody sees it: not drawn then. At 30 a second in the smooth mode.
-  if (!studioView || (sceneOn.value && !force) || (!force && smooth.value && now - studioDrawn < 32)) return
+  // [Sprint 42 I1] 30 a second is plenty for two people at a desk (20 on a weak phone).
+  if (!studioView || (sceneOn.value && !force) || (!force && now - studioDrawn < (smooth.value ? 48 : 32))) return
   studioDrawn = now
   const hype = Math.max(0, Math.min(1, (hypeTill - now) / 1000))
-  try { studioView.update(now / 1000, { clock: clock.value || props.minute, score: `${props.score.away} - ${props.score.home}`, frozen: frozen.value, talk: now < talkTill || bubbleOn.value ? talker : 0, hype }) } catch (e) { console.error(e); studioView = null }
+  try { studioView.update(now / 1000, { clock: clockShown || props.minute, score: `${props.score.away} - ${props.score.home}`, frozen: frozen.value, talk: now < talkTill || bubbleOn.value ? talker : 0, hype }) } catch (e) { console.error(e); studioView = null }
 }
 watch(() => props.kits, () => buildStudio(), { deep: true })
 onMounted(buildStudio)
@@ -365,7 +418,7 @@ onMounted(buildStudio)
 // [Sprint 36 F3] The rain falls in the scenes (from the seed; MomentClock::rainy on the server, keep the two in step).
 const rainy = () => (Number(props.seed) || 0) % 6 === 1
 // [Sprint 31 D4] How close the ball is to a goal, in tenths, for the crowd's sound (sent only when it changes).
-let nearSent = -1
+let nearSent = -1, frozenWas = false
 function near(tick, u) {
   const f = tick?.frames
   if (!f?.length) return
@@ -374,7 +427,7 @@ function near(tick, u) {
 }
 function tickClock(tick, u, p = null) {
   const m = tick?.minute
-  if (!m || (tick.moment?.kind === 'shootout')) { clock.value = ''; frozen.value = false; return }
+  if (!m || (tick.moment?.kind === 'shootout')) { clock = ''; showClock(props.minute, true); frozen.value = false; return }
   const base = m[0] - 1 + (m[1] || 0)
   let sec = Math.min(59, Math.floor(u * 60))
   // [Sprint 42 E1] A minute with a scene: the clock runs up to the moment's second (from the minute, the same on every
@@ -388,9 +441,13 @@ function tickClock(tick, u, p = null) {
   if (frozen.value !== stop) frozen.value = stop
   const mm = m[0] + (m[1] || 0)
   half.value = m[0] > 120 ? tr('ركلات الترجيح') : m[0] > 90 ? tr('الوقت الإضافي') : m[0] > 45 ? tr('الشوط الثاني') : tr('الشوط الأول')
-  progress.value = Math.min(100, Math.round(((mm - 1 + u) / 90) * 100))
+  // The bar by transform, not width: no layout for it.
+  const pr = Math.min(1, Math.round(((mm - 1 + u) / 90) * 200) / 200)
+  if (pr !== progShown && progBar.value) { progShown = pr; progBar.value.style.transform = `scaleX(${pr})` }
   const text = `${String(base).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
-  if (clock.value !== text) clock.value = text
+  clock = text
+  showClock(text, stop !== frozenWas)
+  frozenWas = stop
 }
 watch(() => props.seed, () => setRain(rainy()), { immediate: true })
 onMounted(() => {
@@ -451,12 +508,15 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .clockface .strap span { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 16px; color: #FFD36B; font-variant-numeric: tabular-nums }
 .clockface .strap em { font-style: normal; margin-inline-start: auto }
 .clockface .prog { position: absolute; left: 10px; right: 10px; bottom: 8px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden }
-.clockface .prog i { display: block; height: 100%; background: #F5B82E; transition: width .3s linear }
+.clockface .prog i { display: block; height: 100%; background: #F5B82E; transform: scaleX(0); transform-origin: left; transition: transform .3s linear }
+/* The clock's digits in a box of their own: a change of text there never lays out the rest. */
+.ct { display: inline-block; min-width: 4.4ch; text-align: center; contain: layout paint; font-variant-numeric: tabular-nums }
 /* Stopped for the clip: the clock on the strap blinks. */
 .clockface.frozen .strap span { animation: clockstop .8s steps(2, jump-none) infinite }
 /* [Sprint 42 H1] The cut from the studio to the clip: a gold and navy wipe across the picture, as a broadcast's sting. */
-.moment.on .mbox::after { content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: linear-gradient(105deg, transparent 0 32%, #F5B82E 32% 38%, #071733 38% 62%, #F5B82E 62% 66%, transparent 66%); background-size: 320% 100%; animation: sting .6s ease-in forwards }
-@keyframes sting { from { background-position: 100% 0 } to { background-position: 0 0; opacity: 0 } }
+.moment.on .mbox::after { content: ''; position: absolute; top: 0; bottom: 0; left: -100%; width: 300%; z-index: 6; pointer-events: none; background: linear-gradient(105deg, transparent 0 32%, #F5B82E 32% 38%, #071733 38% 62%, #F5B82E 62% 66%, transparent 66%); will-change: transform; animation: sting .6s ease-in forwards }
+/* [Sprint 42 I1] By transform (the compositor's), not by its background: no repaint on each frame of the wipe. */
+@keyframes sting { from { transform: translateX(34%) } to { transform: translateX(-34%); opacity: 0 } }
 .tl { position: absolute; top: calc(clamp(84px, 16cqw, 106px) + min(40cqh, 62cqw) + 6px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
 .spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, rgba(245,184,46,.55) 10%, rgba(245,184,46,.15)) }
 .list { position: relative; padding: 22px 10px 0; display: grid; gap: 10px }
@@ -491,7 +551,8 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .moment.on .mbox { transform: none }
 /* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */
 .stage { aspect-ratio: 640 / 340; contain: strict; will-change: transform }
-.stage :deep(svg) { display: block; width: 100%; height: 100% }
+.stage { position: relative }
+.stage :deep(svg) { position: absolute; inset: 0; display: block; width: 100%; height: 100% }
 .stage.shake { animation: shake .45s }
 @keyframes shake { 20% { transform: translate(-6px, 3px) } 40% { transform: translate(5px, -4px) } 60% { transform: translate(-4px, 2px) } 80% { transform: translate(3px, -1px) } }
 .lower { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #071733), #071733 55%); border-top: 1px solid rgba(255,255,255,.08) }

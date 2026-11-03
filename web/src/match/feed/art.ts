@@ -13,6 +13,9 @@ export function setKits(k) { KITS = k }
 // The smooth mode [X30]: no glow filter (redrawn every frame on the phone's processor for every line and trail) and a third of the crowd.
 let SMOOTH = false
 export function setSmooth(v) { SMOOTH = !!v }
+// [Sprint 42 I1] Only the full tier draws the blurred glows: an SVG blur makes every repaint of the picture costly.
+let RICH = true
+export function setRich(v) { RICH = !!v }
 // [Sprint 36 F3] The match's rain (the live pitch's, from its seed) falls in the scenes too.
 let RAIN = false
 export function setRain(v) { RAIN = !!v }
@@ -82,6 +85,33 @@ function rnd(seed) {
 const LINE = 150, POSTS = [246, 394], BAR = 72
 const persp = (y) => 0.55 + (y - LINE) * 0.0055
 
+// [Sprint 42 I1] The stadium behind every scene (the stand and its crowd, the boards, the pitch and its lines) drawn
+// once as a picture and kept per club: hundreds of shapes the camera moved on every frame were repainted each time, and
+// a picture is one bitmap to move. Its words (LEGENDS, in the brand's font) stay live on top: a picture has no web fonts.
+const BACKDROPS = new Map()
+function backdrop(c, home) {
+  const key = [c, home, KITS.home?.trim, SMOOTH, RICH].join('|')
+  if (BACKDROPS.has(key)) return BACKDROPS.get(key)
+  const fans = SMOOTH ? 70 : RICH ? 220 : 130
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-120 -40 880 420" width="1320" height="630"><defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14532F"/><stop offset="1" stop-color="#0A2E1B"/></linearGradient>
+    <radialGradient id="h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>
+  </defs>
+  <rect x="-120" y="-40" width="880" height="420" fill="#040B1C"/>
+  <rect x="-80" y="-40" width="800" height="200" fill="url(#h)"/>
+  <g>${Array.from({ length: fans }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
+  <rect x="-80" y="122" width="800" height="16" fill="url(#b)"/>
+  <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
+  <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#t)"/>
+  ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = y0 - LINE + 12, k1 = y1 - LINE + 12; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="#fff" fill-opacity=".035"/>` }).join('')}
+  <g fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
+  <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/></svg>`
+  const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+  BACKDROPS.set(key, url)
+  return url
+}
+
 // The stage: a night stadium, the pitch in perspective, boards behind the goal, the team's light.
 // Everything that the camera moves sits in svg.world; titles and flashes go on top of it.
 function stage(side) {
@@ -100,22 +130,15 @@ function stage(side) {
   </defs>
   <rect width="640" height="340" fill="#040B1C"/>
   <g data-world="1">
-  <rect x="-80" y="-40" width="800" height="200" fill="url(#${id}h)"/>
-  <g>${Array.from({ length: SMOOTH ? 70 : 220 }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
-  <rect x="-80" y="122" width="800" height="16" fill="url(#${id}b)"/>
-  <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
+  <image href="${backdrop(c, home)}" x="-120" y="-40" width="880" height="420" preserveAspectRatio="none"/>
   ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Amin, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
-  <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#${id}t)"/>
-  ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = (y0 - LINE + 12) * 1.0, k1 = (y1 - LINE + 12) * 1.0; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="rgba(255,255,255,.035)"/>` }).join('')}
-  <g fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
-  <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/>
   </g>
   <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>${RAIN ? `<style>.rain{animation:rainfall .5s linear infinite}@keyframes rainfall{to{transform:translate(-5px,30px)}}@media (prefers-reduced-motion:reduce){.rain{animation:none}}</style><g class="rain" stroke="rgba(200,215,235,.45)" stroke-width="1.1">${Array.from({ length: SMOOTH ? 30 : 90 }, (_, i) => `<line x1="${(i * 73) % 680}" y1="${(i * 41) % 360 - 20}" x2="${(i * 73) % 680 - 5}" y2="${(i * 41) % 360 + 10}"/>`).join('')}</g><rect width="640" height="340" fill="rgba(40,55,75,.18)"/>` : ''}`
   svg.dataset.id = id
   svg.world = svg.querySelector('[data-world]')
   return svg
 }
-const ref = (svg, name) => (SMOOTH && name === 'glow' ? 'none' : `url(#${name}${svg.dataset.id})`)
+const ref = (svg, name) => ((SMOOTH || !RICH) && name === 'glow' ? 'none' : `url(#${name}${svg.dataset.id})`)
 // The camera: zoom z around a point that stays put on screen.
 const cam = (svg, z, fx = 320, fy = 170, dx = 0, dy = 0) => sa(svg.world, 'transform', `translate(${fx + dx} ${fy + dy}) scale(${z}) translate(${-fx} ${-fy})`)
 
@@ -717,14 +740,15 @@ export function studio(kits) {
     <filter id="soft${id}"><feGaussianBlur stdDeviation="14"/></filter>
   </defs>
   <rect width="640" height="340" fill="url(#${id}bg)"/>
-  <circle cx="80" cy="60" r="90" fill="${A}" opacity=".22" filter="url(#soft${id})"/><circle cx="560" cy="60" r="90" fill="${H}" opacity=".22" filter="url(#soft${id})"/>
+  <radialGradient id="${id}la"><stop offset="0" stop-color="${A}" stop-opacity=".35"/><stop offset="1" stop-color="${A}" stop-opacity="0"/></radialGradient><radialGradient id="${id}lh"><stop offset="0" stop-color="${H}" stop-opacity=".35"/><stop offset="1" stop-color="${H}" stop-opacity="0"/></radialGradient>
+  <circle cx="80" cy="60" r="130" fill="url(#${id}la)"/><circle cx="560" cy="60" r="130" fill="url(#${id}lh)"/>
   ${Array.from({ length: 9 }, (_, i) => `<rect x="${i * 72 - 4}" y="0" width="2" height="250" fill="rgba(255,255,255,.05)"/>`).join('')}
   <rect x="150" y="18" width="340" height="132" rx="10" fill="url(#${id}led)" stroke="url(#gold${id})" stroke-width="3"/>
   <g data-ledgrid="1" opacity=".18">${Array.from({ length: 22 }, (_, i) => `<rect x="${158 + i * 15}" y="26" width="1" height="116" fill="#7FB4FF"/>`).join('')}</g>
   <rect x="150" y="18" width="12" height="132" fill="${A}" opacity=".9"/><rect x="478" y="18" width="12" height="132" fill="${H}" opacity=".9"/>
   <text x="320" y="44" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="15" letter-spacing="4" fill="#FFD36B">GLM · LIVE</text>
   <text data-score="1" x="320" y="88" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="40" fill="#fff"></text>
-  <text data-clock="1" x="320" y="130" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="#FFD36B" filter="url(#glow${id})"></text>
+  <text data-clock="1" x="320" y="130" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="#FFD36B" stroke="rgba(245,184,46,.35)" stroke-width="4" paint-order="stroke"></text>
   <ellipse cx="320" cy="250" rx="300" ry="30" fill="#0E2246" opacity=".9"/>
   <g data-spot="1" opacity=".0"><path d="M120 0 L180 0 L260 250 L60 250 Z" fill="#FFF6DA" opacity=".07"/><path d="M460 0 L520 0 L580 250 L380 250 Z" fill="#FFF6DA" opacity=".07"/></g>`
   const g = el('g', {}, svg)
@@ -1626,17 +1650,24 @@ export const SCENES = {
   // flags waving, and (the full tier) flares and paper raining down. e.side: whose fans; e.count: how many to draw.
   crowd(e) {
     const svg = stage(e.side), w = svg.world, k = K(e.side), R = rnd(e.v ?? 7)
-    const g = el('g', {}, w), fans = []
+    const g = el('g', {}, w)
     const skins = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982']
     const n = e.count ?? 90
+    // [Sprint 42 I1] The fans in blocks (a row by an eighth of the stand) that jump together, each block on its own
+    // beat: about 48 moves a frame instead of three for every fan (the cutaway was the slowest drawing of all).
+    // Made in order, back row first, so the front rows stand in front.
+    const blocks = new Map()
+    for (let row = 0; row < 6; row++) for (let col = 0; col < 8; col++) blocks.set(row * 8 + col, { g: el('g', {}, g), x: col * 88 + 14, row, ph: R() * 6.3 })
     for (let i = 0; i < n; i++) {
-      const row = i % 6, x = ((i * 53 + row * 29) % 700) - 30, y = 120 + row * 38, s = 0.7 + row * 0.12
-      const f = el('g', {}, g), shirt = R() < 0.7 ? k.kit : k.trim ?? '#fff'
+      const row = i % 6, x = ((i * 53 + row * 29) % 700) - 30, y = 120 + row * 38, s = 0.7 + row * 0.12, col = Math.max(0, Math.min(7, Math.floor((x + 30) / 88)))
+      const key = row * 8 + col
+      const bl = blocks.get(key), shirt = R() < 0.7 ? k.kit : k.trim ?? '#fff', arms = i % 2 ? 'up' : 'v'
+      const f = el('g', { transform: `translate(${x} ${y}) scale(${s})` }, bl.g)
       f.innerHTML = `<rect x="-9" y="0" width="18" height="26" rx="6" fill="${shirt}"/><circle cy="-8" r="8" fill="${skins[i % skins.length]}"/>`
-        + `<rect class="a1" x="-12" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/><rect class="a2" x="7" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/>`
-        + (i % 4 === 0 ? `<rect class="sc" x="-16" y="-34" width="32" height="7" rx="2" fill="${k.trim ?? '#F5B82E'}"/>` : '')
-      fans.push({ f, x, y, s, ph: R() * 6.3, a1: f.querySelector('.a1'), a2: f.querySelector('.a2'), sc: f.querySelector('.sc') })
+        + (arms === 'up' ? `<rect x="-13" y="-22" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(-12 -10 -4)"/><rect x="8" y="-22" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(12 10 -4)"/>` : `<rect x="-16" y="-14" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(-40 -9 2)"/><rect x="11" y="-14" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(40 9 2)"/>`)
+        + (i % 4 === 0 ? `<rect x="-16" y="-34" width="32" height="7" rx="2" fill="${k.trim ?? '#F5B82E'}"/>` : '')
     }
+    const fans = [...blocks.values()]
     const flags = [140, 470].map((x) => { const p = el('path', { fill: k.kit, stroke: k.trim ?? '#fff', 'stroke-width': 3, opacity: 0.95 }, w); return { p, x } })
     const flares = (e.flares ? [90, 330, 560] : []).map((x) => el('circle', { cx: x, cy: 150, r: 26, fill: '#FF8A3D', opacity: 0, filter: ref(svg, 'soft') }, w))
     const paper = (e.flares ? Array.from({ length: 40 }, (_, i) => el('rect', { width: 5, height: 3, fill: ['#fff', k.kit, '#F5B82E'][i % 3], opacity: 0.9 }, w)) : [])
@@ -1653,10 +1684,7 @@ export const SCENES = {
       sa(mArm[0], 'transform', `rotate(${(150 + md * 30).toFixed(0)} -37 4)`); sa(mArm[1], 'transform', `rotate(${(-150 + md * 30).toFixed(0)} 37 4)`)
       for (const q of fans) {
         const j = wave ? Math.max(0, Math.sin(t * 4 - q.x / 70)) ** 3 * 22 : Math.abs(Math.sin(t * 7 + q.ph)) * 10
-        sa(q.f, 'transform', `translate(${q.x} ${q.y - j}) scale(${q.s})`)
-        const a = wave ? 20 + 140 * Math.min(1, j / 14) : 150 + Math.sin(t * 9 + q.ph) * 20
-        sa(q.a1, 'transform', `rotate(${a} -9 0)`); sa(q.a2, 'transform', `rotate(${-a} 9 0)`)
-        if (q.sc) sa(q.sc, 'transform', `translate(0 ${-j * 0.3}) rotate(${Math.sin(t * 5 + q.ph) * 6})`)
+        sa(q.g, 'transform', `translate(0 ${(-j).toFixed(1)})`)
       }
       for (const { p, x } of flags) {
         const wv = (dx) => Math.sin(t * 6 + dx / 18) * 8

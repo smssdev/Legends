@@ -623,6 +623,8 @@ async function step() {
   const t = buffer.shift()!
   fixedPace = !!t.moment && t.moment.ms <= 3400 && t.moment.kind !== 'shootout'
   show(t)
+  // [Sprint 42 I1] The next minute's scene drawn ahead, while this one plays.
+  if (buffer[0]) pitch.value?.prepare(buffer[0])
   if (!t.finished && buffer.length === 0) fetchNext()
   if (!halftime.value && !finished.value) schedule(momentMs(t))
 }
@@ -915,6 +917,8 @@ function handleSync(r: LiveSync): number {
     if (next?.at !== undefined && next.at <= serverNow()) { show(t, false); return missedGoal(t) }
     const startAt = performance.now() + delay
     if (delay <= 0) return show(t, true, startAt)
+    // [Sprint 42 I1] A live minute arrives before it plays: its scene is drawn ahead in the meantime.
+    pitch.value?.prepare(t)
     const id = window.setTimeout(() => { playTimers.delete(id); show(t, true, startAt) }, delay)
     playTimers.set(id, { t, startAt })
   })
