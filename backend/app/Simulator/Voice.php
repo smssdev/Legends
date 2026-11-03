@@ -59,7 +59,8 @@ class Voice
 
         if ($kind === 'goal' && $goal) {
             $vars = ['p' => $goal['scorer'] ?? null, 'q' => $goal['assist'] ?? null, 'A' => $goal['team']];
-            $line = ($attack['quality'] ?? null) === 'header' ? 'header' : 'goal';
+            // [Sprint 42 F5] A cross put away with a bicycle kick is no header: the goal's own line.
+            $line = ($attack['quality'] ?? null) === 'header' && MomentClock::drama('goal', $events) !== 'bicycle' ? 'header' : 'goal';
         } elseif (in_array($kind, ['penalty', 'free_kick'], true) && ($pen || $fk)) {
             $sp = $pen ?? $fk;
             $vars = ['p' => $sp['taker'] ?? null, 'q' => $sp['keeper'] ?? null, 'A' => $sp['team']];
@@ -69,6 +70,10 @@ class Voice
             $vars['p'] = $card['player'] ?? null;
             $vars['A'] = $card['team'];
             $line = ($card['second_yellow'] ?? false) ? 'second_yellow' : $kind;
+        } elseif ($kind === 'foul' && ($foul = $first('foul'))) {
+            // [Sprint 42 A2] A foul told as its own scene: the tackle, or the dive the referee gives all the same.
+            $vars = ['p' => $foul['player'] ?? null, 'q' => $foul['victim'] ?? null, 'A' => $foul['team']];
+            $line = 'foul';
         } elseif ($kind === 'save' && $attack) {
             $vars = ['p' => $attack['shooter'] ?? null, 'q' => $attack['keeper'] ?? null, 'A' => $attack['team']];
             $line = 'save';

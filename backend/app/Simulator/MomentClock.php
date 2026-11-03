@@ -9,9 +9,30 @@ namespace App\Simulator;
  */
 class MomentClock
 {
-    public static function moment(array $events, array $match, int $period = 1): array
+    /** @param  ?int  $seed  the match's seed (its rain, Sprint 42 F8); null for a check without one */
+    public static function moment(array $events, array $match, int $period = 1, ?int $seed = null): array
     {
-        $kind = self::kind($events);
+        $m = self::shot($events, $match, $period, $seed);
+        // [Sprint 42 A1] How a card or a foul is told (drama): decided here so every screen and the replay tell it alike.
+        $drama = self::drama($m['kind'], $events);
+
+        return $drama ? $m + ['drama' => $drama] : $m;
+    }
+
+    /**
+     * [Sprint 42 F8] A rainy match, as the cartoon draws it (MatchFeed.vue rainy(): the seed, one match in six).
+     * Keep the two in step.
+     */
+    public static function rainy(?int $seed): bool
+    {
+        return $seed !== null && $seed % 6 === 1;
+    }
+
+    private static function shot(array $events, array $match, int $period, ?int $seed): array
+    {
+        // [Sprint 42 A2] A foul gets its own scene only in a match made with its length (config_snapshot); so does a
+        // slip in the rain (F8).
+        $kind = self::kind($events, isset($match['broadcast_ms']['foul']), isset($match['broadcast_ms']['slip']) && self::rainy($seed));
         // [X41] The broadcast as on TV, the owner's (2026-10-26): fewer scenes, each as long as it really takes. The big
         // moments (a goal, a penalty, a card, a real chance) play in full with time for the commentator and, after a goal,
         // a replay; a small one (a blocked or a weak shot, an offside, a free kick wide) is only its card and one line.
@@ -19,6 +40,12 @@ class MomentClock
             $table = $match['broadcast_ms'];
             if ($kind === 'shootout') {
                 return ['kind' => $kind, 'ms' => (int) $match['shootout_ms']];
+            }
+            // [Sprint 42 F] A small moment told as a gag (a clearance off the line, the offside trap, the coach's
+            // megaphone) is a short scene of its own, in a match made with its length.
+            $gag = self::drama($kind, $events);
+            if (in_array($gag, ['clearance', 'trap', 'rant'], true) && isset($table[$gag])) {
+                return ['kind' => $kind, 'ms' => (int) $table[$gag]];
             }
             // [X94] And the kinds the highlights broadcast always tells as a card (broadcast_brief).
             if (self::brief($kind, $events) || (in_array($kind, $match['broadcast_brief'] ?? [], true) && ! self::scored($events))) {
@@ -95,7 +122,95 @@ class MomentClock
         };
     }
 
-    public static function kind(array $events): string
+    /**
+     * [Sprint 42 A1] The cartoon's telling of a card or a foul, from the events only (the same on every screen):
+     * yellow: 'tackle' or 'swarm' (his team-mates surround the referee); red: 'tackle', 'brawl' (a fight in a cloud of
+     * dust) or 'spit' (he argues, then spits at the referee); foul: 'tackle' or 'dive' (he goes down untouched and the
+     * referee gives it). Drawing only: the engine's card and foul stay what they are.
+     */
+    public static function drama(string $kind, array $events): ?string
+    {
+        if (in_array($kind, ['yellow', 'red'], true)) {
+            $card = self::first($events, 'card');
+            $foul = self::first($events, 'foul');
+            $n = crc32('drama:'.($card['player'] ?? '').':'.($foul['victim'] ?? '')) % 12;
+            if ($kind === 'yellow') {
+                return $n < 4 ? 'swarm' : 'tackle';
+            }
+
+            return ($card['second_yellow'] ?? false) ? ($n < 6 ? 'swarm' : 'tackle') : ($n < 3 ? 'spit' : ($n < 7 ? 'brawl' : 'tackle'));
+        }
+        if ($kind === 'foul') {
+            $foul = self::foul($events);
+
+            return crc32('dive:'.($foul['player'] ?? '').':'.($foul['victim'] ?? '')) % 2 === 0 ? 'dive' : 'tackle';
+        }
+
+        return self::gag($kind, $events);
+    }
+
+    /**
+     * [Sprint 42 F] The owner's second set (2026-11-03): how the other moments are told, from their events only.
+     * A goal: a blackout (one in ten: the lights go, and come back with the ball in the net), a bicycle kick (a cross,
+     * one in two), a no-look pass (an assisted goal, one in three) or a nutmeg (one in three). A big save: a double save
+     * (one in three). A blocked big chance: cleared off the line (one in two). An offside: the trap (one in three). A
+     * coach's instruction: the megaphone (one in two). Drawing only: the engine's result stays what it is.
+     */
+    private static function gag(string $kind, array $events): ?string
+    {
+        $attack = self::first($events, 'attack') ?? [];
+        $q = $attack['quality'] ?? '';
+        $n = fn (string $what) => crc32($what.':'.implode(':', [$attack['team'] ?? '', $attack['shooter'] ?? '', $attack['carrier'] ?? '', $attack['receiver'] ?? '', $attack['lane'] ?? '', $q]));
+        if ($kind === 'goal') {
+            $goal = self::first($events, 'goal');
+            $key = fn (string $what) => crc32($what.':'.($goal['scorer'] ?? '').':'.($goal['assist'] ?? '').':'.($attack['lane'] ?? ''));
+            if ($key('blackout') % 10 === 0) {
+                return 'blackout';
+            }
+            if ($q === 'header') {
+                return $key('bicycle') % 2 === 0 ? 'bicycle' : null;
+            }
+            if (($goal['assist'] ?? null) && $key('nolook') % 3 === 0) {
+                return 'nolook';
+            }
+
+            return in_array($q, ['big', 'normal'], true) && $key('nutmeg') % 3 === 0 ? 'nutmeg' : null;
+        }
+
+        return match ($kind) {
+            'save' => ! self::brief($kind, $events) && $n('double') % 3 === 0 ? 'double' : null,
+            'miss' => ($attack['result'] ?? '') === 'blocked' && $q === 'big' && $n('clearance') % 2 === 0 ? 'clearance' : null,
+            'offside' => $n('trap') % 3 === 0 ? 'trap' : null,
+            'coach' => self::coachEvent($events) && crc32('rant:'.json_encode(self::coachEvent($events))) % 2 === 0 ? 'rant' : null,
+            'slip' => 'slip',
+            default => null,
+        };
+    }
+
+    private static function coachEvent(array $events): ?array
+    {
+        foreach ($events as $e) {
+            if ($e['type'] === 'action' && in_array($e['action']['type'] ?? '', ['tactics', 'formation'], true)) {
+                return $e;
+            }
+        }
+
+        return null;
+    }
+
+    /** [Sprint 42 A2] The foul (not a penalty) the minute shows as its scene: one in three, chosen by its players. */
+    private static function foul(array $events): ?array
+    {
+        foreach ($events as $e) {
+            if ($e['type'] === 'foul' && ! ($e['penalty'] ?? false) && isset($e['player'], $e['victim'])) {
+                return crc32('foul:'.$e['player'].':'.$e['victim']) % 3 === 0 ? $e : null;
+            }
+        }
+
+        return null;
+    }
+
+    public static function kind(array $events, bool $fouls = false, bool $slips = false): string
     {
         $types = array_column($events, 'type');
         $goal = self::first($events, 'goal');
@@ -126,6 +241,13 @@ class MomentClock
             if ($kind) {
                 return $kind;
             }
+        }
+        if ($fouls && self::foul($events)) {
+            return 'foul';
+        }
+        // [Sprint 42 F8] In the rain, one ball lost in three is a slip: he goes down on his belly and slides away from it.
+        if ($slips && $attack && ($attack['result'] ?? '') === 'lost' && crc32('slip:'.($attack['carrier'] ?? '').':'.($attack['defender'] ?? '')) % 3 === 0) {
+            return 'slip';
         }
         if (in_array('corner', $types, true)) {
             return 'corner';

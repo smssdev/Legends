@@ -75,9 +75,11 @@ class MomentClockTest extends TestCase
         $shot = fn (string $result, string $quality) => [['type' => 'attack', 'team' => 'home', 'result' => $result, 'quality' => $quality]];
         $this->assertSame(['kind' => 'goal', 'ms' => 20000], MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $match));
         $this->assertSame(['kind' => 'miss', 'ms' => (int) config('game.match.broadcast_ms.miss')], MomentClock::moment($shot('missed', 'big'), $match));
-        $this->assertSame(['kind' => 'save', 'ms' => (int) config('game.match.broadcast_ms.save')], MomentClock::moment($shot('saved', 'header'), $match));
+        $this->assertSame(['kind' => 'save', 'ms' => (int) config('game.match.broadcast_ms.save')], array_intersect_key(MomentClock::moment($shot('saved', 'header'), $match), ['kind' => 1, 'ms' => 1]));
         foreach ([$shot('blocked', 'big'), $shot('missed', 'long'), $shot('saved', 'normal'), $shot('offside', '')] as $events) {
-            $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false);
+            // [Sprint 42 F] Unless it is told as a gag (a clearance off the line, the offside trap): a short scene.
+            $m = MomentClock::moment($events, $match);
+            $this->assertTrue(($m['brief'] ?? false) || in_array($m['drama'] ?? null, ['clearance', 'trap'], true));
         }
         $this->assertTrue(MomentClock::moment([['type' => 'free_kick', 'team' => 'home', 'taker' => 1]], $match)['brief'] ?? false);
         $this->assertArrayNotHasKey('brief', MomentClock::moment([['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]], $match));
@@ -89,13 +91,15 @@ class MomentClockTest extends TestCase
     {
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
             'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
-        foreach ([[['type' => 'corner', 'team' => 'home', 'taker' => 1]], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']],
-            [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]], [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]]] as $events) {
+        foreach ([[['type' => 'corner', 'team' => 'home', 'taker' => 1]], [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]]] as $events) {
             $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false, json_encode($events));
         }
         foreach ([[['type' => 'goal', 'team' => 'home', 'kind' => 'open']], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'red']],
             [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2], ['type' => 'goal', 'team' => 'home', 'kind' => 'free_kick']],
-            [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']]] as $events) {
+            [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']],
+            // [Sprint 42] The owner's cartoon clips: a yellow card, a sub and an injury play their scene again.
+            [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']], [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]],
+            [['type' => 'injury', 'team' => 'home', 'player' => 1]]] as $events) {
             $this->assertArrayNotHasKey('brief', MomentClock::moment($events, $match), json_encode($events));
         }
         // A quiet minute runs by in a second.
@@ -127,6 +131,87 @@ class MomentClockTest extends TestCase
         $half = intdiv($ms, $halves);
         $this->assertGreaterThan(90000, $half);
         $this->assertLessThan(150000, $half);
+    }
+
+    /** [Sprint 42 A1] How a card is told (its drama) comes from its players, the same every time, with every telling used. */
+    public function test_a_card_has_its_drama_from_the_events(): void
+    {
+        $card = fn (string $color, int $p, bool $second = false) => [['type' => 'foul', 'team' => 'home', 'player' => $p, 'victim' => 100 + $p, 'penalty' => false],
+            ['type' => 'card', 'team' => 'home', 'player' => $p, 'color' => $color] + ($second ? ['second_yellow' => true] : [])];
+        $yellows = array_map(fn ($p) => MomentClock::moment($card('yellow', $p), $this->match)['drama'], range(1, 60));
+        $reds = array_map(fn ($p) => MomentClock::moment($card('red', $p), $this->match)['drama'], range(1, 60));
+        $this->assertEqualsCanonicalizing(['tackle', 'swarm'], array_values(array_unique($yellows)));
+        $this->assertEqualsCanonicalizing(['tackle', 'brawl', 'spit'], array_values(array_unique($reds)));
+        $this->assertSame($reds, array_map(fn ($p) => MomentClock::moment($card('red', $p), $this->match)['drama'], range(1, 60)));
+        // A second yellow is never a fight or a spit: a tackle or a swarm round the referee.
+        foreach (range(1, 30) as $p) {
+            $this->assertContains(MomentClock::moment($card('red', $p, true), $this->match)['drama'], ['tackle', 'swarm']);
+        }
+        // Other moments have none.
+        $this->assertArrayNotHasKey('drama', MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $this->match));
+    }
+
+    /** [Sprint 42 A2] One foul in three is its own scene (a tackle or a dive), only in a match made with its length. */
+    public function test_a_foul_is_its_own_scene_in_a_new_match(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+            'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
+        $foul = fn (int $p) => [['type' => 'attack', 'team' => 'away', 'result' => 'foul', 'quality' => 'normal'],
+            ['type' => 'foul', 'team' => 'home', 'player' => $p, 'victim' => 200 + $p, 'penalty' => false]];
+        $shown = array_filter(range(1, 60), fn ($p) => MomentClock::moment($foul($p), $match)['kind'] === 'foul');
+        $this->assertGreaterThan(10, count($shown));
+        $this->assertLessThan(35, count($shown));
+        $dramas = array_unique(array_map(fn ($p) => MomentClock::moment($foul($p), $match)['drama'], $shown));
+        $this->assertEqualsCanonicalizing(['dive', 'tackle'], array_values($dramas));
+        $this->assertSame((int) config('game.match.broadcast_ms.foul'), MomentClock::moment($foul(reset($shown)), $match)['ms']);
+        // A penalty foul is the penalty; a match made before keeps its minute as it was (no foul in its lengths).
+        $this->assertNotSame('foul', MomentClock::kind([['type' => 'foul', 'team' => 'home', 'player' => reset($shown), 'victim' => 200 + reset($shown), 'penalty' => true]], true));
+        $old = $match;
+        unset($old['broadcast_ms']['foul']);
+        $this->assertNotSame('foul', MomentClock::moment($foul(reset($shown)), $old)['kind']);
+    }
+
+    /** [Sprint 42 F] The second set's gags: each from its own events, each used, the small ones a short scene of their own. */
+    public function test_the_gags_come_from_the_events(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+            'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
+        $atk = fn (string $result, string $quality, int $p) => ['type' => 'attack', 'team' => 'home', 'result' => $result, 'quality' => $quality, 'shooter' => $p, 'carrier' => $p + 1, 'receiver' => $p, 'defender' => $p + 50, 'lane' => 'center'];
+        $goal = fn (string $quality, int $p, ?int $assist) => [$atk('goal', $quality, $p), ['type' => 'goal', 'team' => 'home', 'kind' => 'open', 'scorer' => $p, 'assist' => $assist]];
+        $dramas = fn (callable $events) => array_values(array_unique(array_filter(array_map(fn ($p) => MomentClock::moment($events($p), $match)['drama'] ?? null, range(1, 80)))));
+        $this->assertEqualsCanonicalizing(['blackout', 'nolook', 'nutmeg'], $dramas(fn ($p) => $goal('big', $p, $p + 3)));
+        $this->assertEqualsCanonicalizing(['blackout', 'bicycle'], $dramas(fn ($p) => $goal('header', $p, $p + 3)));
+        $this->assertEqualsCanonicalizing(['double'], $dramas(fn ($p) => [$atk('saved', 'big', $p)]));
+        $this->assertSame([], $dramas(fn ($p) => [$atk('saved', 'normal', $p)]), 'a small save stays a card');
+        $this->assertEqualsCanonicalizing(['clearance'], $dramas(fn ($p) => [$atk('blocked', 'big', $p)]));
+        $this->assertEqualsCanonicalizing(['trap'], $dramas(fn ($p) => [$atk('offside', '', $p)]));
+        // The gags that were a card are a short scene now, of their own length.
+        foreach (range(1, 40) as $p) {
+            $m = MomentClock::moment([$atk('offside', '', $p)], $match);
+            // (One offside in three is a goal ruled out by VAR, its own scene.)
+            if ($m['kind'] === 'var') {
+                continue;
+            }
+            ($m['drama'] ?? null) === 'trap' ? $this->assertSame(['kind' => 'offside', 'ms' => (int) config('game.match.broadcast_ms.trap'), 'drama' => 'trap'], $m) : $this->assertTrue($m['brief']);
+        }
+        $rant = array_filter(range(1, 40), fn ($p) => (MomentClock::moment([['type' => 'action', 'team' => 'home', 'action' => ['type' => 'tactics', 'tactics' => ['tempo' => $p]]]], $match)['drama'] ?? null) === 'rant');
+        $this->assertNotEmpty($rant);
+        $this->assertLessThan(40, count($rant));
+    }
+
+    /** [Sprint 42 F8] In the rain (the match's seed, as the cartoon draws it), a ball lost can be a slip; never in the dry. */
+    public function test_a_slip_only_in_the_rain(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+            'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
+        $lost = fn ($p) => [['type' => 'attack', 'team' => 'home', 'result' => 'lost', 'carrier' => $p, 'defender' => $p + 50]];
+        $kinds = fn (int $seed) => array_map(fn ($p) => MomentClock::moment($lost($p), $match, 1, $seed)['kind'], range(1, 60));
+        $this->assertTrue(MomentClock::rainy(7));
+        $this->assertFalse(MomentClock::rainy(8));
+        $wet = array_count_values($kinds(7));
+        $this->assertGreaterThan(8, $wet['slip'] ?? 0);
+        $this->assertNotContains('slip', $kinds(8));
+        $this->assertNotContains('slip', array_map(fn ($p) => MomentClock::moment($lost($p), $match)['kind'], range(1, 60)), 'no seed: no rain');
     }
 
     /** [Sprint 35 C3] A goal ruled out by VAR: a big chance offside, or one the attackers fouled in; with its reason. */

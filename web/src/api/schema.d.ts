@@ -14439,7 +14439,7 @@ export interface components {
             /** @description Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant */
             ticks?: {
                 frames?: components["schemas"]["Keyframe"][];
-                /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul */
+                /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 42] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 42 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since) */
                 moment?: Record<string, never>;
             }[];
             /** @description The last few seconds of reactions */

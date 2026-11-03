@@ -50,17 +50,22 @@ return [
         'broadcast_ms' => [
             // [X94] The highlights broadcast, the owner's (2026-11-02): the clock runs fast (a quiet minute in a second) and
             // only the big moments play their scene; the small ones are their card and one line as the clock runs on.
+            // [Sprint 42] The owner's (2026-11-03): the clock stops and a cartoon tells the moment, a card, a foul, an
+            // injury and a sub too (they were a card and one line since X94). A foul is one in three (MomentClock::foul).
             'quiet' => 1000, 'attack' => 1200, 'brief' => 2600, 'stoppage' => 2600, 'whistle' => 10000, 'coach' => 2600,
-            'sub' => 2600, 'injury' => 2600, 'offside' => 2600, 'corner' => 2600, 'miss' => 8000, 'save' => 8000,
-            'goal' => 20000, 'yellow' => 2600, 'red' => 11000, 'free_kick' => 11000, 'free_kick_goal' => 19000,
-            'penalty' => 14000, 'penalty_goal' => 20000,
+            'sub' => 7000, 'injury' => 8000, 'offside' => 2600, 'corner' => 2600, 'miss' => 8000, 'save' => 8000,
+            'goal' => 20000, 'yellow' => 9500, 'red' => 13000, 'foul' => 7500,
+            // [Sprint 42 F] The second set's gags, each a short scene (3 to 5 s): a clearance off the line, the offside
+            // trap, the coach's megaphone, a slip in the rain.
+            'clearance' => 6000, 'trap' => 5200, 'rant' => 5200, 'slip' => 5200, 'free_kick' => 11000, 'free_kick_goal' => 19000,
+            'penalty' => 15000, 'penalty_goal' => 21000,
             // [Sprint 36 F5] A half's end (whistle, 10 s): its board, then the walk to the tunnel or the handshakes.
             // [Sprint 35 C3] A goal ruled out by VAR: the ball in, the check, no goal, and the coaches.
             'var' => 16000,
         ],
         // [X94] Told as their card and one line, never a scene, unless the minute has a goal: only a goal, a penalty, a
         // red card, VAR and a real chance (a big save or miss) play in full. A match made before keeps its scenes (no key).
-        'broadcast_brief' => ['corner', 'yellow', 'sub', 'injury', 'coach', 'stoppage', 'offside', 'free_kick'],
+        'broadcast_brief' => ['corner', 'coach', 'stoppage', 'offside', 'free_kick'],
         // مدة عرض كل دقيقة حسب لقطتها [MATCH_VIEW 4.5، MOMENTS.md]: الهادئة سريعة، واللقطة تأخذ وقتها
         'moment_ms' => [
             // A whole match plays in about three minutes (PLAN 2.24): quiet minutes fly by, each scene has its length.
