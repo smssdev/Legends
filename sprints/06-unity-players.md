@@ -57,7 +57,7 @@
 - **الصورة:** `unity/Reference/players/faces.png` (أربعة لاعبين). وجوه وبشرة وعيون واقعية، ولا يشبه أحدهم أحداً.
 - **ملاحظات لليوم 2 (U2):** البشرة الفاتحة باهتة أكثر من اللازم (الإضاءة والتعريض)، واللاعب المختلط يأخذ بشرة قوقازية، فتُختار البشرة من الأصل نفسه. والقصة `short03` تغطي العين فتُستبعد، وتُصنع قصة قصيرة جداً (حلاقة) وتُضاف الأفرو القصيرة. والطول يُضبط بالمتر (1.70 إلى 1.92).
 - **كيف يُختبر (على جهاز سليمان):**
-  1. `"D:\Blender Foundation\Blender 5.2blender.exe" -b -P tools/unity/players/setup_blender.py` (أول مرة، حوالي 5 دقائق مع التنزيل).
+  1. `"D:\Blender Foundation\Blender 5.2\blender.exe" -b -P tools/unity/players/setup_blender.py` (أول مرة، حوالي 5 دقائق مع التنزيل).
   2. `blender.exe -b -P tools/unity/players/build_players.py -- --close --preview unity/Reference/players/faces.png` (حوالي دقيقتين).
 - **انتبه:** Blender الذي يشغّله Claude من تطبيق Claude Desktop يكتب إعداداته في مجلد التطبيق المعزول (`AppData\Local\Packages\Claude_...\LocalCache\Roaming`)، فإن فتح سليمان Blender بنفسه لا يجد MPFB. يكفي تشغيل `setup_blender.py` مرة من Blender نفسه.
 
