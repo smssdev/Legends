@@ -12,7 +12,10 @@ mv "$file.tmp" "$file"
 ls -1t "$dir"/legends-*.sql.gz | tail -n +15 | xargs -r rm -f
 echo "Backup: $file ($(du -h "$file" | cut -f1))"
 
-set -a; . /opt/legends/.env; set +a
+# [X96] Read only the three B2 keys, never the file as shell: a value with spaces (a Gmail app password is shown in
+# groups of four) would run as a command and stop the backup there.
+env_() { grep -m 1 "^$1=" /opt/legends/.env 2>/dev/null | cut -d= -f2- | sed 's/^["'"'"']//; s/["'"'"']$//'; }
+B2_BUCKET=$(env_ B2_BUCKET); B2_KEY_ID=$(env_ B2_KEY_ID); B2_APPLICATION_KEY=$(env_ B2_APPLICATION_KEY)
 if [ -n "${B2_BUCKET:-}" ] && [ -n "${B2_KEY_ID:-}" ] && [ -n "${B2_APPLICATION_KEY:-}" ]; then
   export RCLONE_CONFIG_B2_TYPE=b2 RCLONE_CONFIG_B2_ACCOUNT="$B2_KEY_ID" RCLONE_CONFIG_B2_KEY="$B2_APPLICATION_KEY"
   rclone copy "$file" "b2:$B2_BUCKET/vps-backups/"
