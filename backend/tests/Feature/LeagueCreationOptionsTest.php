@@ -67,6 +67,15 @@ class LeagueCreationOptionsTest extends TestCase
         $first = DB::table('fixtures')->where('competition', 'league')->orderBy('scheduled_at')->value('scheduled_at');
         // Today at 21:00 in Cairo, the round's time, with no day to get ready.
         $this->assertSame('2026-10-22', Carbon::parse($first, 'UTC')->setTimezone('Africa/Cairo')->toDateString());
+        // [Sprint 40 B1] And free: no coins asked of an owner who has none.
+        $poor = User::factory()->create();
+        $free = fn (int $prep) => ['template' => 'Test League', 'prep_days' => $prep, 'starts_at' => GameClock::now()->addDay()->toIso8601ZuluString(),
+            'club_id' => DB::table('master_clubs')->where('league_name', 'Test League')->orderByDesc('strength_cp')->value('id')];
+        $this->actingAs($poor)->postJson('/api/v1/leagues', $free(0))
+            ->assertCreated()->assertJsonPath('league.prep_days', 0);
+        $this->assertSame(0, (int) DB::table('wallet_transactions')->where('user_id', $poor->id)->where('type', 'league_custom')->count());
+        // 4 days still customize it (paid).
+        $this->actingAs(User::factory()->create())->postJson('/api/v1/leagues', $free(4))->assertStatus(409);
         // And 1 or 3 days are not offered.
         $this->actingAs(User::factory()->create())->postJson('/api/v1/leagues', $this->settings(['prep_days' => 3]))->assertStatus(422);
     }
