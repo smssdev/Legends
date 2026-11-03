@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Free: every club of the real league, one round a day at the creator's evening (game.league.default_kickoff in their
  * own time zone), two days to get ready, the integrity system and the press conferences on, no fair league and no
- * second time slot, one season. Changing any of these makes it a customized league, paid once in coins: the number
+ * second time slot, one season ([Sprint 40 B1] or no preparation at all, free too). Changing any of these makes it a customized league, paid once in coins: the number
  * of its clubs × game.league.custom_coins_per_club. A league keeps at least half the real league's clubs.
  */
 class LeagueTiers
@@ -60,6 +60,9 @@ class LeagueTiers
     public static function changed(array $settings, array $free): array
     {
         $norm = fn ($v) => is_array($v) ? array_values($v) : (is_bool($v) ? $v : ($v === null ? null : (string) $v));
+
+        // [Sprint 40 B1] No preparation at all is free too (the owner's, 2026-11-03): only 4 or 6 days are customizing.
+        $free = (int) ($settings['prep_days'] ?? -1) === 0 ? ['prep_days' => 0] + $free : $free;
 
         return array_values(array_filter(self::CUSTOM, fn ($k) => array_key_exists($k, $settings) && $norm($settings[$k]) !== $norm($free[$k])));
     }

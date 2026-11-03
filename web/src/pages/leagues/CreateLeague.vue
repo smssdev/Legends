@@ -98,7 +98,8 @@ const changes = computed(() => {
   if (!custom.value) return {}
   const c: Record<string, unknown> = {}
   if (teams.value !== fullTeams.value) c.team_count = teams.value
-  if (prepDays.value !== FREE.prep) c.prep_days = prepDays.value
+  // [Sprint 40 B1] No preparation is free: it does not customize (sent apart, below).
+  if (prepDays.value !== FREE.prep && prepDays.value !== 0) c.prep_days = prepDays.value
   if (customTime.value) c.round_times = [time.value]
   if (startingBudget.value !== FREE.budget) c.starting_budget = startingBudget.value
   if (fair.value) c.fair_league = true
@@ -169,6 +170,7 @@ async function create() {
         // The free league plays at this owner's evening, in their own time zone.
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         ...changes.value,
+        ...(prepDays.value === 0 ? { prep_days: 0 } : {}),
         rest_days: restDays.value,
         is_dev: import.meta.env.DEV,
         ...(allianceOn.value ? { alliance: { size: allianceSize.value, assign: allianceAssign.value, ...(allianceAssign.value === 'pick' ? allianceSides.value : {}) } } : {}),
@@ -293,11 +295,13 @@ const field = (name: string) => error.value?.field(name) ?? ''
           <ul class="grid gap-2 text-sm text-text-soft md:grid-cols-2">
             <li>{{ $t('⚽ كل أندية الدوري الأصلي ({v0})', { v0: fullTeams }) }}</li>
             <li>{{ $t('🕘 جولة واحدة يومياً في التاسعة مساءً بتوقيتك') }}</li>
-            <li>{{ $t('📅 يومان للإعداد قبل أول جولة') }}</li>
+            <li>{{ prepDays === 0 ? $t('📅 بلا إعداد: المباريات من أول يوم') : $t('📅 يومان للإعداد قبل أول جولة') }}</li>
             <li>{{ $t('🎙️ المؤتمرات الصحفية ومنظومة النزاهة مفعّلتان') }}</li>
             <li>{{ $t('🏁 موسم واحد ثم ينتهي الدوري') }}</li>
             <li>{{ $t('⚖️ لا دوري نزيه ولا جولة على فترتين') }}</li>
           </ul>
+          <!-- [Sprint 40 B1] No preparation, free in any league. -->
+          <UiToggle :model-value="prepDays === 0" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تبدأ المباريات من أول يوم بعد البداية، مجاناً')" @update:model-value="(v: boolean) => (prepDays = v ? 0 : FREE.prep)"><b>{{ $t('بلا فترة إعداد') }}</b></UiToggle>
           <UiToggle v-model="custom" class="rounded-lg bg-surface-sunk p-3" :hint="$t('عدد الأندية، والإعداد، والساعة، والميزانية، والمزايا، والتجديد')"><b>{{ $t('أريد تخصيص الدوري') }}</b></UiToggle>
         </section>
 
