@@ -13,10 +13,13 @@
 
     <!-- [Sprint 42 G1] The owner's (2026-11-03): no live pitch. Between the moments only the match clock runs; at a
          moment it stops dead and the cartoon clip plays over it, then it runs on. -->
-    <div class="clockface" :class="{ frozen }">
-      <span class="half">{{ half }}</span>
-      <span class="big" dir="ltr">{{ clock || minute }}</span>
-      <span class="state"><i />{{ frozen ? $t('توقف الوقت · لقطة') : $t('الوقت يمشي') }}</span>
+    <!-- [Sprint 42 H1] As on TV: the studio, two commentators at their desk and the clock on the LED wall; at a moment
+         the picture cuts to the clip. -->
+    <div class="clockface tv" :class="{ frozen }">
+      <div ref="studioHost" class="studio" aria-hidden="true" />
+      <span class="bug" dir="ltr">GLM TV</span>
+      <span class="onair"><i />{{ $t('مباشر') }}</span>
+      <span class="strap"><b>{{ half }}</b><span dir="ltr">{{ clock || minute }}</span><em>{{ frozen ? $t('توقف الوقت · لقطة') : $t('الوقت يمشي') }}</em></span>
       <span class="prog" dir="ltr" aria-hidden="true"><i :style="{ width: progress + '%' }" /></span>
     </div>
 
@@ -95,7 +98,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, setKits, setRain, setSmooth } from './art'
+import { ICON, SCENES, crest, setKits, setRain, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
@@ -105,7 +108,7 @@ import { voiceLine, type Lang } from '../voice'
 const props = defineProps<{ kits: any; clubs: { home: string; away: string }; codes: { home: string; away: string }; logos?: { home?: string | null; away?: string | null }; strength: { home: number; away: number }; coaches: any; teams: any; seed: number; kickoff?: string | null; looks?: Partial<Record<'home' | 'away', string>> | null; speed: number; minute: string; score: { home: number; away: number }; mine: string | null; lang: Lang | 'off'; intro: boolean; live: boolean; countdown: number }>()
 const emit = defineEmits<{ cue: [name: string]; sound: [name: string]; say: [line: any]; near: [closeness: number]; introDone: [] }>()
 
-const host = ref<HTMLElement>(), stage = ref<HTMLElement>()
+const host = ref<HTMLElement>(), stage = ref<HTMLElement>(), studioHost = ref<HTMLElement>()
 // [X35] The broadcast clock, minutes and seconds running through each minute as on TV ('' between minutes: the parent's).
 const clock = ref('')
 // [Sprint 42 E1] The owner's (2026-11-03): the clock runs, and at the moment's second it stops dead while the cartoon
@@ -273,11 +276,13 @@ function step(now) {
   if (plan && !document.hidden) noteFrame(now - last)
   const dt = Math.min(0.05, (now - last) / 1000) * (props.speed || 1)
   last = now
+  if (!plan) drawStudio(now)
   if (plan) {
     t = plan.startAt === null ? t + dt : Math.max(0, (now - plan.startAt) / 1000)
     const { s, total, sceneT, rate, fired } = plan
     tickClock(plan.tick, Math.min(1, t / total), plan)
     near(plan.tick, Math.min(1, t / total))
+    drawStudio(now)
     const fire = (k, fn) => { if (!fired.has(k)) { fired.add(k); fn() } }
     // A line or a sound long past (the screen joined late) is dropped, not played out of time.
     const cue = (k, at, fn) => fire(k, () => t - at < 0.6 && fn())
@@ -285,12 +290,13 @@ function step(now) {
     if (scene && t < sceneT && (!smooth.value || now - drawn >= 32)) { drawn = now; draw(t * rate) }
     const keyT = s.keyAt * sceneT
     // Commentary: line times are fractions of the scene (or of the minute when there is none).
-    for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => props.lang !== 'off' && emit('say', voiceLine(props.lang, l, players.value, props.clubs))) }
+    for (const [i, l] of s.lines.entries()) { const at = l.at * (sceneT || total * 0.5); if (t >= at) cue('l' + i, at, () => { talkAt(); if (props.lang !== 'off') emit('say', voiceLine(props.lang, l, players.value, props.clubs)) }) }
     for (const [i, [at, name]] of soundsOf(s).entries()) { const when = at === 'key' ? keyT : at * sceneT; if (t >= when) cue('s' + i, when, () => emit('sound', name)) }
     if (s.scene === 'miss' && s.data.how === 'post' && t >= keyT) cue('post', keyT, () => emit('sound', 'post'))
     if (t >= keyT) fire('key', () => { revealed.value = true; tense.value = false })
     if (s.goal && t >= keyT) fire('goal', () => {
       emit('cue', 'goal'); shake.value = true; setTimeout(() => (shake.value = false), 500)
+      hypeTill = performance.now() + 6000
       party.value = { side: s.side, who: s.who }
     })
     // [Sprint 35 C1] After the scene, the director cuts away (each cutaway built as it starts), then the cards.
@@ -334,6 +340,24 @@ function step(now) {
     if (!plan.replay && t >= (scene ? Math.min(total, sceneT + plan.cutT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
   }
 }
+
+// ---------------------------------------------------------------- [Sprint 42 H1] the studio
+// Two commentators take turns: each line said makes the next one talk for a while; a goal puts them on their feet.
+let studioView: any = null, talkTill = 0, talker = 1, hypeTill = 0, studioDrawn = 0
+function talkAt() { talker = talker === 1 ? 2 : 1; talkTill = performance.now() + 2600 }
+function buildStudio() {
+  if (!studioHost.value) return
+  try { studioView = studio(props.kits); studioHost.value.replaceChildren(studioView.svg); drawStudio(performance.now(), true) } catch (e) { console.error(e); studioView = null }
+}
+function drawStudio(now, force = false) {
+  // Behind a clip nobody sees it: not drawn then. At 30 a second in the smooth mode.
+  if (!studioView || (sceneOn.value && !force) || (!force && smooth.value && now - studioDrawn < 32)) return
+  studioDrawn = now
+  const hype = Math.max(0, Math.min(1, (hypeTill - now) / 1000))
+  try { studioView.update(now / 1000, { clock: clock.value || props.minute, score: `${props.score.away} - ${props.score.home}`, frozen: frozen.value, talk: now < talkTill || bubbleOn.value ? talker : 0, hype }) } catch (e) { console.error(e); studioView = null }
+}
+watch(() => props.kits, () => buildStudio(), { deep: true })
+onMounted(buildStudio)
 
 // ---------------------------------------------------------------- the clock [X35, Sprint 42 G1]
 // [Sprint 42 G1] The live pitch is gone (the owner's, 2026-11-03): only the clock between the moments. The server still
@@ -415,16 +439,24 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .mom { height: 3px; display: flex; margin: 0 14px; border-radius: 2px; overflow: hidden }
 .mom i { display: block; height: 100%; transition: width .8s }
 
-.clockface { position: absolute; z-index: 1; top: clamp(84px, 16cqw, 106px); left: 10px; right: 10px; height: min(40cqh, 62cqw); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: radial-gradient(70% 90% at 50% 40%, rgba(245,184,46,.12), transparent 70%), #071733; box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 16px 30px rgba(0,0,0,.45) }
-.clockface .half { font-size: 14px; font-weight: 700; color: #C9D2E1 }
-.clockface .big { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: clamp(56px, 22cqw, 120px); line-height: 1; letter-spacing: .04em; color: #FFD36B; font-variant-numeric: tabular-nums; text-shadow: 0 4px 24px rgba(245,184,46,.25) }
-.clockface .state { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: #C9D2E1 }
-.clockface .state i { width: 8px; height: 8px; border-radius: 50%; background: #2BB673 }
-.clockface .prog { position: absolute; left: 16px; right: 16px; bottom: 14px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); overflow: hidden }
+.clockface { position: absolute; z-index: 1; top: clamp(84px, 16cqw, 106px); left: 10px; right: 10px; height: min(40cqh, 62cqw); border-radius: 14px; overflow: hidden; background: #040B1C; box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 16px 30px rgba(0,0,0,.45) }
+.studio { position: absolute; inset: 0 }
+.studio :deep(svg) { width: 100%; height: 100%; display: block }
+/* The TV's own graphics over the studio: the channel's mark, ON AIR, and the strap with the half and the clock. */
+.clockface .bug { position: absolute; top: 8px; left: 10px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: .12em; color: #FFD36B; padding: 2px 8px; border-radius: 4px; background: rgba(4,11,28,.7); border: 1px solid rgba(245,184,46,.5) }
+.clockface .onair { position: absolute; top: 8px; right: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 800; color: #fff; background: #D21F1F }
+.clockface .onair i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: ping 1.4s infinite }
+.clockface .strap { position: absolute; left: 10px; right: 10px; bottom: 16px; display: flex; align-items: center; gap: 10px; padding: 4px 10px; border-radius: 6px; background: linear-gradient(90deg, rgba(7,23,51,.92), rgba(7,23,51,.75)); border-inline-start: 3px solid #F5B82E; font-size: 12px; color: #C9D2E1 }
+.clockface .strap b { color: #fff; font-weight: 800 }
+.clockface .strap span { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 16px; color: #FFD36B; font-variant-numeric: tabular-nums }
+.clockface .strap em { font-style: normal; margin-inline-start: auto }
+.clockface .prog { position: absolute; left: 10px; right: 10px; bottom: 8px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden }
 .clockface .prog i { display: block; height: 100%; background: #F5B82E; transition: width .3s linear }
-/* Stopped for the clip: the time blinks and the dot turns gold. */
-.clockface.frozen .big { animation: clockstop .8s steps(2, jump-none) infinite }
-.clockface.frozen .state i { background: #F5B82E }
+/* Stopped for the clip: the clock on the strap blinks. */
+.clockface.frozen .strap span { animation: clockstop .8s steps(2, jump-none) infinite }
+/* [Sprint 42 H1] The cut from the studio to the clip: a gold and navy wipe across the picture, as a broadcast's sting. */
+.moment.on .mbox::after { content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none; background: linear-gradient(105deg, transparent 0 32%, #F5B82E 32% 38%, #071733 38% 62%, #F5B82E 62% 66%, transparent 66%); background-size: 320% 100%; animation: sting .6s ease-in forwards }
+@keyframes sting { from { background-position: 100% 0 } to { background-position: 0 0; opacity: 0 } }
 .tl { position: absolute; top: calc(clamp(84px, 16cqw, 106px) + min(40cqh, 62cqw) + 6px); bottom: 70px; left: 0; right: 0; overflow: hidden; mask-image: linear-gradient(180deg, transparent, #000 26px, #000 82%, transparent) }
 .spine { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, rgba(245,184,46,.55) 10%, rgba(245,184,46,.15)) }
 .list { position: relative; padding: 22px 10px 0; display: grid; gap: 10px }
@@ -549,5 +581,5 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 .smooth .row-enter-active { transition: opacity .3s }
 .smooth .row-enter-from { transform: none }
 .smooth .mbox { box-shadow: 0 12px 30px rgba(0,0,0,.6) }
-@media (prefers-reduced-motion: reduce) { .clockface.frozen .big, .live.frozen, .atmo::before, .wave i, .live i::after, .moment.tense .mbox, .moment.tense::after, .party i { animation: none } .party i { display: none } }
+@media (prefers-reduced-motion: reduce) { .moment.on .mbox::after { animation: none; opacity: 0 } .clockface.frozen .strap span, .clockface .onair i, .live.frozen, .atmo::before, .wave i, .live i::after, .moment.tense .mbox, .moment.tense::after, .party i { animation: none } .party i { display: none } }
 </style>
