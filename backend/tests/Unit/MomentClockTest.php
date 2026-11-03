@@ -74,8 +74,8 @@ class MomentClockTest extends TestCase
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000, 'broadcast_ms' => config('game.match.broadcast_ms')];
         $shot = fn (string $result, string $quality) => [['type' => 'attack', 'team' => 'home', 'result' => $result, 'quality' => $quality]];
         $this->assertSame(['kind' => 'goal', 'ms' => 20000], MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $match));
-        $this->assertSame(['kind' => 'miss', 'ms' => 10000], MomentClock::moment($shot('missed', 'big'), $match));
-        $this->assertSame(['kind' => 'save', 'ms' => 11000], MomentClock::moment($shot('saved', 'header'), $match));
+        $this->assertSame(['kind' => 'miss', 'ms' => (int) config('game.match.broadcast_ms.miss')], MomentClock::moment($shot('missed', 'big'), $match));
+        $this->assertSame(['kind' => 'save', 'ms' => (int) config('game.match.broadcast_ms.save')], MomentClock::moment($shot('saved', 'header'), $match));
         foreach ([$shot('blocked', 'big'), $shot('missed', 'long'), $shot('saved', 'normal'), $shot('offside', '')] as $events) {
             $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false);
         }
@@ -84,8 +84,26 @@ class MomentClockTest extends TestCase
         $this->assertSame(30000, MomentClock::moment([['type' => 'shootout', 'team' => null]], $match, 5)['ms']);
     }
 
-    /** [X41] The owner's length: a half about three and a half real minutes. */
-    public function test_a_broadcast_half_lasts_about_three_and_a_half_minutes(): void
+    /** [X94] The highlights broadcast: the small moments are a card, a goal and a real chance their scene. */
+    public function test_the_highlights_broadcast_plays_only_the_big_moments(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+            'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
+        foreach ([[['type' => 'corner', 'team' => 'home', 'taker' => 1]], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']],
+            [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]], [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]]] as $events) {
+            $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false, json_encode($events));
+        }
+        foreach ([[['type' => 'goal', 'team' => 'home', 'kind' => 'open']], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'red']],
+            [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2], ['type' => 'goal', 'team' => 'home', 'kind' => 'free_kick']],
+            [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']]] as $events) {
+            $this->assertArrayNotHasKey('brief', MomentClock::moment($events, $match), json_encode($events));
+        }
+        // A quiet minute runs by in a second.
+        $this->assertSame(1000, MomentClock::moment([], $match)['ms']);
+    }
+
+    /** [X94] The owner's length: a half about two real minutes (three and a half before, X41). */
+    public function test_a_broadcast_half_lasts_about_two_minutes(): void
     {
         $positions = ['GK', 'GK', 'RB', 'CB', 'CB', 'LB', 'CB', 'CDM', 'CM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'ST', 'ST', 'CM'];
         $lines = ['GK' => 'gk', 'RB' => 'def', 'CB' => 'def', 'LB' => 'def', 'CDM' => 'mid', 'CM' => 'mid', 'CAM' => 'mid',
@@ -107,8 +125,8 @@ class MomentClockTest extends TestCase
             $halves += 2;
         }
         $half = intdiv($ms, $halves);
-        $this->assertGreaterThan(165000, $half);
-        $this->assertLessThan(255000, $half);
+        $this->assertGreaterThan(90000, $half);
+        $this->assertLessThan(150000, $half);
     }
 
     /** [Sprint 35 C3] A goal ruled out by VAR: a big chance offside, or one the attackers fouled in; with its reason. */
