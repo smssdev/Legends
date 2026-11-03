@@ -132,7 +132,7 @@ def aim(ob, target):
     ob.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
 
 
-def render(path, width=1600, height=1000, samples=48):
+def render(path, width=1600, height=1000, samples=48, view='AgX'):
     """The preview picture (Cycles on the processor, so it works on any machine)."""
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -140,7 +140,7 @@ def render(path, width=1600, height=1000, samples=48):
     scene.cycles.samples = samples
     scene.cycles.use_denoising = True
     scene.render.resolution_x, scene.render.resolution_y = width, height
-    scene.view_settings.view_transform = 'AgX'
+    scene.view_settings.view_transform = view
     scene.render.filepath = os.path.abspath(path)
     os.makedirs(os.path.dirname(scene.render.filepath), exist_ok=True)
     bpy.ops.render.render(write_still=True)
