@@ -433,5 +433,6 @@
   "المشاركة في هذه البطولة بطلب فريق من منظمها.": "In this tournament you ask its organizer for a team.",
   "سُحبت القرعة، وأُغلقت المشاركة.": "The draw has been made, and entries are closed.",
   "الفرق في هذه البطولة توزعها القرعة على المشاركين. شارك من صفحة البطولة.": "In this tournament the draw shares the teams among the entrants. Enter from the tournament's page.",
-  "خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.": "A knockout takes up to %d teams; for more, choose groups."
+  "خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.": "A knockout takes up to %d teams; for more, choose groups.",
+  "انتهى الدوري، وجروبه للقراءة فقط.": "The league is over; its group is read-only."
 }

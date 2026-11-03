@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Chat\ChatGroups;
 use App\Chat\DrawChat;
 use App\Http\Controllers\Controller;
 use App\League\CupBracket;
@@ -84,7 +85,7 @@ class TournamentController extends Controller
             'rounds_per_day' => ['sometimes', 'integer', 'between:1,'.($dev ? 2 : $l['rounds_per_day'][1])],
             'round_times' => ['sometimes', 'array', 'size:'.(int) $request->input('rounds_per_day', 1)],
             'round_times.*' => ['date_format:H:i', 'distinct'],
-            'prep_days' => ['sometimes', 'integer', 'between:'.($dev ? 0 : 1).','.max($l['prep_days_options'])],
+            'prep_days' => ['sometimes', 'integer', 'between:0,'.max($l['prep_days_options'])],
             'starts_at' => ['required', 'date'],
             'draw_at' => ['nullable', 'date'],
             'starting_budget' => ['sometimes', 'integer', 'between:'.config('game.economy.starting_budget_min').','.config('game.economy.starting_budget_max')],
@@ -109,6 +110,8 @@ class TournamentController extends Controller
         }
         $data['is_dev'] = $dev;
         $league = TournamentFactory::create($request->user(), $data);
+        // [Sprint 40 B3] Its group from its first minute.
+        ChatGroups::forLeague($league);
 
         return response()->json(['tournament' => $this->summary($league->load('owner'))], 201);
     }

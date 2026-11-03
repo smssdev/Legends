@@ -63,8 +63,8 @@ class LeagueTest extends TestCase
         $owner = User::factory()->create();
         $this->actingAs($owner)->withoutMiddleware(ThrottleRequests::class);
         foreach ([
-            // [UP9, UP17] Half the real league's 12 clubs at least; 2, 4 or 6 days to get ready; one round a day.
-            'team_count' => [5, 13], 'starting_budget' => [999_999, 10_000_001], 'prep_days' => [1, 3, 7], 'rounds_per_day' => [2],
+            // [Sprint 40 B2] From two clubs; [Sprint 40 B1] 0, 2, 4 or 6 days to get ready; one round a day.
+            'team_count' => [1, 13], 'starting_budget' => [999_999, 10_000_001], 'prep_days' => [1, 3, 7], 'rounds_per_day' => [2],
             'season_end_mode' => ['forever'], 'starts_at' => [GameClock::now()->addDays(8)->toIso8601ZuluString(), GameClock::now()->subHour()->toIso8601ZuluString()],
         ] as $field => $bad) {
             foreach ($bad as $value) {

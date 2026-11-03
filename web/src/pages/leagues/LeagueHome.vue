@@ -283,7 +283,7 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
             <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('البداية') }}</dt><dd class="font-bold">{{ when(league.starts_at) }}</dd>
               <!-- [X61] Before the start: the days left to get ready. -->
               <dd v-if="prepDays(league.starts_at) > 0" class="text-xs text-gold">{{ prepDays(league.starts_at) === 1 ? $t('يوم واحد للإعداد') : $t('{v0} أيام للإعداد', { v0: prepDays(league.starts_at) }) }}</dd></div>
-            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الإعداد') }}</dt><dd class="font-bold">{{ ['يوم', $t('يومان'), '3 أيام'][league.prep_days - 1] }}</dd></div>
+            <div class="rounded-lg bg-surface-sunk p-3"><dt class="text-text-muted">{{ $t('الإعداد') }}</dt><dd class="font-bold">{{ league.prep_days === 0 ? $t('بلا إعداد') : league.prep_days === 1 ? $t('يوم') : league.prep_days === 2 ? $t('يومان') : $t('{v0} أيام', { v0: league.prep_days }) }}</dd></div>
             <div class="rounded-lg bg-surface-sunk p-3">
               <dt class="text-text-muted">{{ $t('الجولات') }}</dt>
               <dd class="font-bold" dir="ltr">{{ league.round_times.join(' · ') }}</dd>

@@ -249,6 +249,11 @@ class ChatGroups
     {
         // [Sprint 30 G6] A writer the admins kept out of the groups sends nothing.
         Moderation::assertNotBanned($user);
+        // [Sprint 40 B3] A league's group is open until the league ends, then kept to read.
+        $league = DB::table('chat_groups')->where('id', $groupId)->value('league_id');
+        if ($league && DB::table('leagues')->where('id', $league)->value('status') === 'finished') {
+            throw new HttpException(409, __('انتهى الدوري، وجروبه للقراءة فقط.'));
+        }
         $recent = DB::table('chat_group_messages')->where('chat_group_id', $groupId)->where('user_id', $user->id)
             ->where('created_at', '>', GameClock::now()->subMinute())->count();
         if ($recent >= config('game.chat.per_minute')) {
@@ -339,7 +344,9 @@ class ChatGroups
 
         return ['id' => (int) $g->id, 'name' => $g->name, 'league_id' => $g->league_id ? (int) $g->league_id : null, 'is_admin' => $admin,
             'invite_url' => ! $g->league_id && $admin ? url('/groups/join/'.$g->invite_code) : null,
-            'members_count' => DB::table('chat_group_members')->where('chat_group_id', $g->id)->count()];
+            'members_count' => DB::table('chat_group_members')->where('chat_group_id', $g->id)->count(),
+            // [Sprint 40 B3] A finished league's group: kept to read, no more messages.
+            'closed' => $g->league_id && DB::table('leagues')->where('id', $g->league_id)->value('status') === 'finished'];
     }
 
     /** Messages as the screens show them: who, what, when, and a short quote of what it answers. */

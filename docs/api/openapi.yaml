@@ -4808,6 +4808,7 @@ components:
         is_admin: { type: boolean }
         invite_url: { type: string, nullable: true, description: For the admins of a group that is not a league's }
         members_count: { type: integer }
+        closed: { type: boolean, description: '[Sprint 40 B3] A finished league''s group: read only' }
         members:
           type: array
           items: { type: object, required: [id, name, username, is_admin, avatar_url], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, is_admin: { type: boolean }, avatar_url: { type: string } } }

@@ -12011,6 +12011,8 @@ export interface components {
             /** @description For the admins of a group that is not a league's */
             invite_url: string | null;
             members_count: number;
+            /** @description [Sprint 40 B3] A finished league's group: read only */
+            closed?: boolean;
             members?: {
                 id: number;
                 name: string;
