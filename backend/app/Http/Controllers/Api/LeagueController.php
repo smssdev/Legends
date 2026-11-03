@@ -26,6 +26,7 @@ use App\Rules\NotJunk;
 use App\Season\Objectives;
 use App\Support\GameClock;
 use App\Support\Nation;
+use App\Tournament\Entries;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -140,6 +141,10 @@ class LeagueController extends Controller
                 ->values()->map(fn ($id, $i) => ['slot' => $i + 1, 'club' => $cards[$id]]) : [],
             'league_round' => $league->drawn_at ? $first('league') : [],
             'cup_round' => $league->drawn_at ? $first('cup') : [],
+            // [Sprint 40 C1] A league whose maker chose the draw: its players, then the balls that gave each his team.
+            'entry_mode' => Entries::mode($league),
+            'entrants' => Entries::mode($league) === 'draw' ? Entries::list($league) : [],
+            'owners' => array_map(fn ($s) => ['club' => $cards[$s['club']] ?? null, 'user' => $s['user']], Entries::steps($league)),
         ]);
     }
 
@@ -457,7 +462,14 @@ class LeagueController extends Controller
                 // The creator's own time zone: the free league plays at their evening.
                 'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
                 'is_dev' => ['sometimes', 'boolean'],
-                'club_id' => ['required', 'integer'],
+                // [Sprint 40 C1] Or the draw: the maker chooses the teams and the players, and the draw gives each his team.
+                'entry_mode' => ['sometimes', Rule::in(['pick', 'draw'])],
+                'club_id' => ['required_unless:entry_mode,draw', 'nullable', 'integer'],
+                'club_ids' => ['sometimes', 'array', 'max:'.$c['max_teams']],
+                'club_ids.*' => ['integer', 'distinct'],
+                'draw_users' => ['sometimes', 'array', 'max:'.$c['max_teams']],
+                'draw_users.*' => ['string', 'max:40', 'distinct'],
+                'draw_at' => ['sometimes', 'nullable', 'date'],
             ];
         }
         $data = $request->validate($rules);
@@ -487,7 +499,10 @@ class LeagueController extends Controller
             $changed = LeagueTiers::changed($data, $free);
             $data += $free;
             $data['custom_coins'] = $changed && ! $dev ? LeagueTiers::cost($data['team_count']) : 0;
-            $data['master_club_id'] = (int) $data['club_id'];
+            $data['master_club_id'] = (int) ($data['club_id'] ?? 0);
+            if (! empty($data['club_ids']) && count($data['club_ids']) !== (int) $data['team_count']) {
+                throw ValidationException::withMessages(['club_ids' => 'اختر من الفرق بعدد فرق الدوري.']);
+            }
             $data['fair_league'] = (bool) $data['fair_league'];
             $data['integrity'] = (bool) $data['integrity'];
             $data['press_conferences'] = (bool) $data['press_conferences'];
@@ -572,7 +587,8 @@ class LeagueController extends Controller
     {
         $asked = LeagueJoinRequest::where('league_id', $league->id)->where('user_id', $user->id)->where('status', '!=', 'rejected')->exists();
         $coach = LeagueMembership::where('league_id', $league->id)->where('user_id', $user->id)->exists();
-        abort_unless($league->isOwner($user) || $asked || $coach, 404);
+        // [Sprint 40 C1] A player named for the league's draw sees it before he has a team.
+        abort_unless($league->isOwner($user) || $asked || $coach || Entries::isEntrant($league->id, $user->id), 404);
     }
 
     private function approvedOnly(User $user, League $league): void
@@ -608,6 +624,8 @@ class LeagueController extends Controller
             // [Sprint 30 P5] An alliance tournament to show (else its link is the owner's alone, to make one).
             'has_alliance' => DB::table('alliance_tournaments')->where('league_id', $l->id)->whereIn('status', ['pending', 'running', 'finished'])->exists(),
             'my_club_id' => $mine,
+            // [Sprint 40 C1] pick (each coach takes his team) or draw (the draw gives each named player his team).
+            'entry_mode' => Entries::mode($l),
             'my_request' => $l->isOwner($user) ? null : LeagueJoinRequest::where('league_id', $l->id)->where('user_id', $user->id)->value('status'),
             'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'free_clubs' => $l->team_count - $coaches,

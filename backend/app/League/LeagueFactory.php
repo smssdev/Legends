@@ -9,6 +9,7 @@ use App\Models\Season;
 use App\Models\User;
 use App\Season\Objectives;
 use App\Support\GameClock;
+use App\Tournament\Entries;
 use App\Wallet\Wallet;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -31,16 +32,21 @@ class LeagueFactory
     {
         Joining::assertCanTakeAnother($owner);
         $version = DataController::version();
-        $masters = DB::table('master_clubs')->where('data_version', $version)->where('league_name', $settings['template'])->where('source', '!=', 'nation')
-            ->orderByDesc('strength_cp')->orderBy('id')->limit($settings['team_count'])->get();
+        $query = DB::table('master_clubs')->where('data_version', $version)->where('league_name', $settings['template'])->where('source', '!=', 'nation');
+        // [Sprint 40 C1] The teams the maker chose, or the strongest of the league.
+        if (! empty($settings['club_ids'])) {
+            $query->whereIn('id', array_map('intval', $settings['club_ids']));
+        }
+        $masters = $query->orderByDesc('strength_cp')->orderBy('id')->limit($settings['team_count'])->get();
         if ($masters->count() < $settings['team_count']) {
             throw new HttpException(422, 'عدد الفرق أكبر من عدد أندية هذا الدوري.');
         }
-        if (! $masters->contains('id', $settings['master_club_id'])) {
+        $draw = ($settings['entry_mode'] ?? 'pick') === 'draw';
+        if (! $draw && ! $masters->contains('id', $settings['master_club_id'])) {
             throw new HttpException(422, 'اختر فريقك من أندية هذا الدوري.');
         }
 
-        return DB::transaction(function () use ($owner, $settings, $version, $masters) {
+        return DB::transaction(function () use ($owner, $settings, $version, $masters, $draw) {
             $code = self::code();
             $name = trim((string) ($settings['name'] ?? ''));
             $league = League::create([
@@ -53,6 +59,7 @@ class LeagueFactory
                 'starting_budget' => $settings['starting_budget'], 'fair_league' => $settings['fair_league'], 'integrity' => $settings['integrity'] ?? false, 'second_slot_minutes' => $settings['second_slot_minutes'] ?? null,
                 'is_dev' => $settings['is_dev'] ?? false, 'rest_days' => array_values($settings['rest_days'] ?? []),
                 'press_conferences' => $settings['press_conferences'] ?? true, 'custom_coins' => $settings['custom_coins'] ?? 0,
+                'entry_mode' => $draw ? 'draw' : null,
             ]);
             // [UP9] A customized league is paid in coins as it is made: not enough, and nothing is made.
             if (($settings['custom_coins'] ?? 0) > 0) {
@@ -88,7 +95,15 @@ class LeagueFactory
             Objectives::set($season->id);
             // The market pool for the preparation and the first window [Sprint 24].
             Pool::renew($league->id, DB::table('transfer_windows')->where('season_id', $season->id)->where('kind', 'summer')->value('id'));
-            Joining::claim($owner, $league->fresh(), $chosen);
+            if ($draw) {
+                // [Sprint 40 C1] No team taken by hand: the players named, and the draw gives each his team.
+                if (! empty($settings['draw_at'])) {
+                    LiveDraw::schedule($league->fresh(), $settings['draw_at']);
+                }
+                Entries::invite($league->fresh(), $owner, $settings['draw_users'] ?? []);
+            } else {
+                Joining::claim($owner, $league->fresh(), $chosen);
+            }
 
             return $league->fresh();
         });

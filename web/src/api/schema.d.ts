@@ -1297,7 +1297,7 @@ export interface paths {
                         name?: string | null;
                         /** @description A name from GET /data/templates */
                         template: string;
-                        /** @description From half the template's clubs to all of them [UP9] */
+                        /** @description [Sprint 40 B2] From two to all the template's clubs */
                         team_count?: number;
                         /** @description One round a day [UP17] */
                         rounds_per_day?: number;
@@ -1305,8 +1305,11 @@ export interface paths {
                         round_times?: string[];
                         /** @description [Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free */
                         rest_days?: number[];
-                        /** @enum {integer} */
-                        prep_days?: 2 | 4 | 6;
+                        /**
+                         * @description [Sprint 40 B1] 0: no preparation
+                         * @enum {integer}
+                         */
+                        prep_days?: 0 | 2 | 4 | 6;
                         /** @description The creator's IANA zone: the free league plays at 21:00 there */
                         timezone?: string | null;
                         /**
@@ -1337,8 +1340,22 @@ export interface paths {
                         second_slot_minutes?: number | null;
                         /** @description Development league; ignored in production */
                         is_dev?: boolean;
-                        /** @description The owner's club */
-                        club_id: number;
+                        /** @description The owner's club, a master club id among the league's teams. Required unless entry_mode is draw */
+                        club_id?: number | null;
+                        /**
+                         * @description [Sprint 40 C1] draw: no team taken by hand; the draw gives each named player his team
+                         * @enum {string}
+                         */
+                        entry_mode?: "pick" | "draw";
+                        /** @description [Sprint 40 C1] The teams (master club ids), as many as team_count; else the strongest */
+                        club_ids?: number[];
+                        /** @description [Sprint 40 C1] The players by username (the maker is always one); fewer than the teams leaves the rest to the computer */
+                        draw_users?: string[];
+                        /**
+                         * Format: date-time
+                         * @description [Sprint 40 C1] The draw's time; else when every team has a player, or at the start
+                         */
+                        draw_at?: string | null;
                     };
                 };
             };
@@ -1452,8 +1469,11 @@ export interface paths {
                         round_times?: string[];
                         /** @description [Sprint 27 B1] The calendar is made again */
                         rest_days?: number[];
-                        /** @enum {integer} */
-                        prep_days?: 2 | 4 | 6;
+                        /**
+                         * @description [Sprint 40 B1] 0: no preparation
+                         * @enum {integer}
+                         */
+                        prep_days?: 0 | 2 | 4 | 6;
                         /** @enum {string} */
                         season_end_mode?: "renew" | "end";
                         /** Format: date-time */
@@ -12399,6 +12419,11 @@ export interface components {
             /** @description [Sprint 30 P5] An alliance tournament to show (pending, running or finished) */
             has_alliance?: boolean;
             my_club_id?: number | null;
+            /**
+             * @description [Sprint 40 C1] draw: the draw gives each named player his team
+             * @enum {string}
+             */
+            entry_mode?: "pick" | "draw" | "assign";
             /** @enum {string|null} */
             my_request?: "pending" | "approved" | "rejected" | null;
             /** @description Clubs with a coach */
@@ -14781,6 +14806,28 @@ export interface components {
                         away: {
                             [key: string]: unknown;
                         } | null;
+                    }[];
+                    /**
+                     * @description [Sprint 40 C1]
+                     * @enum {string}
+                     */
+                    entry_mode?: "pick" | "draw" | "assign";
+                    /** @description [Sprint 40 C1] The players of a draw league */
+                    entrants?: {
+                        id: number;
+                        name: string;
+                        username: string | null;
+                        club_id: number | null;
+                    }[];
+                    /** @description [Sprint 40 C1] Once drawn: the balls that gave each player his team, in order */
+                    owners?: {
+                        club: {
+                            [key: string]: unknown;
+                        } | null;
+                        user: {
+                            id: number;
+                            name: string;
+                        };
                     }[];
                 };
             };

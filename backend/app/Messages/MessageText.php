@@ -13,7 +13,7 @@ class MessageText
 
     private const TIER = ['beginner' => 'المبتدئ', 'intermediate' => 'المتوسط', 'pro' => 'المحترف'];
 
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement'];
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement', 'draw_entry'];
 
     private const STRICTNESS = ['very_lenient' => 'متساهل جداً', 'lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم', 'very_strict' => 'صارم جداً'];
 
@@ -234,7 +234,13 @@ class MessageText
             'tournament_full' => [
                 'title' => sprintf('اكتمل المشاركون في %s', $p['tournament'] ?? ''),
                 'body' => 'تُسحب القرعة بعد قليل وتوزع الفرق على المشاركين. تعال شاهدها مباشرة وتفاعل مع الجميع.',
-                'link' => '/tournaments/'.($p['league_id'] ?? '').'/draw',
+                'link' => (($p['kind'] ?? 'tournament') === 'league' ? '/leagues/' : '/tournaments/').($p['league_id'] ?? '').'/draw',
+            ],
+            // [Sprint 40 C1] Named by a league's maker for its draw.
+            'draw_entry' => [
+                'title' => sprintf('دعاك %s إلى قرعة %s', $p['by'] ?? '', $p['league'] ?? ''),
+                'body' => 'القرعة تعطي كل لاعب فريقه. تعال شاهدها مباشرة في موعدها.',
+                'link' => '/leagues/'.($p['league_id'] ?? '').'/draw',
             ],
             'tournament_team' => [
                 'title' => sprintf('صرت مدرب %s في %s', $p['team'] ?? '', $p['tournament'] ?? ''),

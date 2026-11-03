@@ -107,6 +107,25 @@ const local = (iso: string) => new Date(iso).toLocaleString(intlLocale(), { week
         <p v-if="message" class="text-sm" role="status">{{ $t(message) }}</p>
       </form>
 
+      <!-- [Sprint 40 C1] A league made with the draw: its players, then each one's team, ball by ball on the same clock. -->
+      <section v-if="draw.entry_mode === 'draw'" class="flex flex-col gap-2 rounded-xl bg-surface p-4" aria-labelledby="h-players">
+        <h2 id="h-players" class="font-display text-xl font-extrabold">{{ $t('اللاعبون والفرق') }}</h2>
+        <ul v-if="!draw.drawn_at" class="flex flex-wrap gap-2">
+          <li v-for="e in draw.entrants ?? []" :key="e.id" class="rounded-pill bg-surface-sunk px-3 py-1 text-sm font-bold">{{ e.name }}</li>
+        </ul>
+        <ol v-else class="flex flex-col gap-2">
+          <li v-for="(o, i) in draw.owners ?? []" :key="o.user.id" class="flex min-h-touch items-center gap-3 rounded-lg p-2 transition-all duration-500"
+            :class="i < shown ? 'bg-surface-sunk' : 'opacity-50'">
+            <b class="min-w-0 flex-1 truncate">{{ o.user.name }}</b>
+            <template v-if="i < shown && o.club">
+              <ClubCrest :url="card(o.club).crest_url" :code="card(o.club).code" :size="28" />
+              <span class="truncate font-bold text-gold">{{ $nm(card(o.club).name) }}</span>
+            </template>
+            <span v-else class="text-sm text-text-muted">{{ i === shown ? $t('يُسحب…') : $t('؟') }}</span>
+          </li>
+        </ol>
+      </section>
+
       <section v-if="draw.drawn_at" class="flex flex-col gap-2" aria-labelledby="h-slots">
         <h2 id="h-slots" class="font-display text-xl font-extrabold">{{ $t('خانات الدوري') }}</h2>
         <ol class="grid gap-2 sm:grid-cols-2">

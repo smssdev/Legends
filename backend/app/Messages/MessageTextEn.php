@@ -222,7 +222,13 @@ class MessageTextEn
             'tournament_full' => [
                 'title' => sprintf('%s is full', $p['tournament'] ?? ''),
                 'body' => 'The draw is about to share the teams among the players. Come and watch it live and react with everyone.',
-                'link' => '/tournaments/'.($p['league_id'] ?? '').'/draw',
+                'link' => (($p['kind'] ?? 'tournament') === 'league' ? '/leagues/' : '/tournaments/').($p['league_id'] ?? '').'/draw',
+            ],
+            // [Sprint 40 C1] Named by a league's maker for its draw.
+            'draw_entry' => [
+                'title' => sprintf('%s invited you to the draw of %s', $p['by'] ?? '', $p['league'] ?? ''),
+                'body' => 'The draw gives each player his team. Come and watch it live at its time.',
+                'link' => '/leagues/'.($p['league_id'] ?? '').'/draw',
             ],
             'tournament_team' => [
                 'title' => sprintf('You coach %s in %s', $p['team'] ?? '', $p['tournament'] ?? ''),

@@ -75,7 +75,8 @@ class Joining
         }
 
         // [X68] A tournament whose teams the draw shares out: none is taken by hand before the draw.
-        if ($league->kind === 'tournament' && $league->entry_mode === 'draw' && ! $league->drawn_at) {
+        // [Sprint 40 C1] A league of any kind whose maker chose the draw.
+        if ($league->entry_mode === 'draw' && ! $league->drawn_at) {
             throw new HttpException(409, __('الفرق في هذه البطولة توزعها القرعة على المشاركين. شارك من صفحة البطولة.'));
         }
 
