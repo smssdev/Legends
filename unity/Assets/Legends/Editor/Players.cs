@@ -111,8 +111,9 @@ namespace Legends.EditorTools
             RenderSettings.ambientGroundColor = new Color(0.25f, 0.3f, 0.22f);
             var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
             ground.transform.localScale = Vector3.one * 4;
-            var grass = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            grass.SetColor("_BaseColor", new Color(0.16f, 0.42f, 0.2f));
+            // The ground only frames the players: unlit, so it is the same green whatever the sun does.
+            var grass = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            grass.SetColor("_BaseColor", new Color(0.2f, 0.42f, 0.22f));
             ground.GetComponent<Renderer>().sharedMaterial = grass;
 
             var lines = new List<string>();

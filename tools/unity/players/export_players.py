@@ -133,12 +133,14 @@ def bake(body, assets, shapes):
         for variant, data in shapes.items():
             key = ob.shape_key_add(name=variant)
             key.data.foreach_set('co', data[name])
+            key.value = 0.0          # Blender starts a new key at 1: every shape is off until Unity turns it on
         ob.data.update()
 
 
 def drop_helpers(body):
     """MakeHuman's helper geometry (the tights, the skirt, the joints...) is hidden by a modifier; here it goes."""
     keep = body.vertex_groups['body'].index
+    body.active_shape_key_index = 0     # bmesh writes into the active shape: it must be the Basis
     bm = bmesh.new()
     bm.from_mesh(body.data)
     deform = bm.verts.layers.deform.active
@@ -182,6 +184,7 @@ def uncover(body, kit):
         p = body.matrix_world @ v.co
         if near.find(p)[2] < 0.025 and (not rims or rim.find(p)[2] > 0.03):
             covered.add(v.index)
+    body.active_shape_key_index = 0     # bmesh writes into the active shape: it must be the Basis
     bm = bmesh.new()
     bm.from_mesh(body.data)
     bm.verts.ensure_lookup_table()
@@ -211,7 +214,9 @@ def follow(body, ob):
         co = np.empty(len(base) * 3, dtype=np.float32)
         k.data.foreach_get('co', co)
         delta = (co.reshape(-1, 3) - base)[nearest]
-        ob.shape_key_add(name=k.name).data.foreach_set('co', (mine + delta).ravel())
+        key = ob.shape_key_add(name=k.name)
+        key.data.foreach_set('co', (mine + delta).ravel())
+        key.value = 0.0
     ob.data.update()
 
 
@@ -367,4 +372,5 @@ def main():
     textures(out)
 
 
-main()
+if __name__ == '__main__':
+    main()

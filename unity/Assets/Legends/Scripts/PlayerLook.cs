@@ -121,7 +121,9 @@ namespace Legends
                 };
                 r.gameObject.SetActive(shown);
                 if (!shown) continue;
-                Shape(r, "face_" + look.FaceName, look.FaceName != BaseFace);
+                // Every shape is set, not only the chosen one: the FBX brings them all in at full weight.
+                foreach (var face in Faces)
+                    Shape(r, "face_" + face, face == look.FaceName && face != BaseFace);
                 foreach (var tone in Tones)
                     Shape(r, "tone_" + tone, tone == look.ToneName && tone != BaseTone);
                 block.Clear();
