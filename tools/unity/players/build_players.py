@@ -13,6 +13,8 @@ import importlib, os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'art'))
 import bpy, addon_utils
 import common as c
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import kit as kits
 
 
 def mpfb(module):
@@ -57,6 +59,22 @@ FACES = {
           'nose-scale-horiz-incr': 0.5, 'mouth-lowerlip-volume-incr': 0.6, 'mouth-upperlip-volume-incr': 0.5, 'chin-width-incr': 0.5,
           'eye-scale-incr': 0.2},
 }
+# Kits to judge the shirt's patterns on (any club's colours work the same: the data's primary and secondary and its
+# pattern, App\Data\KitPattern). Made-up clubs, not any real one's kit.
+KITS = {
+    'red': ('#C8102E', '#FFFFFF', 'plain'),
+    'stripes': ('#1B4F9C', '#F2F2F2', 'stripes'),
+    'hoops': ('#1E7A3C', '#FFFFFF', 'hoops'),
+    'halves': ('#F5B82E', '#0A1F42', 'halves'),
+    'sash': ('#FFFFFF', '#B0102A', 'sash'),
+}
+KIT_LOOKS = [
+    {'tone': 'olive', 'hair': 'short02', 'face': 'a', 'build': 'medium'},
+    {'tone': 'dark', 'hair': 'afro01', 'face': 'b', 'build': 'strong'},
+    {'tone': 'light', 'hair': 'buzz', 'face': 'c', 'build': 'slim', 'hair_colour': 'brown'},
+    {'tone': 'east_asian', 'hair': 'short01', 'face': 'd', 'build': 'medium'},
+    {'tone': 'brown', 'hair': 'ponytail01', 'face': 'b', 'build': 'strong'},
+]
 HAIR_COLOURS = {'dark': '#2b2622', 'brown': '#5a412c', 'blond': '#a8865c'}
 BROWS = {'olive': 'eyebrow001', 'light': 'eyebrow007', 'fair': 'eyebrow009', 'east_asian': 'eyebrow003', 'brown': 'eyebrow001', 'dark': 'eyebrow001'}
 
@@ -69,7 +87,7 @@ def find(fragment, subdir, ext):
     return path
 
 
-def person(build='medium', tone='olive', hair='short02', face='a', hair_colour='dark', name='Player'):
+def person(build='medium', tone='olive', hair='short02', face='a', hair_colour='dark', name='Player', kit=None):
     muscle, weight = BUILDS[build]
     race, skin, tint = TONES[tone]
     macro = {'gender': 1.0, 'age': 0.5, 'muscle': muscle, 'weight': weight, 'proportions': 0.8, 'height': 0.6,
@@ -101,6 +119,8 @@ def person(build='medium', tone='olive', hair='short02', face='a', hair_colour='
         if any(k in ob.name for k in ('eyebrow', *(h for h in HAIRS if h))):
             for slot in ob.material_slots:
                 multiply(slot.material, HAIR_COLOURS[hair_colour])
+    if kit:
+        kits.materials(kits.dress(top, body), *KITS[kit], c.srgb)
     return top, body
 
 
@@ -225,6 +245,16 @@ def clear():
                 block.remove(d)
 
 
+def full(path, **look):
+    """One player head to toe, from the front at three quarters, to judge his kit."""
+    clear()
+    person(**look)
+    c.studio(target=(0, 0, 0.92), distance=3.2, height=0.15, lens=50, floor='#6f6f6f', night=False)
+    # Standard, not AgX: AgX pulls a strong red towards salmon, and a club's colour must stay its own (as in Unity).
+    bpy.context.scene.view_settings.exposure = -0.4
+    c.render(path, 600, 1000, samples=64, view='Standard')
+
+
 def portrait(path, chest=False, **look):
     """One player's head and shoulders (or chest, to judge a build), in plain daylight on a grey floor, so the skin
     is its own colour."""
@@ -259,6 +289,7 @@ SHEETS = {
     'tones': ('tone', list(TONES)),
     'faces': ('face', list(FACES)),
     'builds': ('build', ['slim', 'medium', 'strong']),
+    'kits': ('kit', list(KITS)),
 }
 
 
@@ -272,7 +303,10 @@ def main():
     for i, v in enumerate(values):
         part = path[:-4] + '-%d.png' % i
         look = {k: opts[k] for k in ('build', 'tone', 'hair', 'face', 'hair_colour') if k in opts}
-        portrait(part, chest=key == 'build', **{**look, key: v})
+        if key == 'kit':     # each kit on another player, so the sheet shows the variety too
+            full(part, **{**KIT_LOOKS[i % len(KIT_LOOKS)], **look, key: v})
+        else:
+            portrait(part, chest=key == 'build', **{**look, key: v})
         parts.append(part)
     sheet(parts, path)
 
