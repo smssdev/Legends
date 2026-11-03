@@ -49,6 +49,40 @@ class Entries
         });
     }
 
+    /**
+     * [Sprint 40 C1] The draw chosen as the league is made: its maker names the players by username (himself always one
+     * of them), each is told, and when they fill every team the draw is set as when the last place is taken. Fewer, and
+     * the draw at the start (or the maker's time) gives the teams left to the computer.
+     */
+    public static function invite(League $league, User $owner, array $usernames): int
+    {
+        $names = collect($usernames)->map(fn ($u) => strtolower(ltrim(trim((string) $u), '@')))->filter()->unique()
+            ->reject(fn ($u) => $u === strtolower((string) $owner->username))->values();
+        if ($names->count() + 1 > (int) $league->team_count) {
+            throw new HttpException(422, __('عدد اللاعبين أكبر من عدد الفرق.'));
+        }
+        $users = User::whereIn('username', $names->all())->get()->keyBy(fn ($u) => strtolower($u->username));
+        foreach ($names as $n) {
+            if (! isset($users[$n])) {
+                throw new HttpException(422, __('لا يوجد مدرب باسم المستخدم :name.', ['name' => $n]));
+            }
+        }
+        $now = GameClock::now();
+        foreach ([$owner, ...$users->values()->all()] as $u) {
+            DB::table('tournament_entries')->insertOrIgnore(['league_id' => $league->id, 'user_id' => $u->id, 'created_at' => $now]);
+            if ($u->id !== $owner->id) {
+                Inbox::send($u->id, 'draw_entry', ['league' => $league->name, 'by' => $owner->name, 'league_id' => $league->id,
+                    'at' => $league->draw_at?->toIso8601ZuluString() ?? $league->starts_at->toIso8601ZuluString()], $league->id);
+            }
+        }
+        $count = DB::table('tournament_entries')->where('league_id', $league->id)->count();
+        if ($count === (int) $league->team_count) {
+            self::full($league->fresh());
+        }
+
+        return $count;
+    }
+
     public static function leave(League $league, User $user, ?int $userId = null): void
     {
         $userId ??= $user->id;
@@ -79,7 +113,7 @@ class Entries
         }
         LiveDraw::schedule($league, $at->toIso8601ZuluString());
         foreach (DB::table('tournament_entries')->where('league_id', $league->id)->pluck('user_id') as $u) {
-            Inbox::send((int) $u, 'tournament_full', ['tournament' => $league->name, 'league_id' => $league->id, 'at' => $at->toIso8601ZuluString()], $league->id);
+            Inbox::send((int) $u, 'tournament_full', ['tournament' => $league->name, 'league_id' => $league->id, 'at' => $at->toIso8601ZuluString(), 'kind' => $league->kind ?: 'league'], $league->id);
         }
     }
 

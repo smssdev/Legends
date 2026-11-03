@@ -263,7 +263,10 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
       <!-- [Sprint 30 Q4] The page in four tabs instead of one long scroll: the table and matches, the coaches, the
            season (invite, dates, holidays), and the rest (the clubs, the media, the draw and the alliances). -->
       <!-- No team yet: the way to one stays above the tabs, never hidden in one. -->
-      <RouterLink v-if="!league.my_club_id && (league.is_owner || league.my_request === 'approved') && league.free_clubs" :to="{ name: 'pick-team', params: { id } }"
+      <!-- [Sprint 40 C1] A league made with the draw: the team comes from the draw, not picked by hand. -->
+      <RouterLink v-if="!league.my_club_id && league.entry_mode === 'draw' && !league.drawn_at" :to="{ name: 'league-draw', params: { id } }"
+        class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold">{{ $t('فريقك من القرعة: تابعها') }} <span aria-hidden="true">←</span></RouterLink>
+      <RouterLink v-else-if="!league.my_club_id && (league.is_owner || league.my_request === 'approved') && league.free_clubs" :to="{ name: 'pick-team', params: { id } }"
         class="flex min-h-touch items-center justify-between gap-3 rounded-xl bg-gold px-4 py-3 font-bold text-on-gold">{{ $t('اختر فريقك') }} <span aria-hidden="true">←</span></RouterLink>
       <UiTabs v-model="section" :items="sections" label="أقسام الدوري" fill size="sm" />
 

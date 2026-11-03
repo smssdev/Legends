@@ -29,7 +29,8 @@ class LeagueStarter
     {
         // A draw set for the start or still waiting is made first [X26].
         // [Sprint 29] A tournament is always drawn: with no time set, at its start, and anyone can replay it.
-        if ($league->kind === 'tournament' && ! $league->draw_at && ! $league->drawn_at) {
+        // [Sprint 40 C1] So is a league whose maker chose the draw.
+        if (($league->kind === 'tournament' || $league->entry_mode === 'draw') && ! $league->draw_at && ! $league->drawn_at) {
             LiveDraw::now($league);
             $league = $league->fresh();
         } elseif ($league->draw_at && ! $league->drawn_at) {

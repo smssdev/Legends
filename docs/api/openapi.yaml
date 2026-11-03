@@ -603,15 +603,15 @@ paths:
           application/json:
             schema:
               type: object
-              required: [template, starts_at, club_id]
+              required: [template, starts_at]
               properties:
                 name: { type: string, maxLength: 60, nullable: true, description: 'Empty: the template and the code, like "Premier League #K7F2QX9M"' }
                 template: { type: string, description: A name from GET /data/templates }
-                team_count: { type: integer, minimum: 4, maximum: 20, description: 'From half the template''s clubs to all of them [UP9]' }
+                team_count: { type: integer, minimum: 2, maximum: 20, description: '[Sprint 40 B2] From two to all the template''s clubs' }
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1, description: 'One round a day [UP17]' }
                 round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM, Cairo time }
                 rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free' }
-                prep_days: { type: integer, enum: [2, 4, 6] }
+                prep_days: { type: integer, enum: [0, 2, 4, 6], description: '[Sprint 40 B1] 0: no preparation' }
                 timezone: { type: string, nullable: true, description: 'The creator''s IANA zone: the free league plays at 21:00 there' }
                 press_conferences: { type: boolean, default: true, description: '[UP12] The press conference before each match' }
                 season_end_mode: { type: string, enum: [renew, end] }
@@ -621,7 +621,11 @@ paths:
                 integrity: { type: boolean, default: true, description: 'Bribes, spies and the FA [X28]' }
                 second_slot_minutes: { type: integer, nullable: true, minimum: 60, maximum: 600, description: 'Each round in two slots: half its matches this long after the round time [X31]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
-                club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
+                club_id: { type: integer, nullable: true, description: 'The owner''s club, a master club id among the league''s teams. Required unless entry_mode is draw' }
+                entry_mode: { type: string, enum: [pick, draw], description: '[Sprint 40 C1] draw: no team taken by hand; the draw gives each named player his team' }
+                club_ids: { type: array, items: { type: integer }, description: '[Sprint 40 C1] The teams (master club ids), as many as team_count; else the strongest' }
+                draw_users: { type: array, items: { type: string }, description: '[Sprint 40 C1] The players by username (the maker is always one); fewer than the teams leaves the rest to the computer' }
+                draw_at: { type: string, format: date-time, nullable: true, description: '[Sprint 40 C1] The draw''s time; else when every team has a player, or at the start' }
       responses:
         '201': { $ref: '#/components/responses/League' }
         '401': { $ref: '#/components/responses/Error' }
@@ -672,7 +676,7 @@ paths:
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1 }
                 round_times: { type: array, items: { type: string } }
                 rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] The calendar is made again' }
-                prep_days: { type: integer, enum: [2, 4, 6] }
+                prep_days: { type: integer, enum: [0, 2, 4, 6], description: '[Sprint 40 B1] 0: no preparation' }
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
                 starting_budget: { type: integer }
@@ -4691,6 +4695,15 @@ components:
               cup_round:
                 type: array
                 items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
+              entry_mode: { type: string, enum: [pick, draw, assign], description: '[Sprint 40 C1]' }
+              entrants:
+                type: array
+                description: '[Sprint 40 C1] The players of a draw league'
+                items: { type: object, required: [id, name, username, club_id], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, club_id: { type: integer, nullable: true } } }
+              owners:
+                type: array
+                description: '[Sprint 40 C1] Once drawn: the balls that gave each player his team, in order'
+                items: { type: object, required: [club, user], properties: { club: { type: object, nullable: true, additionalProperties: true }, user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } } } }
     League:
       description: The league
       content:
@@ -5119,6 +5132,7 @@ components:
         is_owner: { type: boolean }
         has_alliance: { type: boolean, description: '[Sprint 30 P5] An alliance tournament to show (pending, running or finished)' }
         my_club_id: { type: integer, nullable: true }
+        entry_mode: { type: string, enum: [pick, draw, assign], description: '[Sprint 40 C1] draw: the draw gives each named player his team' }
         my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
         coaches: { type: integer, description: Clubs with a coach }
         free_clubs: { type: integer, description: Clubs a coach can still take }

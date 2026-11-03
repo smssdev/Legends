@@ -83,7 +83,8 @@ class LiveDraw
             $fresh = $league->fresh();
             SeasonScheduler::build($fresh, $fresh->season);
             // [X68] A tournament whose teams the draw shares among its entrants: each gets his team now.
-            if ($fresh->kind === 'tournament') {
+            // [Sprint 40 C1] And a league whose maker chose the draw, of any kind.
+            if ($fresh->kind === 'tournament' || $fresh->entry_mode === 'draw') {
                 Entries::assign($fresh);
             }
 
