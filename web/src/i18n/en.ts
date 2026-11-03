@@ -2774,4 +2774,6 @@ export const EN: Record<string, string> = {
   'الوقت يمشي': 'The clock is running',
   'الشوط الأول': 'First half',
   'الشوط الثاني': 'Second half',
+  // [Sprint 42 H] The TV studio and the crowd's wave.
+  'موجة في المدرجات': 'A wave in the stands',
 }

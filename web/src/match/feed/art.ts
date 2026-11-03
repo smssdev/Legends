@@ -13,6 +13,9 @@ export function setKits(k) { KITS = k }
 // The smooth mode [X30]: no glow filter (redrawn every frame on the phone's processor for every line and trail) and a third of the crowd.
 let SMOOTH = false
 export function setSmooth(v) { SMOOTH = !!v }
+// [Sprint 42 I1] Only the full tier draws the blurred glows: an SVG blur makes every repaint of the picture costly.
+let RICH = true
+export function setRich(v) { RICH = !!v }
 // [Sprint 36 F3] The match's rain (the live pitch's, from its seed) falls in the scenes too.
 let RAIN = false
 export function setRain(v) { RAIN = !!v }
@@ -82,6 +85,33 @@ function rnd(seed) {
 const LINE = 150, POSTS = [246, 394], BAR = 72
 const persp = (y) => 0.55 + (y - LINE) * 0.0055
 
+// [Sprint 42 I1] The stadium behind every scene (the stand and its crowd, the boards, the pitch and its lines) drawn
+// once as a picture and kept per club: hundreds of shapes the camera moved on every frame were repainted each time, and
+// a picture is one bitmap to move. Its words (LEGENDS, in the brand's font) stay live on top: a picture has no web fonts.
+const BACKDROPS = new Map()
+function backdrop(c, home) {
+  const key = [c, home, KITS.home?.trim, SMOOTH, RICH].join('|')
+  if (BACKDROPS.has(key)) return BACKDROPS.get(key)
+  const fans = SMOOTH ? 70 : RICH ? 220 : 130
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-120 -40 880 420" width="1320" height="630"><defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14532F"/><stop offset="1" stop-color="#0A2E1B"/></linearGradient>
+    <radialGradient id="h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>
+  </defs>
+  <rect x="-120" y="-40" width="880" height="420" fill="#040B1C"/>
+  <rect x="-80" y="-40" width="800" height="200" fill="url(#h)"/>
+  <g>${Array.from({ length: fans }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
+  <rect x="-80" y="122" width="800" height="16" fill="url(#b)"/>
+  <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
+  <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#t)"/>
+  ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = y0 - LINE + 12, k1 = y1 - LINE + 12; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="#fff" fill-opacity=".035"/>` }).join('')}
+  <g fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
+  <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/></svg>`
+  const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+  BACKDROPS.set(key, url)
+  return url
+}
+
 // The stage: a night stadium, the pitch in perspective, boards behind the goal, the team's light.
 // Everything that the camera moves sits in svg.world; titles and flashes go on top of it.
 function stage(side) {
@@ -100,22 +130,15 @@ function stage(side) {
   </defs>
   <rect width="640" height="340" fill="#040B1C"/>
   <g data-world="1">
-  <rect x="-80" y="-40" width="800" height="200" fill="url(#${id}h)"/>
-  <g>${Array.from({ length: SMOOTH ? 70 : 220 }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
-  <rect x="-80" y="122" width="800" height="16" fill="url(#${id}b)"/>
-  <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
+  <image href="${backdrop(c, home)}" x="-120" y="-40" width="880" height="420" preserveAspectRatio="none"/>
   ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Amin, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
-  <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#${id}t)"/>
-  ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = (y0 - LINE + 12) * 1.0, k1 = (y1 - LINE + 12) * 1.0; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="rgba(255,255,255,.035)"/>` }).join('')}
-  <g fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
-  <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/>
   </g>
   <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>${RAIN ? `<style>.rain{animation:rainfall .5s linear infinite}@keyframes rainfall{to{transform:translate(-5px,30px)}}@media (prefers-reduced-motion:reduce){.rain{animation:none}}</style><g class="rain" stroke="rgba(200,215,235,.45)" stroke-width="1.1">${Array.from({ length: SMOOTH ? 30 : 90 }, (_, i) => `<line x1="${(i * 73) % 680}" y1="${(i * 41) % 360 - 20}" x2="${(i * 73) % 680 - 5}" y2="${(i * 41) % 360 + 10}"/>`).join('')}</g><rect width="640" height="340" fill="rgba(40,55,75,.18)"/>` : ''}`
   svg.dataset.id = id
   svg.world = svg.querySelector('[data-world]')
   return svg
 }
-const ref = (svg, name) => (SMOOTH && name === 'glow' ? 'none' : `url(#${name}${svg.dataset.id})`)
+const ref = (svg, name) => ((SMOOTH || !RICH) && name === 'glow' ? 'none' : `url(#${name}${svg.dataset.id})`)
 // The camera: zoom z around a point that stays put on screen.
 const cam = (svg, z, fx = 320, fy = 170, dx = 0, dy = 0) => sa(svg.world, 'transform', `translate(${fx + dx} ${fy + dy}) scale(${z}) translate(${-fx} ${-fy})`)
 
@@ -167,6 +190,8 @@ const FACES = {
   focus: { bl: 'M-5.6 -24.2 L-1.4 -23.6', br: 'M1.4 -23.6 L5.6 -24.2', bs: 'M2.4 -24 L6.8 -23.4', mf: 'M-2.4 -15.8 L2.4 -15.8', ms: 'M6.4 -16 L8.8 -16' },
   // [Sprint 42] The cartoon's faces: shock (eyes wide, the mouth an O) and the diver's peek (one eye open).
   shock: { bl: 'M-5.6 -27.4 Q-3.6 -28.8 -1.6 -27.6', br: 'M1.6 -27.6 Q3.6 -28.8 5.6 -27.4', bs: 'M2.4 -27.6 Q4.6 -28.8 6.8 -27.4', mf: 'M-1.8 -15.6 A1.8 2.4 0 1 0 1.8 -15.6 A1.8 2.4 0 1 0 -1.8 -15.6 Z', ms: 'M6.6 -16.4 A1.2 1.6 0 1 0 8.6 -16.4 A1.2 1.6 0 1 0 6.6 -16.4 Z', open: true, eye: [2, 2.4], eyeR: [2, 2.4] },
+  // [Sprint 42 H1] A commentator talking: the mouth open in a small O (it alternates with idle).
+  talk: { bl: 'M-5.6 -25 L-1.6 -25.3', br: 'M1.6 -25.3 L5.6 -25', bs: 'M2.4 -25.3 L6.8 -25', mf: 'M-2 -16.4 Q0 -13.4 2 -16.4 Q0 -17.2 -2 -16.4 Z', ms: 'M6.4 -16.6 Q7.6 -14.6 8.8 -16.4 Z', open: true },
   peek: { bl: 'M-5.6 -23.4 L-1.4 -23.2', br: 'M1.4 -25.2 Q3.6 -26.4 5.6 -25.4', bs: 'M2.4 -25.4 Q4.6 -26.4 6.8 -25.2', mf: 'M-1.6 -15.8 L1.6 -15.8', ms: 'M6.6 -16 L8.6 -16', eye: [1.5, 0.25], eyeR: [1.6, 1.7] },
 }
 export function player(p, kit, no, s = 1, o = {}) {
@@ -541,7 +566,9 @@ function openPlay(e, outcome, KT) {
   const path = [strike, [(strike[0] + target[0]) / 2 + side * (R() - 0.3) * 40, Math.min(strike[1], target[1]) - loft], target]
   const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
   const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
-  const party = outcome === 'goal' ? pick(['corner', 'slide', 'leap', 'crowd', 'pile']) : null
+  // [Sprint 42 H2] Ten celebrations: the five before, and a jump with a spin, the aeroplane, a backflip, a dance, and
+  // a finger to the lips towards the other side's fans.
+  const party = outcome === 'goal' ? pick(['corner', 'slide', 'leap', 'crowd', 'pile', 'spin', 'plane', 'flip', 'dance', 'shush']) : null
   // [Sprint 42 F] The server's telling of the move (e.drama): a nutmeg on the marker before the shot, a no-look pass
   // that pops the defenders' eyes out, a bicycle kick from the cross; a double save keeps the ball alive (a parry).
   const drama = e.drama, nut = drama === 'nutmeg' && (q === 'big' || q === 'normal'), look = drama === 'nolook', bike = drama === 'bicycle' && q === 'header'
@@ -585,7 +612,18 @@ function openPlay(e, outcome, KT) {
       // [Sprint 36 F1] The celebration, one of five (from the scene's seed): away to the corner flag arms out, a
       // slide on his knees, a leap punching the air, arms wide towards the crowd, or his team-mates piling on him.
       const c = ease(seg(t, KT + 0.5, KT + 2.6))
-      if (party === 'slide') {
+      if (party === 'spin') {
+        const j = seg(t, KT + 0.9, KT + 1.5), up = Math.sin(Math.PI * j) * 34; put(sh, lerp(spot[0], spot[0] + out * 70, c), spot[1] + 14, 0, 1, up)
+        sh.face?.(j > 0 && j < 1 ? (Math.floor(j * 4) % 2 ? 'side' : 'front') : j >= 1 ? 'front' : 'back', out); sh.mood('joy'); j >= 1 ? sh.pose(26, -26, 50, -50) : sh.pose(6, -6, 30, -30)
+      } else if (party === 'plane') {
+        put(sh, lerp(spot[0], spot[0] + out * 160, c) , lerp(spot[1], spot[1] + 34, c) + Math.sin((t - KT) * 6) * 10, Math.sin((t - KT) * 6) * 16); sh.pose(6, -6, 92, -92)
+      } else if (party === 'flip') {
+        const j = seg(t, KT + 0.9, KT + 1.5), up = Math.sin(Math.PI * j) * 40; put(sh, spot[0] + out * 40 * c, spot[1] + 14, -out * 360 * inout(j), 1, up); j < 1 && j > 0 ? sh.pose(60, 60, 120, -120) : sh.pose(6, -6, 160, -160)
+      } else if (party === 'dance') {
+        put(sh, spot[0] + out * 50 * c, spot[1] + 16, Math.sin((t - KT) * 10) * 10); sh.face?.('front'); sh.mood('joy'); const d = Math.sin((t - KT) * 10); sh.pose(10 * d, -10 * d, 60 + 40 * d, -60 + 40 * d, Math.max(0, d) * 0.4, Math.max(0, -d) * 0.4)
+      } else if (party === 'shush') {
+        put(sh, lerp(spot[0], 320 - out * 40, c), lerp(spot[1], 290, c), 0, 1.1); sh.face?.('front'); sh.mood('focus'); sh.pose(4, -4, 14, 158)
+      } else if (party === 'slide') {
         const sl = ease(seg(t, KT + 0.7, KT + 1.6)); put(sh, lerp(spot[0], spot[0] + out * 120, c), lerp(spot[1], spot[1] + 40, c), -out * 18 * sl, 1, -10 * sl); sh.pose(70, 70, 140, -140)
       } else if (party === 'leap') {
         const up = Math.abs(Math.sin((t - KT) * 5)) * 22 * seg(t, KT + 0.6, KT + 0.9); put(sh, lerp(spot[0], spot[0] + out * 40, c), spot[1] + 10, 0, 1, up); sh.pose(10, -10, 175, -20)
@@ -684,6 +722,75 @@ function openPlay(e, outcome, KT) {
   } }
 }
 
+// ---------------------------------------------------------------- [Sprint 42 H1] the TV studio
+// The owner's (2026-11-03): the match shown like TV, with commentators in a studio. Between the moments the picture
+// is the studio: an LED wall with the score and the running clock, and two cartoon commentators at their desk with
+// headsets, talking in turn when a line is said, and on their feet at a goal. Drawing only (MatchFeed feeds it).
+export function studio(kits) {
+  const svg = el('svg', { viewBox: '0 0 640 340', preserveAspectRatio: 'xMidYMid slice', direction: 'ltr' }), id = 's' + ++uid
+  svg.style.direction = 'ltr'
+  svg.dataset.id = id
+  const H = kits?.home?.kit ?? '#C8102E', A = kits?.away?.kit ?? '#1E4FA8'
+  svg.innerHTML = `<defs>
+    <linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1A3A"/><stop offset="1" stop-color="#040B1C"/></linearGradient>
+    <linearGradient id="${id}led" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E2A5C"/><stop offset=".5" stop-color="#123A7A"/><stop offset="1" stop-color="#0A2148"/></linearGradient>
+    <linearGradient id="${id}desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2B4D"/><stop offset="1" stop-color="#0A1328"/></linearGradient>
+    <linearGradient id="gold${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C08A0C"/><stop offset=".5" stop-color="#FFD36B"/><stop offset="1" stop-color="#C08A0C"/></linearGradient>
+    <filter id="glow${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft${id}"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <rect width="640" height="340" fill="url(#${id}bg)"/>
+  <radialGradient id="${id}la"><stop offset="0" stop-color="${A}" stop-opacity=".35"/><stop offset="1" stop-color="${A}" stop-opacity="0"/></radialGradient><radialGradient id="${id}lh"><stop offset="0" stop-color="${H}" stop-opacity=".35"/><stop offset="1" stop-color="${H}" stop-opacity="0"/></radialGradient>
+  <circle cx="80" cy="60" r="130" fill="url(#${id}la)"/><circle cx="560" cy="60" r="130" fill="url(#${id}lh)"/>
+  ${Array.from({ length: 9 }, (_, i) => `<rect x="${i * 72 - 4}" y="0" width="2" height="250" fill="rgba(255,255,255,.05)"/>`).join('')}
+  <rect x="150" y="18" width="340" height="132" rx="10" fill="url(#${id}led)" stroke="url(#gold${id})" stroke-width="3"/>
+  <g data-ledgrid="1" opacity=".18">${Array.from({ length: 22 }, (_, i) => `<rect x="${158 + i * 15}" y="26" width="1" height="116" fill="#7FB4FF"/>`).join('')}</g>
+  <rect x="150" y="18" width="12" height="132" fill="${A}" opacity=".9"/><rect x="478" y="18" width="12" height="132" fill="${H}" opacity=".9"/>
+  <text x="320" y="44" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="15" letter-spacing="4" fill="#FFD36B">GLM · LIVE</text>
+  <text data-score="1" x="320" y="88" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="40" fill="#fff"></text>
+  <text data-clock="1" x="320" y="130" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="#FFD36B" stroke="rgba(245,184,46,.35)" stroke-width="4" paint-order="stroke"></text>
+  <ellipse cx="320" cy="250" rx="300" ry="30" fill="#0E2246" opacity=".9"/>
+  <g data-spot="1" opacity=".0"><path d="M120 0 L180 0 L260 250 L60 250 Z" fill="#FFF6DA" opacity=".07"/><path d="M460 0 L520 0 L580 250 L380 250 Z" fill="#FFF6DA" opacity=".07"/></g>`
+  const g = el('g', {}, svg)
+  const suit = (trim) => ({ look: 0, shorts: '#1F2937', socks: '#111827', trim })
+  const c1 = player(g, '#22304F', '', 2.1, { ...suit('#F5B82E'), look: 5 }), c2 = player(g, '#2A2F45', '', 2.1, { ...suit('#7FB4FF'), look: 22 })
+  // Headsets with their mics.
+  const hs = [0, 1].map(() => { const e = el('g', {}, g); e.innerHTML = '<path d="M-11 -24 Q0 -38 11 -24" fill="none" stroke="#111" stroke-width="2.4"/><rect x="-12.5" y="-25" width="4" height="7" rx="1.5" fill="#111"/><rect x="8.5" y="-25" width="4" height="7" rx="1.5" fill="#111"/><path d="M-10.5 -19 Q-9 -12 -3 -13" fill="none" stroke="#111" stroke-width="1.6"/><circle cx="-2.5" cy="-13" r="1.6" fill="#F5B82E"/>'; return e })
+  // The desk in front of them: curved, with the channel's mark, two mics and a laptop.
+  const desk = el('g', {}, svg)
+  desk.innerHTML = `<path d="M40 236 Q320 206 600 236 L620 340 L20 340 Z" fill="url(#${id}desk)" stroke="url(#gold${id})" stroke-width="3"/>
+    <path d="M70 262 Q320 236 570 262" fill="none" stroke="rgba(127,180,255,.25)" stroke-width="2"/>
+    <text x="320" y="262" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="22" letter-spacing="6" fill="url(#gold${id})">GLM TV</text>
+    <rect x="290" y="214" width="60" height="22" rx="3" fill="#0A0F1C" stroke="#3A4256"/><rect x="294" y="217" width="52" height="15" fill="#123A7A" opacity=".8"/>
+    <g fill="#111"><rect x="196" y="206" width="4" height="26"/><ellipse cx="198" cy="204" rx="6" ry="8"/><rect x="438" y="206" width="4" height="26"/><ellipse cx="440" cy="204" rx="6" ry="8"/></g>`
+  const score = svg.querySelector('[data-score]'), clockT = svg.querySelector('[data-clock]'), spot = svg.querySelector('[data-spot]')
+  const POS = [[190, 196], [450, 196]]
+  let lastScore = null
+  return {
+    svg,
+    /** t: seconds. st: { clock, score ('away - home', home on the right as on the scorebar), frozen, talk (0 none, 1 or 2: who is talking), hype (0..1, a goal) } */
+    update(t, st) {
+      if (st.score !== lastScore) { lastScore = st.score; score.textContent = st.score }
+      if (clockT.textContent !== st.clock) clockT.textContent = st.clock
+      sa(clockT, 'opacity', st.frozen ? (Math.floor(t * 2.5) % 2 ? 0.35 : 1) : 1)
+      const hype = st.hype ?? 0
+      sa(spot, 'opacity', (hype * (0.6 + 0.4 * Math.sin(t * 9))).toFixed(2))
+      ;[c1, c2].forEach((c, i) => {
+        const talking = st.talk === i + 1, [x, y] = POS[i], up = hype > 0 ? 18 * hype + Math.abs(Math.sin(t * 8 + i)) * 6 * hype : 0
+        c.face?.('front')
+        c.mood(hype > 0 ? 'joy' : talking ? (Math.floor(t * 8 + i) % 2 ? 'talk' : 'idle') : 'idle')
+        // A little sway of the head as they listen; hands moving as they talk; arms up at a goal.
+        const sway = Math.sin(t * 1.3 + i * 2) * 1.5
+        c.at(x + sway, y - up, sway * 0.6, 2.1)
+        if (hype > 0) c.pose(4, -4, 150 + Math.sin(t * 10 + i) * 15, -150 - Math.sin(t * 10 + i) * 15)
+        else if (talking) c.pose(4, -4, 40 + Math.sin(t * 6) * 18, -40 - Math.cos(t * 5) * 18)
+        else c.pose(4, -4, 22, -22)
+        sa(hs[i], 'transform', `translate(${(x + sway).toFixed(1)} ${(y - up).toFixed(1)}) rotate(${(sway * 0.6).toFixed(1)}) scale(2.1)`)
+      })
+    },
+  }
+}
+
 // ---------------------------------------------------------------- scenes: one per kind of moment
 // Lengths and key moments are SCENE_TIME in story.ts; keep them in step.
 export const SCENES = {
@@ -765,11 +872,36 @@ export const SCENES = {
   },
   miss(e) {
     const KT = 2.9, { svg, go } = openPlay(e, 'miss', KT), dg = danger(svg), post = e.how === 'post'
+    // [Sprint 42 H2] Over the bar, one in two: into the stand, where a fan catches it and his popcorn goes everywhere.
+    // Wide, one in two: it hits the photographer behind the goal, who goes over backwards, his flash going off.
+    const V = rnd((e.v ?? 3) * 7 + 1)(), fan = e.how === 'over' && V < 0.5, snap = e.how === 'wide' && V < 0.5
+    const fanG = fan ? el('g', { opacity: 0 }, svg.world) : null
+    if (fanG) fanG.innerHTML = '<rect x="-11" y="0" width="22" height="26" rx="7" fill="' + (K(other(e.side)).kit) + '"/><circle cy="-9" r="9" fill="#D9A982"/><circle cx="-3" cy="-10" r="1.4" fill="#111"/><circle cx="3" cy="-10" r="1.4" fill="#111"/><ellipse cx="0" cy="-4" rx="2.2" ry="2.8" fill="#5A1A14"/><rect data-a="1" x="-15" y="-2" width="5" height="18" rx="2.5" fill="' + (K(other(e.side)).kit) + '"/><rect data-a="2" x="10" y="-2" width="5" height="18" rx="2.5" fill="' + (K(other(e.side)).kit) + '"/><path d="M12 18 L22 18 L20 30 L14 30 Z" fill="#E9EEF6" stroke="#D21F1F"/>'
+    const corn = fan ? dust(svg, svg.world, 12, ['#FFF3C4', '#FFE08A', '#FFFFFF']) : null
+    const ph = snap ? player(svg.world, '#2A2F45', '', 0.9, { look: 13, shorts: '#111827', socks: '#111827' }) : null
+    const cam2 = snap ? el('g', {}, svg.world) : null
+    if (cam2) cam2.innerHTML = '<rect x="-8" y="-6" width="16" height="11" rx="2" fill="#111"/><circle r="4" fill="#333" stroke="#888"/><rect x="-4" y="-9" width="8" height="3" fill="#111"/>'
+    const flashB = snap ? burst(svg, svg.world, '#FFFFFF', 12) : null, ouch = snap ? boom(svg, svg.world, 'BONK!') : null
     // [Sprint 42 C4] The woodwork: it rings and shakes the screen, a flash of blue shock, the striker's hands on his head.
     const blue = post ? tint(svg, '#3B82F6') : null, clang = post ? boom(svg, svg.world, 'CLANG!', '#E9EEF6', '#1E3A8A') : null, ringL = post ? burst(svg, svg.world, '#FFFFFF', 10) : null
     const tt = title(svg, e.how === 'post' ? tr('القائم!') : e.how === 'over' ? tr('فوق العارضة') : tr('بجانب القائم'), '#C9D2E1')
     return { dur: 5.0, svg, update(t) {
       const r = go(t); dg(t, r)
+      if (fan) {
+        // In the stand beside the goal; the ball flies on into his hands.
+        const x = r.target[0] + (r.target[0] >= 320 ? 120 : -120), y = 92, f = seg(t, KT + 0.1, KT + 0.25)
+        if (t > KT) { const g = ease(seg(t, KT, KT + 0.45)); const p = bez([r.target, [lerp(r.target[0], x, 0.5), 20], [x, y - 4]], g); r.b.set(p[0], p[1], 140, t * 900, 1) }
+        sa(fanG, 'opacity', f); sa(fanG, 'transform', `translate(${x.toFixed(1)} ${(y + 6 * (1 - f)).toFixed(1)}) scale(.9)`)
+        const up = t > KT + 0.3 ? 165 : 20
+        sa(fanG.querySelector('[data-a="1"]'), 'transform', `rotate(${up} -12 0)`); sa(fanG.querySelector('[data-a="2"]'), 'transform', `rotate(${-up} 12 0)`)
+        corn(x + 16, y + 20, seg(t, KT + 0.6, KT + 1.6))
+      }
+      if (snap) {
+        const x = r.target[0] + (r.target[0] > 320 ? 26 : -26), y = LINE - 4, hit = seg(t, KT + 0.05, KT + 0.5)
+        put(ph, x, y, (r.target[0] > 320 ? 1 : -1) * 80 * ease(hit), 0.9, 0); ph.face?.('front'); ph.mood(hit > 0 ? 'shock' : 'focus'); ph.pose(30, -30, 150, -40)
+        sa(cam2, 'transform', `translate(${(x - 4).toFixed(1)} ${(y - 52 - 30 * Math.sin(Math.PI * hit)).toFixed(1)}) rotate(${Math.round(hit * 400)})`)
+        flashB(x, y - 50, seg(t, KT + 0.05, KT + 0.35), 6); ouch(x + (r.target[0] > 320 ? 30 : -30), y - 82, seg(t, KT, KT + 0.6))
+      }
       if (post) {
         const k = seg(t, KT - 0.02, KT + 0.8)
         clang(r.target[0], r.target[1] - 10, k); ringL(r.target[0], r.target[1], seg(t, KT, KT + 0.5), 14)
@@ -795,7 +927,7 @@ export const SCENES = {
     const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
     const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'IBM Plex Sans Arabic, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
     const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
-    const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1
+    const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1, wobbly = rnd((e.v ?? 5) * 3 + 2)() < 0.5
     // [Sprint 36 F2] The face-off before the kick, as on TV: the taker and the keeper in two panels, eye to eye.
     const vs = el('g', { opacity: 0 }, svg)
     vs.innerHTML = `<rect x="0" y="50" width="320" height="250" fill="${K(e.side).kit}" opacity=".9"/><rect x="320" y="50" width="320" height="250" fill="${keeperKit(other(e.side))}" opacity=".9"/>`
@@ -827,7 +959,9 @@ export const SCENES = {
       if (t > KT + 0.4 && !e.scored) tk.despair()
       // The keeper bounces on his line, then goes.
       let glove = null
-      if (t < tS) { ready(kp, 320 + Math.sin(t * 2.4) * 6, LINE + 2, t, 1.3); kp.pose(14, -14, 52 + Math.sin(t * 6) * 8, -52 - Math.sin(t * 6) * 8) }
+      // [Sprint 42 H2] One keeper in two puts the taker off with his spaghetti legs, arms waving, on his line.
+      if (t < tS && wobbly && t > 1.2) { const q = Math.sin(t * 14); ready(kp, 320 + Math.sin(t * 5) * 14, LINE + 2, t, 1.1); kp.pose(36 * q, -36 * q, 120 + 40 * q, -120 + 40 * q, Math.max(0, q) * 0.5, Math.max(0, -q) * 0.5) }
+      else if (t < tS) { ready(kp, 320 + Math.sin(t * 2.4) * 6, LINE + 2, t, 1.3); kp.pose(14, -14, 52 + Math.sin(t * 6) * 8, -52 - Math.sin(t * 6) * 8) }
       else glove = dive(kp, 320, LINE + 2, kAim[0], kAim[1], seg(t, tS + 0.03, KT), seg(t, KT + 0.2, KT + 0.85))
       let p, gr = LINE + 2
       if (t < tS) { p = spot; gr = spot[1] }
@@ -863,7 +997,7 @@ export const SCENES = {
     // [Sprint 38 S3] The referee marks the wall's line with his spray, then steps away.
     const rf = player(w, officialKit(), '', 1, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
     const foam = el('path', { fill: 'none', stroke: '#F7F9FC', 'stroke-width': 2.6, 'stroke-linecap': 'round', opacity: 0.85 }, w)
-    const KT = 2.65, tS = 1.85, side = R() < 0.5 ? -1 : 1, spot = [320 - side * 50, 252]
+    const KT = 2.65, tS = 1.85, side = R() < 0.5 ? -1 : 1, spot = [320 - side * 50, 252], scared = rnd((e.v ?? 5) * 11 + 4)() < 0.5
     const target = e.scored ? [side > 0 ? POSTS[1] - 12 : POSTS[0] + 12, 84 + R() * 8] : e.saved ? [320 + side * (44 + R() * 14), 92 + R() * 14] : [320 + side * 20, 50]
     const path = [spot, [lerp(spot[0], target[0], 0.4) - side * 30, 30], target]
     const tt = title(svg, e.scored ? tr('هدف!') : e.saved ? tr('تصدٍّ!') : tr('فوق العارضة'), e.scored ? undefined : e.saved ? '#2BB673' : '#C9D2E1')
@@ -875,7 +1009,12 @@ export const SCENES = {
       sa(foam, 'd', `M${x0} 224 L${lerp(x0, x1, sp)} 224`); sa(foam, 'opacity', 0.85 * (1 - seg(t, 4.2, 5)))
       put(rf, t < 0.6 ? lerp(x0, x1, sp) : lerp(x1, spot[0] + side * 140, ease(seg(t, 0.6, 1.4))), t < 0.6 ? 228 : lerp(228, 240, ease(seg(t, 0.6, 1.4))))
       t < 0.6 ? rf.pose(8, -8, 10, -60) : t < 1.4 ? rf.run(t * 9, 0.5) : rf.pose(); rf.mood('focus')
-      wall.forEach((p, i) => { put(p, spot[0] + side * 20 + (i - 1.5) * 15, 218, 0, 1, jump); p.pose(4, -4, 4, -4, jump > 1 ? 0.5 : 0, jump > 1 ? 0.5 : 0) })
+      // [Sprint 42 H2] One wall in two loses its nerve: hands over their faces, and one of them ducks out of it.
+      wall.forEach((p, i) => {
+        const duck = scared && i === 2 ? -16 * seg(t, tS - 0.35, tS - 0.1) * (1 - seg(t, KT + 0.6, KT + 1.2)) : 0
+        put(p, spot[0] + side * 20 + (i - 1.5) * 15, 218, scared && i === 2 ? side * 20 * seg(t, tS - 0.35, tS - 0.1) : 0, 1, jump + duck)
+        scared && t > tS - 0.5 && t < KT + 0.8 ? p.pose(4, -4, 150, -150, jump > 1 ? 0.5 : 0, jump > 1 ? 0.5 : 0) : p.pose(4, -4, 4, -4, jump > 1 ? 0.5 : 0, jump > 1 ? 0.5 : 0)
+      })
       const f = inout(seg(t, 0.6, tS)); put(tk, lerp(spot[0] - side * 30, spot[0] - side * 5, f), lerp(spot[1] + 30, spot[1] + 6, f))
       if (t < 0.6) tk.pose(3, -3, 20, -20); else if (t < tS - 0.3) tk.run(t * 11, 0.7); else tk.kick(seg(t, tS - 0.3, tS + 0.12))
       if (t > KT + 0.6 && e.scored) tk.celebrate(t)
@@ -1511,29 +1650,41 @@ export const SCENES = {
   // flags waving, and (the full tier) flares and paper raining down. e.side: whose fans; e.count: how many to draw.
   crowd(e) {
     const svg = stage(e.side), w = svg.world, k = K(e.side), R = rnd(e.v ?? 7)
-    const g = el('g', {}, w), fans = []
+    const g = el('g', {}, w)
     const skins = ['#C99A78', '#8D5A3B', '#E2B48F', '#6B4027', '#B07B57', '#D9A982']
     const n = e.count ?? 90
+    // [Sprint 42 I1] The fans in blocks (a row by an eighth of the stand) that jump together, each block on its own
+    // beat: about 48 moves a frame instead of three for every fan (the cutaway was the slowest drawing of all).
+    // Made in order, back row first, so the front rows stand in front.
+    const blocks = new Map()
+    for (let row = 0; row < 6; row++) for (let col = 0; col < 8; col++) blocks.set(row * 8 + col, { g: el('g', {}, g), x: col * 88 + 14, row, ph: R() * 6.3 })
     for (let i = 0; i < n; i++) {
-      const row = i % 6, x = ((i * 53 + row * 29) % 700) - 30, y = 120 + row * 38, s = 0.7 + row * 0.12
-      const f = el('g', {}, g), shirt = R() < 0.7 ? k.kit : k.trim ?? '#fff'
+      const row = i % 6, x = ((i * 53 + row * 29) % 700) - 30, y = 120 + row * 38, s = 0.7 + row * 0.12, col = Math.max(0, Math.min(7, Math.floor((x + 30) / 88)))
+      const key = row * 8 + col
+      const bl = blocks.get(key), shirt = R() < 0.7 ? k.kit : k.trim ?? '#fff', arms = i % 2 ? 'up' : 'v'
+      const f = el('g', { transform: `translate(${x} ${y}) scale(${s})` }, bl.g)
       f.innerHTML = `<rect x="-9" y="0" width="18" height="26" rx="6" fill="${shirt}"/><circle cy="-8" r="8" fill="${skins[i % skins.length]}"/>`
-        + `<rect class="a1" x="-12" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/><rect class="a2" x="7" y="-2" width="5" height="18" rx="2.5" fill="${shirt}"/>`
-        + (i % 4 === 0 ? `<rect class="sc" x="-16" y="-34" width="32" height="7" rx="2" fill="${k.trim ?? '#F5B82E'}"/>` : '')
-      fans.push({ f, x, y, s, ph: R() * 6.3, a1: f.querySelector('.a1'), a2: f.querySelector('.a2'), sc: f.querySelector('.sc') })
+        + (arms === 'up' ? `<rect x="-13" y="-22" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(-12 -10 -4)"/><rect x="8" y="-22" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(12 10 -4)"/>` : `<rect x="-16" y="-14" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(-40 -9 2)"/><rect x="11" y="-14" width="5" height="18" rx="2.5" fill="${shirt}" transform="rotate(40 9 2)"/>`)
+        + (i % 4 === 0 ? `<rect x="-16" y="-34" width="32" height="7" rx="2" fill="${k.trim ?? '#F5B82E'}"/>` : '')
     }
+    const fans = [...blocks.values()]
     const flags = [140, 470].map((x) => { const p = el('path', { fill: k.kit, stroke: k.trim ?? '#fff', 'stroke-width': 3, opacity: 0.95 }, w); return { p, x } })
     const flares = (e.flares ? [90, 330, 560] : []).map((x) => el('circle', { cx: x, cy: 150, r: 26, fill: '#FF8A3D', opacity: 0, filter: ref(svg, 'soft') }, w))
     const paper = (e.flares ? Array.from({ length: 40 }, (_, i) => el('rect', { width: 5, height: 3, fill: ['#fff', k.kit, '#F5B82E'][i % 3], opacity: 0.9 }, w)) : [])
-    const tt = title(svg, tr('فرحة الجماهير'))
+    // [Sprint 42 H2] One crowd in two does a Mexican wave; and the club's mascot dances in front of them.
+    const wave = rnd((e.v ?? 7) * 5 + 3)() < 0.5
+    const masc = el('g', {}, w)
+    masc.innerHTML = `<ellipse cx="0" cy="62" rx="34" ry="7" fill="rgba(0,0,0,.4)"/><ellipse cx="0" cy="20" rx="30" ry="38" fill="${k.kit}" stroke="${k.trim ?? '#fff'}" stroke-width="3"/><circle cy="-30" r="26" fill="${k.trim ?? '#F5B82E'}" stroke="${k.kit}" stroke-width="3"/><circle cx="-9" cy="-34" r="8" fill="#fff"/><circle cx="9" cy="-34" r="8" fill="#fff"/><circle cx="-8" cy="-33" r="3.5" fill="#111"/><circle cx="10" cy="-33" r="3.5" fill="#111"/><path d="M-12 -18 Q0 -6 12 -18" fill="#5A1A14"/><path d="M-22 -50 L-14 -62 L-8 -50 M8 -50 L14 -62 L22 -50" fill="${k.kit}"/><rect data-m="1" x="-44" y="0" width="14" height="40" rx="7" fill="${k.kit}"/><rect data-m="2" x="30" y="0" width="14" height="40" rx="7" fill="${k.kit}"/>`
+    const mArm = [masc.querySelector('[data-m="1"]'), masc.querySelector('[data-m="2"]')]
+    const tt = title(svg, wave ? tr('موجة في المدرجات') : tr('فرحة الجماهير'))
     return { dur: 2.6, svg, update(t) {
       cam(svg, 1.25 - 0.08 * ease(seg(t, 0, 2.6)), 320, 200)
+      const mx = 320 + Math.sin(t * 2) * 120, md = Math.sin(t * 10)
+      sa(masc, 'transform', `translate(${mx.toFixed(1)} ${(250 - Math.abs(md) * 12).toFixed(1)}) rotate(${(md * 8).toFixed(1)})`)
+      sa(mArm[0], 'transform', `rotate(${(150 + md * 30).toFixed(0)} -37 4)`); sa(mArm[1], 'transform', `rotate(${(-150 + md * 30).toFixed(0)} 37 4)`)
       for (const q of fans) {
-        const j = Math.abs(Math.sin(t * 7 + q.ph)) * 10
-        sa(q.f, 'transform', `translate(${q.x} ${q.y - j}) scale(${q.s})`)
-        const a = 150 + Math.sin(t * 9 + q.ph) * 20
-        sa(q.a1, 'transform', `rotate(${a} -9 0)`); sa(q.a2, 'transform', `rotate(${-a} 9 0)`)
-        if (q.sc) sa(q.sc, 'transform', `translate(0 ${-j * 0.3}) rotate(${Math.sin(t * 5 + q.ph) * 6})`)
+        const j = wave ? Math.max(0, Math.sin(t * 4 - q.x / 70)) ** 3 * 22 : Math.abs(Math.sin(t * 7 + q.ph)) * 10
+        sa(q.g, 'transform', `translate(0 ${(-j).toFixed(1)})`)
       }
       for (const { p, x } of flags) {
         const wv = (dx) => Math.sin(t * 6 + dx / 18) * 8
