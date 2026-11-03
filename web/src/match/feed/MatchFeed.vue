@@ -98,7 +98,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ICON, SCENES, crest, setKits, setRain, setRich, setSmooth, studio } from './art'
+import { ICON, SCENES, crest, setKits, setLight, setRain, setRich, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
 import { SCENE_TIME, story } from './story'
@@ -361,7 +361,7 @@ function step(now) {
           try { cutScene = plan.built[n] ?? SCENES[cut.name](cut.data); cutScene.update(0); showSvg(cutScene.svg); sceneOn.value = true } catch (e) { console.error(e); cutScene = null }
         })
         if (cutScene && (!smooth.value || now - drawn >= 32)) { drawn = now; try { cutScene.update(t - c0) } catch (e) { console.error(e); cutScene = null } }
-      } else if (t >= sceneT + plan.cutT) fire('end', () => { sceneOn.value = false; party.value = null; cutScene = null; addItems(); showBubble() })
+      } else if (t >= sceneT + plan.cutT) fire('end', () => { sceneOn.value = false; party.value = null; cutScene = null; addItems(); showBubble(); if (!plan.replay) reactTo(plan) })
     }
     const rp = plan.replay
     if (scene && rp && t >= rp.at) {
@@ -386,7 +386,7 @@ function step(now) {
           if (angleWrap) angleWrap.setAttribute('transform', angle === 2 ? 'translate(320 130) scale(-1.3 1.3) translate(-320 -130)' : '')
         }
         if (!smooth.value || now - drawn >= 32) { drawn = now; draw(u) }
-      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; replayAngle.value = 1; showBubble() })
+      } else fire('replay-end', () => { replaying.value = false; sceneOn.value = false; replayAngle.value = 1; showBubble(); reactTo(plan) })
     }
     // The commentator's bubble leaves before the minute ends: a calm pause on the timeline before the next scene.
     if (!plan.replay && t >= (scene ? Math.min(total, sceneT + plan.cutT + 2.8) : total)) fire('done', () => { bubbleOn.value = false })
@@ -399,7 +399,7 @@ let studioView: any = null, talkTill = 0, talker = 1, hypeTill = 0, studioDrawn 
 function talkAt() { talker = talker === 1 ? 2 : 1; talkTill = performance.now() + 2600 }
 function buildStudio() {
   if (!studioHost.value) return
-  try { studioView = studio(props.kits); studioHost.value.replaceChildren(studioView.svg); drawStudio(performance.now(), true) } catch (e) { console.error(e); studioView = null }
+  try { studioView = studio(props.kits, props.seed); studioHost.value.replaceChildren(studioView.svg); drawStudio(performance.now(), true) } catch (e) { console.error(e); studioView = null }
 }
 function drawStudio(now, force = false) {
   // Behind a clip nobody sees it: not drawn then. At 30 a second in the smooth mode.
@@ -407,9 +407,32 @@ function drawStudio(now, force = false) {
   if (!studioView || (sceneOn.value && !force) || (!force && now - studioDrawn < (smooth.value ? 48 : 32))) return
   studioDrawn = now
   const hype = Math.max(0, Math.min(1, (hypeTill - now) / 1000))
-  try { studioView.update(now / 1000, { clock: clockShown || props.minute, score: `${props.score.away} - ${props.score.home}`, frozen: frozen.value, talk: now < talkTill || bubbleOn.value ? talker : 0, hype }) } catch (e) { console.error(e); studioView = null }
+  try { studioView.update(now / 1000, { clock: clockShown || props.minute, score: `${props.score.away} - ${props.score.home}`, frozen: frozen.value, talk: now < talkTill || bubbleOn.value ? talker : 0, hype, react: reaction }) } catch (e) { console.error(e); studioView = null }
 }
-watch(() => props.kits, () => buildStudio(), { deep: true })
+watch(() => [props.kits, props.seed], () => buildStudio(), { deep: true })
+// [Sprint 42 J2] Back in the studio after a clip: what the commentators react to (the moment, as the pools name it).
+let reaction: any = null
+function reactTo(p) {
+  const s = p?.s
+  if (!s?.scene) return
+  const d = s.data ?? {}
+  const key = s.goal && s.scene !== 'penalty' ? (d.drama === 'blackout' ? 'blackout' : 'goal')
+    : s.scene === 'penalty' ? (d.scored ? 'penalty_goal' : 'penalty_miss')
+    : s.scene === 'save' ? (d.drama === 'double' ? 'double' : 'save')
+    : s.scene === 'miss' ? (d.how === 'post' ? 'post' : 'miss')
+    : s.scene === 'card' ? (['brawl', 'spit'].includes(d.drama) ? 'brawl' : d.type === 'red' ? 'red' : 'yellow')
+    : s.scene === 'foul' ? (d.drama === 'dive' ? 'dive' : 'foul')
+    : s.scene === 'trap' ? 'offside' : s.scene === 'rant' ? 'coach' : s.scene === 'blocked' ? 'miss' : s.scene
+  reaction = { key, seed: (Number(props.seed) || 1) * 31 + (p.tick?.tick ?? 0), t0: performance.now() / 1000 }
+}
+// [Sprint 42 J1] The match's light in the clips: from the kick-off's hour in Cairo (night, dusk or day), or the seed.
+function lightOf() {
+  let h = NaN
+  try { if (props.kickoff) h = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Africa/Cairo' }).format(new Date(props.kickoff))) } catch {}
+  if (Number.isNaN(h)) return ['night', 'dusk', 'day'][(Number(props.seed) || 0) % 3]
+  return h >= 18 || h < 6 ? 'night' : h >= 16 ? 'dusk' : 'day'
+}
+watch(() => [props.kickoff, props.seed], () => setLight(lightOf()), { immediate: true })
 onMounted(buildStudio)
 
 // ---------------------------------------------------------------- the clock [X35, Sprint 42 G1]

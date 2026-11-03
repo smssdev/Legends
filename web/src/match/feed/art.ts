@@ -5,6 +5,7 @@
 // particles; crests and line icons for the timeline. Drawing only: which scene
 // plays, and with whom, comes from story.ts.
 import { t as tr } from '../../lib/i18n'
+import { SCENE_TIME } from './timing'
 
 const NS = 'http://www.w3.org/2000/svg'
 // The two kits of the match: { kit, ink, trim, name } per side, set by the feed.
@@ -16,6 +17,11 @@ export function setSmooth(v) { SMOOTH = !!v }
 // [Sprint 42 I1] Only the full tier draws the blurred glows: an SVG blur makes every repaint of the picture costly.
 let RICH = true
 export function setRich(v) { RICH = !!v }
+// [Sprint 42 J1] The owner's (2026-11-03): no two matches alike. Each scene gets its looks from its own seed (a camera,
+// a headline, an accent at its key moment, VARIANT), and each match its light (LIGHT: night, dusk or day).
+const VARIANT = { cam: 0, title: 0, accent: 0 }
+let LIGHT = 'night'
+export function setLight(v) { LIGHT = ['night', 'dusk', 'day'].includes(v) ? v : 'night' }
 // [Sprint 36 F3] The match's rain (the live pitch's, from its seed) falls in the scenes too.
 let RAIN = false
 export function setRain(v) { RAIN = !!v }
@@ -90,15 +96,18 @@ const persp = (y) => 0.55 + (y - LINE) * 0.0055
 // a picture is one bitmap to move. Its words (LEGENDS, in the brand's font) stay live on top: a picture has no web fonts.
 const BACKDROPS = new Map()
 function backdrop(c, home) {
-  const key = [c, home, KITS.home?.trim, SMOOTH, RICH].join('|')
+  const key = [c, home, KITS.home?.trim, SMOOTH, RICH, LIGHT].join('|')
+  // [Sprint 42 J1] The match's light: the sky, the floodlights' halo and the grass (night, dusk or day).
+  const L = { night: { sky: ['#040B1C', '#0A1A3A'], halo: ['#FFFFFF', 0.22], grass: ['#14532F', '#0A2E1B'] }, dusk: { sky: ['#1E1238', '#C2593A'], halo: ['#FFB27A', 0.3], grass: ['#2C6A2E', '#10391E'] }, day: { sky: ['#4F93D2', '#BFE0F5'], halo: ['#FFFFFF', 0.12], grass: ['#3E9A47', '#1F5E2A'] } }[LIGHT]
   if (BACKDROPS.has(key)) return BACKDROPS.get(key)
   const fans = SMOOTH ? 70 : RICH ? 220 : 130
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-120 -40 880 420" width="1320" height="630"><defs>
-    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14532F"/><stop offset="1" stop-color="#0A2E1B"/></linearGradient>
-    <radialGradient id="h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.grass[0]}"/><stop offset="1" stop-color="${L.grass[1]}"/></linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.sky[0]}"/><stop offset="1" stop-color="${L.sky[1]}"/></linearGradient>
+    <radialGradient id="h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="${L.halo[0]}" stop-opacity="${L.halo[1]}"/><stop offset=".6" stop-color="${L.halo[0]}" stop-opacity="0"/></radialGradient>
     <linearGradient id="b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>
   </defs>
-  <rect x="-120" y="-40" width="880" height="420" fill="#040B1C"/>
+  <rect x="-120" y="-40" width="880" height="420" fill="url(#s)"/>
   <rect x="-80" y="-40" width="800" height="200" fill="url(#h)"/>
   <g>${Array.from({ length: fans }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
   <rect x="-80" y="122" width="800" height="16" fill="url(#b)"/>
@@ -338,12 +347,23 @@ function trail(svg, p = svg.world, color = '#FFE7A8') { return el('path', { d: '
 const drawTrail = (trl, path, f, op, from = 0) => { const pts = Array.from({ length: 14 }, (_, i) => bez(path, Math.max(from, f - 0.35) + ((f - Math.max(from, f - 0.35)) * i) / 13)); sa(trl, 'd', 'M' + pts.map((q) => q.join(' ')).join(' L')); sa(trl, 'opacity', op) }
 // The headline: a dark band with gold rules sliding in, the word over it.
 function title(svg, text, color) {
-  const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: 'rgba(4,11,28,.75)', opacity: 0 }, svg)
-  const r1 = el('rect', { x: 0, y: 4, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg), r2 = el('rect', { x: 0, y: 62, width: 640, height: 2, fill: ref(svg, 'gold'), opacity: 0 }, svg)
+  const fill = color ?? ref(svg, 'gold'), style = VARIANT.title
+  const band = el('rect', { x: 0, y: 4, width: 640, height: 60, fill: style === 2 ? 'rgba(4,11,28,.45)' : 'rgba(4,11,28,.75)', opacity: 0 }, svg)
+  const r1 = el('rect', { x: 0, y: 4, width: 640, height: 2, fill: style === 2 ? fill : ref(svg, 'gold'), opacity: 0 }, svg), r2 = el('rect', { x: 0, y: 62, width: 640, height: 2, fill: style === 2 ? fill : ref(svg, 'gold'), opacity: 0 }, svg)
+  // [Sprint 42 J1] The stamp: a box behind the word, at a slant.
+  const box = style === 3 ? el('rect', { x: 200, y: 10, width: 240, height: 56, rx: 6, fill: 'rgba(4,11,28,.82)', stroke: fill, 'stroke-width': 4, opacity: 0 }, svg) : null
   // [Sprint 30 Q8] A dark edge under the word: read whole over the pitch, the flashes and the band.
-  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 36, fill: color ?? ref(svg, 'gold'), stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
+  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Amin, sans-serif', 'font-weight': 900, 'font-size': 36, fill, stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
   t.textContent = text
-  return (f) => { const e = ease(f); sa(band, 'opacity', f); sa(r1, 'opacity', f); sa(r2, 'opacity', f); sa(r1, 'transform', `translate(${(1 - e) * -640} 0)`); sa(r2, 'transform', `translate(${(1 - e) * 640} 0)`); sa(t, 'opacity', f); sa(t, 'transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`) }
+  // [Sprint 42 J1] Four looks for the headline, one per scene (VARIANT.title): the gold band sliding in; the slam (the
+  // word drops in big, no band); neon (a thin band in its colour, the word flickering on); the stamp (a box at a slant).
+  return (f) => {
+    const e = ease(f)
+    if (style === 1) { sa(t, 'opacity', f); sa(t, 'transform', `translate(320 40) scale(${(lerp(2.6, 1, e)).toFixed(3)}) rotate(${((1 - e) * -6).toFixed(1)}) translate(-320 -40)`); return }
+    if (style === 3) { const k = f < 1 ? lerp(1.7, 1, e) - Math.sin(Math.PI * f) * 0.08 : 1; for (const x of [box, t]) { sa(x, 'opacity', f); sa(x, 'transform', `translate(320 38) rotate(-5) scale(${k.toFixed(3)}) translate(-320 -38)`) } return }
+    sa(band, 'opacity', f); sa(r1, 'opacity', f); sa(r2, 'opacity', f); sa(r1, 'transform', `translate(${(1 - e) * -640} 0)`); sa(r2, 'transform', `translate(${(1 - e) * 640} 0)`)
+    sa(t, 'opacity', style === 2 && f < 1 ? (Math.sin(f * 45) > 0 ? f : f * 0.3) : f); sa(t, 'transform', `translate(320 40) scale(${0.8 + 0.2 * e}) translate(-320 -40)`)
+  }
 }
 function bigNumber(svg, no, kit) {
   const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Amin, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
@@ -726,16 +746,61 @@ function openPlay(e, outcome, KT) {
 // The owner's (2026-11-03): the match shown like TV, with commentators in a studio. Between the moments the picture
 // is the studio: an LED wall with the score and the running clock, and two cartoon commentators at their desk with
 // headsets, talking in turn when a line is said, and on their feet at a goal. Drawing only (MatchFeed feeds it).
-export function studio(kits) {
+// [Sprint 42 J2] The commentators' reactions. f: 0..1 over about three seconds; side: 1 the left one, -1 the right one
+// (each faces the other). Returns how far he moves (dx towards the other, dy up), his lean, his arms (as pose()), his
+// face and the word over his head.
+const REACTIONS = {
+  jump: (f, t) => ({ dy: Math.abs(Math.sin(t * 9)) * 16, pose: [6, -6, 155 + Math.sin(t * 12) * 12, -155 - Math.sin(t * 12) * 12], mood: 'joy', sym: 'GOAL!' }),
+  hug: (f) => ({ dx: 70 * Math.sin(Math.PI * f), r: 8 * Math.sin(Math.PI * f), pose: [4, -4, 95, -40], mood: 'joy', sym: '♥' }),
+  desk: (f, t) => ({ dy: -2, pose: [4, -4, 20 + Math.abs(Math.sin(t * 14)) * 70, -20 - Math.abs(Math.sin(t * 14 + 1)) * 70], mood: 'joy', sym: 'BAM!' }),
+  spin: (f) => ({ face: f > 0.2 && f < 0.6 ? 'back' : 'front', dy: 8 * Math.sin(Math.PI * f), pose: [4, -4, 120, -120], mood: 'joy', sym: 'YES!' }),
+  applaud: (f, t) => ({ pose: [4, -4, 70 + Math.sin(t * 22) * 22, -70 + Math.sin(t * 22) * 22], mood: 'joy', sym: '★★★' }),
+  wow: (f) => ({ r: -6 * Math.sin(Math.PI * f), pose: [4, -4, 100, -100], mood: 'shock', sym: 'WOW!' }),
+  headhands: () => ({ pose: [4, -4, 150, -150], mood: 'shock', sym: '!?' }),
+  facepalm: () => ({ r: 6, pose: [4, -4, 22, 160], mood: 'sad', sym: '...' }),
+  leanback: (f) => ({ r: -10 * Math.sin(Math.PI * f), dy: -4, pose: [4, -4, 40, -40], mood: 'sad', sym: 'OHH' }),
+  point: (f, t) => ({ pose: [4, -4, 88 + Math.sin(t * 10) * 6, -22], mood: 'angry', sym: '!' }),
+  headshake: (f, t) => ({ r: Math.sin(t * 16) * 6, pose: [4, -4, 22, -22], mood: 'angry', sym: 'NO!' }),
+  crossarms: () => ({ pose: [4, -4, -30, 30], mood: 'focus', sym: 'hmm' }),
+  laugh: (f, t) => ({ dy: Math.abs(Math.sin(t * 18)) * 5, r: Math.sin(t * 9) * 4, pose: [4, -4, 40, -40], mood: 'joy', sym: 'HAHA' }),
+  eyeroll: (f) => ({ r: 4, pose: [4, -4, -20, 20], mood: 'peek', sym: '¬_¬' }),
+  worried: (f, t) => ({ r: Math.sin(t * 3) * 2, pose: [4, -4, -20, 20], mood: 'sad', sym: '...' }),
+  nails: (f, t) => ({ dy: Math.sin(t * 20) * 1.5, pose: [4, -4, 150, -22], mood: 'shock', sym: '!!' }),
+  nod: (f, t) => ({ dy: Math.max(0, Math.sin(t * 8)) * 3, pose: [4, -4, 22, -22], mood: 'focus', sym: '✓' }),
+  notes: (f, t) => ({ pose: [4, -4, 30 + Math.sin(t * 14) * 6, -30], mood: 'focus', sym: '✎' }),
+  monitor: (f) => ({ face: 'side', dx: 22 * Math.sin(Math.PI * Math.min(1, f * 1.4)), pose: [4, -4, 30, -30], mood: 'focus', sym: '?' }),
+  handshake: (f) => ({ dx: 50 * Math.sin(Math.PI * f), pose: [4, -4, 22, -85], mood: 'joy', sym: '' }),
+  dance: (f, t) => ({ dy: Math.abs(Math.sin(t * 10)) * 8, r: Math.sin(t * 10) * 8, pose: [4, -4, 90 + Math.sin(t * 10) * 40, -90 + Math.sin(t * 10) * 40], mood: 'joy', sym: '♪♪' }),
+}
+// What each moment may draw from them (MatchFeed names the moment). Each commentator picks his own.
+const REACT_POOLS = {
+  goal: ['jump', 'hug', 'desk', 'spin', 'dance', 'applaud'], save: ['applaud', 'wow', 'headhands', 'point'], miss: ['facepalm', 'headhands', 'leanback', 'wow'],
+  post: ['headhands', 'wow', 'facepalm'], yellow: ['point', 'headshake', 'crossarms', 'nod'], red: ['wow', 'headshake', 'point', 'headhands'],
+  brawl: ['wow', 'headhands', 'laugh', 'headshake'], foul: ['worried', 'headshake', 'point'], dive: ['laugh', 'eyeroll', 'headshake'],
+  injury: ['worried', 'nails'], sub: ['nod', 'notes', 'crossarms'], var: ['monitor', 'crossarms', 'headshake'], offside: ['monitor', 'point', 'nod'],
+  penalty_goal: ['jump', 'applaud', 'nails'], penalty_miss: ['headhands', 'wow', 'nails'], freekick: ['wow', 'applaud', 'leanback'],
+  corner: ['nod', 'notes'], coach: ['laugh', 'notes', 'nod'], slip: ['laugh', 'wow', 'facepalm'], whistle: ['handshake', 'notes', 'nod'],
+  clearance: ['wow', 'applaud', 'headhands'], double: ['applaud', 'wow', 'jump'], blackout: ['wow', 'laugh', 'headhands'], calm: ['nod', 'notes'],
+}
+export const REACT_COUNT = Object.keys(REACTIONS).length
+
+export function studio(kits, seed = 1) {
+  // [Sprint 42 J2] Each match its studio: the LED wall's colours, the desk's trim and the two commentators (their
+  // faces, hair, suits and ties), all from the match's seed.
+  const SR = rnd((Number(seed) || 1) * 101 + 17)
+  const THEMES = [['#0E2A5C', '#123A7A', '#0A2148', '#0B1A3A'], ['#2A1352', '#3B1D74', '#1E0E3D', '#170B30'], ['#063F45', '#0B5C63', '#052E33', '#06232A'], ['#4A0E1E', '#6B1428', '#330915', '#210610']]
+  const TH = THEMES[Math.floor(SR() * THEMES.length)], TRIM = SR() < 0.6 ? ['#C08A0C', '#FFD36B'] : ['#8C96A8', '#F2F5FA']
+  const SUITS = ['#22304F', '#2A2F45', '#3A2A2A', '#1F3B34', '#2E2E2E', '#3A3150', '#1C2A3F'], TIES = ['#F5B82E', '#7FB4FF', '#D21F1F', '#2BB673', '#E85D9A', '#FFFFFF']
+  const crew = [0, 1].map(() => ({ suit: SUITS[Math.floor(SR() * SUITS.length)], tie: TIES[Math.floor(SR() * TIES.length)], look: Math.floor(SR() * 42) }))
   const svg = el('svg', { viewBox: '0 0 640 340', preserveAspectRatio: 'xMidYMid slice', direction: 'ltr' }), id = 's' + ++uid
   svg.style.direction = 'ltr'
   svg.dataset.id = id
   const H = kits?.home?.kit ?? '#C8102E', A = kits?.away?.kit ?? '#1E4FA8'
   svg.innerHTML = `<defs>
-    <linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1A3A"/><stop offset="1" stop-color="#040B1C"/></linearGradient>
-    <linearGradient id="${id}led" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E2A5C"/><stop offset=".5" stop-color="#123A7A"/><stop offset="1" stop-color="#0A2148"/></linearGradient>
+    <linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${TH[3]}"/><stop offset="1" stop-color="#040B1C"/></linearGradient>
+    <linearGradient id="${id}led" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${TH[0]}"/><stop offset=".5" stop-color="${TH[1]}"/><stop offset="1" stop-color="${TH[2]}"/></linearGradient>
     <linearGradient id="${id}desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2B4D"/><stop offset="1" stop-color="#0A1328"/></linearGradient>
-    <linearGradient id="gold${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C08A0C"/><stop offset=".5" stop-color="#FFD36B"/><stop offset="1" stop-color="#C08A0C"/></linearGradient>
+    <linearGradient id="gold${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${TRIM[0]}"/><stop offset=".5" stop-color="${TRIM[1]}"/><stop offset="1" stop-color="${TRIM[0]}"/></linearGradient>
     <filter id="glow${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <filter id="soft${id}"><feGaussianBlur stdDeviation="14"/></filter>
   </defs>
@@ -753,7 +818,7 @@ export function studio(kits) {
   <g data-spot="1" opacity=".0"><path d="M120 0 L180 0 L260 250 L60 250 Z" fill="#FFF6DA" opacity=".07"/><path d="M460 0 L520 0 L580 250 L380 250 Z" fill="#FFF6DA" opacity=".07"/></g>`
   const g = el('g', {}, svg)
   const suit = (trim) => ({ look: 0, shorts: '#1F2937', socks: '#111827', trim })
-  const c1 = player(g, '#22304F', '', 2.1, { ...suit('#F5B82E'), look: 5 }), c2 = player(g, '#2A2F45', '', 2.1, { ...suit('#7FB4FF'), look: 22 })
+  const c1 = player(g, crew[0].suit, '', 2.1, { ...suit(crew[0].tie), look: crew[0].look }), c2 = player(g, crew[1].suit, '', 2.1, { ...suit(crew[1].tie), look: crew[1].look })
   // Headsets with their mics.
   const hs = [0, 1].map(() => { const e = el('g', {}, g); e.innerHTML = '<path d="M-11 -24 Q0 -38 11 -24" fill="none" stroke="#111" stroke-width="2.4"/><rect x="-12.5" y="-25" width="4" height="7" rx="1.5" fill="#111"/><rect x="8.5" y="-25" width="4" height="7" rx="1.5" fill="#111"/><path d="M-10.5 -19 Q-9 -12 -3 -13" fill="none" stroke="#111" stroke-width="1.6"/><circle cx="-2.5" cy="-13" r="1.6" fill="#F5B82E"/>'; return e })
   // The desk in front of them: curved, with the channel's mark, two mics and a laptop.
@@ -765,7 +830,9 @@ export function studio(kits) {
     <g fill="#111"><rect x="196" y="206" width="4" height="26"/><ellipse cx="198" cy="204" rx="6" ry="8"/><rect x="438" y="206" width="4" height="26"/><ellipse cx="440" cy="204" rx="6" ry="8"/></g>`
   const score = svg.querySelector('[data-score]'), clockT = svg.querySelector('[data-clock]'), spot = svg.querySelector('[data-spot]')
   const POS = [[190, 196], [450, 196]]
-  let lastScore = null
+  // [Sprint 42 J2] Over each head, the word of his reaction.
+  const syms = [0, 1].map(() => el('text', { 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 22, fill: '#FFD36B', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg))
+  let lastScore = null, react = null, picks = null
   return {
     svg,
     /** t: seconds. st: { clock, score ('away - home', home on the right as on the scorebar), frozen, talk (0 none, 1 or 2: who is talking), hype (0..1, a goal) } */
@@ -775,7 +842,24 @@ export function studio(kits) {
       sa(clockT, 'opacity', st.frozen ? (Math.floor(t * 2.5) % 2 ? 0.35 : 1) : 1)
       const hype = st.hype ?? 0
       sa(spot, 'opacity', (hype * (0.6 + 0.4 * Math.sin(t * 9))).toFixed(2))
+      // [Sprint 42 J2] Back from a clip, each commentator reacts to it, each in his own way (from the pool for that
+      // moment, by the minute's seed): about three seconds, then back to talking.
+      if (st.react && st.react !== react) { react = st.react; const R = rnd((react.seed >>> 0) + 1), pool = REACT_POOLS[react.key] ?? REACT_POOLS.calm; picks = [pool[Math.floor(R() * pool.length)], pool[Math.floor(R() * pool.length)]] }
+      const rf = react ? (t - react.t0) / 3 : 2
       ;[c1, c2].forEach((c, i) => {
+        const [x0, y0] = POS[i]
+        if (rf >= 0 && rf < 1 && picks) {
+          const r = REACTIONS[picks[i]]?.(rf, t, i ? -1 : 1) ?? {}
+          const dx = (r.dx ?? 0) * (i ? -1 : 1), y = y0 - (r.dy ?? 0)
+          c.face?.(r.face ?? 'front', i ? -1 : 1); c.mood(r.mood ?? 'idle'); c.at(x0 + dx, y, (r.r ?? 0) * (i ? -1 : 1), 2.1)
+          const P = r.pose ?? [4, -4, 22, -22]; c.pose(...(i ? [P[1] * -1, P[0] * -1, -P[3], -P[2]] : P))
+          sa(hs[i], 'transform', `translate(${(x0 + dx).toFixed(1)} ${y.toFixed(1)}) rotate(${((r.r ?? 0) * (i ? -1 : 1)).toFixed(1)}) scale(2.1)`)
+          const so = seg(rf, 0.05, 0.15) * (1 - seg(rf, 0.8, 0.95))
+          syms[i].textContent = r.sym ?? ''
+          sa(syms[i], 'opacity', r.sym ? so.toFixed(2) : 0); sa(syms[i], 'x', (x0 + dx).toFixed(1)); sa(syms[i], 'y', (y - 78 - so * 6).toFixed(1))
+          return
+        }
+        sa(syms[i], 'opacity', 0)
         const talking = st.talk === i + 1, [x, y] = POS[i], up = hype > 0 ? 18 * hype + Math.abs(Math.sin(t * 8 + i)) * 6 * hype : 0
         c.face?.('front')
         c.mood(hype > 0 ? 'joy' : talking ? (Math.floor(t * 8 + i) % 2 ? 'talk' : 'idle') : 'idle')
@@ -1733,3 +1817,60 @@ export const SCENES = {
     } }
   },
 }
+
+// ---------------------------------------------------------------- [Sprint 42 J1] the variety layer
+// The owner's (2026-11-03): "500 different clips, so no match feels like the last". Every scene above already has its
+// own variants (finishes, saves, celebrations, the server's dramas and gags); on top of them each scene now draws, from
+// its own seed, one of 5 cameras, one of 4 headlines and one of 6 accents at its key moment: 120 looks for each of
+// them. The same on every screen (the seed is the minute's), drawing only.
+const CAMS = 5, TITLES = 4, ACCENTS = 6
+export const VARIETY = { cams: CAMS, titles: TITLES, accents: ACCENTS }
+const WORDS = {
+  goal: ['GOAL!!', 'BOOM!', 'WOW!'], save: ['DENIED!', 'NO WAY!', 'WOW!'], miss: ['OHH!', 'SO CLOSE!', 'NOO!'], blocked: ['BLOCKED!', 'THUD!'],
+  penalty: ['ICE COLD!', 'BOOM!', 'OH!'], freekick: ['WHOOSH!', 'CURL!'], card: ['OUCH!', 'TROUBLE!', 'OH NO!'], foul: ['OUCH!', 'CRUNCH!'],
+  injury: ['OUCH!', 'OOF!'], sub: ['FRESH!', 'IN!'], var: ['CHECK!', 'HOLD ON!'], clearance: ['SAVED!', 'PHEW!'], trap: ['STEP UP!', 'CAUGHT!'],
+  slip: ['SPLASH!', 'OOPS!'], rant: ['LISTEN!'], meltdown: ['ARGH!'], crowd: ['YEAH!', 'OLE!'], brawl: ['HEY!'],
+}
+const hashOf = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0) % 1000000 }
+function vary(name, make) {
+  return (e) => {
+    const R = rnd(((e.v ?? hashOf(name + JSON.stringify(e))) * 13 + 7) >>> 0)
+    VARIANT.cam = Math.floor(R() * CAMS); VARIANT.title = Math.floor(R() * TITLES); VARIANT.accent = Math.floor(R() * ACCENTS)
+    const word = (WORDS[name] ?? ['WOW!'])[Math.floor(R() * (WORDS[name]?.length ?? 1))], cam = VARIANT.cam, acc = SMOOTH ? 0 : VARIANT.accent
+    const sc = make(e)
+    VARIANT.title = 0
+    const svg = sc.svg, w = svg.world, KT = SCENE_TIME[name]?.[1] ?? 1, D = sc.dur ?? SCENE_TIME[name]?.[0] ?? 4
+    // The camera: a frame round the world the scene moves itself, so the two add up.
+    let rig = null
+    if (w && cam) { rig = document.createElementNS(NS, 'g'); w.parentNode.insertBefore(rig, w); rig.appendChild(w) }
+    // The accent, over everything, at the key moment.
+    const fx = el('g', { opacity: 0, 'pointer-events': 'none' }, svg)
+    if (acc === 1) fx.innerHTML = Array.from({ length: 14 }, (_, i) => `<polygon points="0,-6 1.6,-1.6 6,0 1.6,1.6 0,6 -1.6,1.6 -6,0 -1.6,-1.6" fill="${i % 2 ? '#FFD36B' : '#FFFFFF'}" transform="translate(${60 + ((i * 97) % 520)} ${40 + ((i * 53) % 240)})"/>`).join('')
+    if (acc === 2) fx.innerHTML = Array.from({ length: 28 }, (_, i) => { const a = (i / 28) * Math.PI * 2, r0 = 150 + (i % 3) * 20; return `<path d="M${(320 + Math.cos(a) * r0).toFixed(0)} ${(170 + Math.sin(a) * r0 * 0.6).toFixed(0)} L${(320 + Math.cos(a) * 420).toFixed(0)} ${(170 + Math.sin(a) * 260).toFixed(0)}" stroke="#fff" stroke-width="${1.5 + (i % 3)}" opacity=".7"/>` }).join('')
+    if (acc === 3) fx.innerHTML = `<g transform="translate(520 280) rotate(-8)"><rect x="-74" y="-24" width="148" height="44" rx="8" fill="#FFD400" stroke="#071733" stroke-width="4"/><text y="9" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="26" fill="#071733">${word}</text></g>`
+    if (acc === 4) fx.innerHTML = '<rect width="640" height="340" fill="#FFFFFF"/>'
+    if (acc === 5) fx.innerHTML = `<radialGradient id="vg${svg.dataset.id}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".75"/></radialGradient><rect width="640" height="340" fill="url(#vg${svg.dataset.id})"/>`
+    const update = sc.update
+    sc.update = (t) => {
+      update(t)
+      if (rig) {
+        const k = t / D, p = seg(t, KT - 0.05, KT + 0.12) * (1 - seg(t, KT + 0.3, KT + 1.1))
+        const tr = cam === 1 ? `translate(320 170) scale(${(1 + 0.07 * inout(k)).toFixed(3)}) translate(-320 -170)`
+          : cam === 2 ? `translate(320 170) rotate(${(-3 + 1.5 * Math.sin(t * 0.8)).toFixed(2)}) scale(1.08) translate(-320 -170)`
+          : cam === 3 ? `translate(${(Math.sin(t * 0.9) * 14).toFixed(1)} ${(Math.cos(t * 0.7) * 4).toFixed(1)}) translate(320 170) scale(1.05) translate(-320 -170)`
+          : `translate(320 170) scale(${(1 + 0.13 * p).toFixed(3)}) translate(-320 -170)`
+        sa(rig, 'transform', tr)
+      }
+      if (acc) {
+        const on = acc === 4 ? 0.55 * seg(t, KT - 0.02, KT + 0.04) * (1 - seg(t, KT + 0.06, KT + 0.3))
+          : acc === 5 ? seg(t, KT - 0.1, KT + 0.1) * (1 - seg(t, KT + 0.8, KT + 1.4))
+          : seg(t, KT, KT + 0.12) * (1 - seg(t, KT + (acc === 3 ? 1.2 : 0.5), KT + (acc === 3 ? 1.5 : 0.9)))
+        sa(fx, 'opacity', on.toFixed(2))
+        if (acc === 1 && on > 0) [...fx.children].forEach((c, i) => sa(c, 'opacity', (0.5 + 0.5 * Math.sin(t * 20 + i)).toFixed(2)))
+        if (acc === 3 && on > 0) sa(fx.firstElementChild, 'transform', `translate(520 280) rotate(-8) scale(${(lerp(1.8, 1, ease(seg(t, KT, KT + 0.18)))).toFixed(2)})`)
+      }
+    }
+    return sc
+  }
+}
+for (const k of Object.keys(SCENES)) SCENES[k] = vary(k, SCENES[k])
