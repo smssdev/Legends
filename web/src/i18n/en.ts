@@ -2769,4 +2769,9 @@ export const EN: Record<string, string> = {
   'انزلق في المطر': 'Slipped in the rain',
   'تصدٍّ مزدوج!': 'Double save!',
   'المدرب ينفجر!': 'The coach explodes!',
+  // [Sprint 42 G1] The clock in place of the live pitch.
+  'توقف الوقت · لقطة': 'Time stopped · the moment',
+  'الوقت يمشي': 'The clock is running',
+  'الشوط الأول': 'First half',
+  'الشوط الثاني': 'Second half',
 }
