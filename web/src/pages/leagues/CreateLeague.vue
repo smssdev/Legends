@@ -76,6 +76,21 @@ const minTeams = computed(() => Math.min(fullTeams.value, 2))
 const count = computed(() => (custom.value ? teams.value : fullTeams.value))
 const rounds = computed(() => roundsFor(count.value))
 const lockFrom = computed(() => lockFromRound(rounds.value))
+// [Sprint 40 D1] Its alliance tournament: 1 to 5 teams each side (2 to 10 in all, no more than the league's), by the
+// draw or the maker's own split by username (the places left drawn before the first round).
+const allianceOn = ref(false)
+const allianceSize = ref(2)
+const allianceAssign = ref<'draw' | 'pick'>('draw')
+const allianceSides = ref<{ a: string[]; b: string[] }>({ a: [], b: [] })
+const allianceInput = ref({ a: '', b: '' })
+const allianceMax = computed(() => Math.max(1, Math.min(5, Math.floor(count.value / 2))))
+watch(allianceMax, (m) => (allianceSize.value = Math.min(allianceSize.value, m)))
+function addAlly(side: 'a' | 'b') {
+  const u = allianceInput.value[side].trim().replace(/^@/, '').toLowerCase()
+  allianceInput.value[side] = ''
+  const all = [...allianceSides.value.a, ...allianceSides.value.b]
+  if (u && !all.includes(u) && allianceSides.value[side].length < allianceSize.value) allianceSides.value[side].push(u)
+}
 watch(fullTeams, (m) => (teams.value = m))
 
 /** What differs from the free league: none, and it stays free. */
@@ -156,6 +171,7 @@ async function create() {
         ...changes.value,
         rest_days: restDays.value,
         is_dev: import.meta.env.DEV,
+        ...(allianceOn.value ? { alliance: { size: allianceSize.value, assign: allianceAssign.value, ...(allianceAssign.value === 'pick' ? allianceSides.value : {}) } } : {}),
         ...(drawMode.value
           ? { entry_mode: 'draw' as const, club_id: null, club_ids: picked.value, draw_users: drawUsers.value, team_count: count.value }
           : { club_id: club.value!.id }),
@@ -213,6 +229,42 @@ const field = (name: string) => error.value?.field(name) ?? ''
             </label>
           </div>
           <RestDaysPicker v-model="restDays" :error="field('rest_days')" />
+        </section>
+
+        <!-- [Sprint 40 D1] The alliance tournament, chosen as the league is made. -->
+        <section class="flex flex-col gap-3 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-alliance">
+          <h2 id="h-alliance" class="font-display text-xl font-extrabold">{{ $t('بطولة التحالفات') }}</h2>
+          <UiToggle v-model="allianceOn" class="rounded-lg bg-surface-sunk p-3" :hint="$t('تحالفان متساويان من فرق الدوري، لا يتقابل زملاء التحالف إلا إن لم يكن بد')"><b>{{ $t('أضف بطولة تحالفات') }}</b></UiToggle>
+          <template v-if="allianceOn">
+            <div class="flex items-center justify-between gap-2" role="group" :aria-label="$t('فرق كل تحالف')">
+              <span class="text-sm font-bold">{{ $t('فرق كل تحالف') }}</span>
+              <span class="flex items-center gap-2">
+                <button type="button" class="size-touch rounded-lg bg-surface-raised text-xl" :aria-label="$t('أقل')" :disabled="allianceSize <= 1" @click="allianceSize--">−</button>
+                <output class="w-24 text-center font-numbers font-bold text-gold" aria-live="polite">{{ $t('{v0} ضد {v1}', { v0: allianceSize, v1: allianceSize }) }}</output>
+                <button type="button" class="size-touch rounded-lg bg-surface-raised text-xl" :aria-label="$t('أكثر')" :disabled="allianceSize >= allianceMax" @click="allianceSize++">+</button>
+              </span>
+            </div>
+            <div class="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunk p-1" role="radiogroup" :aria-label="$t('توزيع الفرق')">
+              <button v-for="o in ([['draw', 'بالقرعة'], ['pick', 'أختارهم بنفسي']] as const)" :key="o[0]" type="button" role="radio" :aria-checked="allianceAssign === o[0]"
+                class="h-11 rounded-md text-sm font-bold" :class="allianceAssign === o[0] ? 'bg-gold text-on-gold' : 'text-text-soft'" @click="allianceAssign = o[0]">{{ $t(o[1]) }}</button>
+            </div>
+            <div v-if="allianceAssign === 'pick'" class="grid gap-3 md:grid-cols-2">
+              <div v-for="side in (['a', 'b'] as const)" :key="side" class="flex flex-col gap-2 rounded-lg bg-surface-sunk p-3">
+                <b class="text-sm">{{ side === 'a' ? $t('التحالف الأول') : $t('التحالف الثاني') }}</b>
+                <div class="flex gap-2">
+                  <input v-model="allianceInput[side]" dir="ltr" :placeholder="$t('اسم المستخدم')" :aria-label="$t('اسم المستخدم')" autocapitalize="off" class="h-touch min-w-0 flex-1 rounded-lg bg-surface px-3" @keydown.enter.prevent="addAlly(side)" />
+                  <UiButton variant="outline" :disabled="!allianceInput[side].trim() || allianceSides[side].length >= allianceSize" @click="addAlly(side)">{{ $t('أضف') }}</UiButton>
+                </div>
+                <ul class="flex flex-wrap gap-1">
+                  <li v-for="u in allianceSides[side]" :key="u" class="flex items-center gap-1 rounded-pill bg-surface ps-3 text-sm" dir="ltr">
+                    @{{ u }}<button type="button" class="grid size-9 place-items-center rounded-full" :aria-label="$t('احذف {v0}', { v0: u })" @click="allianceSides[side].splice(allianceSides[side].indexOf(u), 1)"><Icon name="close" :size="14" /></button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p class="text-xs text-text-muted">{{ $t('تتكوّن الفرق قبل الدور الأول بنصف ساعة من المدربين الذين انضموا، والأماكن الباقية بالقرعة أو للحاسوب. وتبدأ بعد اعتماد المطورين.') }}</p>
+            <span v-if="field('alliance.size')" class="text-sm text-danger">{{ field('alliance.size') }}</span>
+          </template>
         </section>
 
         <!-- [Sprint 40 C1] The draw, chosen as the league is made: the players by username, then the teams. -->

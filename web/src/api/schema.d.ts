@@ -1356,6 +1356,25 @@ export interface paths {
                          * @description [Sprint 40 C1] The draw's time; else when every team has a player, or at the start
                          */
                         draw_at?: string | null;
+                        /** @description [Sprint 40 D1] Its alliance tournament, planned now: formed form_minutes before its first round, after the developers approve it */
+                        alliance?: {
+                            /** @description Teams in each alliance (2 to 10 in all) */
+                            size: number;
+                            /**
+                             * @default draw
+                             * @enum {string}
+                             */
+                            assign?: "draw" | "pick";
+                            /** @description pick: usernames in alliance a (places left are drawn) */
+                            a?: string[];
+                            b?: string[];
+                            /**
+                             * Format: date-time
+                             * @description Else a day after the league's first round
+                             */
+                            first_round_at?: string | null;
+                            name?: string | null;
+                        } | null;
                     };
                 };
             };
@@ -2798,7 +2817,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** A captain picks which of two of his coaches goes on (team-mates are not played) */
+        /** [Sprint 40 D2] One of the two coaches of a team-mates' tie picks who goes on; the same pick from both decides it (else the stronger at its time) */
         post: {
             parameters: {
                 query?: never;
@@ -2814,6 +2833,52 @@ export interface paths {
                     "application/json": {
                         /** @description A club id of the tie */
                         winner: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/alliance/ties/{tie}/swap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                tie: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 40 D2] The coach who went on swaps players one for one with the team he passed (up to swap_max for the tie) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    tie: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description His players */
+                        give: number[];
+                        /** @description The other team's */
+                        take: number[];
                     };
                 };
             };
@@ -14612,6 +14677,19 @@ export interface components {
                          * @enum {string|null}
                          */
                         captain_of: "a" | "b" | null;
+                        /**
+                         * @description [Sprint 40 D1] Planned as the league was made: by the draw or the maker's split
+                         * @enum {string|null}
+                         */
+                        assign?: "draw" | "pick" | null;
+                        /** @description [Sprint 40 D1] Its teams are set (before, only the plan) */
+                        formed?: boolean;
+                        /** @description The maker's split: usernames for a and b */
+                        plan?: {
+                            [key: string]: unknown;
+                        } | null;
+                        my_club_id?: number | null;
+                        swap_max?: number;
                         alliances: {
                             a: components["schemas"]["AllianceSide"];
                             b: components["schemas"]["AllianceSide"];
@@ -14641,6 +14719,10 @@ export interface components {
                                 away: number;
                             } | null;
                             match_id: number | null;
+                            /** @description [Sprint 40 D2] The home coach's pick of who goes on */
+                            home_pick?: number | null;
+                            away_pick?: number | null;
+                            swaps?: number;
                         }[];
                     } | null;
                 };

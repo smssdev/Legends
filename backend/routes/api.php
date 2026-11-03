@@ -254,6 +254,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
         Route::get('/', 'show');
         Route::post('/', 'store')->middleware('throttle:10,1,alliance');
         Route::post('ties/{tie}/decide', 'decide')->whereNumber('tie');
+        // [Sprint 40 D2] The one who went on swaps players with the team he passed.
+        Route::post('ties/{tie}/swap', 'swap')->whereNumber('tie')->middleware('throttle:20,1,alliance-swap');
     });
     // Tickets to cheer at the other clubs' matches [X25].
     Route::controller(TicketController::class)->prefix('{league}/tickets')->whereNumber('league')->group(function () {

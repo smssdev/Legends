@@ -626,6 +626,18 @@ paths:
                 club_ids: { type: array, items: { type: integer }, description: '[Sprint 40 C1] The teams (master club ids), as many as team_count; else the strongest' }
                 draw_users: { type: array, items: { type: string }, description: '[Sprint 40 C1] The players by username (the maker is always one); fewer than the teams leaves the rest to the computer' }
                 draw_at: { type: string, format: date-time, nullable: true, description: '[Sprint 40 C1] The draw''s time; else when every team has a player, or at the start' }
+                alliance:
+                  type: object
+                  nullable: true
+                  description: '[Sprint 40 D1] Its alliance tournament, planned now: formed form_minutes before its first round, after the developers approve it'
+                  required: [size]
+                  properties:
+                    size: { type: integer, minimum: 1, maximum: 5, description: Teams in each alliance (2 to 10 in all) }
+                    assign: { type: string, enum: [draw, pick], default: draw }
+                    a: { type: array, items: { type: string }, description: 'pick: usernames in alliance a (places left are drawn)' }
+                    b: { type: array, items: { type: string } }
+                    first_round_at: { type: string, format: date-time, nullable: true, description: 'Else a day after the league''s first round' }
+                    name: { type: string, nullable: true, maxLength: 40 }
       responses:
         '201': { $ref: '#/components/responses/League' }
         '401': { $ref: '#/components/responses/Error' }
@@ -1205,12 +1217,29 @@ paths:
       - { name: tie, in: path, required: true, schema: { type: integer } }
     post:
       tags: [leagues]
-      summary: A captain picks which of two of his coaches goes on (team-mates are not played)
+      summary: '[Sprint 40 D2] One of the two coaches of a team-mates'' tie picks who goes on; the same pick from both decides it (else the stronger at its time)'
       requestBody:
         required: true
         content:
           application/json:
             schema: { type: object, required: [winner], properties: { winner: { type: integer, description: A club id of the tie } } }
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/alliance/ties/{tie}/swap:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: tie, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: '[Sprint 40 D2] The coach who went on swaps players one for one with the team he passed (up to swap_max for the tie)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [give, take], properties: { give: { type: array, items: { type: integer }, description: His players }, take: { type: array, items: { type: integer }, description: The other team's, as many } } }
       responses:
         '200': { $ref: '#/components/responses/Alliance' }
         '403': { $ref: '#/components/responses/Error' }
@@ -4542,6 +4571,11 @@ components:
                   first_round_at: { type: string, format: date-time }
                   review_note: { type: string, nullable: true }
                   captain_of: { type: string, nullable: true, enum: [a, b, null], description: The alliance I captain }
+                  assign: { type: string, nullable: true, enum: [draw, pick, null], description: '[Sprint 40 D1] Planned as the league was made: by the draw or the maker''s split' }
+                  formed: { type: boolean, description: '[Sprint 40 D1] Its teams are set (before, only the plan)' }
+                  plan: { type: object, nullable: true, additionalProperties: true, description: 'The maker''s split: usernames for a and b' }
+                  my_club_id: { type: integer, nullable: true }
+                  swap_max: { type: integer }
                   alliances:
                     type: object
                     required: [a, b]
@@ -4565,6 +4599,9 @@ components:
                         status: { type: string, nullable: true }
                         score: { type: object, nullable: true, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
                         match_id: { type: integer, nullable: true }
+                        home_pick: { type: integer, nullable: true, description: '[Sprint 40 D2] The home coach''s pick of who goes on' }
+                        away_pick: { type: integer, nullable: true }
+                        swaps: { type: integer }
     AdminAlliances:
       description: The alliance tournaments for review
       content:
