@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be36cce28e4f58645825ba73566010ff, type: 3}
+  m_Name: PlayerArt
+  m_EditorClassIdentifier: Legends::Legends.PlayerArt
+  models:
+  - {fileID: 919132149155446097, guid: abcf3dbd34c5e734fb33730f70ea98fe, type: 3}
+  - {fileID: 919132149155446097, guid: cdfb8a115da08a9479dd57ecb7e756b4, type: 3}
+  - {fileID: 919132149155446097, guid: b1ed085cac220e54d9b1053b05df0cad, type: 3}
+  skins:
+  - name: olive
+    material: {fileID: 2100000, guid: 26add80f42bc29c4798fb1488572d873, type: 2}
+  - name: light
+    material: {fileID: 2100000, guid: 9b72b6ecbc7d17443a1f0ea2515c3420, type: 2}
+  - name: fair
+    material: {fileID: 2100000, guid: 2ba5bfd776e4efb4fa79449ea28509a6, type: 2}
+  - name: east_asian
+    material: {fileID: 2100000, guid: d2dc70419abbe92419c98812d0837a83, type: 2}
+  - name: brown
+    material: {fileID: 2100000, guid: dbed887c1910e8447a5d7198bb06a41e, type: 2}
+  - name: dark
+    material: {fileID: 2100000, guid: 03b6c9956b5de4f42941729c10d18868, type: 2}
+  hairs:
+  - name: short02
+    material: {fileID: 2100000, guid: d04e7203754f9474e81baea670deddcd, type: 2}
+  - name: buzz
+    material: {fileID: 2100000, guid: 7d5ecf192982225428e6dfe419577568, type: 2}
+  - name: short01
+    material: {fileID: 2100000, guid: 45ee3df64f113d14eae417ea6a6039e7, type: 2}
+  - name: short04
+    material: {fileID: 2100000, guid: e60c04203f303e4488ffb0a0b5f2dac7, type: 2}
+  - name: afro01
+    material: {fileID: 2100000, guid: 92854c1963212964c9b9a90f00cf7838, type: 2}
+  - name: ponytail01
+    material: {fileID: 2100000, guid: 9ccdd7047ae3bb74f9574410fbc3055b, type: 2}
+  - name: long01
+    material: {fileID: 2100000, guid: 8854addf2a611064aaf8355f70f91bf3, type: 2}
+  brows:
+  - name: eyebrow001
+    material: {fileID: 2100000, guid: 24d2ca653bbd4d4479db73b751e709f4, type: 2}
+  - name: eyebrow007
+    material: {fileID: 2100000, guid: 68c113edaa4696f4aadaf95dfbe990cc, type: 2}
+  - name: eyebrow009
+    material: {fileID: 2100000, guid: d54406f043b1f5249ac71f2ee44b3ebd, type: 2}
+  - name: eyebrow003
+    material: {fileID: 2100000, guid: bd0fc11db99392a4cb84d5c9d16b01f2, type: 2}
+  browsOfTone:
+  - tone: olive
+    brows: eyebrow001
+  - tone: light
+    brows: eyebrow007
+  - tone: fair
+    brows: eyebrow009
+  - tone: east_asian
+    brows: eyebrow003
+  - tone: brown
+    brows: eyebrow001
+  - tone: dark
+    brows: eyebrow001
+  eyes: {fileID: 2100000, guid: a26c2c0be5251c64380f47f4c869719e, type: 2}
+  lashes: {fileID: 2100000, guid: f6f2ea1c710ed3942bffaa82372d1189, type: 2}
+  kit: {fileID: 2100000, guid: fb0bb4bca6c07684a8e3d26ad50e5cfa, type: 2}
+  hairColours:
+  - {r: 0.16862746, g: 0.14901961, b: 0.13333334, a: 1}
+  - {r: 0.3529412, g: 0.25490198, b: 0.17254902, a: 1}
+  - {r: 0.65882355, g: 0.5254902, b: 0.36078432, a: 1}

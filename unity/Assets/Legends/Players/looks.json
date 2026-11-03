@@ -1,0 +1,72 @@
+{
+  "builds": [
+    "medium",
+    "slim",
+    "strong"
+  ],
+  "base_tone": "olive",
+  "tones": {
+    "olive": {
+      "skin": "young_caucasian_male",
+      "tint": "#c8976e",
+      "brows": "eyebrow001",
+      "normal": false
+    },
+    "light": {
+      "skin": "young_caucasian_male",
+      "tint": "#f4dccb",
+      "brows": "eyebrow007",
+      "normal": false
+    },
+    "fair": {
+      "skin": "young_caucasian_male2",
+      "tint": "#e0b892",
+      "brows": "eyebrow009",
+      "normal": false
+    },
+    "east_asian": {
+      "skin": "young_asian_male",
+      "tint": "#f2d6bc",
+      "brows": "eyebrow003",
+      "normal": false
+    },
+    "brown": {
+      "skin": "young_asian_male",
+      "tint": "#9a6f55",
+      "brows": "eyebrow001",
+      "normal": false
+    },
+    "dark": {
+      "skin": "young_african_male",
+      "tint": "#ffffff",
+      "brows": "eyebrow001",
+      "normal": false
+    }
+  },
+  "faces": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "hairs": [
+    "short02",
+    "buzz",
+    "bald",
+    "short01",
+    "short04",
+    "afro01",
+    "ponytail01",
+    "long01"
+  ],
+  "hair_colours": {
+    "dark": "#2b2622",
+    "brown": "#5a412c",
+    "blond": "#a8865c"
+  },
+  "height": 1.82,
+  "height_range": [
+    1.7,
+    1.92
+  ]
+}

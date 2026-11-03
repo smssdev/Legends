@@ -100,6 +100,7 @@ def person(build='medium', tone='olive', hair='short02', face='a', hair_colour='
             if not path:
                 sys.exit('Legends: no target ' + t)
             TargetService.load_target(body, path, weight=w)
+    fit_height(body)
     rig = HumanService.add_builtin_rig(body, 'game_engine')
     # The game engine skin: one Principled material on the skin's own textures, what Unity reads from the FBX.
     HumanService.set_character_skin(find(skin, 'skins', '.mhmat'), body, skin_type='GAMEENGINE')
@@ -112,7 +113,6 @@ def person(build='medium', tone='olive', hair='short02', face='a', hair_colour='
     for kind, path in parts:
         HumanService.add_mhclo_asset(path, body, asset_type=kind, subdiv_levels=0, material_type='MAKESKIN')
     top = rig or body
-    fit_height(top, body)
     if hair == 'buzz':
         buzz(body, HAIR_COLOURS[hair_colour])
     for ob in top.children_recursive:
@@ -152,9 +152,13 @@ def evaluated_height(body):
     return max(zs) - min(zs), max(zs)
 
 
-def fit_height(top, body):
+def fit_height(body):
+    """Scales the mesh itself (and its shape keys) to HEIGHT, before the rig is fitted to it: the rig, the hair and the
+    kit then fit a body of the right size, and nothing in the file is scaled."""
+    from mathutils import Matrix
     h, _ = evaluated_height(body)
-    top.scale = [s * HEIGHT / h for s in top.scale]
+    body.data.transform(Matrix.Scale(HEIGHT / h, 4), shape_keys=True)
+    body.data.update()
     bpy.context.view_layer.update()
 
 
@@ -163,8 +167,9 @@ def buzz(body, colour):
     which Unity's hair shader reads too), with stubble in the hair's colour."""
     import bmesh
     from mathutils import Vector
-    ev = body.evaluated_get(bpy.context.evaluated_depsgraph_get())
-    me = bpy.data.meshes.new_from_object(ev)
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = body.evaluated_get(dg)
+    me = bpy.data.meshes.new_from_object(ev, preserve_all_data_layers=True, depsgraph=dg)   # with the body's bone weights
     bm = bmesh.new()
     bm.from_mesh(me)
     bm.transform(body.matrix_world)
@@ -311,4 +316,5 @@ def main():
     sheet(parts, path)
 
 
-main()
+if __name__ == '__main__':
+    main()
