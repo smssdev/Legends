@@ -91,34 +91,49 @@ function rnd(seed) {
 const LINE = 150, POSTS = [246, 394], BAR = 72
 const persp = (y) => 0.55 + (y - LINE) * 0.0055
 
-// [Sprint 42 I1] The stadium behind every scene (the stand and its crowd, the boards, the pitch and its lines) drawn
-// once as a picture and kept per club: hundreds of shapes the camera moved on every frame were repainted each time, and
-// a picture is one bitmap to move. Its words (LEGENDS, in the brand's font) stay live on top: a picture has no web fonts.
-const BACKDROPS = new Map()
-function backdrop(c, home) {
+// [Sprint 42 K1] The stadium behind every scene, drawn in place (a picture of it, Sprint 42 I1, could show black until
+// it was decoded, or not at all on some phones). Built as text once per club and light, then reused with the scene's
+// own ids (@ is replaced by them). Closer to a real ground: two tiers of stands under a roof, the crowd, floodlight
+// towers and their beams, the boards, and the grass in mowing stripes, brighter under the lights.
+const STADIUMS = new Map()
+function stadium(id, c, home) {
   const key = [c, home, KITS.home?.trim, SMOOTH, RICH, LIGHT].join('|')
-  // [Sprint 42 J1] The match's light: the sky, the floodlights' halo and the grass (night, dusk or day).
-  const L = { night: { sky: ['#040B1C', '#0A1A3A'], halo: ['#FFFFFF', 0.22], grass: ['#14532F', '#0A2E1B'] }, dusk: { sky: ['#1E1238', '#C2593A'], halo: ['#FFB27A', 0.3], grass: ['#2C6A2E', '#10391E'] }, day: { sky: ['#4F93D2', '#BFE0F5'], halo: ['#FFFFFF', 0.12], grass: ['#3E9A47', '#1F5E2A'] } }[LIGHT]
-  if (BACKDROPS.has(key)) return BACKDROPS.get(key)
-  const fans = SMOOTH ? 70 : RICH ? 220 : 130
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-120 -40 880 420" width="1320" height="630"><defs>
-    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.grass[0]}"/><stop offset="1" stop-color="${L.grass[1]}"/></linearGradient>
-    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.sky[0]}"/><stop offset="1" stop-color="${L.sky[1]}"/></linearGradient>
-    <radialGradient id="h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="${L.halo[0]}" stop-opacity="${L.halo[1]}"/><stop offset=".6" stop-color="${L.halo[0]}" stop-opacity="0"/></radialGradient>
-    <linearGradient id="b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>
-  </defs>
-  <rect x="-120" y="-40" width="880" height="420" fill="url(#s)"/>
-  <rect x="-80" y="-40" width="800" height="200" fill="url(#h)"/>
-  <g>${Array.from({ length: fans }, (_, i) => `<circle cx="${((i * 71) % 760) - 60}" cy="${8 + ((i * 37) % 112)}" r="${1.2 + (i % 3) * 0.7}" fill="${[mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#C9D2E1'][i % 5]}" opacity="${0.18 + (i % 5) * 0.08}"/>`).join('')}</g>
-  <rect x="-80" y="122" width="800" height="16" fill="url(#b)"/>
-  <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
-  <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#t)"/>
-  ${Array.from({ length: 9 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 9, 1.6) * 242, y1 = LINE - 12 + Math.pow((i + 0.5) / 9, 1.6) * 242, k0 = y0 - LINE + 12, k1 = y1 - LINE + 12; return `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="#fff" fill-opacity=".035"/>` }).join('')}
-  <g fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
-  <ellipse cx="320" cy="207" rx="2.2" ry="1" fill="#fff" opacity=".8"/></svg>`
-  const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
-  BACKDROPS.set(key, url)
-  return url
+  let txt = STADIUMS.get(key)
+  if (!txt) {
+    const L = { night: { sky: ['#030916', '#0B1C3D'], halo: ['#FFFFFF', 0.28], grass: ['#23864A', '#0F4A27'], stand: ['#0E1A33', '#16264A'], beam: 0.12 },
+      dusk: { sky: ['#1E1238', '#D06A3E'], halo: ['#FFC08A', 0.3], grass: ['#2F8A3E', '#145226'], stand: ['#2A1C34', '#3A2742'], beam: 0.07 },
+      day: { sky: ['#5C9FDB', '#CBE6F7'], halo: ['#FFFFFF', 0.1], grass: ['#3FA24C', '#1E6A2E'], stand: ['#3A4A66', '#4E5F7E'], beam: 0 } }[LIGHT]
+    const fans = SMOOTH ? 90 : RICH ? 240 : 150, cols = [mix('#2B4F8C', home, 0.35), home, c, KITS.home?.trim ?? '#F5B82E', '#E6EAF2', '#C99A78']
+    const CR = rnd(97)
+    const crowd = Array.from({ length: fans }, (_, i) => { const upper = i % 3 === 0, x = CR() * 840 - 100, y = upper ? 4 + CR() * 48 : 66 + CR() * 48; return `<circle cx="${x}" cy="${y}" r="${(upper ? 1.3 : 1.8) + (i % 3) * 0.5}" fill="${cols[i % cols.length]}" opacity="${(upper ? 0.5 : 0.7) + (i % 4) * 0.08}"/>` }).join('')
+    const tower = (x) => `<rect x="${x - 3}" y="-40" width="6" height="70" fill="#1A2236"/><rect x="${x - 26}" y="-46" width="52" height="20" rx="3" fill="#2A3350"/>${Array.from({ length: 8 }, (_, i) => `<rect x="${x - 23 + (i % 4) * 12}" y="${-43 + Math.floor(i / 4) * 9}" width="9" height="6" rx="1.5" fill="#FFF6DA" opacity="${LIGHT === 'day' ? 0.5 : 0.95}"/>`).join('')}`
+    const beams = L.beam ? `<path d="M-40 -30 L140 160 L20 160 Z" fill="url(#@beam)"/><path d="M680 -30 L500 160 L620 160 Z" fill="url(#@beam)"/>` : ''
+    txt = { defs: `<linearGradient id="@sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.sky[0]}"/><stop offset="1" stop-color="${L.sky[1]}"/></linearGradient>
+      <linearGradient id="@stand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.stand[0]}"/><stop offset="1" stop-color="${L.stand[1]}"/></linearGradient>
+      <linearGradient id="@t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${L.grass[0]}"/><stop offset="1" stop-color="${L.grass[1]}"/></linearGradient>
+      <radialGradient id="@h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="${L.halo[0]}" stop-opacity="${L.halo[1]}"/><stop offset=".6" stop-color="${L.halo[0]}" stop-opacity="0"/></radialGradient>
+      <linearGradient id="@beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6DA" stop-opacity="${L.beam}"/><stop offset="1" stop-color="#FFF6DA" stop-opacity="0"/></linearGradient>
+      <radialGradient id="@ball" cx=".36" cy=".32" r=".75"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".7" stop-color="#F1F3F8"/><stop offset="1" stop-color="#B9C3D6"/></radialGradient>
+      <linearGradient id="@b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>`,
+    body: `<rect x="-120" y="-60" width="880" height="440" fill="url(#@sky)"/>
+      ${RICH && LIGHT !== 'day' ? tower(-50) + tower(690) : ''}
+      <path d="M-120 -8 L760 -8 L760 60 L-120 60 Z" fill="url(#@stand)" opacity=".92"/><path d="M-120 -10 L760 -10" stroke="#3A4A6A" stroke-width="3"/>
+      <path d="M-120 60 L760 60 L760 118 L-120 118 Z" fill="url(#@stand)"/><path d="M-120 60 L760 60" stroke="rgba(255,255,255,.12)" stroke-width="2"/>
+      ${Array.from({ length: 10 }, (_, i) => `<path d="M-120 ${8 + i * 11} L760 ${8 + i * 11}" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`).join('')}
+      <g>${crowd}</g>
+      <rect x="-80" y="-40" width="800" height="200" fill="url(#@h)"/>
+      ${beams}
+      <rect x="-80" y="118" width="800" height="4" fill="#0A1224"/>
+      <rect x="-80" y="122" width="800" height="16" fill="url(#@b)"/>
+      <rect x="-80" y="122" width="800" height="1.5" fill="#F5B82E" opacity=".6"/>
+      <rect x="-120" y="138" width="880" height="250" fill="${mix(L.grass[1], '#000000', 0.25)}"/>
+      <path d="M-120 380 L120 ${LINE - 12} L520 ${LINE - 12} L760 380 Z" fill="url(#@t)"/>
+      ${Array.from({ length: 10 }, (_, i) => { const y0 = LINE - 12 + Math.pow(i / 10, 1.5) * 242, y1 = LINE - 12 + Math.pow((i + 1) / 10, 1.5) * 242, k0 = y0 - LINE + 12, k1 = y1 - LINE + 12; return i % 2 ? '' : `<path d="M${120 - k0} ${y0} L${520 + k0} ${y0} L${520 + k1} ${y1} L${120 - k1} ${y1} Z" fill="#FFFFFF" fill-opacity=".06"/>` }).join('')}
+      <g fill="none" stroke="#FFFFFF" stroke-opacity=".75" stroke-width="1.8"><path d="M108 ${LINE} H532"/><path d="M196 ${LINE} L160 226 H480 L444 ${LINE}"/><path d="M258 ${LINE} L250 172 H390 L382 ${LINE}"/><path d="M262 226 Q320 254 378 226"/></g>
+      <ellipse cx="320" cy="207" rx="2.4" ry="1.1" fill="#fff" opacity=".9"/>` }
+    STADIUMS.set(key, txt)
+  }
+  return { defs: txt.defs.replaceAll('@', id), body: txt.body.replaceAll('@', id) }
 }
 
 // The stage: a night stadium, the pitch in perspective, boards behind the goal, the team's light.
@@ -127,20 +142,16 @@ function stage(side) {
   // [Sprint 37 N5] The stadium is the home club's: its stand and the board under it take its colours.
   const c = K(side).kit, home = KITS.home?.kit ?? '#2B4F8C', id = 's' + ++uid
   const svg = el('svg', { viewBox: '0 0 640 340' })
-  svg.innerHTML = `<defs>
-    <linearGradient id="${id}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14532F"/><stop offset="1" stop-color="#0A2E1B"/></linearGradient>
-    <radialGradient id="${id}h" cx=".5" cy="0" r="1"><stop offset="0" stop-color="rgba(255,255,255,.22)"/><stop offset=".6" stop-color="rgba(255,255,255,0)"/></radialGradient>
-    <radialGradient id="${id}c" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="${c}" stop-opacity=".2"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="${id}v" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+  const st = stadium(id, c, home)
+  svg.innerHTML = `<defs>${st.defs}
+    <radialGradient id="${id}c" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="${c}" stop-opacity=".16"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>
     <linearGradient id="gold${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C08A0C"/><stop offset=".5" stop-color="#FFD36B"/><stop offset="1" stop-color="#C08A0C"/></linearGradient>
-    <linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${mix('#0B2149', home, 0.16)}"/><stop offset=".5" stop-color="${mix('#163B78', home, 0.2)}"/><stop offset="1" stop-color="${mix('#0B2149', home, 0.16)}"/></linearGradient>
     <filter id="glow${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <filter id="soft${id}"><feGaussianBlur stdDeviation="10"/></filter>
   </defs>
-  <rect width="640" height="340" fill="#040B1C"/>
-  <g data-world="1">
-  <image href="${backdrop(c, home)}" x="-120" y="-40" width="880" height="420" preserveAspectRatio="none"/>
-  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Amin, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".75">LEGENDS</text>`).join('')}
+  <rect width="640" height="340" fill="#0B1A3A"/>
+  <g data-world="1">${st.body}
+  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Amin, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".8">LEGENDS</text>`).join('')}
   </g>
   <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>${RAIN ? `<style>.rain{animation:rainfall .5s linear infinite}@keyframes rainfall{to{transform:translate(-5px,30px)}}@media (prefers-reduced-motion:reduce){.rain{animation:none}}</style><g class="rain" stroke="rgba(200,215,235,.45)" stroke-width="1.1">${Array.from({ length: SMOOTH ? 30 : 90 }, (_, i) => `<line x1="${(i * 73) % 680}" y1="${(i * 41) % 360 - 20}" x2="${(i * 73) % 680 - 5}" y2="${(i * 41) % 360 + 10}"/>`).join('')}</g><rect width="640" height="340" fill="rgba(40,55,75,.18)"/>` : ''}`
   svg.dataset.id = id
@@ -324,16 +335,18 @@ function dive(k, x0, y0, gx, gy, f, after = 0) {
 // The keeper waiting: on his toes, following the ball across his line.
 function ready(k, x, y, t, crouch = 1) { put(k, x + Math.sin(t * 4.2) * 1.5, y, 0, 1, Math.abs(Math.sin(t * 8.4)) * 1.2); k.pose(12 * crouch, -12 * crouch, 30 + 6 * crouch, -30 - 6 * crouch) }
 
+// [Sprint 42 K2] The ball, easy to follow: bigger, shaded round, a dark edge against the white net and the day sky, a
+// faint white halo against the night grass, and never smaller than readable far away.
 function ball(svg, p = svg.world) {
-  const shadow = el('ellipse', { rx: 6, ry: 2, fill: 'rgba(0,0,0,.45)' }, p)
-  const g = el('g', {}, p)
-  g.innerHTML = '<circle r="6.5" fill="#F7F8FB"/><g data-spin="1"><path d="M0 -2.6 L2.5 -0.8 L1.6 2.1 L-1.6 2.1 L-2.5 -0.8 Z" fill="#0A1F42"/><path d="M0 -6.5 L0 -2.6 M2.5 -0.8 L6.2 -2 M1.6 2.1 L3.8 5.3 M-1.6 2.1 L-3.8 5.3 M-2.5 -0.8 L-6.2 -2" stroke="#0A1F42" stroke-width=".9"/></g><path d="M-6.5 .5 A6.5 6.5 0 0 0 6.5 .5 A7 5 0 0 1 -6.5 .5Z" fill="rgba(10,31,66,.2)"/>'
+  const shadow = el('ellipse', { rx: 7, ry: 2.4, fill: 'rgba(0,0,0,.5)' }, p)
+  const g = el('g', {}, p), id = svg.dataset.id
+  g.innerHTML = `<circle r="10.5" fill="#FFFFFF" opacity=".28"/><circle r="8" fill="url(#${id}ball)" stroke="#16203A" stroke-width="1.1"/><g data-spin="1" transform="scale(1.23)"><path d="M0 -2.6 L2.5 -0.8 L1.6 2.1 L-1.6 2.1 L-2.5 -0.8 Z" fill="#16203A"/><path d="M0 -6.5 L0 -2.6 M2.5 -0.8 L6.2 -2 M1.6 2.1 L3.8 5.3 M-1.6 2.1 L-3.8 5.3 M-2.5 -0.8 L-6.2 -2" stroke="#16203A" stroke-width=".9"/></g><circle cx="-2.6" cy="-3" r="2" fill="#fff" opacity=".8"/>`
   const spin = g.querySelector('[data-spin]')
   return {
     g,
     // Screen point, its depth on the ground (for size and shadow), and how much it has spun.
     set(x, y, ground, turn = 0, op = 1) {
-      const s = persp(ground) * 1.05
+      const s = Math.max(0.78, persp(ground)) * 1.05
       sa(g, 'transform', `translate(${x} ${y}) scale(${s})`)
       sa(g, 'opacity', op)
       sa(spin, 'transform', `rotate(${turn})`)
@@ -1849,7 +1862,7 @@ function vary(name, make) {
     if (acc === 2) fx.innerHTML = Array.from({ length: 28 }, (_, i) => { const a = (i / 28) * Math.PI * 2, r0 = 150 + (i % 3) * 20; return `<path d="M${(320 + Math.cos(a) * r0).toFixed(0)} ${(170 + Math.sin(a) * r0 * 0.6).toFixed(0)} L${(320 + Math.cos(a) * 420).toFixed(0)} ${(170 + Math.sin(a) * 260).toFixed(0)}" stroke="#fff" stroke-width="${1.5 + (i % 3)}" opacity=".7"/>` }).join('')
     if (acc === 3) fx.innerHTML = `<g transform="translate(520 280) rotate(-8)"><rect x="-74" y="-24" width="148" height="44" rx="8" fill="#FFD400" stroke="#071733" stroke-width="4"/><text y="9" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="26" fill="#071733">${word}</text></g>`
     if (acc === 4) fx.innerHTML = '<rect width="640" height="340" fill="#FFFFFF"/>'
-    if (acc === 5) fx.innerHTML = `<radialGradient id="vg${svg.dataset.id}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".75"/></radialGradient><rect width="640" height="340" fill="url(#vg${svg.dataset.id})"/>`
+    if (acc === 5) fx.innerHTML = `<radialGradient id="vg${svg.dataset.id}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></radialGradient><rect width="640" height="340" fill="url(#vg${svg.dataset.id})"/>`
     const update = sc.update
     sc.update = (t) => {
       update(t)
