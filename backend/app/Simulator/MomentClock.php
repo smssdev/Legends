@@ -9,18 +9,18 @@ namespace App\Simulator;
  */
 class MomentClock
 {
-    /** @param  ?int  $seed  the match's seed (its rain, Sprint 40 F8); null for a check without one */
+    /** @param  ?int  $seed  the match's seed (its rain, Sprint 42 F8); null for a check without one */
     public static function moment(array $events, array $match, int $period = 1, ?int $seed = null): array
     {
         $m = self::shot($events, $match, $period, $seed);
-        // [Sprint 40 A1] How a card or a foul is told (drama): decided here so every screen and the replay tell it alike.
+        // [Sprint 42 A1] How a card or a foul is told (drama): decided here so every screen and the replay tell it alike.
         $drama = self::drama($m['kind'], $events);
 
         return $drama ? $m + ['drama' => $drama] : $m;
     }
 
     /**
-     * [Sprint 40 F8] A rainy match, as the cartoon draws it (MatchFeed.vue rainy(): the seed, one match in six).
+     * [Sprint 42 F8] A rainy match, as the cartoon draws it (MatchFeed.vue rainy(): the seed, one match in six).
      * Keep the two in step.
      */
     public static function rainy(?int $seed): bool
@@ -30,7 +30,7 @@ class MomentClock
 
     private static function shot(array $events, array $match, int $period, ?int $seed): array
     {
-        // [Sprint 40 A2] A foul gets its own scene only in a match made with its length (config_snapshot); so does a
+        // [Sprint 42 A2] A foul gets its own scene only in a match made with its length (config_snapshot); so does a
         // slip in the rain (F8).
         $kind = self::kind($events, isset($match['broadcast_ms']['foul']), isset($match['broadcast_ms']['slip']) && self::rainy($seed));
         // [X41] The broadcast as on TV, the owner's (2026-10-26): fewer scenes, each as long as it really takes. The big
@@ -41,7 +41,7 @@ class MomentClock
             if ($kind === 'shootout') {
                 return ['kind' => $kind, 'ms' => (int) $match['shootout_ms']];
             }
-            // [Sprint 40 F] A small moment told as a gag (a clearance off the line, the offside trap, the coach's
+            // [Sprint 42 F] A small moment told as a gag (a clearance off the line, the offside trap, the coach's
             // megaphone) is a short scene of its own, in a match made with its length.
             $gag = self::drama($kind, $events);
             if (in_array($gag, ['clearance', 'trap', 'rant'], true) && isset($table[$gag])) {
@@ -123,7 +123,7 @@ class MomentClock
     }
 
     /**
-     * [Sprint 40 A1] The cartoon's telling of a card or a foul, from the events only (the same on every screen):
+     * [Sprint 42 A1] The cartoon's telling of a card or a foul, from the events only (the same on every screen):
      * yellow: 'tackle' or 'swarm' (his team-mates surround the referee); red: 'tackle', 'brawl' (a fight in a cloud of
      * dust) or 'spit' (he argues, then spits at the referee); foul: 'tackle' or 'dive' (he goes down untouched and the
      * referee gives it). Drawing only: the engine's card and foul stay what they are.
@@ -150,7 +150,7 @@ class MomentClock
     }
 
     /**
-     * [Sprint 40 F] The owner's second set (2026-11-03): how the other moments are told, from their events only.
+     * [Sprint 42 F] The owner's second set (2026-11-03): how the other moments are told, from their events only.
      * A goal: a blackout (one in ten: the lights go, and come back with the ball in the net), a bicycle kick (a cross,
      * one in two), a no-look pass (an assisted goal, one in three) or a nutmeg (one in three). A big save: a double save
      * (one in three). A blocked big chance: cleared off the line (one in two). An offside: the trap (one in three). A
@@ -198,7 +198,7 @@ class MomentClock
         return null;
     }
 
-    /** [Sprint 40 A2] The foul (not a penalty) the minute shows as its scene: one in three, chosen by its players. */
+    /** [Sprint 42 A2] The foul (not a penalty) the minute shows as its scene: one in three, chosen by its players. */
     private static function foul(array $events): ?array
     {
         foreach ($events as $e) {
@@ -245,7 +245,7 @@ class MomentClock
         if ($fouls && self::foul($events)) {
             return 'foul';
         }
-        // [Sprint 40 F8] In the rain, one ball lost in three is a slip: he goes down on his belly and slides away from it.
+        // [Sprint 42 F8] In the rain, one ball lost in three is a slip: he goes down on his belly and slides away from it.
         if ($slips && $attack && ($attack['result'] ?? '') === 'lost' && crc32('slip:'.($attack['carrier'] ?? '').':'.($attack['defender'] ?? '')) % 3 === 0) {
             return 'slip';
         }

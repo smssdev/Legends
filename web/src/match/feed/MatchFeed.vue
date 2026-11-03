@@ -112,7 +112,7 @@ const camera = ref((() => { try { return localStorage.getItem('legends.camera') 
 function setCamera(c) { camera.value = c; try { localStorage.setItem('legends.camera', c) } catch {} ; buildPitch(); if (plan) drawPitch(plan.tick, 0) }
 // [X35] The broadcast clock, minutes and seconds running through each minute as on TV ('' between minutes: the parent's).
 const clock = ref('')
-// [Sprint 40 E1] The owner's (2026-11-03): the clock runs, and at the moment's second it stops dead while the cartoon
+// [Sprint 42 E1] The owner's (2026-11-03): the clock runs, and at the moment's second it stops dead while the cartoon
 // plays (and its cutaways), then runs on to the end of the minute.
 const frozen = ref(false)
 const items = ref<any[]>([])
@@ -254,17 +254,17 @@ defineExpose({ play, skip, react })
 const SOUNDS = {
   goal: [[0.3, 'kick'], ['key', 'kick'], ['key', 'roar']], save: [[0.3, 'kick'], ['key', 'groan']], miss: [[0.3, 'kick'], ['key', 'groan']], blocked: [['key', 'thud'], ['key', 'groan']],
   penalty: [[0.03, 'whistle-long'], [0.34, 'heart'], [0.42, 'heart'], [0.51, 'heart'], ['key', 'kick'], ['key', 'roar']], freekick: [[0.05, 'whistle'], [0.25, 'heart'], [0.37, 'heart'], ['key', 'kick'], ['key', 'roar']],
-  // [Sprint 40] The cartoon clips: the tackle's thud and the whistle, the card, the injury's whistle, the sub's beeps.
+  // [Sprint 42] The cartoon clips: the tackle's thud and the whistle, the card, the injury's whistle, the sub's beeps.
   card: [[0.12, 'thud'], [0.14, 'whistle'], ['key', 'whistle'], ['key', 'murmur']], foul: [[0.29, 'thud'], [0.31, 'whistle'], [0.57, 'whistle']],
-  // [Sprint 40 F] The second set: the shot and the kick off the line, the trap's whistle, the megaphone's murmur, the slip.
+  // [Sprint 42 F] The second set: the shot and the kick off the line, the trap's whistle, the megaphone's murmur, the slip.
   clearance: [[0.1, 'kick'], ['key', 'thud'], [0.66, 'groan']], trap: [['key', 'whistle']], rant: [[0.1, 'murmur']], slip: [['key', 'thud'], [0.4, 'groan']], var: [[0.32, 'kick'], [0.37, 'roar'], [0.52, 'whistle'], ['key', 'whistle'], ['key', 'groan']], offside: [['key', 'whistle']], corner: [[0.35, 'kick'], ['key', 'kick']], whistle: [[0.1, 'whistle']], sub: [[0.06, 'beep'], [0.2, 'beep'], [0.52, 'thud']], board: [[0.1, 'beep']], injury: [[0.04, 'whistle'], [0.2, 'groan']],
 }
-// [Sprint 40] And each card's drama: the whistles round the swarm, the thumps in the fight, the bottle kicked.
+// [Sprint 42] And each card's drama: the whistles round the swarm, the thumps in the fight, the bottle kicked.
 const DRAMA_SOUNDS = { swarm: [[0.31, 'whistle'], [0.35, 'whistle'], [0.39, 'whistle'], [0.43, 'whistle']], brawl: [[0.3, 'thud'], [0.34, 'thud'], [0.38, 'thud'], [0.42, 'whistle']], spit: [[0.39, 'murmur'], [0.4, 'groan']] }
 function soundsOf(s) {
   const base = SOUNDS[s.scene] ?? []
   if (s.scene === 'foul' && s.data.drama === 'dive') return [[0.25, 'groan'], [0.8, 'whistle']]
-  // [Sprint 40 F2] The double save's second shot and second block; the blackout's dark silence, then the roar.
+  // [Sprint 42 F2] The double save's second shot and second block; the blackout's dark silence, then the roar.
   if (s.scene === 'save' && s.data.drama === 'double') return [...base, [0.69, 'kick'], [0.79, 'thud'], [0.8, 'roar']]
   if (s.scene !== 'card') return base
   return [...base, ...(DRAMA_SOUNDS[s.data.drama] ?? []), ...(s.data.type === 'red' ? [[0.78, 'kick']] : [])]
@@ -909,7 +909,7 @@ function tickClock(tick, u, p = null) {
   if (!m || (tick.moment?.kind === 'shootout')) { clock.value = ''; frozen.value = false; return }
   const base = m[0] - 1 + (m[1] || 0)
   let sec = Math.min(59, Math.floor(u * 60))
-  // [Sprint 40 E1] A minute with a scene: the clock runs up to the moment's second (from the minute, the same on every
+  // [Sprint 42 E1] A minute with a scene: the clock runs up to the moment's second (from the minute, the same on every
   // screen) in the first 0.4 s, stands still through the scene, then runs on.
   const hold = p?.s?.scene && p.total ? Math.min(0.95, (p.sceneT + p.cutT) / p.total) : 0
   const stop = hold > 0 && u < hold && u * p.total >= 0.4
@@ -963,7 +963,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 /* The live dot's ring grows by transform and fades by opacity: no repaint on every frame [X30]. */
 .live i { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #EF4444 }
 .live i::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(239,68,68,.7); animation: ping 1.4s infinite }
-/* [Sprint 40 E1] The clock stopped for the scene: the dot turns gold and the time blinks. */
+/* [Sprint 42 E1] The clock stopped for the scene: the dot turns gold and the time blinks. */
 .live.frozen { animation: clockstop .8s steps(2, jump-none) infinite }
 .live.frozen i { background: #F5B82E }
 .live.frozen i::after { animation: none; background: transparent }

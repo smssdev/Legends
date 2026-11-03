@@ -123,14 +123,14 @@ export function story(tick, ctx) {
   } else if ((kind === 'red' || kind === 'yellow') && card) {
     const s = card.team, red = kind === 'red'
     Object.assign(vars, { p: card.player, A: s })
-    // [Sprint 40 B2] The cartoon's telling (tick.moment.drama, the server's): the tackle before it, the victim's number.
+    // [Sprint 42 B2] The cartoon's telling (tick.moment.drama, the server's): the tackle before it, the victim's number.
     const victim = foul && foul.team === s ? foul.victim : null
     set('card', s, { no: no(card.player), victimNo: victim ? no(victim) : '', type: red ? 'red' : 'yellow', second: !!card.second_yellow, drama: tick.moment?.drama ?? 'tackle', v: seed() }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : club(s))
     before(t('خطأ'), nm(card.player), t('الحكم يقترب...'))
     speak(card.second_yellow ? 'second_yellow' : red ? 'red' : 'yellow', { key: 0.3, post: 0.65 })
     item(s, red ? 'red' : 'yellow', nm(card.player), red ? (card.second_yellow ? t('إنذار ثانٍ وطرد') : t('بطاقة حمراء')) : t('بطاقة صفراء'))
   } else if (kind === 'foul' && foul) {
-    // [Sprint 40 B3] A foul told as its own scene (the server picks one in three): the tackle, or a dive it gives.
+    // [Sprint 42 B3] A foul told as its own scene (the server picks one in three): the tackle, or a dive it gives.
     const s = foul.team, dive = tick.moment?.drama === 'dive'
     Object.assign(vars, { p: foul.player, q: foul.victim ?? null, A: s })
     set('foul', s, { no: no(foul.player), victimNo: no(foul.victim), drama: dive ? 'dive' : 'tackle', v: seed() }, dive ? t('سقوط مثير!') : t('خطأ'), nm(foul.victim), dive ? t('والحكم يحتسب خطأ') : t('عرقلة من {v0}', { v0: nm(foul.player) }))
@@ -149,7 +149,7 @@ export function story(tick, ctx) {
     Object.assign(vars, { p: attack.shooter, q: attack.defender ?? null, A: s })
     const how = blocked ? null : V?.how ?? pick(['wide', 'wide', 'over', 'post'])
     const look = { passNo: attack.creator !== attack.shooter ? no(attack.creator) : '', lane: attack.lane, quality: attack.quality, v: seed() }
-    // [Sprint 40 F1] A blocked big chance the server tells as a clearance off the line: the ball past the keeper, and a
+    // [Sprint 42 F1] A blocked big chance the server tells as a clearance off the line: the ball past the keeper, and a
     // defender sliding in to kick it off the line.
     if (blocked && tick.moment?.drama === 'clearance') set('clearance', s, { no: no(attack.shooter), defNo: no(attack.defender), ...look }, t('أنقذها من على الخط!'), nm(attack.defender) || club(other(s)), t('أمام {v0}', { v0: nm(attack.shooter) }))
     else if (blocked) set('blocked', s, { no: no(attack.shooter), defNo: no(attack.defender), ...look }, t('صدّها الدفاع'), nm(attack.shooter), nm(attack.defender) ? t('تدخل {v0}', { v0: nm(attack.defender) }) : club(other(s)))
@@ -169,7 +169,7 @@ export function story(tick, ctx) {
   } else if (kind === 'offside' && attack) {
     const s = attack.team, who = attack.receiver ?? attack.shooter
     Object.assign(vars, { p: who, A: s })
-    // [Sprint 40 F3] The offside trap (the server's): the back line steps up together.
+    // [Sprint 42 F3] The offside trap (the server's): the back line steps up together.
     set(tick.moment?.drama === 'trap' ? 'trap' : 'offside', s, { no: no(who) }, tick.moment?.drama === 'trap' ? t('مصيدة التسلل!') : t('تسلل'), nm(who), club(s))
     before(t('كرة خلف الدفاع'), nm(who), club(s))
     speak('offside', { key: 0.38, post: 0.66 })
@@ -201,7 +201,7 @@ export function story(tick, ctx) {
     const a = action.action, what = a.type === 'formation' ? t('الطريقة {v0}', { v0: a.formation }) : own ? Object.keys(a.tactics ?? {}).map((k) => t(TACTIC_NAMES[k] ?? k)).slice(0, 2).join(t(' و')) : ''
     const tactic = own && what ? t('تعليمات: {v0}', { v0: what }) : t('تعليمات جديدة')
     Object.assign(vars, { p: null, A: s, n: tactic })
-    // [Sprint 40 F7] Or the megaphone (the server's): the coach shouts, the players sweat. No instruction shown.
+    // [Sprint 42 F7] Or the megaphone (the server's): the coach shouts, the players sweat. No instruction shown.
     if (tick.moment?.drama === 'rant') set('rant', s, {}, t('المدرب غاضب!'), t('مدرب {v0}', { v0: club(s) }), tactic)
     else set('coach', s, { tactic }, t('تعليمات المدرب'), t('مدرب {v0}', { v0: club(s) }), tactic)
     speak('coach', { key: 0.25, post: 0.7 })
@@ -219,7 +219,7 @@ export function story(tick, ctx) {
     speak({ halftime: 'halftime', fulltime: 'fulltime', extra_time: 'extra_time', penalties: 'penalties' }[period.name] ?? 'halftime', { key: 0.25 })
     item('home', 'whistle', head, sc, { center: true })
   } else if (kind === 'slip' && attack) {
-    // [Sprint 40 F8] A slip in the rain (the server's: a rainy match, a ball lost): on his belly, and the ball is gone.
+    // [Sprint 42 F8] A slip in the rain (the server's: a rainy match, a ball lost): on his belly, and the ball is gone.
     const s = attack.team
     Object.assign(vars, { p: attack.carrier ?? null, q: attack.defender ?? null, A: s })
     set('slip', s, { no: no(attack.carrier), defNo: no(attack.defender) }, t('انزلاق!'), nm(attack.carrier), nm(attack.defender) ? t('والكرة لـ{v0}', { v0: nm(attack.defender) }) : club(other(s)))

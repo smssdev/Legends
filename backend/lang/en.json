@@ -433,5 +433,18 @@
   "المشاركة في هذه البطولة بطلب فريق من منظمها.": "In this tournament you ask its organizer for a team.",
   "سُحبت القرعة، وأُغلقت المشاركة.": "The draw has been made, and entries are closed.",
   "الفرق في هذه البطولة توزعها القرعة على المشاركين. شارك من صفحة البطولة.": "In this tournament the draw shares the teams among the entrants. Enter from the tournament's page.",
-  "خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.": "A knockout takes up to %d teams; for more, choose groups."
+  "خروج المغلوب حتى %d فريقاً، ولأكثر منها اختر المجموعات.": "A knockout takes up to %d teams; for more, choose groups.",
+  "انتهى الدوري، وجروبه للقراءة فقط.": "The league is over; its group is read-only.",
+  "عدد اللاعبين أكبر من عدد الفرق.": "More players than teams.",
+  "تحالفان من :n يحتاجان :t فرق في الدوري.": "Two alliances of :n need :t teams in the league.",
+  "في كل تحالف :n فرق على الأكثر.": "At most :n teams in each alliance.",
+  "المدرب في تحالف واحد فقط.": "A coach is in one alliance only.",
+  "بطولة التحالفات": "Alliance tournament",
+  "هذه المواجهة ليست بانتظار اتفاق المدربين.": "This tie is not waiting for the coaches to agree.",
+  "القرار لمدربي الفريقين.": "The two teams' coaches decide.",
+  "التبادل لمن أكمل بعد اتفاق المدربين.": "The swap is for the one who went on, once the coaches agreed.",
+  "انتهت البطولة.": "The tournament is over.",
+  "التبادل لمدرب الفريق الذي أكمل.": "The swap is for the coach of the team that went on.",
+  "لاعب مقابل لاعب، حتى :n.": "One player for one, up to :n.",
+  "بعض اللاعبين ليسوا في الفريقين أو معارون.": "Some players are not in the two teams or are on loan."
 }

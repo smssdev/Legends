@@ -53,6 +53,17 @@ class AllianceController extends Controller
         return response()->json(self::view($league, $request->user()));
     }
 
+    /** [Sprint 40 D2] The one who went on: up to swap_max players, one for one, with the team he passed. */
+    public function swap(Request $request, League $league, int $tie): JsonResponse
+    {
+        $data = $request->validate(['give' => ['required', 'array', 'min:1'], 'give.*' => ['integer'], 'take' => ['required', 'array', 'min:1'], 'take.*' => ['integer']]);
+        abort_unless(DB::table('alliance_ties')->join('alliance_tournaments', 'alliance_tournaments.id', '=', 'alliance_ties.tournament_id')
+            ->where('alliance_ties.id', $tie)->where('alliance_tournaments.league_id', $league->id)->exists(), 404);
+        Alliance::swap($tie, $request->user(), $data['give'], $data['take']);
+
+        return response()->json(self::view($league, $request->user()));
+    }
+
     /** The latest tournament as everyone in the league sees it (the admin panel uses it too). */
     public static function view(League $league, ?User $user): array
     {
@@ -76,12 +87,18 @@ class AllianceController extends Controller
         $fixtures = DB::table('fixtures')->whereIn('id', DB::table('alliance_ties')->where('tournament_id', $t->id)->whereNotNull('fixture_id')->pluck('fixture_id'))
             ->get(['id', 'status', 'home_goals', 'away_goals'])->keyBy('id');
         $matchIds = DB::table('matches')->whereIn('fixture_id', $fixtures->keys())->pluck('id', 'fixture_id');
-        $myAlliance = $user ? ((int) $t->captain_a === $user->id ? 'a' : ((int) $t->captain_b === $user->id ? 'b' : null)) : null;
+        $myAlliance = $user && ! $t->assign ? ((int) $t->captain_a === $user->id ? 'a' : ((int) $t->captain_b === $user->id ? 'b' : null)) : null;
+        // [Sprint 40 D2] This user's club, for his pick in a tie of team-mates and his swap.
+        $myClub = $user ? (int) DB::table('clubs')->where('league_id', $league->id)->where('user_id', $user->id)->value('id') : 0;
+        $plan = json_decode((string) ($t->plan ?? ''), true);
 
         return $base + ['tournament' => [
             'id' => $t->id, 'name' => $t->name, 'status' => $t->status, 'size' => (int) $t->size, 'winner' => $t->winner,
             'first_round_at' => Carbon::parse($t->first_round_at, 'UTC')->toIso8601ZuluString(), 'review_note' => $t->review_note,
             'captain_of' => $myAlliance,
+            // [Sprint 40 D1] Planned as the league was made: the draw or the maker's split, and whether formed yet.
+            'assign' => $t->assign, 'formed' => $t->formed_at !== null || $t->assign === null, 'plan' => $plan ?: null,
+            'my_club_id' => $myClub ?: null, 'swap_max' => (int) config('game.alliance.swap_max'),
             'alliances' => collect(['a', 'b'])->mapWithKeys(fn ($a) => [$a => [
                 'captain' => $captains[$a === 'a' ? $t->captain_a : $t->captain_b] ?? null,
                 'clubs' => $members->where('alliance', $a)->map(fn ($m) => $card($m->club_id))->values(),
@@ -94,6 +111,9 @@ class AllianceController extends Controller
                 'score' => $x->fixture_id && isset($fixtures[$x->fixture_id]) && $fixtures[$x->fixture_id]->home_goals !== null
                     ? ['home' => (int) $fixtures[$x->fixture_id]->home_goals, 'away' => (int) $fixtures[$x->fixture_id]->away_goals] : null,
                 'match_id' => $x->fixture_id ? ($matchIds[$x->fixture_id] ?? null) : null,
+                // [Sprint 40 D2] Each coach's pick of who goes on, and the swaps made.
+                'home_pick' => $x->home_pick ? (int) $x->home_pick : null, 'away_pick' => $x->away_pick ? (int) $x->away_pick : null,
+                'swaps' => (int) ($x->swaps ?? 0),
             ])->values(),
         ]];
     }

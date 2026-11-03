@@ -165,7 +165,7 @@ const FACES = {
   angry: { bl: 'M-5.8 -26 L-1.4 -23.8', br: 'M1.4 -23.8 L5.8 -26', bs: 'M2.4 -25.8 L6.8 -23.6', mf: 'M-3 -14.6 Q0 -17.4 3 -14.6 Q0 -15.6 -3 -14.6 Z', ms: 'M6.2 -15.6 Q7.8 -17 9.2 -15.8', open: true },
   sad: { bl: 'M-5.8 -23.8 L-1.4 -25.8', br: 'M1.4 -25.8 L5.8 -23.8', bs: 'M2.4 -25.6 L6.8 -24', mf: 'M-2.6 -15 Q0 -16.8 2.6 -15', ms: 'M6.4 -15.6 Q7.6 -16.6 8.8 -15.8' },
   focus: { bl: 'M-5.6 -24.2 L-1.4 -23.6', br: 'M1.4 -23.6 L5.6 -24.2', bs: 'M2.4 -24 L6.8 -23.4', mf: 'M-2.4 -15.8 L2.4 -15.8', ms: 'M6.4 -16 L8.8 -16' },
-  // [Sprint 40] The cartoon's faces: shock (eyes wide, the mouth an O) and the diver's peek (one eye open).
+  // [Sprint 42] The cartoon's faces: shock (eyes wide, the mouth an O) and the diver's peek (one eye open).
   shock: { bl: 'M-5.6 -27.4 Q-3.6 -28.8 -1.6 -27.6', br: 'M1.6 -27.6 Q3.6 -28.8 5.6 -27.4', bs: 'M2.4 -27.6 Q4.6 -28.8 6.8 -27.4', mf: 'M-1.8 -15.6 A1.8 2.4 0 1 0 1.8 -15.6 A1.8 2.4 0 1 0 -1.8 -15.6 Z', ms: 'M6.6 -16.4 A1.2 1.6 0 1 0 8.6 -16.4 A1.2 1.6 0 1 0 6.6 -16.4 Z', open: true, eye: [2, 2.4], eyeR: [2, 2.4] },
   peek: { bl: 'M-5.6 -23.4 L-1.4 -23.2', br: 'M1.4 -25.2 Q3.6 -26.4 5.6 -25.4', bs: 'M2.4 -25.4 Q4.6 -26.4 6.8 -25.2', mf: 'M-1.6 -15.8 L1.6 -15.8', ms: 'M6.6 -16 L8.6 -16', eye: [1.5, 0.25], eyeR: [1.6, 1.7] },
 }
@@ -209,7 +209,7 @@ export function player(p, kit, no, s = 1, o = {}) {
     sa(brow.l, 'd', F.bl); sa(brow.r, 'd', F.br); sa(brow.s, 'd', F.bs)
     sa(mouth.f, 'd', F.mf); sa(mouth.s, 'd', F.ms)
     for (const k of ['f', 's']) { sa(mouth[k], 'fill', F.open ? '#5A1A14' : 'none') }
-    // [Sprint 40] The eyes: wide in shock, one shut in the diver's peek.
+    // [Sprint 42] The eyes: wide in shock, one shut in the diver's peek.
     const [lx, ly] = F.eye ?? [1.3, 1.3], [rx, ry] = F.eyeR ?? F.eye ?? [1.3, 1.3]
     sa(eyes.l, 'rx', lx); sa(eyes.l, 'ry', ly); sa(eyes.r, 'rx', rx); sa(eyes.r, 'ry', ry); sa(eyes.s, 'rx', rx); sa(eyes.s, 'ry', ry)
   }
@@ -330,7 +330,7 @@ function flash(svg) { const r = el('rect', { width: 640, height: 340, fill: '#FF
 function flashes(svg, p = svg.world) { const d = Array.from({ length: 26 }, (_, i) => el('circle', { cx: ((i * 97) % 720) - 40, cy: 12 + ((i * 53) % 100), r: 2.2, fill: '#fff', opacity: 0 }, p)); return (t, on) => d.forEach((c, i) => sa(c, 'opacity', on && Math.sin(t * 23 + i * 7.3) > 0.92 ? 0.95 : 0)) }
 const run = (t, a, b) => Math.sin(t * 12) * 4 * (t > a && t < b ? 1 : 0)
 
-// ---------------------------------------------------------------- [Sprint 40] cartoon effects
+// ---------------------------------------------------------------- [Sprint 42] cartoon effects
 // The owner's (2026-11-03): the clock stops and a cartoon tells the moment, with a screen that shakes, flashes of colour
 // for its feeling (red anger or danger, yellow a warning, blue shock), speed lines, dust, stars and comic bursts.
 // The whole picture shakes (a goal, the woodwork, a fight): the svg itself, so its titles shake with it. Half on a weak phone.
@@ -384,7 +384,7 @@ function dizzy(svg, p = svg.world) {
   const items = Array.from({ length: 5 }, (_, i) => { const e = el('g', {}, g); e.innerHTML = i % 2 ? '<path d="M-5 0 Q-2.5 -4 0 0 Q2.5 -4 5 0" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>' : '<polygon points="0,-5 1.5,-1.5 5,-1.5 2.2,1 3.2,4.8 0,2.6 -3.2,4.8 -2.2,1 -5,-1.5 -1.5,-1.5" fill="#FFD400"/>'; return e })
   return (x, y, t, on) => { sa(g, 'opacity', on ? 1 : 0); if (on) items.forEach((e, i) => { const a = t * 5 + (i * Math.PI * 2) / items.length; sa(e, 'transform', `translate(${(x + Math.cos(a) * 20).toFixed(1)} ${(y + Math.sin(a) * 6).toFixed(1)})`) }) }
 }
-// [Sprint 40 F] The classic cartoon shock: the eyes pop out of the head on stalks, looking dir (-1 left, 1 right).
+// [Sprint 42 F] The classic cartoon shock: the eyes pop out of the head on stalks, looking dir (-1 left, 1 right).
 function popEyes(svg, p = svg.world) {
   const g = el('g', { opacity: 0 }, p)
   g.innerHTML = [-6, 6].map((dx) => `<path d="M${dx * 0.4} 6 Q${dx} -4 ${dx * 1.6} -14" stroke="#C99A78" stroke-width="2" fill="none"/><g transform="translate(${dx * 1.6} -18)"><circle r="7" fill="#fff" stroke="#111" stroke-width="1.4"/><circle data-pupil="1" r="3.2" fill="#111"/></g>`).join('')
@@ -423,7 +423,7 @@ function flame(svg, p = svg.world) {
 }
 // A water bottle by the touchline (the sent-off player kicks it).
 function bottle(p) { const g = el('g', {}, p); g.innerHTML = '<rect x="-4" y="-16" width="8" height="16" rx="2.5" fill="#7FC8FF" opacity=".85" stroke="#2D6FA8" stroke-width="1"/><rect x="-2.5" y="-20" width="5" height="4" rx="1" fill="#1F4E8C"/>'; return g }
-// [Sprint 40 D1] The foul itself: the victim runs with the ball, the defender slides in feet first (contact at c), the
+// [Sprint 42 D1] The foul itself: the victim runs with the ball, the defender slides in feet first (contact at c), the
 // victim flies in a flip, lands in a puff of dust and rolls holding his leg (until getUp). Both drawn with at(.., k).
 function tackle(svg, t, c, pl, vi, k, fx, getUp = Infinity, quiet = Infinity) {
   fx.slide(0, 0, 0)
@@ -438,7 +438,7 @@ function tackle(svg, t, c, pl, vi, k, fx, getUp = Infinity, quiet = Infinity) {
   else { const f = ease(seg(t, c + 0.5, c + 0.9)); pl.face?.('front'); pl.mood('focus'); pl.at(lerp(345, 300, f), lerp(244, 200, f), lerp(-70, 0, f), k); pl.pose(3, -3, 14, -14) }
   shakeIt(svg, 4 * seg(t, c + 0.42, c + 0.46) * (1 - seg(t, c + 0.5, c + 0.85)), t)
 }
-// [Sprint 40 D1] The cartoon fight: a churning cloud of dust with fists, boots and stars flying out of it.
+// [Sprint 42 D1] The cartoon fight: a churning cloud of dust with fists, boots and stars flying out of it.
 function brawlCloud(svg, p = svg.world) {
   const g = el('g', { opacity: 0 }, p)
   const puffs = Array.from({ length: 11 }, (_, i) => el('circle', { fill: i % 2 ? '#CFC6B4' : '#E8E1D2', stroke: '#8E8572', 'stroke-width': 1.5 }, g))
@@ -542,7 +542,7 @@ function openPlay(e, outcome, KT) {
   const groundOf = (f) => lerp(strike[1], outcome === 'blocked' ? target[1] + 6 : LINE + 2, f)
   const kRush = q === 'big' ? (finish === 'shot' ? 22 : 46) : 0, kx0 = () => 320 + (lx - 320) * 0.18
   const party = outcome === 'goal' ? pick(['corner', 'slide', 'leap', 'crowd', 'pile']) : null
-  // [Sprint 40 F] The server's telling of the move (e.drama): a nutmeg on the marker before the shot, a no-look pass
+  // [Sprint 42 F] The server's telling of the move (e.drama): a nutmeg on the marker before the shot, a no-look pass
   // that pops the defenders' eyes out, a bicycle kick from the cross; a double save keeps the ball alive (a parry).
   const drama = e.drama, nut = drama === 'nutmeg' && (q === 'big' || q === 'normal'), look = drama === 'nolook', bike = drama === 'bicycle' && q === 'header'
   if (drama === 'double' && outcome === 'save') after = 'parry'
@@ -574,7 +574,7 @@ function openPlay(e, outcome, KT) {
     if (t < tP1) { const f = inout(seg(t, 0.1, tP1)); sx = lerp(sFrom[0], recv[0], f); sy = lerp(sFrom[1], recv[1], f) }
     else { const f = inout(seg(t, tP1, tS)); sx = lerp(recv[0], spot[0], f); sy = lerp(recv[1], spot[1], f) }
     if (q === 'header') lift = (bike ? 44 : 26) * Math.sin(Math.PI * seg(t, tS - (bike ? 0.45 : 0.32), tS + 0.3))
-    // [Sprint 40 C1] A dangerous run: he weaves past his man in a zig-zag before the shot.
+    // [Sprint 42 C1] A dangerous run: he weaves past his man in a zig-zag before the shot.
     if ((q === 'big' || q === 'normal') && t > tP1 - 0.1 && t < tS) sx += Math.sin((t - tP1) * 15) * 10 * seg(t, tP1 - 0.1, tP1 + 0.15) * (1 - seg(t, tS - 0.3, tS - 0.08))
     // Round the keeper: a touch past him to the side, then the finish.
     if (finish === 'round') sx -= side * 36 * ease(seg(t, tS - 0.5, tS - 0.05))
@@ -677,7 +677,7 @@ function openPlay(e, outcome, KT) {
       else { const f = clamp(a / 0.7); bx = target[0] + (target[0] - strike[0]) * 0.18 * f; by = target[1] - 30 * f; gr = LINE - 20 * f; op = 1 - f }
     }
     b.set(bx, by, gr, turn, op)
-    // [Sprint 40 C2] The net stretches far back, as in a cartoon; the woodwork wobbles hard.
+    // [Sprint 42 C2] The net stretches far back, as in a cartoon; the woodwork wobbles hard.
     if (after === 'net') G.bulge(target[0], target[1] - 8, 1.9 * seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.3, KT + 1.3)))
     if (after === 'post') { const wob = seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 1.0)); sa(G.frame, 'transform', `translate(${(Math.sin(t * 70) * 4.5 * wob).toFixed(1)} ${(Math.cos(t * 55) * 1.5 * wob).toFixed(1)})`) }
     return { target, sx, sy, tS, tN, dir: [spot[0] - sFrom[0], spot[1] - sFrom[1]], ball: [bx, by], sh, kp, glove, after, b, mate, trl }
@@ -690,12 +690,12 @@ export const SCENES = {
   goal(e) {
     const KT = 3.0, { svg, go } = openPlay(e, 'goal', KT), dg = danger(svg), cf2 = confetti(svg)
     const bike = e.drama === 'bicycle' && e.quality === 'header', dark = e.drama === 'blackout'
-    // [Sprint 40 F5] The bicycle kick in slow motion: the build-up quicker, the flip and the strike slower, the ball in
+    // [Sprint 42 F5] The bicycle kick in slow motion: the build-up quicker, the flip and the strike slower, the ball in
     // at the same instant (KT), with a trail of fire and black bars as at the cinema.
     const warp = (t) => { if (!bike || t <= 0.4 || t >= KT) return t; const s = (t - 0.4) / (KT - 0.4); return 0.4 + (KT - 0.4) * (s < 0.5 ? s * 1.3 : 0.65 + (s - 0.5) * 0.7) }
     const fire = bike ? flame(svg) : null, bars = bike ? el('g', { opacity: 0 }, svg) : null
     if (bars) bars.innerHTML = '<rect width="640" height="38" fill="#000"/><rect y="302" width="640" height="38" fill="#000"/>'
-    // [Sprint 40 F9] The blackout: the lights go just before the shot, only eyes in the dark, a click, and the lights
+    // [Sprint 42 F9] The blackout: the lights go just before the shot, only eyes in the dark, a click, and the lights
     // come back with the ball in the net.
     const black = dark ? el('g', { opacity: 0 }, svg) : null
     if (black) black.innerHTML = '<rect width="640" height="340" fill="#02030A"/>' + [[320, 120], [250, 210], [400, 200], [180, 250], [470, 260], [330, 230]].map(([x, y], i) => `<g data-eyes="${i}" transform="translate(${x} ${y})"><ellipse cx="-6" rx="4.5" ry="5.5" fill="#fff"/><ellipse cx="6" rx="4.5" ry="5.5" fill="#fff"/><circle data-p="1" cx="-6" r="2" fill="#000"/><circle data-p="1" cx="6" r="2" fill="#000"/></g>`).join('') + '<text data-click="1" x="320" y="70" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="34" fill="#FFD400" opacity="0">*CLICK*</text>'
@@ -705,7 +705,7 @@ export const SCENES = {
     return { dur: 6.0, svg, update(t) {
       const u = warp(t), r = go(u); dg(u, r); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
       fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16)
-      // [Sprint 40 C2] The net stretches, the screen shakes, and the confetti rains on the celebration.
+      // [Sprint 42 C2] The net stretches, the screen shakes, and the confetti rains on the celebration.
       shakeIt(svg, 7 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.6)), t)
       cf2(t - KT - 0.3)
       if (bike) {
@@ -731,14 +731,14 @@ export const SCENES = {
     let last = null, land = null
     return { dur: 5.4, svg, update(t) {
       const r = go(t), { target } = r; dg(t, r)
-      // [Sprint 40 C3] The shot a fireball to the top corner; the keeper's fingertips go BOOM.
+      // [Sprint 42 C3] The shot a fireball to the top corner; the keeper's fingertips go BOOM.
       const fly = t > r.tS && t < KT
       fire(r.ball[0], r.ball[1], last ? r.ball[0] - last[0] : 1, last ? r.ball[1] - last[1] : 0, fly)
       last = r.ball
       pow(target[0], target[1], seg(t, KT - 0.02, KT + 0.7))
       shakeIt(svg, 4 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.4)) + (double ? 4 * seg(t, KT + 1.35, KT + 1.38) * (1 - seg(t, KT + 1.4, KT + 1.7)) : 0), t)
       const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
-      // [Sprint 40 F2] The double save: the rebound falls to a team-mate who hits it at once; the keeper, still on the
+      // [Sprint 42 F2] The double save: the rebound falls to a team-mate who hits it at once; the keeper, still on the
       // ground, pushes off with one hand and flings himself across to block it with his foot.
       if (double) {
         const dx = Math.sign(target[0] - 320) || 1, reb = [target[0] + dx * 96, 196], aim = [320 - dx * 34, 128]
@@ -765,7 +765,7 @@ export const SCENES = {
   },
   miss(e) {
     const KT = 2.9, { svg, go } = openPlay(e, 'miss', KT), dg = danger(svg), post = e.how === 'post'
-    // [Sprint 40 C4] The woodwork: it rings and shakes the screen, a flash of blue shock, the striker's hands on his head.
+    // [Sprint 42 C4] The woodwork: it rings and shakes the screen, a flash of blue shock, the striker's hands on his head.
     const blue = post ? tint(svg, '#3B82F6') : null, clang = post ? boom(svg, svg.world, 'CLANG!', '#E9EEF6', '#1E3A8A') : null, ringL = post ? burst(svg, svg.world, '#FFFFFF', 10) : null
     const tt = title(svg, e.how === 'post' ? tr('القائم!') : e.how === 'over' ? tr('فوق العارضة') : tr('بجانب القائم'), '#C9D2E1')
     return { dur: 5.0, svg, update(t) {
@@ -805,7 +805,7 @@ export const SCENES = {
     const target = e.scored ? [320 + dir * (48 + R() * 12), R() < 0.5 ? 140 : 90] : [320 + dir * (30 + R() * 20), 110 + R() * 30]
     const kAim = e.scored ? (R() < 0.6 ? [640 - target[0], target[1]] : [lerp(320, target[0], 0.7), target[1] + 8]) : target
     const spot = [320, 207], path = [[spot[0], spot[1]], [lerp(spot[0], target[0], 0.5), Math.min(spot[1], target[1]) - 18], target]
-    // [Sprint 40 C5] Before it all (1.2 s): the referee blows hard and points straight at the spot, which glows.
+    // [Sprint 42 C5] Before it all (1.2 s): the referee blows hard and points straight at the spot, which glows.
     const PRE = 1.2, rf = referee(w, 1), blow = burst(svg, w, '#FFFFFF'), spotRing = el('ellipse', { cx: spot[0], cy: spot[1], rx: 10, ry: 3.5, fill: 'none', stroke: '#F5B82E', 'stroke-width': 2, opacity: 0, filter: ref(svg, 'glow') }, w)
     // ... and in the face-off, a close-up of their eyes, staring each other down.
     const eyes = el('g', { opacity: 0 }, vs)
@@ -933,7 +933,7 @@ export const SCENES = {
   },
   // [Sprint 35 C2] The card: the referee holds it up over the offender, who protests (arms out, or hands together
   // pleading); a red, and he walks off, head down, past his team-mate.
-  // [Sprint 40 D1] A card, as a cartoon (tick.moment.drama, the server's): the slide tackle and the flip, then one of
+  // [Sprint 42 D1] A card, as a cartoon (tick.moment.drama, the server's): the slide tackle and the flip, then one of
   // four tellings. tackle: the referee runs in angry, rummages in his pocket and whips the card out; swarm: the
   // offender's team-mates surround him, arms flying, and he backs off blowing his whistle; brawl: the two vanish in a
   // cloud of dust with fists and boots flying out; spit: a close-up of the argument, the spit, the referee's shock,
@@ -1055,7 +1055,7 @@ export const SCENES = {
       tt(seg(t, KT + 0.2, KT + 0.6))
     } }
   },
-  // [Sprint 40 D2] A foul as its own scene (tick.moment.drama). tackle: the slide, the flip, the dust, the agony, the
+  // [Sprint 42 D2] A foul as its own scene (tick.moment.drama). tackle: the slide, the flip, the dust, the agony, the
   // referee's whistle and his arm out for the free kick. dive: he runs past the defender untouched, takes off like a
   // diver, rolls five times screaming, opens one eye to see, and the referee gives it all the same.
   foul(e) {
@@ -1148,7 +1148,7 @@ export const SCENES = {
   },
   // [Sprint 37 N2] The substitution: the fourth official holds up the lit board (off in red, on in green), the player
   // coming off walks to the line and shakes hands with the one coming on, who runs onto the pitch.
-  // [Sprint 40 D4] The sub, as a cartoon: the board flashes green and red, the tired player trudges off with his head
+  // [Sprint 42 D4] The sub, as a cartoon: the board flashes green and red, the tired player trudges off with his head
   // down, the substitute bounces on the spot, they slap a high five, and he leaps onto the pitch.
   sub(e) {
     const svg = stage(e.side), w = svg.world, k = K(e.side).kit, R = rnd((e.inNo || 3) * 17 + (e.outNo || 5))
@@ -1182,7 +1182,7 @@ export const SCENES = {
   },
   // [Sprint 37 N3] The injury: he lies down, a team-mate waves to the bench, the medical staff run on with the
   // stretcher and carry him off (an injured player leaves the match, the engine's rule).
-  // [Sprint 40 D3] As a cartoon: stars and little birds circle his head, and the two medics come on and go off at a
+  // [Sprint 42 D3] As a cartoon: stars and little birds circle his head, and the two medics come on and go off at a
   // comic sprint, legs a blur, with speed lines and a trail of dust.
   injury(e) {
     const svg = stage(e.side), w = svg.world, R = rnd((e.no || 4) * 29)
@@ -1219,7 +1219,7 @@ export const SCENES = {
       tt(seg(t, 0.2, 0.6))
     } }
   },
-  // [Sprint 40 F1] Cleared off the line: the shot beats the diving keeper and rolls slowly towards the empty net; a
+  // [Sprint 42 F1] Cleared off the line: the shot beats the diving keeper and rolls slowly towards the empty net; a
   // defender comes from nowhere in a slide and a cloud of dust and kicks it off the line. A "!" over the striker,
   // and the camera pulls back on his team-mates' despair.
   clearance(e) {
@@ -1262,7 +1262,7 @@ export const SCENES = {
       tt(seg(t, KT + 0.3, KT + 0.7))
     } }
   },
-  // [Sprint 40 F3] The offside trap: the through ball is played, and in one step the whole back line jumps forward
+  // [Sprint 42 F3] The offside trap: the through ball is played, and in one step the whole back line jumps forward
   // together. The striker stops dead, white dashed lines appear on the grass, and the assistant's flag waves in the
   // corner of the screen with a sharp whistle.
   trap(e) {
@@ -1304,7 +1304,7 @@ export const SCENES = {
       tt(seg(t, KT + 0.25, KT + 0.6))
     } }
   },
-  // [Sprint 40 F7] The coach's megaphone: play stops for a moment, he stands on the line and shouts through a huge
+  // [Sprint 42 F7] The coach's megaphone: play stops for a moment, he stands on the line and shouts through a huge
   // megaphone; angry letters and symbols fly out and bounce off his players, who shake and sweat. No instruction is
   // shown (the other side's stay private).
   rant(e) {
@@ -1339,7 +1339,7 @@ export const SCENES = {
       tt(seg(t, 0.3, 0.7))
     } }
   },
-  // [Sprint 40 F8] A slip in the rain: a downpour, he runs with the ball, loses his feet and slides a long way on his
+  // [Sprint 42 F8] A slip in the rain: a downpour, he runs with the ball, loses his feet and slides a long way on his
   // belly like a penguin in a spray of water and mud, the ball stops where he left it, and the other side takes it.
   slip(e) {
     const R = rnd((e.no || 7) * 67), svg = stage(e.side), w = svg.world, k = 1.4
@@ -1370,7 +1370,7 @@ export const SCENES = {
       tt(seg(t, KT + 0.4, KT + 0.8))
     } }
   },
-  // [Sprint 40 F6] The coach's meltdown after a chance blasted over: hands on his head, he pulls his hair, kicks the
+  // [Sprint 42 F6] The coach's meltdown after a chance blasted over: hands on his head, he pulls his hair, kicks the
   // bench away, throws his jacket down, fire coming out of his eyes.
   meltdown(e) {
     const R = rnd(e.v ?? 71), svg = stage(e.side), w = svg.world, kit = K(e.side).kit

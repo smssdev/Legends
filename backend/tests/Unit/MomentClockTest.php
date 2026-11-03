@@ -77,7 +77,7 @@ class MomentClockTest extends TestCase
         $this->assertSame(['kind' => 'miss', 'ms' => (int) config('game.match.broadcast_ms.miss')], MomentClock::moment($shot('missed', 'big'), $match));
         $this->assertSame(['kind' => 'save', 'ms' => (int) config('game.match.broadcast_ms.save')], array_intersect_key(MomentClock::moment($shot('saved', 'header'), $match), ['kind' => 1, 'ms' => 1]));
         foreach ([$shot('blocked', 'big'), $shot('missed', 'long'), $shot('saved', 'normal'), $shot('offside', '')] as $events) {
-            // [Sprint 40 F] Unless it is told as a gag (a clearance off the line, the offside trap): a short scene.
+            // [Sprint 42 F] Unless it is told as a gag (a clearance off the line, the offside trap): a short scene.
             $m = MomentClock::moment($events, $match);
             $this->assertTrue(($m['brief'] ?? false) || in_array($m['drama'] ?? null, ['clearance', 'trap'], true));
         }
@@ -97,7 +97,7 @@ class MomentClockTest extends TestCase
         foreach ([[['type' => 'goal', 'team' => 'home', 'kind' => 'open']], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'red']],
             [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2], ['type' => 'goal', 'team' => 'home', 'kind' => 'free_kick']],
             [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']],
-            // [Sprint 40] The owner's cartoon clips: a yellow card, a sub and an injury play their scene again.
+            // [Sprint 42] The owner's cartoon clips: a yellow card, a sub and an injury play their scene again.
             [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']], [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]],
             [['type' => 'injury', 'team' => 'home', 'player' => 1]]] as $events) {
             $this->assertArrayNotHasKey('brief', MomentClock::moment($events, $match), json_encode($events));
@@ -133,7 +133,7 @@ class MomentClockTest extends TestCase
         $this->assertLessThan(150000, $half);
     }
 
-    /** [Sprint 40 A1] How a card is told (its drama) comes from its players, the same every time, with every telling used. */
+    /** [Sprint 42 A1] How a card is told (its drama) comes from its players, the same every time, with every telling used. */
     public function test_a_card_has_its_drama_from_the_events(): void
     {
         $card = fn (string $color, int $p, bool $second = false) => [['type' => 'foul', 'team' => 'home', 'player' => $p, 'victim' => 100 + $p, 'penalty' => false],
@@ -151,7 +151,7 @@ class MomentClockTest extends TestCase
         $this->assertArrayNotHasKey('drama', MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $this->match));
     }
 
-    /** [Sprint 40 A2] One foul in three is its own scene (a tackle or a dive), only in a match made with its length. */
+    /** [Sprint 42 A2] One foul in three is its own scene (a tackle or a dive), only in a match made with its length. */
     public function test_a_foul_is_its_own_scene_in_a_new_match(): void
     {
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
@@ -171,7 +171,7 @@ class MomentClockTest extends TestCase
         $this->assertNotSame('foul', MomentClock::moment($foul(reset($shown)), $old)['kind']);
     }
 
-    /** [Sprint 40 F] The second set's gags: each from its own events, each used, the small ones a short scene of their own. */
+    /** [Sprint 42 F] The second set's gags: each from its own events, each used, the small ones a short scene of their own. */
     public function test_the_gags_come_from_the_events(): void
     {
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
@@ -199,7 +199,7 @@ class MomentClockTest extends TestCase
         $this->assertLessThan(40, count($rant));
     }
 
-    /** [Sprint 40 F8] In the rain (the match's seed, as the cartoon draws it), a ball lost can be a slip; never in the dry. */
+    /** [Sprint 42 F8] In the rain (the match's seed, as the cartoon draws it), a ball lost can be a slip; never in the dry. */
     public function test_a_slip_only_in_the_rain(): void
     {
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,

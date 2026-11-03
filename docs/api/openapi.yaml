@@ -603,15 +603,15 @@ paths:
           application/json:
             schema:
               type: object
-              required: [template, starts_at, club_id]
+              required: [template, starts_at]
               properties:
                 name: { type: string, maxLength: 60, nullable: true, description: 'Empty: the template and the code, like "Premier League #K7F2QX9M"' }
                 template: { type: string, description: A name from GET /data/templates }
-                team_count: { type: integer, minimum: 4, maximum: 20, description: 'From half the template''s clubs to all of them [UP9]' }
+                team_count: { type: integer, minimum: 2, maximum: 20, description: '[Sprint 40 B2] From two to all the template''s clubs' }
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1, description: 'One round a day [UP17]' }
                 round_times: { type: array, items: { type: string, example: '21:00' }, description: One HH:MM, Cairo time }
                 rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free' }
-                prep_days: { type: integer, enum: [2, 4, 6] }
+                prep_days: { type: integer, enum: [0, 2, 4, 6], description: '[Sprint 40 B1] 0: no preparation' }
                 timezone: { type: string, nullable: true, description: 'The creator''s IANA zone: the free league plays at 21:00 there' }
                 press_conferences: { type: boolean, default: true, description: '[UP12] The press conference before each match' }
                 season_end_mode: { type: string, enum: [renew, end] }
@@ -621,7 +621,23 @@ paths:
                 integrity: { type: boolean, default: true, description: 'Bribes, spies and the FA [X28]' }
                 second_slot_minutes: { type: integer, nullable: true, minimum: 60, maximum: 600, description: 'Each round in two slots: half its matches this long after the round time [X31]' }
                 is_dev: { type: boolean, description: Development league; ignored in production }
-                club_id: { type: integer, description: The owner's club, a master club id among the strongest team_count }
+                club_id: { type: integer, nullable: true, description: 'The owner''s club, a master club id among the league''s teams. Required unless entry_mode is draw' }
+                entry_mode: { type: string, enum: [pick, draw], description: '[Sprint 40 C1] draw: no team taken by hand; the draw gives each named player his team' }
+                club_ids: { type: array, items: { type: integer }, description: '[Sprint 40 C1] The teams (master club ids), as many as team_count; else the strongest' }
+                draw_users: { type: array, items: { type: string }, description: '[Sprint 40 C1] The players by username (the maker is always one); fewer than the teams leaves the rest to the computer' }
+                draw_at: { type: string, format: date-time, nullable: true, description: '[Sprint 40 C1] The draw''s time; else when every team has a player, or at the start' }
+                alliance:
+                  type: object
+                  nullable: true
+                  description: '[Sprint 40 D1] Its alliance tournament, planned now: formed form_minutes before its first round, after the developers approve it'
+                  required: [size]
+                  properties:
+                    size: { type: integer, minimum: 1, maximum: 5, description: Teams in each alliance (2 to 10 in all) }
+                    assign: { type: string, enum: [draw, pick], default: draw }
+                    a: { type: array, items: { type: string }, description: 'pick: usernames in alliance a (places left are drawn)' }
+                    b: { type: array, items: { type: string } }
+                    first_round_at: { type: string, format: date-time, nullable: true, description: 'Else a day after the league''s first round' }
+                    name: { type: string, nullable: true, maxLength: 40 }
       responses:
         '201': { $ref: '#/components/responses/League' }
         '401': { $ref: '#/components/responses/Error' }
@@ -672,7 +688,7 @@ paths:
                 rounds_per_day: { type: integer, minimum: 1, maximum: 1 }
                 round_times: { type: array, items: { type: string } }
                 rest_days: { type: array, maxItems: 3, items: { type: integer, minimum: 1, maximum: 7 }, description: '[Sprint 27 B1] The calendar is made again' }
-                prep_days: { type: integer, enum: [2, 4, 6] }
+                prep_days: { type: integer, enum: [0, 2, 4, 6], description: '[Sprint 40 B1] 0: no preparation' }
                 season_end_mode: { type: string, enum: [renew, end] }
                 starts_at: { type: string, format: date-time }
                 starting_budget: { type: integer }
@@ -1201,12 +1217,29 @@ paths:
       - { name: tie, in: path, required: true, schema: { type: integer } }
     post:
       tags: [leagues]
-      summary: A captain picks which of two of his coaches goes on (team-mates are not played)
+      summary: '[Sprint 40 D2] One of the two coaches of a team-mates'' tie picks who goes on; the same pick from both decides it (else the stronger at its time)'
       requestBody:
         required: true
         content:
           application/json:
             schema: { type: object, required: [winner], properties: { winner: { type: integer, description: A club id of the tie } } }
+      responses:
+        '200': { $ref: '#/components/responses/Alliance' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/alliance/ties/{tie}/swap:
+    parameters:
+      - { $ref: '#/components/parameters/League' }
+      - { name: tie, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [leagues]
+      summary: '[Sprint 40 D2] The coach who went on swaps players one for one with the team he passed (up to swap_max for the tie)'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [give, take], properties: { give: { type: array, items: { type: integer }, description: His players }, take: { type: array, items: { type: integer }, description: The other team's, as many } } }
       responses:
         '200': { $ref: '#/components/responses/Alliance' }
         '403': { $ref: '#/components/responses/Error' }
@@ -2264,7 +2297,7 @@ paths:
                 properties:
                   achievements:
                     type: array
-                    items: { type: object, required: [key, goal, progress, earned], properties: { key: { type: string, enum: [first_win, matches, wins, first_title, league_title, cup_title, professional, legend, friendlies, idea, invites] }, goal: { type: integer }, progress: { type: integer }, earned: { type: boolean } } }
+                    items: { type: object, required: [key, goal, progress, earned, tier, reward, paid], properties: { key: { type: string, enum: [first_win, matches, wins, first_title, league_title, cup_title, professional, legend, friendlies, idea, invites, matches_10, wins_100, titles_5] }, goal: { type: integer }, progress: { type: integer }, earned: { type: boolean }, tier: { type: string, enum: [beginner, intermediate, pro], description: '[Sprint 40 A1] The badge''s level' }, reward: { type: integer, description: 'Its coins, given once when reached' }, paid: { type: boolean } } }
   /home/slots/{slot}/unlock:
     parameters: [{ name: slot, in: path, required: true, schema: { type: integer, minimum: 3, maximum: 8 } }]
     post:
@@ -4538,6 +4571,11 @@ components:
                   first_round_at: { type: string, format: date-time }
                   review_note: { type: string, nullable: true }
                   captain_of: { type: string, nullable: true, enum: [a, b, null], description: The alliance I captain }
+                  assign: { type: string, nullable: true, enum: [draw, pick, null], description: '[Sprint 40 D1] Planned as the league was made: by the draw or the maker''s split' }
+                  formed: { type: boolean, description: '[Sprint 40 D1] Its teams are set (before, only the plan)' }
+                  plan: { type: object, nullable: true, additionalProperties: true, description: 'The maker''s split: usernames for a and b' }
+                  my_club_id: { type: integer, nullable: true }
+                  swap_max: { type: integer }
                   alliances:
                     type: object
                     required: [a, b]
@@ -4561,6 +4599,9 @@ components:
                         status: { type: string, nullable: true }
                         score: { type: object, nullable: true, required: [home, away], properties: { home: { type: integer }, away: { type: integer } } }
                         match_id: { type: integer, nullable: true }
+                        home_pick: { type: integer, nullable: true, description: '[Sprint 40 D2] The home coach''s pick of who goes on' }
+                        away_pick: { type: integer, nullable: true }
+                        swaps: { type: integer }
     AdminAlliances:
       description: The alliance tournaments for review
       content:
@@ -4691,6 +4732,15 @@ components:
               cup_round:
                 type: array
                 items: { type: object, required: [home, away], properties: { home: { type: object, nullable: true, additionalProperties: true }, away: { type: object, nullable: true, additionalProperties: true } } }
+              entry_mode: { type: string, enum: [pick, draw, assign], description: '[Sprint 40 C1]' }
+              entrants:
+                type: array
+                description: '[Sprint 40 C1] The players of a draw league'
+                items: { type: object, required: [id, name, username, club_id], properties: { id: { type: integer }, name: { type: string }, username: { type: string, nullable: true }, club_id: { type: integer, nullable: true } } }
+              owners:
+                type: array
+                description: '[Sprint 40 C1] Once drawn: the balls that gave each player his team, in order'
+                items: { type: object, required: [club, user], properties: { club: { type: object, nullable: true, additionalProperties: true }, user: { type: object, required: [id, name], properties: { id: { type: integer }, name: { type: string } } } } }
     League:
       description: The league
       content:
@@ -4808,6 +4858,7 @@ components:
         is_admin: { type: boolean }
         invite_url: { type: string, nullable: true, description: For the admins of a group that is not a league's }
         members_count: { type: integer }
+        closed: { type: boolean, description: '[Sprint 40 B3] A finished league''s group: read only' }
         members:
           type: array
           items: { type: object, required: [id, name, username, is_admin, avatar_url], properties: { id: { type: integer }, name: { type: string }, username: { type: string }, is_admin: { type: boolean }, avatar_url: { type: string } } }
@@ -5118,6 +5169,7 @@ components:
         is_owner: { type: boolean }
         has_alliance: { type: boolean, description: '[Sprint 30 P5] An alliance tournament to show (pending, running or finished)' }
         my_club_id: { type: integer, nullable: true }
+        entry_mode: { type: string, enum: [pick, draw, assign], description: '[Sprint 40 C1] draw: the draw gives each named player his team' }
         my_request: { type: string, nullable: true, enum: [pending, approved, rejected, null] }
         coaches: { type: integer, description: Clubs with a coach }
         free_clubs: { type: integer, description: Clubs a coach can still take }
@@ -6615,5 +6667,5 @@ components:
         server_now: { type: integer, description: Server clock in ms }
         next_at: { type: [integer, 'null'], description: When the next minute is due (ms), null before the start or after the end }
         gap: { type: boolean, description: Some minutes after `since` are no longer kept; jump to the latest }
-        ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } }, moment: { type: object, description: 'The minute''s shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 40] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 40 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since)' } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
+        ticks: { type: array, items: { type: object, properties: { frames: { type: array, items: { $ref: '#/components/schemas/Keyframe' } }, moment: { type: object, description: 'The minute''s shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 42] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 42 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since)' } } }, description: 'Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant' }
         reactions: { type: array, items: { $ref: '#/components/schemas/Reaction' }, description: The last few seconds of reactions }

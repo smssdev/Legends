@@ -111,13 +111,21 @@ async function claimStarter() {
   }
 }
 // [Sprint 30 G4] The badges (worked out on the server), with their emblem and name here.
-type Badge = { key: string; goal: number; progress: number; earned: boolean }
+type Badge = { key: string; goal: number; progress: number; earned: boolean; tier: 'beginner' | 'intermediate' | 'pro'; reward: number }
 const badges = ref<Badge[]>([])
 const BADGES: Record<string, [string, string]> = {
   first_win: ['🥇', 'أول فوز'], matches: ['🏟️', '100 مباراة'], wins: ['⚽', '25 فوزاً'], first_title: ['🏆', 'أول لقب'],
   league_title: ['👑', 'بطل الدوري'], cup_title: ['🏅', 'بطل الكأس'], professional: ['🎖️', 'درجة المحترف'], legend: ['🌟', 'درجة الأسطورة'],
   friendlies: ['🤝', '10 وديات'], idea: ['💡', 'فكرة اعتُمدت'], invites: ['📨', '3 أصدقاء'],
+  matches_10: ['👟', '10 مباريات'], wins_100: ['💯', '100 فوز'], titles_5: ['🏛️', '5 ألقاب'],
 }
+// [Sprint 40 A1] The three levels, each with its badges and the coins one gives once (from the server).
+const TIERS = [
+  { key: 'beginner', label: 'المبتدئ' },
+  { key: 'intermediate', label: 'المتوسط' },
+  { key: 'pro', label: 'المحترف' },
+] as const
+const byTier = computed(() => TIERS.map((t) => ({ ...t, badges: badges.value.filter((b) => b.tier === t.key) })).filter((t) => t.badges.length))
 onMounted(async () => {
   try { badges.value = ((await api.GET('/home/achievements')).data?.achievements ?? []).filter((b) => BADGES[b.key]) } catch { /* the badges are a bonus */ }
 })
@@ -327,8 +335,11 @@ async function openRanking(by: By) {
         <section v-if="badges.length" class="flex flex-col gap-2 rounded-xl bg-surface p-3" :aria-label="$t('أوسمتي')">
           <h2 class="flex items-center justify-between px-1 font-display text-base font-extrabold">{{ $t('أوسمتي') }}
             <span class="font-numbers text-sm text-gold">{{ badges.filter((b) => b.earned).length }}/{{ badges.length }}</span></h2>
+          <div v-for="tier in byTier" :key="tier.key" class="flex flex-col gap-1.5">
+          <h3 class="flex items-center gap-2 px-1 text-xs font-bold text-text-soft">{{ $t('مستوى {v0}', { v0: $t(tier.label) }) }}
+            <span class="rounded-pill bg-gold/15 px-2 font-numbers text-gold">{{ $t('{v0} كوينز للوسام', { v0: tier.badges[0].reward }) }}</span></h3>
           <ul class="grid grid-cols-4 gap-2">
-            <li v-for="b in badges" :key="b.key" class="flex flex-col items-center gap-1 rounded-lg p-1.5 text-center" :class="b.earned ? 'bg-gold/15' : 'bg-surface-sunk opacity-70'"
+            <li v-for="b in tier.badges" :key="b.key" class="flex flex-col items-center gap-1 rounded-lg p-1.5 text-center" :class="b.earned ? 'bg-gold/15' : 'bg-surface-sunk opacity-70'"
               :title="$t(BADGES[b.key][1]) + ' · ' + b.progress + '/' + b.goal">
               <span class="text-2xl" :class="b.earned ? '' : 'grayscale'" aria-hidden="true">{{ BADGES[b.key][0] }}</span>
               <span class="line-clamp-2 text-[11px] font-bold leading-tight">{{ $t(BADGES[b.key][1]) }}</span>
@@ -336,6 +347,7 @@ async function openRanking(by: By) {
                 <span class="block h-full rounded-pill bg-gold" :style="{ width: `${Math.round((b.progress / b.goal) * 100)}%` }" /></span>
             </li>
           </ul>
+          </div>
         </section>
         <!-- [Sprint 28] An open poll waiting for this coach's vote, else the way to suggest a feature. -->
         <RouterLink to="/ideas" class="flex min-h-touch items-center gap-3 rounded-xl p-3" :class="home.polls_waiting ? 'bg-gold/15 ring-1 ring-gold/40' : 'bg-surface'">

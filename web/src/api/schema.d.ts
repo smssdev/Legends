@@ -1297,7 +1297,7 @@ export interface paths {
                         name?: string | null;
                         /** @description A name from GET /data/templates */
                         template: string;
-                        /** @description From half the template's clubs to all of them [UP9] */
+                        /** @description [Sprint 40 B2] From two to all the template's clubs */
                         team_count?: number;
                         /** @description One round a day [UP17] */
                         rounds_per_day?: number;
@@ -1305,8 +1305,11 @@ export interface paths {
                         round_times?: string[];
                         /** @description [Sprint 27 B1] Days off with no matches: ISO weekdays in Cairo (5 Friday). Free */
                         rest_days?: number[];
-                        /** @enum {integer} */
-                        prep_days?: 2 | 4 | 6;
+                        /**
+                         * @description [Sprint 40 B1] 0: no preparation
+                         * @enum {integer}
+                         */
+                        prep_days?: 0 | 2 | 4 | 6;
                         /** @description The creator's IANA zone: the free league plays at 21:00 there */
                         timezone?: string | null;
                         /**
@@ -1337,8 +1340,41 @@ export interface paths {
                         second_slot_minutes?: number | null;
                         /** @description Development league; ignored in production */
                         is_dev?: boolean;
-                        /** @description The owner's club */
-                        club_id: number;
+                        /** @description The owner's club, a master club id among the league's teams. Required unless entry_mode is draw */
+                        club_id?: number | null;
+                        /**
+                         * @description [Sprint 40 C1] draw: no team taken by hand; the draw gives each named player his team
+                         * @enum {string}
+                         */
+                        entry_mode?: "pick" | "draw";
+                        /** @description [Sprint 40 C1] The teams (master club ids), as many as team_count; else the strongest */
+                        club_ids?: number[];
+                        /** @description [Sprint 40 C1] The players by username (the maker is always one); fewer than the teams leaves the rest to the computer */
+                        draw_users?: string[];
+                        /**
+                         * Format: date-time
+                         * @description [Sprint 40 C1] The draw's time; else when every team has a player, or at the start
+                         */
+                        draw_at?: string | null;
+                        /** @description [Sprint 40 D1] Its alliance tournament, planned now: formed form_minutes before its first round, after the developers approve it */
+                        alliance?: {
+                            /** @description Teams in each alliance (2 to 10 in all) */
+                            size: number;
+                            /**
+                             * @default draw
+                             * @enum {string}
+                             */
+                            assign?: "draw" | "pick";
+                            /** @description pick: usernames in alliance a (places left are drawn) */
+                            a?: string[];
+                            b?: string[];
+                            /**
+                             * Format: date-time
+                             * @description Else a day after the league's first round
+                             */
+                            first_round_at?: string | null;
+                            name?: string | null;
+                        } | null;
                     };
                 };
             };
@@ -1452,8 +1488,11 @@ export interface paths {
                         round_times?: string[];
                         /** @description [Sprint 27 B1] The calendar is made again */
                         rest_days?: number[];
-                        /** @enum {integer} */
-                        prep_days?: 2 | 4 | 6;
+                        /**
+                         * @description [Sprint 40 B1] 0: no preparation
+                         * @enum {integer}
+                         */
+                        prep_days?: 0 | 2 | 4 | 6;
                         /** @enum {string} */
                         season_end_mode?: "renew" | "end";
                         /** Format: date-time */
@@ -2778,7 +2817,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** A captain picks which of two of his coaches goes on (team-mates are not played) */
+        /** [Sprint 40 D2] One of the two coaches of a team-mates' tie picks who goes on; the same pick from both decides it (else the stronger at its time) */
         post: {
             parameters: {
                 query?: never;
@@ -2794,6 +2833,52 @@ export interface paths {
                     "application/json": {
                         /** @description A club id of the tie */
                         winner: number;
+                    };
+                };
+            };
+            responses: {
+                200: components["responses"]["Alliance"];
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leagues/{league}/alliance/ties/{tie}/swap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+                tie: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 40 D2] The coach who went on swaps players one for one with the team he passed (up to swap_max for the tie) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                    tie: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description His players */
+                        give: number[];
+                        /** @description The other team's */
+                        take: number[];
                     };
                 };
             };
@@ -5829,10 +5914,18 @@ export interface paths {
                         "application/json": {
                             achievements: {
                                 /** @enum {string} */
-                                key: "first_win" | "matches" | "wins" | "first_title" | "league_title" | "cup_title" | "professional" | "legend" | "friendlies" | "idea" | "invites";
+                                key: "first_win" | "matches" | "wins" | "first_title" | "league_title" | "cup_title" | "professional" | "legend" | "friendlies" | "idea" | "invites" | "matches_10" | "wins_100" | "titles_5";
                                 goal: number;
                                 progress: number;
                                 earned: boolean;
+                                /**
+                                 * @description [Sprint 40 A1] The badge's level
+                                 * @enum {string}
+                                 */
+                                tier: "beginner" | "intermediate" | "pro";
+                                /** @description Its coins, given once when reached */
+                                reward: number;
+                                paid: boolean;
                             }[];
                         };
                     };
@@ -12003,6 +12096,8 @@ export interface components {
             /** @description For the admins of a group that is not a league's */
             invite_url: string | null;
             members_count: number;
+            /** @description [Sprint 40 B3] A finished league's group: read only */
+            closed?: boolean;
             members?: {
                 id: number;
                 name: string;
@@ -12389,6 +12484,11 @@ export interface components {
             /** @description [Sprint 30 P5] An alliance tournament to show (pending, running or finished) */
             has_alliance?: boolean;
             my_club_id?: number | null;
+            /**
+             * @description [Sprint 40 C1] draw: the draw gives each named player his team
+             * @enum {string}
+             */
+            entry_mode?: "pick" | "draw" | "assign";
             /** @enum {string|null} */
             my_request?: "pending" | "approved" | "rejected" | null;
             /** @description Clubs with a coach */
@@ -14339,7 +14439,7 @@ export interface components {
             /** @description Each minute carries at: when it starts on the server clock (ms). It is made game.match.live_lead_ms early, so both screens play it at that instant */
             ticks?: {
                 frames?: components["schemas"]["Keyframe"][];
-                /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 40] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 40 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since) */
+                /** @description The minute's shot and length (MomentClock): kind, ms, and for kind var (Sprint 35 C3, a goal ruled out by VAR) var: offside or foul. [Sprint 42] kind foul (a foul told as its own scene, matches made since), and drama, how a card or a foul is told: yellow tackle or swarm, red tackle, brawl, swarm or spit, foul tackle or dive; and the gags (Sprint 42 F): goal blackout, bicycle, nolook or nutmeg, save double, miss clearance, offside trap, coach rant. kind slip: a ball lost in a rainy match (matches made since) */
                 moment?: Record<string, never>;
             }[];
             /** @description The last few seconds of reactions */
@@ -14577,6 +14677,19 @@ export interface components {
                          * @enum {string|null}
                          */
                         captain_of: "a" | "b" | null;
+                        /**
+                         * @description [Sprint 40 D1] Planned as the league was made: by the draw or the maker's split
+                         * @enum {string|null}
+                         */
+                        assign?: "draw" | "pick" | null;
+                        /** @description [Sprint 40 D1] Its teams are set (before, only the plan) */
+                        formed?: boolean;
+                        /** @description The maker's split: usernames for a and b */
+                        plan?: {
+                            [key: string]: unknown;
+                        } | null;
+                        my_club_id?: number | null;
+                        swap_max?: number;
                         alliances: {
                             a: components["schemas"]["AllianceSide"];
                             b: components["schemas"]["AllianceSide"];
@@ -14606,6 +14719,10 @@ export interface components {
                                 away: number;
                             } | null;
                             match_id: number | null;
+                            /** @description [Sprint 40 D2] The home coach's pick of who goes on */
+                            home_pick?: number | null;
+                            away_pick?: number | null;
+                            swaps?: number;
                         }[];
                     } | null;
                 };
@@ -14771,6 +14888,28 @@ export interface components {
                         away: {
                             [key: string]: unknown;
                         } | null;
+                    }[];
+                    /**
+                     * @description [Sprint 40 C1]
+                     * @enum {string}
+                     */
+                    entry_mode?: "pick" | "draw" | "assign";
+                    /** @description [Sprint 40 C1] The players of a draw league */
+                    entrants?: {
+                        id: number;
+                        name: string;
+                        username: string | null;
+                        club_id: number | null;
+                    }[];
+                    /** @description [Sprint 40 C1] Once drawn: the balls that gave each player his team, in order */
+                    owners?: {
+                        club: {
+                            [key: string]: unknown;
+                        } | null;
+                        user: {
+                            id: number;
+                            name: string;
+                        };
                     }[];
                 };
             };

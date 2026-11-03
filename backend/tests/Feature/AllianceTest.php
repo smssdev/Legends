@@ -187,13 +187,17 @@ class AllianceTest extends TestCase
         $stronger = DB::table('clubs')->whereIn('id', $a)->orderByDesc('strength_snapshot')->orderBy('id')->value('id');
         $this->assertSame($stronger, DB::table('alliance_ties')->where('round', 9)->value('winner_id'));
 
-        // In time: the captain of that alliance picks (not another coach, and only one of the two).
+        // [Sprint 40 D2] In time: the two teams' coaches agree (not another coach); a pick of each, the same one, decides it.
         $tie = DB::table('alliance_ties')->insertGetId(['tournament_id' => $id, 'round' => 10, 'kind' => 'captain', 'home_id' => $a[0], 'away_id' => $a[1],
             'scheduled_at' => GameClock::now()->addHour(), 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
-        $this->actingAs($this->coaches[1])->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[1]])->assertStatus(403);
-        $this->actingAs($this->owner)->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => 999999])->assertStatus(422);
-        $this->actingAs($this->owner)->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[1]])->assertOk();
+        $coachOf = fn (int $club) => User::find(DB::table('clubs')->where('id', $club)->value('user_id'));
+        $outsider = collect($this->coaches)->push($this->owner)->first(fn ($u) => ! in_array($u->id, [$coachOf($a[0])->id, $coachOf($a[1])->id], true));
+        $this->actingAs($outsider)->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[1]])->assertStatus(403);
+        $this->actingAs($coachOf($a[0]))->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => 999999])->assertStatus(422);
+        $this->actingAs($coachOf($a[0]))->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[1]])->assertOk();
+        $this->assertNull(DB::table('alliance_ties')->where('id', $tie)->value('winner_id'));
+        $this->actingAs($coachOf($a[1]))->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[1]])->assertOk();
         $this->assertSame($a[1], (int) DB::table('alliance_ties')->where('id', $tie)->value('winner_id'));
-        $this->actingAs($this->owner)->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[0]])->assertStatus(409);
+        $this->actingAs($coachOf($a[0]))->postJson("{$this->url}/ties/{$tie}/decide", ['winner' => $a[0]])->assertStatus(409);
     }
 }

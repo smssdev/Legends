@@ -50,12 +50,12 @@ return [
         'broadcast_ms' => [
             // [X94] The highlights broadcast, the owner's (2026-11-02): the clock runs fast (a quiet minute in a second) and
             // only the big moments play their scene; the small ones are their card and one line as the clock runs on.
-            // [Sprint 40] The owner's (2026-11-03): the clock stops and a cartoon tells the moment, a card, a foul, an
+            // [Sprint 42] The owner's (2026-11-03): the clock stops and a cartoon tells the moment, a card, a foul, an
             // injury and a sub too (they were a card and one line since X94). A foul is one in three (MomentClock::foul).
             'quiet' => 1000, 'attack' => 1200, 'brief' => 2600, 'stoppage' => 2600, 'whistle' => 10000, 'coach' => 2600,
             'sub' => 7000, 'injury' => 8000, 'offside' => 2600, 'corner' => 2600, 'miss' => 8000, 'save' => 8000,
             'goal' => 20000, 'yellow' => 9500, 'red' => 13000, 'foul' => 7500,
-            // [Sprint 40 F] The second set's gags, each a short scene (3 to 5 s): a clearance off the line, the offside
+            // [Sprint 42 F] The second set's gags, each a short scene (3 to 5 s): a clearance off the line, the offside
             // trap, the coach's megaphone, a slip in the rain.
             'clearance' => 6000, 'trap' => 5200, 'rant' => 5200, 'slip' => 5200, 'free_kick' => 11000, 'free_kick_goal' => 19000,
             'penalty' => 15000, 'penalty_goal' => 21000,
@@ -82,12 +82,15 @@ return [
         // or at once, in order, for unlock_coins (by slot number; the owner's first model, 2026-10-29). Teams held before it all stay.
         'slots' => ['open' => 2, 'every_days' => 10, 'unlock_coins' => [3 => 50, 4 => 100, 5 => 150, 6 => 200, 7 => 250, 8 => 300]],
         'vacation_max_days' => 7, 'vacation_per_season' => 1,
-        'min_teams' => 4, 'max_teams' => 20, 'code_length' => 8,
+        // [Sprint 40 B2] A league or a cup from two teams (the owner's, 2026-11-03): any number from two.
+        'min_teams' => 2, 'max_teams' => 20, 'code_length' => 8,
         'reference_season_days' => 37, 'strength_top_players' => 18,
         // What the owner may choose [PLAN 2.3]. [UP9, UP17] The owner's spec (2026-10-26): one round a day; two days
         // to get ready in a free league, four or six in a customized one; at least half the real league's clubs.
-        'prep_days' => [2, 6], 'prep_days_options' => [2, 4, 6], 'free_prep_days' => 2, 'rounds_per_day' => [1, 1], 'starts_within_days' => 7,
-        'min_teams_share_bp' => 5000,
+        // [Sprint 40 B1] Or no preparation at all (0 days): the first round on the first day at its time after the start.
+        'prep_days' => [0, 6], 'prep_days_options' => [0, 2, 4, 6], 'free_prep_days' => 2, 'rounds_per_day' => [1, 1], 'starts_within_days' => 7,
+        // [Sprint 40 B2] No share of the real league's clubs any more: any number from min_teams.
+        'min_teams_share_bp' => 0,
         // [UP9] A league with the free settings costs nothing; a customized one this many coins per club, once. Its
         // rounds start at default_kickoff in the creator's own time zone unless the owner picks the hour (customized).
         'custom_coins_per_club' => 20, 'default_kickoff' => '21:00',
@@ -421,7 +424,16 @@ return [
     // [Sprint 30 G4] The achievements and their goals (App\Season\Achievements), in the order they show. professional and
     // legend are the rating's tiers (their goal is the tier's points, game.rating.tiers).
     'achievements' => ['first_win' => 1, 'matches' => 100, 'wins' => 25, 'first_title' => 1, 'league_title' => 1, 'cup_title' => 1,
-        'professional' => 0, 'legend' => 0, 'friendlies' => 10, 'idea' => 1, 'invites' => 3],
+        'professional' => 0, 'legend' => 0, 'friendlies' => 10, 'idea' => 1, 'invites' => 3,
+        // [Sprint 40 A1] Three more, to fill the levels: ten matches, a hundred wins, five titles.
+        'matches_10' => 10, 'wins_100' => 100, 'titles_5' => 5],
+    // [Sprint 40 A1] Each badge's level, and the coins it gives once, when reached (the owner's, 2026-11-03).
+    'achievement_tiers' => [
+        'first_win' => 'beginner', 'matches_10' => 'beginner', 'friendlies' => 'beginner', 'idea' => 'beginner', 'invites' => 'beginner',
+        'matches' => 'intermediate', 'wins' => 'intermediate', 'first_title' => 'intermediate', 'cup_title' => 'intermediate', 'professional' => 'intermediate',
+        'league_title' => 'pro', 'legend' => 'pro', 'wins_100' => 'pro', 'titles_5' => 'pro',
+    ],
+    'achievement_rewards' => ['beginner' => 10, 'intermediate' => 30, 'pro' => 100],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),
@@ -611,7 +623,10 @@ return [
     // The alliance tournament [X27]: the first round at least notice_minutes ahead (time for the developers'
     // approval), a round each gap_minutes (dev_gap_minutes in a development league), and never within
     // clash_minutes of another match of its clubs.
-    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [2, 7], 'default_size' => 5],
+    // [Sprint 40 D1, D2] The owner's (2026-11-03): two to ten teams in all, two equal alliances (1 to 5 each); planned as the
+    // league is made it is formed this many minutes before its first round; the coach who goes on swaps up to swap_max.
+    'alliance' => ['notice_minutes' => 60, 'gap_minutes' => 1440, 'dev_gap_minutes' => 3, 'clash_minutes' => 30, 'sizes' => [1, 5], 'default_size' => 2,
+        'form_minutes' => 30, 'swap_max' => 3],
     // A round in two time slots [X31]: the league's gap to the second slot (min..max minutes; dev_minutes in a
     // development league), and the reminder to each coach remind_minutes before the round's one lock.
     'staggered' => ['min_minutes' => 60, 'max_minutes' => 600, 'dev_minutes' => 3, 'remind_minutes' => 120],

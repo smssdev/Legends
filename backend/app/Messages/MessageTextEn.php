@@ -8,6 +8,11 @@ namespace App\Messages;
  */
 class MessageTextEn
 {
+    /** [Sprint 40 A1] The badges' names and levels, for their message. */
+    private const BADGE = ['first_win' => 'First win', 'matches_10' => '10 matches', 'friendlies' => '10 friendlies', 'idea' => 'An idea accepted', 'invites' => '3 friends', 'matches' => '100 matches', 'wins' => '25 wins', 'first_title' => 'First title', 'cup_title' => 'Cup winner', 'professional' => 'Professional tier', 'league_title' => 'League champion', 'legend' => 'Legend tier', 'wins_100' => '100 wins', 'titles_5' => '5 titles'];
+
+    private const TIER = ['beginner' => 'beginner', 'intermediate' => 'intermediate', 'pro' => 'pro'];
+
     private const STRICTNESS = ['very_lenient' => 'very lenient', 'lenient' => 'lenient', 'medium' => 'medium', 'strict' => 'strict', 'very_strict' => 'very strict'];
 
     private const SECTION = ['seats' => 'Tickets and seats', 'pitch' => 'The pitch', 'training' => 'Training facility'];
@@ -217,7 +222,13 @@ class MessageTextEn
             'tournament_full' => [
                 'title' => sprintf('%s is full', $p['tournament'] ?? ''),
                 'body' => 'The draw is about to share the teams among the players. Come and watch it live and react with everyone.',
-                'link' => '/tournaments/'.($p['league_id'] ?? '').'/draw',
+                'link' => (($p['kind'] ?? 'tournament') === 'league' ? '/leagues/' : '/tournaments/').($p['league_id'] ?? '').'/draw',
+            ],
+            // [Sprint 40 C1] Named by a league's maker for its draw.
+            'draw_entry' => [
+                'title' => sprintf('%s invited you to the draw of %s', $p['by'] ?? '', $p['league'] ?? ''),
+                'body' => 'The draw gives each player his team. Come and watch it live at its time.',
+                'link' => '/leagues/'.($p['league_id'] ?? '').'/draw',
             ],
             'tournament_team' => [
                 'title' => sprintf('You coach %s in %s', $p['team'] ?? '', $p['tournament'] ?? ''),
@@ -235,6 +246,12 @@ class MessageTextEn
                 'link' => '/',
             ],
             // [X54] The developers gave the account coins.
+            // [Sprint 40 A1] A badge reached, and its coins.
+            'achievement' => [
+                'title' => sprintf('New badge: %s', self::BADGE[$p['key'] ?? ''] ?? ''),
+                'body' => sprintf('You reached «%s», a %s badge, and got %s coins.', self::BADGE[$p['key'] ?? ''] ?? '', self::TIER[$p['tier'] ?? ''] ?? '', $p['coins'] ?? 0),
+                'link' => '/',
+            ],
             'coins_gift' => [
                 'title' => sprintf('A gift from the team: %s coins', $p['coins'] ?? 0),
                 'body' => (string) ($p['reason'] ?? ''),

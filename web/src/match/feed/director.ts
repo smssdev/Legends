@@ -26,10 +26,10 @@ export function director(s, tick, total: number, sceneT: number, ctx: DirectorCt
   let list: Cut[] = []
   if (s.goal) list = [crowdCut(), coach(s.side, 'joy'), coach(other, 'angry')]
   // [Sprint 35 C2] A red card: tempers flare first (both sides squaring up), then the coach.
-  // [Sprint 40 B2] A red card told as a fight or a spit already has its tempers: the coach only.
+  // [Sprint 42 B2] A red card told as a fight or a spit already has its tempers: the coach only.
   else if (s.scene === 'card' && s.data.type === 'red' && ['brawl', 'spit'].includes(s.data.drama)) list = [coach(s.side, 'angry')]
   else if (s.scene === 'card') list = s.data.type === 'red' ? [{ name: 'brawl', data: { side: s.side, v: seed * 13 + tick.tick }, dur: SCENE_TIME.brawl[0] }, coach(s.side, 'angry')] : ctx.tier === 'high' ? [coach(s.side, 'angry')] : []
-  // [Sprint 40 F6] A big chance blasted over the bar: the coach loses it (pulls his hair, kicks the bench, throws his jacket).
+  // [Sprint 42 F6] A big chance blasted over the bar: the coach loses it (pulls his hair, kicks the bench, throws his jacket).
   else if (s.scene === 'miss' && s.data.how === 'over') list = [{ name: 'meltdown', data: { side: s.side, v: seed * 5 + tick.tick }, dur: SCENE_TIME.meltdown[0] }]
   else if (['miss', 'save', 'penalty', 'freekick'].includes(s.scene)) list = [coach(s.side, 'worried')]
   // [Sprint 36 F5] The end of a half: at half time the players walk off to the tunnel; at full time they shake

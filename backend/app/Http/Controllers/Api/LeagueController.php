@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Auth\Username;
+use App\Chat\ChatGroups;
 use App\Http\Controllers\Controller;
+use App\League\Alliance;
 use App\League\CoachSlots;
 use App\League\CupBracket;
 use App\League\Integrity;
@@ -25,6 +27,7 @@ use App\Rules\NotJunk;
 use App\Season\Objectives;
 use App\Support\GameClock;
 use App\Support\Nation;
+use App\Tournament\Entries;
 use App\Wallet\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,7 +67,19 @@ class LeagueController extends Controller
     {
         $data = $this->settings($request, true);
         self::slotsFit($data['round_times'] ?? [], $data['second_slot_minutes'] ?? null);
-        $league = LeagueFactory::create($request->user(), $data);
+        $alliance = $data['alliance'] ?? null;
+        unset($data['alliance']);
+        $league = DB::transaction(function () use ($request, $data, $alliance) {
+            $league = LeagueFactory::create($request->user(), $data);
+            // [Sprint 40 D1] Its alliance tournament, planned now and formed before its first round.
+            if ($alliance) {
+                Alliance::plan($league->load('season'), $request->user(), $alliance);
+            }
+
+            return $league;
+        });
+        // [Sprint 40 B3] The league's group from its first minute, while the coaches gather.
+        ChatGroups::forLeague($league);
 
         return response()->json(['league' => $this->leagueData($league->load('season', 'owner'), $request->user())], 201);
     }
@@ -137,6 +152,10 @@ class LeagueController extends Controller
                 ->values()->map(fn ($id, $i) => ['slot' => $i + 1, 'club' => $cards[$id]]) : [],
             'league_round' => $league->drawn_at ? $first('league') : [],
             'cup_round' => $league->drawn_at ? $first('cup') : [],
+            // [Sprint 40 C1] A league whose maker chose the draw: its players, then the balls that gave each his team.
+            'entry_mode' => Entries::mode($league),
+            'entrants' => Entries::mode($league) === 'draw' ? Entries::list($league) : [],
+            'owners' => array_map(fn ($s) => ['club' => $cards[$s['club']] ?? null, 'user' => $s['user']], Entries::steps($league)),
         ]);
     }
 
@@ -425,7 +444,7 @@ class LeagueController extends Controller
         // A development league (never in production) is the developers' tool for a season in minutes: free, and with
         // the old freedom (a few clubs, one day to get ready, two rounds a day) so the clock can be raced.
         $dev = ! app()->isProduction() && ($creating ? $request->boolean('is_dev') : (bool) $request->route('league')?->is_dev);
-        $prep = $dev ? ['between:1,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
+        $prep = $dev ? ['between:0,'.max($c['prep_days_options'])] : [Rule::in($c['prep_days_options'])];
         // [UP9] Every setting may be left out: the free league's own value takes its place (LeagueTiers).
         $rules = [
             'name' => ['nullable', 'string', 'max:60', new NotJunk],
@@ -454,7 +473,24 @@ class LeagueController extends Controller
                 // The creator's own time zone: the free league plays at their evening.
                 'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
                 'is_dev' => ['sometimes', 'boolean'],
-                'club_id' => ['required', 'integer'],
+                // [Sprint 40 C1] Or the draw: the maker chooses the teams and the players, and the draw gives each his team.
+                'entry_mode' => ['sometimes', Rule::in(['pick', 'draw'])],
+                'club_id' => ['required_unless:entry_mode,draw', 'nullable', 'integer'],
+                'club_ids' => ['sometimes', 'array', 'max:'.$c['max_teams']],
+                'club_ids.*' => ['integer', 'distinct'],
+                'draw_users' => ['sometimes', 'array', 'max:'.$c['max_teams']],
+                'draw_users.*' => ['string', 'max:40', 'distinct'],
+                'draw_at' => ['sometimes', 'nullable', 'date'],
+                // [Sprint 40 D1] The alliance tournament planned with it: 1 to 5 teams an alliance, by the draw or the maker's split.
+                'alliance' => ['sometimes', 'nullable', 'array'],
+                'alliance.size' => ['required_with:alliance', 'integer', 'between:'.implode(',', config('game.alliance.sizes'))],
+                'alliance.assign' => ['sometimes', Rule::in(['draw', 'pick'])],
+                'alliance.a' => ['sometimes', 'array'],
+                'alliance.a.*' => ['string', 'max:40'],
+                'alliance.b' => ['sometimes', 'array'],
+                'alliance.b.*' => ['string', 'max:40'],
+                'alliance.first_round_at' => ['sometimes', 'nullable', 'date'],
+                'alliance.name' => ['sometimes', 'nullable', 'string', 'max:40'],
             ];
         }
         $data = $request->validate($rules);
@@ -479,12 +515,15 @@ class LeagueController extends Controller
             $full = $free['team_count'];
             $least = $dev ? (int) $c['min_teams'] : LeagueTiers::minClubs($full);
             if ($full > 0 && isset($data['team_count']) && ($data['team_count'] < $least || $data['team_count'] > $full)) {
-                throw ValidationException::withMessages(['team_count' => "عدد الأندية من {$least} إلى {$full}: نصف أندية الدوري الأصلي على الأقل."]);
+                throw ValidationException::withMessages(['team_count' => "عدد الأندية من {$least} إلى {$full}."]);
             }
             $changed = LeagueTiers::changed($data, $free);
             $data += $free;
             $data['custom_coins'] = $changed && ! $dev ? LeagueTiers::cost($data['team_count']) : 0;
-            $data['master_club_id'] = (int) $data['club_id'];
+            $data['master_club_id'] = (int) ($data['club_id'] ?? 0);
+            if (! empty($data['club_ids']) && count($data['club_ids']) !== (int) $data['team_count']) {
+                throw ValidationException::withMessages(['club_ids' => 'اختر من الفرق بعدد فرق الدوري.']);
+            }
             $data['fair_league'] = (bool) $data['fair_league'];
             $data['integrity'] = (bool) $data['integrity'];
             $data['press_conferences'] = (bool) $data['press_conferences'];
@@ -569,7 +608,8 @@ class LeagueController extends Controller
     {
         $asked = LeagueJoinRequest::where('league_id', $league->id)->where('user_id', $user->id)->where('status', '!=', 'rejected')->exists();
         $coach = LeagueMembership::where('league_id', $league->id)->where('user_id', $user->id)->exists();
-        abort_unless($league->isOwner($user) || $asked || $coach, 404);
+        // [Sprint 40 C1] A player named for the league's draw sees it before he has a team.
+        abort_unless($league->isOwner($user) || $asked || $coach || Entries::isEntrant($league->id, $user->id), 404);
     }
 
     private function approvedOnly(User $user, League $league): void
@@ -605,6 +645,8 @@ class LeagueController extends Controller
             // [Sprint 30 P5] An alliance tournament to show (else its link is the owner's alone, to make one).
             'has_alliance' => DB::table('alliance_tournaments')->where('league_id', $l->id)->whereIn('status', ['pending', 'running', 'finished'])->exists(),
             'my_club_id' => $mine,
+            // [Sprint 40 C1] pick (each coach takes his team) or draw (the draw gives each named player his team).
+            'entry_mode' => Entries::mode($l),
             'my_request' => $l->isOwner($user) ? null : LeagueJoinRequest::where('league_id', $l->id)->where('user_id', $user->id)->value('status'),
             'coaches' => $coaches = Club::where('league_id', $l->id)->whereNotNull('user_id')->count(),
             'free_clubs' => $l->team_count - $coaches,
