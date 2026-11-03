@@ -2717,4 +2717,9 @@ export const EN: Record<string, string> = {
   'توقّع مع {v0}؟': 'Sign {v0}?',
   'يُخصم {v0} من أموال النادي، ويُحسب من توقيعات الموسم.': '{v0} is taken from club money, and it counts toward this season\'s signings.',
   'أُرسل عرضك لمدرب {v0}. تابعه في المفاوضات.': 'Your offer was sent to {v0}\'s coach. Follow it in Negotiations.',
+  // [Sprint 40] The cartoon clips.
+  'سقوط مثير!': 'What a fall!',
+  'والحكم يحتسب خطأ': 'and the referee gives the foul',
+  'عرقلة من {v0}': 'Tripped by {v0}',
+  'خطأ على {v0}': 'Foul on {v0}',
 }

@@ -11,7 +11,17 @@ class MomentClock
 {
     public static function moment(array $events, array $match, int $period = 1): array
     {
-        $kind = self::kind($events);
+        $m = self::shot($events, $match, $period);
+        // [Sprint 40 A1] How a card or a foul is told (drama): decided here so every screen and the replay tell it alike.
+        $drama = self::drama($m['kind'], $events);
+
+        return $drama ? $m + ['drama' => $drama] : $m;
+    }
+
+    private static function shot(array $events, array $match, int $period): array
+    {
+        // [Sprint 40 A2] A foul gets its own scene only in a match made with its length (config_snapshot).
+        $kind = self::kind($events, isset($match['broadcast_ms']['foul']));
         // [X41] The broadcast as on TV, the owner's (2026-10-26): fewer scenes, each as long as it really takes. The big
         // moments (a goal, a penalty, a card, a real chance) play in full with time for the commentator and, after a goal,
         // a replay; a small one (a blocked or a weak shot, an offside, a free kick wide) is only its card and one line.
@@ -95,7 +105,46 @@ class MomentClock
         };
     }
 
-    public static function kind(array $events): string
+    /**
+     * [Sprint 40 A1] The cartoon's telling of a card or a foul, from the events only (the same on every screen):
+     * yellow: 'tackle' or 'swarm' (his team-mates surround the referee); red: 'tackle', 'brawl' (a fight in a cloud of
+     * dust) or 'spit' (he argues, then spits at the referee); foul: 'tackle' or 'dive' (he goes down untouched and the
+     * referee gives it). Drawing only: the engine's card and foul stay what they are.
+     */
+    public static function drama(string $kind, array $events): ?string
+    {
+        if (in_array($kind, ['yellow', 'red'], true)) {
+            $card = self::first($events, 'card');
+            $foul = self::first($events, 'foul');
+            $n = crc32('drama:'.($card['player'] ?? '').':'.($foul['victim'] ?? '')) % 12;
+            if ($kind === 'yellow') {
+                return $n < 4 ? 'swarm' : 'tackle';
+            }
+
+            return ($card['second_yellow'] ?? false) ? ($n < 6 ? 'swarm' : 'tackle') : ($n < 3 ? 'spit' : ($n < 7 ? 'brawl' : 'tackle'));
+        }
+        if ($kind === 'foul') {
+            $foul = self::foul($events);
+
+            return crc32('dive:'.($foul['player'] ?? '').':'.($foul['victim'] ?? '')) % 2 === 0 ? 'dive' : 'tackle';
+        }
+
+        return null;
+    }
+
+    /** [Sprint 40 A2] The foul (not a penalty) the minute shows as its scene: one in three, chosen by its players. */
+    private static function foul(array $events): ?array
+    {
+        foreach ($events as $e) {
+            if ($e['type'] === 'foul' && ! ($e['penalty'] ?? false) && isset($e['player'], $e['victim'])) {
+                return crc32('foul:'.$e['player'].':'.$e['victim']) % 3 === 0 ? $e : null;
+            }
+        }
+
+        return null;
+    }
+
+    public static function kind(array $events, bool $fouls = false): string
     {
         $types = array_column($events, 'type');
         $goal = self::first($events, 'goal');
@@ -126,6 +175,9 @@ class MomentClock
             if ($kind) {
                 return $kind;
             }
+        }
+        if ($fouls && self::foul($events)) {
+            return 'foul';
         }
         if (in_array('corner', $types, true)) {
             return 'corner';

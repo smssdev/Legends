@@ -165,6 +165,9 @@ const FACES = {
   angry: { bl: 'M-5.8 -26 L-1.4 -23.8', br: 'M1.4 -23.8 L5.8 -26', bs: 'M2.4 -25.8 L6.8 -23.6', mf: 'M-3 -14.6 Q0 -17.4 3 -14.6 Q0 -15.6 -3 -14.6 Z', ms: 'M6.2 -15.6 Q7.8 -17 9.2 -15.8', open: true },
   sad: { bl: 'M-5.8 -23.8 L-1.4 -25.8', br: 'M1.4 -25.8 L5.8 -23.8', bs: 'M2.4 -25.6 L6.8 -24', mf: 'M-2.6 -15 Q0 -16.8 2.6 -15', ms: 'M6.4 -15.6 Q7.6 -16.6 8.8 -15.8' },
   focus: { bl: 'M-5.6 -24.2 L-1.4 -23.6', br: 'M1.4 -23.6 L5.6 -24.2', bs: 'M2.4 -24 L6.8 -23.4', mf: 'M-2.4 -15.8 L2.4 -15.8', ms: 'M6.4 -16 L8.8 -16' },
+  // [Sprint 40] The cartoon's faces: shock (eyes wide, the mouth an O) and the diver's peek (one eye open).
+  shock: { bl: 'M-5.6 -27.4 Q-3.6 -28.8 -1.6 -27.6', br: 'M1.6 -27.6 Q3.6 -28.8 5.6 -27.4', bs: 'M2.4 -27.6 Q4.6 -28.8 6.8 -27.4', mf: 'M-1.8 -15.6 A1.8 2.4 0 1 0 1.8 -15.6 A1.8 2.4 0 1 0 -1.8 -15.6 Z', ms: 'M6.6 -16.4 A1.2 1.6 0 1 0 8.6 -16.4 A1.2 1.6 0 1 0 6.6 -16.4 Z', open: true, eye: [2, 2.4], eyeR: [2, 2.4] },
+  peek: { bl: 'M-5.6 -23.4 L-1.4 -23.2', br: 'M1.4 -25.2 Q3.6 -26.4 5.6 -25.4', bs: 'M2.4 -25.4 Q4.6 -26.4 6.8 -25.2', mf: 'M-1.6 -15.8 L1.6 -15.8', ms: 'M6.6 -16 L8.6 -16', eye: [1.5, 0.25], eyeR: [1.6, 1.7] },
 }
 export function player(p, kit, no, s = 1, o = {}) {
   if (p.world) p = p.world
@@ -191,12 +194,13 @@ export function player(p, kit, no, s = 1, o = {}) {
   // The head from behind (hair over it), from the front (a face) and from the side (a profile looking right).
   const head = part(0, 0, `<rect x="-3.4" y="-15" width="6.8" height="7" fill="${skin}"/><circle cx="0" cy="-21" r="9.4" fill="${skin}"/>
     <g data-h="back"><path d="M-9.6 -21 Q-10 -32 0 -32.5 Q10 -32 9.6 -21 Q7 -24 3 -24.5 Q-4 -25 -9.6 -21 Z" fill="${hair}"/></g>
-    <g data-h="front" display="none"><circle cx="-9.4" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><circle cx="9.4" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><path d="M-9.6 -22 Q-10 -32 0 -32.5 Q10 -32 9.6 -22 Q6 -28 0 -28 Q-6 -28 -9.6 -22 Z" fill="${hair}"/><path data-brow="l" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><path data-brow="r" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><circle cx="-3.4" cy="-21" r="1.3" fill="#141414"/><circle cx="3.4" cy="-21" r="1.3" fill="#141414"/><path d="M0.2 -20.4 L-1 -17.8 L0.9 -17.6" fill="none" stroke="${shade(skin, -45)}" stroke-width=".8" stroke-linejoin="round"/><path data-mouth="f" stroke="rgba(60,20,10,.7)" stroke-width="1" stroke-linecap="round"/></g>
-    <g data-h="side" display="none"><path d="M-9.6 -19 Q-11 -32 0 -32.5 Q9 -32 9.4 -24 Q4 -27 -1 -25 Q-3 -20 -9.6 -19 Z" fill="${hair}"/><circle cx="-1.6" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><path data-brow="s" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><circle cx="4.6" cy="-22" r="1.3" fill="#141414"/><path d="M9 -21 L11.6 -18.6 L9 -17.6" fill="${skin}"/><path data-mouth="s" stroke="rgba(60,20,10,.7)" stroke-width="1" stroke-linecap="round"/></g>`)
+    <g data-h="front" display="none"><circle cx="-9.4" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><circle cx="9.4" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><path d="M-9.6 -22 Q-10 -32 0 -32.5 Q10 -32 9.6 -22 Q6 -28 0 -28 Q-6 -28 -9.6 -22 Z" fill="${hair}"/><path data-brow="l" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><path data-brow="r" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><ellipse data-eye="l" cx="-3.4" cy="-21" rx="1.3" ry="1.3" fill="#141414"/><ellipse data-eye="r" cx="3.4" cy="-21" rx="1.3" ry="1.3" fill="#141414"/><path d="M0.2 -20.4 L-1 -17.8 L0.9 -17.6" fill="none" stroke="${shade(skin, -45)}" stroke-width=".8" stroke-linejoin="round"/><path data-mouth="f" stroke="rgba(60,20,10,.7)" stroke-width="1" stroke-linecap="round"/></g>
+    <g data-h="side" display="none"><path d="M-9.6 -19 Q-11 -32 0 -32.5 Q9 -32 9.4 -24 Q4 -27 -1 -25 Q-3 -20 -9.6 -19 Z" fill="${hair}"/><circle cx="-1.6" cy="-20.5" r="2" fill="${shade(skin, -18)}"/><path data-brow="s" fill="none" stroke="${hair}" stroke-width="1.3" stroke-linecap="round"/><ellipse data-eye="s" cx="4.6" cy="-22" rx="1.3" ry="1.3" fill="#141414"/><path d="M9 -21 L11.6 -18.6 L9 -17.6" fill="${skin}"/><path data-mouth="s" stroke="rgba(60,20,10,.7)" stroke-width="1" stroke-linecap="round"/></g>`)
   const heads = Object.fromEntries([...head.e.querySelectorAll('[data-h]')].map((e) => [e.dataset.h, e]))
   // [Sprint 37 N4] The face's feeling in a close-up: the brows and the mouth (front and profile).
   const brow = Object.fromEntries([...head.e.querySelectorAll('[data-brow]')].map((e) => [e.dataset.brow, e]))
   const mouth = Object.fromEntries([...head.e.querySelectorAll('[data-mouth]')].map((e) => [e.dataset.mouth, e]))
+  const eyes = Object.fromEntries([...head.e.querySelectorAll('[data-eye]')].map((e) => [e.dataset.eye, e]))
   let felt = ''
   const setMood = (m) => {
     if (m === felt) return
@@ -205,6 +209,9 @@ export function player(p, kit, no, s = 1, o = {}) {
     sa(brow.l, 'd', F.bl); sa(brow.r, 'd', F.br); sa(brow.s, 'd', F.bs)
     sa(mouth.f, 'd', F.mf); sa(mouth.s, 'd', F.ms)
     for (const k of ['f', 's']) { sa(mouth[k], 'fill', F.open ? '#5A1A14' : 'none') }
+    // [Sprint 40] The eyes: wide in shock, one shut in the diver's peek.
+    const [lx, ly] = F.eye ?? [1.3, 1.3], [rx, ry] = F.eyeR ?? F.eye ?? [1.3, 1.3]
+    sa(eyes.l, 'rx', lx); sa(eyes.l, 'ry', ly); sa(eyes.r, 'rx', rx); sa(eyes.r, 'ry', ry); sa(eyes.s, 'rx', rx); sa(eyes.s, 'ry', ry)
   }
   setMood('idle')
   // Facing: 'back', 'front' or 'side'; mirror -1 turns the side profile to the left. Narrower from the side.
@@ -323,6 +330,133 @@ function flash(svg) { const r = el('rect', { width: 640, height: 340, fill: '#FF
 function flashes(svg, p = svg.world) { const d = Array.from({ length: 26 }, (_, i) => el('circle', { cx: ((i * 97) % 720) - 40, cy: 12 + ((i * 53) % 100), r: 2.2, fill: '#fff', opacity: 0 }, p)); return (t, on) => d.forEach((c, i) => sa(c, 'opacity', on && Math.sin(t * 23 + i * 7.3) > 0.92 ? 0.95 : 0)) }
 const run = (t, a, b) => Math.sin(t * 12) * 4 * (t > a && t < b ? 1 : 0)
 
+// ---------------------------------------------------------------- [Sprint 40] cartoon effects
+// The owner's (2026-11-03): the clock stops and a cartoon tells the moment, with a screen that shakes, flashes of colour
+// for its feeling (red anger or danger, yellow a warning, blue shock), speed lines, dust, stars and comic bursts.
+// The whole picture shakes (a goal, the woodwork, a fight): the svg itself, so its titles shake with it. Half on a weak phone.
+function shakeIt(svg, amt, t) { const k = SMOOTH ? amt * 0.5 : amt; const v = k > 0.05 ? `translate(${(Math.sin(t * 91) * k).toFixed(1)}px, ${(Math.cos(t * 77) * k * 0.7).toFixed(1)}px)` : ''; if (svg._shk !== v) { svg._shk = v; svg.style.transform = v } }
+// A flash of colour over the whole screen (made before the title, so the title stays on top).
+function tint(svg, color) { const r = el('rect', { width: 640, height: 340, fill: color, opacity: 0, 'pointer-events': 'none' }, svg); return (f) => sa(r, 'opacity', Math.max(0, f)) }
+// Speed lines behind a runner going (dx, dy) at (x, y), streaming back as he runs; f fades them in and out.
+function speedLines(svg, p = svg.world, n = 7, color = '#FFFFFF') {
+  const g = el('g', { stroke: color, 'stroke-linecap': 'round', opacity: 0 }, p)
+  const ls = Array.from({ length: n }, (_, i) => el('line', { 'stroke-width': 1.2 + (i % 3) * 0.7 }, g))
+  return (x, y, dx, dy, f, t) => {
+    sa(g, 'opacity', Math.max(0, f))
+    if (f <= 0) return
+    const L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, nx = -uy, ny = ux
+    ls.forEach((l, i) => {
+      const off = (i - (n - 1) / 2) * 6, ph = (t * 5 + i * 0.37) % 1, len = 24 + (i % 3) * 12, back = 12 + ph * 34
+      const x1 = x - ux * back + nx * off, y1 = y - uy * back + ny * off
+      sa(l, 'x1', x1.toFixed(1)); sa(l, 'y1', y1.toFixed(1)); sa(l, 'x2', (x1 - ux * len).toFixed(1)); sa(l, 'y2', (y1 - uy * len).toFixed(1)); sa(l, 'opacity', (1 - ph).toFixed(2))
+    })
+  }
+}
+// Paper confetti raining down after a goal; a: seconds since it started (0 or less: none).
+function confetti(svg, n = 46) {
+  const cols = ['#F5B82E', '#EF4444', '#2BB673', '#3B82F6', '#E85D9A', '#FFFFFF']
+  const ps = Array.from({ length: SMOOTH ? Math.floor(n / 2) : n }, (_, i) => el('rect', { width: 5, height: 9, rx: 1, fill: cols[i % 6], opacity: 0 }, svg))
+  return (a) => ps.forEach((r, i) => {
+    if (a <= 0) { sa(r, 'opacity', 0); return }
+    const x = ((i * 97.3) % 660) - 10 + Math.sin(a * 3 + i) * 18, y = -20 - ((i * 53) % 140) + a * (90 + ((i * 37) % 60))
+    sa(r, 'opacity', y > 350 ? 0 : 1); sa(r, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.round(a * 300 + i * 40)})`)
+  })
+}
+// A comic burst (a jagged star with a word): the keeper's fingertips, the ball on the bar.
+function boom(svg, p = svg.world, word = 'POW!', fill = '#FFD400', ink = '#B91C1C') {
+  const g = el('g', { opacity: 0 }, p)
+  const pts = Array.from({ length: 18 }, (_, i) => { const r = i % 2 ? 15 : 31, a = (i * Math.PI) / 9; return `${(Math.cos(a) * r).toFixed(1)},${(Math.sin(a) * r).toFixed(1)}` }).join(' ')
+  g.innerHTML = `<polygon points="${pts}" fill="${fill}" stroke="#E2531F" stroke-width="3" stroke-linejoin="round"/><text y="5" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-style="italic" font-size="15" fill="${ink}">${word}</text>`
+  return (x, y, f) => { const on = f > 0 && f < 1; sa(g, 'opacity', on ? 1 - seg(f, 0.6, 1) : 0); if (on) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(0.3 + ease(Math.min(1, f * 2.2)) * 0.9).toFixed(2)}) rotate(${Math.round(f * 20)})`) }
+}
+// A puff of dust on the grass (a slide, a fall, the medics' sprint).
+function dust(svg, p = svg.world, n = 8) {
+  const ps = Array.from({ length: n }, () => el('circle', { fill: '#D9C9A8', opacity: 0 }, p))
+  return (x, y, f) => ps.forEach((c, i) => {
+    const on = f > 0 && f < 1, a = (i / n) * Math.PI * 2, d = 8 + ease(f) * 28
+    sa(c, 'opacity', on ? (0.75 * (1 - f)).toFixed(2) : 0)
+    if (on) { sa(c, 'cx', (x + Math.cos(a) * d * 1.4).toFixed(1)); sa(c, 'cy', (y + Math.sin(a) * d * 0.4 - ease(f) * 8).toFixed(1)); sa(c, 'r', (4 + f * 8).toFixed(1)) }
+  })
+}
+// Stars and little birds circling a dazed player's head.
+function dizzy(svg, p = svg.world) {
+  const g = el('g', { opacity: 0 }, p)
+  const items = Array.from({ length: 5 }, (_, i) => { const e = el('g', {}, g); e.innerHTML = i % 2 ? '<path d="M-5 0 Q-2.5 -4 0 0 Q2.5 -4 5 0" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>' : '<polygon points="0,-5 1.5,-1.5 5,-1.5 2.2,1 3.2,4.8 0,2.6 -3.2,4.8 -2.2,1 -5,-1.5 -1.5,-1.5" fill="#FFD400"/>'; return e })
+  return (x, y, t, on) => { sa(g, 'opacity', on ? 1 : 0); if (on) items.forEach((e, i) => { const a = t * 5 + (i * Math.PI * 2) / items.length; sa(e, 'transform', `translate(${(x + Math.cos(a) * 20).toFixed(1)} ${(y + Math.sin(a) * 6).toFixed(1)})`) }) }
+}
+// A speech bubble of comic swearing (or a scream); k scales it.
+function bubbleOf(svg, p = svg.world, text = '#@!%&!', ink = '#D21F1F') {
+  const g = el('g', { opacity: 0 }, p)
+  g.innerHTML = `<path d="M-32 -14 Q-32 -27 -18 -27 H18 Q32 -27 32 -14 V-3 Q32 8 18 8 H-2 L-12 19 L-9 8 H-18 Q-32 8 -32 -3 Z" fill="#fff" stroke="#0A1F42" stroke-width="2"/><text y="-4" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="900" font-size="16" fill="${ink}">${text}</text>`
+  return (x, y, f, k = 1, wob = 0) => { sa(g, 'opacity', Math.max(0, f)); if (f > 0) sa(g, 'transform', `translate(${(x + wob).toFixed(1)} ${y.toFixed(1)}) scale(${(k * (0.7 + 0.3 * ease(Math.min(1, f)))).toFixed(2)})`) }
+}
+// The anger mark over a head, throbbing.
+function vein(svg, p = svg.world) {
+  const g = el('path', { d: 'M-7 -2 Q-2 -2 -2 -7 M2 -7 Q2 -2 7 -2 M7 2 Q2 2 2 7 M-2 7 Q-2 2 -7 2', fill: 'none', stroke: '#E11D2E', 'stroke-width': 2.4, 'stroke-linecap': 'round', opacity: 0 }, p)
+  return (x, y, f, t = 0) => { sa(g, 'opacity', Math.max(0, f)); if (f > 0) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(1 + 0.25 * Math.sin(t * 14)).toFixed(2)})`) }
+}
+// Short lines bursting out of a point: a whistle blown, a hand slapped, a ring off the bar.
+function burst(svg, p = svg.world, color = '#FFFFFF', n = 8) {
+  const g = el('g', { stroke: color, 'stroke-width': 2.2, 'stroke-linecap': 'round', opacity: 0 }, p)
+  const ls = Array.from({ length: n }, () => el('line', {}, g))
+  return (x, y, f, r0 = 8) => {
+    const on = f > 0 && f < 1
+    sa(g, 'opacity', on ? 1 - f : 0)
+    if (on) ls.forEach((l, i) => { const a = (i / n) * Math.PI * 2 + 0.2, d0 = r0 + f * 10, d1 = d0 + 7; sa(l, 'x1', (x + Math.cos(a) * d0).toFixed(1)); sa(l, 'y1', (y + Math.sin(a) * d0).toFixed(1)); sa(l, 'x2', (x + Math.cos(a) * d1).toFixed(1)); sa(l, 'y2', (y + Math.sin(a) * d1).toFixed(1)) })
+  }
+}
+const referee = (w, k = 1.4) => player(w, officialKit(), '', k, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+// Where a standing figure's head is, drawn with at(x, y, 0, k).
+const headOf = (x, y, k) => [x, y - 21 * k]
+// The flame round the ball: a shot like a fireball.
+function flame(svg, p = svg.world) {
+  const g = el('g', { opacity: 0 }, p)
+  g.innerHTML = `<circle r="13" fill="#FF7A1A" opacity=".55" filter="${ref(svg, 'glow')}"/><path d="M-9 0 Q-30 -6 -44 0 Q-30 6 -9 0 Z" fill="#FFB23F" opacity=".85"/><path d="M-8 -3 Q-24 -12 -36 -8 Q-22 -2 -8 3 Z" fill="#FF5A1F" opacity=".75"/>`
+  return (x, y, dx, dy, on) => { sa(g, 'opacity', on ? 1 : 0); if (on) sa(g, 'transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.round((Math.atan2(dy, dx) * 180) / Math.PI)})`) }
+}
+// A water bottle by the touchline (the sent-off player kicks it).
+function bottle(p) { const g = el('g', {}, p); g.innerHTML = '<rect x="-4" y="-16" width="8" height="16" rx="2.5" fill="#7FC8FF" opacity=".85" stroke="#2D6FA8" stroke-width="1"/><rect x="-2.5" y="-20" width="5" height="4" rx="1" fill="#1F4E8C"/>'; return g }
+// [Sprint 40 D1] The foul itself: the victim runs with the ball, the defender slides in feet first (contact at c), the
+// victim flies in a flip, lands in a puff of dust and rolls holding his leg (until getUp). Both drawn with at(.., k).
+function tackle(svg, t, c, pl, vi, k, fx, getUp = Infinity, quiet = Infinity) {
+  fx.slide(0, 0, 0)
+  if (t < c) { vi.face?.('side', 1); vi.mood('focus'); vi.at(lerp(150, 330, seg(t, c - 0.8, c)), 200, 0, k); vi.run(t * 14, 1) }
+  else if (t < c + 0.45) { const f = seg(t, c, c + 0.45); vi.face?.('side', 1); vi.mood('shock'); vi.at(lerp(330, 430, f), lerp(200, 268, f) - Math.sin(Math.PI * f) * 64, f * 450, k); vi.pose(50, 20, -150, -150, 0.5, 0.5) }
+  else if (t < getUp) { const r = Math.sin(t * 9); vi.face?.('front'); vi.mood('angry'); vi.at(430 + r * 3, 268, 90 + r * 12, k); vi.pose(55, -8, 70, -55, 0.4, 0) }
+  fx.dust(430, 283, seg(t, c + 0.42, c + 1.1))
+  const hurt = Math.min(getUp, quiet, c + 2.6)
+  fx.ouch(462, 228, seg(t, c + 0.5, c + 0.65) * (1 - seg(t, hurt, hurt + 0.2)), 0.85, Math.sin(t * 40) * 1.5)
+  if (t < c - 0.3) { pl.face?.('side', 1); pl.mood('angry'); pl.at(lerp(20, 250, seg(t, c - 0.9, c - 0.3)), 206, 0, k); pl.run(t * 15, 1) }
+  else if (t < c + 0.5) { const f = ease(seg(t, c - 0.3, c + 0.5)), x = lerp(250, 345, f); pl.face?.('side', 1); pl.mood('angry'); pl.at(x, 244, -70, k); pl.pose(6, -6, -30, -120); fx.slide(x + 46, 284, ((t - c + 0.3) % 0.3) / 0.3) }
+  else { const f = ease(seg(t, c + 0.5, c + 0.9)); pl.face?.('front'); pl.mood('focus'); pl.at(lerp(345, 300, f), lerp(244, 200, f), lerp(-70, 0, f), k); pl.pose(3, -3, 14, -14) }
+  shakeIt(svg, 4 * seg(t, c + 0.42, c + 0.46) * (1 - seg(t, c + 0.5, c + 0.85)), t)
+}
+// [Sprint 40 D1] The cartoon fight: a churning cloud of dust with fists, boots and stars flying out of it.
+function brawlCloud(svg, p = svg.world) {
+  const g = el('g', { opacity: 0 }, p)
+  const puffs = Array.from({ length: 11 }, (_, i) => el('circle', { fill: i % 2 ? '#CFC6B4' : '#E8E1D2', stroke: '#8E8572', 'stroke-width': 1.5 }, g))
+  const pop = (html) => { const e = el('g', { opacity: 0 }, g); e.innerHTML = html; return e }
+  const fist = '<circle r="8" fill="#D9A982" stroke="#5A3524" stroke-width="1.5"/><path d="M-3 -6 V2 M1 -7 V2 M5 -5 V2" stroke="#5A3524" stroke-width="1.2"/>'
+  const boot = '<path d="M-6 -10 H4 V2 H12 Q14 2 14 7 V9 H-6 Z" fill="#0B0F1A" stroke="#fff" stroke-width="1"/>'
+  const star = '<polygon points="0,-7 2,-2 7,-2 3,1 5,6 0,3 -5,6 -3,1 -7,-2 -2,-2" fill="#FFD400"/>'
+  const items = [pop(fist), pop(boot), pop(fist), pop(star), pop(boot), pop(star)]
+  return (x, y, t, f) => {
+    sa(g, 'opacity', Math.max(0, f)); if (f <= 0) return
+    puffs.forEach((c, i) => { const a = i * 0.57 * Math.PI + t * (i % 2 ? 3 : -2.4); sa(c, 'cx', (x + Math.cos(a) * 36).toFixed(1)); sa(c, 'cy', (y + Math.sin(a) * 18).toFixed(1)); sa(c, 'r', (22 + 6 * Math.sin(t * 7 + i)).toFixed(1)) })
+    items.forEach((e, i) => { const u = t * 2.6 + i / items.length, ph = u % 1, a = i * 1.9 + Math.floor(u) * 2.3, d = 34 + ph * 26; sa(e, 'opacity', ph < 0.6 ? 1 : 0); sa(e, 'transform', `translate(${(x + Math.cos(a) * d * 1.4).toFixed(1)} ${(y + Math.sin(a) * d * 0.7).toFixed(1)}) rotate(${Math.round(a * 57)})`) })
+  }
+}
+// A dangerous attack (the owner's): a red flash as it starts, then speed lines behind the runner.
+function danger(svg) {
+  const red = tint(svg, '#FF2D2D'), sl = speedLines(svg)
+  return (t, r) => {
+    red(0.24 * seg(t, 0.02, 0.1) * (1 - seg(t, 0.18, 0.5)))
+    if (!r?.tS) return
+    const on = seg(t, 0.35, 0.6) * (1 - seg(t, r.tS - 0.25, r.tS)), s = persp(r.sy)
+    sl(r.sx, r.sy - 40 * s, r.dir[0], r.dir[1], on, t)
+  }
+}
+
 /**
  * Open play (goal, save, miss, blocked): the move that leads to the shot, from the engine's
  * own description of the attack (e.lane: left, center, right; e.quality: big = one on one,
@@ -351,7 +485,7 @@ function openPlay(e, outcome, KT) {
   const passer = player(w, atk, passNo, 1, { look: Math.floor(R() * 40) })
   const marker = player(w, dfk, e.defNo ?? '', 1, { look: Math.floor(R() * 40) })
   const sh = player(w, atk, e.no, 1, { look: Math.floor(R() * 40) })
-  const b = ball(svg), trl = trail(svg)
+  const b = ball(svg), trl = trail(svg, w, outcome === 'save' ? '#FF9A3D' : undefined)
 
   // Where the move starts, and the pass that sets the shooter up.
   const pFrom = q === 'header' ? [side > 0 ? 548 : 92, 214] : q === 'big' ? [Math.max(110, Math.min(530, lx - side * 150)), 290] : [Math.max(110, Math.min(530, spot[0] - side * (130 + R() * 40))), Math.min(300, spot[1] + 18)]
@@ -423,6 +557,8 @@ function openPlay(e, outcome, KT) {
     if (t < tP1) { const f = inout(seg(t, 0.1, tP1)); sx = lerp(sFrom[0], recv[0], f); sy = lerp(sFrom[1], recv[1], f) }
     else { const f = inout(seg(t, tP1, tS)); sx = lerp(recv[0], spot[0], f); sy = lerp(recv[1], spot[1], f) }
     if (q === 'header') lift = 26 * Math.sin(Math.PI * seg(t, tS - 0.32, tS + 0.3))
+    // [Sprint 40 C1] A dangerous run: he weaves past his man in a zig-zag before the shot.
+    if ((q === 'big' || q === 'normal') && t > tP1 - 0.1 && t < tS) sx += Math.sin((t - tP1) * 15) * 10 * seg(t, tP1 - 0.1, tP1 + 0.15) * (1 - seg(t, tS - 0.3, tS - 0.08))
     // Round the keeper: a touch past him to the side, then the finish.
     if (finish === 'round') sx -= side * 36 * ease(seg(t, tS - 0.5, tS - 0.05))
     put(sh, sx, sy, q === 'header' ? -side * 8 * seg(t, tS - 0.3, tS) : 0, 1, lift)
@@ -500,9 +636,10 @@ function openPlay(e, outcome, KT) {
       else { const f = clamp(a / 0.7); bx = target[0] + (target[0] - strike[0]) * 0.18 * f; by = target[1] - 30 * f; gr = LINE - 20 * f; op = 1 - f }
     }
     b.set(bx, by, gr, turn, op)
-    if (after === 'net') G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2)))
-    if (after === 'post') sa(G.frame, 'transform', `translate(${Math.sin(t * 70) * 1.8 * seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 0.6))} 0)`)
-    return { target }
+    // [Sprint 40 C2] The net stretches far back, as in a cartoon; the woodwork wobbles hard.
+    if (after === 'net') G.bulge(target[0], target[1] - 8, 1.9 * seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.3, KT + 1.3)))
+    if (after === 'post') { const wob = seg(t, KT, KT + 0.05) * (1 - seg(t, KT + 0.1, KT + 1.0)); sa(G.frame, 'transform', `translate(${(Math.sin(t * 70) * 4.5 * wob).toFixed(1)} ${(Math.cos(t * 55) * 1.5 * wob).toFixed(1)})`) }
+    return { target, sx, sy, tS, dir: [spot[0] - sFrom[0], spot[1] - sFrom[1]], ball: [bx, by], sh, kp, glove, after }
   } }
 }
 
@@ -510,28 +647,50 @@ function openPlay(e, outcome, KT) {
 // Lengths and key moments are SCENE_TIME in story.ts; keep them in step.
 export const SCENES = {
   goal(e) {
-    const KT = 3.0, { svg, go } = openPlay(e, 'goal', KT)
+    const KT = 3.0, { svg, go } = openPlay(e, 'goal', KT), dg = danger(svg), cf2 = confetti(svg)
     const num = bigNumber(svg, e.no, K(e.side).kit), fl = flash(svg), cf = flashes(svg), tt = title(svg, tr('هدف!'))
     return { dur: 6.0, svg, update(t) {
-      go(t); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
+      const r = go(t); dg(t, r); num(seg(t, KT + 0.6, KT + 1.4)); cf(t, t > KT)
       fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16)
+      // [Sprint 40 C2] The net stretches, the screen shakes, and the confetti rains on the celebration.
+      shakeIt(svg, 7 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.6)), t)
+      cf2(t - KT - 0.3)
       tt(seg(t, KT + 0.2, KT + 0.6))
     } }
   },
   save(e) {
-    const KT = 2.9, { svg, go } = openPlay(e, 'save', KT)
+    const KT = 2.9, { svg, go } = openPlay(e, 'save', KT), dg = danger(svg), fire = flame(svg), pow = boom(svg, svg.world, 'BOOM!')
     const ring = el('circle', { r: 26, fill: 'none', stroke: '#2BB673', 'stroke-width': 3, opacity: 0, filter: ref(svg, 'glow') }, svg.world)
     const tt = title(svg, tr('تصدٍّ رائع'), '#2BB673')
+    let last = null
     return { dur: 5.4, svg, update(t) {
-      const { target } = go(t)
+      const r = go(t), { target } = r; dg(t, r)
+      // [Sprint 40 C3] The shot a fireball to the top corner; the keeper's fingertips go BOOM.
+      const fly = t > r.tS && t < KT
+      fire(r.ball[0], r.ball[1], last ? r.ball[0] - last[0] : 1, last ? r.ball[1] - last[1] : 0, fly)
+      last = r.ball
+      pow(target[0], target[1], seg(t, KT - 0.02, KT + 0.7))
+      shakeIt(svg, 4 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.4)), t)
       const s = seg(t, KT - 0.02, KT + 0.6); sa(ring, 'transform', `translate(${target[0]} ${target[1]}) scale(${0.4 + s * 1.6})`); sa(ring, 'opacity', s > 0 ? 1 - s : 0)
       tt(seg(t, KT + 0.3, KT + 0.7))
     } }
   },
   miss(e) {
-    const KT = 2.9, { svg, go } = openPlay(e, 'miss', KT)
+    const KT = 2.9, { svg, go } = openPlay(e, 'miss', KT), dg = danger(svg), post = e.how === 'post'
+    // [Sprint 40 C4] The woodwork: it rings and shakes the screen, a flash of blue shock, the striker's hands on his head.
+    const blue = post ? tint(svg, '#3B82F6') : null, clang = post ? boom(svg, svg.world, 'CLANG!', '#E9EEF6', '#1E3A8A') : null, ringL = post ? burst(svg, svg.world, '#FFFFFF', 10) : null
     const tt = title(svg, e.how === 'post' ? tr('القائم!') : e.how === 'over' ? tr('فوق العارضة') : tr('بجانب القائم'), '#C9D2E1')
-    return { dur: 5.0, svg, update(t) { go(t); tt(seg(t, KT + 0.35, KT + 0.75)) } }
+    return { dur: 5.0, svg, update(t) {
+      const r = go(t); dg(t, r)
+      if (post) {
+        const k = seg(t, KT - 0.02, KT + 0.8)
+        clang(r.target[0], r.target[1] - 10, k); ringL(r.target[0], r.target[1], seg(t, KT, KT + 0.5), 14)
+        shakeIt(svg, 8 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.7)), t)
+        blue(0.28 * seg(t, KT + 0.05, KT + 0.15) * (1 - seg(t, KT + 0.4, KT + 0.9)))
+        if (t > KT + 0.3) { r.sh.face?.('front'); r.sh.mood('shock'); r.sh.pose(3, -3, 150, -150) }
+      }
+      tt(seg(t, KT + 0.35, KT + 0.75))
+    } }
   },
   blocked(e) {
     const KT = 2.6, { svg, go } = openPlay(e, 'blocked', KT)
@@ -558,8 +717,17 @@ export const SCENES = {
     const target = e.scored ? [320 + dir * (48 + R() * 12), R() < 0.5 ? 140 : 90] : [320 + dir * (30 + R() * 20), 110 + R() * 30]
     const kAim = e.scored ? (R() < 0.6 ? [640 - target[0], target[1]] : [lerp(320, target[0], 0.7), target[1] + 8]) : target
     const spot = [320, 207], path = [[spot[0], spot[1]], [lerp(spot[0], target[0], 0.5), Math.min(spot[1], target[1]) - 18], target]
-    return { dur: 5.6, svg, update(t) {
+    // [Sprint 40 C5] Before it all (1.2 s): the referee blows hard and points straight at the spot, which glows.
+    const PRE = 1.2, rf = referee(w, 1), blow = burst(svg, w, '#FFFFFF'), spotRing = el('ellipse', { cx: spot[0], cy: spot[1], rx: 10, ry: 3.5, fill: 'none', stroke: '#F5B82E', 'stroke-width': 2, opacity: 0, filter: ref(svg, 'glow') }, w)
+    // ... and in the face-off, a close-up of their eyes, staring each other down.
+    const eyes = el('g', { opacity: 0 }, vs)
+    const eyePair = (cx, look, brow) => `<g transform="translate(${cx} 176)">${[-38, 38].map((dx) => `<g transform="translate(${dx} 0)"><path d="M-30 0 Q0 -20 30 0 Q0 16 -30 0 Z" fill="#F7F3EA" stroke="#1A1A1A" stroke-width="2.5"/><circle data-iris="1" cx="${look}" cy="0" r="9" fill="#3B2414"/><circle cx="${look}" cy="0" r="4.2" fill="#0A0A0A"/><circle cx="${look + 3}" cy="-3" r="1.8" fill="#fff"/><path d="${brow}" stroke="#1A1A1A" stroke-width="5" stroke-linecap="round" fill="none"/></g>`).join('')}</g>`
+    eyes.innerHTML = `<rect x="0" y="134" width="640" height="84" fill="#0A0F1C"/><rect x="0" y="134" width="640" height="2" fill="#F5B82E"/><rect x="0" y="216" width="640" height="2" fill="#F5B82E"/>`
+      + eyePair(160, 9, 'M-30 -18 L26 -8') + eyePair(480, -9, 'M-26 -8 L30 -18') + `<path d="M319 140 V212" stroke="#F5B82E" stroke-width="2" stroke-dasharray="4 4"/>`
+    const old = (t) => {
       cam(svg, 1.15 + 0.1 * inout(seg(t, 0.3, tS)), 320, 160)
+      sa(eyes, 'opacity', SMOOTH ? 0 : seg(t, 0.5, 0.6) * (1 - seg(t, 1.05, 1.15)))
+      if (t > 0.5 && t < 1.15) sa(eyes, 'transform', `translate(320 176) scale(${(1 + 0.12 * seg(t, 0.5, 1.15)).toFixed(3)}) translate(-320 -176)`)
       sa(hush, 'opacity', seg(t, 0.2, 0.6) * (1 - seg(t, 2, 2.3)))
       const v = SMOOTH ? 0 : seg(t, 0.05, 0.25) * (1 - seg(t, 1.0, 1.2))
       sa(vs, 'opacity', v)
@@ -579,8 +747,23 @@ export const SCENES = {
       else if (e.scored) { const a = t - KT, d = clamp((a - 0.15) / 0.5); p = [target[0], lerp(target[1] - 8 * ease(clamp(a / 0.15)), 146, d * d)]; gr = LINE - 8; sa(trl, 'opacity', 0) }
       else { const a = ease(clamp((t - KT) / 0.8)); p = bez([target, [target[0] - dir * 30, target[1] - 30], [target[0] + dir * 110, 200]], a); gr = lerp(LINE, 200, a); sa(trl, 'opacity', 0) }
       b.set(p[0], p[1], gr, t > tS ? t * 2000 : 0)
-      if (e.scored) { G.bulge(target[0], target[1] - 8, seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.25, KT + 1.2))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT) }
+      if (e.scored) { G.bulge(target[0], target[1] - 8, 1.9 * seg(t, KT, KT + 0.1) * (1 - seg(t, KT + 0.3, KT + 1.3))); fl(seg(t, KT - 0.01, KT + 0.05) * (1 - seg(t, KT + 0.05, KT + 0.25)) * 0.16); cf(t, t > KT); shakeIt(svg, 6 * seg(t, KT, KT + 0.04) * (1 - seg(t, KT + 0.05, KT + 0.6)), t) }
       tt(seg(t, KT + 0.2, KT + 0.6))
+    }
+    return { dur: 5.6 + PRE, svg, update(t) {
+      old(Math.max(0, t - PRE))
+      // The referee: runs in, blows (0.15), points at the spot, then steps away as the taker places the ball.
+      const away = ease(seg(t, PRE - 0.25, PRE + 0.4))
+      sa(rf.g, 'opacity', 1 - away)
+      if (away < 1) {
+        const inn = ease(seg(t, 0, 0.3)); rf.face?.('front'); rf.mood(t > 0.12 ? 'angry' : 'focus')
+        put(rf, lerp(500, 430, inn) + away * 80, 236)
+        const pt = ease(seg(t, 0.25, 0.45)); rf.pose(3, -3, lerp(10, 78, pt), t < 0.3 ? -150 : -12)
+        const [hx, hy] = [lerp(500, 430, inn), 236 - 58 * persp(236) - 21 * persp(236)]
+        blow(hx + 6, hy + 4, seg(t, 0.1, 0.5))
+      }
+      sa(spotRing, 'opacity', seg(t, 0.35, 0.5) * (1 - seg(t, PRE, PRE + 0.4)) * (0.6 + 0.4 * Math.sin(t * 18)))
+      sa(spotRing, 'transform', `translate(${spot[0]} ${spot[1]}) scale(${(1 + 0.6 * seg(t, 0.35, PRE)).toFixed(2)}) translate(${-spot[0]} ${-spot[1]})`)
     } }
   },
   freekick(e) {
@@ -662,30 +845,168 @@ export const SCENES = {
   },
   // [Sprint 35 C2] The card: the referee holds it up over the offender, who protests (arms out, or hands together
   // pleading); a red, and he walks off, head down, past his team-mate.
+  // [Sprint 40 D1] A card, as a cartoon (tick.moment.drama, the server's): the slide tackle and the flip, then one of
+  // four tellings. tackle: the referee runs in angry, rummages in his pocket and whips the card out; swarm: the
+  // offender's team-mates surround him, arms flying, and he backs off blowing his whistle; brawl: the two vanish in a
+  // cloud of dust with fists and boots flying out; spit: a close-up of the argument, the spit, the referee's shock,
+  // his slow wipe, his face going red. A yellow: the offender acts innocent. A red: a red flash, the referee points
+  // to the tunnel, and on his way off the player kicks a water bottle.
   card(e) {
-    const svg = stage(e.side), w = svg.world, red = e.type === 'red', col = red ? '#EF4444' : '#FFD400', R = rnd(e.v ?? (e.no ?? 4) * 13)
-    const rf = player(w, officialKit(), '', 1.5, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
-    const pl = player(w, K(e.side).kit, e.no, 1.5, { look: Math.floor(R() * 40) })
-    const mate = red ? player(w, K(e.side).kit, '', 1.3, { look: Math.floor(R() * 40) }) : null
-    const glow = el('circle', { cx: 250, cy: 120, r: 70, fill: col, opacity: 0, filter: ref(svg, 'soft') }, w)
-    const plead = R() < 0.5
+    const svg = stage(e.side), w = svg.world, red = e.type === 'red', R = rnd(e.v ?? (e.no ?? 4) * 13)
+    const drama = ['swarm', 'brawl', 'spit'].includes(e.drama) ? e.drama : 'tackle', KT = 3.4, k = 1.4
+    const kit = K(e.side).kit, col = red ? '#EF4444' : '#FFD400'
+    const vi = player(w, K(other(e.side)).kit, e.victimNo ?? '', k, { look: Math.floor(R() * 40) })
+    const mates = drama === 'swarm' ? [0, 1, 2].map(() => player(w, kit, '', k, { look: Math.floor(R() * 40) })) : []
+    const bot = red ? bottle(w) : null
+    const pl = player(w, kit, e.no, k, { look: Math.floor(R() * 40) }), rf = referee(w, k)
+    const fx = { dust: dust(svg), slide: dust(svg, w, 5), ouch: bubbleOf(svg, w, '!!!') }
+    const cloud = drama === 'brawl' ? brawlCloud(svg) : null
+    const vnP = vein(svg), vnR = vein(svg), swear = bubbleOf(svg, w, '#@!%&!'), swear2 = bubbleOf(svg, w, '?!#@!'), blow = burst(svg, w), kickB = burst(svg, w, '#7FC8FF')
+    const hot = el('circle', { r: 13.2, fill: '#B00000', opacity: 0 }, w), steam = dust(svg, w, 6)
+    const spit = el('ellipse', { rx: 2.6, ry: 1.8, fill: '#DFF4FF', stroke: '#7FB4D9', 'stroke-width': 0.8, opacity: 0 }, w)
+    const notes = el('text', { 'font-size': 16, fill: '#FFFFFF', 'font-family': 'sans-serif', opacity: 0 }, w); notes.textContent = '♪ ♫'
+    const glow = el('circle', { r: 70, fill: col, opacity: 0, filter: ref(svg, 'soft') }, w)
+    const yel = tint(svg, '#FFD400'), redT = tint(svg, '#FF1E1E'), blue = tint(svg, '#3B82F6')
     const tt = title(svg, red ? tr('طرد!') : tr('إنذار'), col)
-    return { dur: 4.4, svg, update(t) {
-      cam(svg, 1.08, 320, 200)
-      rf.face?.('front'); pl.face?.('front'); rf.mood('focus'); pl.mood(t > 1.0 ? (red ? 'sad' : 'angry') : 'idle')
-      rf.at(250, 196, 0, 1.5)
-      const up = ease(seg(t, 0.5, 1.0))
-      rf.pose(3, -3, 12, -12 - 156 * up)
-      rf.card(up > 0.05 ? col : null)
-      sa(glow, 'opacity', 0.4 * seg(t, 0.9, 1.3))
-      // The offender: protests, then (a red) walks away.
-      const go = red ? ease(seg(t, 2.0, 4.4)) : 0
-      pl.at(lerp(400, 700, go), 200 + go * 20, 0, 1.5)
-      if (go > 0) { pl.face?.('side', 1); pl.run(t * 6, 0.25); pl.despair() }
-      else if (t > 1.0) { const w2 = Math.sin(t * 7) * 10; plead ? pl.pose(4, -4, 60 + w2, -60 - w2) : pl.pose(6, -6, 96 + w2, -96 - w2) }
-      else pl.pose()
-      if (mate) { mate.at(lerp(520, 470, ease(seg(t, 1.5, 2.5))), 214, 0, 1.3); mate.pose(3, -3, 40, -40) }
-      tt(seg(t, 1.1, 1.5))
+    // Where the referee stands to show it, and where the offender stands in front of him.
+    const RX = drama === 'swarm' ? 430 : 395, PX = drama === 'spit' ? 318 : 300
+    return { dur: 6.6, svg, update(t) {
+      blow(0, 0, 0)
+      // The tackle (contact at 0.8 s); the victim lies there and rolls, unless a brawl gets him up.
+      const up = drama === 'brawl' ? 1.55 : Infinity
+      tackle(svg, t, 0.8, pl, vi, k, fx, up, drama === 'spit' || drama === 'swarm' ? 1.7 : Infinity)
+      // The camera: a little closer for the card; right up on the faces for the spit.
+      const near = drama === 'spit' ? ease(seg(t, 1.8, 2.1)) * (1 - ease(seg(t, KT, KT + 0.4))) : 0
+      cam(svg, lerp(1.06 + 0.06 * seg(t, 1.4, KT), 2.3, near), lerp(320, 336, near), lerp(205, 172, near))
+      // ---- the referee comes in
+      const tIn = drama === 'spit' ? [1.35, 1.8] : drama === 'brawl' ? [2.1, 2.7] : [1.35, 2.2]
+      const rIn = ease(seg(t, tIn[0], tIn[1]))
+      let rx = lerp(700, drama === 'spit' ? 362 : RX, rIn)
+      if (drama === 'swarm') rx += 40 * ease(seg(t, 2.0, 3.0)) - 40
+      if (t < tIn[1]) { rf.face?.('side', -1); rf.mood('focus'); rf.run(t * 16, 1) }
+      else { rf.face?.(drama === 'spit' && t < 2.62 ? 'side' : 'front', -1); rf.mood(drama === 'spit' && t > 2.62 && t < 3.0 ? 'shock' : 'angry'); rf.pose(3, -3, 12, -12) }
+      rf.at(rx, 200, 0, k)
+      const [hx, hy] = headOf(rx, 200, k)
+      vnR(hx + 12, hy - 14, drama === 'spit' ? 0 : seg(t, tIn[1], tIn[1] + 0.2) * (1 - seg(t, 5.4, 5.6)), t)
+      // ---- each drama before the card
+      if (drama === 'swarm') {
+        // Four of them round him, arms flying; he backs away blowing his whistle again and again.
+        const crowd = [pl, ...mates], spots = [[-62, 4], [-34, -10], [44, -8], [70, 6]], from = [[-260, 10], [-320, -20], [-420, 0], [-200, 30]]
+        const s1 = ease(seg(t, 1.5, 2.0)), back = ease(seg(t, 3.0, 3.25))
+        crowd.forEach((p, i) => {
+          if (t < 1.5 && i === 0) return
+          const x = rx + lerp(from[i][0], spots[i][0] * (1 + back * 0.9), s1), y = 200 + spots[i][1] + from[i][1] * (1 - s1)
+          p.face?.(s1 < 1 ? 'side' : 'front', 1); p.mood('angry'); p.at(x, y, 0, k)
+          if (s1 < 1) p.run(t * 15, 1); else if (t < 3.0) p.pose(4, -4, 90 + Math.sin(t * 28 + i) * 55, -90 - Math.sin(t * 31 + i * 2) * 55); else p.pose(3, -3, 14, -14)
+        })
+        swear(rx - 40, 128, seg(t, 2.0, 2.15) * (1 - seg(t, 2.95, 3.05)), 0.9, Math.sin(t * 40) * 2)
+        swear2(rx + 60, 134, seg(t, 2.2, 2.35) * (1 - seg(t, 2.95, 3.05)), 0.85, Math.cos(t * 37) * 2)
+        if (t > 2.0 && t < 3.0) { rf.pose(3, -3, 30, -150); blow(hx + 5, hy + 4, ((t - 2.0) % 0.25) / 0.25) }
+      } else if (drama === 'brawl') {
+        // The victim is up and charges; the two vanish in the dust cloud, fists and boots flying out of it.
+        const inCloud = t > 1.85 && t < 2.95, f = seg(t, 1.8, 1.95) * (1 - seg(t, 2.9, 3.15))
+        cloud(340, 236, t, f)
+        sa(pl.g, 'opacity', inCloud ? 0 : 1); sa(vi.g, 'opacity', inCloud ? 0 : 1)
+        swear(340, 150, f, 1, Math.sin(t * 40) * 2)
+        shakeIt(svg, inCloud ? 3 : 0, t)
+        if (t >= up && t < 1.85) { const c = ease(seg(t, up, 1.85)); vi.face?.('side', -1); vi.mood('angry'); vi.at(lerp(430, 360, c), lerp(268, 200, Math.min(1, c * 2)), lerp(90, 0, Math.min(1, c * 2)), k); vi.run(t * 14, 1) }
+        else if (t >= 2.95) { vi.face?.('front'); vi.mood('angry'); vi.at(500, 206, 0, k); vi.pose(4, -4, 40 + Math.sin(t * 9) * 10, -40) }
+        if (t > 2.7 && t < 3.2) blow(hx + 5, hy + 4, seg(t, 2.7, 3.1))
+        vnP(PX + 12, 200 - 21 * k - 14, t > 2.95 && t < 3.9 ? 1 : 0, t)
+      } else if (drama === 'spit') {
+        // The close-up: he argues, spits, the referee stares, wipes his face slowly, and goes red with anger.
+        if (t > 1.6 && t < KT) {
+          pl.face?.('side', 1); pl.mood('angry'); pl.at(PX, 200, 0, k)
+          t < 2.5 ? pl.pose(4, -4, -60 + Math.sin(t * 24) * 40, -110 + Math.cos(t * 21) * 40) : pl.pose(4, -4, -20, -30)
+        }
+        swear(PX - 6, 128, seg(t, 1.9, 2.0) * (1 - seg(t, 2.4, 2.5)), 0.8, Math.sin(t * 40) * 1.5)
+        const sp = seg(t, 2.5, 2.62)
+        sa(spit, 'opacity', sp > 0 && sp < 1 ? 1 : 0)
+        if (sp > 0 && sp < 1) sa(spit, 'transform', `translate(${lerp(PX + 14, hx - 4, sp).toFixed(1)} ${(lerp(175, hy + 2, sp) - Math.sin(Math.PI * sp) * 6).toFixed(1)})`)
+        blue(0.3 * seg(t, 2.62, 2.7) * (1 - seg(t, 2.85, 3.0)))
+        // The slow wipe of his face, then the volcano: dark red, steam out of the top of his head.
+        if (t > 2.95 && t < 3.3) { const wp = Math.sin(Math.PI * seg(t, 2.95, 3.3)); rf.pose(3, -3, 12, lerp(10, 160, wp)) }
+        const boil = seg(t, 3.1, 3.35) * (1 - seg(t, 4.4, 4.8))
+        sa(hot, 'opacity', (0.6 * boil).toFixed(2)); sa(hot, 'cx', hx); sa(hot, 'cy', hy)
+        steam(hx, hy - 16, boil > 0 ? ((t - 3.1) % 0.5) / 0.5 : 0)
+      }
+      // ---- the card: his hand in the pocket, then whipped up (KT); a red's second yellow first shows yellow.
+      const pocket = t > KT - 0.45 && t < KT - 0.1 && drama !== 'spit'
+      if (pocket) rf.pose(3, -3, 12, -22 + Math.sin(t * 40) * 7)
+      const snap = seg(t, KT - 0.12, KT + 0.05), arm = snap >= 1 ? -172 + Math.sin(Math.min(1, (t - KT - 0.05) * 6) * Math.PI) * 10 : lerp(-22, -180, ease(snap))
+      const shown = e.second && t < KT + 0.6 ? '#FFD400' : col
+      if (t > KT - 0.12 && t < 5.8) { rf.pose(3, -3, red && t > KT + 0.5 ? lerp(12, 96, ease(seg(t, KT + 0.5, KT + 0.8))) : 12, arm); rf.card(snap > 0.3 ? shown : null) } else rf.card(null)
+      sa(glow, 'cx', hx + 20); sa(glow, 'cy', hy - 30); sa(glow, 'opacity', 0.4 * seg(t, KT, KT + 0.3) * (1 - seg(t, 5.4, 5.8)))
+      ;(red ? redT : yel)(0.3 * seg(t, KT, KT + 0.06) * (1 - seg(t, KT + 0.15, KT + 0.6)))
+      shakeIt(svg, (red ? 4 : 2) * seg(t, KT, KT + 0.03) * (1 - seg(t, KT + 0.05, KT + 0.4)) + (drama === 'brawl' && t > 1.85 && t < 2.95 ? 3 : 0), t)
+      // ---- the offender after it
+      if (t > KT - 0.6 && drama !== 'swarm' && drama !== 'spit' || (drama === 'spit' && t >= KT)) {
+        const off = red ? seg(t, KT + 0.6, 6.4) : 0, x = lerp(PX, -60, off)
+        if (off > 0) {
+          // Walking off, angry; he kicks the bottle on his way (5.0 s).
+          const kick = seg(t, 4.95, 5.2)
+          pl.face?.('side', -1); pl.mood('angry'); pl.at(x, 200, 0, k)
+          kick > 0 && kick < 1 ? pl.kick(kick) : pl.run(t * 9, 0.45)
+          vnP(x - 4, 200 - 21 * k - 14, 1, t)
+        } else if (!red) {
+          // A yellow: all innocence, hands together, whistling to himself.
+          pl.face?.('front'); pl.mood('idle'); pl.at(PX, 200, 0, k); pl.pose(3, -3, -24, 24)
+          sa(notes, 'opacity', seg(t, KT + 0.2, KT + 0.4) * (1 - seg(t, 5.8, 6.2))); sa(notes, 'x', PX + 14); sa(notes, 'y', 200 - 21 * k - 18 - ((t * 12) % 8))
+        } else { pl.face?.('front'); pl.mood(t > KT ? 'angry' : 'idle'); pl.at(PX, 200, 0, k); pl.pose(4, -4, 60 + Math.sin(t * 8) * 12, -60) }
+      }
+      if (drama === 'swarm' && red && t > KT + 0.6) {
+        const off = seg(t, KT + 0.6, 6.4), x = lerp(rx - 62, -60, off), kick = seg(t, 4.95, 5.2)
+        pl.face?.('side', -1); pl.mood('angry'); pl.at(x, 204, 0, k); kick > 0 && kick < 1 ? pl.kick(kick) : pl.run(t * 9, 0.45)
+      }
+      // The bottle by the touchline: still until the kick, then away, spinning.
+      if (bot) {
+        const fly = ease(seg(t, 5.08, 5.9)), bx = lerp(150, -40, fly), by = 287 - Math.sin(Math.PI * Math.min(1, fly * 1.3)) * 110 * (1 - fly * 0.3)
+        sa(bot, 'transform', `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${Math.round(fly * 900)}) scale(1.3)`)
+        kickB(150, 278, seg(t, 5.08, 5.5))
+      }
+      tt(seg(t, KT + 0.2, KT + 0.6))
+    } }
+  },
+  // [Sprint 40 D2] A foul as its own scene (tick.moment.drama). tackle: the slide, the flip, the dust, the agony, the
+  // referee's whistle and his arm out for the free kick. dive: he runs past the defender untouched, takes off like a
+  // diver, rolls five times screaming, opens one eye to see, and the referee gives it all the same.
+  foul(e) {
+    const svg = stage(e.side), w = svg.world, R = rnd(e.v ?? (e.no ?? 5) * 41), k = 1.4, dive = e.drama === 'dive'
+    const vi = player(w, K(other(e.side)).kit, e.victimNo ?? '', k, { look: Math.floor(R() * 40) })
+    const pl = player(w, K(e.side).kit, e.no, k, { look: Math.floor(R() * 40) }), rf = referee(w, k)
+    const fx = { dust: dust(svg), slide: dust(svg, w, 5), ouch: bubbleOf(svg, w, '!!!') }
+    const scream = bubbleOf(svg, w, 'AAAAH!'), huh = bubbleOf(svg, w, '?!', '#0A1F42'), blow = burst(svg, w), roll = dust(svg, w, 6)
+    const q = el('text', { 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 900, 'font-size': 18, fill: '#FFD400', stroke: '#040B1C', 'stroke-width': 3, 'paint-order': 'stroke', opacity: 0 }, w); q.textContent = '?'
+    const tt = title(svg, dive ? tr('سقوط مثير!') : tr('خطأ'), '#F2994A')
+    return { dur: 5.2, svg, update(t) {
+      roll(0, 0, 0)
+      let zoom = 0, zx = 320, zy = 205
+      if (!dive) {
+        tackle(svg, t, 1.5, pl, vi, k, fx)
+        if (t > 2.4) { pl.mood('sad'); pl.pose(3, -3, 60, -60) }
+      } else {
+        // The defender stands his ground (a half-hearted leg out), then throws his arms up: never touched him!
+        pl.face?.(t < 1.9 ? 'side' : 'front', -1); pl.mood(t < 1.9 ? 'focus' : 'angry'); pl.at(236, 176, 0, k)
+        t < 1.9 ? pl.pose(3, -3 - 18 * Math.sin(Math.PI * seg(t, 1.1, 1.6)), 14, -14) : pl.pose(3, -3, 160 + Math.sin(t * 10) * 8, -160 - Math.sin(t * 10) * 8)
+        huh(236, 108, seg(t, 4.15, 4.3), 0.8)
+        if (t < 1.25) { vi.face?.('side', 1); vi.mood('focus'); vi.at(lerp(90, 310, seg(t, 0.1, 1.25)), 222, 0, k); vi.run(t * 14, 1) }
+        else if (t < 1.6) { const f = seg(t, 1.25, 1.6); vi.face?.('side', 1); vi.mood('joy'); vi.at(lerp(310, 380, f), lerp(222, 266, f) - Math.sin(Math.PI * f) * 56, f * 80, k); vi.pose(10, -10, -165, -165) }
+        else if (t < 2.9) { const f = seg(t, 1.6, 2.9); vi.face?.('side', 1); vi.mood('shock'); vi.at(lerp(380, 540, f), 266, 80 + f * 1800, k); vi.pose(30, -30, 90, -90, 0.4, 0.4); roll(lerp(380, 540, f) - 20, 283, ((t - 1.6) % 0.26) / 0.26) }
+        else if (t < 4.5) { vi.face?.('front'); vi.mood(t > 3.2 ? 'peek' : 'sad'); vi.at(540, 268, 90, k); vi.pose(10, -10, 40, -40) }
+        else { const f = ease(seg(t, 4.5, 4.75)); vi.face?.('front'); vi.mood('joy'); vi.at(540, lerp(268, 200, f), lerp(90, 0, f), k); vi.pose(4, -4, lerp(40, 130, f), -lerp(40, 130, f)) }
+        scream(lerp(400, 560, seg(t, 1.6, 2.9)), 210, seg(t, 1.6, 1.75) * (1 - seg(t, 2.85, 3.0)), 0.9, Math.sin(t * 45) * 2)
+        // The close-up on his face: one eye opens to see what the referee does.
+        zoom = ease(seg(t, 2.95, 3.25)) * (1 - ease(seg(t, 3.95, 4.25))); zx = 570; zy = 262
+        sa(q, 'opacity', seg(t, 3.35, 3.45) * (1 - seg(t, 3.9, 4.0))); sa(q, 'x', 586); sa(q, 'y', 252 - ((t * 10) % 4))
+      }
+      cam(svg, lerp(1.06, 2.6, zoom), lerp(320, zx, zoom), lerp(205, zy, zoom))
+      // The referee: in from behind, the whistle, the arm out for the free kick.
+      const tIn = dive ? [3.4, 4.0] : [2.2, 2.9], rIn = ease(seg(t, tIn[0], tIn[1])), rx = dive ? lerp(-40, 130, rIn) : lerp(700, 560, rIn)
+      if (t < tIn[1]) { rf.face?.('side', dive ? 1 : -1); rf.run(t * 15, 1) } else { rf.face?.('front'); rf.mood('focus'); rf.pose(3, -3, t > tIn[1] + 0.3 ? (dive ? 12 : 92) : 12, t > tIn[1] + 0.3 && dive ? -92 : t < tIn[1] + 0.3 ? -150 : -12) }
+      rf.at(rx, dive ? 190 : 196, 0, k)
+      const [hx, hy] = headOf(rx, dive ? 190 : 196, k)
+      blow(hx + 5, hy + 4, seg(t, tIn[1], tIn[1] + 0.45))
+      tt(seg(t, dive ? 4.3 : 2.4, dive ? 4.7 : 2.8))
     } }
   },
   // [Sprint 35 C2] After a red card: players of both sides square up and push, the referee steps in between them.
@@ -739,31 +1060,42 @@ export const SCENES = {
   },
   // [Sprint 37 N2] The substitution: the fourth official holds up the lit board (off in red, on in green), the player
   // coming off walks to the line and shakes hands with the one coming on, who runs onto the pitch.
+  // [Sprint 40 D4] The sub, as a cartoon: the board flashes green and red, the tired player trudges off with his head
+  // down, the substitute bounces on the spot, they slap a high five, and he leaps onto the pitch.
   sub(e) {
     const svg = stage(e.side), w = svg.world, k = K(e.side).kit, R = rnd((e.inNo || 3) * 17 + (e.outNo || 5))
-    const fo = player(w, officialKit(), '', 1.4, { look: 9, shorts: '#111827', socks: '#111827', trim: '#F5B82E' })
+    const fo = referee(w, 1.4)
     const out = player(w, k, e.outNo, 1.4, { look: Math.floor(R() * 40) }), inn = player(w, k, e.inNo, 1.4, { look: Math.floor(R() * 40) })
     const led = (n, c) => `<text y="-2" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="${c}" style="letter-spacing:1px" filter="${ref(svg, 'glow')}">${n ?? ''}</text>`
     const board = el('g', {}, w)
-    board.innerHTML = `<rect x="-58" y="-34" width="116" height="52" rx="5" fill="#05080F" stroke="#3A4256" stroke-width="2"/><g transform="translate(-28 8)">${led(e.outNo, '#FF4D4D')}</g><g transform="translate(28 8)">${led(e.inNo, '#3BFF8A')}</g><path d="M0 -26 V12" stroke="#1B2233" stroke-width="2"/><rect x="-6" y="18" width="12" height="24" rx="3" fill="#1B2233"/>`
+    board.innerHTML = `<rect data-frame="1" x="-58" y="-34" width="116" height="52" rx="5" fill="#05080F" stroke="#3A4256" stroke-width="2"/><g data-o="1" transform="translate(-28 8)">${led(e.outNo, '#FF4D4D')}</g><g data-i="1" transform="translate(28 8)">${led(e.inNo, '#3BFF8A')}</g><path d="M0 -26 V12" stroke="#1B2233" stroke-width="2"/><rect x="-6" y="18" width="12" height="24" rx="3" fill="#1B2233"/>`
+    const frameB = board.querySelector('[data-frame]'), oN = board.querySelector('[data-o]'), iN = board.querySelector('[data-i]')
+    const slap = burst(svg, w, '#FFD400', 10), sweat = el('path', { d: 'M0 -5 Q4 1 0 3 Q-4 1 0 -5 Z', fill: '#9AD4FF', opacity: 0 }, w)
     const tt = title(svg, tr('تبديل'), '#2BB673')
-    return { dur: 4.2, svg, update(t) {
+    return { dur: 5.0, svg, update(t) {
       cam(svg, 1.05, 320, 200)
-      // The fourth official at the halfway line, the board up in his hands.
-      const up = ease(seg(t, 0, 0.5))
-      fo.face?.('front'); fo.mood('focus'); fo.at(320, 186, 0, 1.4); fo.pose(3, -3, 150 * up, -150 * up)
-      sa(board, 'transform', `translate(320 ${lerp(150, 92, up)}) scale(${0.8 + 0.2 * up})`)
-      // Off: walks over from the pitch; on: waits by the line, then they shake hands and he runs on.
-      const meet = ease(seg(t, 0.3, 2.0)), shake = t > 2.0 && t < 2.7
-      if (t < 2.7) { out.face?.('side', -1); out.at(lerp(660, 446, meet), 214, 0, 1.4); meet < 1 ? out.run(t * 7, 0.3) : out.pose(4, -4, 10, shake ? -80 : -10) }
-      else { out.face?.('front'); out.mood('idle'); out.at(lerp(446, 120, ease(seg(t, 2.7, 4.2))), lerp(214, 236, seg(t, 2.7, 4.2)), 0, 1.4); out.run(t * 6, 0.25); out.pose(4, -4, 16, -16) }
-      if (t < 2.7) { inn.face?.('side', 1); inn.mood('focus'); inn.at(lerp(200, 356, ease(seg(t, 1.2, 2.0))), 214, 0, 1.4); t < 2.0 ? inn.idle(t * 3) : inn.pose(4, -4, 10, shake ? -80 : -10) }
-      else { inn.face?.('back'); const go = ease(seg(t, 2.7, 4.2)); inn.at(lerp(356, 520, go), lerp(214, 150, go), 0, lerp(1.4, 0.9, go)); inn.run(t * 12, 0.8) }
+      // The fourth official, the board up and flashing (out red, in green, its frame blinking both colours).
+      const up = ease(seg(t, 0, 0.5)), blink = t < 2.4 ? Math.floor(t * 6) % 2 : 0
+      fo.face?.('front'); fo.mood('focus'); fo.at(236, 186, 0, 1.4); fo.pose(3, -3, 150 * up, -150 * up)
+      sa(board, 'transform', `translate(236 ${lerp(150, 92, up).toFixed(1)}) scale(${(0.8 + 0.2 * up).toFixed(2)})`)
+      sa(frameB, 'stroke', t < 2.4 ? (blink ? '#3BFF8A' : '#FF4D4D') : '#3A4256'); sa(frameB, 'stroke-width', t < 2.4 ? 3.5 : 2)
+      sa(oN, 'opacity', t < 2.4 && blink ? 0.35 : 1); sa(iN, 'opacity', t < 2.4 && !blink ? 0.35 : 1)
+      // Off: trudges over slowly, head down, a drop of sweat; on: bounces on the spot, can't wait.
+      const meet = ease(seg(t, 0.3, 2.4)), five = seg(t, 2.4, 2.75)
+      if (t < 2.75) { out.face?.('side', -1); out.mood('sad'); out.at(lerp(660, 400, meet), 214 + Math.sin(t * 5) * 1.5, -4, 1.4); meet < 1 ? out.run(t * 4.5, 0.2) : out.pose(4, -4, 10, lerp(-10, -165, Math.sin(Math.PI * five))) }
+      else { out.face?.('front'); out.mood('sad'); out.at(lerp(400, 90, ease(seg(t, 2.75, 5.0))), lerp(214, 236, seg(t, 2.75, 5.0)), 0, 1.4); out.run(t * 4.5, 0.2); out.pose(4, -4, 14, -14) }
+      sa(sweat, 'opacity', t < 2.4 ? 0.9 : 0); sa(sweat, 'transform', `translate(${(lerp(660, 400, meet) - 14).toFixed(1)} ${(170 + ((t * 30) % 14)).toFixed(1)})`)
+      if (t < 2.75) { inn.face?.('side', 1); inn.mood(t > 2.3 ? 'joy' : 'focus'); inn.at(356, 214 - Math.abs(Math.sin(t * 9)) * 9 * (1 - five), 0, 1.4); t < 2.4 ? inn.pose(4, -4, 20 + Math.sin(t * 9) * 12, -20 - Math.sin(t * 9) * 12) : inn.pose(4, -4, 10, lerp(-10, -165, Math.sin(Math.PI * five))) }
+      else { inn.face?.('back'); const go = ease(seg(t, 2.75, 4.6)); inn.mood('joy'); inn.at(lerp(356, 540, go), lerp(214, 150, go) - Math.sin(Math.PI * seg(t, 2.75, 3.2)) * 40, 0, lerp(1.4, 0.9, go)); inn.run(t * 14, 1) }
+      // The high five: a slap and a burst where their hands meet.
+      slap(378, 174, seg(t, 2.52, 2.85), 6)
       tt(seg(t, 0.4, 0.8))
     } }
   },
   // [Sprint 37 N3] The injury: he lies down, a team-mate waves to the bench, the medical staff run on with the
   // stretcher and carry him off (an injured player leaves the match, the engine's rule).
+  // [Sprint 40 D3] As a cartoon: stars and little birds circle his head, and the two medics come on and go off at a
+  // comic sprint, legs a blur, with speed lines and a trail of dust.
   injury(e) {
     const svg = stage(e.side), w = svg.world, R = rnd((e.no || 4) * 29)
     const pl = player(w, K(e.side).kit, e.no, 1.3, { look: Math.floor(R() * 40) }), mate = player(w, K(e.side).kit, '', 1.3, { look: Math.floor(R() * 40) })
@@ -772,24 +1104,30 @@ export const SCENES = {
     const bed = el('g', {}, w)
     bed.innerHTML = '<rect x="-64" y="-5" width="128" height="10" rx="3" fill="#E9EEF6" stroke="#8A97AD" stroke-width="1"/><path d="M-80 0 H80" stroke="#5A667C" stroke-width="3" stroke-linecap="round"/><path d="M-6 -2 H6 M0 -8 V4" stroke="#EF4444" stroke-width="2.4"/>'
     sa(bed, 'transform', 'translate(-200 0)')
+    const stars = dizzy(svg), lines = speedLines(svg, w, 7), trailD = dust(svg, w, 6), ouch = bubbleOf(svg, w, '!!!')
     const tt = title(svg, tr('إصابة'), '#EF4444')
-    return { dur: 3.8, svg, update(t) {
+    return { dur: 5.6, svg, update(t) {
       cam(svg, 1.06, 320, 210)
-      // The stretcher: in from the left (0.3 to 1.4), down by him, then off to the right with him on it (2.3 on).
-      const inn = ease(seg(t, 0.3, 1.4)), off = ease(seg(t, 2.3, 3.8)), lift = seg(t, 1.6, 2.2)
-      const sx = t < 2.3 ? lerp(-120, 300, inn) : lerp(300, 760, off), sy = lerp(lerp(214, 230, seg(t, 1.4, 1.7)), 232, lift)
-      sa(bed, 'transform', `translate(${sx} ${sy})`)
-      const carrying = t < 1.4 || t > 2.3
+      // The stretcher: in at a sprint (1.0 to 1.5), down by him, loaded, then off to the right even faster (3.0 on).
+      const inn = ease(seg(t, 1.0, 1.5)), off = inout(seg(t, 3.0, 3.6)), lift = seg(t, 1.9, 2.5)
+      const sx = t < 3.0 ? lerp(-140, 300, inn) : lerp(300, 820, off), sy = lerp(lerp(214, 230, seg(t, 1.5, 1.8)), 232, lift)
+      sa(bed, 'transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)})`)
+      const sprint = (t > 0.95 && t < 1.5) || (t > 3.0 && t < 3.6), carrying = t < 1.5 || t > 3.0
       for (const [m, dx] of [[m1, -86], [m2, 86]]) {
-        m.face?.('side', 1); m.at(sx + dx, sy - 24 + (carrying ? 0 : 6), 0, 1.25)
-        carrying ? (m.run(t * 9 + dx, 0.45), m.pose(5, -5, 6, -6)) : m.pose(30, -30, 40, -40, 0.4, 0.4)
+        m.face?.('side', 1); m.mood(sprint ? 'focus' : 'idle'); m.at(sx + dx, sy - 24 + (carrying ? 0 : 6) - (sprint ? Math.abs(Math.sin(t * 30)) * 3 : 0), sprint ? 8 : 0, 1.25)
+        carrying ? m.run(t * (sprint ? 34 : 9) + dx, sprint ? 1 : 0.45) : m.pose(30, -30, 40, -40, 0.4, 0.4)
       }
-      // He lies by the stretcher, then is on it.
-      if (t < 1.6) { pl.face?.('back'); pl.at(300, 262, 82, 1.3); pl.pose(14, -6, 60, -20) }
+      lines(sx - 40, sy - 20, 1, 0, sprint ? 1 : 0, t)
+      trailD(sx - 110, 282, sprint ? ((t - 0.95) % 0.3) / 0.3 : 0)
+      // He lies by the stretcher, dazed (stars round his head), then is on it.
+      if (t < 1.9) { pl.face?.('front'); pl.mood('sad'); pl.at(300 + Math.sin(t * 3) * 2, 262, 82, 1.3); pl.pose(14, -6, 60 + Math.sin(t * 6) * 10, -20) }
       else { pl.face?.('side', 1); pl.mood('sad'); pl.at(lerp(300, sx, lift), lerp(262, sy - 12, lift), 90, 1.15); pl.pose(4, -4, 40, -10) }
+      const hx = t < 1.9 ? 327 : sx + 24, hy = t < 1.9 ? 246 : sy - 22
+      stars(hx, hy, t, t > 0.15 && t < 3.3)
+      ouch(hx + 26, hy - 24, seg(t, 0.2, 0.35) * (1 - seg(t, 0.95, 1.1)), 0.8, Math.sin(t * 40) * 1.5)
       // The team-mate waves to the bench, then stands, hands on hips.
       mate.face?.('front'); mate.mood('sad'); mate.at(420, 196, 0, 1.3)
-      if (t < 1.3) { const wv = Math.sin(t * 12) * 24; mate.pose(3, -3, 150 + wv, -150 - wv) } else mate.despair()
+      if (t < 1.3) { const wv = Math.sin(t * 12) * 24; mate.pose(3, -3, 150 + wv, -150 - wv) } else if (t > 3.0 && t < 3.6) { mate.mood('shock'); mate.pose(3, -3, 40, -40) } else mate.despair()
       tt(seg(t, 0.2, 0.6))
     } }
   },

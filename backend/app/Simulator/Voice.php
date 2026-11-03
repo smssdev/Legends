@@ -69,6 +69,10 @@ class Voice
             $vars['p'] = $card['player'] ?? null;
             $vars['A'] = $card['team'];
             $line = ($card['second_yellow'] ?? false) ? 'second_yellow' : $kind;
+        } elseif ($kind === 'foul' && ($foul = $first('foul'))) {
+            // [Sprint 40 A2] A foul told as its own scene: the tackle, or the dive the referee gives all the same.
+            $vars = ['p' => $foul['player'] ?? null, 'q' => $foul['victim'] ?? null, 'A' => $foul['team']];
+            $line = 'foul';
         } elseif ($kind === 'save' && $attack) {
             $vars = ['p' => $attack['shooter'] ?? null, 'q' => $attack['keeper'] ?? null, 'A' => $attack['team']];
             $line = 'save';

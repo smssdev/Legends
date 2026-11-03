@@ -89,13 +89,15 @@ class MomentClockTest extends TestCase
     {
         $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
             'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
-        foreach ([[['type' => 'corner', 'team' => 'home', 'taker' => 1]], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']],
-            [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]], [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]]] as $events) {
+        foreach ([[['type' => 'corner', 'team' => 'home', 'taker' => 1]], [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2]]] as $events) {
             $this->assertTrue(MomentClock::moment($events, $match)['brief'] ?? false, json_encode($events));
         }
         foreach ([[['type' => 'goal', 'team' => 'home', 'kind' => 'open']], [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'red']],
             [['type' => 'free_kick', 'team' => 'home', 'taker' => 1, 'keeper' => 2], ['type' => 'goal', 'team' => 'home', 'kind' => 'free_kick']],
-            [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']]] as $events) {
+            [['type' => 'penalty', 'team' => 'home', 'taker' => 1]], [['type' => 'attack', 'team' => 'home', 'result' => 'saved', 'quality' => 'big']],
+            // [Sprint 40] The owner's cartoon clips: a yellow card, a sub and an injury play their scene again.
+            [['type' => 'card', 'team' => 'home', 'player' => 1, 'color' => 'yellow']], [['type' => 'sub', 'team' => 'home', 'in' => 1, 'out' => 2]],
+            [['type' => 'injury', 'team' => 'home', 'player' => 1]]] as $events) {
             $this->assertArrayNotHasKey('brief', MomentClock::moment($events, $match), json_encode($events));
         }
         // A quiet minute runs by in a second.
@@ -127,6 +129,44 @@ class MomentClockTest extends TestCase
         $half = intdiv($ms, $halves);
         $this->assertGreaterThan(90000, $half);
         $this->assertLessThan(150000, $half);
+    }
+
+    /** [Sprint 40 A1] How a card is told (its drama) comes from its players, the same every time, with every telling used. */
+    public function test_a_card_has_its_drama_from_the_events(): void
+    {
+        $card = fn (string $color, int $p, bool $second = false) => [['type' => 'foul', 'team' => 'home', 'player' => $p, 'victim' => 100 + $p, 'penalty' => false],
+            ['type' => 'card', 'team' => 'home', 'player' => $p, 'color' => $color] + ($second ? ['second_yellow' => true] : [])];
+        $yellows = array_map(fn ($p) => MomentClock::moment($card('yellow', $p), $this->match)['drama'], range(1, 60));
+        $reds = array_map(fn ($p) => MomentClock::moment($card('red', $p), $this->match)['drama'], range(1, 60));
+        $this->assertEqualsCanonicalizing(['tackle', 'swarm'], array_values(array_unique($yellows)));
+        $this->assertEqualsCanonicalizing(['tackle', 'brawl', 'spit'], array_values(array_unique($reds)));
+        $this->assertSame($reds, array_map(fn ($p) => MomentClock::moment($card('red', $p), $this->match)['drama'], range(1, 60)));
+        // A second yellow is never a fight or a spit: a tackle or a swarm round the referee.
+        foreach (range(1, 30) as $p) {
+            $this->assertContains(MomentClock::moment($card('red', $p, true), $this->match)['drama'], ['tackle', 'swarm']);
+        }
+        // Other moments have none.
+        $this->assertArrayNotHasKey('drama', MomentClock::moment([['type' => 'goal', 'team' => 'home', 'kind' => 'open']], $this->match));
+    }
+
+    /** [Sprint 40 A2] One foul in three is its own scene (a tackle or a dive), only in a match made with its length. */
+    public function test_a_foul_is_its_own_scene_in_a_new_match(): void
+    {
+        $match = $this->match + ['minute_ms' => 3333, 'extra_minute_ms' => 2000, 'shootout_ms' => 30000,
+            'broadcast_ms' => config('game.match.broadcast_ms'), 'broadcast_brief' => config('game.match.broadcast_brief')];
+        $foul = fn (int $p) => [['type' => 'attack', 'team' => 'away', 'result' => 'foul', 'quality' => 'normal'],
+            ['type' => 'foul', 'team' => 'home', 'player' => $p, 'victim' => 200 + $p, 'penalty' => false]];
+        $shown = array_filter(range(1, 60), fn ($p) => MomentClock::moment($foul($p), $match)['kind'] === 'foul');
+        $this->assertGreaterThan(10, count($shown));
+        $this->assertLessThan(35, count($shown));
+        $dramas = array_unique(array_map(fn ($p) => MomentClock::moment($foul($p), $match)['drama'], $shown));
+        $this->assertEqualsCanonicalizing(['dive', 'tackle'], array_values($dramas));
+        $this->assertSame((int) config('game.match.broadcast_ms.foul'), MomentClock::moment($foul(reset($shown)), $match)['ms']);
+        // A penalty foul is the penalty; a match made before keeps its minute as it was (no foul in its lengths).
+        $this->assertNotSame('foul', MomentClock::kind([['type' => 'foul', 'team' => 'home', 'player' => reset($shown), 'victim' => 200 + reset($shown), 'penalty' => true]], true));
+        $old = $match;
+        unset($old['broadcast_ms']['foul']);
+        $this->assertNotSame('foul', MomentClock::moment($foul(reset($shown)), $old)['kind']);
     }
 
     /** [Sprint 35 C3] A goal ruled out by VAR: a big chance offside, or one the attackers fouled in; with its reason. */

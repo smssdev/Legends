@@ -123,10 +123,19 @@ export function story(tick, ctx) {
   } else if ((kind === 'red' || kind === 'yellow') && card) {
     const s = card.team, red = kind === 'red'
     Object.assign(vars, { p: card.player, A: s })
-    set('card', s, { no: no(card.player), type: red ? 'red' : 'yellow', v: seed() }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : club(s))
+    // [Sprint 40 B2] The cartoon's telling (tick.moment.drama, the server's): the tackle before it, the victim's number.
+    const victim = foul && foul.team === s ? foul.victim : null
+    set('card', s, { no: no(card.player), victimNo: victim ? no(victim) : '', type: red ? 'red' : 'yellow', second: !!card.second_yellow, drama: tick.moment?.drama ?? 'tackle', v: seed() }, red ? t('بطاقة حمراء') : t('بطاقة صفراء'), nm(card.player), card.second_yellow ? t('الإنذار الثاني') : club(s))
     before(t('خطأ'), nm(card.player), t('الحكم يقترب...'))
     speak(card.second_yellow ? 'second_yellow' : red ? 'red' : 'yellow', { key: 0.3, post: 0.65 })
     item(s, red ? 'red' : 'yellow', nm(card.player), red ? (card.second_yellow ? t('إنذار ثانٍ وطرد') : t('بطاقة حمراء')) : t('بطاقة صفراء'))
+  } else if (kind === 'foul' && foul) {
+    // [Sprint 40 B3] A foul told as its own scene (the server picks one in three): the tackle, or a dive it gives.
+    const s = foul.team, dive = tick.moment?.drama === 'dive'
+    Object.assign(vars, { p: foul.player, q: foul.victim ?? null, A: s })
+    set('foul', s, { no: no(foul.player), victimNo: no(foul.victim), drama: dive ? 'dive' : 'tackle', v: seed() }, dive ? t('سقوط مثير!') : t('خطأ'), nm(foul.victim), dive ? t('والحكم يحتسب خطأ') : t('عرقلة من {v0}', { v0: nm(foul.player) }))
+    speak('foul', { key: 0.3, post: 0.7 })
+    item(s, 'foul', nm(foul.player), t('خطأ على {v0}', { v0: nm(foul.victim) }))
   } else if (kind === 'save' && attack) {
     const s = attack.team
     Object.assign(vars, { p: attack.shooter, q: attack.keeper ?? null, A: s })
