@@ -6,6 +6,7 @@ use App\Database\Sql;
 use App\Economy\Economy;
 use App\Market\Loans;
 use App\Market\Market;
+use App\Season\Achievements;
 use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Tournament\TournamentStage;
@@ -75,6 +76,10 @@ class MatchResult
             }
         }
         MatchReport::store($matchId, $state);
+        // [Sprint 40 A1] A badge reached with this match (the first win, the tenth match...) pays its coins now.
+        foreach ($club as $id) {
+            Achievements::award(DB::table('clubs')->where('id', $id)->value('user_id'));
+        }
     }
 
     private static function players(int $clubId, array $team, int $seed, int $matchId): void

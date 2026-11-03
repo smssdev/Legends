@@ -2264,7 +2264,7 @@ paths:
                 properties:
                   achievements:
                     type: array
-                    items: { type: object, required: [key, goal, progress, earned], properties: { key: { type: string, enum: [first_win, matches, wins, first_title, league_title, cup_title, professional, legend, friendlies, idea, invites] }, goal: { type: integer }, progress: { type: integer }, earned: { type: boolean } } }
+                    items: { type: object, required: [key, goal, progress, earned, tier, reward, paid], properties: { key: { type: string, enum: [first_win, matches, wins, first_title, league_title, cup_title, professional, legend, friendlies, idea, invites, matches_10, wins_100, titles_5] }, goal: { type: integer }, progress: { type: integer }, earned: { type: boolean }, tier: { type: string, enum: [beginner, intermediate, pro], description: '[Sprint 40 A1] The badge''s level' }, reward: { type: integer, description: 'Its coins, given once when reached' }, paid: { type: boolean } } }
   /home/slots/{slot}/unlock:
     parameters: [{ name: slot, in: path, required: true, schema: { type: integer, minimum: 3, maximum: 8 } }]
     post:

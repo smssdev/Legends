@@ -5829,10 +5829,18 @@ export interface paths {
                         "application/json": {
                             achievements: {
                                 /** @enum {string} */
-                                key: "first_win" | "matches" | "wins" | "first_title" | "league_title" | "cup_title" | "professional" | "legend" | "friendlies" | "idea" | "invites";
+                                key: "first_win" | "matches" | "wins" | "first_title" | "league_title" | "cup_title" | "professional" | "legend" | "friendlies" | "idea" | "invites" | "matches_10" | "wins_100" | "titles_5";
                                 goal: number;
                                 progress: number;
                                 earned: boolean;
+                                /**
+                                 * @description [Sprint 40 A1] The badge's level
+                                 * @enum {string}
+                                 */
+                                tier: "beginner" | "intermediate" | "pro";
+                                /** @description Its coins, given once when reached */
+                                reward: number;
+                                paid: boolean;
                             }[];
                         };
                     };

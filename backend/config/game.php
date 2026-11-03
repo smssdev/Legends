@@ -416,7 +416,16 @@ return [
     // [Sprint 30 G4] The achievements and their goals (App\Season\Achievements), in the order they show. professional and
     // legend are the rating's tiers (their goal is the tier's points, game.rating.tiers).
     'achievements' => ['first_win' => 1, 'matches' => 100, 'wins' => 25, 'first_title' => 1, 'league_title' => 1, 'cup_title' => 1,
-        'professional' => 0, 'legend' => 0, 'friendlies' => 10, 'idea' => 1, 'invites' => 3],
+        'professional' => 0, 'legend' => 0, 'friendlies' => 10, 'idea' => 1, 'invites' => 3,
+        // [Sprint 40 A1] Three more, to fill the levels: ten matches, a hundred wins, five titles.
+        'matches_10' => 10, 'wins_100' => 100, 'titles_5' => 5],
+    // [Sprint 40 A1] Each badge's level, and the coins it gives once, when reached (the owner's, 2026-11-03).
+    'achievement_tiers' => [
+        'first_win' => 'beginner', 'matches_10' => 'beginner', 'friendlies' => 'beginner', 'idea' => 'beginner', 'invites' => 'beginner',
+        'matches' => 'intermediate', 'wins' => 'intermediate', 'first_title' => 'intermediate', 'cup_title' => 'intermediate', 'professional' => 'intermediate',
+        'league_title' => 'pro', 'legend' => 'pro', 'wins_100' => 'pro', 'titles_5' => 'pro',
+    ],
+    'achievement_rewards' => ['beginner' => 10, 'intermediate' => 30, 'pro' => 100],
     // Support [X13]: WhatsApp (the number in international form, digits only) and Telegram (the username, without @),
     // for account and sign-up problems and ideas. A channel left empty has no button.
     'support' => ['whatsapp' => env('SUPPORT_WHATSAPP'), 'telegram' => env('SUPPORT_TELEGRAM'),

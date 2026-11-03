@@ -8,7 +8,12 @@ namespace App\Messages;
  */
 class MessageText
 {
-    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team'];
+    /** [Sprint 40 A1] The badges' names and levels, for their message. */
+    private const BADGE = ['first_win' => 'أول فوز', 'matches_10' => '10 مباريات', 'friendlies' => '10 وديات', 'idea' => 'فكرة اعتُمدت', 'invites' => '3 أصدقاء', 'matches' => '100 مباراة', 'wins' => '25 فوزاً', 'first_title' => 'أول لقب', 'cup_title' => 'بطل الكأس', 'professional' => 'درجة المحترف', 'league_title' => 'بطل الدوري', 'legend' => 'درجة الأسطورة', 'wins_100' => '100 فوز', 'titles_5' => '5 ألقاب'];
+
+    private const TIER = ['beginner' => 'المبتدئ', 'intermediate' => 'المتوسط', 'pro' => 'المحترف'];
+
+    public const TYPES = ['referee', 'absence_warning', 'left_absent', 'kicked', 'join_request', 'join_approved', 'join_rejected', 'match_report', 'in_debt', 'forced_sale', 'offer_received', 'offer_countered', 'offer_accepted', 'offer_rejected', 'offer_cancelled', 'offer_expired', 'scout_report', 'training_done', 'camp_back', 'stadium_part', 'season_end', 'vacation_request', 'vacation_approved', 'vacation_rejected', 'listing_sold', 'announcement', 'staff_left', 'match_of_day', 'inactive_warning', 'account_vacation', 'account_vacation_request', 'assistant_led', 'article_pending', 'referral_reward', 'official_message', 'coins_gift', 'slot_opened', 'loan', 'match_move', 'suggestion_answer', 'tournament_groups', 'chat_invite', 'tournament_full', 'tournament_team', 'achievement'];
 
     private const STRICTNESS = ['very_lenient' => 'متساهل جداً', 'lenient' => 'متساهل', 'medium' => 'متوسط', 'strict' => 'صارم', 'very_strict' => 'صارم جداً'];
 
@@ -247,6 +252,12 @@ class MessageText
                 'link' => '/',
             ],
             // [X54] The developers gave the account coins.
+            // [Sprint 40 A1] A badge reached, and its coins.
+            'achievement' => [
+                'title' => sprintf('وسام جديد: %s', self::BADGE[$p['key'] ?? ''] ?? ''),
+                'body' => sprintf('بلغت وسام «%s» من مستوى %s، فوصلتك %s كوينز.', self::BADGE[$p['key'] ?? ''] ?? '', self::TIER[$p['tier'] ?? ''] ?? '', $p['coins'] ?? 0),
+                'link' => '/',
+            ],
             'coins_gift' => [
                 'title' => sprintf('هدية من فريق التطوير: %s كوينز', $p['coins'] ?? 0),
                 'body' => (string) ($p['reason'] ?? ''),
