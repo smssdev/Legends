@@ -67,6 +67,46 @@ class MatchController extends Controller
         return response()->json($view);
     }
 
+    /**
+     * What the Unity scene needs once [Sprint 02 B1, README 7.7]: both clubs with their colours and kits, both teams'
+     * players with their numbers and lines, the stadium and its light from the kick-off's hour in Cairo, and the
+     * minute's length. Drawing only: no tactics of either side, so it is the same for every member.
+     */
+    public function scene(Request $request, int $match): JsonResponse
+    {
+        [$m, $f] = $this->load($request, $match);
+        $state = json_decode($m->initial_state, true);
+        $kickoff = Carbon::parse($f->scheduled_at ?? $m->started_at, 'UTC');
+        $light = self::light((int) $kickoff->copy()->setTimezone('Africa/Cairo')->format('G'));
+        $club = fn (string $side, int $id) => array_intersect_key($state['teams'][$side]['club'], array_flip(['id', 'name', 'code', 'primary', 'secondary']))
+            + KitPattern::kits($id, true);
+        $players = fn (string $side) => array_map(fn ($p) => [
+            'id' => $p['id'], 'name' => $p['name'], 'no' => $p['no'], 'pos' => $p['pos'], 'line' => $p['line'], 'starter' => (bool) $p['on'],
+        ], $state['teams'][$side]['players']);
+        $looks = DB::table('clubs')->join('users', 'users.id', '=', 'clubs.user_id')->whereIn('clubs.id', [$f->home_id, $f->away_id])
+            ->pluck('users.coach_look', 'clubs.id');
+
+        return response()->json([
+            'id' => $m->id,
+            'clubs' => ['home' => $club('home', $f->home_id), 'away' => $club('away', $f->away_id)],
+            'players' => ['home' => $players('home'), 'away' => $players('away')],
+            'captains' => ['home' => $state['teams']['home']['takers']['captain'] ?? null, 'away' => $state['teams']['away']['takers']['captain'] ?? null],
+            'coach_looks' => ['home' => $looks[$f->home_id] ?? null, 'away' => $looks[$f->away_id] ?? null],
+            'stadium' => config("game.scene.stadiums.$light"),
+            'light' => $light,
+            'kickoff_at' => $kickoff->toIso8601ZuluString(),
+            'tick_ms' => (int) $state['cfg']['match']['tick_ms'],
+        ]);
+    }
+
+    /** Night, dusk or day for a kick-off at this hour in Cairo. */
+    public static function light(int $hour): string
+    {
+        $c = config('game.scene');
+
+        return $hour >= $c['night_from'] || $hour < $c['day_from'] ? 'night' : ($hour >= $c['dusk_from'] ? 'dusk' : 'day');
+    }
+
     /** The minutes made after $since, with their frames, as the simulator's live sync gives them. */
     public function live(Request $request, int $match): JsonResponse
     {
