@@ -8,7 +8,7 @@
   <RouterView v-slot="{ Component, route }">
     <!-- [X74] Only a live match stays behind the other screens; a recorded one, or one closed from the bar, goes. -->
     <KeepAlive :include="broadcast.keep ? 'SimMatch' : []" :max="1">
-      <component :is="Component" :key="route.name === 'league-match' || route.name === 'sim-match' ? route.fullPath.split('?')[0] : undefined" />
+      <component :is="Component" :key="route.name === 'league-match' || route.name === 'sim-match' ? route.path : undefined" />
     </KeepAlive>
   </RouterView>
   <!-- [UP4] The splash, once per visit, over the game until the server answers. -->
