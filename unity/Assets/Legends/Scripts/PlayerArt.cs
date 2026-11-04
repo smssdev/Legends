@@ -57,13 +57,13 @@ namespace Legends
             return list.Length > 0 ? list[0].material : null;
         }
 
-        /// <summary>A player of this look, standing, in his kit. Draws only.</summary>
-        public PlayerLook Spawn(Look look, Transform parent, Color kitColour, Color trim)
+        /// <summary>A player of this look, standing, in his side's kit with his number. Draws only.</summary>
+        public PlayerLook Spawn(Look look, Transform parent, KitColours kit, int number)
         {
             var go = Instantiate(Model(look.Build), parent);
             go.name = "Player " + look;
             var player = go.AddComponent<PlayerLook>();
-            player.Apply(look, this, kitColour, trim);
+            player.Apply(look, this, kit, number);
             return player;
         }
     }

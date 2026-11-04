@@ -51,12 +51,22 @@ namespace Legends
     {
         public string Code = "";
         public Color Primary = Color.white, Secondary = Color.black;
+        /// <summary>[Sprint 06 U6] The shirt's pattern (App\Data\KitPattern; null is plain) and the change kit, if the club has one.</summary>
+        public string Pattern, AwayPattern;
+        public bool HasAwayKit;
+        public Color AwayColor = Color.white;
 
         public static ClubKit From(Dictionary<string, object> club)
         {
-            var kit = new ClubKit { Code = MiniJson.Str(club, "code") };
+            var kit = new ClubKit { Code = MiniJson.Str(club, "code"), Pattern = MiniJson.Str(club, "pattern", null) };
             ColorUtility.TryParseHtmlString(MiniJson.Str(club, "primary", "#FFFFFF"), out kit.Primary);
             ColorUtility.TryParseHtmlString(MiniJson.Str(club, "secondary", "#000000"), out kit.Secondary);
+            var away = MiniJson.Obj(club, "away_kit");
+            if (away != null && ColorUtility.TryParseHtmlString(MiniJson.Str(away, "color", ""), out kit.AwayColor))
+            {
+                kit.HasAwayKit = true;
+                kit.AwayPattern = MiniJson.Str(away, "pattern", null);
+            }
             return kit;
         }
     }

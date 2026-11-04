@@ -101,10 +101,11 @@ namespace Legends
         public Look Current { get; private set; }
 
         /// <summary>
-        /// Dresses this model (an instance of Players/player_&lt;build&gt;.fbx) as the look says, in the kit's colours:
-        /// one haircut and the tone's brows shown, the face and the tone's blend shapes on, the materials, and the height.
+        /// Dresses this model (an instance of Players/player_&lt;build&gt;.fbx) as the look says, in his side's kit with his
+        /// number (-1: none): one haircut and the tone's brows shown, the face and the tone's blend shapes on, the
+        /// materials, and the height.
         /// </summary>
-        public void Apply(Look look, PlayerArt art, Color kit, Color trim)
+        public void Apply(Look look, PlayerArt art, KitColours kit, int number)
         {
             Current = look;
             transform.localScale = Vector3.one * (look.Height / ModelHeight);
@@ -121,7 +122,7 @@ namespace Legends
                 };
                 r.gameObject.SetActive(shown);
                 if (!shown) continue;
-                // Every shape is set, not only the chosen one: the FBX brings them all in at full weight.
+                // Every shape is set, not only the chosen one, so nothing of another look stays on.
                 foreach (var face in Faces)
                     Shape(r, "face_" + face, face == look.FaceName && face != BaseFace);
                 foreach (var tone in Tones)
@@ -139,8 +140,7 @@ namespace Legends
                         break;
                     case "Kit":
                         r.sharedMaterial = art.kit;
-                        block.SetColor("_BaseColor", kit);
-                        block.SetColor("_TrimColor", trim);
+                        kit.Into(block, number);
                         break;
                     case "Eyes":
                         r.sharedMaterial = art.eyes;

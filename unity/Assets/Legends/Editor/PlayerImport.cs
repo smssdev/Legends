@@ -45,10 +45,18 @@ namespace Legends.EditorTools
             }
             t.textureType = TextureImporterType.Default;
             t.sRGBTexture = true;
-            bool alpha = !file.StartsWith("skin_") && !file.StartsWith("eye_");
+            bool alpha = !file.StartsWith("skin_");   // the eye keeps its alpha: its clear cornea over the iris
             t.alphaSource = alpha ? TextureImporterAlphaSource.FromInput : TextureImporterAlphaSource.None;
             t.alphaIsTransparency = alpha;
             t.maxTextureSize = file.StartsWith("skin_") ? 1024 : 512;
+            if (file == "numbers")
+            {
+                // The shirt numbers' atlas: ten digits side by side, sharp at its full 1280 pixels, never repeated.
+                t.maxTextureSize = 2048;
+                t.npotScale = TextureImporterNPOTScale.None;
+                t.wrapMode = TextureWrapMode.Clamp;
+                t.textureCompression = TextureImporterCompression.Uncompressed;
+            }
         }
     }
 }
