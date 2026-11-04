@@ -12,6 +12,7 @@ Shader "Legends/Kit"
         _ShortsColor ("Shorts", Color) = (0.11, 0.17, 0.28, 1)
         _SocksColor ("Socks", Color) = (0.78, 0.06, 0.18, 1)
         _BootsColor ("Boots", Color) = (0.08, 0.09, 0.11, 1)
+        _GlovesColor ("Keeper's gloves", Color) = (0.89, 1, 0.35, 1)
         _NumberColor ("Number", Color) = (1, 1, 1, 1)
         _OutlineColor ("Number outline (patterned shirts)", Color) = (0, 0, 0, 1)
         _Pattern ("Pattern (0 plain, 1 stripes, 2 hoops, 3 halves, 4 sash)", Float) = 0
@@ -27,7 +28,7 @@ Shader "Legends/Kit"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor, _TrimColor, _ShortsColor, _SocksColor, _BootsColor, _NumberColor, _OutlineColor;
+            half4 _BaseColor, _TrimColor, _ShortsColor, _SocksColor, _BootsColor, _GlovesColor, _NumberColor, _OutlineColor;
             float _Pattern, _Number;
             half _Smoothness;
         CBUFFER_END
@@ -90,7 +91,7 @@ Shader "Legends/Kit"
             half trim = i.color.r;
             half piece = i.color.b;
             float2 p = i.uv.zw;
-            if (piece > 0.83) return _BootsColor.rgb;
+            if (piece > 0.83) return i.color.a < 0.75 ? _GlovesColor.rgb : _BootsColor.rgb;   // the keeper's gloves: half alpha
             if (piece > 0.5) return lerp(_SocksColor.rgb, _TrimColor.rgb, trim);
             if (piece > 0.17) return lerp(_ShortsColor.rgb, _TrimColor.rgb, trim);
             half3 shirt = lerp(_BaseColor.rgb, _TrimColor.rgb, max(trim, Pattern(p)));

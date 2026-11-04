@@ -15,8 +15,13 @@ namespace Legends
         public static readonly string[] Patterns = { "plain", "stripes", "hoops", "halves", "sash" };
         public static readonly Color Navy = new Color32(0x1C, 0x2B, 0x48, 0xFF);
         public static readonly Color BootsBlack = new Color32(0x15, 0x17, 0x1C, 0xFF);
+        public static readonly Color GlovesNeon = Hex("#E4FF5A"), DarkShorts = Hex("#111827"), Gold = Hex("#F5B82E");
+        // The cartoon's choices, in its order (art.ts keeperKit, officialKit): the first far enough from the shirts.
+        static readonly Color[] HomeKeepers = { Hex("#2BB673"), Hex("#7B3FE4"), Hex("#F2994A"), Hex("#14B8C4") };
+        static readonly Color[] AwayKeepers = { Hex("#F2994A"), Hex("#14B8C4"), Hex("#7B3FE4"), Hex("#2BB673") };
+        static readonly Color[] OfficialShirts = { Hex("#15171C"), Hex("#F2E205"), Hex("#E85D9A"), Hex("#7B3FE4") };
 
-        public Color Shirt, Trim, Shorts, Socks, Boots, Number;
+        public Color Shirt, Trim, Shorts, Socks, Boots, Gloves, Number;
         /// <summary>Round the number on a patterned shirt (the shader draws it only there): the shirt's own colour.</summary>
         public Color Outline;
         public int Pattern;
@@ -30,6 +35,7 @@ namespace Legends
                 Shorts = ShortsUnder(primary),
                 Socks = primary,
                 Boots = BootsBlack,
+                Gloves = GlovesNeon,
                 Number = NumberOn(primary, secondary),
                 Outline = primary,
                 Pattern = PatternIndex(pattern),
@@ -47,6 +53,48 @@ namespace Legends
                 return (homeKit, Of(away.AwayColor, away.Primary, away.AwayPattern));
             return (homeKit, Of(away.Secondary, away.Primary, away.Pattern));
         }
+
+        /// <summary>The keepers' kits: a colour far from both shirts (the away keeper's from the home keeper's too), dark shorts, neon gloves.</summary>
+        public static (KitColours home, KitColours away) Keepers(Color homeShirt, Color awayShirt)
+        {
+            var home = Pick(HomeKeepers, homeShirt, awayShirt);
+            var away = Pick(AwayKeepers, homeShirt, awayShirt, home);
+            return (Keeper(home), Keeper(away));
+        }
+
+        static KitColours Keeper(Color shirt) => new KitColours
+        {
+            Shirt = shirt, Trim = DarkShorts, Shorts = DarkShorts, Socks = shirt, Boots = BootsBlack, Gloves = GlovesNeon,
+            Number = NumberOn(shirt, DarkShorts), Outline = shirt, Pattern = 0,
+        };
+
+        /// <summary>The referee and his assistants: black, or the first colour far from both teams and both keepers; a gold trim.</summary>
+        public static KitColours Officials(Color homeShirt, Color awayShirt, Color homeKeeper, Color awayKeeper)
+        {
+            var shirt = Pick(OfficialShirts, homeShirt, awayShirt, homeKeeper, awayKeeper);
+            return new KitColours
+            {
+                Shirt = shirt, Trim = Gold, Shorts = DarkShorts, Socks = DarkShorts, Boots = BootsBlack, Gloves = GlovesNeon,
+                Number = Color.white, Outline = shirt, Pattern = 0,
+            };
+        }
+
+        /// <summary>The cartoon's "apart": the three channels differ by more than 150 of 255 in all.</summary>
+        public static bool Apart(Color a, Color b) =>
+            Mathf.Abs(a.r - b.r) + Mathf.Abs(a.g - b.g) + Mathf.Abs(a.b - b.b) > 150f / 255f;
+
+        static Color Pick(Color[] choices, params Color[] avoid)
+        {
+            foreach (var c in choices)
+            {
+                bool ok = true;
+                foreach (var a in avoid) ok &= Apart(c, a);
+                if (ok) return c;
+            }
+            return choices[0];
+        }
+
+        static Color Hex(string h) => ColorUtility.TryParseHtmlString(h, out var c) ? c : Color.magenta;
 
         public static int PatternIndex(string pattern)
         {
@@ -78,7 +126,8 @@ namespace Legends
 
         static readonly int ShirtId = Shader.PropertyToID("_BaseColor"), TrimId = Shader.PropertyToID("_TrimColor"),
             ShortsId = Shader.PropertyToID("_ShortsColor"), SocksId = Shader.PropertyToID("_SocksColor"),
-            BootsId = Shader.PropertyToID("_BootsColor"), NumberColourId = Shader.PropertyToID("_NumberColor"),
+            BootsId = Shader.PropertyToID("_BootsColor"), GlovesId = Shader.PropertyToID("_GlovesColor"),
+            NumberColourId = Shader.PropertyToID("_NumberColor"),
             OutlineId = Shader.PropertyToID("_OutlineColor"),
             PatternId = Shader.PropertyToID("_Pattern"), NumberId = Shader.PropertyToID("_Number");
 
@@ -90,6 +139,7 @@ namespace Legends
             b.SetColor(ShortsId, Shorts);
             b.SetColor(SocksId, Socks);
             b.SetColor(BootsId, Boots);
+            b.SetColor(GlovesId, Gloves);
             b.SetColor(NumberColourId, Number);
             b.SetColor(OutlineId, Outline);
             b.SetFloat(PatternId, Pattern);

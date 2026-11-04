@@ -151,6 +151,30 @@ def drop_helpers(body):
         body.modifiers.remove(m)
 
 
+def drop_cornea(eyes):
+    """Leaves out the eye's clear outer shell (the cornea: its faces sit on the eye texture's transparent texels), so
+    the iris shows in Unity with no transparency to sort. About half the eye's faces."""
+    path = os.path.join(os.path.dirname(bp.find('high-poly', 'eyes', '.mhclo')), '..', 'materials', 'brown_eye.png')
+    img = bpy.data.images.load(path)
+    w, h = img.size
+    alpha = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)[..., 3]
+    bpy.data.images.remove(img)
+    uv = eyes.data.uv_layers[0].data
+    eyes.active_shape_key_index = 0     # bmesh writes into the active shape: it must be the Basis
+    bm = bmesh.new()
+    bm.from_mesh(eyes.data)
+    bm.faces.ensure_lookup_table()
+    clear = []
+    for p in eyes.data.polygons:
+        u, v = np.mean([uv[i].uv[:] for i in p.loop_indices], axis=0)
+        if alpha[min(h - 1, int(v * h)), min(w - 1, int(u * w))] < 0.5:
+            clear.append(bm.faces[p.index])
+    bmesh.ops.delete(bm, geom=clear, context='FACES')
+    bm.to_mesh(eyes.data)
+    bm.free()
+    print('Legends: %d cornea faces left out of the eyes' % len(clear))
+
+
 def one_material(ob, name):
     """One slot: Unity gives each part its material (PlayerLook), the FBX carries none of its own."""
     for p in ob.data.polygons:
@@ -341,12 +365,16 @@ def export(build, out):
         buzz.vertex_groups.new(name=g.name)
     buzz.modifiers.new('Armature', 'ARMATURE').object = rig
     kit = one_kit(kits.dress(rig, body))
+    keeper = one_kit(kits.dress(rig, body, keeper=True))
+    keeper.name = 'KitKeeper'
     follow(body, kit)
+    follow(body, keeper)
     follow(body, buzz)
     uncover(body, kit)
-    parts = [(body, 'Body', 'Skin'), (kit, 'Kit', 'Kit'), (buzz, 'Hair', 'Hair_buzz')]
+    parts = [(body, 'Body', 'Skin'), (kit, 'Kit', 'Kit'), (keeper, 'Kit', 'Kit'), (buzz, 'Hair', 'Hair_buzz')]
     parts += [(o, n.split('_')[0] if not n.startswith('Hair') else 'Hair', n) for n, o in assets.items()]
     made = []
+    drop_cornea(assets['Eyes'])
     for ob, part, material in parts:
         one_material(ob, material)
         made += lods(ob, part)

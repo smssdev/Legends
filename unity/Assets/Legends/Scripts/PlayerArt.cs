@@ -58,12 +58,12 @@ namespace Legends
         }
 
         /// <summary>A player of this look, standing, in his side's kit with his number. Draws only.</summary>
-        public PlayerLook Spawn(Look look, Transform parent, KitColours kit, int number)
+        public PlayerLook Spawn(Look look, Transform parent, KitColours kit, int number, bool keeper = false)
         {
             var go = Instantiate(Model(look.Build), parent);
             go.name = "Player " + look;
             var player = go.AddComponent<PlayerLook>();
-            player.Apply(look, this, kit, number);
+            player.Apply(look, this, kit, number, keeper);
             return player;
         }
     }

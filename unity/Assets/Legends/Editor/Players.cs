@@ -62,7 +62,7 @@ namespace Legends.EditorTools
             foreach (var b in new HashSet<string>(browsOfTone.ConvertAll(x => x.brows)))
                 brows.Add(new PlayerArt.Named { name = b, material = Lit("Brows_" + b, Tex(b), Color.white, 0.1f, cutout: true) });
             art.brows = brows.ToArray();
-            art.eyes = Lit("Eyes", Tex("eye_brown"), Color.white, 0.85f, cutout: true);
+            art.eyes = Lit("Eyes", Tex("eye_brown"), Color.white, 0.3f, cutout: true);   // glossier mirrors the sky and hides the iris
             art.lashes = Lit("Lashes", Tex("eyelashes01"), Color.black, 0.1f, cutout: true);
             art.kit = Own("Kit", "Legends/Kit", m => m.SetTexture("_Numbers", Tex("numbers")));
             art.hairColours = new[] { Hex(looks.hair_colours.dark), Hex(looks.hair_colours.brown), Hex(looks.hair_colours.blond) };
@@ -159,6 +159,9 @@ namespace Legends.EditorTools
             float bias = QualitySettings.lodBias;
             QualitySettings.lodBias = 100f;            // the full models, as in a close-up
             Save(cam, 2400, 1000, "players.png");
+            foreach (var r in players[3].GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                if (!r.name.StartsWith("Hair") && !r.name.StartsWith("Brows"))
+                    Debug.Log($"Legends: DEBUG {r.name} active={r.gameObject.activeInHierarchy} mat={r.sharedMaterial?.name} shader={r.sharedMaterial?.shader.name} tex={r.sharedMaterial?.GetTexture("_BaseMap")?.name} bounds={r.bounds.center:F3}/{r.bounds.size:F3}");
             var head = players[3].position + Vector3.up * 1.62f * players[3].localScale.y;
             cam.transform.position = head + new Vector3(0.35f, 0.05f, 1.1f);
             cam.transform.LookAt(head);

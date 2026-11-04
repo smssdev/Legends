@@ -100,12 +100,26 @@ namespace Legends
 
         public Look Current { get; private set; }
 
+        /// <summary>Changes only the kit (a substitute's bib off, the team's shirt on), keeping the look.</summary>
+        public void Dress(KitColours kit, int number)
+        {
+            var block = new MaterialPropertyBlock();
+            foreach (var r in GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {
+                var (part, _) = Part(r.name);
+                if (part != "Kit" && part != "KitKeeper") continue;
+                r.GetPropertyBlock(block);
+                kit.Into(block, number);
+                r.SetPropertyBlock(block);
+            }
+        }
+
         /// <summary>
         /// Dresses this model (an instance of Players/player_&lt;build&gt;.fbx) as the look says, in his side's kit with his
         /// number (-1: none): one haircut and the tone's brows shown, the face and the tone's blend shapes on, the
         /// materials, and the height.
         /// </summary>
-        public void Apply(Look look, PlayerArt art, KitColours kit, int number)
+        public void Apply(Look look, PlayerArt art, KitColours kit, int number, bool keeper = false)
         {
             Current = look;
             transform.localScale = Vector3.one * (look.Height / ModelHeight);
@@ -118,6 +132,8 @@ namespace Legends
                 {
                     "Hair" => variant == look.HairName,
                     "Brows" => variant == brows,
+                    "Kit" => !keeper,                       // the keeper wears his own: long sleeves and gloves
+                    "KitKeeper" => keeper,
                     _ => true,
                 };
                 r.gameObject.SetActive(shown);
@@ -139,6 +155,7 @@ namespace Legends
                         block.SetColor("_BaseColor", art.HairColour(look.HairColourName));
                         break;
                     case "Kit":
+                    case "KitKeeper":
                         r.sharedMaterial = art.kit;
                         kit.Into(block, number);
                         break;
