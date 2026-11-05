@@ -1,5 +1,5 @@
 {
-    "engine_version": 13,
+    "engine_version": 14,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -58,7 +58,7 @@
             "favourite_win_rate_bp": 6700,
             "captain_bonus_bp": 100,
             "captain_min_fitness": 50,
-            "home_base_bp": 500,
+            "home_base_bp": 300,
             "home_pitch_bp": [
                 0,
                 200,
@@ -126,7 +126,7 @@
             }
         },
         "engine": {
-            "version": 13,
+            "version": 14,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,
@@ -221,7 +221,7 @@
             },
             "phase_slope_bp": 17,
             "share_slope_bp": 30,
-            "home_share_bp": 450,
+            "home_share_bp": 250,
             "style_share_bp": 5,
             "goal_base_bp": {
                 "big": 2000,
@@ -233,6 +233,7 @@
             "goal_slope_bp": 12,
             "penalty_goal_bp": 7600,
             "free_kick_goal_bp": 700,
+            "attack_foul_bp": 250,
             "on_target_bp": 3700,
             "corner_after_save_bp": 3000,
             "press_bonus_cp": 4,
@@ -323,7 +324,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "a401354ee9067ac0b575a0a75c9502e69b2af55233cc591c634431dc0947a494"
+            "sha256": "4cbf23f20057c0b85a142569c23e52f6e1a7cc5170c546159f8afb7b6258b305"
         },
         {
             "seed": 42,
@@ -334,18 +335,18 @@
                 "away": 0
             },
             "shootout": null,
-            "sha256": "9d53abcea2717b0ec2d700019731f1c944f7a4747a4da277a6e8f9069714f149"
+            "sha256": "5109956569a7930c2f7e80677471f34018f11c07143136b1d803f827611c5d8c"
         },
         {
             "seed": 48213,
             "competition": "league",
-            "minutes": 93,
+            "minutes": 94,
             "score": {
                 "home": 2,
                 "away": 1
             },
             "shootout": null,
-            "sha256": "7b446008463658b9cc226810ee1402aaabb5339366806426609fc1654e3929b8"
+            "sha256": "e487e772e41e27035fcfd6331cdae1aacdad07ce2abf8b3f0b369bc7351e6a57"
         },
         {
             "seed": 7,
@@ -359,7 +360,7 @@
                 "home": 3,
                 "away": 4
             },
-            "sha256": "189481e28ca05092025108cd5f6f243ffb3be7aadf0218513eb02c57019da75e"
+            "sha256": "b542cee65596e715198d5ac0969907d201fd8739b2073cb08fe0d5d81c6207de"
         },
         {
             "seed": 99,
@@ -370,7 +371,7 @@
                 "away": 1
             },
             "shootout": null,
-            "sha256": "45ea24fa599cd86bb5bb22e72300e9138c4c8ae81bfe1e1be8746adaa20ba9bc"
+            "sha256": "9ad120e76bd6424077199858082fe25c9ad0499aeb03c87e73dcf6b641680981"
         }
     ]
 }

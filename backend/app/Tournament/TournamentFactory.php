@@ -58,6 +58,7 @@ class TournamentFactory
                 'kind' => 'tournament', 'format' => $s['format'], 'tournament_template' => $s['template'],
                 'group_count' => $s['format'] === 'groups' ? (int) $s['group_count'] : null,
                 'advance_per_group' => $s['format'] === 'groups' ? (int) ($s['advance_per_group'] ?? 2) : null,
+                'best_thirds' => $s['format'] === 'groups' && ($s['best_thirds'] ?? 0) > 0 ? (int) $s['best_thirds'] : null,
                 'legs' => $s['format'] === 'knockout' ? null : (int) ($s['legs'] ?? 1),
                 'entry_mode' => $s['entry_mode'] ?? 'pick',
             ]);
@@ -133,7 +134,7 @@ class TournamentFactory
         return ($s['is_dev'] ?? false) ? 0 : LeagueTiers::cost($teams);
     }
 
-    /** The shape fits the count: groups of at least two, and a knockout of 2, 4, 8 or 16 after them. */
+    /** The shape fits the count: groups of at least two, and a knockout of 2, 4, 8, 16 or 32 after them. */
     public static function assertShape(int $teams, array $s): void
     {
         $c = config('game.tournaments');
@@ -149,8 +150,14 @@ class TournamentFactory
         if ($s['format'] === 'groups') {
             $g = (int) ($s['group_count'] ?? 0);
             $a = (int) ($s['advance_per_group'] ?? 2);
+            $t = (int) ($s['best_thirds'] ?? 0);
             if (! in_array($g, $c['group_counts'], true) || ! in_array($a, $c['advance'], true)) {
-                throw new HttpException(422, __('عدد المجموعات 1 أو 2 أو 4 أو 8، والمتأهلون من كل مجموعة 1 أو 2.'));
+                throw new HttpException(422, __('عدد المجموعات 1 أو 2 أو 4 أو 8 أو 12، والمتأهلون من كل مجموعة 1 أو 2.'));
+            }
+            // [Sprint 43 A3] The best thirds complete the knockout to 2, 4, 8, 16 or 32 (12 groups: 24 and 8 thirds).
+            $size = $g * $a + $t;
+            if ($t < 0 || ($t > 0 && ($a !== 2 || $t >= $g || intdiv($teams, $g) < 3)) || ($size & ($size - 1)) !== 0 || $size > 32) {
+                throw new HttpException(422, __('المتأهلون من المجموعات (مع أفضل الثوالث) يكملون دوراً إقصائياً من 2 أو 4 أو 8 أو 16 أو 32 فريقاً.'));
             }
             if (intdiv($teams, $g) < 2 || intdiv($teams, $g) < $a || $g * $a < 2) {
                 throw new HttpException(422, __('الفرق لا تكفي هذه المجموعات: فريقان على الأقل في كل مجموعة، ومتأهلان على الأقل للأدوار الإقصائية.'));

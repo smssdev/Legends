@@ -13,7 +13,7 @@ use Random\Randomizer;
  */
 class CupBracket
 {
-    public const NAMES = [16 => 'r16', 8 => 'qf', 4 => 'sf', 2 => 'final'];
+    public const NAMES = [32 => 'r32', 16 => 'r16', 8 => 'qf', 4 => 'sf', 2 => 'final'];
 
     /** The stages in the order they are played, the preliminary first when there is one. */
     public static function stages(int $teams): array

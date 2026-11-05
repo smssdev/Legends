@@ -105,12 +105,20 @@ function toggle(c: Card) {
 const nations = computed(() => (catalog.value?.nations ?? []).filter((n) => !conf.value || n.confederation === conf.value))
 const count = computed(() => picked.value.length)
 /** The group counts that fit: at least two teams in each, and a knockout of two or more after. */
-const groupOptions = computed(() => (catalog.value?.limits.group_counts ?? [1, 2, 4, 8]).filter((g) => Math.floor(count.value / g) >= 2))
+const groupOptions = computed(() => (catalog.value?.limits.group_counts ?? [1, 2, 4, 8, 12]).filter((g) => Math.floor(count.value / g) >= 2))
 watch(groupOptions, (opts) => { if (!opts.includes(groupCount.value)) groupCount.value = opts[opts.length - 1] ?? 1 })
+/** [Sprint 43 A3] The best thirds that complete the knockout (12 groups: 24 and 8 thirds make 32); the server checks it. */
+const thirds = computed(() => {
+  const n = groupCount.value * advance.value
+  if (advance.value !== 2 || (n & (n - 1)) === 0) return 0
+  let size = 1
+  while (size < n) size *= 2
+  return size - n < groupCount.value && size <= 32 ? size - n : 0
+})
 const shape = computed(() => {
   if (format.value === 'groups') {
     const per = Math.ceil(count.value / groupCount.value)
-    return `${groupCount.value} × ${per} → ${groupCount.value * advance.value}`
+    return `${groupCount.value} × ${per} → ${groupCount.value * advance.value}${thirds.value ? ` + ${thirds.value}` : ''}`
   }
   return ''
 })
@@ -123,6 +131,7 @@ async function create() {
     const { data } = await api.POST('/tournaments', { body: {
       name: name.value || null, template: template.value as 'custom', teams: picked.value.map((c) => c.id), format: format.value,
       group_count: format.value === 'groups' ? groupCount.value as 1 : null, advance_per_group: format.value === 'groups' ? advance.value as 1 : null,
+      best_thirds: format.value === 'groups' && thirds.value ? thirds.value : null,
       legs: format.value === 'knockout' ? null : legs.value as 1, round_times: [time.value], rounds_per_day: 1,
       starts_at: new Date(startsAt.value).toISOString(), draw_at: liveDraw.value ? new Date(drawAt.value).toISOString() : null,
       club_id: entryMode.value === 'draw' ? null : myTeam.value, entry_mode: entryMode.value,
@@ -208,6 +217,7 @@ async function create() {
         <label class="flex items-center gap-2">{{ $t('يتأهل من كل مجموعة') }}
           <select v-model.number="advance" class="h-touch rounded-lg bg-surface-sunk px-2"><option :value="1">1</option><option :value="2">2</option></select></label>
         <span class="font-numbers text-text-muted" dir="ltr">{{ shape }}</span>
+        <span v-if="thirds" class="text-text-muted">{{ $t('ومعهم أفضل {n} ثوالث', { n: thirds }) }}</span>
       </div>
       <label v-if="format !== 'knockout'" class="flex items-center gap-2 text-sm">{{ $t('المباريات') }}
         <select v-model.number="legs" class="h-touch rounded-lg bg-surface-sunk px-2"><option :value="1">{{ $t('مباراة واحدة') }}</option><option :value="2">{{ $t('ذهاب وإياب') }}</option></select></label>

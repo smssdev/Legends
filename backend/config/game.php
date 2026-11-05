@@ -36,7 +36,7 @@ return [
         // كل النسب بنقاط الأساس (10000 = 100%) لأن المحرك يعمل بأرقام صحيحة فقط
         'favourite_win_rate_bp' => 6700,       // الهدف للمعايرة
         'captain_bonus_bp' => 100, 'captain_min_fitness' => 50,
-        'home_base_bp' => 500,                     // ميزة أساسية لكل فريق على أرضه
+        'home_base_bp' => 300,                     // ميزة أساسية لكل فريق على أرضه (3%، قرار 2026-11-05، Sprint 43 B1)
         'home_pitch_bp' => [0, 200, 400, 600],    // فوقها حسب مرحلة أرضية الملعب [PLAN 2.9]: +2% و+4% و+6% [Sprint 39 E6]
         // [X35] The live broadcast's pace, the owner's (2026-10-25): 18 minutes of football in one real minute, so a minute
         // lasts 60000/18 ms and a half two and a half minutes, the clock running on screen as on TV; an extra-time half
@@ -282,7 +282,8 @@ return [
         'targets' => [
             'goals/match' => [2.6, 2.9],
             '0-0_%' => [6, 9],
-            'home_win_%' => [42, 48], 'draw_%' => [22, 28], 'away_win_%' => [27, 33],
+            'home_win_%' => [39, 45],   // 39–45 with the smaller home advantage (Sprint 43 B1); before it 42–48
+            'draw_%' => [22, 28], 'away_win_%' => [27, 33],
             'shots/team' => [10.5, 13.5], 'on_target/team' => [4, 5],
             'yellow/match' => [3.5, 4.5], 'red/match' => [0.07, 0.15],
             'penalties/match' => [0.2, 0.3], 'injuries/match' => [0.2, 0.3], 'offsides/match' => [2, 4],
@@ -315,7 +316,8 @@ return [
     ],
     'engine' => [
         // 13 [X99]: keeper for keeper on an injury, a keeper in an outfield place counts there, the shootout ends when decided.
-        'version' => 13,
+        // 14 [Sprint 43 B1, B2]: home advantage 3% and 2.5% of the ball, and the attackers' own foul taking a goal away.
+        'version' => 14,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -370,11 +372,12 @@ return [
         'phase_base_bp' => ['build' => 8000, 'progress' => 6900, 'create' => 7600, 'header' => 3500],
         'phase_slope_bp' => 17,              // per rating point of difference
         'share_slope_bp' => 30,              // initiative share per point of midfield difference
-        'home_share_bp' => 450,              // the home side has the ball more (of 10000, on its own ground)
+        'home_share_bp' => 250,              // the home side has the ball more (of 10000, on its own ground; 2.5%, Sprint 43 B1)
         'style_share_bp' => 5,               // initiative share per point of attacking style over the opponent's
         'goal_base_bp' => ['big' => 2000, 'normal' => 600, 'half' => 285, 'long' => 1000, 'header' => 450],
         'goal_slope_bp' => 12,               // per point of shooter − keeper
         'penalty_goal_bp' => 7600, 'free_kick_goal_bp' => 700,
+        'attack_foul_bp' => 250,             // [Sprint 43 B2] a missed shot after the finisher's own foul: a goal taken away by the VAR
         'on_target_bp' => 3700, 'corner_after_save_bp' => 3000,
         'press_bonus_cp' => 4,               // defence bonus in build-up per pressing point above 50
         'tempo_precision_cp' => 3,           // own precision loss per tempo point above 50
@@ -595,7 +598,9 @@ return [
     // Club objectives [PLAN 2.20, Sprint 33]: from the club's rank by strength in its league (1 = strongest).
     // League: the strongest goes for the title; the top quarter for a place this far below its rank; the rest
     // further; and nobody is asked for less than to stay out of the bottom fifth. Cup: a stage by quarter of rank.
-    'objectives' => ['top_quarter_slack' => 1, 'rest_slack' => 2, 'bottom_bp' => 2000,
+    // [Sprint 43 A2] The league objective: title_ranks strongest play for the title, the others for their place by
+    // strength, the bottom survive_bottom (a quarter of the league at most) to stay out of the bottom.
+    'objectives' => ['title_ranks' => 2, 'survive_bottom' => 3,
         'cup_by_quarter' => ['final', 'sf', 'qf', 'qf']],
     // The bots between matches [ENGINE 7, Sprint 32]: each personality's own tactics, then the match's adjustments
     // from what any coach can see of the opponent (strength, the four public tactics of his last match, his form).
@@ -645,9 +650,11 @@ return [
         // [X68] Up to 64 teams (a knockout alone up to 32); a draw that shares the teams among the players who entered
         // starts auto_draw_minutes after the last place is taken, unless the organizer set its time.
         'min_teams' => 2, 'max_teams' => 64, 'knockout_max_teams' => 32, 'auto_draw_minutes' => 10, 'entry_modes' => ['pick', 'draw', 'assign'], 'nation_min_players' => 14, 'nation_squad' => 23, 'nation_keepers' => 3,
-        'group_counts' => [1, 2, 4, 8], 'advance' => [1, 2], 'reveal_ms' => 3500,
+        'group_counts' => [1, 2, 4, 8, 12], 'advance' => [1, 2], 'reveal_ms' => 3500,
         'templates' => [
             'world_cup' => ['pool' => 'nations', 'teams' => 32, 'format' => 'groups', 'groups' => 8],
+            // [Sprint 43 A3] The World Cup of 2026: 48 in 12 groups, the first two and the 8 best thirds to a round of 32.
+            'world_cup_48' => ['pool' => 'nations', 'teams' => 48, 'format' => 'groups', 'groups' => 12, 'best_thirds' => 8],
             'club_world_cup' => ['pool' => 'clubs', 'per_league' => 2, 'teams' => 32, 'format' => 'groups', 'groups' => 8],
             'afcon' => ['pool' => 'nations', 'confederation' => 'CAF', 'teams' => 16, 'format' => 'groups', 'groups' => 4],
             'euro' => ['pool' => 'nations', 'confederation' => 'UEFA', 'teams' => 16, 'format' => 'groups', 'groups' => 4],

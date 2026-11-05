@@ -23,15 +23,18 @@ class TournamentPlan
 {
     public const FORMATS = ['league', 'groups', 'knockout'];
 
+    /** A best third's place in a tie: "3:1" is the best third of all the groups [Sprint 43 A3]. */
+    public const THIRD = '3:';
+
     /**
      * @param  list<int>  $byStrength  team ids, strongest first
      * @return array{steps: list<array>, groups: array<int, int>, rounds: list<array{matches: list<array{0: int, 1: int}>, rests: list<int>}>, ties: list<array>}
      */
-    public static function make(array $byStrength, int $seed, string $format, int $groupCount = 1, int $advance = 2, int $legs = 1): array
+    public static function make(array $byStrength, int $seed, string $format, int $groupCount = 1, int $advance = 2, int $legs = 1, int $thirds = 0): array
     {
         return match ($format) {
             'league' => self::league($byStrength, $seed, $legs),
-            'groups' => self::groups($byStrength, $seed, $groupCount, $advance, $legs),
+            'groups' => self::groups($byStrength, $seed, $groupCount, $advance, $legs, $thirds),
             'knockout' => self::knockout($byStrength, $seed),
         };
     }
@@ -44,7 +47,7 @@ class TournamentPlan
         return ['steps' => $steps, 'groups' => [], 'rounds' => self::robin($order, $legs), 'ties' => []];
     }
 
-    private static function groups(array $teams, int $seed, int $groupCount, int $advance, int $legs): array
+    private static function groups(array $teams, int $seed, int $groupCount, int $advance, int $legs, int $thirds = 0): array
     {
         $rng = new Randomizer(new Mt19937($seed));
         $groups = [];
@@ -67,7 +70,7 @@ class TournamentPlan
             }
         }
 
-        return ['steps' => $steps, 'groups' => $groups, 'rounds' => array_values($rounds), 'ties' => self::afterGroups($groupCount, $advance)];
+        return ['steps' => $steps, 'groups' => $groups, 'rounds' => array_values($rounds), 'ties' => self::afterGroups($groupCount, $advance, $thirds)];
     }
 
     private static function knockout(array $teams, int $seed): array
@@ -107,12 +110,41 @@ class TournamentPlan
      * The knockout after the groups: empty ties whose sides say where they come from ("A1", "B2"), in the bracket's
      * order, each pointing at the tie its winner goes to.
      */
-    public static function afterGroups(int $groupCount, int $advance): array
+    public static function afterGroups(int $groupCount, int $advance, int $thirds = 0): array
     {
-        $size = $groupCount * $advance;
+        $size = $groupCount * $advance + $thirds;
         $L = fn (int $g, int $place) => self::letter($g).$place;
         $pairs = [];
-        if ($advance === 1) {
+        if ($thirds > 0) {
+            // [Sprint 43 A3] With the best thirds ("3:1" the best of them): the first winners meet the thirds, the
+            // other winners a neighbour group's runner-up, and the runners-up left meet each other. Who is which third
+            // is settled when the groups end, never a winner's own group (TournamentStage::thirds).
+            $winners = range(1, $groupCount);
+            $runners = range(1, $groupCount);
+            $vsThird = $vsRunner = $runnersLeft = [];
+            foreach (array_slice($winners, 0, $thirds) as $i => $g) {
+                $vsThird[] = [$L($g, 1), self::THIRD.($i + 1)];
+            }
+            $rest = array_slice($winners, $thirds);
+            for ($i = 0; $i + 1 < count($rest); $i += 2) {
+                $vsRunner[] = [$L($rest[$i], 1), $L($rest[$i + 1], 2)];
+                $vsRunner[] = [$L($rest[$i + 1], 1), $L($rest[$i], 2)];
+            }
+            $left = array_values(array_diff($runners, $rest));
+            for ($i = 0; $i + 3 < count($left); $i += 4) {
+                $runnersLeft[] = [$L($left[$i], 2), $L($left[$i + 2], 2)];
+                $runnersLeft[] = [$L($left[$i + 1], 2), $L($left[$i + 3], 2)];
+            }
+            // Spread over the bracket: a third's tie, then one of the others, in turn.
+            $others = array_merge($runnersLeft, $vsRunner);
+            foreach ($vsThird as $i => $tie) {
+                $pairs[] = $tie;
+                if (isset($others[$i])) {
+                    $pairs[] = $others[$i];
+                }
+            }
+            $pairs = array_merge($pairs, array_slice($others, count($vsThird)));
+        } elseif ($advance === 1) {
             for ($g = 1; $g <= $groupCount; $g += 2) {
                 $pairs[] = [$L($g, 1), $L($g + 1, 1)];
             }

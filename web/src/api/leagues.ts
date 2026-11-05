@@ -35,7 +35,7 @@ export function budget(v: number): string {
 }
 
 /** A club's objectives in words (Sprint 33): the place in the league and the stage in the cup. */
-const CUP_STAGES: Record<string, string> = { r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي', winner: 'البطولة' }
+const CUP_STAGES: Record<string, string> = { r32: 'دور الـ32', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي', winner: 'البطولة' }
 export function leagueGoal(o: { target: number; kind: string }): string {
   if (o.kind === 'title') return t('الفوز باللقب')
   if (o.kind === 'survive') return t('البقاء: المركز {n} أو أفضل', { n: o.target })

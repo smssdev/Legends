@@ -91,7 +91,7 @@ class TournamentTest extends TestCase
         $catalog = $this->actingAs($this->owner)->getJson('/api/v1/tournaments/catalog')->assertOk()->json();
         $this->assertSame(['Brazil', 'Egypt'], array_column($catalog['nations'], 'name'));
         $this->assertContains('Palestine', array_column($catalog['missing'], 'name'));
-        $this->assertSame(['world_cup', 'club_world_cup', 'afcon', 'euro', 'asian_cup', 'custom'], array_column($catalog['templates'], 'key'));
+        $this->assertSame(['world_cup', 'world_cup_48', 'club_world_cup', 'afcon', 'euro', 'asian_cup', 'custom'], array_column($catalog['templates'], 'key'));
         $afcon = collect($catalog['templates'])->firstWhere('key', 'afcon');
         $this->assertSame([$this->nation('Egypt')], $afcon['teams']);
     }

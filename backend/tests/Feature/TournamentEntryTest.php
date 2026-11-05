@@ -6,10 +6,12 @@ use App\League\LeagueStarter;
 use App\Models\League;
 use App\Models\User;
 use App\Support\GameClock;
+use App\Tournament\TournamentFactory;
 use App\Wallet\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\Feature\Concerns\MakesLeagues;
 use Tests\TestCase;
 
@@ -114,5 +116,23 @@ class TournamentEntryTest extends TestCase
         $this->actingAs($this->owner)->postJson('/api/v1/tournaments', $body + ['format' => 'knockout'])->assertStatus(422);
         $t = $this->postJson('/api/v1/tournaments', $body + ['format' => 'groups', 'group_count' => 8])->assertCreated()->json('tournament');
         $this->assertSame(64, $t['team_count']);
+    }
+
+    /** [Sprint 43 A3] 48 in 12 groups with the 8 best thirds; thirds that do not complete a round are refused. */
+    public function test_the_world_cup_of_48_shape(): void
+    {
+        $shape = fn (int $teams, int $groups, int $thirds) => TournamentFactory::assertShape($teams,
+            ['format' => 'groups', 'group_count' => $groups, 'advance_per_group' => 2, 'best_thirds' => $thirds]);
+        $shape(48, 12, 8);
+        $shape(32, 8, 0);
+        foreach ([[48, 12, 0], [48, 12, 6], [24, 8, 0 + 8]] as [$teams, $groups, $thirds]) {
+            try {
+                $shape($teams, $groups, $thirds);
+                $this->fail("$teams in $groups groups with $thirds thirds");
+            } catch (HttpException $e) {
+                $this->assertSame(422, $e->getStatusCode());
+            }
+        }
+        $this->assertSame(12, config('game.tournaments.templates.world_cup_48.groups'));
     }
 }

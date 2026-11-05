@@ -29,8 +29,10 @@
     <!-- [X56] The day look before the first paint (src/lib/theme.ts keeps it after), so the page never flashes. -->
     <script>
       try {
-        var t = localStorage.getItem('legends.theme');
-        if (t === 'light' || (t === 'auto' && matchMedia('(prefers-color-scheme: light)').matches)) {
+        // [Sprint 43 A1] Who has not chosen follows the device (the owner's decision 2026-11-05).
+        var t = null;
+        try { t = localStorage.getItem('legends.theme'); } catch (e) {}
+        if (t === 'light' || (t !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)) {
           document.documentElement.classList.add('light');
           document.querySelector('meta[name="theme-color"]').setAttribute('content', '#EFEADF');
         }
