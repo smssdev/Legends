@@ -51,7 +51,7 @@ const sa = (e, k, v) => { const key = '_' + k; if (e[key] === v) return; e[key] 
 let uid = 0
 export const crest = ([c1, c2, t]) => {
   const id = 'cr' + ++uid
-  return `<svg viewBox="0 0 64 72"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${shade(c1, -50)}"/></linearGradient></defs><path d="M32 2 L60 10 V36 C60 54 47 65 32 70 C17 65 4 54 4 36 V10 Z" fill="url(#${id})" stroke="${c2}" stroke-width="3"/><path d="M32 9 L53 15 V35 C53 49 43 58 32 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed, Alexandria, sans-serif" font-weight="800" font-size="${t.length > 2 ? 17 : 20}" fill="${lum(c1) > 150 ? '#0A1F42' : '#fff'}">${t}</text></svg>`
+  return `<svg viewBox="0 0 64 72"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${shade(c1, -50)}"/></linearGradient></defs><path d="M32 2 L60 10 V36 C60 54 47 65 32 70 C17 65 4 54 4 36 V10 Z" fill="url(#${id})" stroke="${c2}" stroke-width="3"/><path d="M32 9 L53 15 V35 C53 49 43 58 32 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="${t.length > 2 ? 17 : 20}" fill="${lum(c1) > 150 ? '#0A1F42' : '#fff'}">${t}</text></svg>`
 }
 
 // Line icons, gold on glass, for the timeline cards.
@@ -151,7 +151,7 @@ function stage(side) {
   </defs>
   <rect width="640" height="340" fill="#0B1A3A"/>
   <g data-world="1">${st.body}
-  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Alexandria, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".8">LEGENDS</text>`).join('')}
+  ${[60, 220, 380, 540].map((x) => `<text x="${x}" y="134" font-family="Tajawal, sans-serif" font-weight="800" font-size="10" letter-spacing="3" fill="#FFD36B" opacity=".8">LEGENDS</text>`).join('')}
   </g>
   <rect width="640" height="340" fill="url(#${id}c)" pointer-events="none"/>${RAIN ? `<style>.rain{animation:rainfall .5s linear infinite}@keyframes rainfall{to{transform:translate(-5px,30px)}}@media (prefers-reduced-motion:reduce){.rain{animation:none}}</style><g class="rain" stroke="rgba(200,215,235,.45)" stroke-width="1.1">${Array.from({ length: SMOOTH ? 30 : 90 }, (_, i) => `<line x1="${(i * 73) % 680}" y1="${(i * 41) % 360 - 20}" x2="${(i * 73) % 680 - 5}" y2="${(i * 41) % 360 + 10}"/>`).join('')}</g><rect width="640" height="340" fill="rgba(40,55,75,.18)"/>` : ''}`
   svg.dataset.id = id
@@ -229,8 +229,8 @@ export function player(p, kit, no, s = 1, o = {}) {
     <path d="M-15 -9 Q0 -15 15 -9 L14.5 21 Q0 24 -14.5 21 Z" fill="${kit}"/>${kitPatternSvg(kit, o)}
     <path d="M-6 21 Q0 -2 6 21" fill="rgba(0,0,0,.08)"/>
     <path d="M-15 -9 Q0 -15 15 -9" fill="none" stroke="${o.trim ?? shade(kit, light ? -45 : 45)}" stroke-width="2"/>
-    <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Alexandria, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>
-    <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Alexandria, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${no ?? ''}</text>`
+    <text data-back="1" x="0" y="12" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="18" fill="${ink}">${no ?? ''}</text>
+    <text data-front="1" x="6" y="4" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="8" fill="${ink}" display="none">${no ?? ''}</text>`
   const back = body.querySelector('[data-back]'), chest = body.querySelector('[data-front]')
   const arm = `<rect x="-4" y="0" width="8" height="12" rx="3.5" fill="${kit}"/><rect x="-3.4" y="10" width="6.8" height="13" rx="3.4" fill="${o.gloves ? kit : skin}"/>${o.gloves ? `<rect x="-5" y="20" width="10" height="9" rx="3.5" fill="${o.gloves}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>` : ''}`
   // [Sprint 35 C2] The right hand can hold a card up (the referee's).
@@ -366,7 +366,7 @@ function title(svg, text, color) {
   // [Sprint 42 J1] The stamp: a box behind the word, at a slant.
   const box = style === 3 ? el('rect', { x: 200, y: 10, width: 240, height: 56, rx: 6, fill: 'rgba(4,11,28,.82)', stroke: fill, 'stroke-width': 4, opacity: 0 }, svg) : null
   // [Sprint 30 Q8] A dark edge under the word: read whole over the pitch, the flashes and the band.
-  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 900, 'font-size': 36, fill, stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
+  const t = el('text', { x: 320, y: 40, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 900, 'font-size': 36, fill, stroke: '#040B1C', 'stroke-width': 5, 'paint-order': 'stroke', 'stroke-linejoin': 'round', opacity: 0 }, svg)
   t.textContent = text
   // [Sprint 42 J1] Four looks for the headline, one per scene (VARIANT.title): the gold band sliding in; the slam (the
   // word drops in big, no band); neon (a thin band in its colour, the word flickering on); the stamp (a box at a slant).
@@ -379,7 +379,7 @@ function title(svg, text, color) {
   }
 }
 function bigNumber(svg, no, kit) {
-  const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Alexandria, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
+  const t = el('text', { x: 520, y: 300, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, Tajawal, sans-serif', 'font-weight': 800, 'font-style': 'italic', 'font-size': 260, fill: 'none', stroke: kit, 'stroke-width': 2, opacity: 0 }, svg)
   t.textContent = no ?? ''
   return (f) => { sa(t, 'opacity', f * 0.35); sa(t, 'transform', `translate(${(1 - ease(f)) * 60} 0)`) }
 }
@@ -1022,7 +1022,7 @@ export const SCENES = {
   penalty(e) {
     const R = rnd(e.v ?? (e.no ?? 9) * 31), svg = stage(e.side), w = svg.world, G = goalFrame(svg)
     const kp = keeper(svg, other(e.side), Math.floor(R() * 40)), tk = player(w, K(e.side).kit, e.no, 1, { look: Math.floor(R() * 40) }), b = ball(svg), trl = trail(svg)
-    const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
+    const hush = el('text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 600, 'font-size': 15, fill: '#C9D2E1', opacity: 0 }, svg); hush.textContent = tr('صمت في المدرجات...')
     const tt = title(svg, e.scored ? tr('هدف!') : tr('تصدٍّ!'), e.scored ? undefined : '#2BB673'), fl = flash(svg), cf = flashes(svg)
     const KT = 2.85, tS = 2.45, dir = R() < 0.5 ? -1 : 1, wobbly = rnd((e.v ?? 5) * 3 + 2)() < 0.5
     // [Sprint 36 F2] The face-off before the kick, as on TV: the taker and the keeper in two panels, eye to eye.
@@ -1654,7 +1654,7 @@ export const SCENES = {
     const dots = [[-110, 0], [-70, -50], [-70, -17], [-70, 17], [-70, 50], [-20, -35], [-20, 0], [-20, 35], [35, -50], [45, 0], [35, 50]].map(([x, y]) => { const d = el('circle', { r: 8, fill: kit, stroke: '#071733', 'stroke-width': 2 }, tab); d.dataset.x = x; d.dataset.y = y; return d })
     const ar = el('g', { fill: 'none', stroke: '#FFD36B', 'stroke-width': 3, 'stroke-linecap': 'round', filter: ref(svg, 'glow') }, tab)
     const A = [[-20, -35, 30, -60], [-20, 35, 30, 60], [-70, -50, -30, -75], [-70, 50, -30, 75]].map(([a, b, c, d]) => el('path', { d: `M${a} ${b} L${c} ${d}`, 'stroke-dasharray': 80, 'stroke-dashoffset': 80 }, ar))
-    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Alexandria, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
+    const chip = el('g', { opacity: 0 }, svg); chip.innerHTML = `<rect x="-150" y="-20" width="300" height="40" rx="20" fill="${ref(svg, 'gold')}"/><text y="7" text-anchor="middle" font-family="Tajawal, sans-serif" font-weight="800" font-size="18" fill="#071733">${e.tactic ?? ''}</text>`
     return { dur: 4.6, svg, update(t) {
       sa(tab, 'transform', `translate(320 ${lerp(380, 158, ease(seg(t, 0, 0.6)))}) scale(.9)`)
       const push = ease(seg(t, 1, 2)); dots.forEach((d) => { sa(d, 'cx', +d.dataset.x + (+d.dataset.x > -100 ? push * 26 : 0)); sa(d, 'cy', d.dataset.y) })
@@ -1666,12 +1666,12 @@ export const SCENES = {
     // Half time and full time: the score and the numbers of the match so far.
     const svg = stage('home'), g = el('g', {}, svg)
     el('rect', { x: 110, y: 26, width: 420, height: 296, rx: 18, fill: 'rgba(4,11,28,.9)', stroke: 'rgba(245,184,46,.35)' }, g)
-    el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 900, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
+    el('text', { x: 320, y: 66, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 900, 'font-size': 28, fill: ref(svg, 'gold') }, g).textContent = e.big ?? ''
     el('text', { x: 320, y: 108, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 800, 'font-size': 42, fill: '#fff', direction: 'ltr' }, g).textContent = e.score ?? ''
     const rows = (e.stats ?? []).slice(0, 4)
     const bars = rows.map(([label, h, a], i) => {
       const y = 146 + i * 44
-      el('text', { x: 320, y: y - 6, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-size': 13, fill: '#93A3BF' }, g).textContent = label
+      el('text', { x: 320, y: y - 6, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-size': 13, fill: '#93A3BF' }, g).textContent = label
       el('text', { x: 500, y: y + 12, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 700, 'font-size': 22, fill: '#fff' }, g).textContent = h
       el('text', { x: 140, y: y + 12, 'text-anchor': 'middle', 'font-family': 'Barlow Condensed, sans-serif', 'font-weight': 700, 'font-size': 22, fill: '#fff' }, g).textContent = a
       el('rect', { x: 170, y: y + 3, width: 300, height: 8, rx: 4, fill: 'rgba(255,255,255,.08)' }, g)
@@ -1691,7 +1691,7 @@ export const SCENES = {
     const shade = el('rect', { width: 640, height: 340, fill: 'rgba(8,18,40,.55)', opacity: 0 }, svg)
     const badge = el('g', { opacity: 0 }, svg)
     badge.innerHTML = `<rect x="-70" y="-26" width="140" height="52" rx="10" fill="#071733" stroke="#F5B82E" stroke-width="2"/><text y="10" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="30" fill="#FFD36B" letter-spacing="4">VAR</text>`
-    const check = el('text', { x: 320, y: 300, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 800, 'font-size': 18, fill: '#C9D2E1', opacity: 0 }, svg)
+    const check = el('text', { x: 320, y: 300, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 800, 'font-size': 18, fill: '#C9D2E1', opacity: 0 }, svg)
     check.textContent = e.reason === 'foul' ? tr('مراجعة الفار: خطأ محتمل') : tr('مراجعة الفار: تسلل محتمل')
     const scan = el('rect', { x: 0, y: 0, width: 640, height: 3, fill: '#7FB4FF', opacity: 0 }, svg)
     const lines = el('g', { opacity: 0 }, svg)
@@ -1700,7 +1700,7 @@ export const SCENES = {
       : `<path d="M200 70 L170 330" stroke="#EF4444" stroke-width="3"/><path d="M232 70 L206 330" stroke="#2BB673" stroke-width="3"/>`
     const tv = el('rect', { x: -28, y: -18, width: 56, height: 36, rx: 3, fill: 'none', stroke: '#fff', 'stroke-width': 3, opacity: 0 }, svg)
     const no = title(svg, tr('لا هدف'), '#EF4444')
-    const sub = el('text', { x: 320, y: 86, 'text-anchor': 'middle', 'font-family': 'Alexandria, sans-serif', 'font-weight': 800, 'font-size': 20, fill: '#fff', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg)
+    const sub = el('text', { x: 320, y: 86, 'text-anchor': 'middle', 'font-family': 'Tajawal, sans-serif', 'font-weight': 800, 'font-size': 20, fill: '#fff', stroke: '#040B1C', 'stroke-width': 4, 'paint-order': 'stroke', opacity: 0 }, svg)
     sub.textContent = e.reason === 'foul' ? tr('خطأ قبل الهدف') : tr('تسلل')
     return { dur: 8.2, svg, update(t) {
       // The goal as it seemed, then the frame stays as the check runs.

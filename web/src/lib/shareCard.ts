@@ -21,7 +21,7 @@ function loadImage(src: string): Promise<HTMLImageElement | null> {
 
 function fit(ctx: CanvasRenderingContext2D, text: string, max: number, size: number, weight = 800): void {
   let s = size
-  do { ctx.font = `${weight} ${s}px Alexandria, sans-serif` } while (ctx.measureText(text).width > max && (s -= 2) > 18)
+  do { ctx.font = `${weight} ${s}px Tajawal, sans-serif` } while (ctx.measureText(text).width > max && (s -= 2) > 18)
 }
 
 export async function drawResultCard(r: ShareResult): Promise<Blob> {
@@ -50,7 +50,7 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   ctx.textBaseline = 'middle'
   // The caption (the competition, «نهاية المباراة»).
   ctx.fillStyle = '#CFE9DF'
-  ctx.font = '700 40px Alexandria, sans-serif'
+  ctx.font = '700 40px Tajawal, sans-serif'
   ctx.fillText(r.caption ?? t('نهاية المباراة'), W / 2, 120)
   // The crests (or a disc in the club's colour), the names under them; home on the right in Arabic.
   const homeX = locale.value === 'ar' ? W * 0.78 : W * 0.22
@@ -77,7 +77,7 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   // The score, big, in the middle (left to right, the home side on the right in Arabic).
   ctx.direction = 'ltr'
   ctx.fillStyle = '#F5B82E'
-  ctx.font = '800 170px "Barlow Condensed", Alexandria, sans-serif'
+  ctx.font = '800 170px "Barlow Condensed", Tajawal, sans-serif'
   const score = locale.value === 'ar' ? `${r.score.away} - ${r.score.home}` : `${r.score.home} - ${r.score.away}`
   ctx.fillText(score, W / 2, 410)
   // The scorers under each side: Latin names and minutes, drawn left to right (the minute's mark stays after it).
@@ -93,7 +93,7 @@ export async function drawResultCard(r: ShareResult): Promise<Blob> {
   ctx.direction = 'rtl'
   ctx.fillStyle = '#F5B82E'
   ctx.fillRect(0, H - 130, W, 2)
-  ctx.font = '900 54px Alexandria, sans-serif'
+  ctx.font = '900 54px Tajawal, sans-serif'
   ctx.fillText(t('المدرب الأسطورة'), W / 2, H - 70)
   return new Promise((resolve) => c.toBlob((b) => resolve(b!), 'image/png'))
 }
