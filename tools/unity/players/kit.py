@@ -261,6 +261,7 @@ def materials(pieces, primary, secondary, pattern, srgb):
         'shorts': node_mat('Shorts', shorts_colour(primary), secondary, False),
         'socks': node_mat('Socks', primary, secondary, False),
         'boots': node_mat('Boots', '#15171c', '#15171c', False),
+        'gloves': node_mat('Gloves', '#E4FF5A', '#E4FF5A', False),   # the keeper's (Sprint 06 U7)
     }
     for kind, ob in pieces.items():
         ob.data.materials.clear()
