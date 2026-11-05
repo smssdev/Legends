@@ -7,6 +7,7 @@
 import { useAuth } from '../stores/auth'
 import { statusLabel } from '../lib/statuses'
 import DataEditor from './admin/DataEditor.vue'
+import StoreAdmin from './admin/StoreAdmin.vue'
 import AnnouncementCard from '../components/AnnouncementCard.vue'
 import { computed, onMounted, ref } from 'vue'
 import { api, asApiError, ensureCsrf } from '../api/client'
@@ -69,6 +70,8 @@ const SECTIONS = {
   users: { label: 'المستخدمون', icon: 'team' },
   leagues: { label: 'الدوريات', icon: 'leagues' },
   announcements: { label: 'الإعلانات', icon: 'bell' },
+  // [Sprint 43 W2] The store: packages and timed offers.
+  store: { label: 'العروض والباقات', icon: 'megaphone' },
   houseAds: { label: 'إعلانات المكافأة', icon: 'match' },
   events: { label: 'الفعاليات', icon: 'league' },
   ideas: { label: 'الاقتراحات', icon: 'idea' },
@@ -863,6 +866,7 @@ onMounted(load)
 
         <!-- [X62 E8] The game's data editor. -->
         <DataEditor v-if="tab === 'data'" />
+        <StoreAdmin v-if="tab === 'store'" />
         <!-- [X65] The chat groups' retention and media. -->
         <section v-if="tab === 'chat' && chat" :aria-label="$t('الجروبات')" class="flex flex-col gap-3 rounded-xl bg-surface p-4">
           <p class="text-sm text-text-muted">{{ $t('{v0} جروب، و{v1} رسالة، و{v2} صورة ورسالة صوتية ({v3} ك.ب).', { v0: chat.groups, v1: chat.messages, v2: chat.media_count, v3: chat.media_kb }) }}</p>

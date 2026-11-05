@@ -6,8 +6,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * [Sprint 39 M3] The store's deals and top-up offers by email (resources/views/mail/store-deal.blade.php), ready for
- * when the store opens: nothing sends it yet. Only to coaches who asked for offers (README section 11: the owner
+ * [Sprint 39 M3] The store's deals and top-up offers by email (resources/views/mail/store-deal.blade.php); sent by the
+ * admin for one item since Sprint 43 W2 (App\Store\Store::email), with its picture and a WhatsApp button. Only to coaches who asked for offers (README section 11: the owner
  * decides the store and who receives its emails), and a new kind of email goes into the privacy policy first.
  */
 class StoreDealNotice extends Notification
@@ -23,6 +23,9 @@ class StoreDealNotice extends Notification
         public ?string $until = null,
         public string $path = '/wallet',
         public bool $en = false,
+        // [Sprint 43 W2] The item's picture (one size), and its WhatsApp chat for the button.
+        public ?string $image = null,
+        public ?string $whatsapp = null,
     ) {
         abort_if($packs === [] || count($packs) > 4, 500, 'العرض من باقة إلى أربع.');
     }
@@ -34,8 +37,8 @@ class StoreDealNotice extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $url = rtrim((string) config('app.url'), '/').$this->path;
-        $button = $this->en ? 'See the offers' : 'شاهد العروض';
+        $url = $this->whatsapp ?? rtrim((string) config('app.url'), '/').$this->path;
+        $button = $this->whatsapp ? ($this->en ? 'Order on WhatsApp' : 'اطلبه عبر واتساب') : ($this->en ? 'See the offers' : 'شاهد العروض');
 
         $site = rtrim((string) config('app.url'), '/');
 
@@ -45,7 +48,7 @@ class StoreDealNotice extends Notification
             ->withSymfonyMessage(fn ($m) => $m->getHeaders()->addTextHeader('List-Unsubscribe', '<mailto:'.config('mail.from.address').'?subject=unsubscribe>, <'.$site.'/profile>'))
             ->action($button, $url)
             ->view(['html' => 'mail.store-deal', 'text' => 'mail.text'], ['en' => $this->en, 'title' => $this->title, 'lead' => $this->lead, 'packs' => $this->packs,
-                'until' => $this->until, 'button' => $button, 'url' => $url, 'heading' => $this->title,
+                'until' => $this->until, 'image' => $this->image, 'button' => $button, 'url' => $url, 'heading' => $this->title,
                 'lines' => array_merge([$this->lead], array_map(fn ($p) => "{$p['name']} ({$p['gives']}): {$p['price']}", $this->packs))]);
     }
 }

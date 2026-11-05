@@ -23,6 +23,8 @@ export const router = createRouter({
         { path: 'admin', name: 'admin', component: () => import('./pages/AdminPage.vue'), meta: { auth: true } },
         // Sprint 34: the coins wallet and the shop
         { path: 'wallet', name: 'wallet', component: () => import('./pages/WalletPage.vue'), meta: { auth: true } },
+        // [Sprint 43 W2] The store: packages and timed offers, ordered by WhatsApp.
+        { path: 'store', name: 'store', component: () => import('./pages/StorePage.vue'), meta: { auth: true } },
         // Sprint 33: a coach's profile
         { path: 'coaches/:id(\\d+)', name: 'coach', component: () => import('./pages/leagues/CoachProfile.vue'), props: true, meta: { auth: true } },
         // [X27] The alliance tournament

@@ -19,6 +19,7 @@ const LINKS = computed(() => auth.user ? [
   { to: '/leagues', label: 'دورياتي' },
   { to: '/profile', label: 'حسابي' },
   { to: '/guide', label: 'طريقة اللعب' },
+  { to: '/store', label: 'العروض' },
   { to: '/ideas', label: 'اقتراحات التطوير' },
 ] : [
   { to: '/', label: 'الرئيسية' },

@@ -1,5 +1,7 @@
 <template>
   <main class="mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-3 px-3 py-3 md:px-5">
+    <!-- [Sprint 43 W3] Sideways on a phone: upright, it asks to turn (and locks it on Android). -->
+    <TurnPhone v-if="view" />
     <header class="flex flex-wrap items-center gap-2">
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-2">
         <BrandMark size="sm" />
@@ -262,6 +264,7 @@
 <script setup lang="ts">
 import { scoreText } from '../lib/format'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
+import TurnPhone from '../components/match/TurnPhone.vue'
 import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'

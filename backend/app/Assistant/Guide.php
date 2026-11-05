@@ -20,7 +20,7 @@ class Guide
     /** The pages the assistant knows, by the web's route names (others fall back to "home"). */
     public const PAGES = ['home', 'club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium',
         'finance', 'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet',
-        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments'];
+        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments', 'store'];
 
     /** A route of the web that is a page of another name here. */
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
@@ -32,7 +32,7 @@ class Guide
     /** The pages an answer may open, by the web's section names. */
     public const GO = ['club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium', 'finance',
         'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet', 'profile',
-        'leagues', 'support', 'ideas', 'groups', 'tournaments'];
+        'leagues', 'support', 'ideas', 'groups', 'tournaments', 'store'];
 
     /**
      * Each page's quick questions: a topic's id is answered from the guide at once; text after "?" goes to the
@@ -40,7 +40,7 @@ class Guide
      */
     private const QUICK = [
         'home' => ['rating', 'slots', 'leagues_create', 'leagues_join', 'coins', '?analysis_overview'],
-        'club' => ['club_board', 'objectives', 'friendlies', 'quests', '?analysis_overview'],
+        'club' => ['club_board', 'objectives', 'contract', 'friendlies', 'quests', '?analysis_overview'],
         'team' => ['morale', 'fitness', 'value', 'potential', '?analysis_best'],
         'lineup' => ['lineup_edit', 'chemistry', 'takers', '?analysis_lineup'],
         'tactics' => ['pressing', 'marking', 'trap', 'opponent_sees', '?analysis_tactics'],
@@ -51,6 +51,7 @@ class Guide
         'stadium' => ['stadium', 'stadium_plan', 'seats', 'pitch', 'training_ground'],
         'finance' => ['finance', 'ticket_price', 'contracts', 'debt', '?analysis_money'],
         'quests' => ['quests', 'coins'],
+        'store' => ['store', 'coins'],
         'match' => ['next_match', 'match_move', 'opponent_sees', 'spy', 'live_changes', 'integrity', '?analysis_last'],
         'league' => ['cup', 'rest_days', 'invite', 'vacation_league', 'alliance', 'draw'],
         'fixtures' => ['stats', 'next_match'],
@@ -336,6 +337,13 @@ class Guide
             $t('vacation_league', ['league'], 'league',
                 ['كيف آخذ إجازة من دوري؟', 'اجازة غياب دوري مسافر', sprintf('إجازة في دوري واحد (مرة في الموسم، حتى %d أيام) تحتاج سبباً يوافق عليه مسؤول الدوري. ولإجازة تشمل كل دورياتك بلا طلب: إجازة الحساب من «حسابي». والغائب بلا إجازة %d أيام قد يُطرد من الدوري.', $c('league.vacation_max_days'), $c('league.absence_days'))],
                 ['How do I take a holiday from a league?', 'holiday vacation absence league away', sprintf('A holiday in one league (once a season, up to %d days) needs a reason the league\'s admin approves. For a holiday across all your leagues with no request: the account holiday in «My account». Someone away without a holiday for %d days may be removed from the league.', $c('league.vacation_max_days'), $c('league.absence_days'))]),
+            // [Sprint 43 W1, W2] The contract with the club, and the store.
+            $t('contract', ['club', 'league'], 'club',
+                ['ما هو عقد تولي الفريق؟', 'عقد توقيع تولي الفريق الادارة', 'حين تبدأ موسماً مع فريقك يعرض عليك عقد تولي القيادة: ناديك ودوريك وموسمه، وهدف الإدارة، والمال المتاح للانتقالات. توقّعه بإصبعك مرة واحدة في الموسم، والتوقيع يُرسم على شاشتك فقط ولا يُرسل ولا يُحفظ.'],
+                ['What is the coaching contract?', 'contract sign take over club board', 'When you start a season with your team, the board offers you its contract: your club, your league and its season, the board\'s objective and the money for transfers. You sign it with your finger once a season, and the signature is drawn on your screen only: it is never sent or kept.']),
+            $t('store', ['store'], 'store',
+                ['ما هي العروض والباقات؟', 'متجر عروض باقات شراء واتساب سعر خصم', 'في صفحة «العروض»: باقات ثابتة يضيفها فريق اللعبة، وعروض لمدة محددة تختفي وحدها بعد انتهائها. لكل واحد صورته وسعره (والسعر قبل الخصم إن وُجد). والطلب عبر واتساب: زر «اطلبه عبر واتساب» يفتح محادثة مع فريق اللعبة فيها اسم العرض ورقم حسابك. ولتصلك العروض بالبريد فعّلها من «حسابي» ← الإشعارات.'],
+                ['What are the offers and packages?', 'store offers packages buy whatsapp price discount', 'On the «Offers» page: fixed packages the game\'s team adds, and offers for a set time that disappear when they end. Each has its picture and price (and the price before a discount, if any). You order by WhatsApp: «Order on WhatsApp» opens a chat with the game\'s team with the item and your account number. To get the offers by email, turn them on in My account, then Notifications.']),
             // [Sprint 43 C2] The creator never resigns; gone from the game, the league passes on.
             $t('league_creator', ['league'], 'league',
                 ['ماذا يحدث إن غاب منشئ الدوري؟', 'منشئ الدوري غياب ترك نقل ادارة استقالة', sprintf('منشئ الدوري لا يستقيل منه لأنه يديره. وإن غاب عن اللعبة %d أيام أو حذف حسابه، تنتقل إدارة الدوري بالقرعة إلى أحد المدربين النشطين، ويُنشر بيان بذلك في أخبار الدوري. وإن لم يبقَ مدرب نشط يبقى منشئاً.', $c('league.absence_days'))],

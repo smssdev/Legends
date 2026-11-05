@@ -221,6 +221,7 @@ onBeforeUnmount(() => sizer?.disconnect())
         <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فرقي') }}</RouterLink>
         <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />{{ $t('دورياتي') }}</RouterLink>
         <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
+        <RouterLink to="/store" class="side-item"><Icon name="megaphone" :size="18" />{{ $t('العروض') }}</RouterLink>
         <RouterLink to="/ideas" class="side-item"><Icon name="idea" :size="18" />{{ $t('اقتراحات التطوير') }}</RouterLink>
       </nav>
       <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'shell-main-slot' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">

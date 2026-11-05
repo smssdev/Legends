@@ -77,7 +77,7 @@ function pathFor(go: string): string {
   if (s?.inLeague) return league ? `/leagues/${league}${s.path}` : '/leagues'
   return s?.path ?? `/${go}`
 }
-const labelOf = (go: string) => SECTIONS.find((x) => x.name === go)?.label ?? ({ wallet: 'المحفظة', profile: 'حسابي', support: 'الدعم', ideas: 'اقتراحات التطوير' } as Record<string, string>)[go] ?? go
+const labelOf = (go: string) => SECTIONS.find((x) => x.name === go)?.label ?? ({ wallet: 'المحفظة', profile: 'حسابي', support: 'الدعم', ideas: 'اقتراحات التطوير', store: 'العروض' } as Record<string, string>)[go] ?? go
 function goTo(go: string) {
   void router.push(pathFor(go))
   // [X61] A recommendation followed ends the task: on the computer the closing card at once, on the phone (whose

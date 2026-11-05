@@ -55,4 +55,29 @@ class Avatar
 
         return $jpeg;
     }
+
+    /**
+     * [Sprint 43 W2] A store picture: cut to the middle of exactly $width × $height (one size in every card and email),
+     * as a JPEG. Null when the bytes are not an image GD reads.
+     */
+    public static function cover(string $bytes, int $width, int $height): ?string
+    {
+        $src = @imagecreatefromstring($bytes);
+        if ($src === false) {
+            return null;
+        }
+        [$w, $h] = [imagesx($src), imagesy($src)];
+        // The largest piece of the picture in the wanted shape, from its middle.
+        [$cw, $ch] = $w * $height > $h * $width ? [intdiv($h * $width, $height), $h] : [$w, intdiv($w * $height, $width)];
+        $out = imagecreatetruecolor($width, $height);
+        imagefill($out, 0, 0, imagecolorallocate($out, 255, 255, 255));
+        imagecopyresampled($out, $src, 0, 0, intdiv($w - $cw, 2), intdiv($h - $ch, 2), $width, $height, max(1, $cw), max(1, $ch));
+        ob_start();
+        imagejpeg($out, null, 84);
+        $jpeg = (string) ob_get_clean();
+        imagedestroy($src);
+        imagedestroy($out);
+
+        return $jpeg;
+    }
 }

@@ -562,9 +562,13 @@ return [
 
     // [Sprint 30 G6] The admins' scopes: each opens these sections of the panel (the first part of the path under
     // /admin/); an admin with no scope opens everything, and gives the scopes.
+    // [Sprint 43 W2, Hamza 2026-11-05] The store: base packages (they stay) and timed offers, added by the admin; bought
+    // by WhatsApp on this number (a public business line). Each picture is cut to image_w × image_h.
+    'store' => ['whatsapp' => '201116648302', 'currency' => 'ج.م', 'image_w' => 1280, 'image_h' => 720, 'image_max_kb' => 8192,
+        'offer_max_days' => 90, 'max_items' => 60],
     'admin' => ['scopes' => [
         'support' => ['overview', 'activity', 'users', 'conversations', 'vacations', 'alliances', 'leagues', 'reports'],
-        'content' => ['overview', 'announcements', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
+        'content' => ['overview', 'announcements', 'store', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
         'finance' => ['overview', 'activity', 'coins', 'leagues'],
     ], 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
