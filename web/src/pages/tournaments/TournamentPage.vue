@@ -138,7 +138,7 @@ const through = computed(() => page.value?.advance_per_group ?? (page.value?.for
               :class="tie.winner_id && card(tie[side])?.id === tie.winner_id ? 'font-bold' : ''">
               <span class="flex min-w-0 items-center gap-1">
                 <ClubCrest v-if="card(tie[side])" :url="card(tie[side])!.crest_url" :code="card(tie[side])!.code" :size="20" />
-                <span class="truncate">{{ card(tie[side]) ? $nm(card(tie[side])!.name) : (tie[`${side}_from`] ?? '؟') }}</span></span>
+                <span class="truncate">{{ card(tie[side]) ? $nm(card(tie[side])!.name) : (tie[`${side}_from`]?.startsWith('3:') ? $t('أفضل ثالث {n}', { n: tie[`${side}_from`]!.slice(2) }) : (tie[`${side}_from`] ?? '؟')) }}</span></span>
               <b v-if="tie.score" class="font-numbers">{{ tie.score[side === 'home' ? 0 : 1] }}</b>
             </div>
             <span class="block text-xs text-text-muted">{{ when(tie.at) }}</span>

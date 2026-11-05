@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Tournament\TournamentPlan;
+use App\Tournament\TournamentStage;
 use PHPUnit\Framework\TestCase;
 
 /** [Sprint 29] A tournament's shape from its draw: pots, groups, rounds and the knockout after them. Pure. */
@@ -70,5 +71,47 @@ class TournamentPlanTest extends TestCase
         $three = TournamentPlan::make([1, 2, 3], 1, 'knockout');
         $this->assertSame(['preliminary', 'final'], TournamentPlan::stages($three['ties']));
         $this->assertCount(3, $three['steps']);
+    }
+
+    /** [Sprint 43 A3] The World Cup of 48: the first two of 12 groups and the 8 best thirds to a round of 32. */
+    public function test_twelve_groups_and_the_best_thirds_make_a_round_of_32(): void
+    {
+        $ties = TournamentPlan::afterGroups(12, 2, 8);
+        $first = array_values(array_filter($ties, fn ($t) => $t['stage'] === 'r32'));
+        $this->assertCount(16, $first);
+        $this->assertSame(['r32', 'r16', 'qf', 'sf', 'final'], TournamentPlan::stages($ties));
+        $sides = array_merge(array_column($first, 'home_from'), array_column($first, 'away_from'));
+        sort($sides);
+        $expected = [];
+        foreach (range('A', 'L') as $g) {
+            $expected[] = $g.'1';
+            $expected[] = $g.'2';
+        }
+        foreach (range(1, 8) as $k) {
+            $expected[] = '3:'.$k;
+        }
+        sort($expected);
+        $this->assertSame($expected, $sides, 'every winner, runner-up and best third once');
+        foreach ($first as $t) {
+            $this->assertNotSame($t['home_from'][0], $t['away_from'][0], 'never two of one group');
+        }
+    }
+
+    /** [Sprint 43 A3] The best thirds by points, then each in a place whose winner is of another group. */
+    public function test_the_best_thirds_never_meet_their_own_groups_winner(): void
+    {
+        $row = fn (int $id, int $pts, int $gd = 0) => ['id' => $id, 'pts' => $pts, 'gd' => $gd, 'gf' => 0, 'st' => 0];
+        $tables = [];
+        foreach (range(1, 12) as $g) {
+            // Group g's third: id 300 + g, the earlier groups' thirds better.
+            $tables[$g] = [$row(100 + $g, 9), $row(200 + $g, 6), $row(300 + $g, 13 - $g), $row(400 + $g, 0)];
+        }
+        $thirds = TournamentStage::thirds($tables, 8);
+        $this->assertCount(8, $thirds);
+        $this->assertEqualsCanonicalizing(range(301, 308), array_values($thirds), 'the eight best: groups A to H');
+        foreach ($thirds as $k => $club) {
+            $this->assertNotSame(300 + $k, $club, "place 3:$k faces the winner of group $k");
+        }
+        $this->assertSame([], TournamentStage::thirds($tables, 0));
     }
 }

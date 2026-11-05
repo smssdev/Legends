@@ -684,6 +684,18 @@ final class MatchEngine
             return;
         }
 
+        // [Sprint 43 B2] Now and then the finisher fouled on his way through: the broadcast shows the ball in the net
+        // and the goal taken away after the VAR (MomentClock::varReason), and the foul is the attackers'.
+        if ($this->rng->chance((int) ($this->eng['attack_foul_bp'] ?? 0))) {
+            $victim = $keeper['id'] ?? ($who['defender'] ?? 0);
+            $this->stat($atk, 'fouls');
+            $this->rate($atk, $shooterId, -3, 'fouls');
+            $this->event('foul', $atk, ['player' => $shooterId, 'victim' => $victim, 'penalty' => false, 'attacking' => true]);
+            $this->attackEvent($atk, $plan, $counter, $phases, 'missed', $who, $quality);
+
+            return;
+        }
+
         if ($this->rng->chance((int) $this->eng['on_target_bp'])) {
             $this->stat($atk, 'on_target');
             $this->stat($def, 'saves');

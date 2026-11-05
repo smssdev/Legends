@@ -29,7 +29,7 @@ class TournamentScheduler
             ->map(fn ($id) => (int) $id)->all();
 
         return TournamentPlan::make($teams, self::seed($league), $league->format, (int) ($league->group_count ?: 1),
-            (int) ($league->advance_per_group ?: 2), (int) ($league->legs ?: 1));
+            (int) ($league->advance_per_group ?: 2), (int) ($league->legs ?: 1), (int) ($league->best_thirds ?: 0));
     }
 
     /** How many league (or group) rounds a tournament of this shape plays. */

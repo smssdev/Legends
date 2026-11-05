@@ -122,6 +122,7 @@ $method = @{
     setup   = 'Legends.EditorTools.Setup.Run'
     demo    = 'Legends.EditorTools.DemoScene.Build'
     players = 'Legends.EditorTools.Players.Run'
+    moves   = 'Legends.EditorTools.MovesCapture.Run'
     capture = 'Legends.EditorTools.Capture.Run'
     kits    = 'Legends.EditorTools.Capture.RunKits'
     webgl   = 'Legends.EditorTools.Builds.WebGL'

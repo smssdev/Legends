@@ -15,7 +15,7 @@ import ClubSquadDialog from '../../components/ClubSquadDialog.vue'
 import MatchRecap from '../../components/shell/MatchRecap.vue'
 
 type Fixture = components['schemas']['Fixture']
-const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
+const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r32: 'دور الـ32', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
 
 const leagueId = ref<number | null>(null)
 const fixtures = ref<Fixture[]>([])

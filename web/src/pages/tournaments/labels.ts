@@ -2,6 +2,7 @@
 // them through $t).
 export const TEMPLATES: Record<string, string> = {
   world_cup: 'كأس العالم',
+  world_cup_48: 'كأس العالم بـ48 منتخباً',
   club_world_cup: 'كأس العالم للأندية',
   afcon: 'كأس أمم أفريقيا',
   euro: 'كأس أمم أوروبا',
@@ -10,6 +11,7 @@ export const TEMPLATES: Record<string, string> = {
 }
 export const TEMPLATE_NOTES: Record<string, string> = {
   world_cup: 'أقوى المنتخبات من كل القارات',
+  world_cup_48: 'نظام 2026: 12 مجموعة، يتأهل الأولان وأفضل 8 ثوالث إلى دور الـ32',
   club_world_cup: 'أقوى الأندية، ناديان على الأكثر من كل دوري',
   afcon: 'منتخبات أفريقيا',
   euro: 'منتخبات أوروبا',
@@ -17,5 +19,5 @@ export const TEMPLATE_NOTES: Record<string, string> = {
   custom: 'منتخبات وأندية تختارها، من فريقين',
 }
 export const FORMATS: Record<string, string> = { league: 'دوري', groups: 'مجموعات ثم إقصاء', knockout: 'خروج المغلوب' }
-export const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
+export const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r32: 'دور الـ32', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
 export const CONFEDERATIONS: Record<string, string> = { UEFA: 'أوروبا', CAF: 'أفريقيا', AFC: 'آسيا', CONMEBOL: 'أمريكا الجنوبية', CONCACAF: 'أمريكا الشمالية', OFC: 'أوقيانوسيا' }
