@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
+import '../notifications/push.dart';
 import 'account.dart';
 import 'auth_repository.dart';
 
@@ -29,6 +30,8 @@ class AuthController extends AsyncNotifier<Account?> {
   }
 
   Future<void> signOut() async {
+    // [Sprint 19 F1] This phone stops getting the account's pushes (while the token is still good).
+    await ref.read(pushProvider).forget();
     await ref.read(authRepositoryProvider).signOut();
     state = const AsyncData(null);
   }

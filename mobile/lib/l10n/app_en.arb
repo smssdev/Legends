@@ -353,5 +353,17 @@
   "drawn": "Drawn",
   "lost": "Lost",
   "titles": "Titles",
-  "objectivesMet": "Board objectives: {met} of {total}"
+  "objectivesMet": "Board objectives: {met} of {total}",
+  "notifications": "Notifications",
+  "pushReady": "Notifications reach this phone",
+  "pushNotReady": "Phone notifications are not switched on on the server yet; every message is in your inbox",
+  "kindReferee": "Your next match's referee",
+  "kindMatchSoon": "Your match soon, and moves",
+  "kindOffers": "Offers, sales and loans",
+  "kindDone": "Training, stadium and scout done",
+  "kindNews": "Game news and the developers' messages",
+  "kindAbsence": "Absence and holidays",
+  "emailMatch": "Match summary by email",
+  "emailOffers": "Store offers by email",
+  "emailNeeded": "Needs a confirmed email on your account"
 }

@@ -1216,4 +1216,41 @@ class LAr extends L {
   String objectivesMet(int met, int total) {
     return 'أهداف الإدارة: $met من $total';
   }
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get pushReady => 'الإشعارات تصل إلى هذا الجوال';
+
+  @override
+  String get pushNotReady =>
+      'الإشعارات على الجوال لم تُفعَّل في الخادم بعد، والرسائل كلها في صندوقك';
+
+  @override
+  String get kindReferee => 'حكم مباراتك القادمة';
+
+  @override
+  String get kindMatchSoon => 'مباراتك بعد قليل وتقديمها';
+
+  @override
+  String get kindOffers => 'العروض والبيع والإعارة';
+
+  @override
+  String get kindDone => 'اكتمال التدريب والملعب والكشاف';
+
+  @override
+  String get kindNews => 'أخبار اللعبة ورسائل المطورين';
+
+  @override
+  String get kindAbsence => 'الغياب والإجازات';
+
+  @override
+  String get emailMatch => 'ملخص المباراة بالبريد';
+
+  @override
+  String get emailOffers => 'عروض المتجر بالبريد';
+
+  @override
+  String get emailNeeded => 'يلزم بريد مؤكد في حسابك';
 }

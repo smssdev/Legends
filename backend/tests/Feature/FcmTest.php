@@ -53,7 +53,7 @@ class FcmTest extends TestCase
             'oauth2.googleapis.com/*' => Http::response(['access_token' => 'at-1', 'expires_in' => 3600]),
             'fcm.googleapis.com/*' => Http::response(['name' => 'projects/glm-test/messages/1']),
         ]);
-        (new SendPush($user->id, ['title' => 'اكتمل جزء', 'body' => 'ابدأ التالي', 'link' => '/stadium', 'tag' => 'stadium_part']))->handle();
+        (new SendPush($user->id, ['title' => 'اكتمل جزء', 'body' => 'ابدأ التالي', 'link' => '/stadium', 'tag' => 'stadium_part', 'league' => 8]))->handle();
 
         Http::assertSent(function (Request $r) {
             if (! str_contains($r->url(), 'fcm.googleapis.com/v1/projects/glm-test/messages:send')) {
@@ -61,7 +61,7 @@ class FcmTest extends TestCase
             }
 
             return $r->hasHeader('Authorization', 'Bearer at-1') && $r['message']['token'] === 'tok-1'
-                && $r['message']['data']['link'] === '/stadium' && $r['message']['notification']['title'] === 'اكتمل جزء';
+                && $r['message']['data']['link'] === '/stadium' && $r['message']['data']['league'] === '8' && $r['message']['notification']['title'] === 'اكتمل جزء';
         });
         // The token was signed with the account's key (a JWT of three parts).
         Http::assertSent(fn (Request $r) => str_contains($r->url(), 'oauth2.googleapis.com') && count(explode('.', $r['assertion'])) === 3);

@@ -2220,6 +2220,78 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'أهداف الإدارة: {met} من {total}'**
   String objectivesMet(int met, int total);
+
+  /// No description provided for @notifications.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات'**
+  String get notifications;
+
+  /// No description provided for @pushReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات تصل إلى هذا الجوال'**
+  String get pushReady;
+
+  /// No description provided for @pushNotReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات على الجوال لم تُفعَّل في الخادم بعد، والرسائل كلها في صندوقك'**
+  String get pushNotReady;
+
+  /// No description provided for @kindReferee.
+  ///
+  /// In ar, this message translates to:
+  /// **'حكم مباراتك القادمة'**
+  String get kindReferee;
+
+  /// No description provided for @kindMatchSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراتك بعد قليل وتقديمها'**
+  String get kindMatchSoon;
+
+  /// No description provided for @kindOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض والبيع والإعارة'**
+  String get kindOffers;
+
+  /// No description provided for @kindDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتمال التدريب والملعب والكشاف'**
+  String get kindDone;
+
+  /// No description provided for @kindNews.
+  ///
+  /// In ar, this message translates to:
+  /// **'أخبار اللعبة ورسائل المطورين'**
+  String get kindNews;
+
+  /// No description provided for @kindAbsence.
+  ///
+  /// In ar, this message translates to:
+  /// **'الغياب والإجازات'**
+  String get kindAbsence;
+
+  /// No description provided for @emailMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملخص المباراة بالبريد'**
+  String get emailMatch;
+
+  /// No description provided for @emailOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'عروض المتجر بالبريد'**
+  String get emailOffers;
+
+  /// No description provided for @emailNeeded.
+  ///
+  /// In ar, this message translates to:
+  /// **'يلزم بريد مؤكد في حسابك'**
+  String get emailNeeded;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

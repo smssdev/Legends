@@ -103,7 +103,7 @@ class MatchPrep
                     $slot = (int) $f->slot === 2 ? ($en ? 'the second slot (evening)' : 'الفترة الثانية (السهرة)') : ($en ? 'the first slot' : 'الفترة الأولى');
                     Push::send($coach, 'match_slot', $en ? "Reminder: your club plays in {$slot}" : "تذكير: ناديك يلعب في {$slot}",
                         $en ? 'Against '.($names[$other] ?? '').". The round's plans all lock in {$left} minutes: check your plan now!"
-                            : 'ضد '.($names[$other] ?? '').". تُقفل خطط الجولة كلها بعد {$left} دقيقة: تفقد خطتك الآن!", '/match');
+                            : 'ضد '.($names[$other] ?? '').". تُقفل خطط الجولة كلها بعد {$left} دقيقة: تفقد خطتك الآن!", '/match', (int) DB::table('clubs')->where('id', $club)->value('league_id'));
                 }
             }
         }
@@ -148,7 +148,7 @@ class MatchPrep
                     $minutes = config('game.notifications.match_soon_minutes');
                     Push::send($coach, 'match_soon', self::english($coach) ? "Your match in {$minutes} minutes" : "مباراتك بعد {$minutes} ".($minutes > 10 ? 'دقيقة' : 'دقائق'),
                         self::english($coach) ? 'Against '.($names[$other] ?? '').'. Get in to follow it and manage your team.'
-                            : 'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match');
+                            : 'ضد '.($names[$other] ?? '').'. ادخل لتتابعها وتدير فريقك.', '/match', (int) DB::table('clubs')->where('id', $club)->value('league_id'));
                 }
             }
         }

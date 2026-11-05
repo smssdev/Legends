@@ -1219,4 +1219,41 @@ class LEn extends L {
   String objectivesMet(int met, int total) {
     return 'Board objectives: $met of $total';
   }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get pushReady => 'Notifications reach this phone';
+
+  @override
+  String get pushNotReady =>
+      'Phone notifications are not switched on on the server yet; every message is in your inbox';
+
+  @override
+  String get kindReferee => 'Your next match\'s referee';
+
+  @override
+  String get kindMatchSoon => 'Your match soon, and moves';
+
+  @override
+  String get kindOffers => 'Offers, sales and loans';
+
+  @override
+  String get kindDone => 'Training, stadium and scout done';
+
+  @override
+  String get kindNews => 'Game news and the developers\' messages';
+
+  @override
+  String get kindAbsence => 'Absence and holidays';
+
+  @override
+  String get emailMatch => 'Match summary by email';
+
+  @override
+  String get emailOffers => 'Store offers by email';
+
+  @override
+  String get emailNeeded => 'Needs a confirmed email on your account';
 }

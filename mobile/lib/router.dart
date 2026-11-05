@@ -22,6 +22,7 @@ import 'features/market/market_screen.dart';
 import 'features/market/scout_screen.dart';
 import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
+import 'features/notifications/notifications_screen.dart';
 import 'features/money/stadium_screen.dart';
 import 'features/wallet/wallet_screen.dart';
 import 'features/match/report_screen.dart';
@@ -73,6 +74,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leagues/:id/market', builder: (_, s) => MarketScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/scout', builder: (_, s) => ScoutScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/coaches/:id', builder: (_, s) => CoachProfileScreen(userId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       GoRoute(path: '/leagues/:id/training', builder: (_, s) => TrainingScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => SpecialistsScreen(leagueId: int.parse(s.pathParameters['id']!))),

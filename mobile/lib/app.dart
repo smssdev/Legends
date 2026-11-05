@@ -6,8 +6,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/settings.dart';
+import 'features/auth/auth_controller.dart';
 import 'features/health/health.dart';
 import 'features/health/status_screens.dart';
+import 'features/inbox/inbox_data.dart';
+import 'features/notifications/push.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
 import 'ui/theme.dart';
@@ -23,6 +26,8 @@ class GlmApp extends ConsumerStatefulWidget {
 
 class _GlmAppState extends ConsumerState<GlmApp> {
   StreamSubscription<Uri>? _links;
+  StreamSubscription<String>? _taps;
+  StreamSubscription<void>? _arrivals;
 
   /// [Sprint 16 F2] An invite link (gamelegendmanager.online/join/CODE) opens the app on its code, at the start or while it
   /// runs; a guest signs in first and lands on it (router.dart).
@@ -35,11 +40,21 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     }
     links.getInitialLink().then((u) => u == null ? null : open(u)).catchError((_) => null);
     _links = links.uriLinkStream.listen(open, onError: (_) {});
+
+    // [Sprint 19 F1] Pushes: started for a signed-in coach; a tap opens its screen, an arrival refreshes the inbox count.
+    final push = ref.read(pushProvider);
+    _taps = push.taps.listen((route) => ref.read(routerProvider).push(route));
+    _arrivals = push.arrivals.listen((_) => ref.invalidate(unreadProvider));
+    ref.listenManual(authProvider, (_, next) {
+      if (next.value != null) push.start();
+    }, fireImmediately: true);
   }
 
   @override
   void dispose() {
     _links?.cancel();
+    _taps?.cancel();
+    _arrivals?.cancel();
     super.dispose();
   }
 

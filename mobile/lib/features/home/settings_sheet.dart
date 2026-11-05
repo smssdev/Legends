@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/settings.dart';
@@ -52,7 +53,18 @@ class _SettingsSheet extends ConsumerWidget {
             selected: {s.language},
             onSelectionChanged: (v) => settings.setLanguage(v.first),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 10),
+          // [Sprint 19 F1] Which notifications the account wants.
+          ListTile(
+            leading: Icon(Icons.notifications_rounded, color: context.palette.gold),
+            title: Text(l.notifications),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () {
+              Navigator.pop(context);
+              GoRouter.of(context).push('/notifications');
+            },
+          ),
+          const SizedBox(height: 12),
           if (accountNo != null) Text(l.accountNo(accountNo!), textAlign: TextAlign.center, style: TextStyle(color: context.palette.textMuted)),
           FutureBuilder(
             future: PackageInfo.fromPlatform(),

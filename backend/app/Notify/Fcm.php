@@ -40,8 +40,8 @@ class Fcm
                 'token' => $token,
                 'notification' => ['title' => (string) $payload['title'], 'body' => (string) $payload['body']],
                 // The tap opens the screen of the message's link (the app maps the site's paths to its own).
-                'data' => ['link' => (string) ($payload['link'] ?? '/'), 'tag' => (string) ($payload['tag'] ?? '')],
-                'android' => ['priority' => 'high', 'notification' => ['channel_id' => 'glm', 'tag' => (string) ($payload['tag'] ?? '')]],
+                'data' => ['link' => (string) ($payload['link'] ?? '/'), 'tag' => (string) ($payload['tag'] ?? ''), 'league' => (string) ($payload['league'] ?? '')],
+                'android' => ['priority' => 'high', 'notification' => ['tag' => (string) ($payload['tag'] ?? '')]],
             ]],
         );
         if ($r->successful()) {

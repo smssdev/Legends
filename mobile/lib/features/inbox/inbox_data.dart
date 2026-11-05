@@ -20,20 +20,24 @@ class InboxMessage {
 
   InboxMessage asRead() => InboxMessage(id: id, type: type, leagueId: leagueId, read: true, at: at, title: title, body: body, link: link);
 
-  /// Where the message leads in the app: the web's path, inside its league when it has one; null for the site only.
-  String? get route {
-    final l = leagueId;
-    final path = link ?? '';
-    if (l == null) return null;
-    for (final (prefix, screen) in [
-      ('/stadium', 'stadium'), ('/finance', 'finance'), ('/market', 'market'), ('/transfers', 'market'), ('/scout', 'scout'), ('/training', 'training'), ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
-    ]) {
-      if (path.startsWith(prefix)) return '/leagues/$l/$screen';
-    }
-    final live = RegExp(r'^/live/(\d+)').firstMatch(path);
-    if (live != null) return '/match/${live.group(1)}';
-    return '/leagues/$l';
+  /// Where the message leads in the app (appRoute).
+  String? get route => appRoute(link, leagueId);
+}
+
+/// [Sprint 18, 19] Where a message or a push leads in the app: the site's path, inside its league when it has one;
+/// null when there is no league (the home screen).
+String? appRoute(String? link, int? league) {
+  final path = link ?? '';
+  final live = RegExp(r'^/live/(\d+)').firstMatch(path);
+  if (live != null) return '/match/${live.group(1)}';
+  if (league == null) return null;
+  for (final (prefix, screen) in [
+    ('/stadium', 'stadium'), ('/finance', 'finance'), ('/market', 'market'), ('/transfers', 'market'), ('/scout', 'scout'), ('/training', 'training'),
+    ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
+  ]) {
+    if (path.startsWith(prefix)) return '/leagues/$league/$screen';
   }
+  return '/leagues/$league';
 }
 
 class InboxPage {
