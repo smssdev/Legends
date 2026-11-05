@@ -90,7 +90,7 @@ namespace Legends.Tests
             var minute = MatchMinute.From(ticks[tick - 1], 3000);
             bridge.OnMinute(Write(ticks[tick - 1]));
             bool flip = MatchScene.Flipped(minute.Period);
-            int checks = 0;
+            int checks = 0, motions = 0, running = 0;
             float limit = Time.realtimeSinceStartup + 20f;
             yield return null;   // the scene takes the minute on its first update
             while (scene.Current != null && Time.realtimeSinceStartup < limit)
@@ -114,9 +114,20 @@ namespace Legends.Tests
                 var ball = MatchScene.SampleBall(pf, a, b, nf, k);
                 var ballAt = MatchScene.World(new Vector2(ball.x, ball.y), flip);
                 Assert.Less(Vector2.Distance(new Vector2(ballAt.x, ballAt.z), new Vector2(scene.Ball.localPosition.x, scene.Ball.localPosition.z)), Tolerance, $"ball in tick {tick}");
+                // [Sprint 07 U4] a real player who moves runs in his Animator at the pace he goes (none on the capsules)
+                if (scene.Progress > 0.3f && scene.Progress < 0.7f)
+                    foreach (var id in a.Players.Keys)
+                    {
+                        var motion = Player(id)?.GetComponent<PlayerMotion>();
+                        if (motion == null) continue;
+                        motions++;
+                        var anim = motion.GetComponent<Animator>();
+                        if (motion.CurrentSpeed > 1f && anim.GetFloat(PlayerMotion.Speed) > 0.5f) running++;
+                    }
                 checks++;
                 yield return null;
             }
+            if (motions > 0) Assert.Greater(running, motions / 10, "players run through their Animator while they move");
             Assert.Greater(checks, 5, "the minute was drawn over several frames");
             Assert.IsNull(scene.Current, "the minute ended in its time");
         }

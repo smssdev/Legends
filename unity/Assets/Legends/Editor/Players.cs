@@ -65,6 +65,12 @@ namespace Legends.EditorTools
             art.eyes = Lit("Eyes", Tex("eye_brown"), Color.white, 0.3f, cutout: true);   // glossier mirrors the sky and hides the iris
             art.lashes = Lit("Lashes", Tex("eyelashes01"), Color.black, 0.1f, cutout: true);
             art.kit = Own("Kit", "Legends/Kit", m => m.SetTexture("_Numbers", Tex("numbers")));
+            // [Sprint 07 U4] the moves' animator, and the sprint's own speed
+            art.controller = PlayerAnimator.Build();
+            var speeds = "Assets/Legends/Animation/Moves/locomotion.json";
+            if (File.Exists(speeds) && MiniJson.Parse(File.ReadAllText(speeds)) is Dictionary<string, object> table
+                && table.TryGetValue("sprint", out var sprint) && sprint is Dictionary<string, object> row)
+                art.sprintSpeed = System.Convert.ToSingle(row["speed"]);
             art.hairColours = new[] { Hex(looks.hair_colours.dark), Hex(looks.hair_colours.brown), Hex(looks.hair_colours.blond) };
             EditorUtility.SetDirty(art);
             AssetDatabase.SaveAssets();

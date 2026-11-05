@@ -31,6 +31,10 @@ namespace Legends
         public Material eyes, lashes, kit;
         [Tooltip("dark, brown and blond, in PlayerLook.HairColours' order")]
         public Color[] hairColours = new Color[3];
+        [Tooltip("[Sprint 07 U4] Animation/Player.controller: standing, walking to sprinting, and the one-off moves")]
+        public RuntimeAnimatorController controller;
+        [Tooltip("[Sprint 07 U4] The sprint's own speed (m/s), from locomotion.json: above it the sprint plays faster")]
+        public float sprintSpeed = 4.48f;
 
         public static PlayerArt Load() => Resources.Load<PlayerArt>("PlayerArt");
 
@@ -64,6 +68,14 @@ namespace Legends
             go.name = "Player " + look;
             var player = go.AddComponent<PlayerLook>();
             player.Apply(look, this, kit, number, keeper);
+            // [Sprint 07 U4] standing at ease, walking and running at the pace the server moves him
+            var animator = go.GetComponent<Animator>();
+            if (animator != null && controller != null)
+            {
+                animator.runtimeAnimatorController = controller;
+                PlayerMotion.SprintSpeed = sprintSpeed;
+                go.AddComponent<PlayerMotion>();
+            }
             return player;
         }
     }
