@@ -596,6 +596,12 @@ return [
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).
         'match_soon_minutes' => 30,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
+        // [Sprint 19 B1] The Android app's pushes (App\Notify\Fcm): the service account's JSON file on the server (a
+        // secret, set with legends-set), and the app's Firebase settings, which are not secret and reach it from /app.
+        'fcm' => [
+            'credentials' => env('FCM_CREDENTIALS'),
+            'client' => ['api_key' => env('FIREBASE_API_KEY'), 'app_id' => env('FIREBASE_ANDROID_APP_ID'), 'project_id' => env('FIREBASE_PROJECT_ID'), 'sender_id' => env('FIREBASE_SENDER_ID')],
+        ],
     ],
     // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
     'premium' => [

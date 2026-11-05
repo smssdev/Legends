@@ -7868,6 +7868,13 @@ export interface paths {
                         "application/json": {
                             android: components["schemas"]["AppRelease"] | null;
                             ios: Record<string, never> | null;
+                            /** @description [Sprint 19 B1] The app's Firebase settings (not secret), null until set on the server */
+                            firebase: {
+                                api_key?: string;
+                                app_id?: string;
+                                project_id?: string;
+                                sender_id?: string;
+                            } | null;
                         };
                     };
                 };
@@ -9896,7 +9903,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** This browser gets the notifications (its PushSubscription) */
+        /** This browser gets the notifications (its PushSubscription), or [Sprint 19 B1] this app (its FCM token) */
         post: {
             parameters: {
                 query?: never;
@@ -9907,11 +9914,18 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        endpoint: string;
-                        keys: {
+                        /**
+                         * @description fcm: the app, with token; otherwise a browser, with endpoint and keys
+                         * @enum {string}
+                         */
+                        channel?: "webpush" | "fcm";
+                        endpoint?: string;
+                        keys?: {
                             p256dh: string;
                             auth: string;
                         };
+                        /** @description The app's FCM registration token */
+                        token?: string;
                     };
                 };
             };
@@ -14405,6 +14419,8 @@ export interface components {
             public_key: string | null;
             /** @description The server can push (its keys are set) */
             enabled: boolean;
+            /** @description [Sprint 19 B1] The server can push to the Android app (FCM) */
+            app_enabled?: boolean;
             devices: number;
             kinds: {
                 /** @enum {string} */

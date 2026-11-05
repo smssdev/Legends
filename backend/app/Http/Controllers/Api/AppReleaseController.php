@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Apps\AppReleases;
 use App\Http\Controllers\Controller;
+use App\Notify\Fcm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,8 @@ class AppReleaseController extends Controller
         $android = AppReleases::latest();
 
         // The iPhone has no file to download: it installs the web app from Safari until the App Store (README section 11).
-        return response()->json(['android' => $android ? AppReleases::card($android) : null, 'ios' => null]);
+        // [Sprint 19 B1] The app's Firebase settings (not secret), so pushes start without a new build; null until set.
+        return response()->json(['android' => $android ? AppReleases::card($android) : null, 'ios' => null, 'firebase' => Fcm::client()]);
     }
 
     public function download(): BinaryFileResponse

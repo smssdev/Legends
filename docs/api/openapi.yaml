@@ -2971,7 +2971,7 @@ paths:
       summary: '[Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store)'
       security: []
       responses:
-        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [android, ios], properties: { android: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true }, ios: { type: object, nullable: true } } } } } }
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [android, ios, firebase], properties: { android: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true }, ios: { type: object, nullable: true }, firebase: { type: object, nullable: true, description: '[Sprint 19 B1] The app''s Firebase settings (not secret), null until set on the server', properties: { api_key: { type: string }, app_id: { type: string }, project_id: { type: string }, sender_id: { type: string } } } } } } } }
   /app/android.apk:
     get:
       tags: [account]
@@ -3573,17 +3573,18 @@ paths:
   /notifications/subscriptions:
     post:
       tags: [notifications]
-      summary: This browser gets the notifications (its PushSubscription)
+      summary: This browser gets the notifications (its PushSubscription), or [Sprint 19 B1] this app (its FCM token)
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [endpoint, keys]
               properties:
+                channel: { type: string, enum: [webpush, fcm], description: 'fcm: the app, with token; otherwise a browser, with endpoint and keys' }
                 endpoint: { type: string }
                 keys: { type: object, required: [p256dh, auth], properties: { p256dh: { type: string }, auth: { type: string } } }
+                token: { type: string, maxLength: 600, description: The app's FCM registration token }
       responses:
         '200':
           description: The settings after
@@ -6229,6 +6230,7 @@ components:
         email_ready: { type: boolean, description: '[X79] The account has a confirmed email, so the summary can arrive' }
         public_key: { type: string, nullable: true, description: The server's VAPID public key for PushManager.subscribe }
         enabled: { type: boolean, description: The server can push (its keys are set) }
+        app_enabled: { type: boolean, description: '[Sprint 19 B1] The server can push to the Android app (FCM)' }
         devices: { type: integer }
         kinds:
           type: array
