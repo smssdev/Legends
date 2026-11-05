@@ -5738,6 +5738,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/matches/{match}/scene": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match: number;
+            };
+            cookie?: never;
+        };
+        /**
+         * What the Unity scene draws, once per match (Sprint 02 B1)
+         * @description Both clubs with their colours, kit pattern and change kit, both teams' players with their numbers, positions,
+         *     lines and who starts, the captains, each human coach's look, and the stadium with its light from the kick-off's
+         *     hour in Cairo (`game.scene`: the arena by night and dusk, the classic by day). Drawing only: no tactics of either
+         *     side, so it is the same for every member. Members only (404 for anyone else), rate limited.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    match: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The scene's setup */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            clubs: {
+                                home?: components["schemas"]["SceneClub"];
+                                away?: components["schemas"]["SceneClub"];
+                            };
+                            players: {
+                                home?: components["schemas"]["ScenePlayer"][];
+                                away?: components["schemas"]["ScenePlayer"][];
+                            };
+                            captains: {
+                                home?: number | null;
+                                away?: number | null;
+                            };
+                            /** @description C1 to C3; null for a club with no coach */
+                            coach_looks: {
+                                home?: string | null;
+                                away?: string | null;
+                            };
+                            /** @enum {string} */
+                            stadium: "arena" | "classic";
+                            /** @enum {string} */
+                            light: "night" | "dusk" | "day";
+                            /** Format: date-time */
+                            kickoff_at: string;
+                            tick_ms: number;
+                        };
+                    };
+                };
+                /** @description Not a member of the match's league */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/matches/{match}/live": {
         parameters: {
             query?: never;
@@ -14409,6 +14488,30 @@ export interface components {
             /** @description home and away: formation, tactics (your side only), subs, stats, captain (the armband, Sprint 34 V3) and players (each with fit and pac, his pace for the drawing, Sprint 34 K4) */
             teams?: Record<string, never>;
             slots?: Record<string, never>;
+        };
+        /** @description A club as the Unity scene draws it (Sprint 02 B1) */
+        SceneClub: {
+            id: number;
+            name: string;
+            code: string;
+            /** @description Hex colour */
+            primary: string;
+            /** @description Hex colour */
+            secondary: string;
+            /** @enum {string|null} */
+            pattern: "stripes" | "hoops" | "halves" | "sash" | null;
+            away_kit: {
+                color?: string;
+                pattern?: string | null;
+            } | null;
+        };
+        ScenePlayer: {
+            id: number;
+            name: string;
+            no: number;
+            pos: string;
+            line: string;
+            starter: boolean;
         };
         /** @description One of the Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json). */
         Keyframe: {
