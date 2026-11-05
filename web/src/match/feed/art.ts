@@ -797,9 +797,9 @@ const REACT_POOLS = {
 }
 export const REACT_COUNT = Object.keys(REACTIONS).length
 
-export function studio(kits, seed = 1) {
+export function studio(kits, seed = 1, day = false) {
   // [Sprint 42 J2] Each match its studio: the LED wall's colours, the desk's trim and the two commentators (their
-  // faces, hair, suits and ties), all from the match's seed.
+  // faces, hair, suits and ties), all from the match's seed. [Sprint 43 C7] By day in the day look.
   const SR = rnd((Number(seed) || 1) * 101 + 17)
   const THEMES = [['#0E2A5C', '#123A7A', '#0A2148', '#0B1A3A'], ['#2A1352', '#3B1D74', '#1E0E3D', '#170B30'], ['#063F45', '#0B5C63', '#052E33', '#06232A'], ['#4A0E1E', '#6B1428', '#330915', '#210610']]
   const TH = THEMES[Math.floor(SR() * THEMES.length)], TRIM = SR() < 0.6 ? ['#C08A0C', '#FFD36B'] : ['#8C96A8', '#F2F5FA']
@@ -810,7 +810,7 @@ export function studio(kits, seed = 1) {
   svg.dataset.id = id
   const H = kits?.home?.kit ?? '#C8102E', A = kits?.away?.kit ?? '#1E4FA8'
   svg.innerHTML = `<defs>
-    <linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${TH[3]}"/><stop offset="1" stop-color="#040B1C"/></linearGradient>
+    <linearGradient id="${id}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${day ? '#DCEBF7' : TH[3]}"/><stop offset="1" stop-color="${day ? '#8FB0CF' : '#040B1C'}"/></linearGradient>
     <linearGradient id="${id}led" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${TH[0]}"/><stop offset=".5" stop-color="${TH[1]}"/><stop offset="1" stop-color="${TH[2]}"/></linearGradient>
     <linearGradient id="${id}desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A2B4D"/><stop offset="1" stop-color="#0A1328"/></linearGradient>
     <linearGradient id="gold${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${TRIM[0]}"/><stop offset=".5" stop-color="${TRIM[1]}"/><stop offset="1" stop-color="${TRIM[0]}"/></linearGradient>
@@ -827,7 +827,7 @@ export function studio(kits, seed = 1) {
   <text x="320" y="44" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="15" letter-spacing="4" fill="#FFD36B">GLM · LIVE</text>
   <text data-score="1" x="320" y="88" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="40" fill="#fff"></text>
   <text data-clock="1" x="320" y="130" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="34" fill="#FFD36B" stroke="rgba(245,184,46,.35)" stroke-width="4" paint-order="stroke"></text>
-  <ellipse cx="320" cy="250" rx="300" ry="30" fill="#0E2246" opacity=".9"/>
+  <ellipse cx="320" cy="250" rx="300" ry="30" fill="${day ? '#6F8FB2' : '#0E2246'}" opacity=".9"/>
   <g data-spot="1" opacity=".0"><path d="M120 0 L180 0 L260 250 L60 250 Z" fill="#FFF6DA" opacity=".07"/><path d="M460 0 L520 0 L580 250 L380 250 Z" fill="#FFF6DA" opacity=".07"/></g>`
   const g = el('g', {}, svg)
   const suit = (trim) => ({ look: 0, shorts: '#1F2937', socks: '#111827', trim })

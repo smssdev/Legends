@@ -12,7 +12,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * The stadium [PLAN 2.9, Sprint 29]: seats, pitch and training, three stages of five parts each. The coach starts
- * each part by hand and pays for it; it is done in 20 hours in every league [Sprint 21 E6], coach online or not.
+ * each part by hand and pays for it; its time comes from the league's length so the whole stadium can be done ten rounds
+ * before the end [Sprint 43 C4], coach online or not.
  * One part at a time across the whole stadium. A finished stage changes the game: more seats (and tickets), more
  * home advantage, faster training. A club left to the computer keeps what it built and finishes the part under way.
  */
@@ -49,8 +50,27 @@ class Stadium
     /** Seconds one part takes in this league. */
     public static function partSeconds(int $leagueId): int
     {
-        // [Sprint 21 E6] The same in every league (no longer scaled by the season's length).
-        return max(60, (int) config('game.stadium.part_hours') * 3600);
+        // [Sprint 43 C4, Hamza 2026-11-05] From the league's length: a coach who keeps building from the season's start
+        // finishes the whole stadium finish_before_rounds rounds before its end (a quarter of the rounds in a short
+        // league). Without a calendar yet, part_hours.
+        $fallback = max(60, (int) config('game.stadium.part_hours') * 3600);
+        $season = DB::table('seasons')->where('league_id', $leagueId)->orderByDesc('number')->first(['id', 'starts_at']);
+        if (! $season) {
+            return $fallback;
+        }
+        $rounds = (int) DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->max('round');
+        if ($rounds < 2) {
+            return $fallback;
+        }
+        $target = $rounds - min((int) config('game.stadium.finish_before_rounds'), intdiv($rounds, 4));
+        $deadline = DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('round', $target)->min('scheduled_at');
+        if (! $deadline) {
+            return $fallback;
+        }
+        $window = Carbon::parse($deadline, 'UTC')->getTimestamp() - Carbon::parse($season->starts_at, 'UTC')->getTimestamp();
+        $parts = (int) config('game.stadium.stages') * (int) config('game.stadium.parts_per_stage') * count(self::SECTIONS);
+
+        return $window > 0 ? max(60, intdiv($window, $parts)) : $fallback;
     }
 
     /** The next part of a section: [stage, part], or null when the section is finished. */

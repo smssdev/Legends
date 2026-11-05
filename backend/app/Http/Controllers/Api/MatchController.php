@@ -131,8 +131,10 @@ class MatchController extends Controller
         // events of the latest missed minutes, and the latest minutes whole. At most missed_max_minutes of events
         // per request [E8.6]: the summary covers the rest, so a long gap never makes a big reply.
         $gap = $shown && $shown[0]['tick'] > $since + 1;
-        $missed = $gap && LiveDegrade::summary() ? $this->missed($m, $live, $since, $shown[0]['tick'], $you) : [];
-        $summary = $gap && LiveDegrade::summary() ? self::summary($missed, $since, $shown[0]['tick']) : null;
+        // [Sprint 43 C5] Without the catch-up, the screen simply goes on live from now.
+        $catchUp = $gap && LiveDegrade::summary() && config('game.live.catch_up');
+        $missed = $catchUp ? $this->missed($m, $live, $since, $shown[0]['tick'], $you) : [];
+        $summary = $catchUp ? self::summary($missed, $since, $shown[0]['tick']) : null;
         $missed = array_slice($missed, -(int) config('game.live.missed_max_minutes'));
 
         return response()->json([
@@ -330,11 +332,13 @@ class MatchController extends Controller
         if ($you) {
             MissedMatches::seen($request->user()->id, [$m->id]);
         }
-        if (! MatchReplay::replayable($m)) {
-            return response()->json(['replayable' => false, 'ticks' => null, 'events' => array_map(fn ($e) => Simulator::redact(['events' => [$e]], $you)['events'][0], MatchReplay::events($m->id))]);
+        // [Sprint 43 C6] Once the next round has started, the result only (its events), no longer the match again.
+        $expired = MatchReplay::expired($m);
+        if ($expired || ! MatchReplay::replayable($m)) {
+            return response()->json(['replayable' => false, 'expired' => $expired, 'ticks' => null, 'events' => array_map(fn ($e) => Simulator::redact(['events' => [$e]], $you)['events'][0], MatchReplay::events($m->id))]);
         }
 
-        return response()->json(['replayable' => true, 'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), MatchReplay::ticks($m)), 'events' => null]);
+        return response()->json(['replayable' => true, 'expired' => false, 'ticks' => array_map(fn ($t) => Simulator::redact($t, $you), MatchReplay::ticks($m)), 'events' => null]);
     }
 
     /** My matches being played now, in every league: the viewer switches between them. */

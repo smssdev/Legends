@@ -63,9 +63,27 @@ class CupBracket
             $entrants = array_map(fn ($c) => ['club' => $c], $clubs);
         }
 
-        // The first main round: the exempt clubs and the preliminary winners, drawn together.
+        // The first main round [Sprint 43 C3, Hamza 2026-11-05]: no branch all strong and another all weak. The
+        // strongest half are seeds, one in each tie, spread by the bracket's seeding (the first two in opposite
+        // halves, the first four in different quarters...), drawn within each level; the rest (the preliminary
+        // winners among them) are drawn against them.
         $main = array_search(self::NAMES[$size], $stages, true);
-        foreach (array_chunk($rng->shuffleArray($entrants), 2) as $i => $pair) {
+        $half = intdiv(count($entrants), 2);
+        $seeds = array_slice($entrants, 0, $half);
+        $others = $rng->shuffleArray(array_slice($entrants, $half));
+        $places = self::seeding($half);
+        $byTie = [];
+        for ($from = 0, $level = 1; $from < $half; $from += $level, $level = $from) {
+            $tier = array_slice(range(0, $half - 1), $from, $level);
+            foreach (array_values($rng->shuffleArray($tier)) as $k => $seed) {
+                $byTie[$places[$from + $k]] = $seeds[$seed];
+            }
+        }
+        $pairs = [];
+        for ($i = 0; $i < $half; $i++) {
+            $pairs[] = [$byTie[$i], $others[$i]];
+        }
+        foreach ($pairs as $i => $pair) {
             $tie = ['stage' => $stages[$main], 'slot' => $i + 1, 'home' => null, 'away' => null, 'next' => null];
             foreach ([0 => 'home', 1 => 'away'] as $k => $side) {
                 if (isset($pair[$k]['club'])) {
@@ -93,5 +111,32 @@ class CupBracket
         }
 
         return $ties;
+    }
+
+    /**
+     * The tie (0-based) of each seed (0-based) in a round of $ties ties: the bracket's seeding, so the first two meet
+     * only in the final, the first four only in the semi-finals, and so on. Pure.
+     *
+     * @return list<int> [seed index => tie index]
+     */
+    public static function seeding(int $ties): array
+    {
+        $order = [1];
+        while (count($order) < $ties) {
+            $n = count($order) * 2;
+            $next = [];
+            foreach ($order as $seed) {
+                $next[] = $seed;
+                $next[] = $n + 1 - $seed;
+            }
+            $order = $next;
+        }
+        $places = [];
+        foreach ($order as $tie => $seed) {
+            $places[$seed - 1] = $tie;
+        }
+        ksort($places);
+
+        return array_values($places);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\League\MatchResult;
 use App\League\MatchRunner;
 use App\League\NextFixture;
 use App\Models\User;
@@ -152,5 +153,41 @@ class WalletTest extends TestCase
         foreach (['exchange', 'convert', 'coins-to', 'to-money', 'cash'] as $word) {
             $this->assertStringNotContainsString($word, $routes);
         }
+    }
+
+    /** [Sprint 43 C1] A coach beaten by one of a lower rating tier pays a coin; by an equal or higher one, nothing. */
+    public function test_5_a_loss_to_a_lower_tier_costs_a_coin(): void
+    {
+        $this->league();
+        $season = (int) DB::table('seasons')->where('league_id', $this->league['id'])->value('id');
+        $other = User::factory()->create();
+        $theirs = (int) DB::table('clubs')->where('league_id', $this->league['id'])->where('id', '!=', $this->mine)->value('id');
+        DB::table('clubs')->where('id', $theirs)->update(['user_id' => $other->id]);
+        Wallet::post($this->owner->id, 'daily', 10, 'seed-owner');
+        $upset = new \ReflectionMethod(MatchResult::class, 'upsetLoss');
+        $fixture = fn (int $id) => (object) ['id' => $id, 'season_id' => $season];
+
+        // Both prospects: an even match, nothing.
+        $upset->invoke(null, $fixture(1), $this->mine, $theirs, $this->league['id']);
+        $this->assertSame(10, Wallet::balance($this->owner->id));
+        // The owner a tier up (a league and a cup title: 160 points): beaten by a prospect, he pays one coin, once.
+        foreach (['league' => 1, 'cup' => 1] as $competition => $position) {
+            DB::table('titles')->insert(['league_id' => $this->league['id'], 'season_id' => $season, 'user_id' => $this->owner->id, 'club_id' => $this->mine,
+                'competition' => $competition, 'position' => $position, 'created_at' => GameClock::now(), 'updated_at' => GameClock::now()]);
+        }
+        $upset->invoke(null, $fixture(2), $this->mine, $theirs, $this->league['id']);
+        $upset->invoke(null, $fixture(2), $this->mine, $theirs, $this->league['id']);
+        $this->assertSame(10 - config('game.premium.upset_loss'), Wallet::balance($this->owner->id));
+        $this->assertSame(1, DB::table('wallet_transactions')->where('type', 'upset_loss')->count());
+        // The prospect beaten by him: nothing.
+        Wallet::post($other->id, 'daily', 10, 'seed-other');
+        $upset->invoke(null, $fixture(3), $theirs, $this->mine, $this->league['id']);
+        $this->assertSame(10, Wallet::balance($other->id));
+        // With no coins, nothing to take.
+        $empty = User::factory()->create();
+        DB::table('clubs')->where('id', $this->mine)->update(['user_id' => $empty->id]);
+        $upset->invoke(null, $fixture(4), $this->mine, $theirs, $this->league['id']);
+        $this->assertSame(0, Wallet::balance($empty->id));
+        $this->assertSame(Wallet::sum($this->owner->id), Wallet::balance($this->owner->id));
     }
 }

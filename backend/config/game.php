@@ -260,6 +260,9 @@ return [
     // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
     // The live broadcast's server side [Sprint 21 E8], outside game.match so it never enters a match's snapshot.
     'live' => [
+        // [Sprint 43 C5, Hamza 2026-11-05] Joining a match under way: watched live from that minute, no catch-up (the
+        // score is right; the whole match again after the round, or its result only). true brings back E8.5's summary.
+        'catch_up' => false,
         // [E8.6] Back after a gap: the events of at most this many missed minutes in one reply (the summary covers the rest).
         'missed_max_minutes' => 30,
         // [E8.7] The degradation ladder under load (App\League\LiveDegrade): 1 drops the catch-up summary, 2 the
@@ -494,7 +497,9 @@ return [
     // started by the coach and done in part_hours (scaled by the season's length). The pitch's effect is in
     // match.home_pitch_bp (the engine reads it from the match's snapshot).
     // [Sprint 21 E6] Every part is built in part_hours, the same in every league.
-    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 20,
+    // [Sprint 43 C4] A part's time: the season's start to finish_before_rounds rounds before its end, over all the
+    // parts (part_hours only before the calendar exists).
+    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 20, 'finish_before_rounds' => 10,
         'sections' => ['seats', 'pitch', 'training'],
         'part_cost_bp' => [1 => 5, 2 => 8, 3 => 12],          // one part of a stage, as a share of the league's money scale
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
@@ -588,7 +593,10 @@ return [
     // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
     'premium' => [
         'season_cap' => 400,           // the most a coach spends in one league in one season
-        'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
+        // [Sprint 43 C1, Hamza 2026-11-05] A win 3, a draw 1, a loss 0; and a coach who loses to one of a lower rating tier
+        // pays upset_loss (CoachRating tiers).
+        'upset_loss' => 1,
+        'earn' => ['daily' => 10, 'win' => 3, 'draw' => 1, 'objective_league' => 50, 'objective_cup' => 30,
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
         'price' => ['spy' => 20, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,

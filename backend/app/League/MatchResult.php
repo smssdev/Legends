@@ -7,6 +7,7 @@ use App\Economy\Economy;
 use App\Market\Loans;
 use App\Market\Market;
 use App\Season\Achievements;
+use App\Season\CoachRating;
 use App\Staff\Specialists;
 use App\Support\GameClock;
 use App\Tournament\TournamentStage;
@@ -69,16 +70,35 @@ class MatchResult
             // Coins for the coach: a win or a draw [docs/features/premium.md].
             $for = $state['score'][$side];
             $against = $state['score'][$side === 'home' ? 'away' : 'home'];
+            $league = (int) DB::table('seasons')->where('id', $f->season_id)->value('league_id');
             if ($for >= $against) {
                 $type = $for > $against ? 'win' : 'draw';
-                $league = (int) DB::table('seasons')->where('id', $f->season_id)->value('league_id');
                 Wallet::earn(DB::table('clubs')->where('id', $club[$side])->value('user_id'), $type, "{$type}:{$f->id}:{$club[$side]}", "fixture:{$f->id}", $league, $f->season_id);
+            } else {
+                self::upsetLoss($f, (int) $club[$side], (int) $club[$side === 'home' ? 'away' : 'home'], $league);
             }
         }
         MatchReport::store($matchId, $state);
         // [Sprint 40 A1] A badge reached with this match (the first win, the tenth match...) pays its coins now.
         foreach ($club as $id) {
             Achievements::award(DB::table('clubs')->where('id', $id)->value('user_id'));
+        }
+    }
+
+    /**
+     * [Sprint 43 C1] A coach beaten by a coach of a lower rating tier pays upset_loss coins (all he has, if fewer). Both
+     * sides coached by people; once by its key.
+     */
+    private static function upsetLoss(object $f, int $loserClub, int $winnerClub, int $league): void
+    {
+        $loser = DB::table('clubs')->where('id', $loserClub)->value('user_id');
+        $winner = DB::table('clubs')->where('id', $winnerClub)->value('user_id');
+        $coins = min((int) config('game.premium.upset_loss'), $loser ? Wallet::balance((int) $loser) : 0);
+        if (! $loser || ! $winner || $coins <= 0) {
+            return;
+        }
+        if (CoachRating::of((int) $loser)['tier']['rank'] > CoachRating::of((int) $winner)['tier']['rank']) {
+            Wallet::post((int) $loser, 'upset_loss', -$coins, "upset_loss:{$f->id}:{$loserClub}", "fixture:{$f->id}", $league, $f->season_id);
         }
     }
 

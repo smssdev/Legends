@@ -1,5 +1,5 @@
 <template>
-  <div ref="host" class="mc theme-night" :class="{ smooth, scene: sceneOn }" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
+  <div ref="host" class="mc theme-night" :class="{ smooth, scene: sceneOn, day: theme === 'light' }" dir="rtl" :style="{ '--H': kits.home.kit, '--A': kits.away.kit }">
     <div class="atmo" aria-hidden="true" />
 
     <div class="sb">
@@ -98,6 +98,7 @@ import { scoreText } from '../../lib/format'
 import { t as tr } from '../../lib/i18n'
 import FlipNumber from '../../components/ui/FlipNumber.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { theme } from '../../lib/theme'
 import { ICON, SCENES, crest, setKits, setLight, setRain, setRich, setSmooth, studio } from './art'
 import { noteFrame, smooth, tier } from '../perf'
 import { sample } from '../frames'
@@ -399,7 +400,7 @@ let studioView: any = null, talkTill = 0, talker = 1, hypeTill = 0, studioDrawn 
 function talkAt() { talker = talker === 1 ? 2 : 1; talkTill = performance.now() + 2600 }
 function buildStudio() {
   if (!studioHost.value) return
-  try { studioView = studio(props.kits, props.seed); studioHost.value.replaceChildren(studioView.svg); drawStudio(performance.now(), true) } catch (e) { console.error(e); studioView = null }
+  try { studioView = studio(props.kits, props.seed, theme.value === 'light'); studioHost.value.replaceChildren(studioView.svg); drawStudio(performance.now(), true) } catch (e) { console.error(e); studioView = null }
 }
 function drawStudio(now, force = false) {
   // Behind a clip nobody sees it: not drawn then. At 30 a second in the smooth mode.
@@ -425,13 +426,12 @@ function reactTo(p) {
     : s.scene === 'trap' ? 'offside' : s.scene === 'rant' ? 'coach' : s.scene === 'blocked' ? 'miss' : s.scene
   reaction = { key, seed: (Number(props.seed) || 1) * 31 + (p.tick?.tick ?? 0), t0: performance.now() / 1000 }
 }
-// [Sprint 42 J1] The match's light in the clips: from the kick-off's hour in Cairo (night, dusk or day), or the seed.
+// [Sprint 43 C7, Hamza 2026-11-05] The broadcast's light follows the coach's look (his choice, or his device's): the
+// day look plays by day, the night look at night (was the kick-off's hour, Sprint 42 J1).
 function lightOf() {
-  let h = NaN
-  try { if (props.kickoff) h = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Africa/Cairo' }).format(new Date(props.kickoff))) } catch {}
-  if (Number.isNaN(h)) return ['night', 'dusk', 'day'][(Number(props.seed) || 0) % 3]
-  return h >= 18 || h < 6 ? 'night' : h >= 16 ? 'dusk' : 'day'
+  return theme.value === 'light' ? 'day' : 'night'
 }
+watch(theme, () => { setLight(lightOf()); buildStudio() })
 watch(() => [props.kickoff, props.seed], () => setLight(lightOf()), { immediate: true })
 onMounted(buildStudio)
 
@@ -488,6 +488,13 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
   radial-gradient(60% 50% at 0% 20%, color-mix(in srgb, var(--A) 26%, transparent), transparent 70%),
   radial-gradient(90% 70% at 50% 110%, rgba(245,184,46,.14), transparent 60%),
   linear-gradient(180deg, #0B2149, #050D1F 70%) }
+/* [Sprint 43 C7] The day look: a daylight sky behind the broadcast; the TV panels on it stay dark to read. */
+.mc.day { background: #9DC4E6 }
+.mc.day .atmo { background:
+  radial-gradient(60% 50% at 100% 20%, color-mix(in srgb, var(--H) 18%, transparent), transparent 70%),
+  radial-gradient(60% 50% at 0% 20%, color-mix(in srgb, var(--A) 20%, transparent), transparent 70%),
+  radial-gradient(90% 70% at 50% 110%, rgba(245,184,46,.18), transparent 60%),
+  linear-gradient(180deg, #CFE6F8, #8DB6DB 75%) }
 .atmo::before { content: ''; position: absolute; inset: -20%; background: repeating-linear-gradient(115deg, transparent 0 120px, rgba(255,255,255,.035) 120px 180px, transparent 180px 300px); animation: beams 18s linear infinite }
 @keyframes beams { to { transform: translateX(300px) } }
 

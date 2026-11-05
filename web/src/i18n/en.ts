@@ -1066,6 +1066,7 @@ export const EN: Record<string, string> = {
   'جارٍ': 'In progress',
   'انتهى': 'Finished',
   'دور الـ32': 'Round of 32',
+  'بدأت جولة جديدة، فلم تعد إعادة هذه المباراة متاحة. تبقى نتيجتها وملخصها السريع.': 'A new round has started, so this match can no longer be watched again. Its result and quick recap stay.',
   'دور الـ16': 'Round of 16',
   'ربع النهائي': 'Quarter-final',
   'نصف النهائي': 'Semi-final',

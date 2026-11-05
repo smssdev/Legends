@@ -71,6 +71,13 @@ class Presence
             }
             $quiet = $since->diffInSeconds($now);
             if ($quiet >= $leaveAfter) {
+                // [Sprint 43 C2] The creator is never sent away as creator: the league first passes to another coach at
+                // random (a statement in its news), then he leaves like any coach away too long. With nobody to take
+                // it, he stays.
+                if ($m->user_id === (int) DB::table('leagues')->where('id', $m->league_id)->value('owner_id')
+                    && Leaving::handOver($m->league_id, $m->user_id) === null) {
+                    continue;
+                }
                 $gone += Leaving::leave($m, 'absent') ? 1 : 0;
             } elseif ($quiet >= $warnAfter && $m->absence_warned_at === null) {
                 $told = DB::table('league_memberships')->where('id', $m->id)->whereNull('absence_warned_at')

@@ -6460,7 +6460,7 @@ export interface paths {
         };
         /**
          * A finished match again, for any member of its league
-         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
+         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine, or one whose next round has started (`expired`, Sprint 43 C6), gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
          */
         get: {
             parameters: {
@@ -6481,6 +6481,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             replayable: boolean;
+                            /** @description [Sprint 43 C6] The next round has started: the result and its events only, no longer the match again */
+                            expired?: boolean;
                             ticks: {
                                 [key: string]: unknown;
                             }[] | null;
