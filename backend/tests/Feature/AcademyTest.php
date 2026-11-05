@@ -51,6 +51,11 @@ class AcademyTest extends TestCase
         $this->assertSame($balance - $first['price'], (int) DB::table('clubs')->where('id', $league['my_club_id'])->value('balance'));
         $this->assertSame((int) DB::table('clubs')->where('id', $league['my_club_id'])->value('balance'), ClubLedger::sum($league['my_club_id']));
         $this->assertNotContains($first['id'], array_column($after['prospects'], 'id'));
+        // [X99] A signing only frees its own place: the other prospects stay, one new one fills the gap.
+        foreach (array_slice($a['prospects'], 1) as $stay) {
+            $this->assertContains($stay['id'], array_column($after['prospects'], 'id'));
+        }
+        $this->assertCount(3, $after['prospects']);
 
         $this->postJson($url, ['master_player_id' => $after['prospects'][0]['id']])->assertOk();
         $third = $this->getJson($url)->json('prospects.0.id');

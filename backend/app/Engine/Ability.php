@@ -60,7 +60,9 @@ final class Ability
         $total = 0;
         $weight = 0;
         foreach ($team['players'] as $p) {
-            if (! $p['on'] || $p['line'] === 'gk') {
+            // The one in goal is out of the lines; a keeper forced into an outfield place counts there, with
+            // position()'s penalty, rather than as nobody [X99].
+            if (! $p['on'] || ($p['slot_line'] ?? $p['line']) === 'gk') {
                 continue;
             }
             $w = $weights[$p['slot_line']] ?? 0;
