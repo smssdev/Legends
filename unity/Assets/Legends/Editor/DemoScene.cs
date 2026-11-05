@@ -33,10 +33,26 @@ namespace Legends.EditorTools
 
             var match = new GameObject("Match").AddComponent<Legends.MatchScene>();
             match.playerMaterial = Mat("Player", Color.white);
+            // [Sprint 06, the owner 2026-11-05] A real ball: its panels and seams (tools/unity/art/ball_texture.py), a
+            // little sheen, no glow; and the contact shadows under the boots and the ball.
             match.ballMaterial = Mat("Ball", Color.white);
-            // A faint glow, so the ball reads from the broadcast camera under the floodlights.
-            match.ballMaterial.EnableKeyword("_EMISSION");
-            match.ballMaterial.SetColor("_EmissionColor", Color.white * 0.6f);
+            match.ballMaterial.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Legends/Art/Ball/ball_panels.png"));
+            match.ballMaterial.SetFloat("_Smoothness", 0.45f);
+            match.ballMaterial.DisableKeyword("_EMISSION");
+            match.ballMaterial.SetColor("_EmissionColor", Color.black);
+            match.ballMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+            EditorUtility.SetDirty(match.ballMaterial);
+            var contact = Shader.Find("Legends/ContactShadow");
+            if (contact == null) Debug.LogError("Legends: no Legends/ContactShadow shader (see the import log)");
+            else
+            {
+                const string path = "Assets/Legends/Materials/ContactShadow.mat";
+                var shadow = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (shadow == null) AssetDatabase.CreateAsset(shadow = new Material(contact), path);
+                shadow.shader = contact;
+                EditorUtility.SetDirty(shadow);
+                match.shadowMaterial = shadow;
+            }
 
             // [Sprint 26 U1] The coaches by the touchline, from the Blender models (tools/unity/art/characters.py).
             var bench = new GameObject("Bench Coaches").AddComponent<Legends.BenchCoaches>();

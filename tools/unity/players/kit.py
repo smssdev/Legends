@@ -15,6 +15,8 @@ from mathutils import Vector
 ARM = ('clavicle', 'upperarm', 'lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')
 LEG = ('thigh', 'calf', 'foot', 'ball')
 PIECES = {'shirt': 0.0, 'shorts': 0.33, 'socks': 0.66, 'boots': 1.0}
+# The keeper's gloves are drawn as the boots' piece (B 1) with half alpha, so the shader colours them apart.
+GLOVES = {'gloves': 1.0}
 PATTERNS = ('plain', 'stripes', 'hoops', 'halves', 'sash')
 
 
@@ -85,10 +87,22 @@ def shirt(b, bm):
     cut(bm, b.names, pelvis + Vector((0, 0, b.m(0.01))), Vector((0, 0, -1)))   # over the shorts' waist, above the crotch
     trims = []
     for side in 'lr':
-        co, d = b.at('upperarm_' + side, 0.55)
+        # Short sleeves to mid upper arm; the keeper's long ones to the wrist.
+        co, d = b.at('lowerarm_' + side, 0.9) if b.long else b.at('upperarm_' + side, 0.55)
         cut(bm, b.names, co, d, only=ARM)
         trims.append((co, d, b.m(0.025), ARM))
     return trims
+
+
+def gloves(b, bm):
+    """The keeper's gloves: the hands and a little of the wrist."""
+    keep_bones(bm, b.names, lambda n: n.startswith(('lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')))
+    # Each wrist's plane goes on for ever: on its own arm only, or the left wrist's would take the right hand too.
+    arm = ('lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')
+    for side in 'lr':
+        co, d = b.at('lowerarm_' + side, 0.86)
+        cut(bm, b.names, co, -d, only=tuple(n for n in b.names if n.startswith(arm) and n.endswith('_' + side)))
+    return []
 
 
 def shorts(b, bm):
@@ -132,7 +146,7 @@ def boots(b, bm):
 
 
 # how far each piece stands off the skin, and how much more at its open ends (loose sleeves and shorts legs), in metres
-LIFT = {'shirt': (0.008, 0.010), 'shorts': (0.011, 0.028), 'socks': (0.0025, 0.0), 'boots': (0.004, 0.0)}
+LIFT = {'shirt': (0.008, 0.010), 'shorts': (0.011, 0.028), 'socks': (0.0025, 0.0), 'boots': (0.004, 0.0), 'gloves': (0.008, 0.0)}
 
 
 def collar(b, bm, trim):
@@ -178,7 +192,7 @@ def piece(b, kind):
                    for co, d, w, bones in trims)
         for loop in f.loops:
             p = loop.vert.co
-            loop[colour] = (1.0 if band else 0.0, front, PIECES[kind], 1.0)
+            loop[colour] = (1.0 if band else 0.0, front, {**PIECES, **GLOVES}[kind], 0.5 if kind == 'gloves' else 1.0)
             loop[uv].uv = (0.5 + p.x / b.m(0.5), (p.z - hem) / (top.z - hem))
     if kind == 'shirt':
         collar(b, bm, colour)
@@ -202,10 +216,11 @@ def piece(b, kind):
     return ob
 
 
-def dress(top, body):
-    """The four pieces on this player, parented to his rig. Returns them by name."""
+def dress(top, body, keeper=False):
+    """The four pieces on this player, parented to his rig (the keeper's: long sleeves, and gloves). By name."""
     b = Body(top, body)
-    return {kind: piece(b, kind) for kind in PIECES}
+    b.long = keeper
+    return {kind: piece(b, kind) for kind in [*PIECES, *(GLOVES if keeper else [])]}
 
 
 # ---------------------------------------------------------------- the preview's materials (Unity's shader does this in U6)
@@ -246,6 +261,7 @@ def materials(pieces, primary, secondary, pattern, srgb):
         'shorts': node_mat('Shorts', shorts_colour(primary), secondary, False),
         'socks': node_mat('Socks', primary, secondary, False),
         'boots': node_mat('Boots', '#15171c', '#15171c', False),
+        'gloves': node_mat('Gloves', '#E4FF5A', '#E4FF5A', False),   # the keeper's (Sprint 06 U7)
     }
     for kind, ob in pieces.items():
         ob.data.materials.clear()
