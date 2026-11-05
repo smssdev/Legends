@@ -963,7 +963,7 @@ paths:
                       type: object
                       required: [stage, scheduled_at, ties]
                       properties:
-                        stage: { type: string, enum: [preliminary, r16, qf, sf, final] }
+                        stage: { type: string, enum: [preliminary, r32, r16, qf, sf, final] }
                         scheduled_at: { type: string, format: date-time }
                         ties:
                           type: array
@@ -3957,11 +3957,12 @@ paths:
               required: [template, teams, format, starts_at]
               properties:
                 name: { type: string, nullable: true }
-                template: { type: string, enum: [world_cup, club_world_cup, afcon, euro, asian_cup, custom] }
+                template: { type: string, enum: [world_cup, world_cup_48, club_world_cup, afcon, euro, asian_cup, custom] }
                 teams: { type: array, items: { type: integer }, description: Master club ids, clubs and national teams together }
                 format: { type: string, enum: [league, groups, knockout] }
-                group_count: { type: integer, nullable: true, enum: [1, 2, 4, 8, null] }
+                group_count: { type: integer, nullable: true, enum: [1, 2, 4, 8, 12, null] }
                 advance_per_group: { type: integer, nullable: true, enum: [1, 2, null] }
+                best_thirds: { type: integer, nullable: true, description: "[Sprint 43 A3] The best third-placed teams that go on with the first two (12 groups of 48: 8), completing a knockout of 2 to 32" }
                 legs: { type: integer, nullable: true, enum: [1, 2, null] }
                 rounds_per_day: { type: integer }
                 round_times: { type: array, items: { type: string } }
@@ -4005,6 +4006,7 @@ paths:
                         format: { type: string }
                         group_count: { type: integer }
                         advance_per_group: { type: integer }
+                        best_thirds: { type: integer }
                         legs: { type: integer }
                         teams: { type: array, items: { type: integer } }
                   nations: { type: array, items: { $ref: '#/components/schemas/TeamCard' } }
@@ -4435,7 +4437,7 @@ components:
                                   slot: { type: integer }
                                   home: { type: object, nullable: true, additionalProperties: true }
                                   away: { type: object, nullable: true, additionalProperties: true }
-                                  home_from: { type: string, nullable: true }
+                                  home_from: { type: string, nullable: true, description: "A group place (\"A1\"), or the n-th best third (\"3:n\", Sprint 43 A3)" }
                                   away_from: { type: string, nullable: true }
                                   winner_id: { type: integer, nullable: true }
                                   score: { type: array, nullable: true, items: { type: integer } }
@@ -4812,6 +4814,7 @@ components:
         format: { type: string, nullable: true }
         group_count: { type: integer, nullable: true }
         advance_per_group: { type: integer, nullable: true }
+        best_thirds: { type: integer, nullable: true }
         legs: { type: integer, nullable: true }
         team_count: { type: integer }
         status: { type: string }
@@ -5944,7 +5947,7 @@ components:
         id: { type: integer }
         competition: { type: string, enum: [league, cup, alliance] }
         round: { type: integer, description: 'League: the round. Cup: the stage order' }
-        stage: { type: string, nullable: true, enum: [preliminary, r16, qf, sf, final, null] }
+        stage: { type: string, nullable: true, enum: [preliminary, r32, r16, qf, sf, final, null] }
         scheduled_at: { type: string, format: date-time }
         home: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }
         away: { allOf: [{ $ref: '#/components/schemas/FixtureClub' }], nullable: true }

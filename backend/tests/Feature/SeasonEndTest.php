@@ -53,10 +53,18 @@ class SeasonEndTest extends TestCase
 
     public function test_the_objectives_follow_the_strength(): void
     {
-        $this->assertSame(['target' => 1, 'kind' => 'title'], Objectives::league(1, 10));
-        $this->assertSame(['target' => 3, 'kind' => 'top'], Objectives::league(2, 10));
-        $this->assertSame(['target' => 6, 'kind' => 'mid'], Objectives::league(4, 10));
-        $this->assertSame(['target' => 8, 'kind' => 'survive'], Objectives::league(9, 10));
+        // [Sprint 43 A2] The two strongest for the title, the others their own place, the bottom three to stay up.
+        $this->assertSame(['target' => 1, 'kind' => 'title'], Objectives::league(1, 20));
+        $this->assertSame(['target' => 1, 'kind' => 'title'], Objectives::league(2, 20));
+        $this->assertSame(['target' => 3, 'kind' => 'top'], Objectives::league(3, 20));
+        $this->assertSame(['target' => 9, 'kind' => 'mid'], Objectives::league(9, 20));
+        $this->assertSame(['target' => 17, 'kind' => 'mid'], Objectives::league(17, 20));
+        $this->assertSame(['target' => 17, 'kind' => 'survive'], Objectives::league(18, 20));
+        $this->assertSame(['target' => 17, 'kind' => 'survive'], Objectives::league(20, 20));
+        // A small league: fewer to stay up; two teams both play for the title.
+        $this->assertSame(['target' => 3, 'kind' => 'survive'], Objectives::league(4, 4));
+        $this->assertSame(['target' => 3, 'kind' => 'mid'], Objectives::league(3, 4));
+        $this->assertSame(['target' => 1, 'kind' => 'title'], Objectives::league(2, 2));
         $this->assertSame('final', Objectives::cup(1, 16));
         $this->assertSame('sf', Objectives::cup(5, 16));
         $this->assertSame('qf', Objectives::cup(12, 16));

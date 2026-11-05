@@ -1,4 +1,5 @@
-// [X56] The game's two looks: the night (our own, the default) and the day, or the device's own choice. On this
+// [X56] The game's two looks: the night and the day, or the device's own choice (the default for who has not
+// chosen, Sprint 43 A1). On this
 // device only, like the names' language. A class on the page's root (html.light) swaps the colours of
 // docs/design/tokens.json (colorLight); index.html puts it there before the first paint, so the page never flashes.
 import { computed, ref, watch } from 'vue'
@@ -11,9 +12,9 @@ const BAR = { dark: '#0B1A2C', light: '#EFEADF' } as const
 function readPref(): ThemePref {
   try {
     const v = localStorage.getItem(KEY)
-    return v === 'light' || v === 'auto' ? v : 'dark'
+    return v === 'light' || v === 'dark' ? v : 'auto'
   } catch {
-    return 'dark'
+    return 'auto'
   }
 }
 

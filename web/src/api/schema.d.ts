@@ -2184,7 +2184,7 @@ export interface paths {
                         "application/json": {
                             stages: {
                                 /** @enum {string} */
-                                stage: "preliminary" | "r16" | "qf" | "sf" | "final";
+                                stage: "preliminary" | "r32" | "r16" | "qf" | "sf" | "final";
                                 /** Format: date-time */
                                 scheduled_at: string;
                                 ties: {
@@ -10764,15 +10764,17 @@ export interface paths {
                     "application/json": {
                         name?: string | null;
                         /** @enum {string} */
-                        template: "world_cup" | "club_world_cup" | "afcon" | "euro" | "asian_cup" | "custom";
+                        template: "world_cup" | "world_cup_48" | "club_world_cup" | "afcon" | "euro" | "asian_cup" | "custom";
                         /** @description Master club ids */
                         teams: number[];
                         /** @enum {string} */
                         format: "league" | "groups" | "knockout";
                         /** @enum {integer|null} */
-                        group_count?: 1 | 2 | 4 | 8 | null;
+                        group_count?: 1 | 2 | 4 | 8 | 12 | null;
                         /** @enum {integer|null} */
                         advance_per_group?: 1 | 2 | null;
+                        /** @description [Sprint 43 A3] The best third-placed teams that go on with the first two (12 groups of 48: 8), completing a knockout of 2 to 32 */
+                        best_thirds?: number | null;
                         /** @enum {integer|null} */
                         legs?: 1 | 2 | null;
                         rounds_per_day?: number;
@@ -10850,6 +10852,7 @@ export interface paths {
                                 format: string;
                                 group_count: number;
                                 advance_per_group: number;
+                                best_thirds?: number;
                                 legs: number;
                                 teams: number[];
                             }[];
@@ -12042,6 +12045,7 @@ export interface components {
             format: string | null;
             group_count: number | null;
             advance_per_group: number | null;
+            best_thirds?: number | null;
             legs: number | null;
             team_count: number;
             status: string;
@@ -13545,7 +13549,7 @@ export interface components {
             /** @description League: the round. Cup: the stage order */
             round: number;
             /** @enum {string|null} */
-            stage?: "preliminary" | "r16" | "qf" | "sf" | "final" | null;
+            stage?: "preliminary" | "r32" | "r16" | "qf" | "sf" | "final" | null;
             /** Format: date-time */
             scheduled_at: string;
             home?: components["schemas"]["FixtureClub"] | null;
@@ -14489,6 +14493,7 @@ export interface components {
                                 away: {
                                     [key: string]: unknown;
                                 } | null;
+                                /** @description A group place ("A1"), or the n-th best third ("3:n", Sprint 43 A3) */
                                 home_from: string | null;
                                 away_from: string | null;
                                 winner_id: number | null;

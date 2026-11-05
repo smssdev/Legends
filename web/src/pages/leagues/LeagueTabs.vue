@@ -38,7 +38,7 @@ const season = ref<Season | null>(null)
 const error = ref('')
 const squadOf = ref<number | null>(null)
 
-const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
+const STAGES: Record<string, string> = { preliminary: 'الدور التمهيدي', r32: 'دور الـ32', r16: 'دور الـ16', qf: 'ربع النهائي', sf: 'نصف النهائي', final: 'النهائي' }
 
 onMounted(async () => {
   const path = { league: props.leagueId }

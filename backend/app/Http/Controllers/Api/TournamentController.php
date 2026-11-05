@@ -81,6 +81,7 @@ class TournamentController extends Controller
             'format' => ['required', Rule::in(TournamentPlan::FORMATS)],
             'group_count' => ['nullable', 'integer'],
             'advance_per_group' => ['nullable', 'integer'],
+            'best_thirds' => ['nullable', 'integer', 'min:0'],
             'legs' => ['nullable', 'integer', 'in:1,2'],
             'rounds_per_day' => ['sometimes', 'integer', 'between:1,'.($dev ? 2 : $l['rounds_per_day'][1])],
             'round_times' => ['sometimes', 'array', 'size:'.(int) $request->input('rounds_per_day', 1)],
@@ -235,6 +236,7 @@ class TournamentController extends Controller
     {
         return ['id' => $l->id, 'name' => $l->name, 'code' => $l->code, 'template' => $l->tournament_template, 'format' => $l->format,
             'group_count' => $l->group_count ? (int) $l->group_count : null, 'advance_per_group' => $l->advance_per_group ? (int) $l->advance_per_group : null,
+            'best_thirds' => $l->best_thirds ? (int) $l->best_thirds : null,
             'legs' => $l->legs ? (int) $l->legs : null, 'team_count' => (int) $l->team_count, 'status' => $l->status,
             'entry_mode' => Entries::mode($l), 'entrants' => DB::table('tournament_entries')->where('league_id', $l->id)->count(),
             'owner' => $l->owner ? ['id' => $l->owner->id, 'name' => $l->owner->name] : null,

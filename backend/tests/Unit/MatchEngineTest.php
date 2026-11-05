@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Engine\MatchSetup;
+use App\Simulator\MomentClock;
 use App\Simulator\Runner;
 use PHPUnit\Framework\TestCase;
 
@@ -145,5 +146,25 @@ class MatchEngineTest extends TestCase
         $in = array_values(array_filter($team['players'], fn ($p) => $p['on'] && $p['slot'] === $state['teams']['home']['players'][$striker]['slot']));
         $this->assertCount(1, $in);
         $this->assertNotSame('gk', $in[0]['line']);
+    }
+
+    /** [Sprint 43 B2] Now and then the finisher's own foul takes the goal away after the VAR: the attackers' foul. */
+    public function test_the_attackers_own_foul_takes_a_goal_away_now_and_then(): void
+    {
+        $seen = 0;
+        foreach (range(1, 60) as $seed) {
+            [, $ticks] = Runner::toEnd($this->state($seed));
+            foreach ($ticks as $out) {
+                if (MomentClock::varReason($out['events']) === 'foul') {
+                    $seen++;
+                    $foul = array_values(array_filter($out['events'], fn ($e) => $e['type'] === 'foul' && ($e['attacking'] ?? false)));
+                    $attack = array_values(array_filter($out['events'], fn ($e) => $e['type'] === 'attack'));
+                    $this->assertNotEmpty($foul);
+                    $this->assertSame($attack[0]['team'], $foul[0]['team'], 'the foul is the attackers\'');
+                }
+            }
+        }
+        $this->assertGreaterThan(5, $seen);
+        $this->assertLessThan(40, $seen);
     }
 }

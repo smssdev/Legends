@@ -20,18 +20,18 @@ class Objectives
      */
     public static function league(int $rank, int $teams): array
     {
+        // [Sprint 43 A2, Hamza's decision 2026-11-05] The strongest and the one after it play for the title; every other
+        // club for its own place by strength (or better); the bottom three (fewer in a small league) to stay up.
         $cfg = config('game.objectives');
-        if ($rank === 1) {
+        if ($rank <= min($teams, (int) $cfg['title_ranks'])) {
             return ['target' => 1, 'kind' => 'title'];
         }
-        $floor = $teams - intdiv($teams * (int) $cfg['bottom_bp'] + 9999, 10000);   // out of the bottom fifth
-        $topQuarter = $rank * 4 <= $teams;
-        $target = $rank + ($topQuarter ? (int) $cfg['top_quarter_slack'] : (int) $cfg['rest_slack']);
-        if ($target >= $floor) {
-            return ['target' => max(1, $floor), 'kind' => 'survive'];
+        $bottom = min((int) $cfg['survive_bottom'], intdiv($teams, 4));
+        if ($bottom > 0 && $rank > $teams - $bottom) {
+            return ['target' => $teams - $bottom, 'kind' => 'survive'];
         }
 
-        return ['target' => $target, 'kind' => $topQuarter ? 'top' : 'mid'];
+        return ['target' => $rank, 'kind' => $rank * 4 <= $teams ? 'top' : 'mid'];
     }
 
     /** The cup stage the club ranked $rank of $teams must reach (one the bracket has). Pure. */

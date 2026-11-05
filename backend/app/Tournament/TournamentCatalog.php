@@ -73,7 +73,16 @@ class TournamentCatalog
             $groups = intdiv($groups, 2);
         }
 
+        // [Sprint 43 A3] The best thirds only with every team the template asks (48 for the World Cup of 2026).
+        $thirds = $n >= $t['teams'] ? (int) ($t['best_thirds'] ?? 0) : 0;
+        if (($t['best_thirds'] ?? 0) > 0 && $thirds === 0) {
+            $groups = 1;
+            while ($groups * 2 <= 8 && intdiv($n, $groups * 2) >= 3) {
+                $groups *= 2;
+            }
+        }
+
         return ['key' => $key, 'pool' => $t['pool'], 'confederation' => $t['confederation'] ?? null, 'format' => $t['format'],
-            'group_count' => $groups, 'advance_per_group' => 2, 'legs' => 1, 'teams' => array_map('intval', $ids)];
+            'group_count' => $groups, 'advance_per_group' => 2, 'best_thirds' => $thirds, 'legs' => 1, 'teams' => array_map('intval', $ids)];
     }
 }
