@@ -1,0 +1,167 @@
+{
+  "@@locale": "ar",
+  "appName": "المدرب الأسطورة",
+  "tagline": "لعبة إدارة كرة قدم عربية مجانية",
+  "signIn": "دخول",
+  "signInTitle": "أهلاً بعودتك",
+  "signInLead": "ادخل لتكمل موسمك",
+  "emailOrUsername": "البريد أو اسم المستخدم",
+  "password": "كلمة المرور",
+  "forgotPassword": "نسيتها؟",
+  "noAccount": "ليس لديك حساب؟",
+  "createAccount": "أنشئ حساباً",
+  "haveAccount": "عندك حساب؟",
+  "registerTitle": "حسابك الجديد",
+  "registerLead": "ثلاث خانات وتبدأ: اسمك، واسم المستخدم، وكلمة المرور",
+  "displayName": "اسمك الظاهر",
+  "username": "اسم المستخدم",
+  "usernameHint": "حروف إنجليزية وأرقام، 3 إلى 20",
+  "emailOptional": "البريد (اختياري، لاستعادة كلمة المرور)",
+  "passwordHint": "8 أحرف على الأقل",
+  "acceptTerms": "أوافق على الشروط وسياسة الخصوصية",
+  "termsAndPrivacy": "الشروط وسياسة الخصوصية",
+  "mustAcceptTerms": "وافق على الشروط وسياسة الخصوصية أولاً",
+  "register": "إنشاء الحساب",
+  "forgotTitle": "استعادة كلمة المرور",
+  "forgotLead": "اكتب بريد حسابك ونرسل لك رابطاً لكلمة مرور جديدة",
+  "email": "البريد الإلكتروني",
+  "sendLink": "أرسل الرابط",
+  "linkSent": "أرسلنا الرابط إن كان البريد لحساب عندنا. افتحه من بريدك.",
+  "required": "مطلوب",
+  "google": "المتابعة بحساب Google",
+  "googleSoon": "الدخول بجوجل قريباً في التطبيق",
+  "orByEmail": "أو بالبريد",
+  "updateTitle": "حدّث التطبيق",
+  "updateBody": "نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.",
+  "update": "حدّث الآن",
+  "offlineTitle": "لا اتصال",
+  "retry": "إعادة المحاولة",
+  "greetingMorning": "صباح الخير يا كوتش",
+  "greetingEvening": "مساء الخير يا كوتش",
+  "coins": "كوينز",
+  "myTeams": "فرقي",
+  "slotsOpen": "{open} من {total}",
+  "@slotsOpen": {
+    "placeholders": {
+      "open": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "slotFree": "فتحة فارغة",
+  "slotWaiting": "طلب انضمام ينتظر الرد",
+  "slotLocked": "مقفلة",
+  "slotOpensIn": "تُفتح مجاناً بعد {time}",
+  "@slotOpensIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "createLeague": "أنشئ دورياً",
+  "joinByCode": "انضم بكود",
+  "openClub": "ادخل النادي",
+  "nextMatch": "المباراة القادمة",
+  "vs": "ضد {club}",
+  "@vs": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "position": "المركز {n} من {of}",
+  "@position": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "of": {
+        "type": "int"
+      }
+    }
+  },
+  "waitsForYou": "{n} ينتظرك",
+  "@waitsForYou": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "record": "{w} فوز · {d} تعادل · {l} خسارة",
+  "@record": {
+    "placeholders": {
+      "w": {
+        "type": "int"
+      },
+      "d": {
+        "type": "int"
+      },
+      "l": {
+        "type": "int"
+      }
+    }
+  },
+  "onWebForNow": "تُفتح في الموقع حتى تصل إلى التطبيق",
+  "settings": "الإعدادات",
+  "look": "المظهر",
+  "lookAuto": "تلقائي",
+  "lookNight": "ليلي",
+  "lookDay": "نهاري",
+  "language": "اللغة",
+  "signOut": "تسجيل الخروج",
+  "signOutConfirm": "تسجيل الخروج من هذا الجوال؟",
+  "cancel": "إلغاء",
+  "accountNo": "رقم حسابك {n}",
+  "@accountNo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "days": "{n} يوم",
+  "@days": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{n} ساعة",
+  "@hours": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "minutes": "{n} دقيقة",
+  "@minutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "version": "النسخة {v}",
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "tierProspect": "الواعد",
+  "tierTactician": "التكتيكي",
+  "tierProfessional": "المحترف",
+  "tierElite": "النخبة",
+  "tierMastermind": "العقل المدبر",
+  "tierIcon": "الأيقونة",
+  "tierLegend": "الأسطورة"
+}
