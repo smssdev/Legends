@@ -84,4 +84,66 @@ class MatchEngineTest extends TestCase
             $this->assertNotSame($h, $a, "seed $seed");
         }
     }
+
+    /** [X99] A shootout ends the moment one side cannot be caught, even between a pair of kicks, and not a kick later. */
+    public function test_a_shootout_ends_the_moment_it_is_decided(): void
+    {
+        $seen = 0;
+        foreach (range(1, 120) as $seed) {
+            $s = $this->state($seed);
+            $s['competition'] = 'cup';
+            [, $ticks] = Runner::toEnd($s);
+            $kicks = null;
+            foreach ($ticks as $out) {
+                foreach ($out['events'] as $e) {
+                    $kicks = $e['type'] === 'shootout' ? $e['kicks'] : $kicks;
+                }
+            }
+            if ($kicks === null) {
+                continue;
+            }
+            $seen++;
+            $score = ['home' => 0, 'away' => 0];
+            $taken = ['home' => 0, 'away' => 0];
+            foreach ($kicks as $i => $k) {
+                $this->assertSame($i % 2 === 0 ? 'home' : 'away', $k['team'], "seed $seed: home kicks first, then in turn");
+                $score[$k['team']] += $k['scored'] ? 1 : 0;
+                $taken[$k['team']]++;
+                $decided = max($taken) <= 5
+                    ? $score['away'] > $score['home'] + 5 - $taken['home'] || $score['home'] > $score['away'] + 5 - $taken['away']
+                    : $taken['home'] === $taken['away'] && $score['home'] !== $score['away'];
+                $decided = $decided || ($taken['home'] === 5 && $taken['away'] === 5 && $score['home'] !== $score['away']);
+                $this->assertSame($i === count($kicks) - 1, $decided, "seed $seed: kick $i");
+            }
+        }
+        $this->assertGreaterThan(0, $seen, 'some draws went to penalties');
+    }
+
+    /** [X99] An injured outfield player is replaced by an outfield player; the bench keeper stays for the goal. */
+    public function test_an_injured_outfield_player_is_not_replaced_by_the_bench_keeper(): void
+    {
+        $state = $this->state(3);
+        $players = &$state['teams']['home']['players'];
+        $bench = array_keys(array_filter($players, fn ($p) => ! $p['on']));
+        $keeper = null;
+        foreach ($bench as $j) {
+            if ($players[$j]['line'] === 'gk') {
+                $keeper = $j;
+                $players[$j]['a']['ovr'] = 99; // the best on the bench by far
+            }
+        }
+        $this->assertNotNull($keeper);
+        $striker = array_key_first(array_filter($players, fn ($p) => $p['on'] && $p['slot_line'] === 'att'));
+        unset($players);
+        $state['teams']['home']['pending_injury'] = $state['teams']['home']['players'][$striker]['id'];
+        $state['teams']['home']['players'][$striker]['on'] = false;
+        $state['teams']['home']['players'][$striker]['out'] = 'injury';
+        $state['teams']['home']['missing']++;
+        $state = Runner::tick($state);
+        $team = $state['teams']['home'];
+        $this->assertFalse($team['players'][$keeper]['on'], 'the bench keeper stays on the bench');
+        $in = array_values(array_filter($team['players'], fn ($p) => $p['on'] && $p['slot'] === $state['teams']['home']['players'][$striker]['slot']));
+        $this->assertCount(1, $in);
+        $this->assertNotSame('gk', $in[0]['line']);
+    }
 }

@@ -314,7 +314,8 @@ return [
         'together_matches' => 15,
     ],
     'engine' => [
-        'version' => 12,
+        // 13 [X99]: keeper for keeper on an injury, a keeper in an outfield place counts there, the shootout ends when decided.
+        'version' => 13,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً

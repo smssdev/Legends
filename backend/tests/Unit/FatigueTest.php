@@ -39,4 +39,16 @@ class FatigueTest extends TestCase
         $this->assertSame(10000, $at('LW', 'att', 'mid'));
         $this->assertSame(10000, $at('CDM', 'mid', 'def', 'CB'));
     }
+
+    /** [X99] A keeper forced into an outfield place counts in its line (with the penalty), the one in goal does not. */
+    public function test_a_keeper_in_an_outfield_place_counts_in_the_line(): void
+    {
+        $p = fn (string $pos, string $line, string $slot, bool $on = true) => ['pos' => $pos, 'line' => $line, 'slot_line' => $slot, 'alt' => '', 'on' => $on, 'fit' => 10000,
+            'a' => ['ovr' => 70, 'pac' => 70, 'sho' => 70, 'pas' => 70, 'dri' => 70, 'def' => 70, 'phy' => 70]];
+        $alone = ['players' => [$p('GK', 'gk', 'gk'), $p('ST', 'att', 'att')]];
+        $withKeeper = ['players' => [$p('GK', 'gk', 'gk'), $p('ST', 'att', 'att'), $p('GK', 'gk', 'att')]];
+        $finish = ['att' => 1];
+        $this->assertLessThan(Ability::lines($alone, 'shoot', $finish), Ability::lines($withKeeper, 'shoot', $finish));
+        $this->assertSame(intdiv(7000 * 4000, 10000), Ability::lines(['players' => [$p('GK', 'gk', 'att')]], 'shoot', $finish));
+    }
 }

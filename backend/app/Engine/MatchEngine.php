@@ -835,7 +835,10 @@ final class MatchEngine
         $best = null;
         foreach ($team['players'] as $j => $p) {
             if (! $p['on'] && $p['out'] === '' && $p['slot'] === null) {
-                $score = $p['a']['ovr'] * 10 + ($p['line'] === $leaving['slot_line'] ? 1000 : 0);
+                // [X99] Keeper for keeper, outfield for outfield: a bench keeper goes to an outfield place (and an
+                // outfield player in goal) only when nobody else is left.
+                $kind = ($p['line'] === 'gk') === ($leaving['slot_line'] === 'gk') ? 2000 : 0;
+                $score = $kind + $p['a']['ovr'] * 10 + ($p['line'] === $leaving['slot_line'] ? 1000 : 0);
                 if ($best === null || $score > $best[0]) {
                     $best = [$score, $j];
                 }
@@ -900,6 +903,7 @@ final class MatchEngine
             usort($takers, fn ($a, $b) => $b['a']['pen'] <=> $a['a']['pen'] ?: $a['id'] <=> $b['id']);
             $order[$side] = $takers;
         }
+        $taken = ['home' => 0, 'away' => 0];
         for ($round = 0; $round < 30; $round++) {
             foreach (['home', 'away'] as $side) {
                 $other = $side === 'home' ? 'away' : 'home';
@@ -908,12 +912,15 @@ final class MatchEngine
                 $p = max(4000, min(9000, 7500 + ($taker['a']['pen'] - ($keeper['a']['gk'] ?? 50)) * 20));
                 $in = $this->rng->chance($p);
                 $score[$side] += $in ? 1 : 0;
+                $taken[$side]++;
                 $kicks[] = ['team' => $side, 'taker' => $taker['id'], 'scored' => $in];
+                // [X99] In the first five each, it ends the moment one side cannot be caught, even between a pair
+                // of kicks (the law's way): 3-0 after three each, or 4-2 with the other's last kick still to come.
+                if ($round < 5 && ($score['away'] > $score['home'] + 5 - $taken['home'] || $score['home'] > $score['away'] + 5 - $taken['away'])) {
+                    break 2;
+                }
             }
-            $left = max(0, 4 - $round);
-            if ($round < 5 && (abs($score['home'] - $score['away']) > $left)) {
-                break;
-            }
+            // Sudden death: after each full pair.
             if ($round >= 4 && $score['home'] !== $score['away']) {
                 break;
             }
