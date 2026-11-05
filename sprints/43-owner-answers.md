@@ -104,4 +104,4 @@
 
 | الرمز | التعديل | من | الحالة |
 |---|---|---|---|
-| | | | |
+| X100 | **خط اللعبة Alexandria بدل Amin** (طلب صاحب المشروع 2026-11-05: «الخط سيء، نريد خطاً حلواً جامداً وواضحاً»). قارنتُ سبعة خطوط مجانية (Amin وCairo وTajawal وAlmarai وIBM Plex Sans Arabic وReadex Pro وAlexandria) بنصوص اللعبة، وظهر في Amin عيبان: لا نقطتين (21:00 تظهر 2100) و«·» يُرسم «\». **Alexandria** (OFL) أوضح وأقوى، خط متغير من 400 إلى 800 في ثلاثة ملفات من ملفاتنا (`web/public/fonts/alexandria-{arabic,latin,latin-ext}.woff2`، نحو 90 كيلوبايت بدل 113)، في `style.css` و`tokens.json` و`index.html`، وفي البث (`art.ts` و`MatchFeed.vue`) وصورة المشاركة (`shareCard.ts`). وحُذفت ملفات Amin. **التجربة:** الصفحة التعريفية والرئيسية وطريقة اللعب بالخط الجديد على جوال (صور في المحادثة)، و`npm run build` و`npm run e2e` | Claude | ✅ |
