@@ -38,12 +38,16 @@ namespace Legends
             public PlayerLook Look;
             public KitColours Kit, Bib;
             public int Number;
-            public Vector3 Bench;
+            public bool Home;
+            public Vector3? Bench;     // his seat, given the first time he sits
             public bool OnPitch = true;
         }
 
-        /// <summary>Where each bench starts, in the scene's metres: by the near touchline, either side of the coaches.</summary>
-        public static readonly Vector3 HomeBench = new Vector3(-16f, 0, -38.5f), AwayBench = new Vector3(10f, 0, -38.5f);
+        /// <summary>Where each bench starts, in the scene's metres: 3 m behind the near touchline, in front of the boards (5 m), either side of the coaches.</summary>
+        public static readonly Vector3 HomeBench = new Vector3(-11.5f, 0, -37f), AwayBench = new Vector3(11.5f, 0, -37f);
+        /// <summary>The seats run away from the coaches (BenchCoaches, x = -9 and 9): the substitutes first, then whoever leaves.</summary>
+        public const float SeatStep = 0.8f;
+        int homeSeats, awaySeats;
 
         public void Begin(MatchSetup setup)
         {
@@ -82,15 +86,14 @@ namespace Legends
             var (home, away) = KitColours.ForMatch(setup.Home, setup.Away);
             var (homeKeeper, awayKeeper) = KitColours.Keepers(home.Shirt, away.Shirt);
             var refs = KitColours.Officials(home.Shirt, away.Shirt, homeKeeper.Shirt, awayKeeper.Shirt);
-            int homeSeat = 0, awaySeat = 0;
+            homeSeats = awaySeats = 0;
             foreach (var p in setup.Players)
             {
                 var kit = p.Keeper ? (p.Home ? homeKeeper : awayKeeper) : p.Home ? home : away;
                 var bib = KitColours.Bib(kit);
                 var look = art.Spawn(PlayerLook.From(p.Id), transform, kit, p.Number, p.Keeper);
                 look.name = (p.Home ? "H" : "A") + p.Number + " #" + p.Id;
-                int n = p.Home ? homeSeat++ : awaySeat++;
-                var seat = new Seat { Look = look, Kit = kit, Bib = bib, Number = p.Number, Bench = (p.Home ? HomeBench : AwayBench) + Vector3.right * 0.9f * n };
+                var seat = new Seat { Look = look, Kit = kit, Bib = bib, Number = p.Number, Home = p.Home };
                 if (!p.Starter) Sit(seat);
                 players[p.Id] = look.transform;
                 seats[p.Id] = seat;
@@ -106,11 +109,16 @@ namespace Legends
         }
 
         /// <summary>At his bench in his bib (a substitute, or a player who has left the pitch).</summary>
-        static void Sit(Seat seat)
+        void Sit(Seat seat)
         {
             seat.OnPitch = false;
             seat.Look.Dress(seat.Bib, seat.Number);
-            seat.Look.transform.localPosition = seat.Bench;
+            if (seat.Bench == null)
+            {
+                int n = seat.Home ? homeSeats++ : awaySeats++;
+                seat.Bench = seat.Home ? HomeBench + Vector3.left * SeatStep * n : AwayBench + Vector3.right * SeatStep * n;
+            }
+            seat.Look.transform.localPosition = seat.Bench.Value;
             seat.Look.transform.localRotation = Quaternion.identity;   // facing the pitch
         }
 
@@ -185,8 +193,20 @@ namespace Legends
             if (elapsedMs >= Current.Ms) Current = null;
         }
 
-        void Draw(MatchMinute m, float t)
+        /// <summary>
+        /// A still: the scene stops on minute m at progress t (0..1), everyone facing his way at once. For the pictures
+        /// (Editor/Capture.cs, the kits of five matches); playing on needs a Push.
+        /// </summary>
+        public void Hold(MatchMinute m, float t)
         {
+            queue.Clear();
+            Current = null;
+            Draw(m, t, true);
+        }
+
+        void Draw(MatchMinute m, float t, bool snap = false)
+        {
+            float turn = snap ? 1f : 10f * Time.deltaTime;
             if (m.Frames.Count == 0) return;
             Segment(m.Frames.Count, t, out int i, out float k);
             var a = m.Frames[i];
@@ -225,7 +245,7 @@ namespace Legends
                 var dir = World(ahead, flip) - pos;
                 kv.Value.localPosition = pos + Vector3.up * BodyLift;
                 if (dir.sqrMagnitude > 0.0004f)
-                    kv.Value.localRotation = Quaternion.Slerp(kv.Value.localRotation, Quaternion.LookRotation(dir), 10f * Time.deltaTime);
+                    kv.Value.localRotation = Quaternion.Slerp(kv.Value.localRotation, Quaternion.LookRotation(dir), turn);
             }
 
             // [Sprint 31 D1] The officials follow the ball, as the frames place them; older recordings have none.
@@ -239,7 +259,7 @@ namespace Legends
                 officials[o].localPosition = at;
                 // the referee faces where he runs; the assistants face the pitch from their touchline
                 var face = o == 0 && to.sqrMagnitude > 0.0004f ? to : (at.z > 0 ? Vector3.back : Vector3.forward);
-                officials[o].localRotation = Quaternion.Slerp(officials[o].localRotation, Quaternion.LookRotation(face), 10f * Time.deltaTime);
+                officials[o].localRotation = Quaternion.Slerp(officials[o].localRotation, Quaternion.LookRotation(face), turn);
             }
 
             var ball = SampleBall(pf, a, b, nf, k);
