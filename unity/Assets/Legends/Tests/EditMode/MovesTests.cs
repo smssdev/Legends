@@ -22,7 +22,7 @@ namespace Legends.Tests
             ("ref_card", 1.8f), ("ref_point_spot", 1.5f), ("ref_whistle_free_kick", 1.6f), ("assistant_flag_up", 1.6f),
         };
 
-        static readonly string[] Loops = { "idle", "keeper_ready", "celebrate_wings" };
+        static readonly string[] Loops = { "idle", "keeper_ready", "celebrate_wings", "walk", "walk_brisk", "jog", "run", "sprint" };
 
         static AnimationClip Clip(string name) =>
             AssetDatabase.LoadAllAssetsAtPath(Clips).OfType<AnimationClip>().FirstOrDefault(c => c.name == name);
@@ -75,6 +75,44 @@ namespace Legends.Tests
                 Assert.Greater(Mathf.Abs(end.x - start.x), 1.4f, PlayerLook.Builds[build] + ": well to his side");
                 var right = BoneAt(build, "keeper_dive_r_high", 1.6f, HumanBodyBones.Hips);
                 Assert.Less(Mathf.Sign(end.x - start.x) * Mathf.Sign(right.x - start.x), 0f, "the left and right dives go opposite ways");
+            }
+        }
+
+        /// <summary>[U1] The strides from motion capture (mocap.py): their lengths as locomotion.json says, and their speeds in order.</summary>
+        [Test]
+        public void TheStridesAreThereWithTheirLengthsAndSpeeds()
+        {
+            var json = System.IO.File.ReadAllText("Assets/Legends/Animation/Moves/locomotion.json");
+            var table = MiniJson.Parse(json) as System.Collections.Generic.Dictionary<string, object>;
+            Assert.NotNull(table, "locomotion.json");
+            float last = 0f;
+            foreach (var name in new[] { "walk", "walk_brisk", "jog", "run", "sprint" })
+            {
+                var row = table[name] as System.Collections.Generic.Dictionary<string, object>;
+                var clip = Clip(name);
+                Assert.NotNull(clip, name);
+                Assert.IsTrue(clip.isLooping && clip.humanMotion, name + " loops through the avatar");
+                Assert.AreEqual(System.Convert.ToSingle(row["seconds"]), clip.length, 0.04f, name + "'s stride");
+                float speed = System.Convert.ToSingle(row["speed"]);
+                Assert.Greater(speed, last, name + " faster than the one before");
+                last = speed;
+            }
+            Assert.That(last, Is.InRange(4f, 6f), "the sprint");
+        }
+
+        [Test]
+        public void AStrideEndsWhereItStartsSoItLoopsWithoutASeam()
+        {
+            foreach (var name in new[] { "walk", "jog", "run" })
+            {
+                float end = Clip(name).length;
+                foreach (var bone in new[] { HumanBodyBones.Hips, HumanBodyBones.LeftFoot, HumanBodyBones.RightHand })
+                {
+                    var a = BoneAt(1, name, 0f, bone);
+                    var b = BoneAt(1, name, end, bone);
+                    Assert.Less(Vector3.Distance(a, b), 0.04f, $"{name}: the {bone} at its end as at its start");
+                }
+                Assert.That(BoneAt(1, name, end * 0.5f, HumanBodyBones.Hips).y, Is.InRange(0.8f, 1.15f), name + ": upright");
             }
         }
 

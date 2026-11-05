@@ -24,9 +24,12 @@ from mathutils import Matrix, Quaternion, Vector
 import build_players as bp
 import common as c
 import kit as kits
+import mocap
 
 FPS = 30
 OUT = os.path.join(c.ROOT, 'unity', 'Assets', 'Legends', 'Animation', 'Moves', 'moves.fbx')
+# each stride's natural speed (m/s) and length, for Unity to play it at the pace the player really goes
+SPEEDS = os.path.join(c.ROOT, 'unity', 'Assets', 'Legends', 'Animation', 'Moves', 'locomotion.json')
 SHEETS = os.path.join(c.ROOT, 'unity', 'Reference', 'moves')
 # from the hips out: a bone is aimed once its parent has its pose
 ORDER = ['spine_01', 'spine_02', 'spine_03', 'neck_01', 'head',
@@ -199,15 +202,22 @@ def place(rig, pose):
         pb.location = (0, 0, 0)
         pb.scale = (1, 1, 1)
     update()
-    q = (Quaternion((0, 0, 1), math.radians(pose.get('turn', 0)))
-         @ Quaternion((0, 1, 0), math.radians(pose.get('side', 0)))
-         @ Quaternion((1, 0, 0), math.radians(pose.get('lean', 0))))
+    # mocap.py gives the hips' turn itself (q) and every direction as the scene sees it (frame: world)
+    q = pose.get('q') or (Quaternion((0, 0, 1), math.radians(pose.get('turn', 0)))
+                          @ Quaternion((0, 1, 0), math.radians(pose.get('side', 0)))
+                          @ Quaternion((1, 0, 0), math.radians(pose.get('lean', 0))))
+    world = pose.get('frame') == 'world'
     ground = Quaternion((0, 0, 1), math.radians(pose.get('turn', 0)))
     legs_in_body = pose.get('legs') == 'body'
     pelvis = rig.pose.bones['pelvis']
     m = pelvis.matrix.copy()
     sl, sf = pose.get('shift', (0, 0))
     at = m.translation + Vector((sl, -sf, 0))
+    if pose.get('at'):
+        ax, ay, az = pose['at']
+        at = m.translation + Vector((ax, ay, 0))
+        if az is not None:
+            at.z = az
     if pose.get('height') is not None:
         at.z = pose['height']
     # the hips turn about their own head; spine and legs follow
@@ -221,7 +231,7 @@ def place(rig, pose):
         frame = q if (legs_in_body or not name.startswith(LEGS)) else ground
         m = pb.matrix.copy()
         now = m.to_quaternion() @ Vector((0, 1, 0))
-        turn = now.rotation_difference(frame @ d(*want))
+        turn = now.rotation_difference(Vector(want).normalized() if world else frame @ d(*want))
         pb.matrix = Matrix.LocRotScale(m.translation, turn @ m.to_quaternion(), None)
         update()
     if pose.get('height') is None:
@@ -229,7 +239,7 @@ def place(rig, pose):
         low = min(min(rig.pose.bones['ball_' + s].head.z - 0.01, rig.pose.bones['ball_' + s].tail.z - 0.01,
                       rig.pose.bones['foot_' + s].head.z - 0.08) for s in 'lr')
         m = pelvis.matrix.copy()
-        m.translation.z -= low
+        m.translation.z += pose.get('ground', 0.0) - low      # mocap: as high as the actor's lowest foot
         pelvis.matrix = m
         update()
 
@@ -259,6 +269,8 @@ def sheet(rig, name, steps, path):
     """The move at each of its poses, side by side, from the front."""
     import numpy as np
     rig.animation_data.action = bpy.data.actions[name]
+    if len(steps) > 6:      # a stride from motion capture has a pose every frame: six of them tell it
+        steps = [steps[round(i * (len(steps) - 1) / 5)] for i in range(6)]
     # the camera in front, a little to the side the move goes, so the whole move is in the picture
     reach = max((p.get('shift', (0, 0))[0] for _, p in steps), key=abs, default=0)
     target = Vector((reach / 2, 0, 0.8))
@@ -288,21 +300,36 @@ def sheet(rig, name, steps, path):
 
 def main():
     opts = c.args()
-    names = opts['moves'].split(',') if opts.get('moves') else list(MOVES)
+    names = opts['moves'].split(',') if opts.get('moves') else list(MOVES) + list(mocap.CYCLES)
     bp.clear()
     bpy.context.scene.render.fps = FPS     # the keys are at FPS: the scene must play at it too
     rig, body = bp.person(build='medium', tone='olive', hair='short02', name='Player')
     keeper = 'keeper' in ','.join(names)
     kits.materials(kits.dress(rig, body, keeper=keeper), '#2BB673', '#111827', 'plain', c.srgb)
+    steps = {}
     for n in names:
-        build(rig, n, MOVES[n])
-        print('Legends: move %-22s %.1f s' % (n, MOVES[n][-1][0]))
+        if n in MOVES:
+            steps[n] = MOVES[n]
+            build(rig, n, MOVES[n])
+            print('Legends: move %-22s %.1f s' % (n, MOVES[n][-1][0]))
+    # [U1] walking, jogging and running from real people (mocap.py), on the spot, with their speeds
+    legs = rig.data.bones['thigh_l'].length + rig.data.bones['calf_l'].length
+    strides = mocap.cycles(legs, [n for n in names if n in mocap.CYCLES])
+    for n, (poses, speed) in strides.items():
+        steps[n] = poses
+        build(rig, n, poses)
+    if strides and 'no-export' not in opts:
+        import json
+        os.makedirs(os.path.dirname(SPEEDS), exist_ok=True)
+        with open(SPEEDS, 'w', encoding='utf-8', newline=chr(10)) as f:
+            json.dump({n: {'speed': round(sp, 3), 'seconds': round(p[-1][0], 3), 'clip': mocap.CYCLES[n]} for n, (p, sp) in strides.items()}, f, indent=2)
+            f.write(chr(10))
     if 'sheet' in opts:
         os.makedirs(SHEETS, exist_ok=True)
         c.studio(target=(0.9, 0, 0.8), distance=6.5, height=0.2, lens=55, floor='#6f6f6f', night=False)
         bpy.context.scene.view_settings.exposure = -0.4
-        for n in names:
-            sheet(rig, n, MOVES[n], os.path.join(SHEETS, n + '.jpg'))
+        for n in steps:
+            sheet(rig, n, steps[n], os.path.join(SHEETS, n + '.jpg'))
     if 'no-export' not in opts:
         export(rig)
 

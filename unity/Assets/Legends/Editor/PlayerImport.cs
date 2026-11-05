@@ -15,7 +15,7 @@ namespace Legends.EditorTools
         const string Folder = "Assets/Legends/Players/";
         const string Moves = "Assets/Legends/Animation/Moves/";
         /// <summary>[Sprint 07 U3] The moves that loop (the others play once and hold their last pose).</summary>
-        public static readonly string[] Looping = { "idle", "keeper_ready", "celebrate_wings" };
+        public static readonly string[] Looping = { "idle", "keeper_ready", "celebrate_wings", "walk", "walk_brisk", "jog", "run", "sprint" };
 
         void OnPreprocessModel()
         {
