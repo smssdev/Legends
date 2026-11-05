@@ -19,6 +19,7 @@ namespace Legends
         // The cartoon's choices, in its order (art.ts keeperKit, officialKit): the first far enough from the shirts.
         static readonly Color[] HomeKeepers = { Hex("#2BB673"), Hex("#7B3FE4"), Hex("#F2994A"), Hex("#14B8C4") };
         static readonly Color[] AwayKeepers = { Hex("#F2994A"), Hex("#14B8C4"), Hex("#7B3FE4"), Hex("#2BB673") };
+        static readonly Color[] BibColours = { Hex("#E4FF5A"), Hex("#FF7A1A") };
         static readonly Color[] OfficialShirts = { Hex("#15171C"), Hex("#F2E205"), Hex("#E85D9A"), Hex("#7B3FE4") };
 
         public Color Shirt, Trim, Shorts, Socks, Boots, Gloves, Number;
@@ -77,6 +78,20 @@ namespace Legends
                 Shirt = shirt, Trim = Gold, Shorts = DarkShorts, Socks = DarkShorts, Boots = BootsBlack, Gloves = GlovesNeon,
                 Number = Color.white, Outline = shirt, Pattern = 0,
             };
+        }
+
+        /// <summary>
+        /// A substitute's bib over his side's kit: neon yellow, or orange when the shirt is close to it, the kit's shirt
+        /// colour on its edges and plain. The shorts and boots stay his side's.
+        /// </summary>
+        public static KitColours Bib(KitColours kit)
+        {
+            var bib = kit;
+            bib.Shirt = bib.Socks = Pick(BibColours, kit.Shirt);
+            bib.Trim = bib.Outline = kit.Shirt;
+            bib.Number = NumberOn(bib.Shirt, kit.Shirt);
+            bib.Pattern = 0;
+            return bib;
         }
 
         /// <summary>The cartoon's "apart": the three channels differ by more than 150 of 255 in all.</summary>

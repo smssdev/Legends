@@ -42,7 +42,6 @@ namespace Legends
             public bool OnPitch = true;
         }
 
-        public static readonly Color BibColour = new Color32(0xE4, 0xFF, 0x5A, 0xFF);
         /// <summary>Where each bench starts, in the scene's metres: by the near touchline, either side of the coaches.</summary>
         public static readonly Vector3 HomeBench = new Vector3(-16f, 0, -38.5f), AwayBench = new Vector3(10f, 0, -38.5f);
 
@@ -87,10 +86,7 @@ namespace Legends
             foreach (var p in setup.Players)
             {
                 var kit = p.Keeper ? (p.Home ? homeKeeper : awayKeeper) : p.Home ? home : away;
-                var bib = kit;
-                bib.Shirt = bib.Socks = BibColour;
-                bib.Trim = bib.Outline = kit.Shirt;
-                bib.Pattern = 0;
+                var bib = KitColours.Bib(kit);
                 var look = art.Spawn(PlayerLook.From(p.Id), transform, kit, p.Number, p.Keeper);
                 look.name = (p.Home ? "H" : "A") + p.Number + " #" + p.Id;
                 int n = p.Home ? homeSeat++ : awaySeat++;
@@ -119,18 +115,18 @@ namespace Legends
         }
 
         /// <summary>The assistant's flag in his right hand, in the trim's gold.</summary>
-        static void Flag(Transform official)
+        public static void Flag(Transform official)
         {
             Transform hand = null;
             foreach (var t in official.GetComponentsInChildren<Transform>(true)) if (t.name == "hand_r") hand = t;
             if (hand == null) return;
             var stick = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            Destroy(stick.GetComponent<Collider>());
+            Drop(stick.GetComponent<Collider>());
             stick.name = "Flag";
             stick.transform.SetParent(hand, false);
             stick.transform.localScale = new Vector3(0.02f, 0.25f, 0.02f);
             var cloth = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Destroy(cloth.GetComponent<Collider>());
+            Drop(cloth.GetComponent<Collider>());
             cloth.transform.SetParent(stick.transform, false);
             cloth.transform.localScale = new Vector3(15f, 0.9f, 1f);
             cloth.transform.localPosition = new Vector3(7f, 0.55f, 0);
@@ -141,6 +137,12 @@ namespace Legends
                 m.SetColor("_BaseColor", KitColours.Gold);
                 cloth.GetComponent<Renderer>().sharedMaterial = m;
             }
+        }
+
+        /// <summary>Destroy in play, at once in the editor (the capture of the officials runs outside play).</summary>
+        static void Drop(Object o)
+        {
+            if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
         }
 
         /// <summary>Simple shapes in the club's colours, when the project has no PlayerArt (the scene before Sprint 06).</summary>

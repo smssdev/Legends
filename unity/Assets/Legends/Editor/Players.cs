@@ -79,6 +79,7 @@ namespace Legends.EditorTools
             {
                 Build();
                 Capture();
+                CapturePeople();
             }
             catch (System.Exception e)
             {
@@ -118,22 +119,7 @@ namespace Legends.EditorTools
         public static void Capture()
         {
             var art = AssetDatabase.LoadAssetAtPath<PlayerArt>(ArtPath);
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var sun = new GameObject("Sun").AddComponent<Light>();
-            sun.type = LightType.Directional;
-            sun.intensity = 1.2f;
-            sun.shadows = LightShadows.Soft;
-            sun.transform.rotation = Quaternion.Euler(40, 210, 0);
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.75f, 0.8f, 0.9f);
-            RenderSettings.ambientEquatorColor = new Color(0.5f, 0.55f, 0.5f);
-            RenderSettings.ambientGroundColor = new Color(0.25f, 0.3f, 0.22f);
-            var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            ground.transform.localScale = Vector3.one * 4;
-            // The ground only frames the players: unlit, so it is the same green whatever the sun does.
-            var grass = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
-            grass.SetColor("_BaseColor", new Color(0.2f, 0.42f, 0.22f));
-            ground.GetComponent<Renderer>().sharedMaterial = grass;
+            var cam = Stage();
 
             var lines = new List<string>();
             var players = new List<Transform>();
@@ -150,18 +136,9 @@ namespace Legends.EditorTools
                 players.Add(p.transform);
                 lines.Add($"{l.id} #{l.number}: {look}");
             }
-            var cam = new GameObject("Camera").AddComponent<Camera>();
-            cam.transform.position = new Vector3(0, 1.25f, 8.6f);   // the players face +Z, as Unity's characters do
-            cam.transform.LookAt(new Vector3(0, 0.95f, 0));
-            cam.fieldOfView = 34;
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.62f, 0.72f, 0.85f);
             float bias = QualitySettings.lodBias;
             QualitySettings.lodBias = 100f;            // the full models, as in a close-up
             Save(cam, 2400, 1000, "players.png");
-            foreach (var r in players[3].GetComponentsInChildren<SkinnedMeshRenderer>(true))
-                if (!r.name.StartsWith("Hair") && !r.name.StartsWith("Brows"))
-                    Debug.Log($"Legends: DEBUG {r.name} active={r.gameObject.activeInHierarchy} mat={r.sharedMaterial?.name} shader={r.sharedMaterial?.shader.name} tex={r.sharedMaterial?.GetTexture("_BaseMap")?.name} bounds={r.bounds.center:F3}/{r.bounds.size:F3}");
             var head = players[3].position + Vector3.up * 1.62f * players[3].localScale.y;
             cam.transform.position = head + new Vector3(0.35f, 0.05f, 1.1f);
             cam.transform.LookAt(head);
@@ -175,6 +152,83 @@ namespace Legends.EditorTools
             Save(cam, 2400, 1000, "players-far.png");
             QualitySettings.lodBias = bias;
             Debug.Log("Legends: lineup\n" + string.Join("\n", lines));
+        }
+
+        /// <summary>
+        /// [Sprint 06 U7] The rest of a match's people, as MatchScene dresses them for the first two clubs of the lineup
+        /// (red against blue stripes): a player of each side, both keepers (long sleeves, gloves), a substitute in his
+        /// bib, the referee and an assistant with his flag. Saves Captures/people.png and people-keeper.png (the gloves).
+        /// </summary>
+        [MenuItem("Legends/Players/Capture the keepers and officials")]
+        public static void CapturePeople()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<PlayerArt>(ArtPath);
+            var cam = Stage();
+            var (home, away) = KitColours.ForMatch(Club(Lineup[0].primary, Lineup[0].secondary, Lineup[0].pattern),
+                                                   Club(Lineup[1].primary, Lineup[1].secondary, Lineup[1].pattern));
+            var (homeKeeper, awayKeeper) = KitColours.Keepers(home.Shirt, away.Shirt);
+            var refs = KitColours.Officials(home.Shirt, away.Shirt, homeKeeper.Shirt, awayKeeper.Shirt);
+            var people = new (string id, KitColours kit, int number, bool keeper, string name)[]
+            {
+                ("2001", home, 8, false, "home player"),
+                ("2002", homeKeeper, 1, true, "home keeper"),
+                ("2003", KitColours.Bib(home), 14, false, "home substitute"),
+                ("official-0", refs, -1, false, "referee"),
+                ("official-1", refs, -1, false, "assistant"),
+                ("2004", KitColours.Bib(away), 17, false, "away substitute"),
+                ("2005", awayKeeper, 1, true, "away keeper"),
+                ("2006", away, 6, false, "away player"),
+            };
+            var lines = new List<string>();
+            Transform keeper = null;
+            for (int i = 0; i < people.Length; i++)
+            {
+                var q = people[i];
+                var look = PlayerLook.From(q.id);
+                var p = art.Spawn(look, null, q.kit, q.number, q.keeper);
+                p.transform.position = new Vector3((i - (people.Length - 1) / 2f) * 1.1f, 0, 0);
+                if (q.name == "assistant") MatchScene.Flag(p.transform);
+                if (q.name == "home keeper") keeper = p.transform;
+                lines.Add($"{q.name}: {look}");
+            }
+            float bias = QualitySettings.lodBias;
+            QualitySettings.lodBias = 100f;
+            Save(cam, 2400, 1000, "people.png");
+            Transform hand = keeper;
+            foreach (var t in keeper.GetComponentsInChildren<Transform>()) if (t.name == "hand_l") hand = t;
+            cam.transform.position = hand.position + new Vector3(0.15f, 0.25f, 0.9f);
+            cam.transform.LookAt(hand.position + Vector3.up * 0.1f);
+            Save(cam, 900, 900, "people-keeper.png");          // the long sleeve's cuff and the glove
+            QualitySettings.lodBias = bias;
+            Debug.Log("Legends: people\n" + string.Join("\n", lines));
+        }
+
+        /// <summary>A new scene with the sun, the sky's light and the grass, and the camera on the line of players.</summary>
+        static Camera Stage()
+        {
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var sun = new GameObject("Sun").AddComponent<Light>();
+            sun.type = LightType.Directional;
+            sun.intensity = 1.2f;
+            sun.shadows = LightShadows.Soft;
+            sun.transform.rotation = Quaternion.Euler(40, 210, 0);
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(0.75f, 0.8f, 0.9f);
+            RenderSettings.ambientEquatorColor = new Color(0.5f, 0.55f, 0.5f);
+            RenderSettings.ambientGroundColor = new Color(0.25f, 0.3f, 0.22f);
+            var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.transform.localScale = Vector3.one * 4;
+            // The ground only frames the players: unlit, so it is the same green whatever the sun does.
+            var grass = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            grass.SetColor("_BaseColor", new Color(0.2f, 0.42f, 0.22f));
+            ground.GetComponent<Renderer>().sharedMaterial = grass;
+            var cam = new GameObject("Camera").AddComponent<Camera>();
+            cam.transform.position = new Vector3(0, 1.25f, 8.6f);   // the players face +Z, as Unity's characters do
+            cam.transform.LookAt(new Vector3(0, 0.95f, 0));
+            cam.fieldOfView = 34;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.62f, 0.72f, 0.85f);
+            return cam;
         }
 
         static void Save(Camera cam, int w, int h, string file)
@@ -248,6 +302,10 @@ namespace Legends.EditorTools
                 m.SetOverrideTag("RenderType", cutout ? "TransparentCutout" : "Opaque");
             }
             m.doubleSidedGI = cutout || twoSided;
+            // The skin, eyes and hair cast shadows but take none: the floodlights' and the sun's shadow maps are too
+            // coarse for a face, and left lighter and darker patches on it in the close shots (Sprint 06 day 6).
+            m.SetFloat("_ReceiveShadows", 0);
+            m.EnableKeyword("_RECEIVE_SHADOWS_OFF");
             EditorUtility.SetDirty(m);
             return m;
         }

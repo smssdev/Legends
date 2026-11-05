@@ -97,9 +97,11 @@ def shirt(b, bm):
 def gloves(b, bm):
     """The keeper's gloves: the hands and a little of the wrist."""
     keep_bones(bm, b.names, lambda n: n.startswith(('lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')))
+    # Each wrist's plane goes on for ever: on its own arm only, or the left wrist's would take the right hand too.
+    arm = ('lowerarm', 'hand', 'index', 'middle', 'ring', 'pinky', 'thumb')
     for side in 'lr':
         co, d = b.at('lowerarm_' + side, 0.86)
-        cut(bm, b.names, co, -d)
+        cut(bm, b.names, co, -d, only=tuple(n for n in b.names if n.startswith(arm) and n.endswith('_' + side)))
     return []
 
 
@@ -144,7 +146,7 @@ def boots(b, bm):
 
 
 # how far each piece stands off the skin, and how much more at its open ends (loose sleeves and shorts legs), in metres
-LIFT = {'shirt': (0.008, 0.010), 'shorts': (0.011, 0.028), 'socks': (0.0025, 0.0), 'boots': (0.004, 0.0), 'gloves': (0.004, 0.0)}
+LIFT = {'shirt': (0.008, 0.010), 'shorts': (0.011, 0.028), 'socks': (0.0025, 0.0), 'boots': (0.004, 0.0), 'gloves': (0.008, 0.0)}
 
 
 def collar(b, bm, trim):

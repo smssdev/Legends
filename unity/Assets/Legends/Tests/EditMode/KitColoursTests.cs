@@ -113,6 +113,84 @@ namespace Legends.Tests
         }
 
         [Test]
+        public void TheKeepersAndTheOfficialsStandApartFromBothSides()
+        {
+            var pairs = new[]
+            {
+                ("#C8102E", "#1B4F9C"),   // red, blue: the first choices
+                ("#111111", "#F5B82E"),   // black, yellow: the away keeper not orange, the referee not in black
+                ("#0A1F42", "#C8102E"),   // navy, red: the referee not in black, nor in yellow by the orange keeper
+            };
+            foreach (var (h, a) in pairs)
+            {
+                var (home, away) = KitColours.ForMatch(Club(h, "#FFFFFF"), Club(a, "#000000"));
+                var (hk, ak) = KitColours.Keepers(home.Shirt, away.Shirt);
+                var refs = KitColours.Officials(home.Shirt, away.Shirt, hk.Shirt, ak.Shirt);
+                var shirts = new[] { home.Shirt, away.Shirt, hk.Shirt, ak.Shirt, refs.Shirt };
+                for (int i = 0; i < shirts.Length; i++)
+                    for (int j = i + 1; j < shirts.Length; j++)
+                        Assert.That(KitColours.Apart(shirts[i], shirts[j]), $"{h} v {a}: shirts {i} and {j} too close");
+            }
+        }
+
+        [Test]
+        public void TheOfficialsWearBlackUnlessASideDoes()
+        {
+            Assert.AreEqual(Hex("#15171C"), KitColours.Officials(Hex("#C8102E"), Hex("#1B4F9C"), Hex("#2BB673"), Hex("#F2994A")).Shirt);
+            var dark = KitColours.Officials(Hex("#111111"), Hex("#1B4F9C"), Hex("#2BB673"), Hex("#F2994A")).Shirt;
+            Assert.That(KitColours.Apart(dark, Hex("#111111")), "not in black against a black side");
+            var refs = KitColours.Officials(Hex("#C8102E"), Hex("#1B4F9C"), Hex("#2BB673"), Hex("#F2994A"));
+            Assert.AreEqual(KitColours.Gold, refs.Trim);
+            Assert.AreEqual(0, refs.Pattern);
+        }
+
+        [Test]
+        public void TheKeeperIsPlainWithDarkShortsAndNeonGloves()
+        {
+            var (hk, ak) = KitColours.Keepers(Hex("#C8102E"), Hex("#1B4F9C"));
+            foreach (var k in new[] { hk, ak })
+            {
+                Assert.AreEqual(0, k.Pattern);
+                Assert.AreEqual(KitColours.DarkShorts, k.Shorts);
+                Assert.AreEqual(k.Shirt, k.Socks);
+                Assert.AreEqual(KitColours.GlovesNeon, k.Gloves);
+            }
+            Assert.AreEqual(Hex("#2BB673"), hk.Shirt);
+            Assert.AreEqual(Hex("#F2994A"), ak.Shirt);
+        }
+
+        [Test]
+        public void ASubstituteWearsABibOverHisSidesKit()
+        {
+            var kit = KitColours.Of(Hex("#C8102E"), Color.white, "stripes");
+            var bib = KitColours.Bib(kit);
+            Assert.AreEqual(Hex("#E4FF5A"), bib.Shirt);
+            Assert.AreEqual(bib.Shirt, bib.Socks);
+            Assert.AreEqual(kit.Shirt, bib.Trim);
+            Assert.AreEqual(kit.Shorts, bib.Shorts);
+            Assert.AreEqual(0, bib.Pattern);
+            Assert.AreEqual(Hex("#FF7A1A"), KitColours.Bib(KitColours.Of(Hex("#E8F55A"), Color.black, "plain")).Shirt, "orange over a yellow shirt");
+        }
+
+        [Test]
+        public void TheKeepersKitHasLongSleevesAndGloves()
+        {
+            foreach (var build in PlayerLook.Builds)
+            {
+                var path = $"Assets/Legends/Players/player_{build}.fbx";
+                var meshes = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Mesh>().ToList();
+                var kit = meshes.First(m => m.name == "Kit_LOD0");
+                var keeper = meshes.FirstOrDefault(m => m.name == "KitKeeper_LOD0");
+                Assert.NotNull(keeper, path + " has KitKeeper_LOD0");
+                var colours = keeper.colors;
+                Assert.That(colours.Any(c => c.b > 0.83f && c.a < 0.75f), build + ": the gloves (the boots' piece, half alpha)");
+                Assert.That(colours.Any(c => c.b > 0.83f && c.a >= 0.75f), build + ": the boots");
+                // the long sleeves reach further out along the arms than the short ones
+                Assert.That(keeper.bounds.size.x, Is.GreaterThan(kit.bounds.size.x + 0.2f), build + ": long sleeves");
+            }
+        }
+
+        [Test]
         public void TheShadersAndTheNumbersAreThere()
         {
             foreach (var name in new[] { "Legends/Kit", "Legends/Stubble" })
