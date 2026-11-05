@@ -849,4 +849,179 @@ class LAr extends L {
 
   @override
   String get confirm => 'تأكيد';
+
+  @override
+  String get market => 'السوق';
+
+  @override
+  String get tabBuy => 'شراء';
+
+  @override
+  String get tabSell => 'بيع';
+
+  @override
+  String get tabOffers => 'العروض';
+
+  @override
+  String get marketClosed => 'السوق مغلق الآن';
+
+  @override
+  String renewsAt(String time) {
+    return 'تتجدد القائمة $time';
+  }
+
+  @override
+  String get fitsYou => 'يقوّي فريقك';
+
+  @override
+  String get sellerWorld => 'من خارج الدوري';
+
+  @override
+  String buyFor(String price) {
+    return 'اشترِه بـ $price';
+  }
+
+  @override
+  String regFee(int coins) {
+    return 'رسوم التسجيل $coins كوينز';
+  }
+
+  @override
+  String compensateWith(int coins) {
+    return 'أكمل الناقص بـ $coins كوينز';
+  }
+
+  @override
+  String get bought => 'صار في فريقك';
+
+  @override
+  String get price => 'السعر';
+
+  @override
+  String listedAt(String price) {
+    return 'معروض بـ $price';
+  }
+
+  @override
+  String sellsIn(String time) {
+    return 'يُباع نحو $time';
+  }
+
+  @override
+  String get listForSale => 'اعرضه للبيع';
+
+  @override
+  String get unlist => 'اسحب العرض';
+
+  @override
+  String sellNowFor(String pays, String fee) {
+    return 'بيع فوري: يدخل $pays، مقابل $fee';
+  }
+
+  @override
+  String get sellNowConfirm => 'بيعه الآن؟ لا رجوع.';
+
+  @override
+  String priceRange(String floor, String cap) {
+    return 'بين $floor و$cap';
+  }
+
+  @override
+  String waitAbout(int hours) {
+    return 'مشترٍ خلال $hours ساعة تقريباً';
+  }
+
+  @override
+  String listingsOf(int listed, int max) {
+    return '$listed من $max معروضون';
+  }
+
+  @override
+  String get noOffers => 'لا عروض الآن';
+
+  @override
+  String offerFrom(String club) {
+    return 'عرض من $club';
+  }
+
+  @override
+  String offerTo(String club) {
+    return 'عرضك إلى $club';
+  }
+
+  @override
+  String get theyWant => 'يطلب';
+
+  @override
+  String get theyGive => 'ويعطي';
+
+  @override
+  String get accept => 'اقبل';
+
+  @override
+  String get cancelOffer => 'اسحب العرض';
+
+  @override
+  String get offersOnWeb => 'تقديم عرض أو عرض مقابل من الموقع الآن';
+
+  @override
+  String coinsWord(int n) {
+    return '$n كوينز';
+  }
+
+  @override
+  String get statusAccepted => 'مقبول';
+
+  @override
+  String get statusRejected => 'مرفوض';
+
+  @override
+  String get statusOther => 'منتهٍ';
+
+  @override
+  String get scout => 'الكشاف';
+
+  @override
+  String get scoutLead =>
+      'يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.';
+
+  @override
+  String get minOverall => 'أقل تقييم';
+
+  @override
+  String get maxAge => 'أكبر عمر';
+
+  @override
+  String get anyLine => 'أي خط';
+
+  @override
+  String get nationality => 'الجنسية';
+
+  @override
+  String get fromLeague => 'من دوري';
+
+  @override
+  String get any => 'أي';
+
+  @override
+  String askScout(String cost, int hours) {
+    return 'ابحث ($cost، $hours ساعة)';
+  }
+
+  @override
+  String searching(String time) {
+    return 'يبحث… التقرير $time';
+  }
+
+  @override
+  String get scoutReports => 'التقارير';
+
+  @override
+  String get nobodyFound => 'لم يجد أحداً، وعادت الأموال';
+
+  @override
+  String get stateMine => 'في فريقك';
+
+  @override
+  String get stateGone => 'ذهب';
 }

@@ -17,6 +17,8 @@ import 'features/leagues/my_leagues_screen.dart';
 import 'features/leagues/pick_team_screen.dart';
 import 'features/health/status_screens.dart';
 import 'features/inbox/inbox_screen.dart';
+import 'features/market/market_screen.dart';
+import 'features/market/scout_screen.dart';
 import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
 import 'features/money/stadium_screen.dart';
@@ -66,6 +68,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/inbox', builder: (_, _) => const InboxScreen()),
       GoRoute(path: '/leagues/:id/finance', builder: (_, s) => FinanceScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/stadium', builder: (_, s) => StadiumScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/market', builder: (_, s) => MarketScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/scout', builder: (_, s) => ScoutScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/match/:id', builder: (_, s) => LiveMatchScreen(matchId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/match/:id/report', builder: (_, s) => MatchReportScreen(matchId: int.parse(s.pathParameters['id']!), coach: s.uri.queryParameters['coach'] == 'true')),
       GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),

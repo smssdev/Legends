@@ -1614,6 +1614,294 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'تأكيد'**
   String get confirm;
+
+  /// No description provided for @market.
+  ///
+  /// In ar, this message translates to:
+  /// **'السوق'**
+  String get market;
+
+  /// No description provided for @tabBuy.
+  ///
+  /// In ar, this message translates to:
+  /// **'شراء'**
+  String get tabBuy;
+
+  /// No description provided for @tabSell.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيع'**
+  String get tabSell;
+
+  /// No description provided for @tabOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض'**
+  String get tabOffers;
+
+  /// No description provided for @marketClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'السوق مغلق الآن'**
+  String get marketClosed;
+
+  /// No description provided for @renewsAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'تتجدد القائمة {time}'**
+  String renewsAt(String time);
+
+  /// No description provided for @fitsYou.
+  ///
+  /// In ar, this message translates to:
+  /// **'يقوّي فريقك'**
+  String get fitsYou;
+
+  /// No description provided for @sellerWorld.
+  ///
+  /// In ar, this message translates to:
+  /// **'من خارج الدوري'**
+  String get sellerWorld;
+
+  /// No description provided for @buyFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشترِه بـ {price}'**
+  String buyFor(String price);
+
+  /// No description provided for @regFee.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسوم التسجيل {coins} كوينز'**
+  String regFee(int coins);
+
+  /// No description provided for @compensateWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكمل الناقص بـ {coins} كوينز'**
+  String compensateWith(int coins);
+
+  /// No description provided for @bought.
+  ///
+  /// In ar, this message translates to:
+  /// **'صار في فريقك'**
+  String get bought;
+
+  /// No description provided for @price.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر'**
+  String get price;
+
+  /// No description provided for @listedAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'معروض بـ {price}'**
+  String listedAt(String price);
+
+  /// No description provided for @sellsIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُباع نحو {time}'**
+  String sellsIn(String time);
+
+  /// No description provided for @listForSale.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعرضه للبيع'**
+  String get listForSale;
+
+  /// No description provided for @unlist.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسحب العرض'**
+  String get unlist;
+
+  /// No description provided for @sellNowFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيع فوري: يدخل {pays}، مقابل {fee}'**
+  String sellNowFor(String pays, String fee);
+
+  /// No description provided for @sellNowConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيعه الآن؟ لا رجوع.'**
+  String get sellNowConfirm;
+
+  /// No description provided for @priceRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'بين {floor} و{cap}'**
+  String priceRange(String floor, String cap);
+
+  /// No description provided for @waitAbout.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشترٍ خلال {hours} ساعة تقريباً'**
+  String waitAbout(int hours);
+
+  /// No description provided for @listingsOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'{listed} من {max} معروضون'**
+  String listingsOf(int listed, int max);
+
+  /// No description provided for @noOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا عروض الآن'**
+  String get noOffers;
+
+  /// No description provided for @offerFrom.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض من {club}'**
+  String offerFrom(String club);
+
+  /// No description provided for @offerTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرضك إلى {club}'**
+  String offerTo(String club);
+
+  /// No description provided for @theyWant.
+  ///
+  /// In ar, this message translates to:
+  /// **'يطلب'**
+  String get theyWant;
+
+  /// No description provided for @theyGive.
+  ///
+  /// In ar, this message translates to:
+  /// **'ويعطي'**
+  String get theyGive;
+
+  /// No description provided for @accept.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقبل'**
+  String get accept;
+
+  /// No description provided for @cancelOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسحب العرض'**
+  String get cancelOffer;
+
+  /// No description provided for @offersOnWeb.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقديم عرض أو عرض مقابل من الموقع الآن'**
+  String get offersOnWeb;
+
+  /// No description provided for @coinsWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} كوينز'**
+  String coinsWord(int n);
+
+  /// No description provided for @statusAccepted.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقبول'**
+  String get statusAccepted;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرفوض'**
+  String get statusRejected;
+
+  /// No description provided for @statusOther.
+  ///
+  /// In ar, this message translates to:
+  /// **'منتهٍ'**
+  String get statusOther;
+
+  /// No description provided for @scout.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكشاف'**
+  String get scout;
+
+  /// No description provided for @scoutLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.'**
+  String get scoutLead;
+
+  /// No description provided for @minOverall.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل تقييم'**
+  String get minOverall;
+
+  /// No description provided for @maxAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكبر عمر'**
+  String get maxAge;
+
+  /// No description provided for @anyLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي خط'**
+  String get anyLine;
+
+  /// No description provided for @nationality.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجنسية'**
+  String get nationality;
+
+  /// No description provided for @fromLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'من دوري'**
+  String get fromLeague;
+
+  /// No description provided for @any.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي'**
+  String get any;
+
+  /// No description provided for @askScout.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث ({cost}، {hours} ساعة)'**
+  String askScout(String cost, int hours);
+
+  /// No description provided for @searching.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبحث… التقرير {time}'**
+  String searching(String time);
+
+  /// No description provided for @scoutReports.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقارير'**
+  String get scoutReports;
+
+  /// No description provided for @nobodyFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يجد أحداً، وعادت الأموال'**
+  String get nobodyFound;
+
+  /// No description provided for @stateMine.
+  ///
+  /// In ar, this message translates to:
+  /// **'في فريقك'**
+  String get stateMine;
+
+  /// No description provided for @stateGone.
+  ///
+  /// In ar, this message translates to:
+  /// **'ذهب'**
+  String get stateGone;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

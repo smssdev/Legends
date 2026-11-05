@@ -851,4 +851,180 @@ class LEn extends L {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get market => 'Market';
+
+  @override
+  String get tabBuy => 'Buy';
+
+  @override
+  String get tabSell => 'Sell';
+
+  @override
+  String get tabOffers => 'Offers';
+
+  @override
+  String get marketClosed => 'The market is closed now';
+
+  @override
+  String renewsAt(String time) {
+    return 'The list renews $time';
+  }
+
+  @override
+  String get fitsYou => 'Improves your team';
+
+  @override
+  String get sellerWorld => 'From outside the league';
+
+  @override
+  String buyFor(String price) {
+    return 'Buy for $price';
+  }
+
+  @override
+  String regFee(int coins) {
+    return 'Registration $coins coins';
+  }
+
+  @override
+  String compensateWith(int coins) {
+    return 'Cover the rest with $coins coins';
+  }
+
+  @override
+  String get bought => 'He is in your team';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String listedAt(String price) {
+    return 'Listed at $price';
+  }
+
+  @override
+  String sellsIn(String time) {
+    return 'Sells around $time';
+  }
+
+  @override
+  String get listForSale => 'List for sale';
+
+  @override
+  String get unlist => 'Take off the list';
+
+  @override
+  String sellNowFor(String pays, String fee) {
+    return 'Sell now: $pays in, for $fee';
+  }
+
+  @override
+  String get sellNowConfirm => 'Sell him now? There is no undo.';
+
+  @override
+  String priceRange(String floor, String cap) {
+    return 'Between $floor and $cap';
+  }
+
+  @override
+  String waitAbout(int hours) {
+    return 'A buyer in about $hours hours';
+  }
+
+  @override
+  String listingsOf(int listed, int max) {
+    return '$listed of $max listed';
+  }
+
+  @override
+  String get noOffers => 'No offers now';
+
+  @override
+  String offerFrom(String club) {
+    return 'Offer from $club';
+  }
+
+  @override
+  String offerTo(String club) {
+    return 'Your offer to $club';
+  }
+
+  @override
+  String get theyWant => 'Asks for';
+
+  @override
+  String get theyGive => 'And gives';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get cancelOffer => 'Withdraw';
+
+  @override
+  String get offersOnWeb =>
+      'Making an offer or a counter is on the site for now';
+
+  @override
+  String coinsWord(int n) {
+    return '$n coins';
+  }
+
+  @override
+  String get statusAccepted => 'Accepted';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get statusOther => 'Closed';
+
+  @override
+  String get scout => 'Scout';
+
+  @override
+  String get scoutLead =>
+      'The scout finds you five players from outside the league to your terms, held for you until the market renews.';
+
+  @override
+  String get minOverall => 'Lowest rating';
+
+  @override
+  String get maxAge => 'Oldest age';
+
+  @override
+  String get anyLine => 'Any line';
+
+  @override
+  String get nationality => 'Nationality';
+
+  @override
+  String get fromLeague => 'From league';
+
+  @override
+  String get any => 'Any';
+
+  @override
+  String askScout(String cost, int hours) {
+    return 'Search ($cost, $hours hours)';
+  }
+
+  @override
+  String searching(String time) {
+    return 'Searching… report $time';
+  }
+
+  @override
+  String get scoutReports => 'Reports';
+
+  @override
+  String get nobodyFound => 'Nobody found; the money came back';
+
+  @override
+  String get stateMine => 'In your team';
+
+  @override
+  String get stateGone => 'Gone';
 }

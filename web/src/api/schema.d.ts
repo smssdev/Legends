@@ -12856,6 +12856,8 @@ export interface components {
             cost: number;
             hours: number;
             balance: number;
+            /** @description [Sprint 18 F1] The coins to finish a search under way now */
+            finish_coins?: number;
             options: {
                 leagues: string[];
                 nationalities: string[];

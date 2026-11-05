@@ -1,0 +1,10 @@
+{"closed": null, "fair": {"min_bp": 5000, "max_bp": 20000}, "pair_cap": 750000, "listings": [],
+ "offers": [
+  {"id": 31, "status": "pending", "money": 4000000, "sell_on_bp": 0, "from": {"id": 142, "name": "Arsenal"}, "to": {"id": 141, "name": "Liverpool"}, "incoming": true, "counter_of": null,
+   "in": [{"id": 5625, "name": "Florian Wirtz", "position": "CAM", "line": "mid", "age": 22, "overall": 89, "value": 17800000}],
+   "out": [{"id": 5701, "name": "Kai Havertz", "position": "ST", "line": "att", "age": 26, "overall": 82, "value": 9000000}],
+   "expires_at": "2026-11-07T19:00:00Z"},
+  {"id": 30, "status": "rejected", "money": 1000000, "sell_on_bp": 0, "from": {"id": 141, "name": "Liverpool"}, "to": {"id": 144, "name": "Newcastle Utd"}, "incoming": false, "counter_of": null,
+   "in": [{"id": 5800, "name": "Bruno Guimarães", "position": "CM", "line": "mid", "age": 27, "overall": 85, "value": 12000000}], "out": [],
+   "expires_at": "2026-11-06T19:00:00Z"}
+ ], "clubs": []}

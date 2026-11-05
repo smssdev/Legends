@@ -542,5 +542,170 @@
       }
     }
   },
-  "confirm": "تأكيد"
+  "confirm": "تأكيد",
+  "market": "السوق",
+  "tabBuy": "شراء",
+  "tabSell": "بيع",
+  "tabOffers": "العروض",
+  "marketClosed": "السوق مغلق الآن",
+  "renewsAt": "تتجدد القائمة {time}",
+  "@renewsAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fitsYou": "يقوّي فريقك",
+  "sellerWorld": "من خارج الدوري",
+  "buyFor": "اشترِه بـ {price}",
+  "@buyFor": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "regFee": "رسوم التسجيل {coins} كوينز",
+  "@regFee": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "compensateWith": "أكمل الناقص بـ {coins} كوينز",
+  "@compensateWith": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "bought": "صار في فريقك",
+  "price": "السعر",
+  "listedAt": "معروض بـ {price}",
+  "@listedAt": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "sellsIn": "يُباع نحو {time}",
+  "@sellsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "listForSale": "اعرضه للبيع",
+  "unlist": "اسحب العرض",
+  "sellNowFor": "بيع فوري: يدخل {pays}، مقابل {fee}",
+  "@sellNowFor": {
+    "placeholders": {
+      "pays": {
+        "type": "String"
+      },
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "sellNowConfirm": "بيعه الآن؟ لا رجوع.",
+  "priceRange": "بين {floor} و{cap}",
+  "@priceRange": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      },
+      "cap": {
+        "type": "String"
+      }
+    }
+  },
+  "waitAbout": "مشترٍ خلال {hours} ساعة تقريباً",
+  "@waitAbout": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "listingsOf": "{listed} من {max} معروضون",
+  "@listingsOf": {
+    "placeholders": {
+      "listed": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "noOffers": "لا عروض الآن",
+  "offerFrom": "عرض من {club}",
+  "@offerFrom": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "offerTo": "عرضك إلى {club}",
+  "@offerTo": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "theyWant": "يطلب",
+  "theyGive": "ويعطي",
+  "accept": "اقبل",
+  "cancelOffer": "اسحب العرض",
+  "offersOnWeb": "تقديم عرض أو عرض مقابل من الموقع الآن",
+  "coinsWord": "{n} كوينز",
+  "@coinsWord": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "statusAccepted": "مقبول",
+  "statusRejected": "مرفوض",
+  "statusOther": "منتهٍ",
+  "scout": "الكشاف",
+  "scoutLead": "يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.",
+  "minOverall": "أقل تقييم",
+  "maxAge": "أكبر عمر",
+  "anyLine": "أي خط",
+  "nationality": "الجنسية",
+  "fromLeague": "من دوري",
+  "any": "أي",
+  "askScout": "ابحث ({cost}، {hours} ساعة)",
+  "@askScout": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "searching": "يبحث… التقرير {time}",
+  "@searching": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scoutReports": "التقارير",
+  "nobodyFound": "لم يجد أحداً، وعادت الأموال",
+  "stateMine": "في فريقك",
+  "stateGone": "ذهب"
 }

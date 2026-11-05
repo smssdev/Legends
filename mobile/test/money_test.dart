@@ -60,7 +60,7 @@ class FakeInbox implements InboxRepository {
 Future<void> pump(WidgetTester t, Widget screen, {FakeMoney? money, FakeInbox? inbox, GoRouter? router}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  t.view.physicalSize = const Size(400 * 3, 2400 * 3);
+  t.view.physicalSize = const Size(360 * 3, 2400 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   await t.pumpWidget(ProviderScope(

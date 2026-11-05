@@ -1,0 +1,463 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/api/api_error.dart';
+import '../../l10n/app_localizations.dart';
+import '../../ui/theme.dart';
+import '../../ui/tokens.g.dart';
+import '../../ui/widgets/async_view.dart';
+import '../../ui/widgets/glm_background.dart';
+import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/glm_card.dart';
+import '../club/squad_screen.dart' show money, lineColor;
+import '../leagues/widgets.dart' show when;
+import '../money/finance_screen.dart' show confirm;
+import 'market_data.dart';
+
+/// [Sprint 18 F1] The market in three tabs: buy (the transfer list by line, UP11), sell (my players: listed up to
+/// their cap, or now for a fee, X6) and the offers between coaches (answered here; made on the site for now).
+class MarketScreen extends StatelessWidget {
+  const MarketScreen({super.key, required this.leagueId});
+
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l.market),
+          bottom: TabBar(indicatorColor: context.palette.gold, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers)]),
+        ),
+        body: GlmBackground(
+          child: TabBarView(children: [_BuyTab(leagueId), _SellTab(leagueId), _OffersTab(leagueId)]),
+        ),
+      ),
+    );
+  }
+}
+
+Widget _ovr(BuildContext context, int v, String line) => Container(
+      width: 40,
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(color: lineColor(line).bg, borderRadius: BorderRadius.circular(10)),
+      child: Text('$v', textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: lineColor(line).fg)),
+    );
+
+class _BuyTab extends ConsumerStatefulWidget {
+  const _BuyTab(this.leagueId);
+
+  final int leagueId;
+
+  @override
+  ConsumerState<_BuyTab> createState() => _BuyTabState();
+}
+
+class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientMixin {
+  String _line = 'gk';
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final l = L.of(context);
+    final p = context.palette;
+    final key = (widget.leagueId, _line);
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+        child: SegmentedButton<String>(
+          showSelectedIcon: false,
+          segments: [
+            for (final (v, t) in [('gk', l.lineGk), ('def', l.lineDef), ('mid', l.lineMid), ('att', l.lineAtt)])
+              ButtonSegment(value: v, label: Text(t, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          ],
+          selected: {_line},
+          onSelectionChanged: (s) => setState(() => _line = s.first),
+        ),
+      ),
+      Expanded(
+        child: AsyncView(
+          value: ref.watch(marketListProvider(key)),
+          onRetry: () => ref.invalidate(marketListProvider(key)),
+          data: (m) => RefreshIndicator(
+            color: p.gold,
+            onRefresh: () => ref.refresh(marketListProvider(key).future),
+            child: ListView(padding: const EdgeInsets.fromLTRB(12, 6, 12, 24), children: [
+              if (m.closed != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.marketClosed, textAlign: TextAlign.center, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700))),
+              if (m.renewsAt != null)
+                Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.renewsAt(when(context, m.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12))),
+              for (final pl in m.players)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GlmCard(
+                    padding: const EdgeInsets.all(10),
+                    gold: pl.fits,
+                    onTap: () => _buySheet(pl),
+                    child: Row(children: [
+                      _ovr(context, pl.overall, pl.line),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(pl.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
+                          Text('${pl.position} · ${pl.age} · ${pl.sellerKind == 'world' ? l.sellerWorld : pl.sellerClub ?? ''}',
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                        ]),
+                      ),
+                      Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                        Text(money(context, pl.price), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+                        if (pl.wasPrice != null)
+                          Text(money(context, pl.wasPrice!), textDirection: TextDirection.ltr, style: TextStyle(color: p.textMuted, fontSize: 12, decoration: TextDecoration.lineThrough)),
+                      ]),
+                    ]),
+                  ),
+                ),
+            ]),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  Future<void> _buySheet(MarketPlayer pl) async {
+    final repo = ref.read(marketRepositoryProvider);
+    final bought = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => BuySheet(player: pl, leagueId: widget.leagueId, repo: repo),
+    );
+    if (bought == true && mounted) {
+      showGlmToast(context, L.of(context).bought);
+      ref.invalidate(marketListProvider((widget.leagueId, _line)));
+    }
+  }
+}
+
+class BuySheet extends StatefulWidget {
+  const BuySheet({super.key, required this.player, required this.leagueId, required this.repo});
+
+  final MarketPlayer player;
+  final int leagueId;
+  final MarketRepository repo;
+
+  @override
+  State<BuySheet> createState() => _BuySheetState();
+}
+
+class _BuySheetState extends State<BuySheet> {
+  BuyQuote? _q;
+  String? _error;
+  bool _busy = false, _compensate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.repo.buyQuote(widget.leagueId, widget.player.id).then((q) {
+      if (mounted) setState(() => _q = q);
+    }, onError: (Object e) {
+      if (mounted) setState(() => _error = ApiError.from(e).message);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final pl = widget.player;
+    final q = _q;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Row(children: [
+            _ovr(context, pl.overall, pl.line),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(pl.name, textDirection: TextDirection.ltr, style: context.text.titleLarge),
+              Text([pl.position, '${pl.age}', if (pl.nationality != null) pl.nationality!, if (pl.potential != null) '${l.potentialWord} ${pl.potential}'].join(' · '),
+                  style: TextStyle(color: p.textMuted)),
+            ])),
+          ]),
+          const SizedBox(height: 12),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final e in pl.attributes.entries)
+              Chip(label: Text('${e.key.toUpperCase()} ${e.value}', textDirection: TextDirection.ltr, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 12),
+          if (_error != null) Text(_error!, style: TextStyle(color: context.glm.liveText)),
+          if (q == null && _error == null) const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator())),
+          if (q != null) ...[
+            if (q.docCoins > 0) Text(l.regFee(q.docCoins), style: TextStyle(color: p.textMuted)),
+            if (q.why != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(q.why!, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700))),
+            if (q.compensate != null)
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _compensate,
+                activeThumbColor: p.gold,
+                title: Text(l.compensateWith(q.compensate!.coins)),
+                onChanged: (v) => setState(() => _compensate = v),
+              ),
+            const SizedBox(height: 10),
+            GlmButton(
+              label: l.buyFor(money(context, q.price)),
+              block: true,
+              loading: _busy,
+              onPressed: q.can || (q.compensate != null && _compensate)
+                  ? () async {
+                      setState(() => _busy = true);
+                      try {
+                        await widget.repo.buy(widget.leagueId, pl.id, compensate: _compensate);
+                        if (context.mounted) Navigator.pop(context, true);
+                      } on ApiError catch (e) {
+                        if (mounted) setState(() => _error = e.message);
+                      } finally {
+                        if (mounted) setState(() => _busy = false);
+                      }
+                    }
+                  : null,
+            ),
+          ],
+        ]),
+      ),
+    );
+  }
+}
+
+class _SellTab extends ConsumerWidget {
+  const _SellTab(this.leagueId);
+
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    return AsyncView(
+      value: ref.watch(sellingProvider(leagueId)),
+      onRetry: () => ref.invalidate(sellingProvider(leagueId)),
+      data: (s) => RefreshIndicator(
+        color: p.gold,
+        onRefresh: () => ref.refresh(sellingProvider(leagueId).future),
+        child: ListView(padding: const EdgeInsets.all(12), children: [
+          Text(l.listingsOf(s.listed, s.maxListings), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
+          const SizedBox(height: 8),
+          for (final pl in s.mine)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: GlmCard(
+                padding: const EdgeInsets.all(10),
+                gold: pl.listed,
+                onTap: () async {
+                  final changed = await showModalBottomSheet<bool>(
+                    context: context,
+                    isScrollControlled: true,
+                    showDragHandle: true,
+                    builder: (_) => _SellSheet(player: pl, leagueId: leagueId, repo: ref.read(marketRepositoryProvider)),
+                  );
+                  if (changed == true) ref.invalidate(sellingProvider(leagueId));
+                },
+                child: Row(children: [
+                  _ovr(context, pl.overall, pl.line),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(pl.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
+                      Text(pl.listed ? l.listedAt(money(context, pl.listedPrice!)) : '${pl.position} · ${l.value} ${money(context, pl.value)}',
+                          style: TextStyle(color: pl.listed ? context.glm.goldText : p.textMuted, fontSize: 12)),
+                    ]),
+                  ),
+                  const Icon(Icons.chevron_right_rounded),
+                ]),
+              ),
+            ),
+        ]),
+      ),
+    );
+  }
+}
+
+class _SellSheet extends StatefulWidget {
+  const _SellSheet({required this.player, required this.leagueId, required this.repo});
+
+  final MyPlayer player;
+  final int leagueId;
+  final MarketRepository repo;
+
+  @override
+  State<_SellSheet> createState() => _SellSheetState();
+}
+
+class _SellSheetState extends State<_SellSheet> {
+  late double _price = (widget.player.listedPrice ?? widget.player.value).clamp(widget.player.floor, widget.player.cap).toDouble();
+  int? _wait;
+  bool _busy = false;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _quote();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _quote() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
+      try {
+        final q = await widget.repo.sellQuote(widget.leagueId, widget.player.id, _price.round());
+        if (mounted) setState(() => _wait = q.waitHours);
+      } on ApiError {
+        // The wait is a hint only.
+      }
+    });
+  }
+
+  Future<void> _do(Future<void> Function() action) async {
+    setState(() => _busy = true);
+    try {
+      await action();
+      if (mounted) Navigator.pop(context, true);
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final pl = widget.player;
+    final fee = pl.quickFee.currency == 'coins' ? l.coinsWord(pl.quickFee.amount) : money(context, pl.quickFee.amount);
+    final step = pl.cap > pl.floor ? ((pl.cap - pl.floor) / 50).ceilToDouble() : 1.0;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(pl.name, textDirection: TextDirection.ltr, textAlign: TextAlign.center, style: context.text.titleLarge),
+          const SizedBox(height: 4),
+          Text('${l.value} ${money(context, pl.value)}', textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
+          const SizedBox(height: 14),
+          if (pl.listed) ...[
+            Text(l.listedAt(money(context, pl.listedPrice!)), textAlign: TextAlign.center, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 18)),
+            if (pl.sellsAt != null) Text(l.sellsIn(when(context, pl.sellsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
+            const SizedBox(height: 10),
+            GlmButton(label: l.unlist, variant: GlmButtonVariant.outline, block: true, loading: _busy, onPressed: () => _do(() => widget.repo.unlist(widget.leagueId, pl.id))),
+          ] else if (pl.cap > pl.floor) ...[
+            Text('${l.price}: ${money(context, _price.round())}', textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 22, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+            Slider(
+              value: _price,
+              min: pl.floor.toDouble(),
+              max: pl.cap.toDouble(),
+              divisions: ((pl.cap - pl.floor) / step).round().clamp(1, 50),
+              activeColor: p.gold,
+              onChanged: (v) {
+                setState(() => _price = v);
+                _quote();
+              },
+            ),
+            Text(l.priceRange(money(context, pl.floor), money(context, pl.cap)), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
+            if (_wait != null) Text(l.waitAbout(_wait!), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
+            const SizedBox(height: 10),
+            GlmButton(label: l.listForSale, block: true, loading: _busy, onPressed: () => _do(() => widget.repo.listForSale(widget.leagueId, pl.id, _price.round()))),
+          ],
+          const SizedBox(height: 10),
+          GlmButton(
+            label: l.sellNowFor(money(context, pl.quickPays), fee),
+            variant: GlmButtonVariant.danger,
+            block: true,
+            onPressed: _busy
+                ? null
+                : () async {
+                    if (await confirm(context, l.sellNowConfirm)) await _do(() => widget.repo.sellNow(widget.leagueId, pl.id));
+                  },
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class _OffersTab extends ConsumerWidget {
+  const _OffersTab(this.leagueId);
+
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    Future<void> answer(int offer, String action) async {
+      try {
+        await ref.read(marketRepositoryProvider).answer(leagueId, offer, action);
+      } on ApiError catch (e) {
+        if (context.mounted) showGlmToast(context, e.message, error: true);
+      }
+      ref.invalidate(dealsProvider(leagueId));
+      ref.invalidate(sellingProvider(leagueId));
+    }
+
+    return AsyncView(
+      value: ref.watch(dealsProvider(leagueId)),
+      onRetry: () => ref.invalidate(dealsProvider(leagueId)),
+      data: (d) => RefreshIndicator(
+        color: p.gold,
+        onRefresh: () => ref.refresh(dealsProvider(leagueId).future),
+        child: ListView(padding: const EdgeInsets.all(12), children: [
+          if (d.offers.isEmpty) Padding(padding: const EdgeInsets.all(32), child: Text(l.noOffers, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted))),
+          for (final o in d.offers)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: GlmCard(
+                gold: o.incoming && o.pending,
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Row(children: [
+                    Expanded(child: Text(o.incoming ? l.offerFrom(o.from) : l.offerTo(o.to), style: const TextStyle(fontWeight: FontWeight.w800))),
+                    if (!o.pending)
+                      Text(switch (o.status) { 'accepted' => l.statusAccepted, 'rejected' => l.statusRejected, _ => l.statusOther },
+                          style: TextStyle(color: o.status == 'accepted' ? context.glm.successText : p.textMuted, fontWeight: FontWeight.w700)),
+                  ]),
+                  const SizedBox(height: 8),
+                  Text(l.theyWant, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                  for (final pl in o.players) Text('${pl.name} (${pl.position} ${pl.overall})', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+                  if (o.give.isNotEmpty || o.money > 0) ...[
+                    const SizedBox(height: 6),
+                    Text(l.theyGive, style: TextStyle(color: p.textMuted, fontSize: 12)),
+                    if (o.money > 0) Text(money(context, o.money), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: context.glm.goldText)),
+                    for (final pl in o.give) Text('${pl.name} (${pl.position} ${pl.overall})', textDirection: TextDirection.ltr),
+                  ],
+                  if (o.pending) ...[
+                    const SizedBox(height: 10),
+                    if (o.incoming)
+                      Row(children: [
+                        Expanded(child: GlmButton(label: l.accept, onPressed: () => answer(o.id, 'accept'))),
+                        const SizedBox(width: 8),
+                        Expanded(child: GlmButton(label: l.reject, variant: GlmButtonVariant.outline, onPressed: () => answer(o.id, 'reject'))),
+                      ])
+                    else
+                      GlmButton(label: l.cancelOffer, variant: GlmButtonVariant.outline, block: true, onPressed: () => answer(o.id, 'cancel')),
+                  ],
+                ]),
+              ),
+            ),
+          const SizedBox(height: 8),
+          Text(l.offersOnWeb, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
+          const SizedBox(height: GlmSize.radiusXl),
+        ]),
+      ),
+    );
+  }
+}

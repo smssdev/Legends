@@ -26,7 +26,7 @@ class InboxMessage {
     final path = link ?? '';
     if (l == null) return null;
     for (final (prefix, screen) in [
-      ('/stadium', 'stadium'), ('/finance', 'finance'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
+      ('/stadium', 'stadium'), ('/finance', 'finance'), ('/market', 'market'), ('/transfers', 'market'), ('/scout', 'scout'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
     ]) {
       if (path.startsWith(prefix)) return '/leagues/$l/$screen';
     }

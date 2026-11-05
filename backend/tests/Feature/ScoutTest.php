@@ -55,7 +55,8 @@ class ScoutTest extends TestCase
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         $cost = Scout::cost($this->league['id']);
         $this->assertGreaterThan(0, $cost);
-        $this->ask()->assertOk()->assertJsonPath('requests.0.status', 'searching');
+        $this->ask()->assertOk()->assertJsonPath('requests.0.status', 'searching')
+            ->assertJsonPath('finish_coins', (int) config('game.premium.price.finish_scout'));
         $this->ask()->assertOk();
         $this->assertSame($before - $cost, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
         $this->assertSame(1, DB::table('scout_requests')->count());
