@@ -7,6 +7,11 @@ import 'features/auth/ui/forgot_screen.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/leagues/create_league_screen.dart';
+import 'features/leagues/join_screen.dart';
+import 'features/leagues/league_screen.dart';
+import 'features/leagues/my_leagues_screen.dart';
+import 'features/leagues/pick_team_screen.dart';
 import 'features/health/status_screens.dart';
 
 /// [Sprint 15 F1] The app's pages: the start while the account is checked, then the sign-in pages for a guest and the
@@ -26,7 +31,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (auth.isLoading && !auth.hasValue) return here == '/start' ? null : '/start';
       if (auth.hasError && !auth.hasValue) return '/offline';
       final signedIn = auth.value != null;
-      if (!signedIn) return guest.contains(here) ? null : '/login';
+      // A guest from an invite link signs in first, then lands on the link.
+      if (!signedIn) return guest.contains(here) ? null : (here.startsWith('/join') ? '/login?from=${Uri.encodeComponent(state.uri.toString())}' : '/login');
+      final from = state.uri.queryParameters['from'];
+      if (from != null && guest.contains(here)) return from;
       return guest.contains(here) || here == '/start' || here == '/offline' ? '/' : null;
     },
     routes: [
@@ -37,6 +45,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(path: '/forgot', builder: (_, _) => const ForgotScreen()),
       GoRoute(path: '/', builder: (_, _) => const HomeScreen()),
+      // [Sprint 16] The leagues, and an invite link (gamelegendmanager.online/join/CODE) opening the app on its code.
+      GoRoute(path: '/leagues', builder: (_, _) => const MyLeaguesScreen()),
+      GoRoute(path: '/leagues/new', builder: (_, _) => const CreateLeagueScreen()),
+      GoRoute(path: '/join', builder: (_, s) => JoinScreen(code: s.uri.queryParameters['code'])),
+      GoRoute(path: '/join/:code', builder: (_, s) => JoinScreen(code: s.pathParameters['code'])),
+      GoRoute(path: '/leagues/:id', builder: (_, s) => LeagueScreen(id: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),
     ],
   );
 });

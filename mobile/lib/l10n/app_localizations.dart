@@ -546,6 +546,294 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الأسطورة'**
   String get tierLegend;
+
+  /// No description provided for @myLeagues.
+  ///
+  /// In ar, this message translates to:
+  /// **'دورياتي'**
+  String get myLeagues;
+
+  /// No description provided for @noLeagues.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا دوري لك بعد. أنشئ دورياً لأصحابك أو انضم بكود.'**
+  String get noLeagues;
+
+  /// No description provided for @newLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوري جديد'**
+  String get newLeague;
+
+  /// No description provided for @freeLeagueLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.'**
+  String get freeLeagueLead;
+
+  /// No description provided for @pickTemplate.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر الدوري'**
+  String get pickTemplate;
+
+  /// No description provided for @pickClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر فريقك'**
+  String get pickClub;
+
+  /// No description provided for @leagueName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الدوري (اختياري)'**
+  String get leagueName;
+
+  /// No description provided for @create.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ الدوري'**
+  String get create;
+
+  /// No description provided for @clubsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} نادٍ'**
+  String clubsCount(int n);
+
+  /// No description provided for @joinTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'انضم إلى دوري'**
+  String get joinTitle;
+
+  /// No description provided for @joinLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.'**
+  String get joinLead;
+
+  /// No description provided for @code.
+  ///
+  /// In ar, this message translates to:
+  /// **'كود الدوري'**
+  String get code;
+
+  /// No description provided for @sendRequest.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الطلب'**
+  String get sendRequest;
+
+  /// No description provided for @requestPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبك ينتظر موافقة المنشئ.'**
+  String get requestPending;
+
+  /// No description provided for @requestApproved.
+  ///
+  /// In ar, this message translates to:
+  /// **'وافق المنشئ. اختر فريقك الآن.'**
+  String get requestApproved;
+
+  /// No description provided for @requestRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'رفض المنشئ طلبك.'**
+  String get requestRejected;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألغِ الطلب'**
+  String get cancelRequest;
+
+  /// No description provided for @takeClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'خذ هذا الفريق'**
+  String get takeClub;
+
+  /// No description provided for @goalTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف: اللقب'**
+  String get goalTitle;
+
+  /// No description provided for @goalPlace.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف: المركز {n} أو أفضل'**
+  String goalPlace(int n);
+
+  /// No description provided for @goalSurvive.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدف: البقاء في المركز {n} أو أفضل'**
+  String goalSurvive(int n);
+
+  /// No description provided for @strength.
+  ///
+  /// In ar, this message translates to:
+  /// **'القوة {n}'**
+  String strength(int n);
+
+  /// No description provided for @tabClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'النادي'**
+  String get tabClub;
+
+  /// No description provided for @tabTable.
+  ///
+  /// In ar, this message translates to:
+  /// **'الترتيب'**
+  String get tabTable;
+
+  /// No description provided for @tabFixtures.
+  ///
+  /// In ar, this message translates to:
+  /// **'المباريات'**
+  String get tabFixtures;
+
+  /// No description provided for @tabCoaches.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدربون'**
+  String get tabCoaches;
+
+  /// No description provided for @waitingStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبدأ الدوري {when}'**
+  String waitingStart(String when);
+
+  /// No description provided for @round.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجولة {n}'**
+  String round(int n);
+
+  /// No description provided for @cup.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكأس'**
+  String get cup;
+
+  /// No description provided for @invite.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادعُ أصحابك'**
+  String get invite;
+
+  /// No description provided for @inviteText.
+  ///
+  /// In ar, this message translates to:
+  /// **'انضم لدوري «{name}» في لعبة المدرب الأسطورة واختر ناديك: {url}'**
+  String inviteText(String name, String url);
+
+  /// No description provided for @requests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات الانضمام'**
+  String get requests;
+
+  /// No description provided for @approve.
+  ///
+  /// In ar, this message translates to:
+  /// **'وافق'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In ar, this message translates to:
+  /// **'ارفض'**
+  String get reject;
+
+  /// No description provided for @creator.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنشئ'**
+  String get creator;
+
+  /// No description provided for @onHoliday.
+  ///
+  /// In ar, this message translates to:
+  /// **'في إجازة'**
+  String get onHoliday;
+
+  /// No description provided for @home.
+  ///
+  /// In ar, this message translates to:
+  /// **'على أرضك'**
+  String get home;
+
+  /// No description provided for @away.
+  ///
+  /// In ar, this message translates to:
+  /// **'خارج أرضك'**
+  String get away;
+
+  /// No description provided for @nextMatchShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراتك القادمة'**
+  String get nextMatchShort;
+
+  /// No description provided for @lineupReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشكيلة جاهزة'**
+  String get lineupReady;
+
+  /// No description provided for @lineupAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشكيلة تلقائية'**
+  String get lineupAuto;
+
+  /// No description provided for @board.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإدارة'**
+  String get board;
+
+  /// No description provided for @noMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مباريات بعد.'**
+  String get noMatches;
+
+  /// No description provided for @openOnSite.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح في الموقع'**
+  String get openOnSite;
+
+  /// No description provided for @copied.
+  ///
+  /// In ar, this message translates to:
+  /// **'نُسخ'**
+  String get copied;
+
+  /// No description provided for @share.
+  ///
+  /// In ar, this message translates to:
+  /// **'شارك'**
+  String get share;
+
+  /// No description provided for @pts.
+  ///
+  /// In ar, this message translates to:
+  /// **'ن'**
+  String get pts;
+
+  /// No description provided for @sign.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقّع'**
+  String get sign;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

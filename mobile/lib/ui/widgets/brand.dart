@@ -81,6 +81,9 @@ class CoinsPill extends StatelessWidget {
 class ClubCrest extends StatelessWidget {
   const ClubCrest({super.key, required this.url, required this.name, this.size = 44});
 
+  /// Off in the widget tests, which never reach the network.
+  static bool loadFromNetwork = true;
+
   final String? url;
   final String name;
   final double size;
@@ -93,7 +96,7 @@ class ClubCrest extends StatelessWidget {
       decoration: BoxDecoration(color: p.surfaceRaised, shape: BoxShape.circle),
       child: Text(name.characters.take(2).toString(), style: TextStyle(fontWeight: FontWeight.w800, color: p.textSoft, fontSize: size * .32)),
     );
-    if (url == null) return initials;
+    if (url == null || !loadFromNetwork) return initials;
     return SvgPicture.network(url!, width: size, height: size, placeholderBuilder: (_) => initials, semanticsLabel: name);
   }
 }

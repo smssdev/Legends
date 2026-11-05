@@ -258,4 +258,164 @@ class LAr extends L {
 
   @override
   String get tierLegend => 'الأسطورة';
+
+  @override
+  String get myLeagues => 'دورياتي';
+
+  @override
+  String get noLeagues => 'لا دوري لك بعد. أنشئ دورياً لأصحابك أو انضم بكود.';
+
+  @override
+  String get newLeague => 'دوري جديد';
+
+  @override
+  String get freeLeagueLead =>
+      'الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.';
+
+  @override
+  String get pickTemplate => 'اختر الدوري';
+
+  @override
+  String get pickClub => 'اختر فريقك';
+
+  @override
+  String get leagueName => 'اسم الدوري (اختياري)';
+
+  @override
+  String get create => 'أنشئ الدوري';
+
+  @override
+  String clubsCount(int n) {
+    return '$n نادٍ';
+  }
+
+  @override
+  String get joinTitle => 'انضم إلى دوري';
+
+  @override
+  String get joinLead =>
+      'اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.';
+
+  @override
+  String get code => 'كود الدوري';
+
+  @override
+  String get sendRequest => 'أرسل الطلب';
+
+  @override
+  String get requestPending => 'طلبك ينتظر موافقة المنشئ.';
+
+  @override
+  String get requestApproved => 'وافق المنشئ. اختر فريقك الآن.';
+
+  @override
+  String get requestRejected => 'رفض المنشئ طلبك.';
+
+  @override
+  String get cancelRequest => 'ألغِ الطلب';
+
+  @override
+  String get takeClub => 'خذ هذا الفريق';
+
+  @override
+  String get goalTitle => 'الهدف: اللقب';
+
+  @override
+  String goalPlace(int n) {
+    return 'الهدف: المركز $n أو أفضل';
+  }
+
+  @override
+  String goalSurvive(int n) {
+    return 'الهدف: البقاء في المركز $n أو أفضل';
+  }
+
+  @override
+  String strength(int n) {
+    return 'القوة $n';
+  }
+
+  @override
+  String get tabClub => 'النادي';
+
+  @override
+  String get tabTable => 'الترتيب';
+
+  @override
+  String get tabFixtures => 'المباريات';
+
+  @override
+  String get tabCoaches => 'المدربون';
+
+  @override
+  String waitingStart(String when) {
+    return 'يبدأ الدوري $when';
+  }
+
+  @override
+  String round(int n) {
+    return 'الجولة $n';
+  }
+
+  @override
+  String get cup => 'الكأس';
+
+  @override
+  String get invite => 'ادعُ أصحابك';
+
+  @override
+  String inviteText(String name, String url) {
+    return 'انضم لدوري «$name» في لعبة المدرب الأسطورة واختر ناديك: $url';
+  }
+
+  @override
+  String get requests => 'طلبات الانضمام';
+
+  @override
+  String get approve => 'وافق';
+
+  @override
+  String get reject => 'ارفض';
+
+  @override
+  String get creator => 'المنشئ';
+
+  @override
+  String get onHoliday => 'في إجازة';
+
+  @override
+  String get home => 'على أرضك';
+
+  @override
+  String get away => 'خارج أرضك';
+
+  @override
+  String get nextMatchShort => 'مباراتك القادمة';
+
+  @override
+  String get lineupReady => 'التشكيلة جاهزة';
+
+  @override
+  String get lineupAuto => 'التشكيلة تلقائية';
+
+  @override
+  String get board => 'الإدارة';
+
+  @override
+  String get noMatches => 'لا مباريات بعد.';
+
+  @override
+  String get openOnSite => 'افتح في الموقع';
+
+  @override
+  String get copied => 'نُسخ';
+
+  @override
+  String get share => 'شارك';
+
+  @override
+  String get pts => 'ن';
+
+  @override
+  String get sign => 'وقّع';
 }

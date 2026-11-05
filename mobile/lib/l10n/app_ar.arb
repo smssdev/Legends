@@ -163,5 +163,105 @@
   "tierElite": "النخبة",
   "tierMastermind": "العقل المدبر",
   "tierIcon": "الأيقونة",
-  "tierLegend": "الأسطورة"
+  "tierLegend": "الأسطورة",
+  "myLeagues": "دورياتي",
+  "noLeagues": "لا دوري لك بعد. أنشئ دورياً لأصحابك أو انضم بكود.",
+  "newLeague": "دوري جديد",
+  "freeLeagueLead": "الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.",
+  "pickTemplate": "اختر الدوري",
+  "pickClub": "اختر فريقك",
+  "leagueName": "اسم الدوري (اختياري)",
+  "create": "أنشئ الدوري",
+  "clubsCount": "{n} نادٍ",
+  "joinTitle": "انضم إلى دوري",
+  "joinLead": "اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.",
+  "code": "كود الدوري",
+  "sendRequest": "أرسل الطلب",
+  "requestPending": "طلبك ينتظر موافقة المنشئ.",
+  "requestApproved": "وافق المنشئ. اختر فريقك الآن.",
+  "requestRejected": "رفض المنشئ طلبك.",
+  "cancelRequest": "ألغِ الطلب",
+  "takeClub": "خذ هذا الفريق",
+  "goalTitle": "الهدف: اللقب",
+  "goalPlace": "الهدف: المركز {n} أو أفضل",
+  "goalSurvive": "الهدف: البقاء في المركز {n} أو أفضل",
+  "strength": "القوة {n}",
+  "tabClub": "النادي",
+  "tabTable": "الترتيب",
+  "tabFixtures": "المباريات",
+  "tabCoaches": "المدربون",
+  "waitingStart": "يبدأ الدوري {when}",
+  "round": "الجولة {n}",
+  "cup": "الكأس",
+  "invite": "ادعُ أصحابك",
+  "inviteText": "انضم لدوري «{name}» في لعبة المدرب الأسطورة واختر ناديك: {url}",
+  "requests": "طلبات الانضمام",
+  "approve": "وافق",
+  "reject": "ارفض",
+  "creator": "المنشئ",
+  "onHoliday": "في إجازة",
+  "home": "على أرضك",
+  "away": "خارج أرضك",
+  "nextMatchShort": "مباراتك القادمة",
+  "lineupReady": "التشكيلة جاهزة",
+  "lineupAuto": "التشكيلة تلقائية",
+  "board": "الإدارة",
+  "noMatches": "لا مباريات بعد.",
+  "openOnSite": "افتح في الموقع",
+  "copied": "نُسخ",
+  "share": "شارك",
+  "pts": "ن",
+  "@clubsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@goalPlace": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@goalSurvive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@strength": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@round": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitingStart": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "@inviteText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "sign": "وقّع"
 }

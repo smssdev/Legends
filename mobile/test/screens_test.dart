@@ -8,6 +8,7 @@ import 'package:glm/features/home/home_data.dart';
 import 'package:glm/features/home/home_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
+import 'package:glm/ui/widgets/brand.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Widget> app(Widget screen, {List overrides = const [], String language = 'ar', bool day = false}) async {
@@ -39,6 +40,7 @@ const homeJson = {
 };
 
 void main() {
+  setUpAll(() => ClubCrest.loadFromNetwork = false);
   testWidgets('the sign-in is in Arabic, right to left, and asks for both fields', (t) async {
     await t.binding.setSurfaceSize(const Size(420, 1000));
     await t.pumpWidget(await app(const LoginScreen()));

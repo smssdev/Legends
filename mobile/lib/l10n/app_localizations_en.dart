@@ -259,4 +259,165 @@ class LEn extends L {
 
   @override
   String get tierLegend => 'Legend';
+
+  @override
+  String get myLeagues => 'My leagues';
+
+  @override
+  String get noLeagues =>
+      'No league yet. Make one for your friends or join with a code.';
+
+  @override
+  String get newLeague => 'New league';
+
+  @override
+  String get freeLeagueLead =>
+      'The free league: all the league\'s clubs, a round a day at 9 pm, two days to get ready. The paid options are on the site.';
+
+  @override
+  String get pickTemplate => 'Pick the league';
+
+  @override
+  String get pickClub => 'Pick your team';
+
+  @override
+  String get leagueName => 'League name (optional)';
+
+  @override
+  String get create => 'Make the league';
+
+  @override
+  String clubsCount(int n) {
+    return '$n clubs';
+  }
+
+  @override
+  String get joinTitle => 'Join a league';
+
+  @override
+  String get joinLead =>
+      'Ask your friend for their league\'s code and type it here; then the creator approves your request.';
+
+  @override
+  String get code => 'League code';
+
+  @override
+  String get sendRequest => 'Send the request';
+
+  @override
+  String get requestPending => 'Your request waits for the creator.';
+
+  @override
+  String get requestApproved => 'The creator said yes. Pick your team now.';
+
+  @override
+  String get requestRejected => 'The creator turned your request down.';
+
+  @override
+  String get cancelRequest => 'Cancel the request';
+
+  @override
+  String get takeClub => 'Take this team';
+
+  @override
+  String get goalTitle => 'Objective: the title';
+
+  @override
+  String goalPlace(int n) {
+    return 'Objective: place $n or better';
+  }
+
+  @override
+  String goalSurvive(int n) {
+    return 'Objective: stay up, place $n or better';
+  }
+
+  @override
+  String strength(int n) {
+    return 'Strength $n';
+  }
+
+  @override
+  String get tabClub => 'Club';
+
+  @override
+  String get tabTable => 'Table';
+
+  @override
+  String get tabFixtures => 'Matches';
+
+  @override
+  String get tabCoaches => 'Coaches';
+
+  @override
+  String waitingStart(String when) {
+    return 'The league starts $when';
+  }
+
+  @override
+  String round(int n) {
+    return 'Round $n';
+  }
+
+  @override
+  String get cup => 'Cup';
+
+  @override
+  String get invite => 'Invite your friends';
+
+  @override
+  String inviteText(String name, String url) {
+    return 'Join «$name» on Game Legend Manager and pick your club: $url';
+  }
+
+  @override
+  String get requests => 'Join requests';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Turn down';
+
+  @override
+  String get creator => 'Creator';
+
+  @override
+  String get onHoliday => 'On holiday';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get away => 'Away';
+
+  @override
+  String get nextMatchShort => 'Your next match';
+
+  @override
+  String get lineupReady => 'The lineup is ready';
+
+  @override
+  String get lineupAuto => 'Automatic lineup';
+
+  @override
+  String get board => 'The board';
+
+  @override
+  String get noMatches => 'No matches yet.';
+
+  @override
+  String get openOnSite => 'Open on the site';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get pts => 'pts';
+
+  @override
+  String get sign => 'Sign';
 }

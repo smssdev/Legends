@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,7 +19,7 @@ import 'settings_sheet.dart';
 
 /// [Sprint 15] The app's first screen after sign-in, as the web's home (MobileHome.dc.html): the coach's card with his
 /// rating, and his slots: each club with its league, place and next match, a free slot's two ways in, a locked one's
-/// countdown. The club screens come in the next sprints; until then they open on the site.
+/// countdown; a club opens its league in the app (Sprint 16).
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -59,6 +60,7 @@ class _Home extends ConsumerWidget {
               titleSpacing: 16,
               title: const BrandMark(size: 36),
               actions: [
+                IconButton(tooltip: l.myLeagues, icon: const Icon(Icons.emoji_events_outlined), onPressed: () => context.push('/leagues')),
                 CoinsPill(coins: h.coach.coins, onTap: () => openSite('/wallet')),
                 IconButton(tooltip: l.settings, icon: const Icon(Icons.tune_rounded), onPressed: () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
                 const SizedBox(width: 6),
@@ -147,7 +149,7 @@ class _SlotCard extends StatelessWidget {
       case SlotState.club:
         final locale = Localizations.localeOf(context).toLanguageTag();
         return GlmCard(
-          onTap: () => openSite('/leagues/${s.leagueId}'),
+          onTap: () => context.push('/leagues/${s.leagueId}'),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
               ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 48),
@@ -188,12 +190,10 @@ class _SlotCard extends StatelessWidget {
             Row(children: [Text(l.slotFree, style: context.text.titleMedium), const Spacer(), number]),
             const SizedBox(height: 12),
             Row(children: [
-              Expanded(child: GlmButton(label: l.createLeague, onPressed: () => openSite('/leagues/new'))),
+              Expanded(child: GlmButton(label: l.createLeague, onPressed: () => context.push('/leagues/new'))),
               const SizedBox(width: 10),
-              Expanded(child: GlmButton(label: l.joinByCode, variant: GlmButtonVariant.quiet, onPressed: () => openSite('/join'))),
+              Expanded(child: GlmButton(label: l.joinByCode, variant: GlmButtonVariant.quiet, onPressed: () => context.push('/join'))),
             ]),
-            const SizedBox(height: 6),
-            Text(l.onWebForNow, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 11)),
           ]),
         );
       case SlotState.locked:
