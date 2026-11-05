@@ -8,6 +8,7 @@ import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
 import 'features/club/lineup_screen.dart';
 import 'features/club/squad_screen.dart';
+import 'features/club/extras_screens.dart';
 import 'features/club/tactics_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/leagues/create_league_screen.dart';
@@ -22,6 +23,7 @@ import 'features/market/scout_screen.dart';
 import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
 import 'features/money/stadium_screen.dart';
+import 'features/wallet/wallet_screen.dart';
 import 'features/match/report_screen.dart';
 
 /// [Sprint 15 F1] The app's pages: the start while the account is checked, then the sign-in pages for a guest and the
@@ -70,6 +72,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leagues/:id/stadium', builder: (_, s) => StadiumScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/market', builder: (_, s) => MarketScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/scout', builder: (_, s) => ScoutScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/coaches/:id', builder: (_, s) => CoachProfileScreen(userId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
+      GoRoute(path: '/leagues/:id/training', builder: (_, s) => TrainingScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => SpecialistsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/spy', builder: (_, s) => SpyScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/quests', builder: (_, s) => QuestsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/honours', builder: (_, s) => HonoursScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/match/:id', builder: (_, s) => LiveMatchScreen(matchId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/match/:id/report', builder: (_, s) => MatchReportScreen(matchId: int.parse(s.pathParameters['id']!), coach: s.uri.queryParameters['coach'] == 'true')),
       GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),

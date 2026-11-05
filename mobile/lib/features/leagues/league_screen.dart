@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
@@ -13,6 +14,9 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/club_data.dart';
+import '../club/extras_data.dart';
+import '../home/home_data.dart';
+import '../money/finance_screen.dart' show confirm;
 import 'leagues_repository.dart';
 import 'models.dart';
 import 'widgets.dart';
@@ -132,6 +136,8 @@ class _ClubTab extends ConsumerWidget {
                 (Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics'),
                 (Icons.swap_horiz_rounded, l.market, 'market'), (Icons.travel_explore_rounded, l.scout, 'scout'),
                 (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
+                (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
+                (Icons.visibility_rounded, l.spy, 'spy'), (Icons.flag_rounded, l.quests, 'quests'), (Icons.emoji_events_rounded, l.honours, 'honours'),
               ])
                 GlmCard(
                   padding: const EdgeInsets.all(8),
@@ -152,6 +158,23 @@ class _ClubTab extends ConsumerWidget {
           ]),
           if (s.goal != null) ...[const SizedBox(height: 12), GlmCard(child: Row(children: [Icon(Icons.flag_rounded, color: p.gold), const SizedBox(width: 10), Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}'))]))],
           for (final line in s.pending) Padding(padding: const EdgeInsets.only(top: 8), child: GlmCard(child: Text(line, style: TextStyle(color: p.textSoft)))),
+          // [Sprint 18] Leaving the league: the team goes back to the computer (Leaving::resign), after a clear yes.
+          const SizedBox(height: 28),
+          GlmButton(
+            label: l.resign,
+            variant: GlmButtonVariant.danger,
+            onPressed: () async {
+              if (!await confirm(context, l.resignConfirm) || !context.mounted) return;
+              try {
+                await ref.read(extrasRepositoryProvider).resign(lg.id);
+                ref.invalidate(homeProvider);
+                ref.invalidate(myLeaguesProvider);
+                if (context.mounted) context.go('/');
+              } on ApiError catch (e) {
+                if (context.mounted) showGlmToast(context, e.message, error: true);
+              }
+            },
+          ),
         ]),
       ),
     );
@@ -314,6 +337,8 @@ class _CoachesTab extends ConsumerWidget {
           leading: CircleAvatar(backgroundColor: p.brand, child: Text(m.name.characters.take(1).toString(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800))),
           title: Text(m.name, style: const TextStyle(fontWeight: FontWeight.w700)),
           subtitle: Text([if (m.club != null) m.club!, if (m.isOwner) l.creator, if (m.onHoliday) l.onHoliday].join(' · ')),
+          trailing: m.userId == null ? null : const Icon(Icons.chevron_right_rounded),
+          onTap: m.userId == null ? null : () => context.push('/coaches/${m.userId}'),
         ),
     ]);
   }

@@ -1027,4 +1027,196 @@ class LEn extends L {
 
   @override
   String get stateGone => 'Gone';
+
+  @override
+  String get training => 'Training';
+
+  @override
+  String get trainingLead =>
+      'One player per line trains; each session raises his progress until his rating goes up.';
+
+  @override
+  String sessionCost(String cost, String time) {
+    return 'A session costs $cost every $time';
+  }
+
+  @override
+  String get nobodyTraining => 'Nobody is training';
+
+  @override
+  String get pickToTrain => 'Choose who trains';
+
+  @override
+  String get recommended => 'Suggested';
+
+  @override
+  String nextSession(String time) {
+    return 'Next session $time';
+  }
+
+  @override
+  String sessionsDone(int n) {
+    return '$n sessions';
+  }
+
+  @override
+  String get stopTraining => 'Stop';
+
+  @override
+  String get maxed => 'Maxed out';
+
+  @override
+  String lineCoach(String name, int stars) {
+    return '$name: $stars stars';
+  }
+
+  @override
+  String get specialists => 'Specialists';
+
+  @override
+  String specialistsLead(int days) {
+    return 'A specialist for each line speeds its training, for $days days.';
+  }
+
+  @override
+  String get hire => 'Hire';
+
+  @override
+  String hiredUntil(String time) {
+    return 'Until $time';
+  }
+
+  @override
+  String hireConfirm(String cost) {
+    return 'Hire for $cost?';
+  }
+
+  @override
+  String get spy => 'Spy';
+
+  @override
+  String get spyLead =>
+      'Your spy reveals your next opponent\'s lineup, shape and fitness before the lock.';
+
+  @override
+  String sendSpy(String cost) {
+    return 'Send the spy ($cost)';
+  }
+
+  @override
+  String get noNextMatch => 'No match coming';
+
+  @override
+  String spyReportOn(String club) {
+    return 'Report on $club';
+  }
+
+  @override
+  String get form => 'Form';
+
+  @override
+  String get quests => 'Quests';
+
+  @override
+  String questsRenew(String time) {
+    return 'Renew $time';
+  }
+
+  @override
+  String get questFriendly => 'Play a friendly';
+
+  @override
+  String get questWins => 'Win matches';
+
+  @override
+  String get questStadium => 'Build a stadium part';
+
+  @override
+  String get questTraining => 'Train a player';
+
+  @override
+  String get questUnbeaten => 'Stay unbeaten';
+
+  @override
+  String get claim => 'Claim';
+
+  @override
+  String get claimed => 'Claimed';
+
+  @override
+  String get honours => 'Honours';
+
+  @override
+  String seasonN(int n) {
+    return 'Season $n';
+  }
+
+  @override
+  String get noTitles => 'No titles yet';
+
+  @override
+  String get resign => 'Resign from the league';
+
+  @override
+  String get resignConfirm =>
+      'Resign from this league? Your team goes back to the computer, with no undo.';
+
+  @override
+  String get wallet => 'Wallet';
+
+  @override
+  String dailyCoins(int n) {
+    return 'Today\'s coins: $n';
+  }
+
+  @override
+  String get claimDaily => 'Claim today\'s coins';
+
+  @override
+  String get dailyClaimed => 'Today\'s coins claimed';
+
+  @override
+  String get store => 'Store';
+
+  @override
+  String get buyOnWhatsapp => 'Order on WhatsApp';
+
+  @override
+  String endsOn(String time) {
+    return 'Ends $time';
+  }
+
+  @override
+  String get competitionLeague => 'League';
+
+  @override
+  String get coachProfile => 'Coach profile';
+
+  @override
+  String accountNumber(int n) {
+    return 'Account no. $n';
+  }
+
+  @override
+  String get seasonsPlayed => 'Seasons';
+
+  @override
+  String get played => 'Played';
+
+  @override
+  String get won => 'Won';
+
+  @override
+  String get drawn => 'Drawn';
+
+  @override
+  String get lost => 'Lost';
+
+  @override
+  String get titles => 'Titles';
+
+  @override
+  String objectivesMet(int met, int total) {
+    return 'Board objectives: $met of $total';
+  }
 }

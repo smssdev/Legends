@@ -1024,4 +1024,196 @@ class LAr extends L {
 
   @override
   String get stateGone => 'ذهب';
+
+  @override
+  String get training => 'التدريب';
+
+  @override
+  String get trainingLead =>
+      'لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.';
+
+  @override
+  String sessionCost(String cost, String time) {
+    return 'الحصة $cost كل $time';
+  }
+
+  @override
+  String get nobodyTraining => 'لا أحد يتدرب';
+
+  @override
+  String get pickToTrain => 'اختر من يتدرب';
+
+  @override
+  String get recommended => 'المقترح';
+
+  @override
+  String nextSession(String time) {
+    return 'الحصة التالية $time';
+  }
+
+  @override
+  String sessionsDone(int n) {
+    return '$n حصص';
+  }
+
+  @override
+  String get stopTraining => 'أوقف';
+
+  @override
+  String get maxed => 'بلغ أقصاه';
+
+  @override
+  String lineCoach(String name, int stars) {
+    return '$name: $stars نجوم';
+  }
+
+  @override
+  String get specialists => 'الأخصائيون';
+
+  @override
+  String specialistsLead(int days) {
+    return 'أخصائي لكل خط يسرّع تدريبه، لمدة $days أيام.';
+  }
+
+  @override
+  String get hire => 'وظّف';
+
+  @override
+  String hiredUntil(String time) {
+    return 'حتى $time';
+  }
+
+  @override
+  String hireConfirm(String cost) {
+    return 'توظيفه بـ $cost؟';
+  }
+
+  @override
+  String get spy => 'التجسس';
+
+  @override
+  String get spyLead =>
+      'يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.';
+
+  @override
+  String sendSpy(String cost) {
+    return 'أرسل الجاسوس ($cost)';
+  }
+
+  @override
+  String get noNextMatch => 'لا مباراة قادمة';
+
+  @override
+  String spyReportOn(String club) {
+    return 'تقرير عن $club';
+  }
+
+  @override
+  String get form => 'الأداء';
+
+  @override
+  String get quests => 'المهام';
+
+  @override
+  String questsRenew(String time) {
+    return 'تتجدد $time';
+  }
+
+  @override
+  String get questFriendly => 'العب ودية';
+
+  @override
+  String get questWins => 'حقق انتصارات';
+
+  @override
+  String get questStadium => 'ابنِ جزءاً في الملعب';
+
+  @override
+  String get questTraining => 'درّب لاعباً';
+
+  @override
+  String get questUnbeaten => 'لا تخسر';
+
+  @override
+  String get claim => 'استلم';
+
+  @override
+  String get claimed => 'استُلمت';
+
+  @override
+  String get honours => 'قاعة الشرف';
+
+  @override
+  String seasonN(int n) {
+    return 'الموسم $n';
+  }
+
+  @override
+  String get noTitles => 'لا ألقاب بعد';
+
+  @override
+  String get resign => 'استقل من الدوري';
+
+  @override
+  String get resignConfirm =>
+      'تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.';
+
+  @override
+  String get wallet => 'المحفظة';
+
+  @override
+  String dailyCoins(int n) {
+    return 'كوينز اليوم: $n';
+  }
+
+  @override
+  String get claimDaily => 'استلم كوينز اليوم';
+
+  @override
+  String get dailyClaimed => 'استلمت كوينز اليوم';
+
+  @override
+  String get store => 'المتجر';
+
+  @override
+  String get buyOnWhatsapp => 'اطلب عبر واتساب';
+
+  @override
+  String endsOn(String time) {
+    return 'ينتهي $time';
+  }
+
+  @override
+  String get competitionLeague => 'الدوري';
+
+  @override
+  String get coachProfile => 'ملف المدرب';
+
+  @override
+  String accountNumber(int n) {
+    return 'حساب رقم $n';
+  }
+
+  @override
+  String get seasonsPlayed => 'المواسم';
+
+  @override
+  String get played => 'لعب';
+
+  @override
+  String get won => 'فاز';
+
+  @override
+  String get drawn => 'تعادل';
+
+  @override
+  String get lost => 'خسر';
+
+  @override
+  String get titles => 'الألقاب';
+
+  @override
+  String objectivesMet(int met, int total) {
+    return 'أهداف الإدارة: $met من $total';
+  }
 }

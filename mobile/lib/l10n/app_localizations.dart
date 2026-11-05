@@ -1902,6 +1902,324 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'ذهب'**
   String get stateGone;
+
+  /// No description provided for @training.
+  ///
+  /// In ar, this message translates to:
+  /// **'التدريب'**
+  String get training;
+
+  /// No description provided for @trainingLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.'**
+  String get trainingLead;
+
+  /// No description provided for @sessionCost.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحصة {cost} كل {time}'**
+  String sessionCost(String cost, String time);
+
+  /// No description provided for @nobodyTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا أحد يتدرب'**
+  String get nobodyTraining;
+
+  /// No description provided for @pickToTrain.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر من يتدرب'**
+  String get pickToTrain;
+
+  /// No description provided for @recommended.
+  ///
+  /// In ar, this message translates to:
+  /// **'المقترح'**
+  String get recommended;
+
+  /// No description provided for @nextSession.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحصة التالية {time}'**
+  String nextSession(String time);
+
+  /// No description provided for @sessionsDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} حصص'**
+  String sessionsDone(int n);
+
+  /// No description provided for @stopTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوقف'**
+  String get stopTraining;
+
+  /// No description provided for @maxed.
+  ///
+  /// In ar, this message translates to:
+  /// **'بلغ أقصاه'**
+  String get maxed;
+
+  /// No description provided for @lineCoach.
+  ///
+  /// In ar, this message translates to:
+  /// **'{name}: {stars} نجوم'**
+  String lineCoach(String name, int stars);
+
+  /// No description provided for @specialists.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأخصائيون'**
+  String get specialists;
+
+  /// No description provided for @specialistsLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'أخصائي لكل خط يسرّع تدريبه، لمدة {days} أيام.'**
+  String specialistsLead(int days);
+
+  /// No description provided for @hire.
+  ///
+  /// In ar, this message translates to:
+  /// **'وظّف'**
+  String get hire;
+
+  /// No description provided for @hiredUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'حتى {time}'**
+  String hiredUntil(String time);
+
+  /// No description provided for @hireConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'توظيفه بـ {cost}؟'**
+  String hireConfirm(String cost);
+
+  /// No description provided for @spy.
+  ///
+  /// In ar, this message translates to:
+  /// **'التجسس'**
+  String get spy;
+
+  /// No description provided for @spyLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.'**
+  String get spyLead;
+
+  /// No description provided for @sendSpy.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الجاسوس ({cost})'**
+  String sendSpy(String cost);
+
+  /// No description provided for @noNextMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مباراة قادمة'**
+  String get noNextMatch;
+
+  /// No description provided for @spyReportOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير عن {club}'**
+  String spyReportOn(String club);
+
+  /// No description provided for @form.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأداء'**
+  String get form;
+
+  /// No description provided for @quests.
+  ///
+  /// In ar, this message translates to:
+  /// **'المهام'**
+  String get quests;
+
+  /// No description provided for @questsRenew.
+  ///
+  /// In ar, this message translates to:
+  /// **'تتجدد {time}'**
+  String questsRenew(String time);
+
+  /// No description provided for @questFriendly.
+  ///
+  /// In ar, this message translates to:
+  /// **'العب ودية'**
+  String get questFriendly;
+
+  /// No description provided for @questWins.
+  ///
+  /// In ar, this message translates to:
+  /// **'حقق انتصارات'**
+  String get questWins;
+
+  /// No description provided for @questStadium.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابنِ جزءاً في الملعب'**
+  String get questStadium;
+
+  /// No description provided for @questTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'درّب لاعباً'**
+  String get questTraining;
+
+  /// No description provided for @questUnbeaten.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تخسر'**
+  String get questUnbeaten;
+
+  /// No description provided for @claim.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلم'**
+  String get claim;
+
+  /// No description provided for @claimed.
+  ///
+  /// In ar, this message translates to:
+  /// **'استُلمت'**
+  String get claimed;
+
+  /// No description provided for @honours.
+  ///
+  /// In ar, this message translates to:
+  /// **'قاعة الشرف'**
+  String get honours;
+
+  /// No description provided for @seasonN.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموسم {n}'**
+  String seasonN(int n);
+
+  /// No description provided for @noTitles.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا ألقاب بعد'**
+  String get noTitles;
+
+  /// No description provided for @resign.
+  ///
+  /// In ar, this message translates to:
+  /// **'استقل من الدوري'**
+  String get resign;
+
+  /// No description provided for @resignConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.'**
+  String get resignConfirm;
+
+  /// No description provided for @wallet.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحفظة'**
+  String get wallet;
+
+  /// No description provided for @dailyCoins.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوينز اليوم: {n}'**
+  String dailyCoins(int n);
+
+  /// No description provided for @claimDaily.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلم كوينز اليوم'**
+  String get claimDaily;
+
+  /// No description provided for @dailyClaimed.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلمت كوينز اليوم'**
+  String get dailyClaimed;
+
+  /// No description provided for @store.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتجر'**
+  String get store;
+
+  /// No description provided for @buyOnWhatsapp.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب عبر واتساب'**
+  String get buyOnWhatsapp;
+
+  /// No description provided for @endsOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي {time}'**
+  String endsOn(String time);
+
+  /// No description provided for @competitionLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدوري'**
+  String get competitionLeague;
+
+  /// No description provided for @coachProfile.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف المدرب'**
+  String get coachProfile;
+
+  /// No description provided for @accountNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'حساب رقم {n}'**
+  String accountNumber(int n);
+
+  /// No description provided for @seasonsPlayed.
+  ///
+  /// In ar, this message translates to:
+  /// **'المواسم'**
+  String get seasonsPlayed;
+
+  /// No description provided for @played.
+  ///
+  /// In ar, this message translates to:
+  /// **'لعب'**
+  String get played;
+
+  /// No description provided for @won.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاز'**
+  String get won;
+
+  /// No description provided for @drawn.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعادل'**
+  String get drawn;
+
+  /// No description provided for @lost.
+  ///
+  /// In ar, this message translates to:
+  /// **'خسر'**
+  String get lost;
+
+  /// No description provided for @titles.
+  ///
+  /// In ar, this message translates to:
+  /// **'الألقاب'**
+  String get titles;
+
+  /// No description provided for @objectivesMet.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهداف الإدارة: {met} من {total}'**
+  String objectivesMet(int met, int total);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

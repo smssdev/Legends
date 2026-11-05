@@ -707,5 +707,172 @@
   "scoutReports": "التقارير",
   "nobodyFound": "لم يجد أحداً، وعادت الأموال",
   "stateMine": "في فريقك",
-  "stateGone": "ذهب"
+  "stateGone": "ذهب",
+  "training": "التدريب",
+  "trainingLead": "لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.",
+  "sessionCost": "الحصة {cost} كل {time}",
+  "@sessionCost": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nobodyTraining": "لا أحد يتدرب",
+  "pickToTrain": "اختر من يتدرب",
+  "recommended": "المقترح",
+  "nextSession": "الحصة التالية {time}",
+  "@nextSession": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsDone": "{n} حصص",
+  "@sessionsDone": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTraining": "أوقف",
+  "maxed": "بلغ أقصاه",
+  "lineCoach": "{name}: {stars} نجوم",
+  "@lineCoach": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "specialists": "الأخصائيون",
+  "specialistsLead": "أخصائي لكل خط يسرّع تدريبه، لمدة {days} أيام.",
+  "@specialistsLead": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hire": "وظّف",
+  "hiredUntil": "حتى {time}",
+  "@hiredUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hireConfirm": "توظيفه بـ {cost}؟",
+  "@hireConfirm": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "spy": "التجسس",
+  "spyLead": "يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.",
+  "sendSpy": "أرسل الجاسوس ({cost})",
+  "@sendSpy": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "noNextMatch": "لا مباراة قادمة",
+  "spyReportOn": "تقرير عن {club}",
+  "@spyReportOn": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "form": "الأداء",
+  "quests": "المهام",
+  "questsRenew": "تتجدد {time}",
+  "@questsRenew": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "questFriendly": "العب ودية",
+  "questWins": "حقق انتصارات",
+  "questStadium": "ابنِ جزءاً في الملعب",
+  "questTraining": "درّب لاعباً",
+  "questUnbeaten": "لا تخسر",
+  "claim": "استلم",
+  "claimed": "استُلمت",
+  "honours": "قاعة الشرف",
+  "seasonN": "الموسم {n}",
+  "@seasonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "noTitles": "لا ألقاب بعد",
+  "resign": "استقل من الدوري",
+  "resignConfirm": "تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.",
+  "wallet": "المحفظة",
+  "dailyCoins": "كوينز اليوم: {n}",
+  "@dailyCoins": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "claimDaily": "استلم كوينز اليوم",
+  "dailyClaimed": "استلمت كوينز اليوم",
+  "store": "المتجر",
+  "buyOnWhatsapp": "اطلب عبر واتساب",
+  "endsOn": "ينتهي {time}",
+  "@endsOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "competitionLeague": "الدوري",
+  "coachProfile": "ملف المدرب",
+  "accountNumber": "حساب رقم {n}",
+  "@accountNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "seasonsPlayed": "المواسم",
+  "played": "لعب",
+  "won": "فاز",
+  "drawn": "تعادل",
+  "lost": "خسر",
+  "titles": "الألقاب",
+  "objectivesMet": "أهداف الإدارة: {met} من {total}",
+  "@objectivesMet": {
+    "placeholders": {
+      "met": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

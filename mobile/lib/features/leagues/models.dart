@@ -38,19 +38,22 @@ class League {
 }
 
 class Member {
-  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false});
+  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false, this.userId});
 
   factory Member.fromJson(Map<String, dynamic> j) {
     final u = j['user'] as Map<String, dynamic>? ?? const {};
     final c = j['club'] as Map<String, dynamic>?;
     return Member(id: j['id'] as int, name: '${u['name'] ?? ''}', username: u['username'] as String?, club: c?['name'] as String?,
-        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true);
+        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?);
   }
 
   final int id;
   final String name;
   final String? username, club;
   final bool isOwner, onHoliday;
+
+  /// The coach's account, for his profile.
+  final int? userId;
 }
 
 class ClubCardData {

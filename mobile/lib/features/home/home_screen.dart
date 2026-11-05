@@ -76,7 +76,7 @@ class _Home extends ConsumerWidget {
                   onPressed: () => context.push('/inbox'),
                 ),
                 IconButton(tooltip: l.myLeagues, icon: const Icon(Icons.emoji_events_outlined), onPressed: () => context.push('/leagues')),
-                CoinsPill(coins: h.coach.coins, onTap: () => openSite('/wallet')),
+                CoinsPill(coins: h.coach.coins, onTap: () => context.push('/wallet')),
                 IconButton(tooltip: l.settings, icon: const Icon(Icons.tune_rounded), onPressed: () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
                 const SizedBox(width: 6),
               ],
