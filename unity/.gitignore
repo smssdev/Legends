@@ -25,3 +25,7 @@ Thumbs.db
 /Assets/StreamingAssets/sample-match.json
 /Assets/StreamingAssets/sample-match.json.meta
 /Captures/
+
+# The performance test package writes these during a build and removes them after
+/Assets/Resources/PerformanceTestRun*
+/Assets/Resources.meta
