@@ -4,6 +4,7 @@ namespace App\Market;
 
 use App\Economy\Contracts;
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\Integrity;
 use App\League\MatchPrep;
 use App\Support\GameClock;
@@ -173,6 +174,7 @@ class Market
             if ($taken !== 1) {
                 throw new HttpException(409, 'سبقك مدرب آخر إلى هذا اللاعب.');
             }
+            ClubStrength::refresh($clubId, (int) $from);   // [X98]
             $q = self::quote($clubId, $price);
             if ($q['short'] > 0 && (! $compensate || ! $q['can'] || ! $q['compensate'])) {
                 throw new HttpException(409, $q['why'] ?? __('رصيد النادي لا يكفي: أكمل الباقي بالكوينز.'));

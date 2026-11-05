@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // [X59, X82] The foot of every page [X90: the game's frame, the sign-in screens, the guide and the legal pages]: the game and its
 // mark, its quick links (the public pages that exist: router.ts), its social accounts and the support, then the
-// copyright (this year, from the device) and the credit line. The accounts and the team come from content/site.ts:
+// copyright (this year, from the device) and the credit line [X98: «GLM Team» opens the team's site]. The accounts and the team come from content/site.ts:
 // an account without its real address shows no button. Arabic first, right to left; one column on the phone.
 import { computed } from 'vue'
 import SupportLinks from './SupportLinks.vue'
@@ -20,13 +20,11 @@ const LINKS = computed(() => auth.user ? [
   { to: '/profile', label: 'حسابي' },
   { to: '/guide', label: 'طريقة اللعب' },
   { to: '/ideas', label: 'اقتراحات التطوير' },
-  { to: '/developers', label: 'فريق التطوير' },
 ] : [
   { to: '/', label: 'الرئيسية' },
   { to: '/guide', label: 'طريقة اللعب' },
   { to: '/register', label: 'إنشاء حساب مجاني' },
   { to: '/login', label: 'تسجيل الدخول' },
-  { to: '/developers', label: 'فريق التطوير' },
 ])
 const LEGAL = [
   { to: '/privacy', label: 'سياسة الخصوصية' },
@@ -106,9 +104,9 @@ const LEGAL = [
 .foot-link:hover { color: var(--color-gold); transform: translateX(-3px); }
 :dir(ltr) .foot-link:hover { transform: translateX(3px); }
 .foot-link.router-link-exact-active { color: var(--color-gold); font-weight: 700; }
-.social { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; color: var(--color-text-soft);
-  background: var(--color-surface); border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent); transition: color 0.15s, background 0.15s, transform 0.15s, border-color 0.15s; }
-.social:hover { transform: translateY(-2px); color: var(--color-on-gold); background: var(--color-gold); border-color: var(--color-gold); }
+/* [X98] Each account its own coloured tile (SocialIcon.vue), lifted a little under the finger or the mouse. */
+.social { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 0.75rem; transition: transform 0.15s, filter 0.15s; }
+.social:hover { transform: translateY(-2px); filter: brightness(1.08) drop-shadow(0 4px 8px rgb(0 0 0 / 0.3)); }
 .team { font-weight: 800; background: linear-gradient(90deg, var(--color-gold), var(--color-brand-light, var(--color-gold))); -webkit-background-clip: text; background-clip: text; color: transparent;
   border-radius: 0.25rem; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--color-gold) 40%, transparent); text-underline-offset: 3px; }
 .team:hover { text-decoration-color: var(--color-gold); }
