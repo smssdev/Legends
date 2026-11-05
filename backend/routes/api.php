@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\AppReleaseController;
 use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
@@ -368,6 +369,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('chat/prune', 'pruneChat');
         // [X54] Coins to any account by its number.
         Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
+        // [Sprint 15 D1] The app's versions: uploaded in pieces, then published as the latest.
+        Route::get('app-releases', [AppReleaseController::class, 'index']);
+        Route::post('app-releases', [AppReleaseController::class, 'start'])->middleware('throttle:10,1,admin-app');
+        Route::put('app-releases/{id}/chunk', [AppReleaseController::class, 'chunk'])->whereNumber('id')->middleware('throttle:600,1,admin-app-chunk');
+        Route::post('app-releases/{id}/finish', [AppReleaseController::class, 'finish'])->whereNumber('id');
+        Route::delete('app-releases/{id}', [AppReleaseController::class, 'destroy'])->whereNumber('id');
         // [Sprint 43 W2] The store: packages and timed offers, each by email to those who asked.
         Route::get('store', [StoreController::class, 'adminIndex']);
         Route::post('store', [StoreController::class, 'store'])->middleware('throttle:30,1,admin-store');
@@ -402,6 +409,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         });
     });
 });
+
+// [Sprint 15 D1] The app to download from the site (public): the latest version, and the Android file.
+Route::get('app', [AppReleaseController::class, 'show'])->middleware('throttle:60,1,app');
+Route::get('app/android.apk', [AppReleaseController::class, 'download'])->middleware('throttle:20,1,app-download');
 
 // [Sprint 43 W2] The store for the coaches (bought by WhatsApp), and its pictures (public, for an <img> and the emails).
 Route::get('store', [StoreController::class, 'index'])->middleware(['auth:sanctum', 'throttle:60,1,store']);

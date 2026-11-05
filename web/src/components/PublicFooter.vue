@@ -20,10 +20,12 @@ const LINKS = computed(() => auth.user ? [
   { to: '/profile', label: 'حسابي' },
   { to: '/guide', label: 'طريقة اللعب' },
   { to: '/store', label: 'العروض' },
+  { to: '/download', label: 'حمّل التطبيق' },
   { to: '/ideas', label: 'اقتراحات التطوير' },
 ] : [
   { to: '/', label: 'الرئيسية' },
   { to: '/guide', label: 'طريقة اللعب' },
+  { to: '/download', label: 'حمّل التطبيق' },
   { to: '/register', label: 'إنشاء حساب مجاني' },
   { to: '/login', label: 'تسجيل الدخول' },
 ])

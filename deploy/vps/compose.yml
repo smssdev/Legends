@@ -53,7 +53,10 @@ services:
     volumes:
       # The copies before each deploy's migrations (db:backup), kept across deploys.
       - backups:/app/backend/database/backups
+      # [Sprint 15 D1] The app's files to download from the site (the admin uploads them), kept across deploys.
+      - downloads:/app/backend/storage/app/downloads
 
 volumes:
   pgdata:
   backups:
+  downloads:

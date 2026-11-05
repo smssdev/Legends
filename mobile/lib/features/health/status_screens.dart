@@ -67,7 +67,7 @@ class UpdateRequiredScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return _Message(icon: Icons.system_update_rounded, title: l.updateTitle, body: l.updateBody, action: l.update,
-        onPressed: () => launchUrl(Uri.parse(AppConfig.siteUrl), mode: LaunchMode.externalApplication));
+        onPressed: () => launchUrl(Uri.parse('${AppConfig.siteUrl}/download'), mode: LaunchMode.externalApplication));
   }
 }
 

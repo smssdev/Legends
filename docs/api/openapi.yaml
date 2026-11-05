@@ -2965,6 +2965,59 @@ paths:
       responses:
         '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok, deleted], properties: { ok: { type: boolean }, deleted: { type: boolean } } } } } }
         '409': { $ref: '#/components/responses/Error' }
+  /app:
+    get:
+      tags: [account]
+      summary: '[Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store)'
+      security: []
+      responses:
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [android, ios], properties: { android: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true }, ios: { type: object, nullable: true } } } } } }
+  /app/android.apk:
+    get:
+      tags: [account]
+      summary: '[Sprint 15 D1] The latest Android app (APK), as a download'
+      security: []
+      responses:
+        '200': { description: The APK, content: { application/vnd.android.package-archive: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /admin/app-releases:
+    get:
+      tags: [admin]
+      summary: '[Sprint 15 D1] The app''s versions, and the upload''s piece size'
+      responses:
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [releases, chunk_kb, max_mb], properties: { releases: { type: array, items: { $ref: '#/components/schemas/AppRelease' } }, chunk_kb: { type: integer }, max_mb: { type: integer } } } } } }
+    post:
+      tags: [admin]
+      summary: '[Sprint 15 D1] Start an upload: the version, its size in bytes and what is new; then its pieces in order'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [version, bytes], properties: { version: { type: string, example: 1.0.0 }, bytes: { type: integer }, notes: { type: string, nullable: true } } } } } }
+      responses:
+        '201': { description: Started, content: { application/json: { schema: { type: object, required: [id, chunk_kb], properties: { id: { type: integer }, chunk_kb: { type: integer } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}/chunk:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }, { name: offset, in: query, required: true, schema: { type: integer } }]
+    put:
+      tags: [admin]
+      summary: '[Sprint 15 D1] One piece at its offset, the raw bytes as the body (at most chunk_kb); a piece sent twice is not added twice'
+      requestBody: { required: true, content: { application/octet-stream: { schema: { type: string, format: binary } } } }
+      responses:
+        '200': { description: The bytes received so far, content: { application/json: { schema: { type: object, required: [received], properties: { received: { type: integer } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}/finish:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 15 D1] The upload is whole: checked (size, an APK), fingerprinted and published as the latest; beyond the two latest, older files go'
+      responses:
+        '200': { description: Published, content: { application/json: { schema: { type: object, required: [release], properties: { release: { $ref: '#/components/schemas/AppRelease' } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [admin]
+      summary: '[Sprint 15 D1] Remove a version and its file'
+      responses:
+        '200': { description: Removed, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
   /store:
     get:
       tags: [account]
@@ -5727,6 +5780,22 @@ components:
               reward: { type: object, properties: { coins: { type: integer }, money: { type: integer } } }
               complete: { type: boolean }
               claimed: { type: boolean }
+    AppRelease:
+      type: object
+      description: '[Sprint 15 D1] A version of the app to download'
+      required: [id, platform, version, notes, bytes, received, status, sha256, downloads, published_at, url]
+      properties:
+        id: { type: integer }
+        platform: { type: string, enum: [android] }
+        version: { type: string }
+        notes: { type: string, nullable: true }
+        bytes: { type: integer }
+        received: { type: integer }
+        status: { type: string, enum: [uploading, ready, removed] }
+        sha256: { type: string, nullable: true }
+        downloads: { type: integer }
+        published_at: { type: string, format: date-time, nullable: true }
+        url: { type: string, nullable: true, description: The download (ready only) }
     StoreItem:
       type: object
       description: '[Sprint 43 W2] A store package (it stays) or timed offer'

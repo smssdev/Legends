@@ -109,6 +109,8 @@ export const router = createRouter({
     // [X57] The privacy policy and the terms, open to everyone (Google AdSense and the stores ask for them)
     { path: '/privacy', name: 'privacy', component: () => import('./pages/LegalPage.vue'), props: { kind: 'privacy' } },
     { path: '/terms', name: 'terms', component: () => import('./pages/LegalPage.vue'), props: { kind: 'terms' } },
+    // [Sprint 15 D1] The app to download (Android) or install (iPhone), open to everyone
+    { path: '/download', name: 'download', component: () => import('./pages/DownloadPage.vue') },
     // [X59] The game's guide, open to everyone
     { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
     // The match and its report fill the screen

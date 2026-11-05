@@ -7842,6 +7842,292 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/app": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The versions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            android: components["schemas"]["AppRelease"] | null;
+                            ios: Record<string, never> | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/android.apk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The latest Android app (APK), as a download */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The APK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.android.package-archive": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The app's versions, and the upload's piece size */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The versions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            releases: components["schemas"]["AppRelease"][];
+                            chunk_kb: number;
+                            max_mb: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 15 D1] Start an upload: the version, its size in bytes and what is new; then its pieces in order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @example 1.0.0 */
+                        version: string;
+                        bytes: number;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Started */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            chunk_kb: number;
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}/chunk": {
+        parameters: {
+            query: {
+                offset: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [Sprint 15 D1] One piece at its offset, the raw bytes as the body (at most chunk_kb); a piece sent twice is not added twice */
+        put: {
+            parameters: {
+                query: {
+                    offset: number;
+                };
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            responses: {
+                /** @description The bytes received so far */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            received: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 15 D1] The upload is whole: checked (size, an APK), fingerprinted and published as the latest; beyond the two latest, older files go */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            release: components["schemas"]["AppRelease"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 15 D1] Remove a version and its file */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/store": {
         parameters: {
             query?: never;
@@ -13539,6 +13825,24 @@ export interface components {
                 complete: boolean;
                 claimed: boolean;
             }[];
+        };
+        /** @description [Sprint 15 D1] A version of the app to download */
+        AppRelease: {
+            id: number;
+            /** @enum {string} */
+            platform: "android";
+            version: string;
+            notes: string | null;
+            bytes: number;
+            received: number;
+            /** @enum {string} */
+            status: "uploading" | "ready" | "removed";
+            sha256: string | null;
+            downloads: number;
+            /** Format: date-time */
+            published_at: string | null;
+            /** @description The download (ready only) */
+            url: string | null;
         };
         /** @description [Sprint 43 W2] A store package (it stays) or timed offer */
         StoreItem: {

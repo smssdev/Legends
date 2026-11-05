@@ -415,7 +415,10 @@ return [
     'brand' => ['name' => 'Game Legend Manager', 'name_ar' => 'المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     // [X61] The oldest app still served comes from the same source as the game's version (APP_VERSION), not a number of
     // its own: the server said 0.1.0 and asked for apps from 1.0.0 at once. MIN_APP_VERSION raises it when an app ships.
-    'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30],
+    // [Sprint 15 D1] The app to download from the site: its files on the server's downloads volume, at most max_mb each,
+    // uploaded in pieces of chunk_kb (under any upload limit of PHP or nginx).
+    'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30,
+        'downloads_dir' => env('APP_DOWNLOADS_DIR', storage_path('app/downloads')), 'max_mb' => 200, 'chunk_kb' => 1536],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.
@@ -568,7 +571,7 @@ return [
         'offer_max_days' => 90, 'max_items' => 60],
     'admin' => ['scopes' => [
         'support' => ['overview', 'activity', 'users', 'conversations', 'vacations', 'alliances', 'leagues', 'reports'],
-        'content' => ['overview', 'announcements', 'store', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
+        'content' => ['overview', 'announcements', 'store', 'app-releases', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
         'finance' => ['overview', 'activity', 'coins', 'leagues'],
     ], 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
