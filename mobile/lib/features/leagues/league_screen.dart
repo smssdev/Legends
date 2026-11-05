@@ -114,6 +114,21 @@ class _ClubTab extends ConsumerWidget {
             ]),
           ),
           const SizedBox(height: 12),
+          // [Sprint 17] My team's screens.
+          Row(children: [
+            for (final (icon, label, path) in [(Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics')])
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: GlmCard(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    onTap: () => context.push('/leagues/${lg.id}/$path'),
+                    child: Column(children: [Icon(icon, color: p.gold), const SizedBox(height: 6), Text(label, style: const TextStyle(fontWeight: FontWeight.w800))]),
+                  ),
+                ),
+              ),
+          ]),
+          const SizedBox(height: 12),
           Row(children: [
             Expanded(child: _Stat(label: l.tabTable, value: s.position == null ? '—' : '${s.position}/${s.teams}')),
             const SizedBox(width: 10),

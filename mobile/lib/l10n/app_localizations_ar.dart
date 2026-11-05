@@ -418,4 +418,197 @@ class LAr extends L {
 
   @override
   String get sign => 'وقّع';
+
+  @override
+  String get squad => 'الفريق';
+
+  @override
+  String get lineup => 'التشكيلة';
+
+  @override
+  String get tactics => 'التكتيك';
+
+  @override
+  String get lineGk => 'حراسة المرمى';
+
+  @override
+  String get lineDef => 'الدفاع';
+
+  @override
+  String get lineMid => 'الوسط';
+
+  @override
+  String get lineAtt => 'الهجوم';
+
+  @override
+  String get starter => 'أساسي';
+
+  @override
+  String get bench => 'احتياط';
+
+  @override
+  String get reserve => 'خارج القائمة';
+
+  @override
+  String injuredFor(int n) {
+    return 'مصاب $n مباراة';
+  }
+
+  @override
+  String suspendedFor(int n) {
+    return 'موقوف $n مباراة';
+  }
+
+  @override
+  String age(int n) {
+    return 'العمر $n';
+  }
+
+  @override
+  String potential(int n) {
+    return 'الإمكانية $n';
+  }
+
+  @override
+  String get fitness => 'اللياقة';
+
+  @override
+  String morale(int n) {
+    return 'المعنويات $n';
+  }
+
+  @override
+  String get squadValue => 'قيمة الفريق';
+
+  @override
+  String get formation => 'الخطة';
+
+  @override
+  String get autoLineup => 'تلقائية';
+
+  @override
+  String get save => 'احفظ';
+
+  @override
+  String get saved => 'حُفظ';
+
+  @override
+  String get swapWith => 'بدّله مع';
+
+  @override
+  String get tapToSwap => 'اضغط لاعباً في الملعب ثم بديله';
+
+  @override
+  String get plan => 'الخطة الهجومية';
+
+  @override
+  String get tackling => 'قطع الكرة';
+
+  @override
+  String get pressing => 'الضغط على الخصم';
+
+  @override
+  String get style => 'الأسلوب';
+
+  @override
+  String get tempo => 'إيقاع اللعب';
+
+  @override
+  String get trap => 'مصيدة التسلل';
+
+  @override
+  String get marking => 'الرقابة';
+
+  @override
+  String get markZone => 'دفاع المنطقة';
+
+  @override
+  String get markMan => 'رجل لرجل';
+
+  @override
+  String get planCounter => 'هجوم مرتد';
+
+  @override
+  String get planShots => 'تسديد عن بعد';
+
+  @override
+  String get planLong => 'كرات طويلة';
+
+  @override
+  String get planPassing => 'تمريرات';
+
+  @override
+  String get planWings => 'لعب على الأجنحة';
+
+  @override
+  String get tackle0 => 'قانوني';
+
+  @override
+  String get tackle1 => 'عادي';
+
+  @override
+  String get tackle2 => 'حماس';
+
+  @override
+  String get tackle3 => 'خشونة';
+
+  @override
+  String get attBack => 'ارتداد';
+
+  @override
+  String get attSupport => 'مساندة الوسط';
+
+  @override
+  String get attOnly => 'هجوم فقط';
+
+  @override
+  String get midDef => 'مساندة الدفاع';
+
+  @override
+  String get midStay => 'بقاء';
+
+  @override
+  String get midPush => 'اندفاع';
+
+  @override
+  String get defStay => 'بقاء';
+
+  @override
+  String get defFullbacks => 'هجوم الظهيرين';
+
+  @override
+  String get defMid => 'مساندة الوسط';
+
+  @override
+  String get low => 'منخفض';
+
+  @override
+  String get high => 'عالٍ';
+
+  @override
+  String get defensive => 'دفاعي';
+
+  @override
+  String get attacking => 'هجومي';
+
+  @override
+  String get calm => 'هادئ';
+
+  @override
+  String get fast => 'سريع';
+
+  @override
+  String get savesItself => 'يُحفظ وحده مع كل تغيير';
+
+  @override
+  String get attributes => 'المهارات';
+
+  @override
+  String get value => 'القيمة';
+
+  @override
+  String get ratingWord => 'التقييم';
+
+  @override
+  String get potentialWord => 'الإمكانية';
 }

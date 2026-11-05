@@ -834,6 +834,372 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'وقّع'**
   String get sign;
+
+  /// No description provided for @squad.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفريق'**
+  String get squad;
+
+  /// No description provided for @lineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشكيلة'**
+  String get lineup;
+
+  /// No description provided for @tactics.
+  ///
+  /// In ar, this message translates to:
+  /// **'التكتيك'**
+  String get tactics;
+
+  /// No description provided for @lineGk.
+  ///
+  /// In ar, this message translates to:
+  /// **'حراسة المرمى'**
+  String get lineGk;
+
+  /// No description provided for @lineDef.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفاع'**
+  String get lineDef;
+
+  /// No description provided for @lineMid.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوسط'**
+  String get lineMid;
+
+  /// No description provided for @lineAtt.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهجوم'**
+  String get lineAtt;
+
+  /// No description provided for @starter.
+  ///
+  /// In ar, this message translates to:
+  /// **'أساسي'**
+  String get starter;
+
+  /// No description provided for @bench.
+  ///
+  /// In ar, this message translates to:
+  /// **'احتياط'**
+  String get bench;
+
+  /// No description provided for @reserve.
+  ///
+  /// In ar, this message translates to:
+  /// **'خارج القائمة'**
+  String get reserve;
+
+  /// No description provided for @injuredFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصاب {n} مباراة'**
+  String injuredFor(int n);
+
+  /// No description provided for @suspendedFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'موقوف {n} مباراة'**
+  String suspendedFor(int n);
+
+  /// No description provided for @age.
+  ///
+  /// In ar, this message translates to:
+  /// **'العمر {n}'**
+  String age(int n);
+
+  /// No description provided for @potential.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإمكانية {n}'**
+  String potential(int n);
+
+  /// No description provided for @fitness.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللياقة'**
+  String get fitness;
+
+  /// No description provided for @morale.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعنويات {n}'**
+  String morale(int n);
+
+  /// No description provided for @squadValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة الفريق'**
+  String get squadValue;
+
+  /// No description provided for @formation.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة'**
+  String get formation;
+
+  /// No description provided for @autoLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائية'**
+  String get autoLineup;
+
+  /// No description provided for @save.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ'**
+  String get save;
+
+  /// No description provided for @saved.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُفظ'**
+  String get saved;
+
+  /// No description provided for @swapWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدّله مع'**
+  String get swapWith;
+
+  /// No description provided for @tapToSwap.
+  ///
+  /// In ar, this message translates to:
+  /// **'اضغط لاعباً في الملعب ثم بديله'**
+  String get tapToSwap;
+
+  /// No description provided for @plan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة الهجومية'**
+  String get plan;
+
+  /// No description provided for @tackling.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطع الكرة'**
+  String get tackling;
+
+  /// No description provided for @pressing.
+  ///
+  /// In ar, this message translates to:
+  /// **'الضغط على الخصم'**
+  String get pressing;
+
+  /// No description provided for @style.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسلوب'**
+  String get style;
+
+  /// No description provided for @tempo.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيقاع اللعب'**
+  String get tempo;
+
+  /// No description provided for @trap.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصيدة التسلل'**
+  String get trap;
+
+  /// No description provided for @marking.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرقابة'**
+  String get marking;
+
+  /// No description provided for @markZone.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفاع المنطقة'**
+  String get markZone;
+
+  /// No description provided for @markMan.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجل لرجل'**
+  String get markMan;
+
+  /// No description provided for @planCounter.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجوم مرتد'**
+  String get planCounter;
+
+  /// No description provided for @planShots.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسديد عن بعد'**
+  String get planShots;
+
+  /// No description provided for @planLong.
+  ///
+  /// In ar, this message translates to:
+  /// **'كرات طويلة'**
+  String get planLong;
+
+  /// No description provided for @planPassing.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمريرات'**
+  String get planPassing;
+
+  /// No description provided for @planWings.
+  ///
+  /// In ar, this message translates to:
+  /// **'لعب على الأجنحة'**
+  String get planWings;
+
+  /// No description provided for @tackle0.
+  ///
+  /// In ar, this message translates to:
+  /// **'قانوني'**
+  String get tackle0;
+
+  /// No description provided for @tackle1.
+  ///
+  /// In ar, this message translates to:
+  /// **'عادي'**
+  String get tackle1;
+
+  /// No description provided for @tackle2.
+  ///
+  /// In ar, this message translates to:
+  /// **'حماس'**
+  String get tackle2;
+
+  /// No description provided for @tackle3.
+  ///
+  /// In ar, this message translates to:
+  /// **'خشونة'**
+  String get tackle3;
+
+  /// No description provided for @attBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'ارتداد'**
+  String get attBack;
+
+  /// No description provided for @attSupport.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساندة الوسط'**
+  String get attSupport;
+
+  /// No description provided for @attOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجوم فقط'**
+  String get attOnly;
+
+  /// No description provided for @midDef.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساندة الدفاع'**
+  String get midDef;
+
+  /// No description provided for @midStay.
+  ///
+  /// In ar, this message translates to:
+  /// **'بقاء'**
+  String get midStay;
+
+  /// No description provided for @midPush.
+  ///
+  /// In ar, this message translates to:
+  /// **'اندفاع'**
+  String get midPush;
+
+  /// No description provided for @defStay.
+  ///
+  /// In ar, this message translates to:
+  /// **'بقاء'**
+  String get defStay;
+
+  /// No description provided for @defFullbacks.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجوم الظهيرين'**
+  String get defFullbacks;
+
+  /// No description provided for @defMid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مساندة الوسط'**
+  String get defMid;
+
+  /// No description provided for @low.
+  ///
+  /// In ar, this message translates to:
+  /// **'منخفض'**
+  String get low;
+
+  /// No description provided for @high.
+  ///
+  /// In ar, this message translates to:
+  /// **'عالٍ'**
+  String get high;
+
+  /// No description provided for @defensive.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفاعي'**
+  String get defensive;
+
+  /// No description provided for @attacking.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجومي'**
+  String get attacking;
+
+  /// No description provided for @calm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هادئ'**
+  String get calm;
+
+  /// No description provided for @fast.
+  ///
+  /// In ar, this message translates to:
+  /// **'سريع'**
+  String get fast;
+
+  /// No description provided for @savesItself.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُحفظ وحده مع كل تغيير'**
+  String get savesItself;
+
+  /// No description provided for @attributes.
+  ///
+  /// In ar, this message translates to:
+  /// **'المهارات'**
+  String get attributes;
+
+  /// No description provided for @value.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة'**
+  String get value;
+
+  /// No description provided for @ratingWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقييم'**
+  String get ratingWord;
+
+  /// No description provided for @potentialWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإمكانية'**
+  String get potentialWord;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

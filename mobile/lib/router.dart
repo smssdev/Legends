@@ -6,6 +6,9 @@ import 'features/auth/auth_controller.dart';
 import 'features/auth/ui/forgot_screen.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
+import 'features/club/lineup_screen.dart';
+import 'features/club/squad_screen.dart';
+import 'features/club/tactics_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/leagues/create_league_screen.dart';
 import 'features/leagues/join_screen.dart';
@@ -51,6 +54,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/join', builder: (_, s) => JoinScreen(code: s.uri.queryParameters['code'])),
       GoRoute(path: '/join/:code', builder: (_, s) => JoinScreen(code: s.pathParameters['code'])),
       GoRoute(path: '/leagues/:id', builder: (_, s) => LeagueScreen(id: int.parse(s.pathParameters['id']!))),
+      // [Sprint 17] My team in the league: the squad, the lineup, the tactics.
+      GoRoute(path: '/leagues/:id/squad', builder: (_, s) => SquadScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/lineup', builder: (_, s) => LineupScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/tactics', builder: (_, s) => TacticsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),
     ],
   );

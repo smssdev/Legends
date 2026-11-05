@@ -263,5 +263,101 @@
       }
     }
   },
-  "sign": "وقّع"
+  "sign": "وقّع",
+  "squad": "الفريق",
+  "lineup": "التشكيلة",
+  "tactics": "التكتيك",
+  "lineGk": "حراسة المرمى",
+  "lineDef": "الدفاع",
+  "lineMid": "الوسط",
+  "lineAtt": "الهجوم",
+  "starter": "أساسي",
+  "bench": "احتياط",
+  "reserve": "خارج القائمة",
+  "injuredFor": "مصاب {n} مباراة",
+  "suspendedFor": "موقوف {n} مباراة",
+  "age": "العمر {n}",
+  "potential": "الإمكانية {n}",
+  "fitness": "اللياقة",
+  "morale": "المعنويات {n}",
+  "squadValue": "قيمة الفريق",
+  "formation": "الخطة",
+  "autoLineup": "تلقائية",
+  "save": "احفظ",
+  "saved": "حُفظ",
+  "swapWith": "بدّله مع",
+  "tapToSwap": "اضغط لاعباً في الملعب ثم بديله",
+  "plan": "الخطة الهجومية",
+  "tackling": "قطع الكرة",
+  "pressing": "الضغط على الخصم",
+  "style": "الأسلوب",
+  "tempo": "إيقاع اللعب",
+  "trap": "مصيدة التسلل",
+  "marking": "الرقابة",
+  "markZone": "دفاع المنطقة",
+  "markMan": "رجل لرجل",
+  "planCounter": "هجوم مرتد",
+  "planShots": "تسديد عن بعد",
+  "planLong": "كرات طويلة",
+  "planPassing": "تمريرات",
+  "planWings": "لعب على الأجنحة",
+  "tackle0": "قانوني",
+  "tackle1": "عادي",
+  "tackle2": "حماس",
+  "tackle3": "خشونة",
+  "attBack": "ارتداد",
+  "attSupport": "مساندة الوسط",
+  "attOnly": "هجوم فقط",
+  "midDef": "مساندة الدفاع",
+  "midStay": "بقاء",
+  "midPush": "اندفاع",
+  "defStay": "بقاء",
+  "defFullbacks": "هجوم الظهيرين",
+  "defMid": "مساندة الوسط",
+  "low": "منخفض",
+  "high": "عالٍ",
+  "defensive": "دفاعي",
+  "attacking": "هجومي",
+  "calm": "هادئ",
+  "fast": "سريع",
+  "savesItself": "يُحفظ وحده مع كل تغيير",
+  "attributes": "المهارات",
+  "value": "القيمة",
+  "@injuredFor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@suspendedFor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@age": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@potential": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@morale": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingWord": "التقييم",
+  "potentialWord": "الإمكانية"
 }

@@ -420,4 +420,197 @@ class LEn extends L {
 
   @override
   String get sign => 'Sign';
+
+  @override
+  String get squad => 'Squad';
+
+  @override
+  String get lineup => 'Lineup';
+
+  @override
+  String get tactics => 'Tactics';
+
+  @override
+  String get lineGk => 'Goalkeepers';
+
+  @override
+  String get lineDef => 'Defence';
+
+  @override
+  String get lineMid => 'Midfield';
+
+  @override
+  String get lineAtt => 'Attack';
+
+  @override
+  String get starter => 'Starter';
+
+  @override
+  String get bench => 'Bench';
+
+  @override
+  String get reserve => 'Reserve';
+
+  @override
+  String injuredFor(int n) {
+    return 'Injured, $n matches';
+  }
+
+  @override
+  String suspendedFor(int n) {
+    return 'Suspended, $n matches';
+  }
+
+  @override
+  String age(int n) {
+    return 'Age $n';
+  }
+
+  @override
+  String potential(int n) {
+    return 'Potential $n';
+  }
+
+  @override
+  String get fitness => 'Fitness';
+
+  @override
+  String morale(int n) {
+    return 'Morale $n';
+  }
+
+  @override
+  String get squadValue => 'Squad value';
+
+  @override
+  String get formation => 'Formation';
+
+  @override
+  String get autoLineup => 'Automatic';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get swapWith => 'Swap with';
+
+  @override
+  String get tapToSwap => 'Tap a player on the pitch, then his replacement';
+
+  @override
+  String get plan => 'Attacking plan';
+
+  @override
+  String get tackling => 'Tackling';
+
+  @override
+  String get pressing => 'Pressing';
+
+  @override
+  String get style => 'Style';
+
+  @override
+  String get tempo => 'Tempo';
+
+  @override
+  String get trap => 'Offside trap';
+
+  @override
+  String get marking => 'Marking';
+
+  @override
+  String get markZone => 'Zonal';
+
+  @override
+  String get markMan => 'Man to man';
+
+  @override
+  String get planCounter => 'Counter';
+
+  @override
+  String get planShots => 'Long shots';
+
+  @override
+  String get planLong => 'Long balls';
+
+  @override
+  String get planPassing => 'Passing';
+
+  @override
+  String get planWings => 'Wings';
+
+  @override
+  String get tackle0 => 'Clean';
+
+  @override
+  String get tackle1 => 'Normal';
+
+  @override
+  String get tackle2 => 'Eager';
+
+  @override
+  String get tackle3 => 'Hard';
+
+  @override
+  String get attBack => 'Drop back';
+
+  @override
+  String get attSupport => 'Support midfield';
+
+  @override
+  String get attOnly => 'Attack only';
+
+  @override
+  String get midDef => 'Support defence';
+
+  @override
+  String get midStay => 'Stay';
+
+  @override
+  String get midPush => 'Push on';
+
+  @override
+  String get defStay => 'Stay';
+
+  @override
+  String get defFullbacks => 'Full-backs attack';
+
+  @override
+  String get defMid => 'Support midfield';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get defensive => 'Defensive';
+
+  @override
+  String get attacking => 'Attacking';
+
+  @override
+  String get calm => 'Calm';
+
+  @override
+  String get fast => 'Fast';
+
+  @override
+  String get savesItself => 'Saved by itself with every change';
+
+  @override
+  String get attributes => 'Attributes';
+
+  @override
+  String get value => 'Value';
+
+  @override
+  String get ratingWord => 'Rating';
+
+  @override
+  String get potentialWord => 'Potential';
 }
