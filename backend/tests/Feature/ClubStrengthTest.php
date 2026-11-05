@@ -39,6 +39,14 @@ class ClubStrengthTest extends TestCase
         parent::tearDown();
     }
 
+    private function baseline(): int
+    {
+        // The test data's clubs carry a round strength; the real import gives the best-18 rule from the start.
+        ClubStrength::refresh($this->mine);
+
+        return $this->strength();
+    }
+
     private function strength(): int
     {
         return (int) DB::table('clubs')->where('id', $this->mine)->value('strength_snapshot');
@@ -56,16 +64,16 @@ class ClubStrengthTest extends TestCase
         $this->assertSame(8000, ClubStrength::of([...array_fill(0, 18, 80), 40, 40]));
     }
 
-    public function test_a_new_league_keeps_its_strength_from_the_data(): void
+    public function test_it_is_the_best_18_of_the_squad_as_it_is(): void
     {
-        $before = $this->strength();
+        $ratings = DB::table('players')->where('club_id', $this->mine)->pluck('overall')->map(fn ($o) => (int) $o)->all();
         ClubStrength::refresh($this->mine);
-        $this->assertSame($before, $this->strength());
+        $this->assertSame(ClubStrength::of($ratings), $this->strength());
     }
 
     public function test_buying_a_star_raises_it_and_selling_him_lowers_it_again(): void
     {
-        $before = $this->strength();
+        $before = $this->baseline();
         $p = DB::table('players')->where('league_id', $this->league['id'])->whereNull('club_id')->where('in_pool', true)->orderBy('value')->first();
         DB::table('players')->where('id', $p->id)->update(['overall' => 99]);
         $this->actingAs($this->owner)->postJson($this->url('/buy'), ['player_id' => $p->id, 'idempotency_key' => 'b1'])->assertOk();
@@ -77,7 +85,7 @@ class ClubStrengthTest extends TestCase
 
     public function test_training_raises_it(): void
     {
-        $before = $this->strength();
+        $before = $this->baseline();
         $best = DB::table('players')->where('club_id', $this->mine)->orderByDesc('overall')->first();
         DB::transaction(fn () => Training::advance(Training::player((int) $best->id), (int) config('game.training.progress_scale')));
         $this->assertSame(1, (int) DB::table('players')->where('id', $best->id)->value('training_bonus'));
