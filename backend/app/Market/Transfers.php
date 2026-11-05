@@ -3,6 +3,7 @@
 namespace App\Market;
 
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\Integrity;
 use App\League\MatchPrep;
 use App\Messages\Inbox;
@@ -134,6 +135,7 @@ class Transfers
                     }
                 }
             }
+            ClubStrength::refresh((int) $from->id, (int) $to->id);   // [X98]
             if ($o->money > 0) {
                 ClubLedger::post($from->id, 'transfer_buy', -(int) $o->money, "offer:{$offerId}:pay", "offer:{$offerId}", spend: true);
                 ClubLedger::post($to->id, 'transfer_sale', (int) $o->money, "offer:{$offerId}:get", "offer:{$offerId}");
@@ -199,6 +201,7 @@ class Transfers
             self::close($o, 'cancelled', 'offer_cancelled');
         }
         if ($fromClub) {
+            ClubStrength::refresh($fromClub);   // [X98] the squad he left
             DB::table('lineup_slots')->whereIn('lineup_id', DB::table('lineups')->where('club_id', $fromClub)->select('id'))->where('player_id', $playerId)->delete();
             foreach (['captain_id', 'penalty_id', 'free_kick_id', 'corner_id'] as $col) {
                 DB::table('set_piece_takers')->where('club_id', $fromClub)->where($col, $playerId)->update([$col => null]);

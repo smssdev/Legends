@@ -4,6 +4,7 @@ namespace App\Market;
 
 use App\Economy\Contracts;
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\Integrity;
 use App\Support\GameClock;
 use App\Support\Nation;
@@ -83,6 +84,7 @@ class Academy
                 throw new HttpException(409, 'سبقك نادٍ آخر إلى هذا الشاب.');
             }
             $id = (int) DB::table('players')->where('league_id', $club->league_id)->where('master_player_id', $masterId)->value('id');
+            ClubStrength::refresh((int) $club->id);   // [X98]
             ClubLedger::post($club->id, 'academy', -self::price((int) $m->value), "academy:{$club->id}:{$masterId}", "player:{$id}", spend: true);
 
             return $id;

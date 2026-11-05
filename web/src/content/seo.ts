@@ -80,16 +80,6 @@ export const PAGES: Record<string, PageSeo> = {
     keywords: { ar: ['تسجيل الدخول', 'دخول اللعبة'], en: ['sign in', 'log in'] },
     sitemap: { priority: '0.6', changefreq: 'monthly' },
   },
-  developers: {
-    path: '/developers',
-    title: { ar: 'فريق التطوير | Game Legend Manager', en: 'The developers | Game Legend Manager' },
-    description: {
-      ar: 'تعرّف على فريق تطوير المدرب الأسطورة، لعبة إدارة كرة القدم العربية، وقصة بنائها.',
-      en: 'Meet the team behind Game Legend Manager, the Arabic football manager game, and the story of how it was built.',
-    },
-    keywords: { ar: ['مطورو اللعبة', 'فريق المدرب الأسطورة'], en: ['game developers', 'GLM team'] },
-    sitemap: { priority: '0.4', changefreq: 'monthly' },
-  },
   // [X59] The game's guide, open to everyone: the Assistant Coach's explanations, the site's richest page.
   guide: {
     path: '/guide',
