@@ -5,6 +5,7 @@ namespace App\Training;
 use App\Data\PlayerValuation;
 use App\Economy\Economy;
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\Messages\Inbox;
 use App\Stadium\Stadium;
 use App\Staff\Specialists;
@@ -166,6 +167,7 @@ class Training
         $overall = $p->overall + $p->training_bonus + 1;
         $value = PlayerValuation::fromConfig()->value($overall, (int) $p->age, $p->line, (int) $p->potential);
         DB::table('players')->where('id', $p->id)->update(['training_bonus' => $p->training_bonus + 1, 'training_progress' => 0, 'value' => $value]);
+        ClubStrength::refresh((int) $p->club_id);   // [X98] his rating counts in his club's strength
 
         return true;
     }

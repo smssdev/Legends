@@ -70,6 +70,12 @@ class ChatController extends Controller
         $file = $request->file('file');
         if ($data['kind'] === 'image') {
             $request->validate(['file' => ['image', 'mimes:jpeg,png,webp,gif', 'max:'.$c['image_max_kb']]]);
+        } else {
+            // [X99] A voice note's type is the one its bytes say, not only the browser's: anything that is not sound
+            // (or a webm/mp4/ogg recording, which the server reads as video) is refused before it is kept.
+            $real = strtolower((string) $file->getMimeType());
+            abort_unless(str_starts_with($real, 'audio/') || in_array($real, ['video/webm', 'video/mp4', 'video/ogg', 'application/ogg'], true),
+                422, 'التسجيل الصوتي غير مقبول أو أطول من المسموح.');
         }
         $message = ChatGroups::sendMedia($group, $request->user(), $data['kind'], (string) file_get_contents($file->getRealPath()),
             (string) ($file->getClientMimeType() ?: $file->getMimeType()), (string) ($data['caption'] ?? ''), $data['seconds'] ?? null, $data['reply_to'] ?? null);
@@ -81,7 +87,9 @@ class ChatController extends Controller
     {
         [$bytes, $mime] = ChatGroups::media($group, $request->user(), $message);
 
-        return response($bytes, 200, ['Content-Type' => $mime, 'Content-Length' => (string) strlen($bytes), 'Cache-Control' => 'private, max-age=86400']);
+        // [X99] Played or shown in the page, never run as a page of its own: no sniffing, and no scripts if opened directly.
+        return response($bytes, 200, ['Content-Type' => $mime, 'Content-Length' => (string) strlen($bytes), 'Cache-Control' => 'private, max-age=86400',
+            'X-Content-Type-Options' => 'nosniff', 'Content-Disposition' => 'inline', 'Content-Security-Policy' => "default-src 'none'; sandbox"]);
     }
 
     /** [Sprint 30 G6] A member reports another's message to the admins. */

@@ -569,7 +569,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(raf); clearInterval(bgTimer) })
 
 .moment { position: absolute; inset: 0; z-index: 8; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .45s ease-out }
 .moment.on { opacity: 1 }
-.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.7) }
+.moment::before { content: ''; position: absolute; inset: 0; background: rgba(3,8,20,.55) }
 .mbox { position: relative; width: min(94cqw, 780px, calc((100cqh - 30px) * 1.5)); border-radius: 20px; overflow: hidden; background: #040B1C; border: 1px solid rgba(245,184,46,.28); box-shadow: 0 30px 80px rgba(0,0,0,.7); transform: translateY(10px) scale(.9); transition: transform .55s cubic-bezier(.2,.9,.25,1.1) }
 .moment.on .mbox { transform: none }
 /* The scene is walled off from the page [X30]: its every frame lays out and paints only itself, on its own layer. */

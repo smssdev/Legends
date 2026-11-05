@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The account (Sprint 10 W1; modern in Sprint 21 E2.7): a header with the picture, the name, the badge and the
 // account's number, then the verification by email (E2.4) and the invite gift (E2.3), and the settings in cards.
+import { TEAM } from '../content/site'
 import MailSentNote from '../components/MailSentNote.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
 import LegalLinks from '../components/LegalLinks.vue'
@@ -400,7 +401,8 @@ async function remove() {
       <p v-if="viewMsg" class="text-sm" :class="viewErr ? 'text-danger' : 'text-success'" role="status">{{ $t(viewMsg) }}</p>
     </section>
 
-    <RouterLink :to="{ name: 'developers' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">{{ $t('فريق التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('تعرّف على من صنع اللعبة') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
+    <!-- [X98] The team's own site (the developers' page is gone). -->
+    <a :href="TEAM.url" target="_blank" rel="noopener noreferrer" class="flex min-h-touch items-center justify-between rounded-xl bg-surface px-4 py-3"><span><b class="block">{{ $t('فريق التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('تعرّف على من صنع اللعبة') }}</span></span><span class="font-bold text-gold">←</span></a>
 
     <section class="flex flex-col gap-3 rounded-2xl bg-surface p-4 sm:p-5" aria-labelledby="h-holiday">
       <h2 id="h-holiday" class="font-display text-xl font-extrabold">{{ $t('إجازة الحساب') }}</h2>

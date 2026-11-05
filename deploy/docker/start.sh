@@ -79,12 +79,23 @@ php artisan route:cache
 php artisan event:cache
 php artisan view:cache
 
-php artisan queue:work --tries=1 --sleep=3 >> storage/logs/queue.log 2>&1 &
-php artisan schedule:work >> storage/logs/schedule.log 2>&1 &
-php artisan matches:run >> storage/logs/matches.log 2>&1 &
+# [X99] Each worker in its own loop: one that stops (an error, out of memory, the database gone for a moment) is
+# started again in a few seconds, written in its log, instead of the matches or live updates stopping in silence.
+keep() {
+  log="$1"; shift
+  while true; do
+    "$@" >> "storage/logs/$log" 2>&1
+    code=$?
+    echo "$(date -u '+%F %T') $* stopped (exit $code), starting again in 5s" >> "storage/logs/$log"
+    sleep 5
+  done
+}
+keep queue.log php artisan queue:work --tries=1 --sleep=3 &
+keep schedule.log php artisan schedule:work &
+keep matches.log php artisan matches:run &
 # [X48] Live updates: Reverb beside the game (the server's nginx sends /app and /apps to it).
 if [ "${BROADCAST_CONNECTION:-}" = reverb ]; then
-  php artisan reverb:start >> storage/logs/reverb.log 2>&1 &
+  keep reverb.log php artisan reverb:start &
   echo "Live updates: Reverb on port ${REVERB_SERVER_PORT:-8080}"
 fi
 

@@ -4,10 +4,13 @@ namespace App\Market;
 
 use App\Economy\Contracts;
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\Integrity;
 use App\Support\GameClock;
 use App\Support\Nation;
 use Illuminate\Support\Facades\DB;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -29,19 +32,24 @@ class Academy
     {
         $cfg = config('game.academy');
         $version = DB::table('master_players')->max('data_version');
-        $ids = DB::table('master_players')->where('data_version', $version)->where('age', '<=', $cfg['max_age'])
-            ->whereNotIn('id', DB::table('players')->where('league_id', $club->league_id)->select('master_player_id'))
-            ->orderBy('id')->pluck('id')->all();
+        $ids = DB::table('master_players')->where('data_version', $version)->where('age', '<=', $cfg['max_age'])->orderBy('id')->pluck('id')->all();
         if (! $ids) {
             return [];
         }
-        // The same draw all the period for this club, different for each club and period.
-        mt_srand(crc32("academy:{$club->id}:".self::period()));
+        // The same draw all the period for this club, different for each club and period [X99]: the order is drawn from
+        // the data alone with the draw's own generator (the process's mt_rand untouched), and a prospect another club
+        // signs only leaves his place to the next in line; the others stay where they were.
+        $order = (new Randomizer(new Mt19937(crc32("academy:{$club->id}:".self::period()))))->shuffleArray($ids);
+        $taken = array_flip(DB::table('players')->where('league_id', $club->league_id)->whereNotNull('master_player_id')->pluck('master_player_id')->all());
         $picked = [];
-        for ($i = 0; $i < 50 && count($picked) < (int) $cfg['offers']; $i++) {
-            $picked[$ids[mt_rand(0, count($ids) - 1)]] = true;
+        foreach ($order as $id) {
+            if (count($picked) >= (int) $cfg['offers']) {
+                break;
+            }
+            if (! isset($taken[$id])) {
+                $picked[$id] = true;
+            }
         }
-        mt_srand();
         $range = (int) $cfg['range'];
 
         return DB::table('master_players')->whereIn('id', array_keys($picked))->orderByDesc('potential')->get()
@@ -83,6 +91,7 @@ class Academy
                 throw new HttpException(409, 'سبقك نادٍ آخر إلى هذا الشاب.');
             }
             $id = (int) DB::table('players')->where('league_id', $club->league_id)->where('master_player_id', $masterId)->value('id');
+            ClubStrength::refresh((int) $club->id);   // [X98]
             ClubLedger::post($club->id, 'academy', -self::price((int) $m->value), "academy:{$club->id}:{$masterId}", "player:{$id}", spend: true);
 
             return $id;

@@ -114,6 +114,13 @@ class ChatGroupTest extends TestCase
         $this->assertSame('audio/webm', $this->get($v['media_url'])->assertOk()->headers->get('Content-Type'));
         // Not a sound: refused.
         $this->post("/api/v1/groups/{$id}/media", ['kind' => 'audio', 'file' => UploadedFile::fake()->create('x.exe', 5, 'application/x-msdownload')], ['Accept' => 'application/json'])->assertStatus(422);
+        // [X99] A page dressed as a voice note: the browser says audio/webm, its bytes say HTML. Refused.
+        $page = tempnam(sys_get_temp_dir(), 'voice');
+        file_put_contents($page, '<!doctype html><html><body><script>alert(1)</script></body></html>');
+        $this->post("/api/v1/groups/{$id}/media", ['kind' => 'audio', 'file' => new UploadedFile($page, 'voice.webm', 'audio/webm', null, true)], ['Accept' => 'application/json'])->assertStatus(422);
+        $played = $this->get($v['media_url'])->assertOk();
+        $this->assertSame('nosniff', $played->headers->get('X-Content-Type-Options'));
+        $this->assertStringContainsString('sandbox', (string) $played->headers->get('Content-Security-Policy'));
         // A stranger cannot fetch it; a deleted voice note is gone.
         $this->actingAs(User::factory()->create())->get($v['media_url'])->assertNotFound();
         $this->actingAs($omar)->deleteJson("/api/v1/groups/{$id}/messages/{$v['id']}")->assertOk();

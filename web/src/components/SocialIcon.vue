@@ -1,16 +1,49 @@
 <script setup lang="ts">
-// [X82] The social networks' own marks (their public brand shapes), drawn in the current colour, for the footer.
+// [X82, X98] The social networks' marks as the owner's pictures: a rounded tile in the network's own colours (its
+// brand, not the game's tokens) with its white sign, a soft shade over the lower corner, all four the same shape and
+// size. YouTube drawn the same way to match.
+import { useId } from 'vue'
 import type { Social } from '../content/site'
 
 defineProps<{ name: Social['key'] }>()
-const PATHS: Record<Social['key'], string> = {
-  facebook: 'M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07',
-  instagram: 'M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.13 1.38A5.9 5.9 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13a5.9 5.9 0 0 0 2.13 1.38c.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.13-1.38 5.9 5.9 0 0 0 1.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.38-2.13A5.9 5.9 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0Zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z',
-  tiktok: 'M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z',
-  youtube: 'M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81ZM9.55 15.57V8.43L15.82 12l-6.27 3.57Z',
-}
+const id = useId()
+const TIKTOK = 'M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z'
 </script>
 
 <template>
-  <svg viewBox="0 0 24 24" class="size-5" fill="currentColor" aria-hidden="true" focusable="false"><path :d="PATHS[name]" /></svg>
+  <svg viewBox="0 0 48 48" class="size-10" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath :id="`${id}-tile`"><rect width="48" height="48" rx="12" /></clipPath>
+      <linearGradient v-if="name === 'facebook'" :id="`${id}-bg`" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#5a86dc" /><stop offset="1" stop-color="#1c45a0" />
+      </linearGradient>
+      <radialGradient v-else-if="name === 'instagram'" :id="`${id}-bg`" cx="0.2" cy="1.05" r="1.25">
+        <stop offset="0" stop-color="#ffdd55" /><stop offset="0.12" stop-color="#ffcb3d" /><stop offset="0.35" stop-color="#ff5a4a" />
+        <stop offset="0.6" stop-color="#e9268f" /><stop offset="1" stop-color="#7a2be0" />
+      </radialGradient>
+      <linearGradient v-else-if="name === 'youtube'" :id="`${id}-bg`" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff3b30" /><stop offset="1" stop-color="#c4000a" />
+      </linearGradient>
+      <linearGradient v-else :id="`${id}-bg`" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#111" /><stop offset="1" stop-color="#000" />
+      </linearGradient>
+    </defs>
+    <g :clip-path="`url(#${id}-tile)`">
+      <rect width="48" height="48" :fill="`url(#${id}-bg)`" />
+      <!-- The soft shade over the lower corner, as on the pictures. -->
+      <circle cx="40" cy="48" r="34" fill="#000" opacity="0.1" />
+
+      <g v-if="name === 'facebook'" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round">
+        <path d="M27 52V20.5a6.5 6.5 0 0 1 6.5-6.5h3" />
+        <path d="M19.5 26.5h15" />
+      </g>
+      <g v-else-if="name === 'instagram'" fill="none" stroke="#fff" stroke-width="3.6">
+        <rect x="11" y="11" width="26" height="26" rx="8" />
+        <circle cx="24" cy="24" r="6.3" />
+        <circle cx="31.4" cy="16.6" r="1.9" fill="#fff" stroke="none" />
+      </g>
+      <path v-else-if="name === 'youtube'" d="M19 15.6c0-1.6 1.7-2.6 3.1-1.8l13.4 8.4c1.3.8 1.3 2.8 0 3.6l-13.4 8.4c-1.4.9-3.1-.1-3.1-1.8z" fill="#fff" />
+      <path v-else :d="TIKTOK" fill="#fff" transform="translate(11 10.2) scale(1.15)" />
+    </g>
+  </svg>
 </template>

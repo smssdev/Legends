@@ -4,6 +4,7 @@ namespace App\Market;
 
 use App\Economy\Contracts;
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\Integrity;
 use App\Messages\Inbox;
 use App\Support\GameClock;
@@ -62,6 +63,7 @@ class Loans
                     throw new HttpException(409, 'لم يعد اللاعب متاحاً للإعارة.');
                 }
                 Transfers::left($l->player_id, $owner->id);
+                ClubStrength::refresh((int) $l->borrower_club_id);   // [X98]
                 if ($l->fee > 0) {
                     ClubLedger::post($l->borrower_club_id, 'loan_fee', -(int) $l->fee, "loan:{$loanId}:pay", "loan:{$loanId}", spend: true);
                     ClubLedger::post($owner->id, 'loan_fee', (int) $l->fee, "loan:{$loanId}:get", "loan:{$loanId}");
@@ -82,6 +84,7 @@ class Loans
                 if (DB::table('player_loans')->where('id', $l->id)->where('status', 'active')->update(['status' => 'returned', 'updated_at' => GameClock::now()]) === 1) {
                     DB::table('players')->where('id', $l->player_id)->where('club_id', $l->borrower_club_id)->update(['club_id' => $l->owner_club_id, 'updated_at' => GameClock::now()]);
                     Transfers::left($l->player_id, $l->borrower_club_id);
+                    ClubStrength::refresh((int) $l->owner_club_id);   // [X98]
                     $back++;
                 }
             });

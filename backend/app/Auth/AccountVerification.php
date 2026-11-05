@@ -65,20 +65,26 @@ class AccountVerification
     {
         abort_if($user->account_verified_at !== null, 409, 'حسابك موثّق من قبل.');
         $now = GameClock::now();
-        $row = DB::table('account_codes')->where('user_id', $user->id)->whereNull('used_at')->where('expires_at', '>', $now)->orderByDesc('id')->first();
+        $max = (int) config('game.account.verify_code_attempts');
+        // A code whose tries are all spent is dead, even if wrong tries sent at once have not ended it yet [X99].
+        $row = DB::table('account_codes')->where('user_id', $user->id)->whereNull('used_at')->where('expires_at', '>', $now)
+            ->where('attempts', '<', $max)->orderByDesc('id')->first();
         if (! $row) {
             throw ValidationException::withMessages(['code' => 'انتهت مدة الكود. اضغط «أرسل الكود» لكود جديد.']);
         }
         if (! Hash::check(trim($code), $row->code_hash)) {
-            // Each wrong try counts; the last one ends the code, so it cannot be guessed.
-            $tries = (int) $row->attempts + 1;
-            $last = $tries >= (int) config('game.account.verify_code_attempts');
-            DB::table('account_codes')->where('id', $row->id)->update(['attempts' => $tries, 'updated_at' => $now] + ($last ? ['expires_at' => $now] : []));
+            // Each wrong try counts; the last one ends the code, so it cannot be guessed. The count goes up by a
+            // conditional update [X99], so wrong tries sent at once each take their own place and none passes the limit.
+            $counted = DB::table('account_codes')->where('id', $row->id)->whereNull('used_at')->where('attempts', '<', $max)->increment('attempts', 1, ['updated_at' => $now]);
+            $last = $counted !== 1 || (int) DB::table('account_codes')->where('id', $row->id)->value('attempts') >= $max;
+            if ($last) {
+                DB::table('account_codes')->where('id', $row->id)->update(['expires_at' => $now, 'updated_at' => $now]);
+            }
             throw ValidationException::withMessages(['code' => $last ? 'الكود غير صحيح، وانتهى بعد المحاولات المسموحة. اطلب كوداً جديداً.' : 'الكود غير صحيح.']);
         }
-        DB::transaction(function () use ($user, $row, $now) {
-            // One use: the conditional update decides, whichever request comes first.
-            if (DB::table('account_codes')->where('id', $row->id)->whereNull('used_at')->update(['used_at' => $now, 'updated_at' => $now]) !== 1) {
+        DB::transaction(function () use ($user, $row, $now, $max) {
+            // One use: the conditional update decides, whichever request comes first (and not after its tries are spent).
+            if (DB::table('account_codes')->where('id', $row->id)->whereNull('used_at')->where('attempts', '<', $max)->update(['used_at' => $now, 'updated_at' => $now]) !== 1) {
                 throw ValidationException::withMessages(['code' => 'استُعمل هذا الكود من قبل.']);
             }
             // A code that came by email proves the address: the account keeps it, confirmed.

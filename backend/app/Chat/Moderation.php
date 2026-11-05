@@ -5,7 +5,6 @@ namespace App\Chat;
 use App\Events\ChatMessageSent;
 use App\Models\User;
 use App\Support\GameClock;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -28,12 +27,10 @@ class Moderation
         if ((int) $m->user_id === $user->id) {
             throw new HttpException(422, __('لا تبلّغ عن رسالتك.'));
         }
-        try {
-            DB::table('chat_reports')->insert(['chat_group_message_id' => $messageId, 'reporter_id' => $user->id, 'reason' => $reason,
-                'note' => $note ? mb_substr(trim($note), 0, 300) : null, 'created_at' => GameClock::now()]);
-        } catch (UniqueConstraintViolationException) {
-            // Reported before by this coach: once is enough.
-        }
+        // Reported before by this coach: once is enough. Ignored by the database itself [X99], since a caught
+        // duplicate would leave a PostgreSQL transaction aborted.
+        DB::table('chat_reports')->insertOrIgnore(['chat_group_message_id' => $messageId, 'reporter_id' => $user->id, 'reason' => $reason,
+            'note' => $note ? mb_substr(trim($note), 0, 300) : null, 'created_at' => GameClock::now()]);
     }
 
     /** The pending reports, one row per message, the most reported first. */

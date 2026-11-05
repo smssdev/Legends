@@ -35,6 +35,25 @@ class AccountCodeTest extends TestCase
         return (string) $code;
     }
 
+    /** [X99] Wrong tries sent at once all count: once they reach the limit, even the right code is dead. */
+    public function test_a_code_whose_tries_are_spent_is_dead_even_before_it_is_ended(): void
+    {
+        Notification::fake();
+        $coach = User::factory()->create(['email' => null, 'email_verified_at' => null]);
+        $this->actingAs($coach)->postJson('/api/v1/auth/verify-account/send', ['email' => 'karim@gmail.com'])->assertOk();
+        $code = $this->sentCode('karim@gmail.com');
+        // Parallel wrong tries counted to the limit, the code's end not written yet.
+        DB::table('account_codes')->where('user_id', $coach->id)->update(['attempts' => (int) config('game.account.verify_code_attempts')]);
+        $this->postJson('/api/v1/auth/verify-account', ['code' => $code])->assertStatus(422)
+            ->assertJsonPath('errors.code.0', 'انتهت مدة الكود. اضغط «أرسل الكود» لكود جديد.');
+        $this->assertNull($coach->fresh()->account_verified_at);
+        // One wrong try short of the limit: it is counted once and ends the code.
+        DB::table('account_codes')->where('user_id', $coach->id)->update(['attempts' => (int) config('game.account.verify_code_attempts') - 1]);
+        $this->postJson('/api/v1/auth/verify-account', ['code' => $code === '000000' ? '111111' : '000000'])->assertStatus(422)
+            ->assertJsonPath('errors.code.0', 'الكود غير صحيح، وانتهى بعد المحاولات المسموحة. اطلب كوداً جديداً.');
+        $this->assertSame((int) config('game.account.verify_code_attempts'), (int) DB::table('account_codes')->where('user_id', $coach->id)->value('attempts'));
+    }
+
     public function test_every_account_has_its_own_five_digit_number(): void
     {
         $users = User::factory()->count(30)->create();

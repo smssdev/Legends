@@ -298,6 +298,8 @@ Route::prefix('matches')->middleware(['auth:sanctum'])->controller(MatchControll
     Route::get('live', 'mine')->middleware('throttle:120,1,match-mine');
     Route::get('{match}', 'show')->whereNumber('match')->middleware('throttle:120,1,match-show');
     Route::get('{match}/live', 'live')->whereNumber('match')->middleware('throttle:720,1,match-live');
+    // [Sprint 02 B1] What the Unity scene draws, once per match.
+    Route::get('{match}/scene', 'scene')->whereNumber('match')->middleware('throttle:60,1,match-scene');
     Route::post('{match}/actions', 'order')->whereNumber('match')->middleware('throttle:120,1,match-orders');
     Route::post('{match}/ready', 'ready')->whereNumber('match')->middleware('throttle:60,1,match-ready');
     // The broadcast's reactions and side chat [X24].

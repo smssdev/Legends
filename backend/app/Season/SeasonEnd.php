@@ -3,6 +3,7 @@
 namespace App\Season;
 
 use App\League\ClubLedger;
+use App\League\ClubStrength;
 use App\League\LeagueFactory;
 use App\League\SeasonScheduler;
 use App\League\Standings;
@@ -136,6 +137,7 @@ class SeasonEnd
             ]);
         }
         $ids = $clubs->pluck('id')->all();
+        ClubStrength::refreshLeague($league->id);   // [X98] the squads as they now are
         // No training, camp, stadium, specialist or deal carries over; lineups go back to automatic.
         DB::table('training_slots')->whereIn('club_id', $ids)->delete();
         DB::table('training_camps')->whereIn('club_id', $ids)->where('status', 'active')->update(['status' => 'done', 'updated_at' => $now]);
