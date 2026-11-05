@@ -718,4 +718,135 @@ class LAr extends L {
   String kickoffAt(String time) {
     return 'البداية $time';
   }
+
+  @override
+  String get inbox => 'الرسائل';
+
+  @override
+  String get noMessages => 'لا رسائل بعد';
+
+  @override
+  String get readAll => 'قرأتها كلها';
+
+  @override
+  String get more => 'المزيد';
+
+  @override
+  String get finance => 'المالية';
+
+  @override
+  String get balance => 'الرصيد';
+
+  @override
+  String get seasonIncome => 'دخل الموسم';
+
+  @override
+  String get seasonExpenses => 'مصروفات الموسم';
+
+  @override
+  String get wagesPerRound => 'الرواتب كل جولة';
+
+  @override
+  String inDebt(int rounds, int limit) {
+    return 'النادي مدين: لا شراء ولا بناء حتى يعود الرصيد موجباً ($rounds من $limit جولات)';
+  }
+
+  @override
+  String get ticketPrice => 'سعر التذاكر';
+
+  @override
+  String perMatch(String amount) {
+    return '$amount في المباراة';
+  }
+
+  @override
+  String attendance(int pct) {
+    return 'الحضور $pct%';
+  }
+
+  @override
+  String get sponsors => 'الرعاة';
+
+  @override
+  String perWin(String amount) {
+    return '+$amount للفوز';
+  }
+
+  @override
+  String get signSponsorConfirm => 'توقيع هذا العرض للموسم كله؟';
+
+  @override
+  String get signed => 'موقَّع';
+
+  @override
+  String get transactions => 'الحركات';
+
+  @override
+  String get stadium => 'الملعب';
+
+  @override
+  String stadiumProgress(int done, int total) {
+    return '$done من $total أجزاء';
+  }
+
+  @override
+  String get capacity => 'السعة';
+
+  @override
+  String get homeAdvantage => 'أفضلية الأرض';
+
+  @override
+  String get sectionSeats => 'التذاكر والمقاعد';
+
+  @override
+  String get sectionPitch => 'أرضية الملعب';
+
+  @override
+  String get sectionTraining => 'مركز التدريب';
+
+  @override
+  String stageOf(int stage) {
+    return 'المرحلة $stage من 3';
+  }
+
+  @override
+  String partOf(int part) {
+    return 'الجزء $part من 5';
+  }
+
+  @override
+  String buildPart(String cost) {
+    return 'ابنِ ($cost)';
+  }
+
+  @override
+  String get sectionDone => 'مكتمل';
+
+  @override
+  String buildingNow(String section) {
+    return 'يُبنى الآن: $section';
+  }
+
+  @override
+  String endsIn(String time) {
+    return 'ينتهي بعد $time';
+  }
+
+  @override
+  String finishNow(int coins) {
+    return 'أنهِه الآن ($coins كوينز)';
+  }
+
+  @override
+  String finishNowConfirm(int coins) {
+    return 'إنهاء الجزء الآن مقابل $coins كوينز؟';
+  }
+
+  @override
+  String partTime(String time) {
+    return 'كل جزء يأخذ $time';
+  }
+
+  @override
+  String get confirm => 'تأكيد';
 }

@@ -6004,6 +6004,7 @@ components:
             part: { type: integer }
             ends_at: { type: string, format: date-time }
             ads: { $ref: '#/components/schemas/AdStatus' }
+            finish_coins: { type: integer, description: '[Sprint 18 F1] The coins to finish it now' }
     TrainingPlayer:
       type: object
       required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed]

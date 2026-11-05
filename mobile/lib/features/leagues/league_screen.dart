@@ -119,19 +119,30 @@ class _ClubTab extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           // [Sprint 17] My team's screens.
-          Row(children: [
-            for (final (icon, label, path) in [(Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics')])
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: GlmCard(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    onTap: () => context.push('/leagues/${lg.id}/$path'),
-                    child: Column(children: [Icon(icon, color: p.gold), const SizedBox(height: 6), Text(label, style: const TextStyle(fontWeight: FontWeight.w800))]),
-                  ),
+          // [Sprint 18] And the club's other screens, three to a row.
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 1.25,
+            children: [
+              for (final (icon, label, path) in [
+                (Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics'),
+                (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
+              ])
+                GlmCard(
+                  padding: const EdgeInsets.all(8),
+                  onTap: () => context.push('/leagues/${lg.id}/$path'),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Icon(icon, color: p.gold),
+                    const SizedBox(height: 6),
+                    Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  ]),
                 ),
-              ),
-          ]),
+            ],
+          ),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: _Stat(label: l.tabTable, value: s.position == null ? '—' : '${s.position}/${s.teams}')),

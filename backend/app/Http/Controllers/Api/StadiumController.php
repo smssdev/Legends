@@ -70,6 +70,8 @@ class StadiumController extends Controller
                 'ends_at' => Carbon::parse($building->ends_at, 'UTC')->toIso8601ZuluString(),
                 // [Sprint 20 S4] The rewarded ads for this part: on or off, the minutes a video cuts, and how many so far.
                 'ads' => AdReward::status('stadium', (int) $building->id),
+                // [Sprint 18 F1] What finishing it now costs in coins (the app shows it as the server prices it).
+                'finish_coins' => (int) config('game.premium.price.finish_stadium_per_stage') * (int) $building->stage,
             ] : null,
         ]);
     }

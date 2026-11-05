@@ -15,6 +15,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../health/status_screens.dart';
 import 'home_data.dart';
+import '../inbox/inbox_data.dart';
 import '../match/match_data.dart';
 import 'settings_sheet.dart';
 
@@ -55,6 +56,7 @@ class _Home extends ConsumerWidget {
           color: p.gold,
           onRefresh: () {
             ref.invalidate(myLiveMatchesProvider);
+            ref.invalidate(unreadProvider);
             return ref.refresh(homeProvider.future);
           },
           child: CustomScrollView(slivers: [
@@ -64,6 +66,15 @@ class _Home extends ConsumerWidget {
               titleSpacing: 16,
               title: const BrandMark(size: 36),
               actions: [
+                IconButton(
+                  tooltip: l.inbox,
+                  icon: Badge(
+                    isLabelVisible: (ref.watch(unreadProvider).value ?? 0) > 0,
+                    label: Text('${ref.watch(unreadProvider).value ?? 0}'),
+                    child: const Icon(Icons.mail_outline_rounded),
+                  ),
+                  onPressed: () => context.push('/inbox'),
+                ),
                 IconButton(tooltip: l.myLeagues, icon: const Icon(Icons.emoji_events_outlined), onPressed: () => context.push('/leagues')),
                 CoinsPill(coins: h.coach.coins, onTap: () => openSite('/wallet')),
                 IconButton(tooltip: l.settings, icon: const Icon(Icons.tune_rounded), onPressed: () => showSettingsSheet(context, accountNo: h.coach.accountNo)),

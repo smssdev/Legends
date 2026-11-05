@@ -14100,6 +14100,8 @@ export interface components {
                 /** Format: date-time */
                 ends_at: string;
                 ads: components["schemas"]["AdStatus"];
+                /** @description [Sprint 18 F1] The coins to finish it now */
+                finish_coins?: number;
             } | null;
         };
         TrainingPlayer: {

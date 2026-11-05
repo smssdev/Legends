@@ -720,4 +720,135 @@ class LEn extends L {
   String kickoffAt(String time) {
     return 'Kick-off $time';
   }
+
+  @override
+  String get inbox => 'Messages';
+
+  @override
+  String get noMessages => 'No messages yet';
+
+  @override
+  String get readAll => 'Mark all read';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get finance => 'Finance';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get seasonIncome => 'Season income';
+
+  @override
+  String get seasonExpenses => 'Season expenses';
+
+  @override
+  String get wagesPerRound => 'Wages per round';
+
+  @override
+  String inDebt(int rounds, int limit) {
+    return 'The club is in debt: no buying or building until the balance is positive ($rounds of $limit rounds)';
+  }
+
+  @override
+  String get ticketPrice => 'Ticket price';
+
+  @override
+  String perMatch(String amount) {
+    return '$amount a match';
+  }
+
+  @override
+  String attendance(int pct) {
+    return 'Attendance $pct%';
+  }
+
+  @override
+  String get sponsors => 'Sponsors';
+
+  @override
+  String perWin(String amount) {
+    return '+$amount a win';
+  }
+
+  @override
+  String get signSponsorConfirm => 'Sign this offer for the whole season?';
+
+  @override
+  String get signed => 'Signed';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get stadium => 'Stadium';
+
+  @override
+  String stadiumProgress(int done, int total) {
+    return '$done of $total parts';
+  }
+
+  @override
+  String get capacity => 'Capacity';
+
+  @override
+  String get homeAdvantage => 'Home advantage';
+
+  @override
+  String get sectionSeats => 'Seats and tickets';
+
+  @override
+  String get sectionPitch => 'The pitch';
+
+  @override
+  String get sectionTraining => 'Training centre';
+
+  @override
+  String stageOf(int stage) {
+    return 'Stage $stage of 3';
+  }
+
+  @override
+  String partOf(int part) {
+    return 'Part $part of 5';
+  }
+
+  @override
+  String buildPart(String cost) {
+    return 'Build ($cost)';
+  }
+
+  @override
+  String get sectionDone => 'Complete';
+
+  @override
+  String buildingNow(String section) {
+    return 'Building now: $section';
+  }
+
+  @override
+  String endsIn(String time) {
+    return 'Ends in $time';
+  }
+
+  @override
+  String finishNow(int coins) {
+    return 'Finish now ($coins coins)';
+  }
+
+  @override
+  String finishNowConfirm(int coins) {
+    return 'Finish the part now for $coins coins?';
+  }
+
+  @override
+  String partTime(String time) {
+    return 'Each part takes $time';
+  }
+
+  @override
+  String get confirm => 'Confirm';
 }

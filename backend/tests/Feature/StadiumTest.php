@@ -65,7 +65,8 @@ class StadiumTest extends TestCase
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         $cost = Stadium::partCost($this->league['id'], 1);
         $this->assertGreaterThan(0, $cost);
-        $this->start('seats')->assertOk()->assertJsonPath('building.section', 'seats')->assertJsonPath('building.part', 1);
+        $this->start('seats')->assertOk()->assertJsonPath('building.section', 'seats')->assertJsonPath('building.part', 1)
+            ->assertJsonPath('building.finish_coins', (int) config('game.premium.price.finish_stadium_per_stage'));
         $this->start('seats')->assertOk();
         $this->assertSame($before - $cost, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
         $this->start('pitch', 'k2')->assertConflict()->assertJsonPath('message', 'يُبنى جزء الآن، انتظر حتى يكتمل.');

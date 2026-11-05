@@ -410,5 +410,137 @@
         "type": "String"
       }
     }
-  }
+  },
+  "inbox": "الرسائل",
+  "noMessages": "لا رسائل بعد",
+  "readAll": "قرأتها كلها",
+  "more": "المزيد",
+  "finance": "المالية",
+  "balance": "الرصيد",
+  "seasonIncome": "دخل الموسم",
+  "seasonExpenses": "مصروفات الموسم",
+  "wagesPerRound": "الرواتب كل جولة",
+  "inDebt": "النادي مدين: لا شراء ولا بناء حتى يعود الرصيد موجباً ({rounds} من {limit} جولات)",
+  "@inDebt": {
+    "placeholders": {
+      "rounds": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketPrice": "سعر التذاكر",
+  "perMatch": "{amount} في المباراة",
+  "@perMatch": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "attendance": "الحضور {pct}%",
+  "@attendance": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "sponsors": "الرعاة",
+  "perWin": "+{amount} للفوز",
+  "@perWin": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "signSponsorConfirm": "توقيع هذا العرض للموسم كله؟",
+  "signed": "موقَّع",
+  "transactions": "الحركات",
+  "stadium": "الملعب",
+  "stadiumProgress": "{done} من {total} أجزاء",
+  "@stadiumProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "capacity": "السعة",
+  "homeAdvantage": "أفضلية الأرض",
+  "sectionSeats": "التذاكر والمقاعد",
+  "sectionPitch": "أرضية الملعب",
+  "sectionTraining": "مركز التدريب",
+  "stageOf": "المرحلة {stage} من 3",
+  "@stageOf": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "partOf": "الجزء {part} من 5",
+  "@partOf": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "buildPart": "ابنِ ({cost})",
+  "@buildPart": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionDone": "مكتمل",
+  "buildingNow": "يُبنى الآن: {section}",
+  "@buildingNow": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "endsIn": "ينتهي بعد {time}",
+  "@endsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "finishNow": "أنهِه الآن ({coins} كوينز)",
+  "@finishNow": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "finishNowConfirm": "إنهاء الجزء الآن مقابل {coins} كوينز؟",
+  "@finishNowConfirm": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "partTime": "كل جزء يأخذ {time}",
+  "@partTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "تأكيد"
 }

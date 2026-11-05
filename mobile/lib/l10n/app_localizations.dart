@@ -1404,6 +1404,216 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'البداية {time}'**
   String kickoffAt(String time);
+
+  /// No description provided for @inbox.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرسائل'**
+  String get inbox;
+
+  /// No description provided for @noMessages.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا رسائل بعد'**
+  String get noMessages;
+
+  /// No description provided for @readAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'قرأتها كلها'**
+  String get readAll;
+
+  /// No description provided for @more.
+  ///
+  /// In ar, this message translates to:
+  /// **'المزيد'**
+  String get more;
+
+  /// No description provided for @finance.
+  ///
+  /// In ar, this message translates to:
+  /// **'المالية'**
+  String get finance;
+
+  /// No description provided for @balance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد'**
+  String get balance;
+
+  /// No description provided for @seasonIncome.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخل الموسم'**
+  String get seasonIncome;
+
+  /// No description provided for @seasonExpenses.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصروفات الموسم'**
+  String get seasonExpenses;
+
+  /// No description provided for @wagesPerRound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرواتب كل جولة'**
+  String get wagesPerRound;
+
+  /// No description provided for @inDebt.
+  ///
+  /// In ar, this message translates to:
+  /// **'النادي مدين: لا شراء ولا بناء حتى يعود الرصيد موجباً ({rounds} من {limit} جولات)'**
+  String inDebt(int rounds, int limit);
+
+  /// No description provided for @ticketPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر التذاكر'**
+  String get ticketPrice;
+
+  /// No description provided for @perMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'{amount} في المباراة'**
+  String perMatch(String amount);
+
+  /// No description provided for @attendance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحضور {pct}%'**
+  String attendance(int pct);
+
+  /// No description provided for @sponsors.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرعاة'**
+  String get sponsors;
+
+  /// No description provided for @perWin.
+  ///
+  /// In ar, this message translates to:
+  /// **'+{amount} للفوز'**
+  String perWin(String amount);
+
+  /// No description provided for @signSponsorConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'توقيع هذا العرض للموسم كله؟'**
+  String get signSponsorConfirm;
+
+  /// No description provided for @signed.
+  ///
+  /// In ar, this message translates to:
+  /// **'موقَّع'**
+  String get signed;
+
+  /// No description provided for @transactions.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحركات'**
+  String get transactions;
+
+  /// No description provided for @stadium.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملعب'**
+  String get stadium;
+
+  /// No description provided for @stadiumProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} من {total} أجزاء'**
+  String stadiumProgress(int done, int total);
+
+  /// No description provided for @capacity.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعة'**
+  String get capacity;
+
+  /// No description provided for @homeAdvantage.
+  ///
+  /// In ar, this message translates to:
+  /// **'أفضلية الأرض'**
+  String get homeAdvantage;
+
+  /// No description provided for @sectionSeats.
+  ///
+  /// In ar, this message translates to:
+  /// **'التذاكر والمقاعد'**
+  String get sectionSeats;
+
+  /// No description provided for @sectionPitch.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرضية الملعب'**
+  String get sectionPitch;
+
+  /// No description provided for @sectionTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'مركز التدريب'**
+  String get sectionTraining;
+
+  /// No description provided for @stageOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'المرحلة {stage} من 3'**
+  String stageOf(int stage);
+
+  /// No description provided for @partOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجزء {part} من 5'**
+  String partOf(int part);
+
+  /// No description provided for @buildPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابنِ ({cost})'**
+  String buildPart(String cost);
+
+  /// No description provided for @sectionDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكتمل'**
+  String get sectionDone;
+
+  /// No description provided for @buildingNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُبنى الآن: {section}'**
+  String buildingNow(String section);
+
+  /// No description provided for @endsIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي بعد {time}'**
+  String endsIn(String time);
+
+  /// No description provided for @finishNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنهِه الآن ({coins} كوينز)'**
+  String finishNow(int coins);
+
+  /// No description provided for @finishNowConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنهاء الجزء الآن مقابل {coins} كوينز؟'**
+  String finishNowConfirm(int coins);
+
+  /// No description provided for @partTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل جزء يأخذ {time}'**
+  String partTime(String time);
+
+  /// No description provided for @confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get confirm;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
