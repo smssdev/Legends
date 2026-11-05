@@ -165,7 +165,7 @@ namespace Legends.EditorTools
                 {
                     Save(Camera.main, $"kits-{file}.png");
                     var ball = scene.Ball.position;
-                    Save(Still(ball + new Vector3(-3f, 2.2f, -10f), ball + Vector3.up * 0.9f, 32f), $"kits-{file}-close.png");
+                    Save(Still(Clear(scene, ball), ball + Vector3.up * 0.6f, 34f), $"kits-{file}-close.png");
                     Debug.Log($"Legends: captured kits-{file}: {home.Code} v {away.Code}");
                 }
                 kitStep++;
@@ -177,6 +177,35 @@ namespace Legends.EditorTools
             Save(Still(bench + new Vector3(2f, 2.4f, 9f), bench + Vector3.up * 0.9f, 40f), "kits-bench.png");
             kitStep = -1;
             Finish("saved the kits of " + KitMatches.Length + " matches and the bench", true);
+        }
+
+        /// <summary>
+        /// Where to stand for a close-up of the ball and the players by it: 6 m off and 1.4 m up, on whichever of twelve
+        /// sides leaves the most room between the camera's line and every player (no back in front of the ball).
+        /// </summary>
+        static Vector3 Clear(Legends.MatchScene scene, Vector3 ball)
+        {
+            var people = new System.Collections.Generic.List<Vector3>();
+            foreach (var r in scene.GetComponentsInChildren<SkinnedMeshRenderer>())
+                if (r.name.StartsWith("Body") && r.gameObject.activeInHierarchy) people.Add(r.bounds.center);
+            Vector3 best = ball + new Vector3(-4f, 1.4f, -4.5f);
+            float room = -1f;
+            for (int i = 0; i < 12; i++)
+            {
+                float a = i * Mathf.PI / 6f;
+                var at = ball + new Vector3(Mathf.Cos(a) * 6f, 1.4f, Mathf.Sin(a) * 6f);
+                float least = float.MaxValue;
+                foreach (var p in people)
+                {
+                    var q = new Vector2(p.x, p.z);
+                    Vector2 s0 = new Vector2(at.x, at.z), s1 = new Vector2(ball.x, ball.z);
+                    float t = Mathf.Clamp01(Vector2.Dot(q - s0, s1 - s0) / Mathf.Max(1e-4f, (s1 - s0).sqrMagnitude));
+                    float d = Vector2.Distance(q, Vector2.Lerp(s0, s1, t * 0.85f));   // a player just behind the ball is fine
+                    least = Mathf.Min(least, d);
+                }
+                if (least > room) { room = least; best = at; }
+            }
+            return best;
         }
 
         /// <summary>A camera of its own for a still, set as the broadcast camera is (the broadcast camera keeps its place).</summary>

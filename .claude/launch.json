@@ -4,14 +4,35 @@
     {
       "name": "api",
       "runtimeExecutable": "C:\\laragon\\bin\\php\\php-8.5.4RC1-Win32-vs17-x64\\php.exe",
-      "runtimeArgs": ["backend/artisan", "serve", "--port=8000"],
+      "runtimeArgs": [
+        "backend/artisan",
+        "serve",
+        "--port=8000"
+      ],
       "port": 8000
     },
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "web", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "web",
+        "run",
+        "dev"
+      ],
       "port": 5173
+    },
+    {
+      "name": "unity-web",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8090",
+        "--directory",
+        "unity/Builds/WebGL"
+      ],
+      "port": 8090
     }
   ]
 }

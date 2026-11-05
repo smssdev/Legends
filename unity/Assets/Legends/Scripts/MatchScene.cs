@@ -16,6 +16,14 @@ namespace Legends
         public Material playerMaterial;
         [Tooltip("Material of the ball.")]
         public Material ballMaterial;
+        [Tooltip("The contact shadows under the boots and the ball (Players/Shaders/ContactShadow.shader); none without it.")]
+        public Material shadowMaterial;
+
+        /// <summary>[Sprint 06, the owner 2026-11-05: "a real ball"] A real ball's size: 22 cm across.</summary>
+        public const float BallRadius = 0.11f;
+        ContactShadows contacts;
+        Vector3 lastBall, spinAxis = Vector3.right;
+        bool rolled;
 
         public MatchSetup Setup { get; private set; }
         public MatchMinute Current { get; private set; }
@@ -60,6 +68,9 @@ namespace Legends
             Current = null;
             Setup = setup;
             if (bench != null) bench.Setup(setup.HomeLook, setup.AwayLook);
+            if (contacts == null && shadowMaterial != null) contacts = ContactShadows.On(gameObject, shadowMaterial);
+            if (contacts != null) contacts.Clear();
+            rolled = false;
 
             var art = PlayerArt.Load();
             if (art != null && art.models != null && art.models.Length == PlayerLook.Builds.Length && art.models[0] != null)
@@ -72,11 +83,12 @@ namespace Legends
                 var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 ball.name = "Ball";
                 ball.transform.SetParent(transform, false);
-                ball.transform.localScale = Vector3.one * 0.32f;   // a real ball is 0.22 m: a little bigger reads on TV
+                ball.transform.localScale = Vector3.one * BallRadius * 2f;   // a real ball, rolling on the grass (Roll)
                 if (ballMaterial != null) ball.GetComponent<Renderer>().sharedMaterial = ballMaterial;
                 Destroy(ball.GetComponent<Collider>());
                 Ball = ball.transform;
             }
+            if (contacts != null) contacts.TrackBall(Ball, BallRadius);
         }
 
         /// <summary>[Sprint 06 U8] Legends' players, the keepers and the officials, each dressed by the server's colours.</summary>
@@ -97,6 +109,7 @@ namespace Legends
                 if (!p.Starter) Sit(seat);
                 players[p.Id] = look.transform;
                 seats[p.Id] = seat;
+                if (contacts != null) contacts.Track(look.transform);
             }
             for (int i = 0; i < 3; i++)
             {
@@ -105,6 +118,7 @@ namespace Legends
                 if (i > 0) Flag(official.transform);
                 official.gameObject.SetActive(false);
                 officials.Add(official.transform);
+                if (contacts != null) contacts.Track(official.transform);
             }
         }
 
@@ -263,8 +277,38 @@ namespace Legends
             }
 
             var ball = SampleBall(pf, a, b, nf, k);
-            Ball.localPosition = World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (0.16f + ball.z / 10f);
+            Roll(World(new Vector2(ball.x, ball.y), flip) + Vector3.up * (BallRadius + ball.z / 10f));
         }
+
+        /// <summary>
+        /// [Sprint 06, the owner 2026-11-05: "a real ball, not a robot's"] The ball to its spot, turning as a real one
+        /// does: on the grass it rolls exactly as far as it travels (its turn = the distance / its radius, about the axis
+        /// across its path); in the air it keeps the spin it left the grass with, a little slower. A jump of more than 8 m
+        /// in one frame (a new minute, a still) is a cut, not a roll.
+        /// </summary>
+        void Roll(Vector3 to)
+        {
+            if (rolled)
+            {
+                var d = to - lastBall;
+                d.y = 0f;
+                float dist = d.magnitude;
+                if (dist > 1e-4f && dist < 8f)
+                {
+                    bool air = to.y > BallRadius + 0.05f;
+                    var axis = Vector3.Cross(Vector3.up, d / dist);
+                    if (!air) spinAxis = axis;
+                    float turn = dist / BallRadius * Mathf.Rad2Deg * (air ? 0.6f : 1f);
+                    Ball.Rotate(transform.TransformDirection(air ? spinAxis : axis), turn, Space.World);
+                }
+            }
+            lastBall = to;
+            rolled = true;
+            Ball.localPosition = to;
+        }
+
+        /// <summary>How far the ball turns rolling `metres` on the grass, in degrees (the tests check the roll with it).</summary>
+        public static float RollDegrees(float metres) => metres / BallRadius * Mathf.Rad2Deg;
 
         /// <summary>
         /// [Sprint 31 M1] The tangent at cur from its neighbours (NaN when missing): Catmull-Rom, 0 at a turn, at most 3 x
