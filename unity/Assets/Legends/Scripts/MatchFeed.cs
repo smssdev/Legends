@@ -19,6 +19,9 @@ namespace Legends
         /// {clubs: {home, away}, players: {home: [...], away: [...]}, tick_ms}. The same shape the sample recording
         /// gives once its match object and first minute are put together (SamplePlayback.Setup).
         /// </summary>
+        static bool? Flag(object o, string key) =>
+            o is Dictionary<string, object> d && d.TryGetValue(key, out var v) && v is bool b ? b : (bool?)null;
+
         public static MatchSetup From(object json)
         {
             var setup = new MatchSetup();
@@ -39,6 +42,8 @@ namespace Legends
                         Id = MiniJson.Str(p, "id"),
                         Number = (int)MiniJson.Int(p, "no"),
                         Keeper = MiniJson.Str(p, "pos") == "GK",
+                        // the scene route says starter; the live minutes' teams say on
+                        Starter = Flag(p, "starter") ?? Flag(p, "on") ?? true,
                         Home = side == "home",
                     });
                 }
@@ -51,12 +56,22 @@ namespace Legends
     {
         public string Code = "";
         public Color Primary = Color.white, Secondary = Color.black;
+        /// <summary>[Sprint 06 U6] The shirt's pattern (App\Data\KitPattern; null is plain) and the change kit, if the club has one.</summary>
+        public string Pattern, AwayPattern;
+        public bool HasAwayKit;
+        public Color AwayColor = Color.white;
 
         public static ClubKit From(Dictionary<string, object> club)
         {
-            var kit = new ClubKit { Code = MiniJson.Str(club, "code") };
+            var kit = new ClubKit { Code = MiniJson.Str(club, "code"), Pattern = MiniJson.Str(club, "pattern", null) };
             ColorUtility.TryParseHtmlString(MiniJson.Str(club, "primary", "#FFFFFF"), out kit.Primary);
             ColorUtility.TryParseHtmlString(MiniJson.Str(club, "secondary", "#000000"), out kit.Secondary);
+            var away = MiniJson.Obj(club, "away_kit");
+            if (away != null && ColorUtility.TryParseHtmlString(MiniJson.Str(away, "color", ""), out kit.AwayColor))
+            {
+                kit.HasAwayKit = true;
+                kit.AwayPattern = MiniJson.Str(away, "pattern", null);
+            }
             return kit;
         }
     }
@@ -66,6 +81,8 @@ namespace Legends
         public string Id;
         public int Number;
         public bool Keeper, Home;
+        /// <summary>[Sprint 06 U8] On the pitch at kick-off; the others wait on the bench.</summary>
+        public bool Starter = true;
     }
 
     /// <summary>One minute of play: its key frames (six, ten in a busy minute), the shot and how long it lasts, the score.</summary>
@@ -115,6 +132,12 @@ namespace Legends
                     if (xy != null && xy.Count == 2)
                         frame.Players[kv.Key] = new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1]));
                 }
+                foreach (var o in MiniJson.Arr(fr, "r") ?? new List<object>())
+                {
+                    var xy = o as List<object>;
+                    if (xy != null && xy.Count == 2)
+                        frame.Officials.Add(new Vector2(System.Convert.ToSingle(xy[0]), System.Convert.ToSingle(xy[1])));
+                }
                 m.Frames.Add(frame);
             }
             return m;
@@ -127,5 +150,7 @@ namespace Legends
         public Vector3 Ball;   // x, y, height
         public readonly Dictionary<string, Vector2> Players = new Dictionary<string, Vector2>();
         public string Holder;
+        /// <summary>[Sprint 31 D1] The referee, the far assistant and the near one (none in older recordings).</summary>
+        public readonly List<Vector2> Officials = new List<Vector2>();
     }
 }

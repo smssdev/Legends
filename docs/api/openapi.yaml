@@ -2202,6 +2202,43 @@ paths:
       responses:
         '200': { description: 'The match, its clubs, teams (tactics only for your side), the slots of both formations, and kickoff_at: when it kicks off (UTC, Sprint 32 V3)' }
         '404': { $ref: '#/components/responses/Error' }
+  /matches/{match}/scene:
+    parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [matches]
+      summary: What the Unity scene draws, once per match (Sprint 02 B1)
+      description: |
+        Both clubs with their colours, kit pattern and change kit, both teams' players with their numbers, positions,
+        lines and who starts, the captains, each human coach's look, and the stadium with its light from the kick-off's
+        hour in Cairo (`game.scene`: the arena by night and dusk, the classic by day). Drawing only: no tactics of either
+        side, so it is the same for every member. Members only (404 for anyone else), rate limited.
+      responses:
+        '200':
+          description: The scene's setup
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, clubs, players, captains, coach_looks, stadium, light, kickoff_at, tick_ms]
+                properties:
+                  id: { type: integer }
+                  clubs:
+                    type: object
+                    properties:
+                      home: { $ref: '#/components/schemas/SceneClub' }
+                      away: { $ref: '#/components/schemas/SceneClub' }
+                  players:
+                    type: object
+                    properties:
+                      home: { type: array, items: { $ref: '#/components/schemas/ScenePlayer' } }
+                      away: { type: array, items: { $ref: '#/components/schemas/ScenePlayer' } }
+                  captains: { type: object, properties: { home: { type: [integer, 'null'] }, away: { type: [integer, 'null'] } } }
+                  coach_looks: { type: object, description: 'C1 to C3; null for a club with no coach', properties: { home: { type: [string, 'null'] }, away: { type: [string, 'null'] } } }
+                  stadium: { type: string, enum: [arena, classic] }
+                  light: { type: string, enum: [night, dusk, day] }
+                  kickoff_at: { type: string, format: date-time }
+                  tick_ms: { type: integer }
+        '404': { description: Not a member of the match's league }
   /matches/{match}/live:
     parameters: [{ name: match, in: path, required: true, schema: { type: integer } }]
     get:
@@ -6651,6 +6688,28 @@ components:
         coach_looks: { type: object, description: "[Sprint 26] Each human coach's look on the touchline (C1 to C3): {home?, away?}" }
         teams: { type: object, description: 'home and away: formation, tactics (your side only), subs, stats, captain (the armband, Sprint 34 V3) and players (each with fit and pac, his pace for the drawing, Sprint 34 K4)' }
         slots: { type: object }
+    SceneClub:
+      type: object
+      description: A club as the Unity scene draws it (Sprint 02 B1)
+      required: [id, name, code, primary, secondary, pattern, away_kit]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        code: { type: string }
+        primary: { type: string, description: Hex colour }
+        secondary: { type: string, description: Hex colour }
+        pattern: { type: [string, 'null'], enum: [stripes, hoops, halves, sash, null] }
+        away_kit: { type: [object, 'null'], properties: { color: { type: string }, pattern: { type: [string, 'null'] } } }
+    ScenePlayer:
+      type: object
+      required: [id, name, no, pos, line, starter]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        no: { type: integer }
+        pos: { type: string }
+        line: { type: string }
+        starter: { type: boolean }
     Keyframe:
       type: object
       description: 'One of the Keyframes of a minute (MatchChoreographer). Decimetres on a 1050 x 680 pitch, the home side attacking x = 1050; screens only interpolate between them (web/src/match/frames.ts, docs/api/frame-golden.json).'

@@ -98,16 +98,20 @@ namespace Legends.Tests
                 MatchScene.Segment(minute.Frames.Count, scene.Progress, out int i, out float k);
                 var a = minute.Frames[i];
                 var b = minute.Frames[Mathf.Min(i + 1, minute.Frames.Count - 1)];
+                // [Sprint 31 M1] Between frames the scene follows the curve, not a straight line; [Sprint 06 U8] a real
+                // player stands on the grass (BodyLift 0), a capsule 0.9 m up.
+                var pf = i > 0 ? minute.Frames[i - 1] : null;
+                var nf = i + 2 < minute.Frames.Count ? minute.Frames[i + 2] : null;
                 foreach (var id in a.Players.Keys)
                 {
                     if (!b.Players.ContainsKey(id)) continue;
-                    var expected = Vector3.Lerp(MatchScene.World(a.Players[id], flip), MatchScene.World(b.Players[id], flip), k) + Vector3.up * 0.9f;
+                    var expected = MatchScene.World(MatchScene.SamplePlayer(pf, a, b, nf, id, k), flip) + Vector3.up * scene.BodyLift;
                     var body = Player(id);
                     Assert.NotNull(body, "player " + id + " is in the scene");
                     Assert.IsTrue(body.gameObject.activeSelf, "player " + id + " is shown");
                     Assert.Less(Vector3.Distance(expected, body.localPosition), Tolerance, $"player {id} in tick {tick} at {scene.Progress:0.00}");
                 }
-                var ball = Vector3.Lerp(a.Ball, b.Ball, k);
+                var ball = MatchScene.SampleBall(pf, a, b, nf, k);
                 var ballAt = MatchScene.World(new Vector2(ball.x, ball.y), flip);
                 Assert.Less(Vector2.Distance(new Vector2(ballAt.x, ballAt.z), new Vector2(scene.Ball.localPosition.x, scene.Ball.localPosition.z)), Tolerance, $"ball in tick {tick}");
                 checks++;
