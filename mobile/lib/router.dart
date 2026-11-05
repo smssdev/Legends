@@ -16,6 +16,8 @@ import 'features/leagues/league_screen.dart';
 import 'features/leagues/my_leagues_screen.dart';
 import 'features/leagues/pick_team_screen.dart';
 import 'features/health/status_screens.dart';
+import 'features/match/live_screen.dart';
+import 'features/match/report_screen.dart';
 
 /// [Sprint 15 F1] The app's pages: the start while the account is checked, then the sign-in pages for a guest and the
 /// home for a coach. The router listens to the account and moves by itself on sign-in, sign-out and a refused token.
@@ -58,6 +60,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leagues/:id/squad', builder: (_, s) => SquadScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/lineup', builder: (_, s) => LineupScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/tactics', builder: (_, s) => TacticsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/match/:id', builder: (_, s) => LiveMatchScreen(matchId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/match/:id/report', builder: (_, s) => MatchReportScreen(matchId: int.parse(s.pathParameters['id']!), coach: s.uri.queryParameters['coach'] == 'true')),
       GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),
     ],
   );

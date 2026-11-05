@@ -1200,6 +1200,210 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الإمكانية'**
   String get potentialWord;
+
+  /// No description provided for @watchLive.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاهد المباراة'**
+  String get watchLive;
+
+  /// No description provided for @liveNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباشر'**
+  String get liveNow;
+
+  /// No description provided for @fullTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'نهاية المباراة'**
+  String get fullTime;
+
+  /// No description provided for @notStarted.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تبدأ بعد'**
+  String get notStarted;
+
+  /// No description provided for @matchReport.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير المباراة'**
+  String get matchReport;
+
+  /// No description provided for @commentary.
+  ///
+  /// In ar, this message translates to:
+  /// **'التعليق'**
+  String get commentary;
+
+  /// No description provided for @assistantNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات مساعدك'**
+  String get assistantNotes;
+
+  /// No description provided for @substitute.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبديل'**
+  String get substitute;
+
+  /// No description provided for @subOut.
+  ///
+  /// In ar, this message translates to:
+  /// **'يخرج'**
+  String get subOut;
+
+  /// No description provided for @subIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'يدخل'**
+  String get subIn;
+
+  /// No description provided for @subsLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'{used} من {max} تبديلات'**
+  String subsLeft(int used, int max);
+
+  /// No description provided for @ordersHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.'**
+  String get ordersHint;
+
+  /// No description provided for @windowOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'النافذة مفتوحة: أوامرك الآن'**
+  String get windowOpen;
+
+  /// No description provided for @imReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنا مستعد'**
+  String get imReady;
+
+  /// No description provided for @readyWaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'في انتظار المدرب الآخر'**
+  String get readyWaiting;
+
+  /// No description provided for @breakTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'استراحة'**
+  String get breakTime;
+
+  /// No description provided for @orderSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل الأمر، يُنفَّذ في الدقيقة التالية'**
+  String get orderSent;
+
+  /// No description provided for @send.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل'**
+  String get send;
+
+  /// No description provided for @possession.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاستحواذ'**
+  String get possession;
+
+  /// No description provided for @shots.
+  ///
+  /// In ar, this message translates to:
+  /// **'التسديدات'**
+  String get shots;
+
+  /// No description provided for @onTarget.
+  ///
+  /// In ar, this message translates to:
+  /// **'على المرمى'**
+  String get onTarget;
+
+  /// No description provided for @corners.
+  ///
+  /// In ar, this message translates to:
+  /// **'الركنيات'**
+  String get corners;
+
+  /// No description provided for @fouls.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأخطاء'**
+  String get fouls;
+
+  /// No description provided for @saves.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصديات'**
+  String get saves;
+
+  /// No description provided for @manOfMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجل المباراة'**
+  String get manOfMatch;
+
+  /// No description provided for @toImprove.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما يُحسَّن'**
+  String get toImprove;
+
+  /// No description provided for @whyResult.
+  ///
+  /// In ar, this message translates to:
+  /// **'لماذا هذه النتيجة'**
+  String get whyResult;
+
+  /// No description provided for @keyMoments.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهم اللحظات'**
+  String get keyMoments;
+
+  /// No description provided for @bestPlayers.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأفضل'**
+  String get bestPlayers;
+
+  /// No description provided for @resultWin.
+  ///
+  /// In ar, this message translates to:
+  /// **'فوز'**
+  String get resultWin;
+
+  /// No description provided for @resultDraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعادل'**
+  String get resultDraw;
+
+  /// No description provided for @resultLoss.
+  ///
+  /// In ar, this message translates to:
+  /// **'خسارة'**
+  String get resultLoss;
+
+  /// No description provided for @pitchView.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملعب'**
+  String get pitchView;
+
+  /// No description provided for @kickoffAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'البداية {time}'**
+  String kickoffAt(String time);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

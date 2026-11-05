@@ -611,4 +611,111 @@ class LAr extends L {
 
   @override
   String get potentialWord => 'الإمكانية';
+
+  @override
+  String get watchLive => 'شاهد المباراة';
+
+  @override
+  String get liveNow => 'مباشر';
+
+  @override
+  String get fullTime => 'نهاية المباراة';
+
+  @override
+  String get notStarted => 'لم تبدأ بعد';
+
+  @override
+  String get matchReport => 'تقرير المباراة';
+
+  @override
+  String get commentary => 'التعليق';
+
+  @override
+  String get assistantNotes => 'ملاحظات مساعدك';
+
+  @override
+  String get substitute => 'تبديل';
+
+  @override
+  String get subOut => 'يخرج';
+
+  @override
+  String get subIn => 'يدخل';
+
+  @override
+  String subsLeft(int used, int max) {
+    return '$used من $max تبديلات';
+  }
+
+  @override
+  String get ordersHint =>
+      'الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.';
+
+  @override
+  String get windowOpen => 'النافذة مفتوحة: أوامرك الآن';
+
+  @override
+  String get imReady => 'أنا مستعد';
+
+  @override
+  String get readyWaiting => 'في انتظار المدرب الآخر';
+
+  @override
+  String get breakTime => 'استراحة';
+
+  @override
+  String get orderSent => 'وصل الأمر، يُنفَّذ في الدقيقة التالية';
+
+  @override
+  String get send => 'أرسل';
+
+  @override
+  String get possession => 'الاستحواذ';
+
+  @override
+  String get shots => 'التسديدات';
+
+  @override
+  String get onTarget => 'على المرمى';
+
+  @override
+  String get corners => 'الركنيات';
+
+  @override
+  String get fouls => 'الأخطاء';
+
+  @override
+  String get saves => 'التصديات';
+
+  @override
+  String get manOfMatch => 'رجل المباراة';
+
+  @override
+  String get toImprove => 'ما يُحسَّن';
+
+  @override
+  String get whyResult => 'لماذا هذه النتيجة';
+
+  @override
+  String get keyMoments => 'أهم اللحظات';
+
+  @override
+  String get bestPlayers => 'الأفضل';
+
+  @override
+  String get resultWin => 'فوز';
+
+  @override
+  String get resultDraw => 'تعادل';
+
+  @override
+  String get resultLoss => 'خسارة';
+
+  @override
+  String get pitchView => 'الملعب';
+
+  @override
+  String kickoffAt(String time) {
+    return 'البداية $time';
+  }
 }

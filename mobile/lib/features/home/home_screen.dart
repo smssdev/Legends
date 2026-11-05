@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/api_error.dart';
@@ -15,6 +15,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../health/status_screens.dart';
 import 'home_data.dart';
+import '../match/match_data.dart';
 import 'settings_sheet.dart';
 
 /// [Sprint 15] The app's first screen after sign-in, as the web's home (MobileHome.dc.html): the coach's card with his
@@ -52,7 +53,10 @@ class _Home extends ConsumerWidget {
       body: GlmBackground(
         child: RefreshIndicator(
           color: p.gold,
-          onRefresh: () => ref.refresh(homeProvider.future),
+          onRefresh: () {
+            ref.invalidate(myLiveMatchesProvider);
+            return ref.refresh(homeProvider.future);
+          },
           child: CustomScrollView(slivers: [
             SliverAppBar(
               floating: true,
@@ -70,6 +74,23 @@ class _Home extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
               sliver: SliverList.list(children: [
                 _CoachCard(h.coach),
+                // [Sprint 17 F2] My matches under way, in every league: one tap to the live screen.
+                ...?ref.watch(myLiveMatchesProvider).value?.map((m) => Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: GlmCard(
+                        gold: true,
+                        onTap: () => context.push('/match/${m.id}'),
+                        child: Row(children: [
+                          Icon(Icons.sensors_rounded, color: context.glm.liveText),
+                          const SizedBox(width: 10),
+                          Text(l.liveNow, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w800)),
+                          const Spacer(),
+                          Text('${m.home} - ${m.away}', textDirection: TextDirection.ltr, style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800)),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.chevron_right_rounded),
+                        ]),
+                      ),
+                    )),
                 const SizedBox(height: 22),
                 Row(children: [
                   Text(l.myTeams, style: context.text.titleLarge),

@@ -359,5 +359,56 @@
     }
   },
   "ratingWord": "التقييم",
-  "potentialWord": "الإمكانية"
+  "potentialWord": "الإمكانية",
+  "watchLive": "شاهد المباراة",
+  "liveNow": "مباشر",
+  "fullTime": "نهاية المباراة",
+  "notStarted": "لم تبدأ بعد",
+  "matchReport": "تقرير المباراة",
+  "commentary": "التعليق",
+  "assistantNotes": "ملاحظات مساعدك",
+  "substitute": "تبديل",
+  "subOut": "يخرج",
+  "subIn": "يدخل",
+  "subsLeft": "{used} من {max} تبديلات",
+  "@subsLeft": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "ordersHint": "الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.",
+  "windowOpen": "النافذة مفتوحة: أوامرك الآن",
+  "imReady": "أنا مستعد",
+  "readyWaiting": "في انتظار المدرب الآخر",
+  "breakTime": "استراحة",
+  "orderSent": "وصل الأمر، يُنفَّذ في الدقيقة التالية",
+  "send": "أرسل",
+  "possession": "الاستحواذ",
+  "shots": "التسديدات",
+  "onTarget": "على المرمى",
+  "corners": "الركنيات",
+  "fouls": "الأخطاء",
+  "saves": "التصديات",
+  "manOfMatch": "رجل المباراة",
+  "toImprove": "ما يُحسَّن",
+  "whyResult": "لماذا هذه النتيجة",
+  "keyMoments": "أهم اللحظات",
+  "bestPlayers": "الأفضل",
+  "resultWin": "فوز",
+  "resultDraw": "تعادل",
+  "resultLoss": "خسارة",
+  "pitchView": "الملعب",
+  "kickoffAt": "البداية {time}",
+  "@kickoffAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

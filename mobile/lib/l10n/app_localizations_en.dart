@@ -613,4 +613,111 @@ class LEn extends L {
 
   @override
   String get potentialWord => 'Potential';
+
+  @override
+  String get watchLive => 'Watch the match';
+
+  @override
+  String get liveNow => 'Live';
+
+  @override
+  String get fullTime => 'Full time';
+
+  @override
+  String get notStarted => 'Not started yet';
+
+  @override
+  String get matchReport => 'Match report';
+
+  @override
+  String get commentary => 'Commentary';
+
+  @override
+  String get assistantNotes => 'Your assistant\'s notes';
+
+  @override
+  String get substitute => 'Substitute';
+
+  @override
+  String get subOut => 'Off';
+
+  @override
+  String get subIn => 'On';
+
+  @override
+  String subsLeft(int used, int max) {
+    return '$used of $max subs';
+  }
+
+  @override
+  String get ordersHint =>
+      'Orders go in during the windows: before kick-off, at half-time and after minutes 15, 30, 60 and 75.';
+
+  @override
+  String get windowOpen => 'The window is open: give your orders now';
+
+  @override
+  String get imReady => 'I\'m ready';
+
+  @override
+  String get readyWaiting => 'Waiting for the other coach';
+
+  @override
+  String get breakTime => 'Break';
+
+  @override
+  String get orderSent => 'Order received: it goes in next minute';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get possession => 'Possession';
+
+  @override
+  String get shots => 'Shots';
+
+  @override
+  String get onTarget => 'On target';
+
+  @override
+  String get corners => 'Corners';
+
+  @override
+  String get fouls => 'Fouls';
+
+  @override
+  String get saves => 'Saves';
+
+  @override
+  String get manOfMatch => 'Man of the match';
+
+  @override
+  String get toImprove => 'To improve';
+
+  @override
+  String get whyResult => 'Why this result';
+
+  @override
+  String get keyMoments => 'Key moments';
+
+  @override
+  String get bestPlayers => 'The best';
+
+  @override
+  String get resultWin => 'Win';
+
+  @override
+  String get resultDraw => 'Draw';
+
+  @override
+  String get resultLoss => 'Loss';
+
+  @override
+  String get pitchView => 'Pitch';
+
+  @override
+  String kickoffAt(String time) {
+    return 'Kick-off $time';
+  }
 }

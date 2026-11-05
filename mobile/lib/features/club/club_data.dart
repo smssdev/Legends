@@ -7,7 +7,7 @@ import '../leagues/models.dart';
 /// place in the table, the board's objective and what waits for me.
 class ClubSummary {
   const ClubSummary({required this.club, required this.cash, required this.coins, this.next, this.venue, this.matchAt, this.lineupAuto = true,
-      this.lineupReady = true, this.position, this.teams, this.goal, this.pending = const []});
+      this.lineupReady = true, this.position, this.teams, this.goal, this.pending = const [], this.matchId, this.matchStatus});
 
   factory ClubSummary.fromJson(Map<String, dynamic> j) {
     final m = j['match'] as Map<String, dynamic>?;
@@ -21,6 +21,7 @@ class ClubSummary {
       lineupAuto: lineup['auto'] != false, lineupReady: lineup['ready'] != false,
       position: standings['position'] as int?, teams: standings['teams'] as int?,
       goal: board == null ? null : (kind: '${board['kind']}', target: board['target'] as int? ?? 0),
+      matchId: m?['match_id'] as int?, matchStatus: m?['status'] as String?,
       pending: [for (final p in (j['pending'] as List? ?? const [])) '${((p as Map)['lines'] as List?)?.join(' ') ?? p['kind']}'],
     );
   }
@@ -34,6 +35,10 @@ class ClubSummary {
   final int? position, teams;
   final ({String kind, int target})? goal;
   final List<String> pending;
+
+  /// [Sprint 17 F2] The next match once it is under way: its id and status.
+  final int? matchId;
+  final String? matchStatus;
 }
 
 final clubSummaryProvider = FutureProvider.autoDispose.family<ClubSummary, int>(

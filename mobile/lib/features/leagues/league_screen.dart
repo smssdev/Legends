@@ -111,6 +111,10 @@ class _ClubTab extends ConsumerWidget {
               ]),
               const SizedBox(height: 12),
               Text(s.lineupAuto ? l.lineupAuto : l.lineupReady, style: TextStyle(color: s.lineupReady ? context.glm.successText : context.glm.liveText, fontWeight: FontWeight.w700)),
+              if (s.matchId != null) ...[
+                const SizedBox(height: 12),
+                GlmButton(label: l.watchLive, variant: GlmButtonVariant.brand, block: true, icon: const Icon(Icons.play_circle_fill_rounded), onPressed: () => context.push('/match/${s.matchId}')),
+              ],
             ]),
           ),
           const SizedBox(height: 12),

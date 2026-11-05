@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../l10n/app_localizations.dart';
@@ -42,8 +43,9 @@ class FixtureTile extends StatelessWidget {
             style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 20, color: f.live ? context.glm.liveText : p.text))
         : Text(f.at == null ? '—' : latinDigits(DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(f.at!)),
             style: TextStyle(color: p.textMuted, fontSize: 13, fontWeight: FontWeight.w700));
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+    // [Sprint 17 F2] A match under way or played opens: live, or its report afterwards.
+    final open = f.matchId == null ? null : () => context.push(f.finished ? '/match/${f.matchId}/report?coach=$ours' : '/match/${f.matchId}');
+    final tile = Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: ours ? p.gold.withValues(alpha: .10) : p.surface,
@@ -52,6 +54,10 @@ class FixtureTile extends StatelessWidget {
       ),
       // Home on the right in Arabic, as the web's score bug (tokens.json match.homeSide).
       child: Row(children: [side(f.home, end: false), Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: middle), side(f.away, end: true)]),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: open == null ? tile : InkWell(borderRadius: BorderRadius.circular(GlmSize.radiusXl), onTap: open, child: tile),
     );
   }
 }
