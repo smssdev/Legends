@@ -10,6 +10,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money;
 import 'market_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 18 D] An offer to another coach (Sprint 25): his players I ask for, mine I give, and the money; or my
 /// counter to his offer (counterOf), its players already chosen; or, for one of his players alone, a loan (X61 E2).
@@ -70,7 +71,7 @@ class _OfferScreenState extends ConsumerState<OfferScreen> {
     final mine = ref.watch(sellingProvider(widget.leagueId)).value?.mine ?? const <MyPlayer>[];
     final loanTerms = ref.watch(loansProvider(widget.leagueId)).value;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.counterOf != null ? l.counterOffer : l.offerTitleTo(widget.clubName))),
+      appBar: GameBar(title: Text(widget.counterOf != null ? l.counterOffer : l.offerTitleTo(widget.clubName))),
       body: GlmBackground(
         child: AsyncView(
           value: ref.watch(_theirPlayers((widget.leagueId, widget.clubId))),

@@ -17,6 +17,7 @@ import '../club/squad_screen.dart' show money;
 import '../auth/auth_controller.dart';
 import '../home/home_data.dart';
 import '../leagues/widgets.dart' show when;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F] The account and the community in the app: my account (name, look, password, invites, badges), a
 /// league's stats, the ideas and polls (Sprint 28), support, the developers' announcements and the guide (X59).
@@ -39,7 +40,7 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
 }
 
 Widget _page(String title, Widget body, {List<Widget>? actions}) =>
-    Scaffold(appBar: AppBar(title: Text(title), actions: actions), body: GlmBackground(child: body));
+    Scaffold(appBar: GameBar(title: Text(title), actions: actions), body: GlmBackground(child: body));
 
 /// A holiday request (days and a reason) sent to [path]: a league's (its creator answers) or the account's.
 Future<void> askHoliday(BuildContext context, WidgetRef ref, String path, int maxDays) async {

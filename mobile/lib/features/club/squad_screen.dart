@@ -11,6 +11,7 @@ import '../../ui/widgets/game.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/glm_background.dart';
 import 'team_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 17 F1, Sprint 45 M3] The squad as the manager games show it, a table: the position in its line's colour,
 /// the name, age, rating, potential, fitness as a bar, value and who cannot play; a tap on a column sorts by it (again:
@@ -58,7 +59,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
     final l = L.of(context);
     final c = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.squad)),
+      appBar: GameBar(title: Text(l.squad)),
       body: GlmBackground(
         wide: true,
         child: RefreshIndicator(

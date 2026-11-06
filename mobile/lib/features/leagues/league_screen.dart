@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,12 +15,12 @@ import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/cut.dart';
+import '../../ui/widgets/game_icons.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/club_data.dart';
-import '../club/squad_screen.dart' show money;
 import '../../core/api/api_client.dart';
 import '../account/account_screens.dart' show askHoliday;
 import '../club/extras_data.dart';
@@ -66,7 +67,7 @@ class _LeagueScreenState extends ConsumerState<LeagueScreen> {
     final lg = league.value;
     final hasClub = lg?.myClubId != null;
     return Scaffold(
-      appBar: AppBar(
+      appBar: GameBar(
         title: Text(lg?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
           // [Sprint 18] The creator renames the league or moves its start until it starts.
@@ -152,102 +153,300 @@ class _ClubTab extends ConsumerWidget {
       child: AsyncView(
         value: ref.watch(clubSummaryProvider(lg.id)),
         onRetry: () => ref.invalidate(clubSummaryProvider(lg.id)),
-        // [Sprint 45 M2] The manager's office: the next match as the hero, then the club's departments as big tiles
-        // with their state, what needs me now, the table's top and the board's goal.
-        data: (s) => GamePanes(startFlex: 5, endFlex: 6, start: [
-          _NextMatchHero(s: s, leagueId: lg.id),
-          if (lg.contract != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: GlmCard(
-                gold: true,
-                accent: p.gold,
-                child: Row(children: [
-                  Icon(Icons.draw_rounded, color: p.gold),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(goalText(l, s.goal), style: context.text.titleMedium)),
-                  GlmButton(label: l.sign, onPressed: () async {
-                    await ref.read(leaguesRepositoryProvider).signContract(lg.id);
-                    ref.invalidate(leagueProvider(lg.id));
-                  }),
-                ]),
+        // [Sprint 46] The league's hub, the manager games' way: the next match on the stadium filling the screen,
+        // then a strip of tiles for what comes next (the match's preparation, training, a friendly, the table, quests,
+        // the market), each with a green «!» when it needs the coach.
+        data: (s) => LayoutBuilder(builder: (context, box) {
+          final stage = _Versus(s: s, leagueId: lg.id);
+          final tiles = _HubTiles(s: s, go: (path) => context.push(go(path)), table: () => context.go('/leagues/${lg.id}?tab=matches'),
+              contract: lg.contract == null ? null : () async {
+                await ref.read(leaguesRepositoryProvider).signContract(lg.id);
+                ref.invalidate(leagueProvider(lg.id));
+              });
+          final contract = lg.contract == null
+              ? null
+              : GlmCard(
+                  gold: true,
+                  accent: p.gold,
+                  child: Row(children: [
+                    Icon(Icons.draw_rounded, color: p.gold),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(goalText(l, s.goal), style: context.text.titleMedium)),
+                    GlmButton(label: l.sign, onPressed: () async {
+                      await ref.read(leaguesRepositoryProvider).signContract(lg.id);
+                      ref.invalidate(leagueProvider(lg.id));
+                    }),
+                  ]),
+                );
+          if (box.maxWidth < 560 || box.maxHeight < 300) {
+            return ListView(padding: const EdgeInsets.all(12), children: [
+              ?contract,
+              SizedBox(height: 300, child: stage),
+              const SizedBox(height: 10),
+              SizedBox(height: 150, child: tiles),
+              GameHeader(l.needsYou, icon: Icons.notifications_active_rounded),
+              _Needs(s: s, leagueId: lg.id),
+            ]);
+          }
+          return Column(children: [
+            Expanded(child: stage),
+            SizedBox(height: math.min(150, box.maxHeight * .36), child: tiles),
+          ]);
+        }),
+      ),
+    );
+  }
+}
+
+/// [Sprint 46] The next match on the stadium: both clubs' crests large with their strength in a lit ring, the round, the
+/// countdown, a great «VS», where it is played, and the way in (live when it plays, the match day before).
+class _Versus extends StatelessWidget {
+  const _Versus({required this.s, required this.leagueId});
+
+  final ClubSummary s;
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final live = s.matchId != null;
+    final left = s.matchAt?.difference(DateTime.now());
+    String? countdown;
+    if (left != null && !left.isNegative) {
+      final ar = Localizations.localeOf(context).languageCode == 'ar';
+      final (d, h, m) = (left.inDays, left.inHours % 24, left.inMinutes % 60);
+      countdown = ar ? '${d > 0 ? '$dي ' : ''}$hس $mد' : '${d > 0 ? '${d}d ' : ''}${h}h ${m}m';
+    }
+    final home = s.venue != 'away';
+    final (homeSide, awaySide) = home ? (s.club, s.next ?? s.club) : (s.next ?? s.club, s.club);
+    final (hs, as_) = s.strength == null ? (null, null) : home ? (s.strength!.$1, s.strength!.$2) : (s.strength!.$2, s.strength!.$1);
+    Widget team(Side c, int? strength, bool mine) => Expanded(
+          child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              ClubCrest(url: c.crestUrl, name: c.code, size: 84),
+              if (strength != null) ...[const SizedBox(width: 10), _Ring(value: strength ~/ 100, mine: mine)],
+            ]),
+            const SizedBox(height: 6),
+            Text(c.name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
+                style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 28, color: Colors.white, height: 1.05,
+                    shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 6)])),
+          ])),
+        );
+    return StadiumBackdrop(
+      tint: live ? p.live : null,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+        child: Row(children: [
+          team(homeSide, hs, home),
+          SizedBox(
+            width: 190,
+            child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                decoration: ShapeDecoration(shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .15))), color: GlmArena.navy.withValues(alpha: .9)),
+                child: Text(s.round == null ? l.nextMatchShort : l.round(s.round!), style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 17)),
               ),
-            ),
-          _MiniTable(s: s, onTap: () => context.go('/leagues/${lg.id}?tab=matches')),
-        ], end: [
-          _Departments(s: s, go: (path) => context.push(go(path))),
-          GameHeader(l.needsYou, icon: Icons.notifications_active_rounded),
-          _Needs(s: s, leagueId: lg.id),
-          if (s.goal != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: GlmCard(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Row(children: [
-                  IconTile(Icons.flag_rounded, size: 34, color: p.brandLight),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}', style: const TextStyle(fontWeight: FontWeight.w700))),
-                ]),
-              ),
-            ),
+              const SizedBox(height: 6),
+              if (live)
+                Pulse(child: Text(l.liveBadge, style: TextStyle(color: p.danger, fontWeight: FontWeight.w800, fontSize: 18)))
+              else if (countdown != null)
+                Text(countdown, style: const TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: [GlmFonts.body], fontWeight: FontWeight.w800, fontSize: 24, color: Colors.white)),
+              Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 60, height: 1,
+                  foreground: Paint()..shader = LinearGradient(colors: [p.goldLight, p.gold, p.goldDark]).createShader(const Rect.fromLTWH(0, 0, 80, 60)),
+                  shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 3), blurRadius: 8)])),
+              Text(home ? l.homeAway : l.awayGame, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 12)),
+              const SizedBox(height: 6),
+              live
+                  ? GlmButton(label: l.watchLive, variant: GlmButtonVariant.brand, icon: const Icon(Icons.play_circle_fill_rounded), onPressed: () => context.push('/match/${s.matchId}'))
+                  : GlmButton(label: l.matchday, icon: const Icon(Icons.sports_rounded), onPressed: () => context.push('/leagues/$leagueId/matchday')),
+            ])),
+          ),
+          team(awaySide, as_, !home),
         ]),
       ),
     );
   }
 }
 
-/// [Sprint 45 M2] The club's departments as the office's big tiles (the manager games' way, in our Legend Cut): each
-/// with its state in a line, and a badge when it needs the coach.
-class _Departments extends StatelessWidget {
-  const _Departments({required this.s, required this.go});
+/// A club's strength as a number in a lit ring: mine in gold, theirs in blue.
+class _Ring extends StatelessWidget {
+  const _Ring({required this.value, required this.mine});
+
+  final int value;
+  final bool mine;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final c = mine ? p.gold : GlmArena.blueLight;
+    return Container(
+      width: 62,
+      height: 62,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: GlmArena.navy.withValues(alpha: .92),
+        border: Border.all(color: c, width: 3.5),
+        boxShadow: [BoxShadow(color: c.withValues(alpha: .5), blurRadius: 14)],
+      ),
+      child: Text('$value', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: Colors.white, height: 1)),
+    );
+  }
+}
+
+/// The hub's strip of tiles under the match, scrolling across when it does not fit.
+class _HubTiles extends StatelessWidget {
+  const _HubTiles({required this.s, required this.go, required this.table, this.contract});
 
   final ClubSummary s;
   final void Function(String path) go;
+  final VoidCallback table;
+
+  /// The contract to sign (the board's goal), first in the strip while it waits.
+  final VoidCallback? contract;
 
   @override
   Widget build(BuildContext context) {
     final l = L.of(context);
     final p = context.palette;
     bool needs(String kind) => s.needs.any((n) => n.kind == kind);
-    final tiles = [
-      (Icons.groups_rounded, l.squad, l.subSquad, 'squad', p.gold, false),
-      (Icons.grid_view_rounded, l.lineup, '${s.formation ?? ''} · ${s.lineupAuto ? l.tileAuto : l.tileReady}', 'lineup', p.success, needs('lineup')),
-      (Icons.tune_rounded, l.tactics, l.subTactics, 'tactics', p.brandLight, false),
-      (Icons.fitness_center_rounded, l.training, l.subTraining, 'training', p.warning, needs('training_empty') || needs('training_done')),
-      (Icons.storefront_rounded, l.market, l.subMarket, 'market', p.gold, needs('offers')),
-      (Icons.travel_explore_rounded, l.scout, l.subScout, 'scout', p.brandLight, false),
-      (Icons.account_balance_wallet_rounded, l.finance, money(context, s.cash), 'finance', p.success, false),
-      (Icons.stadium_rounded, l.stadium, l.subStadium, 'stadium', p.textSoft, false),
+    final missing = needs('lineup');
+    final prep = missing ? .35 : s.lineupAuto ? .7 : 1.0;
+    DateTime? timer(String kind) => s.timers.where((t) => t.kind == kind).firstOrNull?.at;
+    String left(DateTime? at) {
+      if (at == null) return '';
+      final d = at.difference(DateTime.now());
+      if (d.isNegative) return '';
+      final ar = Localizations.localeOf(context).languageCode == 'ar';
+      return d.inDays > 0 ? (ar ? '${d.inDays}ي' : '${d.inDays}d') : (ar ? '${d.inHours}س ${d.inMinutes % 60}د' : '${d.inHours}h ${d.inMinutes % 60}m');
+    }
+
+    final tiles = <Widget>[
+      if (contract != null) _HubTile(width: 230, gold: true, alert: true, onTap: contract!, icon: GameGlyph.contracts, title: l.sign, sub: goalText(l, s.goal)),
+      _HubTile(
+        width: 270,
+        alert: missing,
+        onTap: () => go('lineup'),
+        icon: GameGlyph.lineup,
+        title: l.matchPrep,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(missing ? l.prepMissing : s.lineupAuto ? l.prepAuto : l.prepReady, style: TextStyle(color: missing ? p.danger : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12)),
+          const SizedBox(height: 6),
+          _Progress(value: prep, color: missing ? p.danger : prep < 1 ? p.gold : p.success),
+        ]),
+      ),
+      _HubTile(width: 170, alert: needs('training_empty') || needs('training_done'), onTap: () => go('training'), icon: GameGlyph.training, title: l.training,
+          sub: left(timer('training')).isEmpty ? l.trainingSub : left(timer('training'))),
+      _HubTile(width: 230, onTap: () => go('friendlies'), icon: GameGlyph.friendlies, title: l.quickFriendly, sub: l.quickFriendlySub),
+      _HubTile(
+        width: 250,
+        onTap: table,
+        icon: GameGlyph.table,
+        title: l.leagueTable,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          for (final r in s.top.take(3))
+            Row(children: [
+              SizedBox(width: 22, child: Text('${r.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.mine ? p.goldLight : Colors.white70))),
+              Expanded(child: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, textAlign: TextAlign.start,
+                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 13, height: 1.15, color: r.mine ? p.goldLight : Colors.white))),
+              Text('${r.points}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.mine ? p.goldLight : Colors.white)),
+            ]),
+        ]),
+      ),
+      _HubTile(width: 190, gold: true, onTap: () => go('quests'), icon: GameGlyph.quests, title: l.quests, sub: left(timer('daily')).isEmpty ? l.questsSub : left(timer('daily'))),
+      _HubTile(width: 190, alert: needs('offers'), onTap: () => go('market'), icon: GameGlyph.transfers, title: l.market, sub: left(timer('market')).isEmpty ? l.subMarket : '${l.marketRenews} ${left(timer('market'))}'),
     ];
-    return LayoutBuilder(builder: (context, box) {
-      final cols = box.maxWidth >= 520 ? 4 : box.maxWidth >= 300 ? 3 : 2;
-      final w = (box.maxWidth - (cols - 1) * 8) / cols;
-      return Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final (i, (icon, label, sub, path, color, alert)) in tiles.indexed)
-          SizedBox(
-            width: w,
-            child: FadeSlideIn(
-              index: i,
-              child: GlmCard(
-                padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-                accent: color,
-                onTap: () => go(path),
-                child: Stack(clipBehavior: Clip.none, children: [
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    IconTile(icon, color: color, size: 40),
-                    const SizedBox(height: 10),
-                    Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                    Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: path == 'finance' ? TextDirection.ltr : null, textAlign: TextAlign.start,
-                        style: TextStyle(color: p.textMuted, fontSize: 11.5, fontFamily: path == 'finance' ? GlmFonts.numbers : null, fontWeight: path == 'finance' ? FontWeight.w800 : null)),
-                  ]),
-                  if (alert) PositionedDirectional(top: -4, end: -2, child: Pulse(child: Container(width: 12, height: 12, decoration: BoxDecoration(color: p.danger, shape: BoxShape.circle, border: Border.all(color: p.surface, width: 2))))),
-                ]),
-              ),
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      itemCount: tiles.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 10),
+      itemBuilder: (_, i) => FadeSlideIn(index: i, child: tiles[i]),
+    );
+  }
+}
+
+/// A tile of the hub: a navy card lit from the top (gold for the quests), its glossy icon, its title in gold, a line or
+/// its own content, and the green «!» when it needs the coach.
+class _HubTile extends StatelessWidget {
+  const _HubTile({required this.width, required this.onTap, required this.icon, required this.title, this.sub, this.child, this.alert = false, this.gold = false});
+
+  final double width;
+  final VoidCallback onTap;
+  final GameGlyph icon;
+  final String title;
+  final String? sub;
+  final Widget? child;
+  final bool alert, gold;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final card = Material(
+      shape: GlmCut.shape(14, side: BorderSide(color: gold ? p.goldLight : GlmArena.navyEdge, width: 1.2)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Ink(
+          width: width,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                colors: gold ? [GlmArena.questTop, GlmArena.questBottom] : [GlmArena.navyLight, GlmArena.navy]),
+          ),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            GameIcon(icon, size: 52),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: gold ? p.onGold : p.goldLight, fontWeight: FontWeight.w800, fontSize: 17)),
+                const SizedBox(height: 4),
+                ?child,
+                if (sub != null) Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: gold ? p.onGold.withValues(alpha: .8) : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12.5)),
+              ]),
+            ),
+          ]),
+        ),
+      ),
+    );
+    return Stack(clipBehavior: Clip.none, children: [
+      PressScale(child: card),
+      if (alert)
+        PositionedDirectional(
+          top: -6,
+          start: 8,
+          child: Pulse(
+            child: Container(
+              width: 24,
+              height: 24,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.alert, border: Border.all(color: Colors.white, width: 2), boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)]),
+              child: const Text('!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, height: 1)),
             ),
           ),
-      ]);
-    });
+        ),
+    ]);
   }
+}
+
+class _Progress extends StatelessWidget {
+  const _Progress({required this.value, required this.color});
+
+  final double value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        height: 14,
+        padding: const EdgeInsets.all(2),
+        decoration: ShapeDecoration(shape: GlmCut.shape(5, side: BorderSide(color: Colors.white.withValues(alpha: .25))), color: Colors.black.withValues(alpha: .45)),
+        child: FractionallySizedBox(
+          alignment: AlignmentDirectional.centerStart,
+          widthFactor: value.clamp(0, 1),
+          child: DecoratedBox(decoration: ShapeDecoration(shape: GlmCut.shape(3), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(color, Colors.white, .3)!, color]))),
+        ),
+      );
 }
 
 /// What needs the coach now (the server's agenda), each a line with its way in; or «all set».
@@ -304,136 +503,6 @@ class _Needs extends StatelessWidget {
           ),
         ],
       ]),
-    );
-  }
-}
-
-/// The table's top and my place in it, as a small broadcast table; a tap opens the full one.
-class _MiniTable extends StatelessWidget {
-  const _MiniTable({required this.s, required this.onTap});
-
-  final ClubSummary s;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    if (s.top.isEmpty) return const SizedBox();
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      GameHeader(l.leagueTable, icon: Icons.leaderboard_rounded),
-      GlmCard(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        onTap: onTap,
-        child: Column(children: [
-          for (final r in s.top)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              color: r.mine ? p.gold.withValues(alpha: .12) : null,
-              child: Row(children: [
-                Container(
-                  width: 26,
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  decoration: ShapeDecoration(shape: GlmCut.shape(5), color: r.position == 1 ? p.gold : p.surfaceRaised),
-                  child: Text('${r.position}', textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.position == 1 ? p.onGold : p.text)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(child: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, textAlign: TextAlign.start,
-                    style: TextStyle(fontWeight: r.mine ? FontWeight.w800 : FontWeight.w600, color: r.mine ? context.glm.goldText : p.text))),
-                Text('${r.points}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 17, color: p.text)),
-              ]),
-            ),
-        ]),
-      ),
-    ]);
-  }
-}
-
-/// The next match as the screen's hero: both crests large on a pitch-green glow, the time and how long until it, the
-/// line-up's state, and the way in (live when it plays, the match day panels before).
-class _NextMatchHero extends StatelessWidget {
-  const _NextMatchHero({required this.s, required this.leagueId});
-
-  final ClubSummary s;
-  final int leagueId;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    final live = s.matchId != null;
-    final left = s.matchAt?.difference(DateTime.now());
-    String? countdown;
-    if (left != null && !left.isNegative) {
-      countdown = left.inDays >= 1 ? '${l.days(left.inDays)} ${l.hours(left.inHours % 24)}' : left.inHours >= 1 ? l.hours(left.inHours) : l.minutes(left.inMinutes.clamp(1, 59));
-    }
-    Widget side(Side c) => Expanded(
-          child: Column(children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .06), border: Border.all(color: Colors.white.withValues(alpha: .10))),
-              child: ClubCrest(url: c.crestUrl, name: c.code, size: 64),
-            ),
-            const SizedBox(height: 8),
-            Text(c.name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-          ]),
-        );
-    return HeroFrame(
-      edge: live ? p.danger : p.gold,
-      glow: live ? p.danger : p.pitch,
-      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(p.pitchDark, p.surface, .35)!, p.surface]),
-      child: Builder(builder: (_) => StadiumBackdrop(
-        child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-        child: Column(children: [
-          Row(children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: ShapeDecoration(color: live ? p.danger : p.gold.withValues(alpha: .16), shape: GlmCut.shape(GlmCut.chip + 2)),
-              child: live
-                  ? Pulse(child: Text(l.liveBadge, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)))
-                  : Text(l.nextMatchShort, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
-            ),
-            const SizedBox(width: 8),
-            if (s.matchAt != null)
-              Expanded(child: Text(when(context, s.matchAt!.toLocal()), textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12))),
-          ]),
-          const SizedBox(height: 14),
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            side(s.venue == 'away' ? (s.next ?? s.club) : s.club),
-            Padding(
-              padding: const EdgeInsets.only(top: 22),
-              child: Column(children: [
-                Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 28, fontWeight: FontWeight.w800, color: p.gold, height: 1)),
-                if (countdown != null) Text(l.countdownIn(countdown), style: TextStyle(color: p.textSoft, fontSize: 12)),
-              ]),
-            ),
-            side(s.venue == 'away' ? s.club : (s.next ?? s.club)),
-          ]),
-          if (s.strength != null) ...[
-            const SizedBox(height: 10),
-            _StrengthBar(mine: s.strength!.$1, theirs: s.strength!.$2, home: s.venue != 'away'),
-          ],
-          const SizedBox(height: 12),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: ShapeDecoration(color: p.bgDeep.withValues(alpha: .75), shape: GlmCut.shape(GlmCut.chip + 2)),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(s.lineupReady ? Icons.check_circle_rounded : Icons.error_rounded, size: 16, color: s.lineupReady ? p.success : p.danger),
-                const SizedBox(width: 6),
-                Text(s.lineupAuto ? l.lineupAuto : l.lineupReady, style: TextStyle(color: p.text, fontWeight: FontWeight.w700, fontSize: 13)),
-              ]),
-            ),
-          ),
-          const SizedBox(height: 12),
-          live
-              ? GlmButton(label: l.watchLive, variant: GlmButtonVariant.brand, block: true, icon: const Icon(Icons.play_circle_fill_rounded), onPressed: () => context.push('/match/${s.matchId}'))
-              : GlmButton(label: l.matchday, block: true, icon: const Icon(Icons.sports_rounded), onPressed: () => context.push('/leagues/$leagueId/matchday')),
-        ]),
-      ),
-      ),
-      ),
     );
   }
 }
@@ -804,41 +873,3 @@ class _CoachesTab extends ConsumerWidget {
   }
 }
 
-/// [Sprint 45 M2] Both sides' strength for the next match: two bars meeting in the middle, mine in gold.
-class _StrengthBar extends StatelessWidget {
-  const _StrengthBar({required this.mine, required this.theirs, required this.home});
-
-  final int mine, theirs;
-
-  /// My club on the reading start (home) or the end (away), as the crests above.
-  final bool home;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    final (a, b) = home ? (mine, theirs) : (theirs, mine);
-    final (ca, cb) = home ? (p.gold, p.textSoft) : (p.textSoft, p.gold);
-    String n(int v) => (v / 100).toStringAsFixed(0);
-    final big = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: p.text);
-    return Column(children: [
-      Row(children: [
-        Text(n(a), style: big),
-        Expanded(child: Text(l.strengthCompare, textAlign: TextAlign.center, style: TextStyle(color: p.textSoft, fontSize: 11.5))),
-        Text(n(b), style: big),
-      ]),
-      const SizedBox(height: 4),
-      ClipPath(
-        clipper: ShapeBorderClipper(shape: GlmCut.shape(4), textDirection: Directionality.of(context)),
-        child: SizedBox(
-          height: 8,
-          child: Row(children: [
-            Expanded(flex: a, child: ColoredBox(color: ca)),
-            const SizedBox(width: 2),
-            Expanded(flex: b == 0 && a == 0 ? 1 : b, child: ColoredBox(color: cb)),
-          ]),
-        ),
-      ),
-    ]);
-  }
-}

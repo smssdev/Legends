@@ -8,6 +8,7 @@ import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_card.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 19 F1] Which notifications the account wants (`/notifications`, Sprint 36): the six kinds, on the phone and in
 /// the browser alike, and the two emails. Whether the server can push to the app at all is shown on top.
@@ -36,7 +37,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.notifications)),
+      appBar: GameBar(title: Text(l.notifications)),
       body: GlmBackground(
         child: AsyncView(
           value: ref.watch(notificationSettingsProvider),

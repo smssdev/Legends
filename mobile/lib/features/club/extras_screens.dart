@@ -13,6 +13,7 @@ import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'extras_data.dart';
 import 'squad_screen.dart' show money, lineColor;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The club's other screens in the app: training, the specialists, the spy, the weekly quests and
 /// the league's honours. They show what the server sends and send the coach's choice; a refusal shows its reason.
@@ -28,7 +29,7 @@ String _lineName(L l, String line) => switch (line) { 'gk' => l.lineGk, 'def' =>
 
 String _span(L l, int minutes) => minutes >= 120 ? l.hours((minutes / 60).round()) : l.minutes(minutes);
 
-Widget _scaffold(String title, Widget body) => Scaffold(appBar: AppBar(title: Text(title)), body: GlmBackground(child: body));
+Widget _scaffold(String title, Widget body) => Scaffold(appBar: GameBar(title: Text(title)), body: GlmBackground(child: body));
 
 class TrainingScreen extends ConsumerWidget {
   const TrainingScreen({super.key, required this.leagueId});

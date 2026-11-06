@@ -5,6 +5,7 @@ import '../tokens.g.dart';
 import 'cut.dart';
 import 'glm_card.dart';
 import 'motion.dart';
+import '../../features/leagues/shell.dart';
 
 /// [2026-11-06] The game's shared pieces for every screen: a rating badge coloured by its level, a stat tile, a
 /// section header, and grouped menus of screens (an icon in its colour, a title and a line), in place of walls of tiles.
@@ -270,8 +271,8 @@ PreferredSizeWidget gameTabsBar(BuildContext context, {required String title, re
     unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w600, fontSize: 15),
     dividerColor: Colors.transparent,
   );
-  if (!isWide(context)) return AppBar(title: Text(title), actions: actions, bottom: bar);
-  return AppBar(
+  if (!isWide(context)) return GameBar(title: Text(title), actions: actions, bottom: bar);
+  return GameBar(
     titleSpacing: 16,
     title: Row(children: [Text(title), const SizedBox(width: 16), Expanded(child: bar)]),
     actions: actions,

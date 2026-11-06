@@ -13,6 +13,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money;
 import 'finance_screen.dart' show confirm;
 import 'money_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The stadium (the web's StadiumPage, Sprint 29): seats, pitch and training, three stages of five
 /// parts each, one part at a time. The coach starts each part and pays for it; the server times it from the league's
@@ -68,7 +69,7 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
     final l = L.of(context);
     final repo = ref.read(moneyRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l.stadium)),
+      appBar: GameBar(title: Text(l.stadium)),
       body: GlmBackground(
         child: AsyncView(
           value: ref.watch(stadiumProvider(widget.leagueId)),

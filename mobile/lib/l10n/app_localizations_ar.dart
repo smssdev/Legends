@@ -2285,4 +2285,64 @@ class LAr extends L {
 
   @override
   String get leagueTable => 'الترتيب';
+
+  @override
+  String get matchPrep => 'الاستعداد للمباراة';
+
+  @override
+  String get prepReady => 'التشكيلة جاهزة';
+
+  @override
+  String get prepAuto => 'التشكيلة تلقائية';
+
+  @override
+  String get prepMissing => 'غائبون في التشكيلة';
+
+  @override
+  String get quickFriendly => 'ودية سريعة';
+
+  @override
+  String get quickFriendlySub => 'العب ودية مع أندية الدوري';
+
+  @override
+  String get questsSub => 'احصل عليه';
+
+  @override
+  String get trainingSub => 'طوّر لاعبيك';
+
+  @override
+  String get marketRenews => 'تتجدد القائمة';
+
+  @override
+  String get homeAway => 'على أرضك';
+
+  @override
+  String get awayGame => 'خارج أرضك';
+
+  @override
+  String get coachFile => 'ملف المدرب';
+
+  @override
+  String get coachSlots => 'فتحات المدرب';
+
+  @override
+  String get newLeagueShort => 'دوري جديد';
+
+  @override
+  String get statWon => 'الانتصارات';
+
+  @override
+  String get statDrawn => 'التعادلات';
+
+  @override
+  String get statLost => 'الهزائم';
+
+  @override
+  String get statPoints => 'النقاط';
+
+  @override
+  String get shopTile => 'المتجر';
+
+  @override
+  String get shopSub => 'كوينز وعروض';
 }

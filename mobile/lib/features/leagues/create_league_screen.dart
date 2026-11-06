@@ -12,6 +12,7 @@ import '../../ui/widgets/glm_text_field.dart';
 import 'leagues_repository.dart';
 import 'models.dart';
 import 'widgets.dart';
+import 'shell.dart';
 
 final _templatesProvider = FutureProvider.autoDispose((ref) => ref.read(leaguesRepositoryProvider).templates());
 final _templateClubsProvider = FutureProvider.autoDispose.family<List<ClubCardData>, String>((ref, t) => ref.read(leaguesRepositoryProvider).templateClubs(t));
@@ -58,7 +59,7 @@ class _CreateLeagueScreenState extends ConsumerState<CreateLeagueScreen> {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.newLeague)),
+      appBar: GameBar(title: Text(l.newLeague)),
       bottomNavigationBar: SafeArea(
         child: Padding(padding: const EdgeInsets.all(16), child: GlmButton(label: l.create, block: true, loading: _busy, onPressed: _template != null && _club != null ? _create : null)),
       ),

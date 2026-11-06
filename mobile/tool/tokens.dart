@@ -41,6 +41,10 @@ void main() {
   for (final e in ink.entries) {
     b.writeln('  static const ${ident(e.key)} = Color(${hex(e.value as String)});');
   }
+  b..writeln('}')..writeln()..writeln('/// [Sprint 46] The app\'s arena look: the blue ground, the navy cards, the top bar\'s pills.')..writeln('abstract final class GlmArena {');
+  (t['arena'] as Map).forEach((k, v) {
+    if (!(k as String).startsWith(r'$')) b.writeln('  static const ${ident(k)} = Color(${hex(v as String)});');
+  });
   b..writeln('}')..writeln()..writeln('/// A player\'s line: its badge colour and text.')..writeln('abstract final class GlmLine {');
   (t['line'] as Map).forEach((k, v) => b.writeln('  static const $k = (bg: Color(${hex(v['bg'])}), fg: Color(${hex(v['fg'])}));'));
   b..writeln('}')..writeln()..writeln('/// Fitness from its value (min, colour), highest first.')..writeln('const glmFitness = [');

@@ -2290,4 +2290,64 @@ class LEn extends L {
 
   @override
   String get leagueTable => 'Table';
+
+  @override
+  String get matchPrep => 'Match preparation';
+
+  @override
+  String get prepReady => 'Lineup ready';
+
+  @override
+  String get prepAuto => 'Automatic lineup';
+
+  @override
+  String get prepMissing => 'Players missing';
+
+  @override
+  String get quickFriendly => 'Quick friendly';
+
+  @override
+  String get quickFriendlySub => 'Play a friendly with the league\'s clubs';
+
+  @override
+  String get questsSub => 'Claim it';
+
+  @override
+  String get trainingSub => 'Develop your players';
+
+  @override
+  String get marketRenews => 'The list renews';
+
+  @override
+  String get homeAway => 'At home';
+
+  @override
+  String get awayGame => 'Away';
+
+  @override
+  String get coachFile => 'Manager profile';
+
+  @override
+  String get coachSlots => 'Manager slots';
+
+  @override
+  String get newLeagueShort => 'New league';
+
+  @override
+  String get statWon => 'Wins';
+
+  @override
+  String get statDrawn => 'Draws';
+
+  @override
+  String get statLost => 'Losses';
+
+  @override
+  String get statPoints => 'Points';
+
+  @override
+  String get shopTile => 'Shop';
+
+  @override
+  String get shopSub => 'Coins and offers';
 }

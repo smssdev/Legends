@@ -15,6 +15,7 @@ import '../../ui/widgets/kit.dart';
 import '../../ui/widgets/motion.dart';
 import 'squad_screen.dart';
 import 'team_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 17 F1] The lineup on a pitch (the web's Lineup): the formation from the book, the eleven at their slots and
 /// the bench under it. A tap on a player then on another swaps them (between the pitch, the bench and the rest), any
@@ -99,7 +100,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     final formations = ref.watch(formationsProvider).value ?? const <Formation>[];
     final save = GlmButton(label: l.save, block: true, loading: _busy, icon: const Icon(Icons.check_rounded), onPressed: _formation != null && _dirty ? _save : null);
     return Scaffold(
-      appBar: AppBar(title: Text(l.lineup), actions: [
+      appBar: GameBar(title: Text(l.lineup), actions: [
         TextButton.icon(
           onPressed: _busy ? null : () => _save(auto: true),
           icon: Icon(Icons.auto_awesome_rounded, color: context.glm.goldText, size: 18),

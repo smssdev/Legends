@@ -4104,6 +4104,126 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الترتيب'**
   String get leagueTable;
+
+  /// No description provided for @matchPrep.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاستعداد للمباراة'**
+  String get matchPrep;
+
+  /// No description provided for @prepReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشكيلة جاهزة'**
+  String get prepReady;
+
+  /// No description provided for @prepAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشكيلة تلقائية'**
+  String get prepAuto;
+
+  /// No description provided for @prepMissing.
+  ///
+  /// In ar, this message translates to:
+  /// **'غائبون في التشكيلة'**
+  String get prepMissing;
+
+  /// No description provided for @quickFriendly.
+  ///
+  /// In ar, this message translates to:
+  /// **'ودية سريعة'**
+  String get quickFriendly;
+
+  /// No description provided for @quickFriendlySub.
+  ///
+  /// In ar, this message translates to:
+  /// **'العب ودية مع أندية الدوري'**
+  String get quickFriendlySub;
+
+  /// No description provided for @questsSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'احصل عليه'**
+  String get questsSub;
+
+  /// No description provided for @trainingSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'طوّر لاعبيك'**
+  String get trainingSub;
+
+  /// No description provided for @marketRenews.
+  ///
+  /// In ar, this message translates to:
+  /// **'تتجدد القائمة'**
+  String get marketRenews;
+
+  /// No description provided for @homeAway.
+  ///
+  /// In ar, this message translates to:
+  /// **'على أرضك'**
+  String get homeAway;
+
+  /// No description provided for @awayGame.
+  ///
+  /// In ar, this message translates to:
+  /// **'خارج أرضك'**
+  String get awayGame;
+
+  /// No description provided for @coachFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف المدرب'**
+  String get coachFile;
+
+  /// No description provided for @coachSlots.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتحات المدرب'**
+  String get coachSlots;
+
+  /// No description provided for @newLeagueShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوري جديد'**
+  String get newLeagueShort;
+
+  /// No description provided for @statWon.
+  ///
+  /// In ar, this message translates to:
+  /// **'الانتصارات'**
+  String get statWon;
+
+  /// No description provided for @statDrawn.
+  ///
+  /// In ar, this message translates to:
+  /// **'التعادلات'**
+  String get statDrawn;
+
+  /// No description provided for @statLost.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهزائم'**
+  String get statLost;
+
+  /// No description provided for @statPoints.
+  ///
+  /// In ar, this message translates to:
+  /// **'النقاط'**
+  String get statPoints;
+
+  /// No description provided for @shopTile.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتجر'**
+  String get shopTile;
+
+  /// No description provided for @shopSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'كوينز وعروض'**
+  String get shopSub;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

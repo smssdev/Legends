@@ -17,6 +17,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../leagues/widgets.dart' show when;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 G] Tournaments (Sprint 29) and the alliance tournament (X27) in the app: my tournaments, a new one from
 /// a template, its page (code, entry, groups), and its draw replayed on the server's clock, one ball every reveal_ms
@@ -38,7 +39,7 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
 }
 
 Widget _page(String title, Widget body, {Widget? fab}) =>
-    Scaffold(appBar: AppBar(title: Text(title)), floatingActionButton: fab, body: GlmBackground(child: body));
+    Scaffold(appBar: GameBar(title: Text(title)), floatingActionButton: fab, body: GlmBackground(child: body));
 
 String templateName(L l, String key) => switch (key) {
       'world_cup' => l.tplWorldCup, 'world_cup_48' => l.tplWorldCup48, 'club_world_cup' => l.tplClubWorldCup,
