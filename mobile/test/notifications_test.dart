@@ -16,7 +16,7 @@ void main() {
   test('a push opens its screen: the site\'s path inside its league', () {
     expect(appRoute('/stadium', 8), '/leagues/8/stadium');
     expect(appRoute('/transfers', 8), '/leagues/8/market');
-    expect(appRoute('/match', 8), '/leagues/8');
+    expect(appRoute('/match', 8), '/leagues/8/matchday');
     expect(appRoute('/live/77', null), '/match/77');
     expect(appRoute('/leagues', null), isNull);
   });

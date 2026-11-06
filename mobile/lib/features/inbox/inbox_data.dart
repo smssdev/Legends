@@ -37,7 +37,7 @@ String? appRoute(String? link, int? league) {
   if (league == null) return null;
   for (final (prefix, screen) in [
     ('/stadium', 'stadium'), ('/finance', 'finance'), ('/market', 'market'), ('/transfers', 'market'), ('/scout', 'scout'), ('/training', 'training'),
-    ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/friendlies', 'friendlies'), ('/predictions', 'predictions'), ('/newspaper', 'newspaper'), ('/stats', 'stats'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
+    ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/friendlies', 'friendlies'), ('/predictions', 'predictions'), ('/newspaper', 'newspaper'), ('/stats', 'stats'), ('/match', 'matchday'), ('/contracts', 'contracts'), ('/tickets', 'tickets'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
   ]) {
     if (path.startsWith(prefix)) return '/leagues/$league/$screen';
   }

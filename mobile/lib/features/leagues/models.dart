@@ -7,7 +7,7 @@ String? _name(Object? v) => v is Map ? v['name'] as String? : v as String?;
 class League {
   const League({required this.id, required this.name, required this.code, required this.status, required this.isOwner, this.myClubId, this.myRequest,
       this.freeClubs = 0, this.pendingRequests = 0, this.inviteUrl, this.startsAt, this.teamCount = 0, this.coaches = 0, this.members = const [],
-      this.seasonNumber, this.roundsPlayed, this.rounds, this.contract});
+      this.seasonNumber, this.roundsPlayed, this.rounds, this.contract, this.locked = true});
 
   factory League.fromJson(Map<String, dynamic> j) {
     final season = j['season'] as Map<String, dynamic>?;
@@ -19,13 +19,16 @@ class League {
       teamCount: j['team_count'] as int? ?? 0, coaches: j['coaches'] as int? ?? 0,
       members: [for (final m in (j['members'] as List? ?? const [])) Member.fromJson(m as Map<String, dynamic>)],
       seasonNumber: season?['number'] as int?, roundsPlayed: season?['rounds_played'] as int?, rounds: season?['rounds'] as int?,
-      contract: me?['contract'] as Map<String, dynamic>?,
+      contract: me?['contract'] as Map<String, dynamic>?, locked: j['locked'] != false,
     );
   }
 
   final int id;
   final String name, code, status;
   final bool isOwner;
+
+  /// Its settings are locked once it starts [PLAN 2.3].
+  final bool locked;
   final int? myClubId;
   final String? myRequest, inviteUrl;
   final int freeClubs, pendingRequests, teamCount, coaches;
@@ -38,13 +41,14 @@ class League {
 }
 
 class Member {
-  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false, this.userId});
+  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false, this.userId, this.vacationRequest});
 
   factory Member.fromJson(Map<String, dynamic> j) {
     final u = j['user'] as Map<String, dynamic>? ?? const {};
     final c = j['club'] as Map<String, dynamic>?;
     return Member(id: j['id'] as int, name: '${u['name'] ?? ''}', username: u['username'] as String?, club: c?['name'] as String?,
-        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?);
+        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?,
+        vacationRequest: j['vacation_request'] is Map ? (days: (j['vacation_request'] as Map)['days'] as int? ?? 0, reason: '${(j['vacation_request'] as Map)['reason'] ?? ''}') : null);
   }
 
   final int id;
@@ -54,6 +58,9 @@ class Member {
 
   /// The coach's account, for his profile.
   final int? userId;
+
+  /// A holiday he asked for, for the league's creator to answer.
+  final ({int days, String reason})? vacationRequest;
 }
 
 class ClubCardData {

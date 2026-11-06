@@ -14,7 +14,10 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/club_data.dart';
+import '../../core/api/api_client.dart';
+import '../account/account_screens.dart' show askHoliday;
 import '../club/extras_data.dart';
+import '../tournaments/tournament_screens.dart' show pickWhen;
 import '../home/home_data.dart';
 import '../money/finance_screen.dart' show confirm;
 import 'leagues_repository.dart';
@@ -37,6 +40,11 @@ class LeagueScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(league.value?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+          actions: [
+            // [Sprint 18] The creator renames the league or moves its start until it starts.
+            if (league.value?.isOwner == true && league.value?.locked == false)
+              IconButton(tooltip: l.leagueSettings, icon: const Icon(Icons.settings_rounded), onPressed: () => _settings(context, ref, league.value!)),
+          ],
           bottom: TabBar(isScrollable: true, tabAlignment: TabAlignment.start, labelColor: context.glm.goldText, indicatorColor: context.palette.gold,
               tabs: [Tab(text: l.tabClub), Tab(text: l.tabTable), Tab(text: l.tabFixtures), Tab(text: l.tabCoaches)]),
         ),
@@ -98,6 +106,20 @@ class _ClubTab extends ConsumerWidget {
                 ]),
               ),
             ),
+          // [Sprint 20 B3] What was played while I was away.
+          if (s.missed > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: GlmCard(
+                onTap: () => context.push('/leagues/${lg.id}/missed'),
+                child: Row(children: [
+                  Icon(Icons.history_rounded, color: p.gold),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(l.missedMatches(s.missed), style: const TextStyle(fontWeight: FontWeight.w800))),
+                  const Icon(Icons.chevron_right_rounded),
+                ]),
+              ),
+            ),
           GlmCard(
             gold: true,
             child: Column(children: [
@@ -133,7 +155,9 @@ class _ClubTab extends ConsumerWidget {
             childAspectRatio: 1.25,
             children: [
               for (final (icon, label, path) in [
+                (Icons.sports_rounded, l.matchday, 'matchday'),
                 (Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics'),
+                (Icons.description_rounded, l.contracts, 'contracts'), (Icons.confirmation_number_rounded, l.cheerTickets, 'tickets'),
                 (Icons.swap_horiz_rounded, l.market, 'market'), (Icons.travel_explore_rounded, l.scout, 'scout'),
                 (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
                 (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
@@ -160,6 +184,14 @@ class _ClubTab extends ConsumerWidget {
           ]),
           if (s.goal != null) ...[const SizedBox(height: 12), GlmCard(child: Row(children: [Icon(Icons.flag_rounded, color: p.gold), const SizedBox(width: 10), Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}'))]))],
           for (final line in s.pending) Padding(padding: const EdgeInsets.only(top: 8), child: GlmCard(child: Text(line, style: TextStyle(color: p.textSoft)))),
+          // [Sprint 18] A holiday in this league, asked of its creator.
+          const SizedBox(height: 16),
+          GlmButton(
+            label: l.holidayLeague,
+            variant: GlmButtonVariant.quiet,
+            icon: const Icon(Icons.beach_access_rounded),
+            onPressed: () => askHoliday(context, ref, '/leagues/${lg.id}/vacation', 14),
+          ),
           // [Sprint 18] Leaving the league: the team goes back to the computer (Leaving::resign), after a clear yes.
           const SizedBox(height: 28),
           GlmButton(
@@ -279,6 +311,55 @@ class _FixturesTab extends ConsumerWidget {
   }
 }
 
+Future<void> _settings(BuildContext context, WidgetRef ref, League lg) async {
+  final l = L.of(context);
+  final name = TextEditingController(text: lg.name);
+  DateTime? starts = lg.startsAt?.toLocal();
+  final ok = await showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, set) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(l.leagueSettings, style: ctx.text.titleMedium),
+          TextField(controller: name, maxLength: 60, decoration: InputDecoration(labelText: l.leagueName)),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l.startsOn),
+            subtitle: Text(starts == null ? '—' : when(ctx, starts!)),
+            onTap: () async {
+              final d = await pickWhen(ctx, DateTime.now().add(const Duration(hours: 2)));
+              if (d != null) set(() => starts = d);
+            },
+          ),
+          GlmButton(label: l.save, block: true, onPressed: () => Navigator.pop(ctx, true)),
+        ]),
+      ),
+    ),
+  );
+  if (ok == true && context.mounted) {
+    try {
+      await ref.read(apiProvider).patch('/leagues/${lg.id}', {'name': name.text.trim(), if (starts != null) 'starts_at': starts!.toUtc().toIso8601String()});
+      if (context.mounted) showGlmToast(context, l.saved);
+    } on ApiError catch (e) {
+      if (context.mounted) showGlmToast(context, e.message, error: true);
+    }
+    ref.invalidate(leagueProvider(lg.id));
+  }
+  name.dispose();
+}
+
+Future<void> _owner(BuildContext context, WidgetRef ref, String path, [Map<String, Object>? body]) async {
+  try {
+    await ref.read(apiProvider).post(path, body);
+  } on ApiError catch (e) {
+    if (context.mounted) showGlmToast(context, e.message, error: true);
+  }
+  ref.invalidate(leagueProvider);
+}
+
 class _CoachesTab extends ConsumerWidget {
   const _CoachesTab(this.lg);
 
@@ -342,6 +423,36 @@ class _CoachesTab extends ConsumerWidget {
           trailing: m.userId == null ? null : const Icon(Icons.chevron_right_rounded),
           onTap: m.userId == null ? null : () => context.push('/coaches/${m.userId}'),
         ),
+      // [Sprint 18] The creator answers a holiday and may remove a coach, with a reason everyone sees.
+      if (lg.isOwner)
+        for (final m in lg.members.where((m) => !m.isOwner))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Wrap(spacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+              Text(m.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+              if (m.vacationRequest != null) ...[
+                Text(l.vacationAsk(m.vacationRequest!.days, m.vacationRequest!.reason), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                TextButton(onPressed: () => _owner(context, ref, '/leagues/${lg.id}/members/${m.id}/vacation/approve'), child: Text(l.approve)),
+                TextButton(onPressed: () => _owner(context, ref, '/leagues/${lg.id}/members/${m.id}/vacation/reject'), child: Text(l.reject)),
+              ],
+              TextButton(
+                onPressed: () async {
+                  final reason = TextEditingController();
+                  final ok = await showDialog<bool>(
+                    context: context,
+                    builder: (d) => AlertDialog(
+                      title: Text('${l.kick}: ${m.name}'),
+                      content: TextField(controller: reason, maxLength: 200, decoration: InputDecoration(labelText: l.kickReason)),
+                      actions: [TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.cancel)), FilledButton(onPressed: () => Navigator.pop(d, true), child: Text(l.kick))],
+                    ),
+                  );
+                  if (ok == true && context.mounted) await _owner(context, ref, '/leagues/${lg.id}/members/${m.id}/kick', {'reason': reason.text.trim()});
+                  reason.dispose();
+                },
+                child: Text(l.kick, style: TextStyle(color: context.glm.liveText)),
+              ),
+            ]),
+          ),
     ]);
   }
 }

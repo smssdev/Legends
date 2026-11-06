@@ -3192,6 +3192,516 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'افتح'**
   String get openIt;
+
+  /// No description provided for @matchday.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوم المباراة'**
+  String get matchday;
+
+  /// No description provided for @referee.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحكم'**
+  String get referee;
+
+  /// No description provided for @moveMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'قدّم المباراة أو أخّرها'**
+  String get moveMatch;
+
+  /// No description provided for @moveLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'في يومها نفسه، بموافقة المدرب الآخر. باقٍ لك {n}.'**
+  String moveLead(int n);
+
+  /// No description provided for @moveTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى {time}'**
+  String moveTo(String time);
+
+  /// No description provided for @movePendingMine.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبت نقلها إلى {time}، بانتظار رده'**
+  String movePendingMine(String time);
+
+  /// No description provided for @movePendingTheirs.
+  ///
+  /// In ar, this message translates to:
+  /// **'يطلب نقلها إلى {time}'**
+  String movePendingTheirs(String time);
+
+  /// No description provided for @moveSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل طلبك للمدرب الآخر'**
+  String get moveSent;
+
+  /// No description provided for @hoursEarlier.
+  ///
+  /// In ar, this message translates to:
+  /// **'أبكر {n} س'**
+  String hoursEarlier(int n);
+
+  /// No description provided for @hoursLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'أبعد {n} س'**
+  String hoursLater(int n);
+
+  /// No description provided for @press.
+  ///
+  /// In ar, this message translates to:
+  /// **'المؤتمر الصحفي'**
+  String get press;
+
+  /// No description provided for @pressOpensAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'يفتح {time}'**
+  String pressOpensAt(String time);
+
+  /// No description provided for @chances.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحظوظ: فوز {home}% · تعادل {draw}% · خسارة {away}%'**
+  String chances(int home, int draw, int away);
+
+  /// No description provided for @stakes.
+  ///
+  /// In ar, this message translates to:
+  /// **'الروح المعنوية: فوز {win} · تعادل {draw} · خسارة {loss}'**
+  String stakes(int win, int draw, int loss);
+
+  /// No description provided for @youSaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'قلتَ'**
+  String get youSaid;
+
+  /// No description provided for @integrity.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما وراء الكواليس'**
+  String get integrity;
+
+  /// No description provided for @bribe.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادفع للحكم ({money} + {extra})'**
+  String bribe(String money, String extra);
+
+  /// No description provided for @bribeNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفار يكشفها مرة من كل {pct}%'**
+  String bribeNote(int pct);
+
+  /// No description provided for @bribePaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفعت للحكم'**
+  String get bribePaid;
+
+  /// No description provided for @securityCheck.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص أمني ({cost})'**
+  String securityCheck(String cost);
+
+  /// No description provided for @spiesOnMe.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجواسيس على مباراتك'**
+  String get spiesOnMe;
+
+  /// No description provided for @noSpies.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا جواسيس حتى الآن'**
+  String get noSpies;
+
+  /// No description provided for @turnSpy.
+  ///
+  /// In ar, this message translates to:
+  /// **'اجعله مزدوجاً ({cost})'**
+  String turnSpy(String cost);
+
+  /// No description provided for @accuse.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتهمه'**
+  String get accuse;
+
+  /// No description provided for @contracts.
+  ///
+  /// In ar, this message translates to:
+  /// **'العقود'**
+  String get contracts;
+
+  /// No description provided for @contractsLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرواتب {wages} كل جولة من سقف {cap}'**
+  String contractsLead(String wages, String cap);
+
+  /// No description provided for @untilSeason.
+  ///
+  /// In ar, this message translates to:
+  /// **'حتى الموسم {n}'**
+  String untilSeason(int n);
+
+  /// No description provided for @renew.
+  ///
+  /// In ar, this message translates to:
+  /// **'جدّد'**
+  String get renew;
+
+  /// No description provided for @renewSeasons.
+  ///
+  /// In ar, this message translates to:
+  /// **'جدّد {n} مواسم ({cost})'**
+  String renewSeasons(int n, String cost);
+
+  /// No description provided for @releasePlayer.
+  ///
+  /// In ar, this message translates to:
+  /// **'فسخ العقد ({cost})'**
+  String releasePlayer(String cost);
+
+  /// No description provided for @releaseConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'فسخ عقد {name}؟ يخرج من فريقك.'**
+  String releaseConfirm(String name);
+
+  /// No description provided for @renewEnding.
+  ///
+  /// In ar, this message translates to:
+  /// **'جدّد كل العقود المنتهية'**
+  String get renewEnding;
+
+  /// No description provided for @cheerTickets.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذاكر التشجيع'**
+  String get cheerTickets;
+
+  /// No description provided for @cheerLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'شجّع فريقاً في مباراة أخرى: +{boost} لحماسه، والتذكرة بـ {price}.'**
+  String cheerLead(int boost, String price);
+
+  /// No description provided for @cheer.
+  ///
+  /// In ar, this message translates to:
+  /// **'شجّع'**
+  String get cheer;
+
+  /// No description provided for @matchChat.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدردشة'**
+  String get matchChat;
+
+  /// No description provided for @reactionSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل تفاعلك'**
+  String get reactionSent;
+
+  /// No description provided for @missedMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتتك {n} مباريات'**
+  String missedMatches(int n);
+
+  /// No description provided for @missedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما فاتك'**
+  String get missedTitle;
+
+  /// No description provided for @markSeen.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاهدتها كلها'**
+  String get markSeen;
+
+  /// No description provided for @squadChanges.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيّر في فريقك'**
+  String get squadChanges;
+
+  /// No description provided for @injured.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصاب'**
+  String get injured;
+
+  /// No description provided for @sentOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'طُرد'**
+  String get sentOff;
+
+  /// No description provided for @unlockSlot.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتحها الآن ({coins} كوينز)'**
+  String unlockSlot(int coins);
+
+  /// No description provided for @unlockConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح الفتحة {n} الآن بـ {coins} كوينز؟ تبقى مفتوحة دائماً.'**
+  String unlockConfirm(int n, int coins);
+
+  /// No description provided for @starterGift.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدية البداية: {coins} كوينز'**
+  String starterGift(int coins);
+
+  /// No description provided for @claimGift.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلمها'**
+  String get claimGift;
+
+  /// No description provided for @ranking.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترتيب المدربين'**
+  String get ranking;
+
+  /// No description provided for @trophiesShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} ألقاب'**
+  String trophiesShort(int n);
+
+  /// No description provided for @holiday.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجازة'**
+  String get holiday;
+
+  /// No description provided for @holidayLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب إجازة من هذا الدوري'**
+  String get holidayLeague;
+
+  /// No description provided for @holidayAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجازة طويلة للحساب كله'**
+  String get holidayAccount;
+
+  /// No description provided for @holidayDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيام: {n}'**
+  String holidayDays(int n);
+
+  /// No description provided for @holidayReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب'**
+  String get holidayReason;
+
+  /// No description provided for @holidaySent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل طلب الإجازة'**
+  String get holidaySent;
+
+  /// No description provided for @endHoliday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنهِ الإجازة'**
+  String get endHoliday;
+
+  /// No description provided for @vacationAsk.
+  ///
+  /// In ar, this message translates to:
+  /// **'يطلب إجازة {days} أيام: {reason}'**
+  String vacationAsk(int days, String reason);
+
+  /// No description provided for @kick.
+  ///
+  /// In ar, this message translates to:
+  /// **'أبعِده'**
+  String get kick;
+
+  /// No description provided for @kickReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب (يراه الجميع)'**
+  String get kickReason;
+
+  /// No description provided for @verifyAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'وثّق حسابك واحصل على {coins} كوينز'**
+  String verifyAccount(int coins);
+
+  /// No description provided for @sendCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الرمز إلى بريدي'**
+  String get sendCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل الرمز'**
+  String get codeSent;
+
+  /// No description provided for @verifyCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز'**
+  String get verifyCode;
+
+  /// No description provided for @verified.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك موثّق'**
+  String get verified;
+
+  /// No description provided for @resendEmail.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد إرسال رسالة تأكيد البريد'**
+  String get resendEmail;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'احذف حسابي'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.'**
+  String get deleteAccountLead;
+
+  /// No description provided for @startLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ الدوري الآن'**
+  String get startLeague;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'غيّر الصورة'**
+  String get changePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'احذف الصورة'**
+  String get removePhoto;
+
+  /// No description provided for @sendPhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل صورة'**
+  String get sendPhoto;
+
+  /// No description provided for @leagueSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات الدوري'**
+  String get leagueSettings;
+
+  /// No description provided for @settingsLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات مقفلة منذ بداية الدوري'**
+  String get settingsLocked;
+
+  /// No description provided for @customTeams.
+  ///
+  /// In ar, this message translates to:
+  /// **'فرق من اختيارك'**
+  String get customTeams;
+
+  /// No description provided for @searchClubs.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن نادٍ'**
+  String get searchClubs;
+
+  /// No description provided for @nationsTab.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنتخبات'**
+  String get nationsTab;
+
+  /// No description provided for @clubsTab.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأندية'**
+  String get clubsTab;
+
+  /// No description provided for @chosenTeams.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} فريقاً مختاراً'**
+  String chosenTeams(int n);
+
+  /// No description provided for @formatLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوري'**
+  String get formatLeague;
+
+  /// No description provided for @formatGroups.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجموعات'**
+  String get formatGroups;
+
+  /// No description provided for @formatKnockout.
+  ///
+  /// In ar, this message translates to:
+  /// **'خروج المغلوب'**
+  String get formatKnockout;
+
+  /// No description provided for @groupsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المجموعات: {n}'**
+  String groupsCount(int n);
+
+  /// No description provided for @swapPlayers.
+  ///
+  /// In ar, this message translates to:
+  /// **'بادل لاعبين (حتى {n})'**
+  String swapPlayers(int n);
+
+  /// No description provided for @swapGive.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعطي'**
+  String get swapGive;
+
+  /// No description provided for @swapTake.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأخذ'**
+  String get swapTake;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -74,5 +74,6 @@ void main() {
     expect(find.text('أنشئ دورياً'), findsOneWidget);
     expect(find.text('مقفلة'), findsOneWidget);
     expect(find.textContaining('تُفتح مجاناً بعد'), findsOneWidget);
+    expect(find.text('افتحها الآن (50 كوينز)'), findsOneWidget);
   });
 }

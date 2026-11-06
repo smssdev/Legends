@@ -1766,4 +1766,320 @@ class LEn extends L {
 
   @override
   String get openIt => 'Open';
+
+  @override
+  String get matchday => 'Match day';
+
+  @override
+  String get referee => 'Referee';
+
+  @override
+  String get moveMatch => 'Move the match';
+
+  @override
+  String moveLead(int n) {
+    return 'On its own day, if the other coach agrees. $n left.';
+  }
+
+  @override
+  String moveTo(String time) {
+    return 'To $time';
+  }
+
+  @override
+  String movePendingMine(String time) {
+    return 'You asked to move it to $time; waiting for the answer';
+  }
+
+  @override
+  String movePendingTheirs(String time) {
+    return 'He asks to move it to $time';
+  }
+
+  @override
+  String get moveSent => 'Your request went to the other coach';
+
+  @override
+  String hoursEarlier(int n) {
+    return '${n}h earlier';
+  }
+
+  @override
+  String hoursLater(int n) {
+    return '${n}h later';
+  }
+
+  @override
+  String get press => 'Press conference';
+
+  @override
+  String pressOpensAt(String time) {
+    return 'Opens $time';
+  }
+
+  @override
+  String chances(int home, int draw, int away) {
+    return 'Chances: win $home% · draw $draw% · loss $away%';
+  }
+
+  @override
+  String stakes(int win, int draw, int loss) {
+    return 'Morale: win $win · draw $draw · loss $loss';
+  }
+
+  @override
+  String get youSaid => 'You said';
+
+  @override
+  String get integrity => 'Behind the scenes';
+
+  @override
+  String bribe(String money, String extra) {
+    return 'Pay the referee ($money + $extra)';
+  }
+
+  @override
+  String bribeNote(int pct) {
+    return 'The VAR catches it $pct% of the time';
+  }
+
+  @override
+  String get bribePaid => 'You paid the referee';
+
+  @override
+  String securityCheck(String cost) {
+    return 'Security check ($cost)';
+  }
+
+  @override
+  String get spiesOnMe => 'Spies on your match';
+
+  @override
+  String get noSpies => 'No spies so far';
+
+  @override
+  String turnSpy(String cost) {
+    return 'Turn him ($cost)';
+  }
+
+  @override
+  String get accuse => 'Accuse';
+
+  @override
+  String get contracts => 'Contracts';
+
+  @override
+  String contractsLead(String wages, String cap) {
+    return 'Wages $wages a round, cap $cap';
+  }
+
+  @override
+  String untilSeason(int n) {
+    return 'Until season $n';
+  }
+
+  @override
+  String get renew => 'Renew';
+
+  @override
+  String renewSeasons(int n, String cost) {
+    return 'Renew $n seasons ($cost)';
+  }
+
+  @override
+  String releasePlayer(String cost) {
+    return 'Release ($cost)';
+  }
+
+  @override
+  String releaseConfirm(String name) {
+    return 'Release $name? He leaves your team.';
+  }
+
+  @override
+  String get renewEnding => 'Renew every ending contract';
+
+  @override
+  String get cheerTickets => 'Cheer tickets';
+
+  @override
+  String cheerLead(int boost, String price) {
+    return 'Cheer a side in another match: +$boost to its spirit; a ticket costs $price.';
+  }
+
+  @override
+  String get cheer => 'Cheer';
+
+  @override
+  String get matchChat => 'Chat';
+
+  @override
+  String get reactionSent => 'Reaction sent';
+
+  @override
+  String missedMatches(int n) {
+    return 'You missed $n matches';
+  }
+
+  @override
+  String get missedTitle => 'What you missed';
+
+  @override
+  String get markSeen => 'Mark all seen';
+
+  @override
+  String get squadChanges => 'Squad changes';
+
+  @override
+  String get injured => 'injured';
+
+  @override
+  String get sentOff => 'sent off';
+
+  @override
+  String unlockSlot(int coins) {
+    return 'Open it now ($coins coins)';
+  }
+
+  @override
+  String unlockConfirm(int n, int coins) {
+    return 'Open slot $n now for $coins coins? It stays open for good.';
+  }
+
+  @override
+  String starterGift(int coins) {
+    return 'Starter gift: $coins coins';
+  }
+
+  @override
+  String get claimGift => 'Claim it';
+
+  @override
+  String get ranking => 'Coaches\' ranking';
+
+  @override
+  String trophiesShort(int n) {
+    return '$n titles';
+  }
+
+  @override
+  String get holiday => 'Holiday';
+
+  @override
+  String get holidayLeague => 'Ask for a holiday in this league';
+
+  @override
+  String get holidayAccount => 'A long holiday for the whole account';
+
+  @override
+  String holidayDays(int n) {
+    return 'Days: $n';
+  }
+
+  @override
+  String get holidayReason => 'Reason';
+
+  @override
+  String get holidaySent => 'Holiday request sent';
+
+  @override
+  String get endHoliday => 'End the holiday';
+
+  @override
+  String vacationAsk(int days, String reason) {
+    return 'Asks for $days days off: $reason';
+  }
+
+  @override
+  String get kick => 'Remove';
+
+  @override
+  String get kickReason => 'Reason (everyone sees it)';
+
+  @override
+  String verifyAccount(int coins) {
+    return 'Verify your account and get $coins coins';
+  }
+
+  @override
+  String get sendCode => 'Send the code to my email';
+
+  @override
+  String get codeSent => 'Code sent';
+
+  @override
+  String get verifyCode => 'The code';
+
+  @override
+  String get verified => 'Your account is verified';
+
+  @override
+  String get resendEmail => 'Resend the email confirmation';
+
+  @override
+  String get deleteAccount => 'Delete my account';
+
+  @override
+  String get deleteAccountLead =>
+      'Your teams go back to the computer, with no undo. Type «احذف» to confirm.';
+
+  @override
+  String get startLeague => 'Start the league now';
+
+  @override
+  String get changePhoto => 'Change the picture';
+
+  @override
+  String get removePhoto => 'Remove the picture';
+
+  @override
+  String get sendPhoto => 'Send a picture';
+
+  @override
+  String get leagueSettings => 'League settings';
+
+  @override
+  String get settingsLocked => 'Settings are locked since the league started';
+
+  @override
+  String get customTeams => 'Teams of your choice';
+
+  @override
+  String get searchClubs => 'Search a club';
+
+  @override
+  String get nationsTab => 'National teams';
+
+  @override
+  String get clubsTab => 'Clubs';
+
+  @override
+  String chosenTeams(int n) {
+    return '$n teams chosen';
+  }
+
+  @override
+  String get formatLeague => 'League';
+
+  @override
+  String get formatGroups => 'Groups';
+
+  @override
+  String get formatKnockout => 'Knockout';
+
+  @override
+  String groupsCount(int n) {
+    return 'Groups: $n';
+  }
+
+  @override
+  String swapPlayers(int n) {
+    return 'Swap players (up to $n)';
+  }
+
+  @override
+  String get swapGive => 'You give';
+
+  @override
+  String get swapTake => 'You take';
 }

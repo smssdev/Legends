@@ -1275,5 +1275,330 @@
   "groupMembers": "أسماء المستخدمين (مفصولة بفاصلة)",
   "joinGroup": "ادخل بالكود",
   "groupCode": "كود الجروب",
-  "openIt": "افتح"
+  "openIt": "افتح",
+  "matchday": "يوم المباراة",
+  "referee": "الحكم",
+  "moveMatch": "قدّم المباراة أو أخّرها",
+  "moveLead": "في يومها نفسه، بموافقة المدرب الآخر. باقٍ لك {n}.",
+  "@moveLead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "moveTo": "إلى {time}",
+  "@moveTo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "movePendingMine": "طلبت نقلها إلى {time}، بانتظار رده",
+  "@movePendingMine": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "movePendingTheirs": "يطلب نقلها إلى {time}",
+  "@movePendingTheirs": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "moveSent": "أُرسل طلبك للمدرب الآخر",
+  "hoursEarlier": "أبكر {n} س",
+  "@hoursEarlier": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursLater": "أبعد {n} س",
+  "@hoursLater": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "press": "المؤتمر الصحفي",
+  "pressOpensAt": "يفتح {time}",
+  "@pressOpensAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "chances": "الحظوظ: فوز {home}% · تعادل {draw}% · خسارة {away}%",
+  "@chances": {
+    "placeholders": {
+      "home": {
+        "type": "int"
+      },
+      "draw": {
+        "type": "int"
+      },
+      "away": {
+        "type": "int"
+      }
+    }
+  },
+  "stakes": "الروح المعنوية: فوز {win} · تعادل {draw} · خسارة {loss}",
+  "@stakes": {
+    "placeholders": {
+      "win": {
+        "type": "int"
+      },
+      "draw": {
+        "type": "int"
+      },
+      "loss": {
+        "type": "int"
+      }
+    }
+  },
+  "youSaid": "قلتَ",
+  "integrity": "ما وراء الكواليس",
+  "bribe": "ادفع للحكم ({money} + {extra})",
+  "@bribe": {
+    "placeholders": {
+      "money": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "bribeNote": "الفار يكشفها مرة من كل {pct}%",
+  "@bribeNote": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "bribePaid": "دفعت للحكم",
+  "securityCheck": "فحص أمني ({cost})",
+  "@securityCheck": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "spiesOnMe": "الجواسيس على مباراتك",
+  "noSpies": "لا جواسيس حتى الآن",
+  "turnSpy": "اجعله مزدوجاً ({cost})",
+  "@turnSpy": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "accuse": "اتهمه",
+  "contracts": "العقود",
+  "contractsLead": "الرواتب {wages} كل جولة من سقف {cap}",
+  "@contractsLead": {
+    "placeholders": {
+      "wages": {
+        "type": "String"
+      },
+      "cap": {
+        "type": "String"
+      }
+    }
+  },
+  "untilSeason": "حتى الموسم {n}",
+  "@untilSeason": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "renew": "جدّد",
+  "renewSeasons": "جدّد {n} مواسم ({cost})",
+  "@renewSeasons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "releasePlayer": "فسخ العقد ({cost})",
+  "@releasePlayer": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseConfirm": "فسخ عقد {name}؟ يخرج من فريقك.",
+  "@releaseConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "renewEnding": "جدّد كل العقود المنتهية",
+  "cheerTickets": "تذاكر التشجيع",
+  "cheerLead": "شجّع فريقاً في مباراة أخرى: +{boost} لحماسه، والتذكرة بـ {price}.",
+  "@cheerLead": {
+    "placeholders": {
+      "boost": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "cheer": "شجّع",
+  "matchChat": "الدردشة",
+  "reactionSent": "وصل تفاعلك",
+  "missedMatches": "فاتتك {n} مباريات",
+  "@missedMatches": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "missedTitle": "ما فاتك",
+  "markSeen": "شاهدتها كلها",
+  "squadChanges": "تغيّر في فريقك",
+  "injured": "مصاب",
+  "sentOff": "طُرد",
+  "unlockSlot": "افتحها الآن ({coins} كوينز)",
+  "@unlockSlot": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "unlockConfirm": "فتح الفتحة {n} الآن بـ {coins} كوينز؟ تبقى مفتوحة دائماً.",
+  "@unlockConfirm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "starterGift": "هدية البداية: {coins} كوينز",
+  "@starterGift": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "claimGift": "استلمها",
+  "ranking": "ترتيب المدربين",
+  "trophiesShort": "{n} ألقاب",
+  "@trophiesShort": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "holiday": "إجازة",
+  "holidayLeague": "اطلب إجازة من هذا الدوري",
+  "holidayAccount": "إجازة طويلة للحساب كله",
+  "holidayDays": "الأيام: {n}",
+  "@holidayDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "holidayReason": "السبب",
+  "holidaySent": "وصل طلب الإجازة",
+  "endHoliday": "أنهِ الإجازة",
+  "vacationAsk": "يطلب إجازة {days} أيام: {reason}",
+  "@vacationAsk": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "kick": "أبعِده",
+  "kickReason": "السبب (يراه الجميع)",
+  "verifyAccount": "وثّق حسابك واحصل على {coins} كوينز",
+  "@verifyAccount": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCode": "أرسل الرمز إلى بريدي",
+  "codeSent": "أُرسل الرمز",
+  "verifyCode": "الرمز",
+  "verified": "حسابك موثّق",
+  "resendEmail": "أعد إرسال رسالة تأكيد البريد",
+  "deleteAccount": "احذف حسابي",
+  "deleteAccountLead": "تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.",
+  "startLeague": "ابدأ الدوري الآن",
+  "changePhoto": "غيّر الصورة",
+  "removePhoto": "احذف الصورة",
+  "sendPhoto": "أرسل صورة",
+  "leagueSettings": "إعدادات الدوري",
+  "settingsLocked": "الإعدادات مقفلة منذ بداية الدوري",
+  "customTeams": "فرق من اختيارك",
+  "searchClubs": "ابحث عن نادٍ",
+  "nationsTab": "المنتخبات",
+  "clubsTab": "الأندية",
+  "chosenTeams": "{n} فريقاً مختاراً",
+  "@chosenTeams": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "formatLeague": "دوري",
+  "formatGroups": "مجموعات",
+  "formatKnockout": "خروج المغلوب",
+  "groupsCount": "المجموعات: {n}",
+  "@groupsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "swapPlayers": "بادل لاعبين (حتى {n})",
+  "@swapPlayers": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "swapGive": "تعطي",
+  "swapTake": "تأخذ"
 }

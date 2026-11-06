@@ -1762,4 +1762,320 @@ class LAr extends L {
 
   @override
   String get openIt => 'افتح';
+
+  @override
+  String get matchday => 'يوم المباراة';
+
+  @override
+  String get referee => 'الحكم';
+
+  @override
+  String get moveMatch => 'قدّم المباراة أو أخّرها';
+
+  @override
+  String moveLead(int n) {
+    return 'في يومها نفسه، بموافقة المدرب الآخر. باقٍ لك $n.';
+  }
+
+  @override
+  String moveTo(String time) {
+    return 'إلى $time';
+  }
+
+  @override
+  String movePendingMine(String time) {
+    return 'طلبت نقلها إلى $time، بانتظار رده';
+  }
+
+  @override
+  String movePendingTheirs(String time) {
+    return 'يطلب نقلها إلى $time';
+  }
+
+  @override
+  String get moveSent => 'أُرسل طلبك للمدرب الآخر';
+
+  @override
+  String hoursEarlier(int n) {
+    return 'أبكر $n س';
+  }
+
+  @override
+  String hoursLater(int n) {
+    return 'أبعد $n س';
+  }
+
+  @override
+  String get press => 'المؤتمر الصحفي';
+
+  @override
+  String pressOpensAt(String time) {
+    return 'يفتح $time';
+  }
+
+  @override
+  String chances(int home, int draw, int away) {
+    return 'الحظوظ: فوز $home% · تعادل $draw% · خسارة $away%';
+  }
+
+  @override
+  String stakes(int win, int draw, int loss) {
+    return 'الروح المعنوية: فوز $win · تعادل $draw · خسارة $loss';
+  }
+
+  @override
+  String get youSaid => 'قلتَ';
+
+  @override
+  String get integrity => 'ما وراء الكواليس';
+
+  @override
+  String bribe(String money, String extra) {
+    return 'ادفع للحكم ($money + $extra)';
+  }
+
+  @override
+  String bribeNote(int pct) {
+    return 'الفار يكشفها مرة من كل $pct%';
+  }
+
+  @override
+  String get bribePaid => 'دفعت للحكم';
+
+  @override
+  String securityCheck(String cost) {
+    return 'فحص أمني ($cost)';
+  }
+
+  @override
+  String get spiesOnMe => 'الجواسيس على مباراتك';
+
+  @override
+  String get noSpies => 'لا جواسيس حتى الآن';
+
+  @override
+  String turnSpy(String cost) {
+    return 'اجعله مزدوجاً ($cost)';
+  }
+
+  @override
+  String get accuse => 'اتهمه';
+
+  @override
+  String get contracts => 'العقود';
+
+  @override
+  String contractsLead(String wages, String cap) {
+    return 'الرواتب $wages كل جولة من سقف $cap';
+  }
+
+  @override
+  String untilSeason(int n) {
+    return 'حتى الموسم $n';
+  }
+
+  @override
+  String get renew => 'جدّد';
+
+  @override
+  String renewSeasons(int n, String cost) {
+    return 'جدّد $n مواسم ($cost)';
+  }
+
+  @override
+  String releasePlayer(String cost) {
+    return 'فسخ العقد ($cost)';
+  }
+
+  @override
+  String releaseConfirm(String name) {
+    return 'فسخ عقد $name؟ يخرج من فريقك.';
+  }
+
+  @override
+  String get renewEnding => 'جدّد كل العقود المنتهية';
+
+  @override
+  String get cheerTickets => 'تذاكر التشجيع';
+
+  @override
+  String cheerLead(int boost, String price) {
+    return 'شجّع فريقاً في مباراة أخرى: +$boost لحماسه، والتذكرة بـ $price.';
+  }
+
+  @override
+  String get cheer => 'شجّع';
+
+  @override
+  String get matchChat => 'الدردشة';
+
+  @override
+  String get reactionSent => 'وصل تفاعلك';
+
+  @override
+  String missedMatches(int n) {
+    return 'فاتتك $n مباريات';
+  }
+
+  @override
+  String get missedTitle => 'ما فاتك';
+
+  @override
+  String get markSeen => 'شاهدتها كلها';
+
+  @override
+  String get squadChanges => 'تغيّر في فريقك';
+
+  @override
+  String get injured => 'مصاب';
+
+  @override
+  String get sentOff => 'طُرد';
+
+  @override
+  String unlockSlot(int coins) {
+    return 'افتحها الآن ($coins كوينز)';
+  }
+
+  @override
+  String unlockConfirm(int n, int coins) {
+    return 'فتح الفتحة $n الآن بـ $coins كوينز؟ تبقى مفتوحة دائماً.';
+  }
+
+  @override
+  String starterGift(int coins) {
+    return 'هدية البداية: $coins كوينز';
+  }
+
+  @override
+  String get claimGift => 'استلمها';
+
+  @override
+  String get ranking => 'ترتيب المدربين';
+
+  @override
+  String trophiesShort(int n) {
+    return '$n ألقاب';
+  }
+
+  @override
+  String get holiday => 'إجازة';
+
+  @override
+  String get holidayLeague => 'اطلب إجازة من هذا الدوري';
+
+  @override
+  String get holidayAccount => 'إجازة طويلة للحساب كله';
+
+  @override
+  String holidayDays(int n) {
+    return 'الأيام: $n';
+  }
+
+  @override
+  String get holidayReason => 'السبب';
+
+  @override
+  String get holidaySent => 'وصل طلب الإجازة';
+
+  @override
+  String get endHoliday => 'أنهِ الإجازة';
+
+  @override
+  String vacationAsk(int days, String reason) {
+    return 'يطلب إجازة $days أيام: $reason';
+  }
+
+  @override
+  String get kick => 'أبعِده';
+
+  @override
+  String get kickReason => 'السبب (يراه الجميع)';
+
+  @override
+  String verifyAccount(int coins) {
+    return 'وثّق حسابك واحصل على $coins كوينز';
+  }
+
+  @override
+  String get sendCode => 'أرسل الرمز إلى بريدي';
+
+  @override
+  String get codeSent => 'أُرسل الرمز';
+
+  @override
+  String get verifyCode => 'الرمز';
+
+  @override
+  String get verified => 'حسابك موثّق';
+
+  @override
+  String get resendEmail => 'أعد إرسال رسالة تأكيد البريد';
+
+  @override
+  String get deleteAccount => 'احذف حسابي';
+
+  @override
+  String get deleteAccountLead =>
+      'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.';
+
+  @override
+  String get startLeague => 'ابدأ الدوري الآن';
+
+  @override
+  String get changePhoto => 'غيّر الصورة';
+
+  @override
+  String get removePhoto => 'احذف الصورة';
+
+  @override
+  String get sendPhoto => 'أرسل صورة';
+
+  @override
+  String get leagueSettings => 'إعدادات الدوري';
+
+  @override
+  String get settingsLocked => 'الإعدادات مقفلة منذ بداية الدوري';
+
+  @override
+  String get customTeams => 'فرق من اختيارك';
+
+  @override
+  String get searchClubs => 'ابحث عن نادٍ';
+
+  @override
+  String get nationsTab => 'المنتخبات';
+
+  @override
+  String get clubsTab => 'الأندية';
+
+  @override
+  String chosenTeams(int n) {
+    return '$n فريقاً مختاراً';
+  }
+
+  @override
+  String get formatLeague => 'دوري';
+
+  @override
+  String get formatGroups => 'مجموعات';
+
+  @override
+  String get formatKnockout => 'خروج المغلوب';
+
+  @override
+  String groupsCount(int n) {
+    return 'المجموعات: $n';
+  }
+
+  @override
+  String swapPlayers(int n) {
+    return 'بادل لاعبين (حتى $n)';
+  }
+
+  @override
+  String get swapGive => 'تعطي';
+
+  @override
+  String get swapTake => 'تأخذ';
 }

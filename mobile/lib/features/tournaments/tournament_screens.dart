@@ -107,6 +107,13 @@ class NewTournamentScreen extends ConsumerStatefulWidget {
 class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
   String? _template;
   String _entry = 'pick';
+  // [Sprint 18 J] Teams of my choice: national teams from the catalog, or clubs found by name.
+  final Map<int, String> _picked = {};
+  String _format = 'groups';
+  int _groups = 4;
+  bool _clubs = false;
+  String _q = '';
+  List<Map> _found = const [];
   DateTime? _starts;
   final _name = TextEditingController();
   bool _busy = false;
@@ -115,6 +122,62 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
   void dispose() {
     _name.dispose();
     super.dispose();
+  }
+
+  List<Widget> _custom(BuildContext context, Map<String, dynamic> c) {
+    final l = L.of(context);
+    final p = context.palette;
+    final groupCounts = ((c['limits'] as Map?)?['group_counts'] as List? ?? const [1, 2, 4, 8]).cast<int>();
+    final pool = _clubs ? _found : (c['nations'] as List? ?? const []).cast<Map>().where((n) => _q.isEmpty || '${n['name']}'.toLowerCase().contains(_q.toLowerCase())).toList();
+    return [
+      const SizedBox(height: 10),
+      SegmentedButton<String>(
+        showSelectedIcon: false,
+        segments: [ButtonSegment(value: 'league', label: Text(l.formatLeague)), ButtonSegment(value: 'groups', label: Text(l.formatGroups)), ButtonSegment(value: 'knockout', label: Text(l.formatKnockout))],
+        selected: {_format},
+        onSelectionChanged: (x) => setState(() => _format = x.first),
+      ),
+      if (_format == 'groups')
+        Wrap(spacing: 6, children: [
+          for (final g in groupCounts) ChoiceChip(label: Text(l.groupsCount(g)), selected: _groups == g, onSelected: (_) => setState(() => _groups = g)),
+        ]),
+      const SizedBox(height: 8),
+      SegmentedButton<bool>(
+        showSelectedIcon: false,
+        segments: [ButtonSegment(value: false, label: Text(l.nationsTab)), ButtonSegment(value: true, label: Text(l.clubsTab))],
+        selected: {_clubs},
+        onSelectionChanged: (x) => setState(() => _clubs = x.first),
+      ),
+      TextField(
+        decoration: InputDecoration(labelText: l.searchClubs, prefixIcon: const Icon(Icons.search_rounded)),
+        onChanged: (v) async {
+          setState(() => _q = v.trim());
+          if (_clubs && v.trim().length >= 2) {
+            final r = await ref.read(apiProvider).get('/tournaments/clubs', query: {'q': v.trim()}).catchError((_) => <String, dynamic>{});
+            if (mounted) setState(() => _found = (r['clubs'] as List? ?? const []).cast<Map>());
+          }
+        },
+      ),
+      Text(l.chosenTeams(_picked.length), style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700)),
+      if (_picked.isNotEmpty)
+        Wrap(spacing: 4, runSpacing: 4, children: [
+          for (final e in _picked.entries) InputChip(label: Text(e.value, textDirection: TextDirection.ltr), onDeleted: () => setState(() => _picked.remove(e.key))),
+        ]),
+      SizedBox(
+        height: 260,
+        child: ListView(children: [
+          for (final t in pool.take(60))
+            CheckboxListTile(
+              dense: true,
+              value: _picked.containsKey(t['id']),
+              activeColor: p.gold,
+              title: Text('${t['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start),
+              subtitle: Text('${t['league'] ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 11)),
+              onChanged: (on) => setState(() => on == true ? _picked[t['id'] as int] = '${t['name']}' : _picked.remove(t['id'])),
+            ),
+        ]),
+      ),
+    ];
   }
 
   @override
@@ -140,7 +203,14 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
                   selectedColor: p.gold.withValues(alpha: .28),
                   onSelected: (_) => setState(() => _template = '${t['key']}'),
                 ),
+              ChoiceChip(
+                label: Text(l.customTeams),
+                selected: _template == 'custom',
+                selectedColor: p.gold.withValues(alpha: .28),
+                onSelected: (_) => setState(() => _template = 'custom'),
+              ),
             ]),
+            if (_template == 'custom') ..._custom(context, c),
             const SizedBox(height: 12),
             RadioGroup<String>(
               groupValue: _entry,
@@ -161,19 +231,23 @@ class _NewTournamentScreenState extends ConsumerState<NewTournamentScreen> {
               },
             ),
             if (chosen != null) Text(l.tournamentCost(perTeam * (chosen['teams'] as List).length), textAlign: TextAlign.center, style: TextStyle(color: context.glm.goldText)),
+            if (_template == 'custom' && _picked.isNotEmpty) Text(l.tournamentCost(perTeam * _picked.length), textAlign: TextAlign.center, style: TextStyle(color: context.glm.goldText)),
             const SizedBox(height: 12),
             GlmButton(
               label: l.create,
               block: true,
               loading: _busy,
-              onPressed: chosen == null || _starts == null
+              onPressed: (chosen == null && !(_template == 'custom' && _picked.length >= 2)) || _starts == null
                   ? null
                   : () async {
                       setState(() => _busy = true);
+                      final shape = chosen == null
+                          ? {'template': 'custom', 'teams': _picked.keys.toList(), 'format': _format, if (_format == 'groups') ...{'group_count': _groups, 'advance_per_group': 2}, 'legs': 1}
+                          : {'template': chosen['key'], 'teams': chosen['teams'], 'format': chosen['format'], 'group_count': chosen['group_count'],
+                              'advance_per_group': chosen['advance_per_group'], 'best_thirds': chosen['best_thirds'], 'legs': chosen['legs']};
                       final r = await _try(context, () => ref.read(apiProvider).post('/tournaments', {
                             if (_name.text.trim().isNotEmpty) 'name': _name.text.trim(),
-                            'template': chosen['key'], 'teams': chosen['teams'], 'format': chosen['format'],
-                            'group_count': chosen['group_count'], 'advance_per_group': chosen['advance_per_group'], 'best_thirds': chosen['best_thirds'], 'legs': chosen['legs'],
+                            ...shape,
                             'starts_at': _starts!.toUtc().toIso8601String(), 'entry_mode': _entry, 'timezone': 'Africa/Cairo',
                           }));
                       if (mounted) setState(() => _busy = false);
@@ -391,6 +465,58 @@ class AllianceScreen extends ConsumerStatefulWidget {
 }
 
 class _AllianceScreenState extends ConsumerState<AllianceScreen> {
+  Future<void> _swap(Map tie, int max) async {
+    final l = L.of(context);
+    final mine = tie['winner_id'];
+    final other = (tie['home'] as Map?)?['id'] == mine ? tie['away'] as Map? : tie['home'] as Map?;
+    if (other == null) return;
+    final api = ref.read(apiProvider);
+    final lists = await Future.wait([api.get('/leagues/${widget.leagueId}/clubs/$mine'), api.get('/leagues/${widget.leagueId}/clubs/${other['id']}')]);
+    if (!mounted) return;
+    final give = <int>{}, take = <int>{};
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, set) => SizedBox(
+          height: MediaQuery.of(ctx).size.height * .75,
+          child: Column(children: [
+            Expanded(
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                for (final (title, list, chosen) in [(l.swapGive, lists[0], give), (l.swapTake, lists[1], take)])
+                  Expanded(
+                    child: ListView(children: [
+                      Padding(padding: const EdgeInsets.all(8), child: Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w800))),
+                      for (final pl in (list['players'] as List? ?? const []).cast<Map>())
+                        CheckboxListTile(
+                          dense: true,
+                          value: chosen.contains(pl['id']),
+                          title: Text('${pl['name']}', textDirection: TextDirection.ltr, textAlign: TextAlign.start, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: Text('${pl['position']} ${pl['overall']}', textDirection: TextDirection.ltr),
+                          onChanged: (on) => set(() => on == true ? (chosen.length < max ? chosen.add(pl['id'] as int) : null) : chosen.remove(pl['id'])),
+                        ),
+                    ]),
+                  ),
+              ]),
+            ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: GlmButton(label: l.send, block: true, onPressed: give.isEmpty || take.isEmpty ? null : () => Navigator.pop(ctx, true)),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+    if (ok == true && mounted) {
+      await _try(context, () => api.post('/leagues/${widget.leagueId}/alliance/ties/${tie['id']}/swap', {'give': give.toList(), 'take': take.toList()}));
+      ref.invalidate(allianceProvider(widget.leagueId));
+    }
+  }
+
   final _name = TextEditingController();
   String? _a, _b;
   double? _size;
@@ -433,6 +559,13 @@ class _AllianceScreenState extends ConsumerState<AllianceScreen> {
                         Text(x['score'] is Map ? '${(x['score'] as Map)['home']} - ${(x['score'] as Map)['away']}' : 'vs', textDirection: TextDirection.ltr),
                         Expanded(child: Text('${(x['away'] as Map?)?['name'] ?? '—'}', textDirection: TextDirection.ltr, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w700))),
                       ]),
+                      // [Sprint 40 D2] The one who went on swaps players with the team he passed.
+                      if (x['winner_id'] != null && x['winner_id'] == t['my_club_id'] && (x['swaps'] as int? ?? 0) < (t['swap_max'] as int? ?? 3))
+                        GlmButton(
+                          label: l.swapPlayers((t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
+                          variant: GlmButtonVariant.quiet,
+                          onPressed: () => _swap(x, (t['swap_max'] as int? ?? 3) - (x['swaps'] as int? ?? 0)),
+                        ),
                       if (x['winner_id'] == null && t['my_club_id'] != null && [(x['home'] as Map?)?['id'], (x['away'] as Map?)?['id']].contains(t['my_club_id']))
                         Row(children: [
                           for (final side in ['home', 'away'])

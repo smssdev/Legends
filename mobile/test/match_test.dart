@@ -39,6 +39,10 @@ class FakeMatchRepository implements MatchRepository {
   @override
   Future<void> ready(int id) async => readies++;
   @override
+  Future<void> react(int id, String key, {String? target}) async => orders.add({'react': key, 'target': ?target});
+  @override
+  Future<void> say(int id, String body) async => orders.add({'say': body});
+  @override
   Future<MatchReport> report(int id, {required bool coach}) async => MatchReport.fromReport(json('report')).withMoments(MatchReport.fromRecap({
         'score': {'home': 1, 'away': 1}, 'result': 'draw', 'side': 'home',
         'moments': [
@@ -146,6 +150,11 @@ void main() {
     await t.tap(find.text('أرسل'));
     await wait(t);
     expect(repo.orders.single, {'type': 'sub', 'out': 1, 'in': 9});
+
+    // A reaction for every viewer's screen.
+    await t.tap(find.text('🔥'));
+    await wait(t);
+    expect(repo.orders.last, {'react': 'fire'});
     await leave(t);
   });
 

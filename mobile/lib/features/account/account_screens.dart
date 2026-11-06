@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,6 +14,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money;
+import '../auth/auth_controller.dart';
 import '../home/home_data.dart';
 import '../leagues/widgets.dart' show when;
 
@@ -24,6 +26,7 @@ final statsProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, in
 final ideasProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) => ref.read(apiProvider).get('/ideas'));
 final supportProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/support'))['messages'] as List? ?? const []);
 final announcementsProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/announcements'))['announcements'] as List? ?? const []);
+final rankingProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/rankings/coaches'))['coaches'] as List? ?? const []);
 final guideProvider = FutureProvider.autoDispose<List>((ref) async => (await ref.read(apiProvider).get('/guide'))['sections'] as List? ?? const []);
 
 Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
@@ -37,6 +40,34 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
 
 Widget _page(String title, Widget body, {List<Widget>? actions}) =>
     Scaffold(appBar: AppBar(title: Text(title), actions: actions), body: GlmBackground(child: body));
+
+/// A holiday request (days and a reason) sent to [path]: a league's (its creator answers) or the account's.
+Future<void> askHoliday(BuildContext context, WidgetRef ref, String path, int maxDays) async {
+  final l = L.of(context);
+  final reason = TextEditingController();
+  var days = 3.0.clamp(1, maxDays.toDouble()).toDouble();
+  final ok = await showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, set) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(l.holidayDays(days.round()), style: const TextStyle(fontWeight: FontWeight.w700)),
+          Slider(value: days, min: 1, max: maxDays.toDouble(), divisions: (maxDays - 1).clamp(1, 100), activeColor: ctx.palette.gold, onChanged: (v) => set(() => days = v)),
+          TextField(controller: reason, maxLength: 300, decoration: InputDecoration(labelText: l.holidayReason)),
+          GlmButton(label: l.send, block: true, onPressed: () => Navigator.pop(ctx, true)),
+        ]),
+      ),
+    ),
+  );
+  if (ok == true && context.mounted) {
+    final r = await _try(context, () => ref.read(apiProvider).post(path, {'days': days.round(), 'reason': reason.text.trim()}));
+    if (r != null && context.mounted) showGlmToast(context, l.holidaySent);
+  }
+  reason.dispose();
+}
 
 String badgeName(L l, String key, int goal) => switch (key) {
       'first_win' => l.aFirstWin, 'matches' || 'matches_10' => l.aMatches(goal), 'wins' || 'wins_100' => l.aWins(goal), 'first_title' => l.aFirstTitle,
@@ -72,6 +103,36 @@ class ProfileScreen extends ConsumerWidget {
             GlmCard(
               gold: true,
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                // The picture: picked from the phone, squared by the server.
+                Row(children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: p.brand,
+                    foregroundImage: me['avatar_url'] == null ? null : NetworkImage('${me['avatar_url']}'),
+                    child: Text('${me['name'] ?? ''}'.characters.take(1).toString(), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Wrap(spacing: 4, children: [
+                      TextButton.icon(
+                        icon: const Icon(Icons.photo_camera_rounded),
+                        label: Text(l.changePhoto),
+                        onPressed: () async {
+                          final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
+                          if (f == null || !context.mounted) return;
+                          await _try(context, () => api.upload('/auth/avatar', 'image', f.path));
+                          ref.invalidate(meProvider);
+                        },
+                      ),
+                      if (me['avatar_url'] != null)
+                        TextButton(onPressed: () async {
+                          await _try(context, () => api.delete('/auth/avatar'));
+                          ref.invalidate(meProvider);
+                        }, child: Text(l.removePhoto)),
+                    ]),
+                  ),
+                ]),
+                const SizedBox(height: 8),
                 TextFormField(
                   initialValue: '${me['name'] ?? ''}',
                   decoration: InputDecoration(labelText: l.displayName, suffixIcon: const Icon(Icons.edit_rounded)),
@@ -82,6 +143,32 @@ class ProfileScreen extends ConsumerWidget {
                 Text('@${me['username'] ?? ''} · ${l.accountNo(me['account_no'] as int? ?? 0)}', textDirection: TextDirection.ltr, style: TextStyle(color: p.textMuted)),
               ]),
             ),
+            const SizedBox(height: 12),
+            ...?(me['verification'] as Map?)?.let((v) => v['verified'] == true
+                ? [Text(l.verified, textAlign: TextAlign.center, style: TextStyle(color: context.glm.successText, fontWeight: FontWeight.w700))]
+                : [
+                    GlmCard(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Text(l.verifyAccount(v['welcome_coins'] as int? ?? 0), style: const TextStyle(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 8),
+                        GlmButton(label: l.sendCode, variant: GlmButtonVariant.outline, onPressed: () async {
+                          if (await _try(context, () => api.post('/auth/verify-account/send')) != null && context.mounted) showGlmToast(context, l.codeSent);
+                        }),
+                        TextField(
+                          textDirection: TextDirection.ltr,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(labelText: l.verifyCode),
+                          onSubmitted: (code) async {
+                            await _try(context, () => api.post('/auth/verify-account', {'code': code.trim()}));
+                            ref.invalidate(meProvider);
+                            ref.invalidate(homeProvider);
+                          },
+                        ),
+                      ]),
+                    ),
+                  ]),
+            if (me['email'] != null && me['email_verified'] != true)
+              TextButton(onPressed: () => _try(context, () => api.post('/auth/email/resend')), child: Text(l.resendEmail)),
             const SizedBox(height: 12),
             SectionTitle(l.coachLook),
             SegmentedButton<String>(
@@ -116,15 +203,57 @@ class ProfileScreen extends ConsumerWidget {
               );
             }),
             const SizedBox(height: 12),
+            // [UP13] A long holiday for the whole account (the developers answer it), or its end.
+            if ((me['vacation'] as Map?)?['on'] == true)
+              GlmButton(label: l.endHoliday, variant: GlmButtonVariant.outline, onPressed: () async {
+                await _try(context, () => api.delete('/auth/vacation'));
+                ref.invalidate(meProvider);
+              })
+            else if ((me['vacation'] as Map?)?['pending'] == null)
+              GlmButton(label: l.holidayAccount, variant: GlmButtonVariant.quiet, icon: const Icon(Icons.beach_access_rounded),
+                  onPressed: () => askHoliday(context, ref, '/auth/vacation', (me['vacation'] as Map?)?['max_days'] as int? ?? 60)),
+            const SizedBox(height: 8),
             for (final (icon, label, path) in [
+              (Icons.leaderboard_rounded, l.ranking, '/ranking'),
               (Icons.lightbulb_rounded, l.ideas, '/ideas'), (Icons.support_agent_rounded, l.support, '/support'),
               (Icons.campaign_rounded, l.announcements, '/announcements'), (Icons.menu_book_rounded, l.guide, '/guide'),
             ])
               ListTile(leading: Icon(icon, color: p.gold), title: Text(label), trailing: const Icon(Icons.chevron_right_rounded), onTap: () => context.push(path)),
+            const SizedBox(height: 24),
+            GlmButton(label: l.deleteAccount, variant: GlmButtonVariant.danger, onPressed: () => _delete(context, ref, me['has_password'] == true, '${me['email'] ?? ''}')),
           ]);
         },
       ),
     );
+  }
+
+  /// [X12] Asked twice: the word احذف, and the password (or the email of an account without one).
+  Future<void> _delete(BuildContext context, WidgetRef ref, bool hasPassword, String email) async {
+    final l = L.of(context);
+    final phrase = TextEditingController(), secret = TextEditingController();
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(l.deleteAccountLead),
+          TextField(controller: phrase, decoration: const InputDecoration(labelText: 'احذف')),
+          TextField(controller: secret, obscureText: hasPassword, textDirection: TextDirection.ltr,
+              decoration: InputDecoration(labelText: hasPassword ? l.currentPassword : l.email)),
+          const SizedBox(height: 12),
+          GlmButton(label: l.deleteAccount, variant: GlmButtonVariant.danger, block: true, onPressed: () => Navigator.pop(ctx, true)),
+        ]),
+      ),
+    );
+    if (ok == true && context.mounted) {
+      final body = {'phrase': phrase.text.trim(), if (hasPassword) 'password': secret.text else 'confirm': secret.text.trim()};
+      final r = await _try(context, () => ref.read(apiProvider).delete('/auth/me', body));
+      if (r != null) await ref.read(authProvider.notifier).forgetHere();
+    }
+    phrase.dispose();
+    secret.dispose();
   }
 
   Future<void> _password(BuildContext context, WidgetRef ref, bool hasOne) async {
@@ -150,6 +279,32 @@ class ProfileScreen extends ConsumerWidget {
     }
     current.dispose();
     next.dispose();
+  }
+}
+
+/// [X18] The coaches' ranking: titles first, then wins.
+class RankingScreen extends ConsumerWidget {
+  const RankingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    return _page(
+      l.ranking,
+      AsyncView(
+        value: ref.watch(rankingProvider),
+        onRetry: () => ref.invalidate(rankingProvider),
+        data: (rows) => ListView(padding: const EdgeInsets.all(12), children: [
+          for (final r in rows.cast<Map>())
+            ListTile(
+              leading: Text('${r['position']}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+              title: Text('${(r['coach'] as Map?)?['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text('${l.trophiesShort(((r['trophies'] as Map?)?['total'] as int?) ?? 0)} · ${r['won']}/${r['played']} · ${((r['rating'] as Map?)?['points']) ?? 0}'),
+              onTap: (r['coach'] as Map?)?['id'] == null ? null : () => context.push('/coaches/${(r['coach'] as Map)['id']}'),
+            ),
+        ]),
+      ),
+    );
   }
 }
 
@@ -470,4 +625,8 @@ class GuideScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+extension<T> on T {
+  R let<R>(R Function(T) f) => f(this);
 }

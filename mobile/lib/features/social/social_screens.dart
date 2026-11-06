@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
@@ -523,6 +525,28 @@ class GroupsScreen extends ConsumerWidget {
       );
 }
 
+/// A picture sent in a group: private to its members, so fetched with the account's token, once.
+class _GroupImage extends ConsumerStatefulWidget {
+  const _GroupImage({required this.path});
+
+  final String path;
+
+  @override
+  ConsumerState<_GroupImage> createState() => _GroupImageState();
+}
+
+class _GroupImageState extends ConsumerState<_GroupImage> {
+  late final Future<List<int>> _bytes = ref.read(apiProvider).bytes(widget.path);
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<List<int>>(
+        future: _bytes,
+        builder: (_, s) => s.hasData && s.data!.isNotEmpty
+            ? ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.memory(Uint8List.fromList(s.data!), width: 240, fit: BoxFit.cover))
+            : const SizedBox(width: 240, height: 140, child: Center(child: CircularProgressIndicator())),
+      );
+}
+
 /// A group's conversation: the latest page, asked again every few seconds while open, and a line to write.
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.groupId, required this.name});
@@ -600,8 +624,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     decoration: BoxDecoration(color: p.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: p.surfaceRaised)),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text('${(m['user'] as Map?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
-                      Text(m['deleted'] == true ? l.messageDeleted : m['kind'] == 'text' ? '${m['body'] ?? ''}' : l.mediaOnWeb,
-                          style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null)),
+                      if (m['deleted'] != true && m['kind'] == 'image')
+                        _GroupImage(path: '/groups/${widget.groupId}/media/${m['id']}')
+                      else
+                        Text(m['deleted'] == true ? l.messageDeleted : m['kind'] == 'text' ? '${m['body'] ?? ''}' : l.mediaOnWeb,
+                            style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null)),
+                      if (m['deleted'] != true && m['kind'] == 'image' && (m['body'] ?? '') != '') Text('${m['body']}'),
                     ]),
                   ),
                 ),
@@ -612,6 +640,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
               child: Row(children: [
+                IconButton(
+                  tooltip: l.sendPhoto,
+                  icon: Icon(Icons.image_rounded, color: p.gold),
+                  onPressed: _sending
+                      ? null
+                      : () async {
+                          final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, maxHeight: 1600, imageQuality: 80);
+                          if (f == null) return;
+                          setState(() => _sending = true);
+                          try {
+                            await ref.read(apiProvider).upload('/groups/${widget.groupId}/media', 'file', f.path, fields: {'kind': 'image'});
+                            await _load();
+                          } on ApiError catch (e) {
+                            if (mounted) showGlmToast(this.context, e.message, error: true);
+                          } finally {
+                            if (mounted) setState(() => _sending = false);
+                          }
+                        },
+                ),
                 Expanded(child: TextField(controller: _text, minLines: 1, maxLines: 4, decoration: InputDecoration(hintText: l.typeMessage), onSubmitted: (_) => _send())),
                 IconButton(tooltip: l.send, icon: Icon(Icons.send_rounded, color: p.gold), onPressed: _sending ? null : _send),
               ]),
