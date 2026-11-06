@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
+import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
@@ -112,6 +113,7 @@ class WalletScreen extends ConsumerWidget {
                         : () async {
                             try {
                               await ref.read(walletRepositoryProvider).claimDaily();
+                              GameSounds.play(Sfx.coin);
                             } on ApiError catch (e) {
                               if (context.mounted) showGlmToast(context, e.message, error: true);
                             }

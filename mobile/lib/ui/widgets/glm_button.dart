@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import '../../core/sounds.dart';
 import 'cut.dart';
 
 enum GlmButtonVariant { primary, brand, outline, quiet, danger }
@@ -62,7 +63,7 @@ class GlmButton extends StatelessWidget {
                 type: MaterialType.transparency,
                 child: InkWell(
                   customBorder: GlmCut.shape(GlmCut.button),
-                  onTap: enabled ? () { HapticFeedback.selectionClick(); onPressed!(); } : null,
+                  onTap: enabled ? () { HapticFeedback.selectionClick(); GameSounds.play(Sfx.tap); onPressed!(); } : null,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(minHeight: 48, minWidth: GlmSize.touchMin),
                     child: Padding(padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12), child: child),

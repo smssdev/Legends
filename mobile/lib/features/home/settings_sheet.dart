@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/settings.dart';
+import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -53,7 +54,20 @@ class _SettingsSheet extends ConsumerWidget {
             selected: {s.language},
             onSelectionChanged: (v) => settings.setLanguage(v.first),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            secondary: Icon(s.sounds ? Icons.volume_up_rounded : Icons.volume_off_rounded, color: context.palette.gold),
+            title: Text(l.gameSounds),
+            value: s.sounds,
+            activeThumbColor: context.palette.gold,
+            onChanged: (v) {
+              settings.setSounds(v);
+              GameSounds.enabled = v;
+              if (v) GameSounds.play(Sfx.confirm);
+            },
+          ),
+          const SizedBox(height: 4),
           // [Sprint 18 F] The account: name, look, password, invites and badges; and the community's pages from it.
           ListTile(
             leading: Icon(Icons.person_rounded, color: context.palette.gold),

@@ -700,6 +700,9 @@ class LAr extends L {
   String get keyMoments => 'أهم اللحظات';
 
   @override
+  String get gameSounds => 'أصوات اللعبة';
+
+  @override
   String get matchStats => 'إحصائيات المباراة';
 
   @override

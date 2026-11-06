@@ -1369,6 +1369,12 @@ abstract class L {
   /// **'أهم اللحظات'**
   String get keyMoments;
 
+  /// No description provided for @gameSounds.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصوات اللعبة'**
+  String get gameSounds;
+
   /// No description provided for @matchStats.
   ///
   /// In ar, this message translates to:
