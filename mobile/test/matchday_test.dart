@@ -35,6 +35,11 @@ Future<void> pump(WidgetTester t, Widget screen) async {
           }),
       contractsProvider.overrideWith((ref, l) async => json('team_contracts')),
       ticketsProvider.overrideWith((ref, l) async => json('tickets')),
+      missedProvider.overrideWith((ref, l) async => [
+            {'match_id': 77, 'result': 1, 'home': {'name': 'Liverpool'}, 'away': {'name': 'Arsenal'}, 'home_goals': 2, 'away_goals': 1,
+              'goals': [{'minute': 18, 'side': 'home', 'scorer': 'Mohamed Salah'}], 'man_of_the_match': {'name': 'Mohamed Salah'}, 'coins': 3,
+              'changes': [{'kind': 'injury', 'player': 'Cody Gakpo'}]},
+          ]),
     ],
     child: MaterialApp(
       theme: glmTheme(day: false),
@@ -67,5 +72,13 @@ void main() {
     await pump(t, const TicketsScreen(leagueId: 8));
     expect(find.text('Leeds United'), findsWidgets);
     expect(find.text('شجّع'), findsWidgets);
+  });
+
+  testWidgets('what I missed: the result, its scorer, the coins and an injury', (t) async {
+    await pump(t, const MissedScreen(leagueId: 8));
+    expect(find.text('2 - 1'), findsOneWidget);
+    expect(find.textContaining('Mohamed Salah'), findsWidgets);
+    expect(find.text('3 كوينز'), findsOneWidget);
+    expect(find.textContaining('Cody Gakpo'), findsOneWidget);
   });
 }

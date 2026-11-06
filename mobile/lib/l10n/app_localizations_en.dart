@@ -1909,4 +1909,30 @@ class LEn extends L {
 
   @override
   String get cheer => 'Cheer';
+
+  @override
+  String get matchChat => 'Chat';
+
+  @override
+  String get reactionSent => 'Reaction sent';
+
+  @override
+  String missedMatches(int n) {
+    return 'You missed $n matches';
+  }
+
+  @override
+  String get missedTitle => 'What you missed';
+
+  @override
+  String get markSeen => 'Mark all seen';
+
+  @override
+  String get squadChanges => 'Squad changes';
+
+  @override
+  String get injured => 'injured';
+
+  @override
+  String get sentOff => 'sent off';
 }

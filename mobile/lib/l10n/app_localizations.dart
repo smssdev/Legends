@@ -3402,6 +3402,54 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'شجّع'**
   String get cheer;
+
+  /// No description provided for @matchChat.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدردشة'**
+  String get matchChat;
+
+  /// No description provided for @reactionSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل تفاعلك'**
+  String get reactionSent;
+
+  /// No description provided for @missedMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتتك {n} مباريات'**
+  String missedMatches(int n);
+
+  /// No description provided for @missedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما فاتك'**
+  String get missedTitle;
+
+  /// No description provided for @markSeen.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاهدتها كلها'**
+  String get markSeen;
+
+  /// No description provided for @squadChanges.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيّر في فريقك'**
+  String get squadChanges;
+
+  /// No description provided for @injured.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصاب'**
+  String get injured;
+
+  /// No description provided for @sentOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'طُرد'**
+  String get sentOff;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

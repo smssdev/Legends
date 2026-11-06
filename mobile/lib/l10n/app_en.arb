@@ -550,5 +550,13 @@
   "renewEnding": "Renew every ending contract",
   "cheerTickets": "Cheer tickets",
   "cheerLead": "Cheer a side in another match: +{boost} to its spirit; a ticket costs {price}.",
-  "cheer": "Cheer"
+  "cheer": "Cheer",
+  "matchChat": "Chat",
+  "reactionSent": "Reaction sent",
+  "missedMatches": "You missed {n} matches",
+  "missedTitle": "What you missed",
+  "markSeen": "Mark all seen",
+  "squadChanges": "Squad changes",
+  "injured": "injured",
+  "sentOff": "sent off"
 }

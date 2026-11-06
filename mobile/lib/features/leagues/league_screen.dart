@@ -98,6 +98,20 @@ class _ClubTab extends ConsumerWidget {
                 ]),
               ),
             ),
+          // [Sprint 20 B3] What was played while I was away.
+          if (s.missed > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: GlmCard(
+                onTap: () => context.push('/leagues/${lg.id}/missed'),
+                child: Row(children: [
+                  Icon(Icons.history_rounded, color: p.gold),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(l.missedMatches(s.missed), style: const TextStyle(fontWeight: FontWeight.w800))),
+                  const Icon(Icons.chevron_right_rounded),
+                ]),
+              ),
+            ),
           GlmCard(
             gold: true,
             child: Column(children: [

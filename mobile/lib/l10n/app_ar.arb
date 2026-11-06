@@ -1467,5 +1467,20 @@
       }
     }
   },
-  "cheer": "شجّع"
+  "cheer": "شجّع",
+  "matchChat": "الدردشة",
+  "reactionSent": "وصل تفاعلك",
+  "missedMatches": "فاتتك {n} مباريات",
+  "@missedMatches": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "missedTitle": "ما فاتك",
+  "markSeen": "شاهدتها كلها",
+  "squadChanges": "تغيّر في فريقك",
+  "injured": "مصاب",
+  "sentOff": "طُرد"
 }

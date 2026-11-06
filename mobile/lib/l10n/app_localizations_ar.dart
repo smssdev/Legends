@@ -1905,4 +1905,30 @@ class LAr extends L {
 
   @override
   String get cheer => 'شجّع';
+
+  @override
+  String get matchChat => 'الدردشة';
+
+  @override
+  String get reactionSent => 'وصل تفاعلك';
+
+  @override
+  String missedMatches(int n) {
+    return 'فاتتك $n مباريات';
+  }
+
+  @override
+  String get missedTitle => 'ما فاتك';
+
+  @override
+  String get markSeen => 'شاهدتها كلها';
+
+  @override
+  String get squadChanges => 'تغيّر في فريقك';
+
+  @override
+  String get injured => 'مصاب';
+
+  @override
+  String get sentOff => 'طُرد';
 }

@@ -95,6 +95,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),
       GoRoute(path: '/guide', builder: (_, _) => const GuideScreen()),
       GoRoute(path: '/leagues/:id/stats', builder: (_, s) => StatsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/missed', builder: (_, s) => MissedScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/matchday', builder: (_, s) => MatchdayScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/contracts', builder: (_, s) => ContractsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/tickets', builder: (_, s) => TicketsScreen(leagueId: int.parse(s.pathParameters['id']!))),

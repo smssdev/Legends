@@ -156,7 +156,7 @@ class MatchPause {
 
 class LiveSync {
   const LiveSync({required this.finished, required this.tick, required this.serverNow, this.nextAt, this.ticks = const [], this.missed = const [],
-      this.pause, this.pollMs, this.readings = const []});
+      this.pause, this.pollMs, this.readings = const [], this.chat = const [], this.reactions = const []});
 
   factory LiveSync.fromJson(Map<String, dynamic> j) => LiveSync(
         finished: j['finished'] == true, tick: j['tick'] as int? ?? 0, serverNow: (j['server_now'] as num?)?.toInt() ?? 0,
@@ -170,6 +170,8 @@ class LiveSync {
         pause: j['pause'] is Map ? MatchPause.fromJson(j['pause'] as Map<String, dynamic>) : null,
         pollMs: (j['poll_ms'] as num?)?.toInt(),
         readings: [for (final r in (j['readings'] as List? ?? const [])) if (r is Map && r['text'] != null) '${r['text']}'],
+        chat: [for (final c in (j['chat'] as List? ?? const [])) (id: (c as Map)['id'] as int, who: '${c['who']}', body: '${c['body']}', side: c['side'] as String?)],
+        reactions: [for (final r in (j['reactions'] as List? ?? const [])) (id: (r as Map)['id'] as int, who: '${r['who']}', key: '${r['key']}', target: r['target'] as String?)],
       );
 
   final bool finished;
@@ -179,6 +181,10 @@ class LiveSync {
   final List<MatchEvent> missed;
   final MatchPause? pause;
   final List<String> readings;
+
+  /// [X24] The side chat between the league's viewers (the latest 50) and the latest reactions.
+  final List<({int id, String who, String body, String? side})> chat;
+  final List<({int id, String who, String key, String? target})> reactions;
 }
 
 /// What the app needs of a finished match: the coach's report, or the recap for a member who coaches neither side.
@@ -266,6 +272,8 @@ class MatchRepository {
   Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
   Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});
   Future<void> ready(int id) => _api.post('/matches/$id/ready');
+  Future<void> react(int id, String key, {String? target}) => _api.post('/matches/$id/reactions', {'key': key, 'target': ?target});
+  Future<void> say(int id, String body) => _api.post('/matches/$id/chat', {'body': body});
 
   /// The coach's own report; the quick recap for a member who coaches neither side (403 on the report).
   Future<MatchReport> report(int id, {required bool coach}) async {
