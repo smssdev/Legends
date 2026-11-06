@@ -181,7 +181,7 @@ onMounted(() => load().catch((e) => ((message.value = asApiError(e).message), (l
 
       <!-- [S1] The board: the sliders, the trap and the marking first (the right in Arabic); the plan, the tackling and
            the positions second. One column on a phone. -->
-      <div class="grid gap-3 md:grid-cols-2">
+      <div class="grid gap-3 xl:grid-cols-2">
         <div class="flex flex-col gap-3">
           <section v-for="sl in SLIDERS" :key="sl.key" class="flex flex-col gap-2 rounded-xl border border-text/10 bg-surface p-4">
             <span class="flex items-center justify-center gap-1 text-sm font-bold text-ring"><label :for="`t-${sl.key}`">{{ $t(sl.label) }}</label></span>

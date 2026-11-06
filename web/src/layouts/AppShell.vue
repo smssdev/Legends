@@ -174,8 +174,8 @@ onBeforeUnmount(() => sizer?.disconnect())
       </div>
 
       <!-- A portal's list on the phone: a sheet over the bottom bar. -->
-      <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:hidden" @click="portal = null" />
-      <section v-if="inSlot && openGroup" id="portal-list" class="portal-list md:hidden" :aria-label="$t(openGroup.label)">
+      <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="portal = null" />
+      <section v-if="inSlot && openGroup" id="portal-list" class="portal-list lg:hidden" :aria-label="$t(openGroup.label)">
         <h2 class="mb-2 flex items-center gap-2 font-display text-base font-extrabold"><Icon :name="openGroup.icon" :size="18" />{{ $t(openGroup.label) }}</h2>
         <div class="grid grid-cols-3 gap-2">
           <RouterLink v-for="s in openGroup.items" :key="s.name" :to="pathOf(s)" class="portal-item" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
@@ -205,9 +205,9 @@ onBeforeUnmount(() => sizer?.disconnect())
       {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
 
-    <div :class="inSlot ? 'md:grid md:grid-cols-[15rem_minmax(0,1fr)]' : ''">
+    <div :class="inSlot ? 'lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]' : ''">
       <!-- [W6] Inside a slot on the computer: every section, always in sight. -->
-      <nav v-if="inSlot" class="side-nav hidden md:flex" :aria-label="$t('أقسام النادي')">
+      <nav v-if="inSlot" class="side-nav hidden lg:flex" :aria-label="$t('أقسام النادي')">
         <RouterLink v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" class="side-item" :class="active(pathOf(s)) ? 'is-active' : ''" :aria-current="active(pathOf(s)) ? 'page' : undefined">
           <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
         </RouterLink>
@@ -237,7 +237,7 @@ onBeforeUnmount(() => sizer?.disconnect())
     <PublicFooter :class="inSlot ? 'shell-foot-slot' : ''" />
 
     <!-- [W6] Inside a slot on the phone: «النادي» first, then the four portals. -->
-    <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden" :aria-label="$t('أقسام النادي')">
+    <nav v-if="inSlot" class="shell-tabs fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 gap-1 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 lg:hidden" :aria-label="$t('أقسام النادي')">
       <RouterLink to="/club" class="tab-item" :class="route.path === '/club' && !portal ? 'is-active' : ''" :aria-current="route.path === '/club' ? 'page' : undefined">
         <Icon name="club" /><span class="line-clamp-2 max-w-full leading-tight">{{ $t('النادي') }}</span>
       </RouterLink>
@@ -416,7 +416,7 @@ onBeforeUnmount(() => sizer?.disconnect())
 .shell-main-slot { padding-bottom: 2.5rem; }
 /* [X90] The footer ends the page above the phone's bottom bar. */
 .shell-foot-slot { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) { .shell-foot-slot { padding-bottom: 0; } }
+@media (min-width: 1024px) { .shell-foot-slot { padding-bottom: 0; } }
 /* The phone's bottom bar: night ink, the current tab in emerald with a gold mark. */
 .shell-tabs {
   background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));

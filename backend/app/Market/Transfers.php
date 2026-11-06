@@ -48,6 +48,8 @@ class Transfers
         if (DB::table('transfer_listings')->where('club_id', $clubId)->count() >= $max) {
             throw new HttpException(422, sprintf(__('تعرض %d لاعبين الآن، وهذا أقصى ما يُعرض في نفس الوقت: اسحب أحدهم أو انتظر بيعه.'), $max));
         }
+        // [X101] The players listed already count as gone: the line keeps its minimum even if all of them sell.
+        Market::assertLineKeeps($clubId, (string) DB::table('master_players')->where('id', $p->master_player_id)->value('line'), 0, true);
         $cap = Buyer::cap($p, $clubId);
         $floor = Buyer::floor($p, $cap);
         if ($price < $floor || $price > $cap) {
@@ -261,6 +263,18 @@ class Transfers
         foreach ([[$from->id, count($in) - count($out)], [$to->id, count($out) - count($in)]] as [$club, $change]) {
             if ($change < 0 && DB::table('players')->where('club_id', $club)->count() + $change < (int) config('game.economy.min_squad')) {
                 throw new HttpException(409, 'لا يمكن أن ينزل أي فريق عن 16 لاعباً.');
+            }
+        }
+        // [X101] And each line its minimum: what a club gives of a line, less what it gets of it.
+        $lines = fn ($ids) => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->whereIn('players.id', $ids)->pluck('master_players.line')->countBy();
+        [$gets, $gives] = [$lines($in), $lines($out)];
+        foreach ([[$from->id, $gives, $gets], [$to->id, $gets, $gives]] as [$club, $leaving, $coming]) {
+            foreach ($leaving as $line => $n) {
+                $net = $n - ($coming[$line] ?? 0);
+                if ($net > 0) {
+                    Market::assertLineKeeps($club, (string) $line, $net - 1);
+                }
             }
         }
         // 5. The buyer can pay.

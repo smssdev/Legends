@@ -139,6 +139,9 @@ return [
         'debt_rounds_before_forced_sale' => 3,
         'min_squad' => 16,                  // a forced sale never leaves fewer players than this
         'bot_min_squad' => 18, 'min_keepers' => 2,   // a bot club sells no lower than this [PLAN 2.7]
+        // [X101] No club sells, lists or trades a line below this: the owner's report 2026-11-05 (three keepers
+        // listed at once). A listed player counts as gone already.
+        'min_per_line' => ['gk' => 2, 'def' => 4, 'mid' => 4, 'att' => 2],
         'pool_size' => 300,
         // The pool renews every pool_hours from the players of every league in the data [X6], as strong as this
         // league: from its pool_level_from_pct percentile of strength to its best, in pool_lines shares per line.

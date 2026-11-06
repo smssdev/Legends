@@ -221,9 +221,7 @@ class Buyer
             }
             // A squad too small to let him go: the buyer comes back in an hour.
             $count = DB::table('players')->where('club_id', $l->club_id)->count();
-            $keepers = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
-                ->where('players.club_id', $l->club_id)->where('master_players.line', 'gk')->count();
-            if ($count - 1 < (int) config('game.economy.min_squad') || ($p->line === 'gk' && $keepers - 1 < (int) config('game.economy.min_keepers'))) {
+            if ($count - 1 < (int) config('game.economy.min_squad') || Market::lineCount((int) $l->club_id, (string) $p->line) - 1 < Market::lineMin((string) $p->line)) {   // [X101]
                 DB::table('transfer_listings')->where('id', $l->id)->update(['sells_at' => GameClock::now()->copy()->addHour()]);
 
                 return false;

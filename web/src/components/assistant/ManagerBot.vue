@@ -190,7 +190,7 @@ const status = computed(() => (!bot.ai ? 'guide' : bot.limited || bot.remaining 
 /* Fixed on the left in Arabic and on the right in English (the line's end), above the phone's bottom bar inside a slot. */
 .bot-root { position: fixed; z-index: 40; inset-inline-end: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
 .bot-root.raised { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) { .bot-root.raised { bottom: 1.25rem; } }
+@media (min-width: 1024px) { .bot-root.raised { bottom: 1.25rem; } }
 .bot-fab-row { display: flex; align-items: center; gap: 0.5rem; flex-direction: row-reverse; }
 .bot-fab {
   position: relative;

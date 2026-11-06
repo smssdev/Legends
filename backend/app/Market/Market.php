@@ -248,13 +248,39 @@ class Market
         if ($count - 1 < $min) {
             throw new HttpException(409, sprintf($message, $min));
         }
-        $line = DB::table('master_players')->where('id', $player->master_player_id)->value('line');
-        $keepers = DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
-            ->where('players.club_id', $clubId)->where('master_players.line', 'gk')->count();
-        if ($line === 'gk' && $keepers - 1 < (int) config('game.economy.min_keepers')) {
-            throw new HttpException(409, 'لا بد أن يبقى حارسان على الأقل.');
+        self::assertLineKeeps($clubId, (string) DB::table('master_players')->where('id', $player->master_player_id)->value('line'));
+    }
+
+    /** [X101] The fewest players a line may keep (game.economy.min_per_line; keepers at least min_keepers). */
+    public static function lineMin(string $line): int
+    {
+        $min = (int) (config('game.economy.min_per_line')[$line] ?? 0);
+
+        return $line === 'gk' ? max($min, (int) config('game.economy.min_keepers')) : $min;
+    }
+
+    /** How many players of this line the club has, those listed for sale left out when $listedGone. */
+    public static function lineCount(int $clubId, string $line, bool $listedGone = false): int
+    {
+        return DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.club_id', $clubId)->where('master_players.line', $line)
+            ->when($listedGone, fn ($q) => $q->whereNotExists(fn ($w) => $w->from('transfer_listings')->whereColumn('transfer_listings.player_id', 'players.id')))
+            ->count();
+    }
+
+    /**
+     * [X101] One more of this line leaving (and $alsoLeaving with him) keeps the line at its minimum, or a 409
+     * that names the line and the number.
+     */
+    public static function assertLineKeeps(int $clubId, string $line, int $alsoLeaving = 0, bool $listedGone = false): void
+    {
+        $min = self::lineMin($line);
+        if (self::lineCount($clubId, $line, $listedGone) - 1 - $alsoLeaving < $min) {
+            throw new HttpException(409, sprintf(__('لا بد أن يبقى في %s %d لاعبين على الأقل.'), __(self::LINE_LABEL[$line] ?? $line), $min));
         }
     }
+
+    private const LINE_LABEL = ['gk' => 'حراسة المرمى', 'def' => 'خط الدفاع', 'mid' => 'خط الوسط', 'att' => 'خط الهجوم'];
 
     /**
      * A bot short of players (a forced sale) buys from the pool what it lacks [PLAN 2.7]: the cheapest keeper

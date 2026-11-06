@@ -199,10 +199,41 @@ class MarketTest extends TestCase
         $this->assertSame(192 * 3600, Buyer::wait(2_500_000, 1_000_000, $id, 10000));
     }
 
+    /** [X101] No line is listed, sold or traded below its minimum: three keepers, and the third is refused. */
+    public function test_each_line_keeps_its_minimum(): void
+    {
+        $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
+        $line = fn (string $l) => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.club_id', $this->mine)->where('master_players.line', $l)->orderBy('players.id')->select('players.*')->get();
+        $keepers = $line('gk');
+        $this->actingAs($this->owner);
+        // Down to two keepers: the extra ones list, then the next is refused (the listed count as gone).
+        foreach ($keepers->slice(0, max(0, $keepers->count() - 2)) as $p) {
+            $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value])->assertOk();
+        }
+        $last = $keepers[$keepers->count() - 2];
+        $this->postJson($tr, ['player_id' => $last->id, 'price' => (int) $last->value])->assertStatus(409)
+            ->assertJsonPath('message', 'لا بد أن يبقى في حراسة المرمى 2 لاعبين على الأقل.');
+        // The instant sale too, once the extra keepers are gone.
+        DB::table('players')->whereIn('id', $keepers->slice(0, max(0, $keepers->count() - 2))->pluck('id'))->update(['club_id' => null]);
+        $this->postJson($this->url('/sell'), ['player_id' => $last->id, 'idempotency_key' => 'k1'])->assertStatus(409);
+
+        // The same for every line, from config.
+        $this->assertSame(4, Market::lineMin('def'));
+        $this->assertSame(2, Market::lineMin('att'));
+        $atts = $line('att');
+        DB::table('players')->whereIn('id', $atts->slice(2)->pluck('id'))->update(['club_id' => null]);
+        $this->postJson($tr, ['player_id' => $atts[0]->id, 'price' => (int) $atts[0]->value])->assertStatus(409)
+            ->assertJsonPath('message', 'لا بد أن يبقى في خط الهجوم 2 لاعبين على الأقل.');
+    }
+
     public function test_four_listings_at_a_time_and_the_seasons_profit_room(): void
     {
         $tr = "/api/v1/leagues/{$this->league['id']}/transfers/listings";
-        $mine = DB::table('players')->where('club_id', $this->mine)->orderByDesc('value')->orderBy('id')->limit(5)->get();
+        // [X101] Three midfielders and two attackers (of seven and four), so no line falls below its minimum.
+        $of = fn (string $l, int $n) => DB::table('players')->join('master_players', 'master_players.id', '=', 'players.master_player_id')
+            ->where('players.club_id', $this->mine)->where('master_players.line', $l)->orderBy('players.id')->limit($n)->select('players.*')->get();
+        $mine = $of('mid', 3)->concat($of('att', 2))->values();
         $this->actingAs($this->owner);
         foreach ($mine->take(4) as $p) {
             $this->postJson($tr, ['player_id' => $p->id, 'price' => (int) $p->value])->assertOk();

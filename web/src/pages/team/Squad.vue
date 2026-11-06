@@ -170,7 +170,7 @@ function status(p: SquadPlayer) {
       <!-- [Sprint 21 E3.5] The list: by line, compact rows that read across, and on a computer columns with their
            headings (position, age, fitness, status, value, rating). -->
       <div v-else class="flex flex-col gap-4">
-        <div class="hidden grid-cols-[2.5rem_minmax(0,1fr)_3.5rem_8rem_9rem_5.5rem_3.5rem] items-center gap-3 px-3 text-xs font-bold text-text-muted md:grid">
+        <div class="hidden grid-cols-[2.5rem_minmax(0,1fr)_3rem_6rem_7rem_5rem_3.5rem] items-center gap-3 px-3 text-xs font-bold text-text-muted lg:grid">
           <span /><span>{{ $t('اللاعب') }}</span><span class="text-center">{{ $t('العمر') }}</span><span>{{ $t('اللياقة') }}</span><span>{{ $t('الحالة') }}</span><span class="text-end">{{ $t('القيمة') }}</span><span class="text-center">{{ $t('القوة') }}</span>
         </div>
         <section v-for="grp in groups" :key="grp.line" class="flex flex-col gap-1.5" :aria-label="$t(LINES[grp.line].plural)">
@@ -180,28 +180,28 @@ function status(p: SquadPlayer) {
           </h2>
           <ul class="flex flex-col overflow-hidden rounded-xl bg-surface">
             <li v-for="p in grp.players" :key="p.id" class="v-row border-b border-text/5 last:border-0">
-              <button type="button" class="grid min-h-16 w-full grid-cols-[2.5rem_minmax(0,1fr)_3rem] items-center gap-3 px-3 py-2 text-start transition-colors hover:bg-surface-raised md:grid-cols-[2.5rem_minmax(0,1fr)_3.5rem_8rem_9rem_5.5rem_3.5rem]" @click="open = p">
+              <button type="button" class="grid min-h-16 w-full grid-cols-[2.5rem_minmax(0,1fr)_3rem] items-center gap-3 px-3 py-2 text-start transition-colors hover:bg-surface-raised lg:grid-cols-[2.5rem_minmax(0,1fr)_3rem_6rem_7rem_5rem_3.5rem]" @click="open = p">
                 <LineBadge :line="p.line as Line" />
                 <span class="min-w-0">
-                  <span class="flex items-center gap-1.5">
-                    <span class="truncate font-display text-base font-extrabold md:text-lg">{{ $nm(p.name) }}</span>
+                  <span class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                    <span class="line-clamp-2 min-w-0 break-words font-display text-base font-extrabold leading-snug lg:text-lg">{{ $nm(p.name) }}</span>
                     <!-- [X84] On the transfer list: a mark, and a tap on it opens withdraw or keep. -->
                     <span v-if="p.listed" role="button" tabindex="0" class="shrink-0 rounded-pill bg-gold/20 px-2 py-0.5 text-[11px] font-bold text-gold" :aria-label="$t('معروض للبيع: اسحبه أو اتركه')"
                       @click.stop="openSale(p)" @keydown.enter.stop.prevent="openSale(p)">{{ $t('معروض للبيع') }}</span>
                   </span>
                   <span class="flex items-center gap-2 text-xs text-text-muted">
                     <span dir="ltr">{{ p.position }}</span>
-                    <span class="md:hidden">· {{ $t('{n} سنة', { n: p.age }) }}</span>
-                    <span class="md:hidden" :class="status(p).tone">· {{ $t(status(p).text) }}</span>
+                    <span class="lg:hidden">· {{ $t('{n} سنة', { n: p.age }) }}</span>
+                    <span class="lg:hidden" :class="status(p).tone">· {{ $t(status(p).text) }}</span>
                   </span>
                 </span>
-                <span class="hidden text-center font-numbers text-text-soft md:block">{{ p.age }}</span>
-                <span class="hidden items-center gap-2 md:flex">
+                <span class="hidden text-center font-numbers text-text-soft lg:block">{{ p.age }}</span>
+                <span class="hidden items-center gap-2 lg:flex">
                   <span class="h-1.5 flex-1 rounded-full bg-surface-sunk"><span class="block h-full rounded-full" :class="fitnessTone(p.fitness)" :style="{ width: `${p.fitness}%` }" /></span>
                   <span class="w-8 text-end font-numbers text-xs text-text-soft">{{ p.fitness }}</span>
                 </span>
-                <span class="hidden truncate text-sm md:block" :class="status(p).tone">{{ $t(status(p).text) }}</span>
-                <span class="hidden text-end font-numbers text-sm text-text-soft md:block">{{ money(p.value) }}</span>
+                <span class="hidden truncate text-sm lg:block" :class="status(p).tone">{{ $t(status(p).text) }}</span>
+                <span class="hidden text-end font-numbers text-sm text-text-soft lg:block">{{ money(p.value) }}</span>
                 <span class="flex size-11 items-center justify-center justify-self-center rounded-lg bg-surface-sunk font-numbers text-xl font-bold" :class="p.overall >= 85 ? 'text-gold' : ''">{{ p.overall }}</span>
               </button>
             </li>
