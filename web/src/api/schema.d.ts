@@ -13859,6 +13859,8 @@ export interface components {
             published_at: string | null;
             /** @description The download (ready only) */
             url: string | null;
+            /** @description [2026-11-06] The app that ships with the site: its file for old 32-bit phones */
+            old_phones_url?: string | null;
         };
         /** @description [Sprint 43 W2] A store package (it stays) or timed offer */
         StoreItem: {

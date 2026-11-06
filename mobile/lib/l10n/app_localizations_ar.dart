@@ -2078,4 +2078,18 @@ class LAr extends L {
 
   @override
   String get swapTake => 'تأخذ';
+
+  @override
+  String get recordVoice => 'سجّل رسالة صوتية';
+
+  @override
+  String get stopAndSend => 'أوقف وأرسل';
+
+  @override
+  String voiceNote(int n) {
+    return 'رسالة صوتية $n ث';
+  }
+
+  @override
+  String get micDenied => 'اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال';
 }

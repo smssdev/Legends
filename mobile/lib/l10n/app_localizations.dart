@@ -3702,6 +3702,30 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'تأخذ'**
   String get swapTake;
+
+  /// No description provided for @recordVoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل رسالة صوتية'**
+  String get recordVoice;
+
+  /// No description provided for @stopAndSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوقف وأرسل'**
+  String get stopAndSend;
+
+  /// No description provided for @voiceNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسالة صوتية {n} ث'**
+  String voiceNote(int n);
+
+  /// No description provided for @micDenied.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال'**
+  String get micDenied;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

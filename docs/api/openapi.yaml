@@ -5798,6 +5798,7 @@ components:
         downloads: { type: integer }
         published_at: { type: string, format: date-time, nullable: true }
         url: { type: string, nullable: true, description: The download (ready only) }
+        old_phones_url: { type: string, nullable: true, description: '[2026-11-06] The app that ships with the site: its file for old 32-bit phones' }
     StoreItem:
       type: object
       description: '[Sprint 43 W2] A store package (it stays) or timed offer'
