@@ -64,7 +64,7 @@ class MatchTeam {
 class MatchView {
   const MatchView({required this.id, required this.leagueId, required this.home, required this.away, required this.teams, this.you,
       required this.finished, required this.score, required this.tick, required this.tickMs, this.kickoffAt, this.formations = const [],
-      this.coaches = const {}, this.competition = 'league', this.round});
+      this.coaches = const {}, this.competition = 'league', this.round, this.seed});
 
   factory MatchView.fromJson(Map<String, dynamic> j) {
     final clubs = j['clubs'] as Map<String, dynamic>? ?? const {};
@@ -80,8 +80,12 @@ class MatchView {
       kickoffAt: DateTime.tryParse('${j['kickoff_at'] ?? ''}'),
       formations: [for (final f in (j['formations'] as List? ?? const [])) '$f'],
       coaches: coaches is Map ? {for (final e in coaches.entries) '${e.key}': '${e.value}'} : const {},
+      seed: (j['seed'] as num?)?.toInt(),
     );
   }
+
+  /// [Sprint 44 C3] The match's seed: the rain (MomentClock::rainy) and the cartoon's own variety, as on the web.
+  final int? seed;
 
   final int id, leagueId, tick, tickMs;
   final int? round;
@@ -121,7 +125,7 @@ class MatchEvent {
 /// A minute made by the server: its clock, score, events, both teams as they stand, and its Keyframes.
 class LiveTick {
   const LiveTick({required this.tick, required this.minute, this.added = 0, required this.score, required this.events, this.teams,
-      this.frames = const [], this.at, this.window = false, this.finished = false, this.period});
+      this.frames = const [], this.at, this.window = false, this.finished = false, this.period, this.moment, this.moods = const {}, this.how});
 
   factory LiveTick.fromJson(Map<String, dynamic> j) {
     final m = j['minute'];
@@ -134,6 +138,9 @@ class LiveTick {
       teams: teams == null ? null : {'home': MatchTeam.fromJson(teams['home'] as Map<String, dynamic>?), 'away': MatchTeam.fromJson(teams['away'] as Map<String, dynamic>?)},
       frames: [for (final f in (j['frames'] as List? ?? const [])) Keyframe.fromJson(f as Map<String, dynamic>)],
       at: (j['at'] as num?)?.toInt(), window: j['window'] == true, finished: j['finished'] == true, period: j['period'] as int?,
+      moment: j['moment'] is Map ? Moment.fromJson(j['moment'] as Map<String, dynamic>) : null,
+      moods: j['moods'] is Map ? {for (final e in (j['moods'] as Map).entries) '${e.key}': '${e.value}'} : const {},
+      how: j['voice'] is Map ? (j['voice'] as Map)['how'] as String? : null,
     );
   }
 
@@ -144,6 +151,29 @@ class LiveTick {
   final List<Keyframe> frames;
   final int? at, period;
   final bool window, finished;
+
+  /// [Sprint 44 A1] How the server tells this minute on the broadcast (MomentClock::moment), and the coaches' moods.
+  final Moment? moment;
+  final Map<String, String> moods;
+
+  /// Where a missed shot went (wide, over, the post): the server's, with its commentary line.
+  final String? how;
+}
+
+/// [Sprint 44 A1] The server's moment for a minute: its kind, its length on the broadcast, a brief one (only its card),
+/// how a card or a foul is told (drama), and why VAR ruled a goal out.
+class Moment {
+  const Moment({required this.kind, required this.ms, this.brief = false, this.drama, this.varReason});
+
+  factory Moment.fromJson(Map<String, dynamic> j) => Moment(
+        kind: '${j['kind'] ?? 'quiet'}', ms: (j['ms'] as num?)?.toInt() ?? 3000, brief: j['brief'] == true,
+        drama: j['drama'] as String?, varReason: j['var'] as String?,
+      );
+
+  final String kind;
+  final int ms;
+  final bool brief;
+  final String? drama, varReason;
 }
 
 /// The break under way [UP17]: until when (server ms), who is ready, and whether orders are open in it.

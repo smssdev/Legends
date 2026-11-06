@@ -152,6 +152,38 @@ def error():
     return track * 0.8
 
 
+def kick():
+    """[Sprint 44 C2] A boot on the ball: a dull thump and a leather slap."""
+    x = t(0.18)
+    thump = np.sin(2 * np.pi * (150 * np.exp(-x * 25) + 60) * x) * np.exp(-x * 35)
+    slap = bandnoise(0.18, 800, 4000) * np.exp(-x * 120) * 0.7
+    return thump + slap
+
+
+def roar():
+    """The crowd erupting at a goal: a sudden wall of voices, held, then easing."""
+    sec = 3.2
+    x = t(sec)
+    low = bandnoise(sec, 120, 800)
+    mid = bandnoise(sec, 500, 2400) * 0.8
+    air = bandnoise(sec, 2000, 6000) * 0.25
+    shape = np.minimum(1, x / 0.12) * np.clip((sec - x) / 1.6, 0, 1) ** 0.8
+    wobble = 1 + 0.12 * np.sin(2 * np.pi * 3.3 * x)
+    return (low + mid + air) * shape * wobble
+
+
+def ooh():
+    """The crowd's groan at a chance gone: a rising then falling vowel of thousands."""
+    sec = 1.6
+    x = t(sec)
+    voices = bandnoise(sec, 200, 1200)
+    # A formant sweeping like «ooo-oh».
+    f = 380 + 160 * np.sin(np.pi * x / sec)
+    vowel = np.sin(2 * np.pi * np.cumsum(f) / RATE) * 0.35
+    shape = np.sin(np.pi * np.clip(x / sec, 0, 1)) ** 1.2
+    return (voices + vowel * np.abs(voices).mean() * 6) * shape
+
+
 if __name__ == '__main__':
     save('intro', intro())
     save('tap', tap())
@@ -159,3 +191,7 @@ if __name__ == '__main__':
     save('coin', coin())
     save('error', error())
     save('whistle', whistle(0.55))
+    # [Sprint 44 C2] Last, so the sounds above keep their noise (the generator's draws stay in order).
+    save('kick', kick())
+    save('roar', roar())
+    save('ooh', ooh())
