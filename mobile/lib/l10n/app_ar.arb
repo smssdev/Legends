@@ -1656,5 +1656,37 @@
       }
     }
   },
-  "liveBadge": "مباشر الآن"
+  "liveBadge": "مباشر الآن",
+  "navOffice": "المكتب",
+  "officeHello": "مكتب المدرب",
+  "strengthCompare": "قوة الفريقين",
+  "needsYou": "ينتظرك الآن",
+  "allClear": "كل شيء جاهز، استعد للمباراة",
+  "needWindow": "نافذة الأوامر مفتوحة في مباراتك",
+  "needLineup": "لاعبون غائبون في تشكيلتك",
+  "needOffers": "عروض بانتظار ردك",
+  "needRequests": "طلبات انضمام للدوري",
+  "needTrainingEmpty": "خطوط بلا تدريب",
+  "needTrainingDone": "تدريب انتهى وينتظر لاعباً جديداً",
+  "tileSquadSub": "{n} لاعباً",
+  "@tileSquadSub": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tileReady": "جاهزة",
+  "tileAuto": "تلقائية",
+  "tileFixtures": "الجدول والنتائج",
+  "colPos": "مركز",
+  "colName": "اللاعب",
+  "colAge": "عمر",
+  "colOvr": "تقييم",
+  "colPot": "إمكانية",
+  "colFit": "لياقة",
+  "colValue": "القيمة",
+  "filterAll": "الكل",
+  "dragHint": "اسحب لاعباً إلى مكانه، أو المس لاعبَين للتبديل",
+  "leagueTable": "الترتيب"
 }

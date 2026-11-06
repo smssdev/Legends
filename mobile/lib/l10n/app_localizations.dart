@@ -3954,6 +3954,156 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'مباشر الآن'**
   String get liveBadge;
+
+  /// No description provided for @navOffice.
+  ///
+  /// In ar, this message translates to:
+  /// **'المكتب'**
+  String get navOffice;
+
+  /// No description provided for @officeHello.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكتب المدرب'**
+  String get officeHello;
+
+  /// No description provided for @strengthCompare.
+  ///
+  /// In ar, this message translates to:
+  /// **'قوة الفريقين'**
+  String get strengthCompare;
+
+  /// No description provided for @needsYou.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتظرك الآن'**
+  String get needsYou;
+
+  /// No description provided for @allClear.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل شيء جاهز، استعد للمباراة'**
+  String get allClear;
+
+  /// No description provided for @needWindow.
+  ///
+  /// In ar, this message translates to:
+  /// **'نافذة الأوامر مفتوحة في مباراتك'**
+  String get needWindow;
+
+  /// No description provided for @needLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاعبون غائبون في تشكيلتك'**
+  String get needLineup;
+
+  /// No description provided for @needOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'عروض بانتظار ردك'**
+  String get needOffers;
+
+  /// No description provided for @needRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات انضمام للدوري'**
+  String get needRequests;
+
+  /// No description provided for @needTrainingEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'خطوط بلا تدريب'**
+  String get needTrainingEmpty;
+
+  /// No description provided for @needTrainingDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تدريب انتهى وينتظر لاعباً جديداً'**
+  String get needTrainingDone;
+
+  /// No description provided for @tileSquadSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} لاعباً'**
+  String tileSquadSub(int n);
+
+  /// No description provided for @tileReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاهزة'**
+  String get tileReady;
+
+  /// No description provided for @tileAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلقائية'**
+  String get tileAuto;
+
+  /// No description provided for @tileFixtures.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجدول والنتائج'**
+  String get tileFixtures;
+
+  /// No description provided for @colPos.
+  ///
+  /// In ar, this message translates to:
+  /// **'مركز'**
+  String get colPos;
+
+  /// No description provided for @colName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللاعب'**
+  String get colName;
+
+  /// No description provided for @colAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'عمر'**
+  String get colAge;
+
+  /// No description provided for @colOvr.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقييم'**
+  String get colOvr;
+
+  /// No description provided for @colPot.
+  ///
+  /// In ar, this message translates to:
+  /// **'إمكانية'**
+  String get colPot;
+
+  /// No description provided for @colFit.
+  ///
+  /// In ar, this message translates to:
+  /// **'لياقة'**
+  String get colFit;
+
+  /// No description provided for @colValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة'**
+  String get colValue;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get filterAll;
+
+  /// No description provided for @dragHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسحب لاعباً إلى مكانه، أو المس لاعبَين للتبديل'**
+  String get dragHint;
+
+  /// No description provided for @leagueTable.
+  ///
+  /// In ar, this message translates to:
+  /// **'الترتيب'**
+  String get leagueTable;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -642,5 +642,37 @@
   "subAlliance": "Two alliances of coaches",
   "subTournaments": "Tournaments with a live draw",
   "countdownIn": "In {time}",
-  "liveBadge": "Live now"
+  "liveBadge": "Live now",
+  "navOffice": "Office",
+  "officeHello": "The manager's office",
+  "strengthCompare": "Team strength",
+  "needsYou": "Needs you now",
+  "allClear": "All set: get ready for the match",
+  "needWindow": "Your match is open for orders",
+  "needLineup": "Unavailable players in your lineup",
+  "needOffers": "Offers waiting for you",
+  "needRequests": "Requests to join the league",
+  "needTrainingEmpty": "Lines with no training",
+  "needTrainingDone": "Training finished: pick the next player",
+  "tileSquadSub": "{n} players",
+  "@tileSquadSub": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tileReady": "Ready",
+  "tileAuto": "Automatic",
+  "tileFixtures": "Fixtures and results",
+  "colPos": "Pos",
+  "colName": "Player",
+  "colAge": "Age",
+  "colOvr": "Ovr",
+  "colPot": "Pot",
+  "colFit": "Fit",
+  "colValue": "Value",
+  "filterAll": "All",
+  "dragHint": "Drag a player into place, or tap two to swap",
+  "leagueTable": "Table"
 }

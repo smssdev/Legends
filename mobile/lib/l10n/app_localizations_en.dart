@@ -2213,4 +2213,81 @@ class LEn extends L {
 
   @override
   String get liveBadge => 'Live now';
+
+  @override
+  String get navOffice => 'Office';
+
+  @override
+  String get officeHello => 'The manager\'s office';
+
+  @override
+  String get strengthCompare => 'Team strength';
+
+  @override
+  String get needsYou => 'Needs you now';
+
+  @override
+  String get allClear => 'All set: get ready for the match';
+
+  @override
+  String get needWindow => 'Your match is open for orders';
+
+  @override
+  String get needLineup => 'Unavailable players in your lineup';
+
+  @override
+  String get needOffers => 'Offers waiting for you';
+
+  @override
+  String get needRequests => 'Requests to join the league';
+
+  @override
+  String get needTrainingEmpty => 'Lines with no training';
+
+  @override
+  String get needTrainingDone => 'Training finished: pick the next player';
+
+  @override
+  String tileSquadSub(int n) {
+    return '$n players';
+  }
+
+  @override
+  String get tileReady => 'Ready';
+
+  @override
+  String get tileAuto => 'Automatic';
+
+  @override
+  String get tileFixtures => 'Fixtures and results';
+
+  @override
+  String get colPos => 'Pos';
+
+  @override
+  String get colName => 'Player';
+
+  @override
+  String get colAge => 'Age';
+
+  @override
+  String get colOvr => 'Ovr';
+
+  @override
+  String get colPot => 'Pot';
+
+  @override
+  String get colFit => 'Fit';
+
+  @override
+  String get colValue => 'Value';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get dragHint => 'Drag a player into place, or tap two to swap';
+
+  @override
+  String get leagueTable => 'Table';
 }

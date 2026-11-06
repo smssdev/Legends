@@ -122,7 +122,7 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
               if (m.closed != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.marketClosed, textAlign: TextAlign.center, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700))),
               if (m.renewsAt != null)
                 Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.renewsAt(when(context, m.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12))),
-              GameGrid(children: [
+              GameGrid(minWidth: 300, children: [
                 for (final pl in m.players)
                   _PlayerCard(
                     overall: pl.overall,
@@ -269,7 +269,7 @@ class _SellTab extends ConsumerWidget {
         child: ListView(padding: const EdgeInsets.all(12), children: [
           Text(l.listingsOf(s.listed, s.maxListings), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
           const SizedBox(height: 8),
-          GameGrid(children: [
+          GameGrid(minWidth: 300, children: [
             for (final pl in s.mine)
               _PlayerCard(
                 overall: pl.overall,
@@ -571,7 +571,7 @@ class _AcademyTab extends ConsumerWidget {
         Text(l.academyLead(a.signed, a.perSeason), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
         if (a.renewsAt != null) Text(l.renewsAt(when(context, a.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
         const SizedBox(height: 12),
-        GameGrid(children: [
+        GameGrid(minWidth: 300, children: [
           for (final x in a.prospects)
             GlmCard(
               accent: lineColor(x.line).bg,

@@ -28,22 +28,36 @@ import '../home/home_data.dart';
 import '../money/finance_screen.dart' show confirm;
 import 'leagues_repository.dart';
 import 'models.dart';
+import 'shell.dart';
 import 'widgets.dart';
 
 /// [Sprint 16 F1, redesigned 2026-11-06] A league as a game hub: five sections in a bottom bar, the way the best manager
 /// games are laid out (our own design): my club's dashboard (the next match as the hero, what needs me, the numbers),
 /// the team, the matches (calendar and table), the market and money, and the rest grouped by what it is for.
 class LeagueScreen extends ConsumerStatefulWidget {
-  const LeagueScreen({super.key, required this.id});
+  const LeagueScreen({super.key, required this.id, this.tab});
 
   final int id;
+
+  /// [Sprint 45 M1] The section to open (club, team, matches, market, more), from the menu's link.
+  final String? tab;
+
+  static const tabs = ['club', 'team', 'matches', 'market', 'more'];
 
   @override
   ConsumerState<LeagueScreen> createState() => _LeagueScreenState();
 }
 
 class _LeagueScreenState extends ConsumerState<LeagueScreen> {
-  int _tab = 0;
+  late int _tab = _of(widget.tab);
+
+  static int _of(String? tab) => LeagueScreen.tabs.indexOf(tab ?? 'club').clamp(0, 4);
+
+  @override
+  void didUpdateWidget(LeagueScreen old) {
+    super.didUpdateWidget(old);
+    if (old.tab != widget.tab) _tab = _of(widget.tab);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +86,8 @@ class _LeagueScreenState extends ConsumerState<LeagueScreen> {
                 : IndexedStack(index: _tab, children: [_ClubTab(lg), _TeamTab(lg), _MatchesTab(lg), _MarketTab(lg), _MoreTab(lg)]),
           ),
         );
-        if (!hasClub) return content;
+        // Inside the league's menu (wide): the menu is the navigation.
+        if (!hasClub || LeagueShell.of(context)) return content;
         final items = [
           (Icons.shield_outlined, Icons.shield_rounded, l.navClub),
           (Icons.groups_outlined, Icons.groups_rounded, l.navTeam),
@@ -137,13 +152,13 @@ class _ClubTab extends ConsumerWidget {
       child: AsyncView(
         value: ref.watch(clubSummaryProvider(lg.id)),
         onRetry: () => ref.invalidate(clubSummaryProvider(lg.id)),
-        data: (s) => GamePanes(start: [
+        // [Sprint 45 M2] The manager's office: the next match as the hero, then the club's departments as big tiles
+        // with their state, what needs me now, the table's top and the board's goal.
+        data: (s) => GamePanes(startFlex: 5, endFlex: 6, start: [
           _NextMatchHero(s: s, leagueId: lg.id),
-        ], end: [
-          // What needs me: the contract to sign, the matches I missed.
           if (lg.contract != null)
             Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(top: 10),
               child: GlmCard(
                 gold: true,
                 accent: p.gold,
@@ -158,58 +173,179 @@ class _ClubTab extends ConsumerWidget {
                 ]),
               ),
             ),
-          if (s.missed > 0)
+          _MiniTable(s: s, onTap: () => context.go('/leagues/${lg.id}?tab=matches')),
+        ], end: [
+          _Departments(s: s, go: (path) => context.push(go(path))),
+          GameHeader(l.needsYou, icon: Icons.notifications_active_rounded),
+          _Needs(s: s, leagueId: lg.id),
+          if (s.goal != null)
             Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(top: 10),
               child: GlmCard(
-                accent: p.brand,
-                onTap: () => context.push(go('missed')),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 child: Row(children: [
-                  Icon(Icons.history_rounded, color: p.gold),
+                  IconTile(Icons.flag_rounded, size: 34, color: p.brandLight),
                   const SizedBox(width: 10),
-                  Expanded(child: Text(l.missedMatches(s.missed), style: const TextStyle(fontWeight: FontWeight.w800))),
-                  const Icon(Icons.chevron_right_rounded),
+                  Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}', style: const TextStyle(fontWeight: FontWeight.w700))),
                 ]),
               ),
             ),
-          Row(children: [
-            Expanded(child: StatTile(value: s.position == null ? '—' : '${s.position}/${s.teams}', label: l.tabTable, icon: Icons.leaderboard_rounded)),
-            const SizedBox(width: 10),
-            Expanded(child: StatTile(value: money(context, s.cash), label: l.balance, icon: Icons.account_balance_wallet_rounded, color: p.success)),
-          ]),
-          if (s.goal != null) ...[
-            const SizedBox(height: 10),
-            GlmCard(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Row(children: [
-                Icon(Icons.flag_rounded, color: p.gold),
-                const SizedBox(width: 10),
-                Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}', style: const TextStyle(fontWeight: FontWeight.w700))),
-              ]),
-            ),
-          ],
-          GameHeader(l.secPlayers, icon: Icons.bolt_rounded),
-          Row(children: [
-            for (final (icon, label, path) in [(Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics')])
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: GlmCard(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-                    onTap: () => context.push(go(path)),
-                    child: Column(children: [
-                      Icon(icon, color: p.gold, size: 26),
-                      const SizedBox(height: 6),
-                      Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
-                    ]),
-                  ),
-                ),
-              ),
-          ]),
-          for (final line in s.pending) Padding(padding: const EdgeInsets.only(top: 8), child: GlmCard(child: Text(line, style: TextStyle(color: p.textSoft)))),
         ]),
       ),
     );
+  }
+}
+
+/// [Sprint 45 M2] The club's departments as the office's big tiles (the manager games' way, in our Legend Cut): each
+/// with its state in a line, and a badge when it needs the coach.
+class _Departments extends StatelessWidget {
+  const _Departments({required this.s, required this.go});
+
+  final ClubSummary s;
+  final void Function(String path) go;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    bool needs(String kind) => s.needs.any((n) => n.kind == kind);
+    final tiles = [
+      (Icons.groups_rounded, l.squad, l.subSquad, 'squad', p.gold, false),
+      (Icons.grid_view_rounded, l.lineup, '${s.formation ?? ''} · ${s.lineupAuto ? l.tileAuto : l.tileReady}', 'lineup', p.success, needs('lineup')),
+      (Icons.tune_rounded, l.tactics, l.subTactics, 'tactics', p.brandLight, false),
+      (Icons.fitness_center_rounded, l.training, l.subTraining, 'training', p.warning, needs('training_empty') || needs('training_done')),
+      (Icons.storefront_rounded, l.market, l.subMarket, 'market', p.gold, needs('offers')),
+      (Icons.travel_explore_rounded, l.scout, l.subScout, 'scout', p.brandLight, false),
+      (Icons.account_balance_wallet_rounded, l.finance, money(context, s.cash), 'finance', p.success, false),
+      (Icons.stadium_rounded, l.stadium, l.subStadium, 'stadium', p.textSoft, false),
+    ];
+    return LayoutBuilder(builder: (context, box) {
+      final cols = box.maxWidth >= 520 ? 4 : box.maxWidth >= 300 ? 3 : 2;
+      final w = (box.maxWidth - (cols - 1) * 8) / cols;
+      return Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final (i, (icon, label, sub, path, color, alert)) in tiles.indexed)
+          SizedBox(
+            width: w,
+            child: FadeSlideIn(
+              index: i,
+              child: GlmCard(
+                padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+                accent: color,
+                onTap: () => go(path),
+                child: Stack(clipBehavior: Clip.none, children: [
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    IconTile(icon, color: color, size: 40),
+                    const SizedBox(height: 10),
+                    Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                    Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: path == 'finance' ? TextDirection.ltr : null, textAlign: TextAlign.start,
+                        style: TextStyle(color: p.textMuted, fontSize: 11.5, fontFamily: path == 'finance' ? GlmFonts.numbers : null, fontWeight: path == 'finance' ? FontWeight.w800 : null)),
+                  ]),
+                  if (alert) PositionedDirectional(top: -4, end: -2, child: Pulse(child: Container(width: 12, height: 12, decoration: BoxDecoration(color: p.danger, shape: BoxShape.circle, border: Border.all(color: p.surface, width: 2))))),
+                ]),
+              ),
+            ),
+          ),
+      ]);
+    });
+  }
+}
+
+/// What needs the coach now (the server's agenda), each a line with its way in; or «all set».
+class _Needs extends StatelessWidget {
+  const _Needs({required this.s, required this.leagueId});
+
+  final ClubSummary s;
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final base = '/leagues/$leagueId';
+    final rows = [
+      if (s.missed > 0) (Icons.history_rounded, l.missedMatches(s.missed), '$base/missed', p.brandLight),
+      for (final n in s.needs)
+        switch (n.kind) {
+          'window' => (Icons.sensors_rounded, l.needWindow, '/match/${n.matchId}', p.danger),
+          'lineup' => (Icons.person_off_rounded, '${l.needLineup} (${n.count})', '$base/lineup', p.danger),
+          'offers' => (Icons.mark_email_unread_rounded, '${l.needOffers} (${n.count})', '$base/market', p.warning),
+          'requests' => (Icons.how_to_reg_rounded, '${l.needRequests} (${n.count})', '$base?tab=more', p.warning),
+          'training_empty' => (Icons.fitness_center_rounded, '${l.needTrainingEmpty} (${n.count})', '$base/training', p.textSoft),
+          'training_done' => (Icons.task_alt_rounded, l.needTrainingDone, '$base/training', p.success),
+          _ => (Icons.info_rounded, n.kind, base, p.textSoft),
+        },
+    ];
+    if (rows.isEmpty) {
+      return GlmCard(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(children: [
+          IconTile(Icons.verified_rounded, color: p.success, size: 34),
+          const SizedBox(width: 10),
+          Expanded(child: Text(l.allClear, style: const TextStyle(fontWeight: FontWeight.w700))),
+        ]),
+      );
+    }
+    return GlmCard(
+      padding: EdgeInsets.zero,
+      child: Column(children: [
+        for (final (i, (icon, text, path, color)) in rows.indexed) ...[
+          if (i > 0) Divider(height: 1, indent: 56, color: Colors.white.withValues(alpha: .06)),
+          InkWell(
+            onTap: () => context.push(path),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(children: [
+                IconTile(icon, color: color, size: 32),
+                const SizedBox(width: 10),
+                Expanded(child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14))),
+                Icon(Icons.chevron_right_rounded, color: p.textMuted),
+              ]),
+            ),
+          ),
+        ],
+      ]),
+    );
+  }
+}
+
+/// The table's top and my place in it, as a small broadcast table; a tap opens the full one.
+class _MiniTable extends StatelessWidget {
+  const _MiniTable({required this.s, required this.onTap});
+
+  final ClubSummary s;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    if (s.top.isEmpty) return const SizedBox();
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      GameHeader(l.leagueTable, icon: Icons.leaderboard_rounded),
+      GlmCard(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        onTap: onTap,
+        child: Column(children: [
+          for (final r in s.top)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              color: r.mine ? p.gold.withValues(alpha: .12) : null,
+              child: Row(children: [
+                Container(
+                  width: 26,
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  decoration: ShapeDecoration(shape: GlmCut.shape(5), color: r.position == 1 ? p.gold : p.surfaceRaised),
+                  child: Text('${r.position}', textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.position == 1 ? p.onGold : p.text)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(child: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, textAlign: TextAlign.start,
+                    style: TextStyle(fontWeight: r.mine ? FontWeight.w800 : FontWeight.w600, color: r.mine ? context.glm.goldText : p.text))),
+                Text('${r.points}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 17, color: p.text)),
+              ]),
+            ),
+        ]),
+      ),
+    ]);
   }
 }
 
@@ -274,6 +410,10 @@ class _NextMatchHero extends StatelessWidget {
             ),
             side(s.venue == 'away' ? s.club : (s.next ?? s.club)),
           ]),
+          if (s.strength != null) ...[
+            const SizedBox(height: 10),
+            _StrengthBar(mine: s.strength!.$1, theirs: s.strength!.$2, home: s.venue != 'away'),
+          ],
           const SizedBox(height: 12),
           Center(
             child: Container(
@@ -660,6 +800,45 @@ class _CoachesTab extends ConsumerWidget {
               ),
             ]),
           ),
+    ]);
+  }
+}
+
+/// [Sprint 45 M2] Both sides' strength for the next match: two bars meeting in the middle, mine in gold.
+class _StrengthBar extends StatelessWidget {
+  const _StrengthBar({required this.mine, required this.theirs, required this.home});
+
+  final int mine, theirs;
+
+  /// My club on the reading start (home) or the end (away), as the crests above.
+  final bool home;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final (a, b) = home ? (mine, theirs) : (theirs, mine);
+    final (ca, cb) = home ? (p.gold, p.textSoft) : (p.textSoft, p.gold);
+    String n(int v) => (v / 100).toStringAsFixed(0);
+    final big = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: p.text);
+    return Column(children: [
+      Row(children: [
+        Text(n(a), style: big),
+        Expanded(child: Text(l.strengthCompare, textAlign: TextAlign.center, style: TextStyle(color: p.textSoft, fontSize: 11.5))),
+        Text(n(b), style: big),
+      ]),
+      const SizedBox(height: 4),
+      ClipPath(
+        clipper: ShapeBorderClipper(shape: GlmCut.shape(4), textDirection: Directionality.of(context)),
+        child: SizedBox(
+          height: 8,
+          child: Row(children: [
+            Expanded(flex: a, child: ColoredBox(color: ca)),
+            const SizedBox(width: 2),
+            Expanded(flex: b == 0 && a == 0 ? 1 : b, child: ColoredBox(color: cb)),
+          ]),
+        ),
+      ),
     ]);
   }
 }

@@ -45,6 +45,13 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
     return t != null && (_formation != t.lineup.formation || '$_starters' != '${t.lineup.starters}' || '$_bench' != '${t.lineup.bench}');
   }
 
+  /// [Sprint 45 M4] A player dropped on another: the two swap (as two taps would).
+  void _drop(int dragged, int onto) {
+    if (dragged == onto) return;
+    _picked = dragged;
+    _tap(onto);
+  }
+
   void _tap(int id) {
     HapticFeedback.selectionClick();
     if (_picked == null) return setState(() => _picked = id);
@@ -105,7 +112,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
           value: team,
           onRetry: () => ref.invalidate(teamProvider(widget.leagueId)),
           data: (t) => LayoutBuilder(builder: (context, box) {
-            final wide = box.maxWidth >= 640;
+            final wide = box.maxWidth >= 560;
             _load(t);
             final slots = formations.where((f) => f.name == _formation).firstOrNull?.slots ?? t.lineup.slots;
             final others = t.players.where((p) => !_starters!.contains(p.id) && !_bench!.contains(p.id)).toList();
@@ -117,6 +124,7 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: formations.any((f) => f.name == _formation) ? _formation : null,
                     hint: Text(_formation ?? ''),
                     decoration: const InputDecoration(border: InputBorder.none, enabledBorder: InputBorder.none, focusedBorder: InputBorder.none, filled: false),
@@ -131,17 +139,17 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
               child: Row(children: [
                 Icon(Icons.touch_app_rounded, size: 16, color: context.palette.textMuted),
                 const SizedBox(width: 6),
-                Expanded(child: Text(l.tapToSwap, style: TextStyle(color: context.palette.textMuted, fontSize: 12))),
+                Expanded(child: Text(l.dragHint, style: TextStyle(color: context.palette.textMuted, fontSize: 12))),
               ]),
             );
-            final pitch = _Pitch(slots: slots, starters: _starters!, team: t, picked: _picked, onTap: _tap, horizontal: wide);
+            final pitch = _Pitch(slots: slots, starters: _starters!, team: t, picked: _picked, onTap: _tap, onDrop: _drop, horizontal: wide);
             final lists = [
               GameHeader(l.bench, icon: Icons.event_seat_rounded),
               for (final (i, id) in _bench!.indexed)
-                if (t.byId(id) case final p?) FadeSlideIn(index: i, child: PlayerRow(p, selected: _picked == id, onTap: () => _tap(id))),
+                if (t.byId(id) case final p?) FadeSlideIn(index: i, child: _DragRow(player: p, selected: _picked == id, onTap: () => _tap(id), onDrop: (d) => _drop(d, id))),
               if (others.isNotEmpty) ...[
                 GameHeader(l.reserve, icon: Icons.groups_rounded),
-                for (final p in others) PlayerRow(p, selected: _picked == p.id, onTap: () => _tap(p.id)),
+                for (final p in others) _DragRow(player: p, selected: _picked == p.id, onTap: () => _tap(p.id), onDrop: (d) => _drop(d, p.id)),
               ],
             ];
             if (!wide) {
@@ -154,16 +162,37 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
             // and the reserves on the other, and «save» always in reach at the bottom of that side.
             return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Expanded(
-                flex: 6,
+                flex: 13,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 8, 12),
-                  child: Center(child: AspectRatio(aspectRatio: 1.5, child: pitch)),
+                  padding: const EdgeInsets.fromLTRB(12, 8, 6, 12),
+                  child: Column(children: [
+                    // [Sprint 45 M4] The formations as a strip of chips over the pitch: one tap each.
+                    SizedBox(
+                      height: 40,
+                      child: ListView(scrollDirection: Axis.horizontal, children: [
+                        for (final f in formations)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 6),
+                            child: ChoiceChip(
+                              label: Text(f.label, textDirection: TextDirection.ltr, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 15)),
+                              selected: _formation == f.name,
+                              showCheckmark: false,
+                              selectedColor: context.palette.gold,
+                              labelStyle: TextStyle(color: _formation == f.name ? context.palette.onGold : context.palette.text),
+                              onSelected: (_) => setState(() => _formation = f.name),
+                            ),
+                          ),
+                      ]),
+                    ),
+                    const SizedBox(height: 6),
+                    Expanded(child: Center(child: AspectRatio(aspectRatio: 1.5, child: pitch))),
+                  ]),
                 ),
               ),
               Expanded(
-                flex: 4,
+                flex: 7,
                 child: Column(children: [
-                  Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(8, 8, 16, 8), children: [formation, hint, ...lists])),
+                  Expanded(child: ListView(padding: const EdgeInsets.fromLTRB(8, 8, 16, 8), children: [hint, ...lists])),
                   Padding(padding: const EdgeInsets.fromLTRB(8, 0, 16, 12), child: save),
                 ]),
               ),
@@ -176,7 +205,10 @@ class _LineupScreenState extends ConsumerState<LineupScreen> {
 }
 
 class _Pitch extends StatelessWidget {
-  const _Pitch({required this.slots, required this.starters, required this.team, required this.picked, required this.onTap, this.horizontal = false});
+  const _Pitch({required this.slots, required this.starters, required this.team, required this.picked, required this.onTap, required this.onDrop, this.horizontal = false});
+
+  /// A player dropped on a player of the eleven: (the one dragged, the one there).
+  final void Function(int dragged, int onto) onDrop;
 
   final List<Slot> slots;
   final List<int> starters;
@@ -215,7 +247,7 @@ class _Pitch extends StatelessWidget {
                   left: left,
                   top: top,
                   width: tokenW,
-                  child: _Token(player: pl, line: slots[i].line, picked: picked == pl.id, onTap: () => onTap(pl.id)),
+                  child: _Token(player: pl, line: slots[i].line, picked: picked == pl.id, onTap: () => onTap(pl.id), onDrop: (d) => onDrop(d, pl.id)),
                 );
               }),
         ]),
@@ -227,35 +259,74 @@ class _Pitch extends StatelessWidget {
 
 /// A player on the pitch: his shirt in his line's colour with his rating on it, and his surname under it.
 class _Token extends StatelessWidget {
-  const _Token({required this.player, required this.line, required this.picked, required this.onTap});
+  const _Token({required this.player, required this.line, required this.picked, required this.onTap, required this.onDrop});
 
   final Player player;
   final String line;
   final bool picked;
   final VoidCallback onTap;
+  final ValueChanged<int> onDrop;
 
   @override
   Widget build(BuildContext context) {
     final c = lineColor(line);
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedScale(
-        scale: picked ? 1.12 : 1,
-        duration: const Duration(milliseconds: 160),
-        child: Column(children: [
-          KitShirt(color: picked ? context.palette.gold : c.bg, trim: Colors.white, label: '${player.overall}', size: 44, picked: picked),
-          const SizedBox(height: 2),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-            decoration: BoxDecoration(color: Colors.black.withValues(alpha: .55), borderRadius: BorderRadius.circular(5)),
-            child: Text(player.name.split(' ').last, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
-                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
-          ),
-        ]),
+    Widget shirt({bool lit = false, bool ghost = false}) => Opacity(
+          opacity: ghost ? .35 : 1,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            KitShirt(color: picked || lit ? context.palette.gold : c.bg, trim: Colors.white, label: '${player.overall}', size: 44, picked: picked || lit),
+            const SizedBox(height: 2),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: .55), borderRadius: BorderRadius.circular(5)),
+              child: Text(player.name.split(' ').last, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
+                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700, decoration: TextDecoration.none)),
+            ),
+          ]),
+        );
+    // [Sprint 45 M4] Dragged straight away on the pitch; a player dropped on him swaps with him, his shirt lit gold.
+    return DragTarget<int>(
+      onWillAcceptWithDetails: (d) => d.data != player.id,
+      onAcceptWithDetails: (d) => onDrop(d.data),
+      builder: (context, over, _) => Draggable<int>(
+        data: player.id,
+        feedback: Material(type: MaterialType.transparency, child: Transform.scale(scale: 1.2, child: shirt(lit: true))),
+        childWhenDragging: shirt(ghost: true),
+        onDragStarted: HapticFeedback.selectionClick,
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedScale(scale: picked || over.isNotEmpty ? 1.15 : 1, duration: const Duration(milliseconds: 160), child: shirt(lit: over.isNotEmpty)),
+        ),
       ),
     );
   }
+}
+
+/// [Sprint 45 M4] A bench or reserve player in the list: held a moment, he lifts and can be dropped on the pitch or on
+/// another; a player dropped on him swaps with him.
+class _DragRow extends StatelessWidget {
+  const _DragRow({required this.player, required this.selected, required this.onTap, required this.onDrop});
+
+  final Player player;
+  final bool selected;
+  final VoidCallback onTap;
+  final ValueChanged<int> onDrop;
+
+  @override
+  Widget build(BuildContext context) => DragTarget<int>(
+        onWillAcceptWithDetails: (d) => d.data != player.id,
+        onAcceptWithDetails: (d) => onDrop(d.data),
+        builder: (context, over, _) => LongPressDraggable<int>(
+          data: player.id,
+          onDragStarted: HapticFeedback.mediumImpact,
+          feedback: Material(
+            type: MaterialType.transparency,
+            child: Transform.scale(scale: 1.1, child: KitShirt(color: context.palette.gold, trim: Colors.white, label: '${player.overall}', size: 52, picked: true)),
+          ),
+          childWhenDragging: Opacity(opacity: .4, child: PlayerRow(player)),
+          child: PlayerRow(player, selected: selected || over.isNotEmpty, onTap: onTap),
+        ),
+      );
 }
 
 class _Lines extends CustomPainter {

@@ -91,6 +91,22 @@ void main() {
     expect(repo.startersSent![5], sub.id);
   });
 
+  testWidgets('the lineup: a bench player held and dropped on one of the eleven takes his place', (t) async {
+    final repo = FakeTeamRepository();
+    await pump(t, const LineupScreen(leagueId: 1), repo);
+    final starter = sample.byId(sample.lineup.starters[5])!;
+    final sub = sample.byId(sample.lineup.bench[2])!;
+    final g = await t.startGesture(t.getCenter(find.text(sub.name)));
+    await t.pump(const Duration(milliseconds: 700));
+    await g.moveTo(t.getCenter(find.text(starter.name.split(' ').last).first));
+    await t.pump();
+    await g.up();
+    await t.pump();
+    await t.tap(find.text('احفظ'));
+    await t.pumpAndSettle();
+    expect(repo.startersSent![5], sub.id);
+  });
+
   testWidgets('the tactics save themselves after a change', (t) async {
     final repo = FakeTeamRepository();
     await pump(t, const TacticsScreen(leagueId: 1), repo);

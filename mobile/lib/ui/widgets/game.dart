@@ -201,7 +201,7 @@ class GamePanes extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
         List<Widget> rise(List<Widget> xs, int from) => [for (final (i, w) in xs.indexed) FadeSlideIn(index: from + i, child: w)];
-        if (box.maxWidth < 640) return ListView(padding: padding, children: rise([...start, ...end], 0));
+        if (box.maxWidth < 560) return ListView(padding: padding, children: rise([...start, ...end], 0));
         return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(flex: startFlex, child: ListView(padding: padding.copyWith(right: padding.right / 2), children: rise(start, 0))),
           Expanded(flex: endFlex, child: ListView(padding: padding.copyWith(left: padding.left / 2), children: rise(end, 2))),
