@@ -1345,4 +1345,126 @@ class LAr extends L {
   String potentialRange(int from, int to) {
     return 'الإمكانية $from–$to';
   }
+
+  @override
+  String get friendlies => 'الوديات';
+
+  @override
+  String friendlyLead(int fit) {
+    return 'ودية سريعة ضد أي نادٍ: ترفع اللياقة $fit والانسجام، ولا تحتسب في الجدول.';
+  }
+
+  @override
+  String friendlyCost(int coins) {
+    return 'الودية بـ $coins كوينز';
+  }
+
+  @override
+  String get friendlyFree => 'الأولى مجانية';
+
+  @override
+  String get playFriendly => 'العب';
+
+  @override
+  String get suggestedOpponent => 'مقترح';
+
+  @override
+  String get playedToday => 'لُعبت اليوم';
+
+  @override
+  String get recentFriendlies => 'آخر الوديات';
+
+  @override
+  String get skip => 'تخطَّ';
+
+  @override
+  String get bestOfMatch => 'الأفضل في المباراة';
+
+  @override
+  String get kGoal => 'هدف';
+
+  @override
+  String get kSaved => 'تصدٍّ';
+
+  @override
+  String get kMissed => 'ضائعة';
+
+  @override
+  String get kCorner => 'ركنية';
+
+  @override
+  String get kYellow => 'صفراء';
+
+  @override
+  String get kRed => 'حمراء';
+
+  @override
+  String get kAttack => 'هجمة';
+
+  @override
+  String get predictions => 'التوقعات';
+
+  @override
+  String predictionsLead(int round, String reward) {
+    return 'توقّع نتائج الجولة $round، ولكل توقع صحيح $reward لناديك.';
+  }
+
+  @override
+  String get draw => 'تعادل';
+
+  @override
+  String get predictionClosed => 'أُغلق التوقع';
+
+  @override
+  String get newspaper => 'الصحيفة';
+
+  @override
+  String get noEdition => 'لا عدد بعد: تصدر الصحيفة بعد أول جولة';
+
+  @override
+  String roundResults(int round) {
+    return 'نتائج الجولة $round';
+  }
+
+  @override
+  String get playerOfRound => 'لاعب الجولة';
+
+  @override
+  String get coachOfRound => 'مدرب الجولة';
+
+  @override
+  String get articles => 'مقالات المدربين';
+
+  @override
+  String get writeArticle => 'اكتب مقالاً';
+
+  @override
+  String get articleTitle => 'العنوان';
+
+  @override
+  String get articleBody => 'المقال';
+
+  @override
+  String get articleSent => 'وصل مقالك إلى منشئ الدوري للنشر';
+
+  @override
+  String get pendingArticles => 'بانتظار النشر';
+
+  @override
+  String get publish => 'انشر';
+
+  @override
+  String get groups => 'الجروبات';
+
+  @override
+  String get noGroups => 'لا جروبات بعد';
+
+  @override
+  String get typeMessage => 'اكتب رسالة';
+
+  @override
+  String get messageDeleted => 'حُذفت هذه الرسالة';
+
+  @override
+  String get mediaOnWeb => 'صورة أو صوت: افتحه من الموقع';
 }

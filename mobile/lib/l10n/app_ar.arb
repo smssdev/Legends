@@ -1004,5 +1004,74 @@
         "type": "int"
       }
     }
-  }
+  },
+  "friendlies": "الوديات",
+  "friendlyLead": "ودية سريعة ضد أي نادٍ: ترفع اللياقة {fit} والانسجام، ولا تحتسب في الجدول.",
+  "@friendlyLead": {
+    "placeholders": {
+      "fit": {
+        "type": "int"
+      }
+    }
+  },
+  "friendlyCost": "الودية بـ {coins} كوينز",
+  "@friendlyCost": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "friendlyFree": "الأولى مجانية",
+  "playFriendly": "العب",
+  "suggestedOpponent": "مقترح",
+  "playedToday": "لُعبت اليوم",
+  "recentFriendlies": "آخر الوديات",
+  "skip": "تخطَّ",
+  "bestOfMatch": "الأفضل في المباراة",
+  "kGoal": "هدف",
+  "kSaved": "تصدٍّ",
+  "kMissed": "ضائعة",
+  "kCorner": "ركنية",
+  "kYellow": "صفراء",
+  "kRed": "حمراء",
+  "kAttack": "هجمة",
+  "predictions": "التوقعات",
+  "predictionsLead": "توقّع نتائج الجولة {round}، ولكل توقع صحيح {reward} لناديك.",
+  "@predictionsLead": {
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "draw": "تعادل",
+  "predictionClosed": "أُغلق التوقع",
+  "newspaper": "الصحيفة",
+  "noEdition": "لا عدد بعد: تصدر الصحيفة بعد أول جولة",
+  "roundResults": "نتائج الجولة {round}",
+  "@roundResults": {
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "playerOfRound": "لاعب الجولة",
+  "coachOfRound": "مدرب الجولة",
+  "articles": "مقالات المدربين",
+  "writeArticle": "اكتب مقالاً",
+  "articleTitle": "العنوان",
+  "articleBody": "المقال",
+  "articleSent": "وصل مقالك إلى منشئ الدوري للنشر",
+  "pendingArticles": "بانتظار النشر",
+  "publish": "انشر",
+  "groups": "الجروبات",
+  "noGroups": "لا جروبات بعد",
+  "typeMessage": "اكتب رسالة",
+  "messageDeleted": "حُذفت هذه الرسالة",
+  "mediaOnWeb": "صورة أو صوت: افتحه من الموقع"
 }

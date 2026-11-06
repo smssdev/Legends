@@ -138,10 +138,12 @@ class _ClubTab extends ConsumerWidget {
                 (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
                 (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
                 (Icons.visibility_rounded, l.spy, 'spy'), (Icons.flag_rounded, l.quests, 'quests'), (Icons.emoji_events_rounded, l.honours, 'honours'),
+                (Icons.sports_soccer_rounded, l.friendlies, 'friendlies'), (Icons.how_to_vote_rounded, l.predictions, 'predictions'),
+                (Icons.newspaper_rounded, l.newspaper, 'newspaper'), (Icons.forum_rounded, l.groups, '/groups'),
               ])
                 GlmCard(
                   padding: const EdgeInsets.all(8),
-                  onTap: () => context.push('/leagues/${lg.id}/$path'),
+                  onTap: () => context.push(path.startsWith('/') ? path : '/leagues/${lg.id}/$path'),
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Icon(icon, color: p.gold),
                     const SizedBox(height: 6),

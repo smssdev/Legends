@@ -1,0 +1,125 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/core/settings.dart';
+import 'package:glm/features/social/social_screens.dart';
+import 'package:glm/l10n/app_localizations.dart';
+import 'package:glm/ui/theme.dart';
+import 'package:glm/ui/widgets/brand.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
+
+/// Real replies from a local server (league 8: a friendly played, the round's predictions, a group's message).
+class FakeSocial implements SocialRepository {
+  final List<String> sent = [];
+
+  @override
+  Future<Map<String, dynamic>> friendlies(int league) async => json('friendlies');
+  @override
+  Future<Map<String, dynamic>> playFriendly(int league, int opponent) async {
+    sent.add('friendly $opponent');
+    return json('friendly_played');
+  }
+
+  @override
+  Future<Map<String, dynamic>> predictions(int league) async => json('predictions');
+  @override
+  Future<Map<String, dynamic>> predict(int league, int fixture, String pick) async {
+    sent.add('predict $fixture $pick');
+    return json('predictions');
+  }
+
+  @override
+  Future<Map<String, dynamic>> newspaper(int league) async => {
+        ...json('newspaper'),
+        'pending': [
+          {'id': 3, 'title': 'Liverpool on top', 'body': 'A great start for the reds this season.', 'status': 'pending', 'author': {'id': 9, 'name': 'Hamza'}},
+        ],
+      };
+  @override
+  Future<Map<String, dynamic>> write(int league, String title, String body) async => json('newspaper');
+  @override
+  Future<Map<String, dynamic>> decide(int league, int article, bool publish) async {
+    sent.add('article $article $publish');
+    return json('newspaper');
+  }
+
+  @override
+  Future<Map<String, dynamic>> groups() async => json('groups');
+  @override
+  Future<List<Map<String, dynamic>>> messages(int group) async => [for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>];
+  @override
+  Future<void> say(int group, String body) async => sent.add('say $group $body');
+  @override
+  Future<void> read(int group) async {}
+}
+
+Future<void> pump(WidgetTester t, Widget screen, FakeSocial social) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  t.view.physicalSize = const Size(360 * 3, 3000 * 3);
+  t.view.devicePixelRatio = 3;
+  addTearDown(t.view.reset);
+  ClubCrest.loadFromNetwork = false;
+  await t.pumpWidget(ProviderScope(
+    overrides: [preferencesProvider.overrideWithValue(prefs), socialRepositoryProvider.overrideWithValue(social)],
+    child: MaterialApp(
+      theme: glmTheme(day: false),
+      locale: const Locale('ar'),
+      supportedLocales: L.supportedLocales,
+      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      home: screen,
+    ),
+  ));
+  await t.pumpAndSettle();
+}
+
+void main() {
+  testWidgets('a friendly played, then played back to full time with the best players', (t) async {
+    final s = FakeSocial();
+    await pump(t, const FriendliesScreen(leagueId: 8), s);
+    expect(find.text('الأولى مجانية'), findsOneWidget);
+    await t.tap(find.text('العب').first);
+    await t.pumpAndSettle();
+    expect(s.sent, ['friendly 142']);
+    await t.tap(find.text('تخطَّ'));
+    await t.pumpAndSettle();
+    expect(find.text('2 - 1'), findsOneWidget);
+    expect(find.text('الأفضل في المباراة'), findsOneWidget);
+    expect(find.text('Mohamed Salah'), findsWidgets);
+  });
+
+  testWidgets('a prediction picked, an article published', (t) async {
+    final s = FakeSocial();
+    await pump(t, const PredictionsScreen(leagueId: 8), s);
+    await t.tap(find.text('تعادل').first);
+    await t.pumpAndSettle();
+    expect(s.sent, ['predict 2794 draw']);
+
+    await pump(t, const NewspaperScreen(leagueId: 8), s);
+    expect(find.textContaining('لا عدد بعد'), findsOneWidget);
+    await t.tap(find.text('انشر'));
+    await t.pumpAndSettle();
+    expect(s.sent.last, 'article 3 true');
+  });
+
+  testWidgets('the league\'s group: its message, and one written', (t) async {
+    final s = FakeSocial();
+    await pump(t, const GroupsScreen(), s);
+    await t.tap(find.textContaining('Premier League'));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('أهلاً بالجميع'), findsOneWidget);
+    await t.enterText(find.byType(TextField), 'مباراة قوية الليلة');
+    await t.tap(find.byIcon(Icons.send_rounded));
+    await t.pump(const Duration(milliseconds: 500));
+    expect(s.sent, ['say 8 مباراة قوية الليلة']);
+    await t.pumpWidget(const SizedBox());
+  });
+}
