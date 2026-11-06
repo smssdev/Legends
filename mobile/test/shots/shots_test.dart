@@ -15,6 +15,7 @@ import 'package:glm/features/club/club_data.dart';
 import 'package:glm/features/club/squad_screen.dart';
 import 'package:glm/features/club/team_data.dart';
 import 'package:glm/features/home/home_data.dart';
+import 'package:glm/features/auth/ui/login_screen.dart';
 import 'package:glm/features/home/home_screen.dart';
 import 'package:glm/features/leagues/league_screen.dart';
 import 'package:glm/features/leagues/leagues_repository.dart';
@@ -60,10 +61,10 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  t.view.physicalSize = Size(390 * 2, h * 2);
+  t.view.physicalSize = const Size(844 * 2, 390 * 2);
   t.view.devicePixelRatio = 2;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;
@@ -82,6 +83,17 @@ Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {d
   for (var i = 0; i < 10; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }
+  // Let the images decode (the emblem, the coin) before the picture is taken.
+  for (final e in find.byType(Image).evaluate()) {
+    await t.runAsync(() => precacheImage((e.widget as Image).image, e));
+  }
+  await t.pump(const Duration(milliseconds: 100));
+  if (tap != null) {
+    await t.tap(find.text(tap).last);
+    for (var i = 0; i < 8; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+  }
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
   await t.pumpWidget(const SizedBox());
 }
@@ -92,6 +104,15 @@ void main() {
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
         clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
       ], h: 1400));
+  for (final (name, tab) in [('league-team', 'الفريق'), ('league-matches', 'المباريات'), ('league-more', 'المزيد')]) {
+    testWidgets(name, (t) => shot(t, name, const LeagueScreen(id: 8), [
+          leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+          clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
+          standingsProvider.overrideWith((ref, id) async => [for (final r in json('standings')['table'] as List) StandingRow.fromJson(r as Map<String, dynamic>)]),
+          fixturesProvider.overrideWith((ref, id) async => [for (final f in json('fixtures')['fixtures'] as List) Fixture.fromJson(f as Map<String, dynamic>)]),
+        ], tap: tab));
+  }
+  testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
   testWidgets('squad', (t) => shot(t, 'squad', const SquadScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
   testWidgets('market', (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]));
   testWidgets('live', (t) => shot(t, 'live', const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]));

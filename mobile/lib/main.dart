@@ -11,7 +11,9 @@ import 'core/settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  // [2026-11-06] The game plays in landscape, as the owner asked: wide screens, a side rail, two columns.
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   final preferences = await SharedPreferences.getInstance();
   runApp(ProviderScope(overrides: [preferencesProvider.overrideWithValue(preferences)], child: const GlmApp()));
 }

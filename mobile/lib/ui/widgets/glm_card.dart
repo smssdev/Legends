@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import 'motion.dart';
 
 /// [Sprint 15 F2, redesigned 2026-11-06] A card: a raised surface lit from the top (a soft gradient and a hairline of
 /// light on its upper edge), one deep shadow, and a gold edge and glow when it is the screen's main object.
@@ -25,7 +26,7 @@ class GlmCard extends StatelessWidget {
     final r = BorderRadius.circular(radius);
     final base = color ?? (day ? p.panel : p.surface);
     final top = Color.lerp(base, day ? Colors.white : p.surfaceRaised, day ? .6 : .55)!;
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: r,
         gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [top, base]),
@@ -54,5 +55,7 @@ class GlmCard extends StatelessWidget {
         ]),
       ),
     );
+    // A card that opens something sinks a little under the finger.
+    return onTap == null ? card : PressScale(child: card);
   }
 }

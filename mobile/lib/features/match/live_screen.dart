@@ -152,22 +152,44 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(title: Text(_finished ? l.fullTime : l.liveNow)),
       body: GlmBackground(
-        child: Column(children: [
-          _ScoreBug(view: v, score: _score, minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null, finished: _finished),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers),
-          ),
-          if (_pause != null && _you != null && !_finished) _breakBar(l),
-          if (_you != null && !_finished) _coachBar(l),
-          if (_finished)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-              child: GlmButton(label: l.matchReport, variant: GlmButtonVariant.brand, block: true, onPressed: () => context.push('/match/$_id/report?coach=${_you != null}')),
-            ),
-          if (!_finished && _started) _socialBar(l),
-          Expanded(child: _feedList(l)),
-        ]),
+        wide: true,
+        child: LayoutBuilder(builder: (context, box) {
+          final bug = _ScoreBug(view: v, score: _score, minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null, finished: _finished);
+          final pitch = LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers);
+          final controls = <Widget>[
+            if (_pause != null && _you != null && !_finished) _breakBar(l),
+            if (_you != null && !_finished) _coachBar(l),
+            if (_finished)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                child: GlmButton(label: l.matchReport, variant: GlmButtonVariant.brand, block: true, onPressed: () => context.push('/match/$_id/report?coach=${_you != null}')),
+              ),
+            if (!_finished && _started) _socialBar(l),
+          ];
+          // [2026-11-06] Landscape, as a broadcast: the score and the pitch filling one side, the coach's controls and
+          // the commentary on the other.
+          if (box.maxWidth > box.maxHeight) {
+            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                flex: 6,
+                child: Column(children: [
+                  bug,
+                  Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 12), child: Center(child: pitch))),
+                ]),
+              ),
+              Expanded(
+                flex: 5,
+                child: Column(children: [...controls, Expanded(child: _feedList(l))]),
+              ),
+            ]);
+          }
+          return Column(children: [
+            bug,
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: pitch),
+            ...controls,
+            Expanded(child: _feedList(l)),
+          ]);
+        }),
       ),
     );
   }
@@ -285,11 +307,25 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
       child: Row(children: [
-        Expanded(child: GlmButton(label: '${l.substitute} ${team.subsMax - team.subsUsed}', icon: const Icon(Icons.swap_vert_rounded), variant: GlmButtonVariant.outline, onPressed: _busy ? null : _subSheet)),
-        const SizedBox(width: 6),
-        Expanded(child: GlmButton(label: l.tactics, icon: const Icon(Icons.tune_rounded), variant: GlmButtonVariant.outline, onPressed: _busy ? null : _tacticsSheet)),
-        const SizedBox(width: 6),
-        Expanded(child: GlmButton(label: l.formation, icon: const Icon(Icons.grid_view_rounded), variant: GlmButtonVariant.outline, onPressed: _busy || widget.view.formations.isEmpty ? null : _formationSheet)),
+        for (final (icon, label, onTap) in [
+          (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', _busy ? null : _subSheet),
+          (Icons.tune_rounded, l.tactics, _busy ? null : _tacticsSheet),
+          (Icons.grid_view_rounded, l.formation, _busy || widget.view.formations.isEmpty ? null : _formationSheet),
+        ])
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: GlmCard(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                onTap: onTap,
+                child: Column(children: [
+                  Icon(icon, color: onTap == null ? context.palette.textMuted : context.palette.gold),
+                  const SizedBox(height: 2),
+                  Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                ]),
+              ),
+            ),
+          ),
       ]),
     );
   }

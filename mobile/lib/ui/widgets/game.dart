@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../tokens.g.dart';
 import 'glm_card.dart';
+import 'motion.dart';
 
 /// [2026-11-06] The game's shared pieces for every screen: a rating badge coloured by its level, a stat tile, a
 /// section header, and grouped menus of screens (an icon in its colour, a title and a line), in place of walls of tiles.
@@ -202,4 +203,24 @@ class MenuSection extends StatelessWidget {
       ),
     ]);
   }
+}
+
+/// [2026-11-06] A screen in two columns on a wide (landscape) screen, each scrolling on its own, or one list when narrow.
+/// Each child arrives with a short staggered rise.
+class GamePanes extends StatelessWidget {
+  const GamePanes({super.key, required this.start, required this.end, this.startFlex = 5, this.endFlex = 4, this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 24)});
+
+  final List<Widget> start, end;
+  final int startFlex, endFlex;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        List<Widget> rise(List<Widget> xs, int from) => [for (final (i, w) in xs.indexed) FadeSlideIn(index: from + i, child: w)];
+        if (box.maxWidth < 640) return ListView(padding: padding, children: rise([...start, ...end], 0));
+        return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(flex: startFlex, child: ListView(padding: padding.copyWith(right: padding.right / 2), children: rise(start, 0))),
+          Expanded(flex: endFlex, child: ListView(padding: padding.copyWith(left: padding.left / 2), children: rise(end, 2))),
+        ]);
+      });
 }

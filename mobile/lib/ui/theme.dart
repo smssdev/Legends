@@ -55,9 +55,24 @@ ThemeData glmTheme({required bool day}) {
       bodySmall: text.bodySmall?.copyWith(color: p.textMuted, height: 1.5),
       labelLarge: text.labelLarge?.copyWith(fontWeight: FontWeight.w800),
     ),
-    appBarTheme: AppBarTheme(backgroundColor: day ? p.panel : p.bgDeep, foregroundColor: p.text, elevation: 0, scrolledUnderElevation: 0, centerTitle: false,
+    // [2026-11-06] Screens fade through into each other, as in a game's menus.
+    pageTransitionsTheme: const PageTransitionsTheme(builders: {
+      TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+      TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
+    }),
+    appBarTheme: AppBarTheme(toolbarHeight: 50, backgroundColor: day ? p.panel : p.bgDeep, foregroundColor: p.text, elevation: 0, scrolledUnderElevation: 0, centerTitle: false,
         surfaceTintColor: Colors.transparent, titleTextStyle: text.titleLarge?.copyWith(fontWeight: FontWeight.w800, fontSize: 20)),
     // [2026-11-06] The league's five sections at the bottom, as in the manager games: gold for where you are.
+    // In landscape the league's sections stand in a rail at the side.
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: day ? p.panel : p.bgDeep,
+      indicatorColor: p.gold.withValues(alpha: day ? .22 : .18),
+      selectedIconTheme: IconThemeData(color: day ? GlmInk.gold : p.gold, size: 24),
+      unselectedIconTheme: IconThemeData(color: p.textMuted, size: 24),
+      selectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w800, color: day ? GlmInk.gold : p.gold),
+      unselectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w600, color: p.textMuted),
+      labelType: NavigationRailLabelType.all,
+    ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: day ? p.panel : p.bgDeep,
       surfaceTintColor: Colors.transparent,

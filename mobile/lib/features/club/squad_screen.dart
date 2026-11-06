@@ -7,6 +7,7 @@ import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/game.dart';
+import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/glm_background.dart';
 import 'team_data.dart';
 
@@ -23,6 +24,7 @@ class SquadScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.squad)),
       body: GlmBackground(
+        wide: true,
         child: RefreshIndicator(
           onRefresh: () => ref.refresh(teamProvider(leagueId).future),
           child: AsyncView(
@@ -38,7 +40,15 @@ class SquadScreen extends ConsumerWidget {
                 ]),
                 for (final e in lines.entries) ...[
                   SectionTitle(e.value),
-                  for (final p in team.players.where((p) => p.line == e.key)) PlayerRow(p, onTap: () => showPlayerCard(context, p)),
+                  // [2026-11-06] Two players a row in landscape.
+                  LayoutBuilder(builder: (context, box) {
+                    final cols = box.maxWidth >= 640 ? 2 : 1;
+                    final w = (box.maxWidth - (cols - 1) * 8) / cols;
+                    return Wrap(spacing: 8, children: [
+                      for (final (i, p) in team.players.where((p) => p.line == e.key).indexed)
+                        SizedBox(width: w, child: FadeSlideIn(index: i, child: PlayerRow(p, onTap: () => showPlayerCard(context, p)))),
+                    ]);
+                  }),
                 ],
               ]);
             },

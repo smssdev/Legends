@@ -4,9 +4,13 @@ import '../theme.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
 class GlmBackground extends StatelessWidget {
-  const GlmBackground({super.key, required this.child});
+  const GlmBackground({super.key, required this.child, this.wide = false});
 
   final Widget child;
+
+  /// A screen laid out for the whole width (two columns, a rail); otherwise a single column centred on wide screens,
+  /// so a list never stretches across a landscape phone.
+  final bool wide;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,10 @@ class GlmBackground extends StatelessWidget {
         ),
       ),
       // [2026-11-06] A stadium's mowing stripes, barely there, under everything.
-      child: CustomPaint(painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014)), child: child),
+      child: CustomPaint(
+        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014)),
+        child: wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child)),
+      ),
     );
   }
 }

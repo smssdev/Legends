@@ -13,6 +13,8 @@ import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
+import '../../ui/widgets/motion.dart';
+import '../../ui/widgets/stadium.dart';
 import '../health/status_screens.dart';
 import 'home_data.dart';
 import '../inbox/inbox_data.dart';
@@ -51,21 +53,7 @@ class _Home extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
     final p = context.palette;
-    return Scaffold(
-      body: GlmBackground(
-        child: RefreshIndicator(
-          color: p.gold,
-          onRefresh: () {
-            ref.invalidate(myLiveMatchesProvider);
-            ref.invalidate(unreadProvider);
-            return ref.refresh(homeProvider.future);
-          },
-          child: CustomScrollView(slivers: [
-            // [2026-11-06] The header: the brand and the coach's tools on a stadium-night banner, then the coach himself.
-            SliverToBoxAdapter(child: _HomeHeader(h)),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
-              sliver: SliverList.list(children: [
+    final extras = <Widget>[
                 if (!h.starterClaimed && h.starterCoins > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
@@ -103,102 +91,173 @@ class _Home extends ConsumerWidget {
                         ]),
                       ),
                     )),
-                const SizedBox(height: 22),
-                Row(children: [
-                  Text(l.myTeams, style: context.text.titleLarge),
-                  const SizedBox(width: 8),
-                  Text(l.slotsOpen(h.slotsOpen, h.slots.length), style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 16, color: p.textMuted)),
+    ];
+    final teamsTitle = Padding(
+      padding: const EdgeInsets.fromLTRB(4, 14, 4, 10),
+      child: Row(children: [
+        Icon(Icons.shield_rounded, color: p.gold, size: 20),
+        const SizedBox(width: 6),
+        Text(l.myTeams, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+        const SizedBox(width: 8),
+        Text(l.slotsOpen(h.slotsOpen, h.slots.length), style: TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: const [GlmFonts.body], fontSize: 15, color: p.textMuted)),
+      ]),
+    );
+    Future<void> refresh() {
+      ref.invalidate(myLiveMatchesProvider);
+      ref.invalidate(unreadProvider);
+      return ref.refresh(homeProvider.future);
+    }
+
+    return Scaffold(
+      body: GlmBackground(
+        wide: true,
+        child: RefreshIndicator(
+          color: p.gold,
+          onRefresh: refresh,
+          child: LayoutBuilder(builder: (context, box) {
+            // [2026-11-06] Landscape: the coach on the stadium at the side, his teams in a grid beside him.
+            if (box.maxWidth >= 700) {
+              return Column(children: [
+                _TopBar(h),
+                Expanded(
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    SizedBox(
+                      width: (box.maxWidth * .38).clamp(300, 420),
+                      child: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 8, 24), children: [
+                        FadeSlideIn(child: _CoachCard(h.coach)),
+                        for (final (i, w) in extras.indexed) FadeSlideIn(index: i + 1, child: w),
+                      ]),
+                    ),
+                    Expanded(
+                      child: ListView(padding: const EdgeInsets.fromLTRB(8, 0, 16, 24), children: [
+                        teamsTitle,
+                        Wrap(spacing: 12, runSpacing: 12, children: [
+                          for (final (i, s) in h.slots.indexed)
+                            SizedBox(width: ((box.maxWidth - (box.maxWidth * .38).clamp(300, 420)) - 24 - 12) / 2, child: FadeSlideIn(index: i + 2, child: _SlotCard(s))),
+                        ]),
+                      ]),
+                    ),
+                  ]),
+                ),
+              ]);
+            }
+            return ListView(padding: EdgeInsets.zero, children: [
+              _TopBar(h),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _CoachCard(h.coach)),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  ...extras,
+                  teamsTitle,
+                  for (final s in h.slots) Padding(padding: const EdgeInsets.only(bottom: 12), child: _SlotCard(s)),
                 ]),
-                const SizedBox(height: 10),
-                for (final s in h.slots) Padding(padding: const EdgeInsets.only(bottom: 12), child: _SlotCard(s)),
-              ]),
-            ),
-          ]),
+              ),
+            ]);
+          }),
         ),
       ),
     );
   }
 }
 
-class _HomeHeader extends ConsumerWidget {
-  const _HomeHeader(this.h);
+/// The brand and the coach's tools: coins, notifications, the menu.
+class _TopBar extends ConsumerWidget {
+  const _TopBar(this.h);
 
   final HomeData h;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
+    final unread = ref.watch(unreadProvider).value ?? 0;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 4, 8, 4),
+      child: Row(children: [
+        const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: FittedBox(child: BrandMark(size: 30)))),
+        CoinsPill(coins: h.coach.coins, onTap: () => context.push('/wallet')),
+        IconButton(
+          tooltip: l.inbox,
+          icon: Badge(isLabelVisible: unread > 0, label: Text('$unread'), child: const Icon(Icons.notifications_rounded)),
+          onPressed: () => context.push('/inbox'),
+        ),
+        IconButton(tooltip: l.settings, icon: const Icon(Icons.menu_rounded), onPressed: () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
+      ]),
+    );
+  }
+}
+
+/// The coach himself on the stadium at night: his picture in a gold ring, his name and rank, and his record.
+class _CoachCard extends StatelessWidget {
+  const _CoachCard(this.c);
+
+  final Coach c;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
     final p = context.palette;
-    final c = h.coach;
     final hour = DateTime.now().hour;
     final tier = switch (c.tierKey) {
       'tactician' => l.tierTactician, 'professional' => l.tierProfessional, 'elite' => l.tierElite, 'mastermind' => l.tierMastermind,
       'icon' => l.tierIcon, 'legend' => l.tierLegend, _ => l.tierProspect,
     };
     final division = c.division == null ? '' : ' ${['', 'I', 'II', 'III'][c.division!]}';
-    final unread = ref.watch(unreadProvider).value ?? 0;
-    Widget record(String n, String label, Color color) => Expanded(
+    Widget record(int n, String label, Color color) => Expanded(
           child: Column(children: [
-            Text(n, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: color, height: 1.1)),
-            Text(label, style: TextStyle(color: p.textMuted, fontSize: 11)),
+            CountUp(n, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w800, color: color, height: 1.1)),
+            Text(label, style: TextStyle(color: p.textSoft, fontSize: 11)),
           ]),
         );
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-            colors: context.glm.day ? [p.panel, p.bg] : [Color.lerp(p.brandDark, p.bgDeep, .35)!, p.bg.withValues(alpha: 0)]),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: p.gold.withValues(alpha: .5)),
+        boxShadow: [BoxShadow(color: p.gold.withValues(alpha: .14), blurRadius: 28, spreadRadius: -6)],
       ),
-      padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 6, 16, 12),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Row(children: [
-          const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: FittedBox(child: BrandMark(size: 30)))),
-          CoinsPill(coins: c.coins, onTap: () => context.push('/wallet')),
-          IconButton(
-            tooltip: l.inbox,
-            icon: Badge(isLabelVisible: unread > 0, label: Text('$unread'), child: const Icon(Icons.notifications_rounded)),
-            onPressed: () => context.push('/inbox'),
-          ),
-          IconButton(tooltip: l.settings, icon: const Icon(Icons.menu_rounded), onPressed: () => showSettingsSheet(context, accountNo: c.accountNo)),
-        ]),
-        const SizedBox(height: 10),
-        GlmCard(
-          gold: true,
-          accent: p.gold,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-          child: Column(children: [
-            Row(children: [
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(21),
+        child: StadiumBackdrop(
+          pitch: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Column(children: [
+              Row(children: [
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [p.goldLight, p.goldDark])),
+                  child: CircleAvatar(radius: 30, backgroundColor: p.brand,
+                      child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(hour < 12 ? l.greetingMorning : l.greetingEvening, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700, fontSize: 13)),
+                    Text(c.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      decoration: BoxDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .30), p.gold.withValues(alpha: .12)]), borderRadius: BorderRadius.circular(99)),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(Icons.military_tech_rounded, size: 15, color: context.glm.goldText),
+                        const SizedBox(width: 4),
+                        Flexible(child: Text('$tier$division · ${c.points}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: context.glm.goldText))),
+                      ]),
+                    ),
+                  ]),
+                ),
+                IconButton(tooltip: l.myLeagues, icon: Icon(Icons.emoji_events_rounded, color: p.gold, size: 28), onPressed: () => context.push('/leagues')),
+              ]),
+              const SizedBox(height: 14),
               Container(
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [p.goldLight, p.goldDark])),
-                child: CircleAvatar(radius: 30, backgroundColor: p.brand,
-                    child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .6), borderRadius: BorderRadius.circular(14)),
+                child: Row(children: [record(c.won, l.won, p.success), record(c.drawn, l.drawn, p.textSoft), record(c.lost, l.lost, p.danger)]),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(hour < 12 ? l.greetingMorning : l.greetingEvening, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700, fontSize: 13)),
-                  Text(c.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                    decoration: BoxDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .28), p.gold.withValues(alpha: .10)]), borderRadius: BorderRadius.circular(99)),
-                    child: Text('🏅 $tier$division · ${c.points}', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: context.glm.goldText)),
-                  ),
-                ]),
-              ),
-              IconButton(tooltip: l.myLeagues, icon: Icon(Icons.emoji_events_rounded, color: p.gold, size: 28), onPressed: () => context.push('/leagues')),
             ]),
-            const SizedBox(height: 12),
-            Divider(height: 1, color: Colors.white.withValues(alpha: .08)),
-            const SizedBox(height: 10),
-            Row(children: [
-              record('${c.won}', l.won, p.success),
-              record('${c.drawn}', l.drawn, p.textSoft),
-              record('${c.lost}', l.lost, p.danger),
-            ]),
-          ]),
+          ),
         ),
-      ]),
+      ),
     );
   }
 }
@@ -278,11 +337,9 @@ class _SlotCard extends ConsumerWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [Text(l.slotFree, style: context.text.titleMedium), const Spacer(), number]),
             const SizedBox(height: 12),
-            Row(children: [
-              Expanded(child: GlmButton(label: l.createLeague, onPressed: () => context.push('/leagues/new'))),
-              const SizedBox(width: 10),
-              Expanded(child: GlmButton(label: l.joinByCode, variant: GlmButtonVariant.quiet, onPressed: () => context.push('/join'))),
-            ]),
+            GlmButton(label: l.createLeague, block: true, icon: const Icon(Icons.add_rounded), onPressed: () => context.push('/leagues/new')),
+            const SizedBox(height: 8),
+            GlmButton(label: l.joinByCode, block: true, variant: GlmButtonVariant.quiet, icon: const Icon(Icons.vpn_key_rounded), onPressed: () => context.push('/join')),
           ]),
         );
       case SlotState.locked:
@@ -302,6 +359,7 @@ class _SlotCard extends ConsumerWidget {
                     child: GlmButton(
                       label: l.unlockSlot(s.unlockCoins!),
                       variant: GlmButtonVariant.outline,
+                      block: true,
                       onPressed: () async {
                         if (!await confirm(context, l.unlockConfirm(s.number, s.unlockCoins!)) || !context.mounted) return;
                         try {
