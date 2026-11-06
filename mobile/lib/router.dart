@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/account/account_screens.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/ui/forgot_screen.dart';
 import 'features/auth/ui/login_screen.dart';
@@ -80,6 +81,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leagues/:id/friendlies', builder: (_, s) => FriendliesScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/predictions', builder: (_, s) => PredictionsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/newspaper', builder: (_, s) => NewspaperScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
+      GoRoute(path: '/ideas', builder: (_, _) => const IdeasScreen()),
+      GoRoute(path: '/support', builder: (_, _) => const SupportScreen()),
+      GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),
+      GoRoute(path: '/guide', builder: (_, _) => const GuideScreen()),
+      GoRoute(path: '/leagues/:id/stats', builder: (_, s) => StatsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       GoRoute(path: '/leagues/:id/training', builder: (_, s) => TrainingScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => SpecialistsScreen(leagueId: int.parse(s.pathParameters['id']!))),

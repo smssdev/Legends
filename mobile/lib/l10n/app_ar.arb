@@ -1073,5 +1073,115 @@
   "noGroups": "لا جروبات بعد",
   "typeMessage": "اكتب رسالة",
   "messageDeleted": "حُذفت هذه الرسالة",
-  "mediaOnWeb": "صورة أو صوت: افتحه من الموقع"
+  "mediaOnWeb": "صورة أو صوت: افتحه من الموقع",
+  "profile": "حسابي",
+  "displayNameSaved": "حُفظ",
+  "coachLook": "شكلك على الخط",
+  "changePassword": "غيّر كلمة المرور",
+  "currentPassword": "كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "passwordChanged": "تغيّرت كلمة المرور",
+  "inviteFriends": "ادعُ أصدقاءك",
+  "inviteReward": "{coins} كوينز لكل صديق يلعب، دُفع لك {paid} من {max}",
+  "@inviteReward": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      },
+      "paid": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "achievements": "الأوسمة",
+  "tierBeginner": "المبتدئ",
+  "tierIntermediate": "المتوسط",
+  "tierPro": "المحترف",
+  "aFirstWin": "أول فوز",
+  "aMatches": "{n} مباراة",
+  "@aMatches": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aWins": "{n} فوزاً",
+  "@aWins": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aFirstTitle": "أول لقب",
+  "aLeagueTitle": "بطل الدوري",
+  "aCupTitle": "بطل الكأس",
+  "aProfessional": "درجة المحترف",
+  "aLegend": "درجة الأسطورة",
+  "aFriendlies": "{n} وديات",
+  "@aFriendlies": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aIdea": "فكرة اعتُمدت",
+  "aInvites": "{n} أصدقاء",
+  "@aInvites": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aTitles": "{n} ألقاب",
+  "@aTitles": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "stats": "الإحصاءات",
+  "scorers": "الهدافون",
+  "assistsTitle": "صناع الأهداف",
+  "squadValues": "قيمة الفرق",
+  "goalsShort": "أهداف",
+  "assistsShort": "تمريرات",
+  "noStatsYet": "تظهر الإحصاءات بعد أول جولة",
+  "ideas": "اقتراحاتك للمطورين",
+  "ideasLead": "المقبول يأخذ مكافأة كوينز ويدخل صاحبه قائمة الشرف. باقٍ لك اليوم {n}.",
+  "@ideasLead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "suggest": "أرسل الاقتراح",
+  "suggestionSent": "وصل اقتراحك",
+  "polls": "التصويت",
+  "vote": "صوّت",
+  "votes": "{n} صوت",
+  "@votes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "honourRoll": "قائمة الشرف",
+  "statusPending": "قيد المراجعة",
+  "statusBuilt": "بُني",
+  "support": "الدعم",
+  "supportLead": "اكتب لفريق اللعبة، والرد هنا.",
+  "fromTeam": "فريق اللعبة",
+  "announcements": "الإعلانات",
+  "noAnnouncements": "لا إعلانات",
+  "guide": "طريقة اللعب"
 }

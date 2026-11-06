@@ -139,7 +139,7 @@ class _ClubTab extends ConsumerWidget {
                 (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
                 (Icons.visibility_rounded, l.spy, 'spy'), (Icons.flag_rounded, l.quests, 'quests'), (Icons.emoji_events_rounded, l.honours, 'honours'),
                 (Icons.sports_soccer_rounded, l.friendlies, 'friendlies'), (Icons.how_to_vote_rounded, l.predictions, 'predictions'),
-                (Icons.newspaper_rounded, l.newspaper, 'newspaper'), (Icons.forum_rounded, l.groups, '/groups'),
+                (Icons.newspaper_rounded, l.newspaper, 'newspaper'), (Icons.forum_rounded, l.groups, '/groups'), (Icons.leaderboard_rounded, l.stats, 'stats'),
               ])
                 GlmCard(
                   padding: const EdgeInsets.all(8),

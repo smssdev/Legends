@@ -1467,4 +1467,164 @@ class LAr extends L {
 
   @override
   String get mediaOnWeb => 'صورة أو صوت: افتحه من الموقع';
+
+  @override
+  String get profile => 'حسابي';
+
+  @override
+  String get displayNameSaved => 'حُفظ';
+
+  @override
+  String get coachLook => 'شكلك على الخط';
+
+  @override
+  String get changePassword => 'غيّر كلمة المرور';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get passwordChanged => 'تغيّرت كلمة المرور';
+
+  @override
+  String get inviteFriends => 'ادعُ أصدقاءك';
+
+  @override
+  String inviteReward(int coins, int paid, int max) {
+    return '$coins كوينز لكل صديق يلعب، دُفع لك $paid من $max';
+  }
+
+  @override
+  String get achievements => 'الأوسمة';
+
+  @override
+  String get tierBeginner => 'المبتدئ';
+
+  @override
+  String get tierIntermediate => 'المتوسط';
+
+  @override
+  String get tierPro => 'المحترف';
+
+  @override
+  String get aFirstWin => 'أول فوز';
+
+  @override
+  String aMatches(int n) {
+    return '$n مباراة';
+  }
+
+  @override
+  String aWins(int n) {
+    return '$n فوزاً';
+  }
+
+  @override
+  String get aFirstTitle => 'أول لقب';
+
+  @override
+  String get aLeagueTitle => 'بطل الدوري';
+
+  @override
+  String get aCupTitle => 'بطل الكأس';
+
+  @override
+  String get aProfessional => 'درجة المحترف';
+
+  @override
+  String get aLegend => 'درجة الأسطورة';
+
+  @override
+  String aFriendlies(int n) {
+    return '$n وديات';
+  }
+
+  @override
+  String get aIdea => 'فكرة اعتُمدت';
+
+  @override
+  String aInvites(int n) {
+    return '$n أصدقاء';
+  }
+
+  @override
+  String aTitles(int n) {
+    return '$n ألقاب';
+  }
+
+  @override
+  String get stats => 'الإحصاءات';
+
+  @override
+  String get scorers => 'الهدافون';
+
+  @override
+  String get assistsTitle => 'صناع الأهداف';
+
+  @override
+  String get squadValues => 'قيمة الفرق';
+
+  @override
+  String get goalsShort => 'أهداف';
+
+  @override
+  String get assistsShort => 'تمريرات';
+
+  @override
+  String get noStatsYet => 'تظهر الإحصاءات بعد أول جولة';
+
+  @override
+  String get ideas => 'اقتراحاتك للمطورين';
+
+  @override
+  String ideasLead(int n) {
+    return 'المقبول يأخذ مكافأة كوينز ويدخل صاحبه قائمة الشرف. باقٍ لك اليوم $n.';
+  }
+
+  @override
+  String get suggest => 'أرسل الاقتراح';
+
+  @override
+  String get suggestionSent => 'وصل اقتراحك';
+
+  @override
+  String get polls => 'التصويت';
+
+  @override
+  String get vote => 'صوّت';
+
+  @override
+  String votes(int n) {
+    return '$n صوت';
+  }
+
+  @override
+  String get honourRoll => 'قائمة الشرف';
+
+  @override
+  String get statusPending => 'قيد المراجعة';
+
+  @override
+  String get statusBuilt => 'بُني';
+
+  @override
+  String get support => 'الدعم';
+
+  @override
+  String get supportLead => 'اكتب لفريق اللعبة، والرد هنا.';
+
+  @override
+  String get fromTeam => 'فريق اللعبة';
+
+  @override
+  String get announcements => 'الإعلانات';
+
+  @override
+  String get noAnnouncements => 'لا إعلانات';
+
+  @override
+  String get guide => 'طريقة اللعب';
 }

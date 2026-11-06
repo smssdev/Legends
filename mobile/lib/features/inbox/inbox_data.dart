@@ -28,12 +28,16 @@ class InboxMessage {
 /// null when there is no league (the home screen).
 String? appRoute(String? link, int? league) {
   final path = link ?? '';
+  // Pages of the account, wherever the message came from.
+  for (final page in ['/ideas', '/support', '/announcements', '/wallet', '/profile']) {
+    if (path.startsWith(page)) return page;
+  }
   final live = RegExp(r'^/live/(\d+)').firstMatch(path);
   if (live != null) return '/match/${live.group(1)}';
   if (league == null) return null;
   for (final (prefix, screen) in [
     ('/stadium', 'stadium'), ('/finance', 'finance'), ('/market', 'market'), ('/transfers', 'market'), ('/scout', 'scout'), ('/training', 'training'),
-    ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/friendlies', 'friendlies'), ('/predictions', 'predictions'), ('/newspaper', 'newspaper'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
+    ('/specialists', 'specialists'), ('/spy', 'spy'), ('/quests', 'quests'), ('/friendlies', 'friendlies'), ('/predictions', 'predictions'), ('/newspaper', 'newspaper'), ('/stats', 'stats'), ('/squad', 'squad'), ('/team', 'squad'), ('/lineup', 'lineup'), ('/tactics', 'tactics'),
   ]) {
     if (path.startsWith(prefix)) return '/leagues/$league/$screen';
   }

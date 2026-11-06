@@ -2664,6 +2664,294 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'صورة أو صوت: افتحه من الموقع'**
   String get mediaOnWeb;
+
+  /// No description provided for @profile.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابي'**
+  String get profile;
+
+  /// No description provided for @displayNameSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُفظ'**
+  String get displayNameSaved;
+
+  /// No description provided for @coachLook.
+  ///
+  /// In ar, this message translates to:
+  /// **'شكلك على الخط'**
+  String get coachLook;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'غيّر كلمة المرور'**
+  String get changePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور الحالية'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة المرور الجديدة'**
+  String get newPassword;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيّرت كلمة المرور'**
+  String get passwordChanged;
+
+  /// No description provided for @inviteFriends.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادعُ أصدقاءك'**
+  String get inviteFriends;
+
+  /// No description provided for @inviteReward.
+  ///
+  /// In ar, this message translates to:
+  /// **'{coins} كوينز لكل صديق يلعب، دُفع لك {paid} من {max}'**
+  String inviteReward(int coins, int paid, int max);
+
+  /// No description provided for @achievements.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأوسمة'**
+  String get achievements;
+
+  /// No description provided for @tierBeginner.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبتدئ'**
+  String get tierBeginner;
+
+  /// No description provided for @tierIntermediate.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتوسط'**
+  String get tierIntermediate;
+
+  /// No description provided for @tierPro.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحترف'**
+  String get tierPro;
+
+  /// No description provided for @aFirstWin.
+  ///
+  /// In ar, this message translates to:
+  /// **'أول فوز'**
+  String get aFirstWin;
+
+  /// No description provided for @aMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} مباراة'**
+  String aMatches(int n);
+
+  /// No description provided for @aWins.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} فوزاً'**
+  String aWins(int n);
+
+  /// No description provided for @aFirstTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أول لقب'**
+  String get aFirstTitle;
+
+  /// No description provided for @aLeagueTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطل الدوري'**
+  String get aLeagueTitle;
+
+  /// No description provided for @aCupTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطل الكأس'**
+  String get aCupTitle;
+
+  /// No description provided for @aProfessional.
+  ///
+  /// In ar, this message translates to:
+  /// **'درجة المحترف'**
+  String get aProfessional;
+
+  /// No description provided for @aLegend.
+  ///
+  /// In ar, this message translates to:
+  /// **'درجة الأسطورة'**
+  String get aLegend;
+
+  /// No description provided for @aFriendlies.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} وديات'**
+  String aFriendlies(int n);
+
+  /// No description provided for @aIdea.
+  ///
+  /// In ar, this message translates to:
+  /// **'فكرة اعتُمدت'**
+  String get aIdea;
+
+  /// No description provided for @aInvites.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} أصدقاء'**
+  String aInvites(int n);
+
+  /// No description provided for @aTitles.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} ألقاب'**
+  String aTitles(int n);
+
+  /// No description provided for @stats.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإحصاءات'**
+  String get stats;
+
+  /// No description provided for @scorers.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدافون'**
+  String get scorers;
+
+  /// No description provided for @assistsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'صناع الأهداف'**
+  String get assistsTitle;
+
+  /// No description provided for @squadValues.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة الفرق'**
+  String get squadValues;
+
+  /// No description provided for @goalsShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهداف'**
+  String get goalsShort;
+
+  /// No description provided for @assistsShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمريرات'**
+  String get assistsShort;
+
+  /// No description provided for @noStatsYet.
+  ///
+  /// In ar, this message translates to:
+  /// **'تظهر الإحصاءات بعد أول جولة'**
+  String get noStatsYet;
+
+  /// No description provided for @ideas.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقتراحاتك للمطورين'**
+  String get ideas;
+
+  /// No description provided for @ideasLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'المقبول يأخذ مكافأة كوينز ويدخل صاحبه قائمة الشرف. باقٍ لك اليوم {n}.'**
+  String ideasLead(int n);
+
+  /// No description provided for @suggest.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الاقتراح'**
+  String get suggest;
+
+  /// No description provided for @suggestionSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل اقتراحك'**
+  String get suggestionSent;
+
+  /// No description provided for @polls.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصويت'**
+  String get polls;
+
+  /// No description provided for @vote.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوّت'**
+  String get vote;
+
+  /// No description provided for @votes.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} صوت'**
+  String votes(int n);
+
+  /// No description provided for @honourRoll.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة الشرف'**
+  String get honourRoll;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد المراجعة'**
+  String get statusPending;
+
+  /// No description provided for @statusBuilt.
+  ///
+  /// In ar, this message translates to:
+  /// **'بُني'**
+  String get statusBuilt;
+
+  /// No description provided for @support.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدعم'**
+  String get support;
+
+  /// No description provided for @supportLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب لفريق اللعبة، والرد هنا.'**
+  String get supportLead;
+
+  /// No description provided for @fromTeam.
+  ///
+  /// In ar, this message translates to:
+  /// **'فريق اللعبة'**
+  String get fromTeam;
+
+  /// No description provided for @announcements.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعلانات'**
+  String get announcements;
+
+  /// No description provided for @noAnnouncements.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا إعلانات'**
+  String get noAnnouncements;
+
+  /// No description provided for @guide.
+  ///
+  /// In ar, this message translates to:
+  /// **'طريقة اللعب'**
+  String get guide;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

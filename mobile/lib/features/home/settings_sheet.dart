@@ -54,6 +54,16 @@ class _SettingsSheet extends ConsumerWidget {
             onSelectionChanged: (v) => settings.setLanguage(v.first),
           ),
           const SizedBox(height: 10),
+          // [Sprint 18 F] The account: name, look, password, invites and badges; and the community's pages from it.
+          ListTile(
+            leading: Icon(Icons.person_rounded, color: context.palette.gold),
+            title: Text(l.profile),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () {
+              Navigator.pop(context);
+              GoRouter.of(context).push('/profile');
+            },
+          ),
           // [Sprint 19 F1] Which notifications the account wants.
           ListTile(
             leading: Icon(Icons.notifications_rounded, color: context.palette.gold),
