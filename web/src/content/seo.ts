@@ -94,6 +94,20 @@ export const PAGES: Record<string, PageSeo> = {
     },
     sitemap: { priority: '0.8', changefreq: 'weekly' },
   },
+  // [Sprint 15 D1] The app to download: Android from our server, the iPhone from Safari.
+  download: {
+    path: '/download',
+    title: { ar: 'حمّل تطبيق المدرب الأسطورة: أندرويد وآيفون', en: 'Download Game Legend Manager: Android and iPhone' },
+    description: {
+      ar: 'حمّل تطبيق لعبة المدرب الأسطورة على أندرويد مجاناً، وثبّتها على آيفون من Safari. نفس حسابك ودورياتك في الموقع والتطبيق.',
+      en: 'Download the Game Legend Manager app for Android for free, and install it on the iPhone from Safari. The same account and leagues on the site and the app.',
+    },
+    keywords: {
+      ar: ['تحميل المدرب الأسطورة', 'تطبيق لعبة كرة قدم', 'لعبة مدرب أندرويد', 'تحميل APK'],
+      en: ['download football manager', 'football manager app', 'android football game', 'APK download'],
+    },
+    sitemap: { priority: '0.7', changefreq: 'weekly' },
+  },
   // [X57] The privacy policy and the terms, open to everyone.
   privacy: {
     path: '/privacy',

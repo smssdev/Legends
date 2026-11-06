@@ -7,6 +7,7 @@ use App\Chat\ChatGroups;
 use App\Http\Controllers\Controller;
 use App\League\Alliance;
 use App\League\CoachSlots;
+use App\League\Contract;
 use App\League\CupBracket;
 use App\League\Integrity;
 use App\League\Joining;
@@ -665,6 +666,17 @@ class LeagueController extends Controller
         ];
     }
 
+    /** [Sprint 43 W1] The coach signs his contract with his club for this season. */
+    public function signContract(Request $request, League $league): JsonResponse
+    {
+        $m = $league->season ? LeagueMembership::where('league_id', $league->id)->where('season_id', $league->season->id)
+            ->where('user_id', $request->user()->id)->whereNull('left_at')->first() : null;
+        abort_unless($m, 403, 'لست مدرباً في هذا الدوري.');
+        Contract::sign($league, $m);
+
+        return response()->json(['ok' => true]);
+    }
+
     private function presence(League $l, User $user): ?array
     {
         $m = $l->season ? LeagueMembership::where('league_id', $l->id)->where('season_id', $l->season->id)->where('user_id', $user->id)->whereNull('left_at')->first() : null;
@@ -683,6 +695,8 @@ class LeagueController extends Controller
             // When the club goes back to a bot if nothing changes: only once the season counts absence.
             'away_deadline' => ($since = Presence::quietSince($m, $l->season->starts_at))
                 ? $since->copy()->addDays(config('game.league.absence_days'))->toIso8601ZuluString() : null,
+            // [Sprint 43 W1] The contract waiting for his signature this season, or null.
+            'contract' => Contract::pending($l, $m),
         ];
     }
 

@@ -35,6 +35,9 @@ class MatchReplay
         if (DB::table('match_replays')->where('match_id', $match->id)->exists()) {
             return true;
         }
+        if (self::expired($match)) {
+            return false;
+        }
         if ($match->status !== 'finished' || (int) $match->engine_version !== (int) config('game.engine.version')) {
             return false;
         }
@@ -43,6 +46,36 @@ class MatchReplay
             'bytes' => strlen($packed), 'ticks' => $packed, 'created_at' => GameClock::now()]);
 
         return true;
+    }
+
+    /**
+     * [Sprint 43 C6, Hamza 2026-11-05] A replay lasts its round: once a later match of its season has started (the next
+     * round, or the cup's), only the result stays. A friendly (no fixture) and a development league keep it.
+     */
+    public static function expired(object $match): bool
+    {
+        $f = DB::table('fixtures')->join('seasons', 'seasons.id', '=', 'fixtures.season_id')->join('leagues', 'leagues.id', '=', 'seasons.league_id')
+            ->where('fixtures.id', $match->fixture_id ?? 0)->first(['fixtures.season_id', 'fixtures.scheduled_at', 'leagues.is_dev']);
+        // A development league (rounds a minute apart) keeps its replays for testing.
+        if (! $f || ! $f->season_id || $f->is_dev) {
+            return false;
+        }
+
+        return DB::table('fixtures')->where('season_id', $f->season_id)->where('is_bye', false)->where('scheduled_at', '>', $f->scheduled_at)
+            ->whereIn('status', ['live', 'finished'])->exists();
+    }
+
+    /** [Sprint 43 C6] Every kept scene whose round is over goes; the results, reports and events stay. Returns how many. */
+    public static function prune(): int
+    {
+        $gone = 0;
+        foreach (DB::table('match_replays')->join('matches', 'matches.id', '=', 'match_replays.match_id')->get(['matches.id', 'matches.fixture_id']) as $m) {
+            if (self::expired($m)) {
+                $gone += DB::table('match_replays')->where('match_id', $m->id)->delete();
+            }
+        }
+
+        return $gone;
     }
 
     /** [X78] The kept scene, or null. */

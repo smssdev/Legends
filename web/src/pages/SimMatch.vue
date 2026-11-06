@@ -1,5 +1,7 @@
 <template>
   <main class="mx-auto flex min-h-dvh max-w-[1500px] flex-col gap-3 px-3 py-3 md:px-5">
+    <!-- [Sprint 43 W3] Sideways on a phone: upright, it asks to turn (and locks it on Android). -->
+    <TurnPhone v-if="view" />
     <header class="flex flex-wrap items-center gap-2">
       <RouterLink :to="league ? '/match' : '/sim'" class="flex items-center gap-2">
         <BrandMark size="sm" />
@@ -36,7 +38,7 @@
 
     <p v-if="error" class="rounded-lg bg-live/15 px-4 py-2 text-sm text-danger">{{ $t(error) }}</p>
     <p v-if="oldEngine" class="flex flex-wrap items-center gap-2 rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">
-      <span class="flex-1">{{ $t('لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.') }}</span>
+      <span class="flex-1">{{ replayExpired ? $t('بدأت جولة جديدة، فلم تعد إعادة هذه المباراة متاحة. تبقى نتيجتها وملخصها السريع.') : $t('لُعبت هذه المباراة بنسخة أقدم من المحرك، فلا تُعاد محاكاتها. شاهد ملخصها السريع.') }}</span>
       <button type="button" class="h-touch rounded-md bg-gold px-4 font-bold text-on-gold" @click="recapOpen = true">⚡ {{ $t('الملخص السريع') }}</button>
     </p>
     <p v-if="viewing.chosenView.value === 'unity' && viewing.playing.value === 'cartoon'" class="rounded-lg bg-surface px-4 py-2 text-sm text-text-soft" role="status">{{ $t('المحاكي المطوّر (Unity) قريباً. تُعرض المباراة الآن بالمحاكي الكرتوني بنفس التوقيت.') }}</p>
@@ -262,6 +264,7 @@
 <script setup lang="ts">
 import { scoreText } from '../lib/format'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
+import TurnPhone from '../components/match/TurnPhone.vue'
 import { useAuth } from '../stores/auth'
 import UiSlider from '../components/ui/UiSlider.vue'
 import UiToggle from '../components/ui/UiToggle.vue'
@@ -339,6 +342,8 @@ const finished = ref(false)
 // the viewer plays it like the simulator, at its own pace, with no orders. An older engine's match has its recap only.
 const rerun = ref(false)
 const oldEngine = ref(false)
+// [Sprint 43 C6] A replay lasts its round: after the next one starts, the result and the quick recap only.
+const replayExpired = ref(false)
 const recapOpen = ref(false)
 let rerunTicks: Tick[] = []
 function startRerun() {
@@ -1082,6 +1087,7 @@ onMounted(async () => {
         return
       } else {
         oldEngine.value = true
+        replayExpired.value = !!r.expired
       }
     }
     if (live.value) {

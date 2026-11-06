@@ -1,0 +1,890 @@
+{
+  "@@locale": "ar",
+  "appName": "المدرب الأسطورة",
+  "tagline": "لعبة إدارة كرة قدم عربية مجانية",
+  "signIn": "دخول",
+  "signInTitle": "أهلاً بعودتك",
+  "signInLead": "ادخل لتكمل موسمك",
+  "emailOrUsername": "البريد أو اسم المستخدم",
+  "password": "كلمة المرور",
+  "forgotPassword": "نسيتها؟",
+  "noAccount": "ليس لديك حساب؟",
+  "createAccount": "أنشئ حساباً",
+  "haveAccount": "عندك حساب؟",
+  "registerTitle": "حسابك الجديد",
+  "registerLead": "ثلاث خانات وتبدأ: اسمك، واسم المستخدم، وكلمة المرور",
+  "displayName": "اسمك الظاهر",
+  "username": "اسم المستخدم",
+  "usernameHint": "حروف إنجليزية وأرقام، 3 إلى 20",
+  "emailOptional": "البريد (اختياري، لاستعادة كلمة المرور)",
+  "passwordHint": "8 أحرف على الأقل",
+  "acceptTerms": "أوافق على الشروط وسياسة الخصوصية",
+  "termsAndPrivacy": "الشروط وسياسة الخصوصية",
+  "mustAcceptTerms": "وافق على الشروط وسياسة الخصوصية أولاً",
+  "register": "إنشاء الحساب",
+  "forgotTitle": "استعادة كلمة المرور",
+  "forgotLead": "اكتب بريد حسابك ونرسل لك رابطاً لكلمة مرور جديدة",
+  "email": "البريد الإلكتروني",
+  "sendLink": "أرسل الرابط",
+  "linkSent": "أرسلنا الرابط إن كان البريد لحساب عندنا. افتحه من بريدك.",
+  "required": "مطلوب",
+  "google": "المتابعة بحساب Google",
+  "googleSoon": "الدخول بجوجل قريباً في التطبيق",
+  "orByEmail": "أو بالبريد",
+  "updateTitle": "حدّث التطبيق",
+  "updateBody": "نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.",
+  "update": "حدّث الآن",
+  "offlineTitle": "لا اتصال",
+  "retry": "إعادة المحاولة",
+  "greetingMorning": "صباح الخير يا كوتش",
+  "greetingEvening": "مساء الخير يا كوتش",
+  "coins": "كوينز",
+  "myTeams": "فرقي",
+  "slotsOpen": "{open} من {total}",
+  "@slotsOpen": {
+    "placeholders": {
+      "open": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "slotFree": "فتحة فارغة",
+  "slotWaiting": "طلب انضمام ينتظر الرد",
+  "slotLocked": "مقفلة",
+  "slotOpensIn": "تُفتح مجاناً بعد {time}",
+  "@slotOpensIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "createLeague": "أنشئ دورياً",
+  "joinByCode": "انضم بكود",
+  "openClub": "ادخل النادي",
+  "nextMatch": "المباراة القادمة",
+  "vs": "ضد {club}",
+  "@vs": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "position": "المركز {n} من {of}",
+  "@position": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "of": {
+        "type": "int"
+      }
+    }
+  },
+  "waitsForYou": "{n} ينتظرك",
+  "@waitsForYou": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "record": "{w} فوز · {d} تعادل · {l} خسارة",
+  "@record": {
+    "placeholders": {
+      "w": {
+        "type": "int"
+      },
+      "d": {
+        "type": "int"
+      },
+      "l": {
+        "type": "int"
+      }
+    }
+  },
+  "onWebForNow": "تُفتح في الموقع حتى تصل إلى التطبيق",
+  "settings": "الإعدادات",
+  "look": "المظهر",
+  "lookAuto": "تلقائي",
+  "lookNight": "ليلي",
+  "lookDay": "نهاري",
+  "language": "اللغة",
+  "signOut": "تسجيل الخروج",
+  "signOutConfirm": "تسجيل الخروج من هذا الجوال؟",
+  "cancel": "إلغاء",
+  "accountNo": "رقم حسابك {n}",
+  "@accountNo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "days": "{n} يوم",
+  "@days": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{n} ساعة",
+  "@hours": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "minutes": "{n} دقيقة",
+  "@minutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "version": "النسخة {v}",
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "tierProspect": "الواعد",
+  "tierTactician": "التكتيكي",
+  "tierProfessional": "المحترف",
+  "tierElite": "النخبة",
+  "tierMastermind": "العقل المدبر",
+  "tierIcon": "الأيقونة",
+  "tierLegend": "الأسطورة",
+  "myLeagues": "دورياتي",
+  "noLeagues": "لا دوري لك بعد. أنشئ دورياً لأصحابك أو انضم بكود.",
+  "newLeague": "دوري جديد",
+  "freeLeagueLead": "الدوري المجاني: كل أندية الدوري، جولة كل يوم الساعة 9 مساءً، ويومان للتحضير. والخيارات المدفوعة من الموقع.",
+  "pickTemplate": "اختر الدوري",
+  "pickClub": "اختر فريقك",
+  "leagueName": "اسم الدوري (اختياري)",
+  "create": "أنشئ الدوري",
+  "clubsCount": "{n} نادٍ",
+  "joinTitle": "انضم إلى دوري",
+  "joinLead": "اطلب من صاحبك كود دوريه واكتبه هنا، ثم ينتظر طلبك موافقة المنشئ.",
+  "code": "كود الدوري",
+  "sendRequest": "أرسل الطلب",
+  "requestPending": "طلبك ينتظر موافقة المنشئ.",
+  "requestApproved": "وافق المنشئ. اختر فريقك الآن.",
+  "requestRejected": "رفض المنشئ طلبك.",
+  "cancelRequest": "ألغِ الطلب",
+  "takeClub": "خذ هذا الفريق",
+  "goalTitle": "الهدف: اللقب",
+  "goalPlace": "الهدف: المركز {n} أو أفضل",
+  "goalSurvive": "الهدف: البقاء في المركز {n} أو أفضل",
+  "strength": "القوة {n}",
+  "tabClub": "النادي",
+  "tabTable": "الترتيب",
+  "tabFixtures": "المباريات",
+  "tabCoaches": "المدربون",
+  "waitingStart": "يبدأ الدوري {when}",
+  "round": "الجولة {n}",
+  "cup": "الكأس",
+  "invite": "ادعُ أصحابك",
+  "inviteText": "انضم لدوري «{name}» في لعبة المدرب الأسطورة واختر ناديك: {url}",
+  "requests": "طلبات الانضمام",
+  "approve": "وافق",
+  "reject": "ارفض",
+  "creator": "المنشئ",
+  "onHoliday": "في إجازة",
+  "home": "على أرضك",
+  "away": "خارج أرضك",
+  "nextMatchShort": "مباراتك القادمة",
+  "lineupReady": "التشكيلة جاهزة",
+  "lineupAuto": "التشكيلة تلقائية",
+  "board": "الإدارة",
+  "noMatches": "لا مباريات بعد.",
+  "openOnSite": "افتح في الموقع",
+  "copied": "نُسخ",
+  "share": "شارك",
+  "pts": "ن",
+  "@clubsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@goalPlace": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@goalSurvive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@strength": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@round": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@waitingStart": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "@inviteText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "sign": "وقّع",
+  "squad": "الفريق",
+  "lineup": "التشكيلة",
+  "tactics": "التكتيك",
+  "lineGk": "حراسة المرمى",
+  "lineDef": "الدفاع",
+  "lineMid": "الوسط",
+  "lineAtt": "الهجوم",
+  "starter": "أساسي",
+  "bench": "احتياط",
+  "reserve": "خارج القائمة",
+  "injuredFor": "مصاب {n} مباراة",
+  "suspendedFor": "موقوف {n} مباراة",
+  "age": "العمر {n}",
+  "potential": "الإمكانية {n}",
+  "fitness": "اللياقة",
+  "morale": "المعنويات {n}",
+  "squadValue": "قيمة الفريق",
+  "formation": "الخطة",
+  "autoLineup": "تلقائية",
+  "save": "احفظ",
+  "saved": "حُفظ",
+  "swapWith": "بدّله مع",
+  "tapToSwap": "اضغط لاعباً في الملعب ثم بديله",
+  "plan": "الخطة الهجومية",
+  "tackling": "قطع الكرة",
+  "pressing": "الضغط على الخصم",
+  "style": "الأسلوب",
+  "tempo": "إيقاع اللعب",
+  "trap": "مصيدة التسلل",
+  "marking": "الرقابة",
+  "markZone": "دفاع المنطقة",
+  "markMan": "رجل لرجل",
+  "planCounter": "هجوم مرتد",
+  "planShots": "تسديد عن بعد",
+  "planLong": "كرات طويلة",
+  "planPassing": "تمريرات",
+  "planWings": "لعب على الأجنحة",
+  "tackle0": "قانوني",
+  "tackle1": "عادي",
+  "tackle2": "حماس",
+  "tackle3": "خشونة",
+  "attBack": "ارتداد",
+  "attSupport": "مساندة الوسط",
+  "attOnly": "هجوم فقط",
+  "midDef": "مساندة الدفاع",
+  "midStay": "بقاء",
+  "midPush": "اندفاع",
+  "defStay": "بقاء",
+  "defFullbacks": "هجوم الظهيرين",
+  "defMid": "مساندة الوسط",
+  "low": "منخفض",
+  "high": "عالٍ",
+  "defensive": "دفاعي",
+  "attacking": "هجومي",
+  "calm": "هادئ",
+  "fast": "سريع",
+  "savesItself": "يُحفظ وحده مع كل تغيير",
+  "attributes": "المهارات",
+  "value": "القيمة",
+  "@injuredFor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@suspendedFor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@age": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@potential": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@morale": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingWord": "التقييم",
+  "potentialWord": "الإمكانية",
+  "watchLive": "شاهد المباراة",
+  "liveNow": "مباشر",
+  "fullTime": "نهاية المباراة",
+  "notStarted": "لم تبدأ بعد",
+  "matchReport": "تقرير المباراة",
+  "commentary": "التعليق",
+  "assistantNotes": "ملاحظات مساعدك",
+  "substitute": "تبديل",
+  "subOut": "يخرج",
+  "subIn": "يدخل",
+  "subsLeft": "{used} من {max} تبديلات",
+  "@subsLeft": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "ordersHint": "الأوامر تُنفَّذ في النوافذ: قبل البداية وبين الشوطين وبعد الدقائق 15 و30 و60 و75.",
+  "windowOpen": "النافذة مفتوحة: أوامرك الآن",
+  "imReady": "أنا مستعد",
+  "readyWaiting": "في انتظار المدرب الآخر",
+  "breakTime": "استراحة",
+  "orderSent": "وصل الأمر، يُنفَّذ في الدقيقة التالية",
+  "send": "أرسل",
+  "possession": "الاستحواذ",
+  "shots": "التسديدات",
+  "onTarget": "على المرمى",
+  "corners": "الركنيات",
+  "fouls": "الأخطاء",
+  "saves": "التصديات",
+  "manOfMatch": "رجل المباراة",
+  "toImprove": "ما يُحسَّن",
+  "whyResult": "لماذا هذه النتيجة",
+  "keyMoments": "أهم اللحظات",
+  "bestPlayers": "الأفضل",
+  "resultWin": "فوز",
+  "resultDraw": "تعادل",
+  "resultLoss": "خسارة",
+  "pitchView": "الملعب",
+  "kickoffAt": "البداية {time}",
+  "@kickoffAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "inbox": "الرسائل",
+  "noMessages": "لا رسائل بعد",
+  "readAll": "قرأتها كلها",
+  "more": "المزيد",
+  "finance": "المالية",
+  "balance": "الرصيد",
+  "seasonIncome": "دخل الموسم",
+  "seasonExpenses": "مصروفات الموسم",
+  "wagesPerRound": "الرواتب كل جولة",
+  "inDebt": "النادي مدين: لا شراء ولا بناء حتى يعود الرصيد موجباً ({rounds} من {limit} جولات)",
+  "@inDebt": {
+    "placeholders": {
+      "rounds": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketPrice": "سعر التذاكر",
+  "perMatch": "{amount} في المباراة",
+  "@perMatch": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "attendance": "الحضور {pct}%",
+  "@attendance": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "sponsors": "الرعاة",
+  "perWin": "+{amount} للفوز",
+  "@perWin": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "signSponsorConfirm": "توقيع هذا العرض للموسم كله؟",
+  "signed": "موقَّع",
+  "transactions": "الحركات",
+  "stadium": "الملعب",
+  "stadiumProgress": "{done} من {total} أجزاء",
+  "@stadiumProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "capacity": "السعة",
+  "homeAdvantage": "أفضلية الأرض",
+  "sectionSeats": "التذاكر والمقاعد",
+  "sectionPitch": "أرضية الملعب",
+  "sectionTraining": "مركز التدريب",
+  "stageOf": "المرحلة {stage} من 3",
+  "@stageOf": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "partOf": "الجزء {part} من 5",
+  "@partOf": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "buildPart": "ابنِ ({cost})",
+  "@buildPart": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionDone": "مكتمل",
+  "buildingNow": "يُبنى الآن: {section}",
+  "@buildingNow": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "endsIn": "ينتهي بعد {time}",
+  "@endsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "finishNow": "أنهِه الآن ({coins} كوينز)",
+  "@finishNow": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "finishNowConfirm": "إنهاء الجزء الآن مقابل {coins} كوينز؟",
+  "@finishNowConfirm": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "partTime": "كل جزء يأخذ {time}",
+  "@partTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "تأكيد",
+  "market": "السوق",
+  "tabBuy": "شراء",
+  "tabSell": "بيع",
+  "tabOffers": "العروض",
+  "marketClosed": "السوق مغلق الآن",
+  "renewsAt": "تتجدد القائمة {time}",
+  "@renewsAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fitsYou": "يقوّي فريقك",
+  "sellerWorld": "من خارج الدوري",
+  "buyFor": "اشترِه بـ {price}",
+  "@buyFor": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "regFee": "رسوم التسجيل {coins} كوينز",
+  "@regFee": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "compensateWith": "أكمل الناقص بـ {coins} كوينز",
+  "@compensateWith": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "bought": "صار في فريقك",
+  "price": "السعر",
+  "listedAt": "معروض بـ {price}",
+  "@listedAt": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "sellsIn": "يُباع نحو {time}",
+  "@sellsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "listForSale": "اعرضه للبيع",
+  "unlist": "اسحب العرض",
+  "sellNowFor": "بيع فوري: يدخل {pays}، مقابل {fee}",
+  "@sellNowFor": {
+    "placeholders": {
+      "pays": {
+        "type": "String"
+      },
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "sellNowConfirm": "بيعه الآن؟ لا رجوع.",
+  "priceRange": "بين {floor} و{cap}",
+  "@priceRange": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      },
+      "cap": {
+        "type": "String"
+      }
+    }
+  },
+  "waitAbout": "مشترٍ خلال {hours} ساعة تقريباً",
+  "@waitAbout": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "listingsOf": "{listed} من {max} معروضون",
+  "@listingsOf": {
+    "placeholders": {
+      "listed": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "noOffers": "لا عروض الآن",
+  "offerFrom": "عرض من {club}",
+  "@offerFrom": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "offerTo": "عرضك إلى {club}",
+  "@offerTo": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "theyWant": "يطلب",
+  "theyGive": "ويعطي",
+  "accept": "اقبل",
+  "cancelOffer": "اسحب العرض",
+  "offersOnWeb": "تقديم عرض أو عرض مقابل من الموقع الآن",
+  "coinsWord": "{n} كوينز",
+  "@coinsWord": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "statusAccepted": "مقبول",
+  "statusRejected": "مرفوض",
+  "statusOther": "منتهٍ",
+  "scout": "الكشاف",
+  "scoutLead": "يبحث لك الكشاف عن خمسة لاعبين من خارج الدوري بشروطك، ويحجزهم لك حتى يتجدد السوق.",
+  "minOverall": "أقل تقييم",
+  "maxAge": "أكبر عمر",
+  "anyLine": "أي خط",
+  "nationality": "الجنسية",
+  "fromLeague": "من دوري",
+  "any": "أي",
+  "askScout": "ابحث ({cost}، {hours} ساعة)",
+  "@askScout": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "searching": "يبحث… التقرير {time}",
+  "@searching": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scoutReports": "التقارير",
+  "nobodyFound": "لم يجد أحداً، وعادت الأموال",
+  "stateMine": "في فريقك",
+  "stateGone": "ذهب",
+  "training": "التدريب",
+  "trainingLead": "لاعب واحد في كل خط يتدرب، وكل حصة ترفع تقدمه حتى يزيد تقييمه.",
+  "sessionCost": "الحصة {cost} كل {time}",
+  "@sessionCost": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "nobodyTraining": "لا أحد يتدرب",
+  "pickToTrain": "اختر من يتدرب",
+  "recommended": "المقترح",
+  "nextSession": "الحصة التالية {time}",
+  "@nextSession": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsDone": "{n} حصص",
+  "@sessionsDone": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTraining": "أوقف",
+  "maxed": "بلغ أقصاه",
+  "lineCoach": "{name}: {stars} نجوم",
+  "@lineCoach": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "specialists": "الأخصائيون",
+  "specialistsLead": "أخصائي لكل خط يسرّع تدريبه، لمدة {days} أيام.",
+  "@specialistsLead": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hire": "وظّف",
+  "hiredUntil": "حتى {time}",
+  "@hiredUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hireConfirm": "توظيفه بـ {cost}؟",
+  "@hireConfirm": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "spy": "التجسس",
+  "spyLead": "يكشف لك جاسوسك تشكيلة خصمك القادم وخطته ولياقته قبل القفل.",
+  "sendSpy": "أرسل الجاسوس ({cost})",
+  "@sendSpy": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "noNextMatch": "لا مباراة قادمة",
+  "spyReportOn": "تقرير عن {club}",
+  "@spyReportOn": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "form": "الأداء",
+  "quests": "المهام",
+  "questsRenew": "تتجدد {time}",
+  "@questsRenew": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "questFriendly": "العب ودية",
+  "questWins": "حقق انتصارات",
+  "questStadium": "ابنِ جزءاً في الملعب",
+  "questTraining": "درّب لاعباً",
+  "questUnbeaten": "لا تخسر",
+  "claim": "استلم",
+  "claimed": "استُلمت",
+  "honours": "قاعة الشرف",
+  "seasonN": "الموسم {n}",
+  "@seasonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "noTitles": "لا ألقاب بعد",
+  "resign": "استقل من الدوري",
+  "resignConfirm": "تستقيل من هذا الدوري؟ يعود فريقك للكمبيوتر ولا رجوع.",
+  "wallet": "المحفظة",
+  "dailyCoins": "كوينز اليوم: {n}",
+  "@dailyCoins": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "claimDaily": "استلم كوينز اليوم",
+  "dailyClaimed": "استلمت كوينز اليوم",
+  "store": "المتجر",
+  "buyOnWhatsapp": "اطلب عبر واتساب",
+  "endsOn": "ينتهي {time}",
+  "@endsOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "competitionLeague": "الدوري",
+  "coachProfile": "ملف المدرب",
+  "accountNumber": "حساب رقم {n}",
+  "@accountNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "seasonsPlayed": "المواسم",
+  "played": "لعب",
+  "won": "فاز",
+  "drawn": "تعادل",
+  "lost": "خسر",
+  "titles": "الألقاب",
+  "objectivesMet": "أهداف الإدارة: {met} من {total}",
+  "@objectivesMet": {
+    "placeholders": {
+      "met": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "notifications": "الإشعارات",
+  "pushReady": "الإشعارات تصل إلى هذا الجوال",
+  "pushNotReady": "الإشعارات على الجوال لم تُفعَّل في الخادم بعد، والرسائل كلها في صندوقك",
+  "kindReferee": "حكم مباراتك القادمة",
+  "kindMatchSoon": "مباراتك بعد قليل وتقديمها",
+  "kindOffers": "العروض والبيع والإعارة",
+  "kindDone": "اكتمال التدريب والملعب والكشاف",
+  "kindNews": "أخبار اللعبة ورسائل المطورين",
+  "kindAbsence": "الغياب والإجازات",
+  "emailMatch": "ملخص المباراة بالبريد",
+  "emailOffers": "عروض المتجر بالبريد",
+  "emailNeeded": "يلزم بريد مؤكد في حسابك"
+}

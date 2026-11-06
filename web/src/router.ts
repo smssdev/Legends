@@ -23,6 +23,8 @@ export const router = createRouter({
         { path: 'admin', name: 'admin', component: () => import('./pages/AdminPage.vue'), meta: { auth: true } },
         // Sprint 34: the coins wallet and the shop
         { path: 'wallet', name: 'wallet', component: () => import('./pages/WalletPage.vue'), meta: { auth: true } },
+        // [Sprint 43 W2] The store: packages and timed offers, ordered by WhatsApp.
+        { path: 'store', name: 'store', component: () => import('./pages/StorePage.vue'), meta: { auth: true } },
         // Sprint 33: a coach's profile
         { path: 'coaches/:id(\\d+)', name: 'coach', component: () => import('./pages/leagues/CoachProfile.vue'), props: true, meta: { auth: true } },
         // [X27] The alliance tournament
@@ -107,6 +109,8 @@ export const router = createRouter({
     // [X57] The privacy policy and the terms, open to everyone (Google AdSense and the stores ask for them)
     { path: '/privacy', name: 'privacy', component: () => import('./pages/LegalPage.vue'), props: { kind: 'privacy' } },
     { path: '/terms', name: 'terms', component: () => import('./pages/LegalPage.vue'), props: { kind: 'terms' } },
+    // [Sprint 15 D1] The app to download (Android) or install (iPhone), open to everyone
+    { path: '/download', name: 'download', component: () => import('./pages/DownloadPage.vue') },
     // [X59] The game's guide, open to everyone
     { path: '/guide', name: 'guide', component: () => import('./pages/GuidePage.vue') },
     // The match and its report fill the screen

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Auth\AccountDeletion;
 use App\Auth\AccountHolidays;
 use App\Models\User;
 use App\Support\GameClock;
@@ -84,6 +85,7 @@ class LeaguePresenceTest extends TestCase
 
         // Any visit clears it and starts the count again.
         $me = $this->me($this->coach)['me'];
+        $this->me($this->owner);   // the creator visits at the same time
         $this->assertFalse($me['absence_warning']);
         $this->assertSame(GameClock::now()->addDays(3)->toIso8601ZuluString(), $me['away_deadline']);
         $this->passTime('71 hours');
@@ -94,10 +96,11 @@ class LeaguePresenceTest extends TestCase
         // The club goes back to a bot as it is, free for another coach; he cannot come back this season.
         $this->assertNull(DB::table('clubs')->where('id', $this->club)->value('user_id'));
         $this->assertSame(3_000_000, (int) DB::table('clubs')->where('id', $this->club)->value('balance'));
-        // The owner was just as quiet, and the rule is the same for the owner: both left; everyone sees why.
-        $this->assertSame([[$this->coach->name, 'absent', null], [$this->owner->name, 'absent', null]],
-            collect($this->me($this->owner)['departures'])->map(fn ($d) => [$d['user'], $d['reason'], $d['kick_reason']])
-                ->sortBy(fn ($d) => $d[0] === $this->coach->name ? 0 : 1)->values()->all());
+        // [Sprint 43 C2] The owner was just as quiet, but with no active coach to take the league, its creator stays.
+        $this->assertSame($this->owner->id, (int) DB::table('leagues')->where('id', $this->league['id'])->value('owner_id'));
+        $this->assertSame([[$this->coach->name, 'absent', null]],
+            collect($this->me($this->owner)['departures'])->map(fn ($d) => [$d['user'], $d['reason'], $d['kick_reason']])->values()->all());
+        $this->assertNull(DB::table('league_memberships')->where('user_id', $this->owner->id)->value('left_at'));
         $this->actingAs($this->coach)->postJson("/api/v1/leagues/{$this->league['id']}/clubs/{$this->club}/claim")->assertConflict();
     }
 
@@ -246,5 +249,38 @@ class LeaguePresenceTest extends TestCase
         // An unknown code still opens the app, with a plain invitation.
         $this->get('/join/NOPE1234')->assertOk()->assertSee('دعوة إلى Game Legend Manager (المدرب الأسطورة)', false);
         $this->assertSame(url('/join/'.$this->league['code']).'?ref='.$this->owner->account_no, $this->me($this->owner)['invite_url']);
+    }
+
+    /** [Sprint 43 C2] An absent creator: the league passes to an active coach, with a statement in its news, then he leaves. */
+    public function test_an_absent_creator_hands_the_league_to_an_active_coach(): void
+    {
+        $this->passTime('2 days');
+        // The coach keeps visiting; the owner does not.
+        foreach (['24 hours', '24 hours', '24 hours'] as $by) {
+            $this->me($this->coach);
+            $this->passTime($by);
+        }
+        $this->me($this->coach);
+        $this->passTime('1 hour');
+        $this->assertSame($this->coach->id, (int) DB::table('leagues')->where('id', $this->league['id'])->value('owner_id'));
+        $this->assertSame('absent', DB::table('league_memberships')->where('user_id', $this->owner->id)->value('left_reason'));
+        $statement = DB::table('league_articles')->where('league_id', $this->league['id'])->where('status', 'published')->first();
+        $this->assertSame('بيان: انتقال إدارة الدوري', $statement->title);
+        $this->assertStringContainsString($this->coach->name, $statement->body);
+        $this->assertSame(1, DB::table('messages')->where('user_id', $this->coach->id)->where('type', 'league_owner')->count());
+        // The new creator runs it: he cannot resign.
+        $mid = $this->membershipId($this->coach);
+        $this->actingAs($this->coach)->postJson("/api/v1/leagues/{$this->league['id']}/resign")->assertStatus(409);
+        $this->assertNotNull($mid);
+    }
+
+    /** [Sprint 43 C2] A creator who deletes his account hands the league to an active coach. */
+    public function test_a_creator_who_deletes_his_account_hands_the_league_on(): void
+    {
+        $this->passTime('2 days');
+        $this->me($this->coach);
+        AccountDeletion::delete($this->owner);
+        $this->assertSame($this->coach->id, (int) DB::table('leagues')->where('id', $this->league['id'])->value('owner_id'));
+        $this->assertSame(1, DB::table('league_articles')->where('league_id', $this->league['id'])->where('status', 'published')->count());
     }
 }

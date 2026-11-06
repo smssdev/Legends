@@ -24,9 +24,10 @@ class DataEditorTest extends TestCase
         $this->actingAs($owner)->getJson('/api/v1/admin/data?kind=players')->assertForbidden();
 
         $this->actingAs($admin);
-        $used = DB::table('players')->value('master_player_id');
+        // An ordered row (PostgreSQL keeps no order of its own), found by a part of its name long enough to be its.
+        $used = DB::table('players')->orderBy('id')->value('master_player_id');
         $name = DB::table('master_players')->where('id', $used)->value('name');
-        $rows = $this->getJson('/api/v1/admin/data?kind=players&q='.urlencode(mb_substr($name, 0, 4)))->assertOk()->json('rows');
+        $rows = $this->getJson('/api/v1/admin/data?kind=players&q='.urlencode(mb_substr($name, 0, 10)))->assertOk()->json('rows');
         $this->assertContains($used, array_column($rows, 'id'));
 
         // A correction: the age, kept with what it was.

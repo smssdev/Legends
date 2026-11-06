@@ -155,6 +155,8 @@ class MatchCommentaryTest extends TestCase
 
     public function test_coming_back_after_a_lost_connection_loses_no_event(): void
     {
+        // The catch-up (E8.5), off by default since Sprint 43 C5.
+        config(['game.live.catch_up' => true]);
         $match = $this->kickOff();
         $this->playTo($match->id, 50);
         $now = (int) DB::table('matches')->where('id', $match->id)->value('tick');
@@ -235,7 +237,12 @@ class MatchCommentaryTest extends TestCase
         Event::fake([MatchMinute::class, ClubReading::class]);
         $match = $this->kickOff();
         $this->playTo($match->id, 70);
-        config(['game.live.missed_max_minutes' => 5]);
+        // [Sprint 43 C5] By default joining late goes on live from now: no summary, nothing missed told.
+        $r = $this->getJson("/api/v1/matches/{$match->id}/live?since=0")->assertOk()->json();
+        $this->assertSame([true, null, []], [$r['gap'], $r['summary'], $r['missed']]);
+        $this->assertNotEmpty($r['ticks']);
+        // The catch-up (E8.5) when it is turned on.
+        config(['game.live.catch_up' => true, 'game.live.missed_max_minutes' => 5]);
         [, $all] = MatchReplay::run(DB::table('matches')->where('id', $match->id)->first());
 
         // [E8.5] Joining late (since 0), like a hidden tab or a lost connection: the latest minutes whole, the summary

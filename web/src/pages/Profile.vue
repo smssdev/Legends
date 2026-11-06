@@ -437,6 +437,8 @@ async function remove() {
       <h2 id="h-support" class="font-display text-xl font-extrabold">{{ $t('الدعم الفني') }}</h2>
       <!-- [Sprint 21 E7.7] Write to the developers from inside the game. -->
       <RouterLink :to="{ name: 'support' }" class="flex h-12 items-center justify-center gap-2 self-start rounded-lg bg-gold px-5 font-bold text-on-gold">{{ $t('راسل فريق التطوير') }}</RouterLink>
+      <!-- [Sprint 43 W2] The store's packages and offers. -->
+      <RouterLink :to="{ name: 'store' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface-sunk px-4 py-3"><span><b class="block">{{ $t('العروض') }}</b><span class="text-sm text-text-muted">{{ $t('الباقات والعروض، واطلبها عبر واتساب') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
       <!-- [Sprint 28] A suggestion, the polls, and the honour roll. -->
       <RouterLink :to="{ name: 'ideas' }" class="flex min-h-touch items-center justify-between rounded-xl bg-surface-sunk px-4 py-3"><span><b class="block">{{ $t('اقتراحات التطوير') }}</b><span class="text-sm text-text-muted">{{ $t('اقترح ميزة، وصوّت على القادمة، وادخل قائمة الشرف') }}</span></span><span class="font-bold text-gold">←</span></RouterLink>
       <SupportLinks />

@@ -1651,6 +1651,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/contract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 43 W1] Sign the contract with my club for this season (once; the drawn signature is never sent) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Signed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/resign": {
         parameters: {
             query?: never;
@@ -6460,7 +6504,7 @@ export interface paths {
         };
         /**
          * A finished match again, for any member of its league
-         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
+         * @description Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine, or one whose next round has started (`expired`, Sprint 43 C6), gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
          */
         get: {
             parameters: {
@@ -6481,6 +6525,8 @@ export interface paths {
                     content: {
                         "application/json": {
                             replayable: boolean;
+                            /** @description [Sprint 43 C6] The next round has started: the result and its events only, no longer the match again */
+                            expired?: boolean;
                             ticks: {
                                 [key: string]: unknown;
                             }[] | null;
@@ -7791,6 +7837,569 @@ export interface paths {
                 409: components["responses"]["Error"];
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The versions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            android: components["schemas"]["AppRelease"] | null;
+                            ios: Record<string, never> | null;
+                            /** @description [Sprint 19 B1] The app's Firebase settings (not secret), null until set on the server */
+                            firebase: {
+                                api_key?: string;
+                                app_id?: string;
+                                project_id?: string;
+                                sender_id?: string;
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/app/android.apk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The latest Android app (APK), as a download */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The APK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.android.package-archive": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 15 D1] The app's versions, and the upload's piece size */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The versions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            releases: components["schemas"]["AppRelease"][];
+                            chunk_kb: number;
+                            max_mb: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 15 D1] Start an upload: the version, its size in bytes and what is new; then its pieces in order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @example 1.0.0 */
+                        version: string;
+                        bytes: number;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Started */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            chunk_kb: number;
+                        };
+                    };
+                };
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}/chunk": {
+        parameters: {
+            query: {
+                offset: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** [Sprint 15 D1] One piece at its offset, the raw bytes as the body (at most chunk_kb); a piece sent twice is not added twice */
+        put: {
+            parameters: {
+                query: {
+                    offset: number;
+                };
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            responses: {
+                /** @description The bytes received so far */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            received: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 15 D1] The upload is whole: checked (size, an APK), fingerprinted and published as the latest; beyond the two latest, older files go */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            release: components["schemas"]["AppRelease"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/app-releases/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** [Sprint 15 D1] Remove a version and its file */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 43 W2] The store: the timed offers not yet ended, then the packages; each with its WhatsApp chat */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: (components["schemas"]["StoreItem"] & {
+                                /** @description wa.me with the item and the account number */
+                                whatsapp_url: string;
+                            })[];
+                            whatsapp: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/store/{id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        /** [Sprint 43 W2] A store item's picture (JPEG, always 1280 × 720), public */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The picture */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** [Sprint 43 W2] Every store item, ended offers too */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: components["schemas"]["StoreItem"][];
+                            currency: string;
+                            image: {
+                                width: number;
+                                height: number;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** [Sprint 43 W2] Add a package (it stays) or an offer (until ends_at); its picture uploaded and cut to one size */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": components["schemas"]["StoreItemInput"];
+                };
+            };
+            responses: {
+                /** @description Added */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            item: components["schemas"]["StoreItem"];
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/store/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 43 W2] Change an item (a POST, for the picture's form; the picture is optional) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": components["schemas"]["StoreItemInput"];
+                };
+            };
+            responses: {
+                /** @description Changed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            item: components["schemas"]["StoreItem"];
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+                422: components["responses"]["Error"];
+            };
+        };
+        /** [Sprint 43 W2] Delete an item and its picture */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            ok: boolean;
+                        };
+                    };
+                };
+                404: components["responses"]["Error"];
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/store/{id}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** [Sprint 43 W2] Email an item to every coach who turned the offers on (and confirmed his email) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Sent */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: number;
+                        };
+                    };
+                };
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -9260,6 +9869,8 @@ export interface paths {
                         };
                         /** @description [X79] The match summary by email (off by default) */
                         email_match?: boolean;
+                        /** @description [Sprint 43 W2] The store's offers by email (off by default) */
+                        email_offers?: boolean;
                     };
                 };
             };
@@ -9292,7 +9903,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** This browser gets the notifications (its PushSubscription) */
+        /** This browser gets the notifications (its PushSubscription), or [Sprint 19 B1] this app (its FCM token) */
         post: {
             parameters: {
                 query?: never;
@@ -9303,11 +9914,18 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        endpoint: string;
-                        keys: {
+                        /**
+                         * @description fcm: the app, with token; otherwise a browser, with endpoint and keys
+                         * @enum {string}
+                         */
+                        channel?: "webpush" | "fcm";
+                        endpoint?: string;
+                        keys?: {
                             p256dh: string;
                             auth: string;
                         };
+                        /** @description The app's FCM registration token */
+                        token?: string;
                     };
                 };
             };
@@ -12252,6 +12870,8 @@ export interface components {
             cost: number;
             hours: number;
             balance: number;
+            /** @description [Sprint 18 F1] The coins to finish a search under way now */
+            finish_coins?: number;
             options: {
                 leagues: string[];
                 nationalities: string[];
@@ -12599,6 +13219,27 @@ export interface components {
                  * @description When the club goes back to a bot if I stay away; null before the season and on holiday
                  */
                 away_deadline?: string | null;
+                /** @description [Sprint 43 W1] The contract waiting for my signature this season (null once signed, or with no club) */
+                contract?: {
+                    club: {
+                        id: number;
+                        name: string;
+                        code: string;
+                        colors: string[];
+                        crest_url: string;
+                    };
+                    league: string;
+                    season: number;
+                    objective: {
+                        /** @enum {string} */
+                        kind: "title" | "top" | "mid" | "survive";
+                        target: number;
+                    } | null;
+                    /** @description The cup stage to reach */
+                    cup: string | null;
+                    /** @description The club's money now */
+                    budget: number;
+                } | null;
             } | null;
             /** @description Coaches this season */
             members: {
@@ -13201,6 +13842,71 @@ export interface components {
                 claimed: boolean;
             }[];
         };
+        /** @description [Sprint 15 D1] A version of the app to download */
+        AppRelease: {
+            id: number;
+            /** @enum {string} */
+            platform: "android";
+            version: string;
+            notes: string | null;
+            bytes: number;
+            received: number;
+            /** @enum {string} */
+            status: "uploading" | "ready" | "removed";
+            sha256: string | null;
+            downloads: number;
+            /** Format: date-time */
+            published_at: string | null;
+            /** @description The download (ready only) */
+            url: string | null;
+        };
+        /** @description [Sprint 43 W2] A store package (it stays) or timed offer */
+        StoreItem: {
+            id: number;
+            /** @enum {string} */
+            kind: "package" | "offer";
+            title: string;
+            description: string;
+            price: number;
+            /** @description The price before the discount */
+            old_price: number | null;
+            currency: string;
+            /** @description Whole per cent */
+            discount: number | null;
+            visible: boolean;
+            sort: number;
+            /**
+             * Format: date-time
+             * @description An offer's end; null for a package
+             */
+            ends_at: string | null;
+            ended: boolean;
+            image_url: string | null;
+            /** Format: date-time */
+            emailed_at: string | null;
+        };
+        StoreItemInput: {
+            /** @enum {string} */
+            kind: "package" | "offer";
+            title: string;
+            description: string;
+            price: number;
+            old_price?: number | null;
+            /** @description Default ج.م */
+            currency?: string | null;
+            visible?: boolean;
+            sort?: number;
+            /**
+             * Format: date-time
+             * @description Required for an offer (in the next 90 days)
+             */
+            ends_at?: string | null;
+            /**
+             * Format: binary
+             * @description Required when adding; cut to 1280 × 720
+             */
+            image?: string;
+        };
         AnnouncementCard: {
             id: number;
             title: string;
@@ -13410,6 +14116,8 @@ export interface components {
                 /** Format: date-time */
                 ends_at: string;
                 ads: components["schemas"]["AdStatus"];
+                /** @description [Sprint 18 F1] The coins to finish it now */
+                finish_coins?: number;
             } | null;
         };
         TrainingPlayer: {
@@ -13703,12 +14411,16 @@ export interface components {
         NotificationSettings: {
             /** @description [X79] The match summary by email, the account's choice (off by default) */
             email_match: boolean;
+            /** @description [Sprint 43 W2] The store's offers by email, the account's choice (off by default) */
+            email_offers: boolean;
             /** @description [X79] The account has a confirmed email, so the summary can arrive */
             email_ready: boolean;
             /** @description The server's VAPID public key for PushManager.subscribe */
             public_key: string | null;
             /** @description The server can push (its keys are set) */
             enabled: boolean;
+            /** @description [Sprint 19 B1] The server can push to the Android app (FCM) */
+            app_enabled?: boolean;
             devices: number;
             kinds: {
                 /** @enum {string} */

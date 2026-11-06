@@ -225,6 +225,11 @@ class MessageTextEn
                 'link' => (($p['kind'] ?? 'tournament') === 'league' ? '/leagues/' : '/tournaments/').($p['league_id'] ?? '').'/draw',
             ],
             // [Sprint 40 C1] Named by a league's maker for its draw.
+            'league_owner' => [
+                'title' => sprintf('You now run %s', $league),
+                'body' => sprintf('%s left the game, so the league passed to you: joining, articles and removals are in your hands now.', $p['from'] ?? ''),
+                'link' => '/leagues/'.($p['league_id'] ?? ''),
+            ],
             'draw_entry' => [
                 'title' => sprintf('%s invited you to the draw of %s', $p['by'] ?? '', $p['league'] ?? ''),
                 'body' => 'The draw gives each player his team. Come and watch it live at its time.',

@@ -369,4 +369,27 @@ class MatchOrdersTest extends TestCase
         $this->assertSame(0, $auto['teams'][$this->side]['missing']);
         $this->assertSame(1, collect($auto['out']['events'])->where('type', 'sub')->where('team', $this->side)->count());
     }
+
+    /** [Sprint 43 C6] A replay lasts its round: once the next round starts, the result only, and the kept scene goes. */
+    public function test_a_replay_lasts_until_the_next_round_starts(): void
+    {
+        $match = $this->kickOff();
+        $this->playTo($match, 200);
+        $this->actingAs($this->owner)->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->assertJsonPath('replayable', true)->assertJsonPath('expired', false);
+        $this->artisan('matches:prune-replays')->expectsOutput('Deleted 0 replays.')->assertSuccessful();
+
+        // A real league (not a development one, whose rounds come a minute apart), and a later match of its season starts.
+        DB::table('leagues')->where('id', $this->league['id'])->update(['is_dev' => false]);
+        $next = DB::table('fixtures')->where('season_id', $this->fixture->season_id)->where('scheduled_at', '>', $this->fixture->scheduled_at)
+            ->where('is_bye', false)->orderBy('scheduled_at')->first();
+        DB::table('fixtures')->where('id', $next->id)->update(['status' => 'live']);
+        $old = $this->getJson("/api/v1/matches/{$match->id}/replay")->assertOk()->assertJsonPath('replayable', false)->assertJsonPath('expired', true)->json();
+        $this->assertNull($old['ticks']);
+        $this->assertNotEmpty($old['events']);
+        $this->artisan('matches:prune-replays')->assertSuccessful();
+        $this->assertFalse(DB::table('match_replays')->where('match_id', $match->id)->exists());
+        // The result stays.
+        $this->assertSame('finished', DB::table('fixtures')->where('id', $this->fixture->id)->value('status'));
+        $this->assertNotNull(DB::table('match_reports')->where('match_id', $match->id)->first());
+    }
 }

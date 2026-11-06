@@ -20,6 +20,7 @@ import { t } from '../../lib/i18n'
 import { useToast } from '../../stores/toast'
 import AdSlot from '../../components/ads/AdSlot.vue'
 import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
+import ContractDialog from '../../components/league/ContractDialog.vue'
 
 const props = defineProps<{ id: string }>()
 const route = useRoute()
@@ -217,6 +218,8 @@ const prepDays = (iso: string) => Math.max(0, Math.ceil((new Date(iso).getTime()
 
 <template>
   <div class="flex flex-col gap-5">
+    <!-- [Sprint 43 W1] The contract with the club, once a season, before anything else. -->
+    <ContractDialog v-if="league?.me?.contract" :league-id="league.id" :contract="league.me.contract" @signed="league.me.contract = null" />
     <p v-if="route.query.welcome && mine" class="rounded-lg bg-success/15 px-4 py-3 text-sm" role="status">
       {{ $t('أهلاً بك مدرباً لـ{v0}. {v1}', { v0: $nm(mine.name), v1: league?.is_owner ? $t('شارك الكود مع أصحابك ليختاروا فرقهم.') : $t('بالتوفيق في الموسم!') }) }}
     </p>

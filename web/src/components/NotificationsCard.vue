@@ -75,6 +75,11 @@ async function toggleEmail(on: boolean) {
   await ensureCsrf()
   settings.value = (await api.PUT('/notifications', { body: { email_match: on } })).data!
 }
+// [Sprint 43 W2] The store's offers by email, off until the coach asks for them.
+async function toggleOffers(on: boolean) {
+  await ensureCsrf()
+  settings.value = (await api.PUT('/notifications', { body: { email_offers: on } })).data!
+}
 
 onMounted(load)
 </script>
@@ -103,6 +108,9 @@ onMounted(load)
     <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_match" :label="$t('ملخص المباراة بالبريد')"
       :hint="settings.email_ready ? $t('النتيجة والهدافون ورابط التقرير بعد كل مباراة لك') : $t('أكّد بريدك أولاً من صفحة حسابك ليصلك الملخص')"
       @update:model-value="(on: boolean) => toggleEmail(on)" />
+    <UiToggle v-if="settings" class="rounded-lg px-1" :model-value="settings.email_offers" :label="$t('عروض المتجر بالبريد')"
+      :hint="settings.email_ready ? $t('العروض الجديدة بصورها وأسعارها حين ينشرها فريق اللعبة') : $t('أكّد بريدك أولاً من صفحة حسابك لتصلك العروض')"
+      @update:model-value="(on: boolean) => toggleOffers(on)" />
 
     <template v-if="settings">
       <p v-if="!settings.enabled" class="text-sm text-text-muted">{{ $t('الإشعارات غير مفعلة على الخادم بعد.') }}</p>

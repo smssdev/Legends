@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Notify\Fcm;
 use App\Notify\Push;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
-/** One push to every browser of an account [Sprint 36]. A subscription the push service says is gone is removed. */
+/** One push to every browser [Sprint 36] and app [Sprint 19] of an account. A subscription its service says is gone is removed. */
 class SendPush implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
@@ -22,6 +23,14 @@ class SendPush implements ShouldQueue
 
     public function handle(): void
     {
+        // [Sprint 19 B1] The app's devices by FCM; a token Firebase says is dead is removed.
+        if (Fcm::configured()) {
+            foreach (DB::table('push_subscriptions')->where('user_id', $this->userId)->where('channel', 'fcm')->pluck('endpoint') as $token) {
+                if (Fcm::send($token, $this->payload) === 'gone') {
+                    DB::table('push_subscriptions')->where('endpoint', $token)->delete();
+                }
+            }
+        }
         if (! Push::configured()) {
             return;
         }

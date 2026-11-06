@@ -1,0 +1,164 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:glm/core/settings.dart';
+import 'package:glm/features/match/frames.dart';
+import 'package:glm/features/match/live_screen.dart';
+import 'package:glm/features/match/match_data.dart';
+import 'package:glm/features/match/report_screen.dart';
+import 'package:glm/l10n/app_localizations.dart';
+import 'package:glm/ui/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Map<String, dynamic> json(String name) => jsonDecode(File('test/fixtures/$name.json').readAsStringSync()) as Map<String, dynamic>;
+
+/// Answers as the API would (the fixtures are the engine's own sample match), and records the orders.
+class FakeMatchRepository implements MatchRepository {
+  FakeMatchRepository({this.finished = false});
+
+  final bool finished;
+  final List<Map<String, Object>> orders = [];
+  int readies = 0;
+
+  @override
+  Future<MatchView> show(int id) async => MatchView.fromJson({...json('match'), 'finished': finished});
+  @override
+  Future<LiveSync> live(int id, int since) async => LiveSync.fromJson({...json('live'), 'finished': finished, 'server_now': DateTime.now().millisecondsSinceEpoch});
+  @override
+  Future<void> order(int id, Map<String, Object> order) async => orders.add(order);
+  @override
+  Future<void> sub(int id, int out, int into) => order(id, {'type': 'sub', 'out': out, 'in': into});
+  @override
+  Future<void> tactics(int id, Map<String, Object> changes) => order(id, {'type': 'tactics', 'tactics': changes});
+  @override
+  Future<void> formation(int id, String formation) => order(id, {'type': 'formation', 'formation': formation});
+  @override
+  Future<void> ready(int id) async => readies++;
+  @override
+  Future<MatchReport> report(int id, {required bool coach}) async => MatchReport.fromReport(json('report')).withMoments(MatchReport.fromRecap({
+        'score': {'home': 1, 'away': 1}, 'result': 'draw', 'side': 'home',
+        'moments': [
+          {'minute': 24, 'type': 'goal', 'team': 'away', 'player': 'Bukayo Saka', 'other': 'Martin Ødegaard', 'color': null, 'score': {'home': 0, 'away': 1}},
+        ],
+        'stats': {'home': {'possession': 52, 'shots': 13}, 'away': {'possession': 48, 'shots': 14}},
+        'best': {'home': [], 'away': []},
+      }));
+  @override
+  Future<List<({int id, String home, String away})>> mine() async => const [];
+}
+
+Future<void> pump(WidgetTester t, Widget screen, FakeMatchRepository repo) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  t.view.physicalSize = const Size(420 * 3, 1600 * 3);
+  t.view.devicePixelRatio = 3;
+  addTearDown(t.view.reset);
+  await t.pumpWidget(ProviderScope(
+    overrides: [preferencesProvider.overrideWithValue(prefs), matchRepositoryProvider.overrideWithValue(repo)],
+    child: MaterialApp(
+      theme: glmTheme(day: false),
+      locale: const Locale('ar'),
+      supportedLocales: L.supportedLocales,
+      localizationsDelegates: const [L.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      home: screen,
+    ),
+  ));
+  // The pitch draws every frame: pump a while instead of settling.
+  for (var i = 0; i < 10; i++) {
+    await t.pump(const Duration(milliseconds: 100));
+  }
+}
+
+/// Leaves the screen so its poll and its pitch stop.
+Future<void> wait(WidgetTester t) async {
+  for (var i = 0; i < 8; i++) {
+    await t.pump(const Duration(milliseconds: 100));
+  }
+}
+
+Future<void> leave(WidgetTester t) async {
+  await t.pumpWidget(const SizedBox());
+  await t.pump(const Duration(seconds: 5));
+}
+
+void main() {
+  group('frames: the golden vectors (docs/api/frame-golden.json), as the web and Unity', () {
+    final golden = jsonDecode(File('../docs/api/frame-golden.json').readAsStringSync()) as Map<String, dynamic>;
+    final frames = [for (final f in golden['frames'] as List) Keyframe.fromJson(f as Map<String, dynamic>)];
+
+    test('segments', () {
+      for (final s in golden['segments'] as List) {
+        final got = segment(s['count'] as int, (s['u'] as num).toDouble());
+        expect(got.i, s['i'], reason: '$s');
+        expect(got.k, closeTo((s['k'] as num).toDouble(), 1e-9), reason: '$s');
+      }
+    });
+
+    test('samples', () {
+      for (final s in golden['samples'] as List) {
+        final f = sample(frames, (s['u'] as num).toDouble())!;
+        final ball = s['ball'] as List;
+        expect([f.ball.$1, f.ball.$2, f.ball.$3], [for (final v in ball) closeTo((v as num).toDouble(), 1e-6)], reason: 'ball at ${s['u']}');
+        final players = s['players'] as Map;
+        expect(f.players.keys.toSet(), players.keys.toSet(), reason: 'players at ${s['u']}');
+        for (final e in players.entries) {
+          final want = e.value as List;
+          expect([f.players[e.key]!.$1, f.players[e.key]!.$2], [closeTo((want[0] as num).toDouble(), 1e-6), closeTo((want[1] as num).toDouble(), 1e-6)], reason: '${e.key} at ${s['u']}');
+        }
+      }
+    });
+  });
+
+  test('a live sync from the engine: the minutes, their events with the server\'s sentences, the break', () {
+    final s = LiveSync.fromJson(json('live'));
+    expect(s.ticks, hasLength(6));
+    expect(s.ticks.last.score, (1, 1));
+    expect(s.ticks.first.frames, isNotEmpty);
+    expect(s.ticks.expand((t) => t.events).where((e) => e.type == 'goal'), hasLength(2));
+    expect(s.pause!.window, isTrue);
+    expect(s.readings, hasLength(1));
+  });
+
+  testWidgets('the live match: the score, the commentary, the break and the coach\'s orders', (t) async {
+    final repo = FakeMatchRepository();
+    await pump(t, const LiveMatchScreen(matchId: 77), repo);
+    expect(find.text('1 - 1'), findsOneWidget);
+    expect(find.textContaining('Bukayo Saka يفتتح'), findsOneWidget);
+    expect(find.textContaining('لاعبك في الوسط تعب'), findsOneWidget);
+    expect(find.text('النافذة مفتوحة: أوامرك الآن'), findsOneWidget);
+
+    await t.tap(find.text('أنا مستعد'));
+    await t.pump(const Duration(milliseconds: 300));
+    expect(repo.readies, 1);
+
+    // A substitution: Salah off, Szoboszlai on.
+    await t.tap(find.textContaining('تبديل ('));
+    await wait(t);
+    expect(find.text('يخرج'), findsOneWidget);
+    await t.tap(find.text('Mohamed Salah'));
+    await t.pump();
+    await t.tap(find.text('Dominik Szoboszlai'));
+    await t.pump();
+    await t.tap(find.text('أرسل'));
+    await wait(t);
+    expect(repo.orders.single, {'type': 'sub', 'out': 1, 'in': 9});
+    await leave(t);
+  });
+
+  testWidgets('a played match: full time and its report', (t) async {
+    await pump(t, const LiveMatchScreen(matchId: 77), FakeMatchRepository(finished: true));
+    expect(find.text('نهاية المباراة'), findsWidgets);
+    expect(find.text('تقرير المباراة'), findsOneWidget);
+    await leave(t);
+
+    await pump(t, const MatchReportScreen(matchId: 77, coach: true), FakeMatchRepository(finished: true));
+    expect(find.text('تعادل'), findsOneWidget);
+    expect(find.text('لماذا هذه النتيجة'), findsOneWidget);
+    expect(find.textContaining('Bukayo Saka (Martin Ødegaard)'), findsOneWidget);
+    expect(find.textContaining('Mohamed Salah'), findsWidgets);
+  });
+}

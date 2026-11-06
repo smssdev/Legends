@@ -27,7 +27,7 @@ class Inbox
         $view = self::view(DB::table('messages')->find($id), DB::table('users')->where('id', $userId)->value('locale') ?? 'ar');
         MessageReceived::dispatch($userId, $view, self::unread($userId));
         // And a push to the account's browsers, for the kinds it wants [Sprint 36].
-        Push::send($userId, $type, $view['title'], $view['body'], $view['link']);
+        Push::send($userId, $type, $view['title'], $view['body'], $view['link'], $view['league_id'] ? (int) $view['league_id'] : null);
 
         return $id;
     }

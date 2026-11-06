@@ -36,14 +36,17 @@ class Push
         return (bool) config('game.notifications.vapid.public') && (bool) config('game.notifications.vapid.private');
     }
 
-    /** Push to the account: title, body and the screen the tap opens. Returns whether anything was queued. */
-    public static function send(int $userId, string $type, string $title, string $body, ?string $link): bool
+    /**
+     * Push to the account: title, body and the screen the tap opens, and [Sprint 19 F1] its league, so the app opens
+     * that screen inside it. Returns whether anything was queued.
+     */
+    public static function send(int $userId, string $type, string $title, string $body, ?string $link, ?int $leagueId = null): bool
     {
         $kind = self::kindOf($type);
         if (! $kind || ! self::wants($userId, $kind) || ! DB::table('push_subscriptions')->where('user_id', $userId)->exists()) {
             return false;
         }
-        SendPush::dispatch($userId, ['title' => $title, 'body' => $body, 'link' => $link ?? '/', 'tag' => $type])->afterCommit();
+        SendPush::dispatch($userId, ['title' => $title, 'body' => $body, 'link' => $link ?? '/', 'tag' => $type] + ($leagueId ? ['league' => $leagueId] : []))->afterCommit();
 
         return true;
     }

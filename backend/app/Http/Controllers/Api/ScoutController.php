@@ -28,6 +28,8 @@ class ScoutController extends Controller
             'cost' => Scout::cost($league->id),
             'hours' => intdiv((int) config('game.scout.hours') * max(1, (int) $league->timer_scale), 10000),
             'balance' => (int) $club->balance,
+            // [Sprint 18 F1] The coins to finish a search under way now.
+            'finish_coins' => (int) config('game.premium.price.finish_scout'),
             'options' => [
                 'leagues' => DB::table('master_clubs')->where('data_version', $version)->where('source', '!=', 'nation')->distinct()->orderBy('league_name')->pluck('league_name'),
                 'nationalities' => DB::table('master_players')->where('data_version', $version)->whereNotNull('nationality')

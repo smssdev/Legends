@@ -32,9 +32,9 @@ class ManagerBotGuideTest extends TestCase
 
     public function test_the_numbers_come_from_the_config(): void
     {
-        config(['game.friendlies.coins' => 7, 'game.stadium.part_hours' => 11]);
+        config(['game.friendlies.coins' => 7, 'game.stadium.finish_before_rounds' => 11]);
         $this->assertStringContainsString('ثمنها 7 كوينز', Guide::find('friendlies', 'ar')['a']);
-        $this->assertStringContainsString('11 hours', Guide::find('stadium_plan', 'en')['a']);
+        $this->assertStringContainsString('11 rounds', Guide::find('stadium_plan', 'en')['a']);
     }
 
     public function test_the_search_finds_the_coachs_own_spelling(): void

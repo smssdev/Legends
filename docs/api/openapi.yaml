@@ -742,6 +742,15 @@ paths:
       responses:
         '200': { description: Cancelled }
         '404': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/contract:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    post:
+      tags: [leagues]
+      summary: '[Sprint 43 W1] Sign the contract with my club for this season (once; the drawn signature is never sent)'
+      responses:
+        '200': { description: Signed, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
   /leagues/{league}/resign:
     parameters: [{ $ref: '#/components/parameters/League' }]
     post:
@@ -2497,7 +2506,7 @@ paths:
     get:
       tags: [matches]
       summary: A finished match again, for any member of its league
-      description: Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
+      description: Every minute with its frames, from the seed, the starting state and the orders, while the engine is the same version (`replayable`); a match from an older engine, or one whose next round has started (`expired`, Sprint 43 C6), gives its stored events instead. Tactics only for your own side. [X69] The web plays it in full on /live/{id}; for a coach of either side it marks the match seen.
       responses:
         '200':
           description: The minutes, or the events
@@ -2508,6 +2517,7 @@ paths:
                 required: [replayable, ticks, events]
                 properties:
                   replayable: { type: boolean }
+                  expired: { type: boolean, description: "[Sprint 43 C6] The next round has started: the result and its events only, no longer the match again" }
                   ticks: { type: array, nullable: true, items: { type: object, additionalProperties: true } }
                   events: { type: array, nullable: true, items: { type: object, additionalProperties: true } }
         '404': { $ref: '#/components/responses/Error' }
@@ -2954,6 +2964,112 @@ paths:
       summary: '[Sprint 28] One not started (or with no votes) is deleted; one running ends now and stays as the record'
       responses:
         '200': { description: Done, content: { application/json: { schema: { type: object, required: [ok, deleted], properties: { ok: { type: boolean }, deleted: { type: boolean } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /app:
+    get:
+      tags: [account]
+      summary: '[Sprint 15 D1] The app to download from the site: the latest Android version (null before the first), and the iPhone (null: it installs from Safari until the App Store)'
+      security: []
+      responses:
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [android, ios, firebase], properties: { android: { allOf: [{ $ref: '#/components/schemas/AppRelease' }], nullable: true }, ios: { type: object, nullable: true }, firebase: { type: object, nullable: true, description: '[Sprint 19 B1] The app''s Firebase settings (not secret), null until set on the server', properties: { api_key: { type: string }, app_id: { type: string }, project_id: { type: string }, sender_id: { type: string } } } } } } } }
+  /app/android.apk:
+    get:
+      tags: [account]
+      summary: '[Sprint 15 D1] The latest Android app (APK), as a download'
+      security: []
+      responses:
+        '200': { description: The APK, content: { application/vnd.android.package-archive: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /admin/app-releases:
+    get:
+      tags: [admin]
+      summary: '[Sprint 15 D1] The app''s versions, and the upload''s piece size'
+      responses:
+        '200': { description: The versions, content: { application/json: { schema: { type: object, required: [releases, chunk_kb, max_mb], properties: { releases: { type: array, items: { $ref: '#/components/schemas/AppRelease' } }, chunk_kb: { type: integer }, max_mb: { type: integer } } } } } }
+    post:
+      tags: [admin]
+      summary: '[Sprint 15 D1] Start an upload: the version, its size in bytes and what is new; then its pieces in order'
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [version, bytes], properties: { version: { type: string, example: 1.0.0 }, bytes: { type: integer }, notes: { type: string, nullable: true } } } } } }
+      responses:
+        '201': { description: Started, content: { application/json: { schema: { type: object, required: [id, chunk_kb], properties: { id: { type: integer }, chunk_kb: { type: integer } } } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}/chunk:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }, { name: offset, in: query, required: true, schema: { type: integer } }]
+    put:
+      tags: [admin]
+      summary: '[Sprint 15 D1] One piece at its offset, the raw bytes as the body (at most chunk_kb); a piece sent twice is not added twice'
+      requestBody: { required: true, content: { application/octet-stream: { schema: { type: string, format: binary } } } }
+      responses:
+        '200': { description: The bytes received so far, content: { application/json: { schema: { type: object, required: [received], properties: { received: { type: integer } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}/finish:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 15 D1] The upload is whole: checked (size, an APK), fingerprinted and published as the latest; beyond the two latest, older files go'
+      responses:
+        '200': { description: Published, content: { application/json: { schema: { type: object, required: [release], properties: { release: { $ref: '#/components/schemas/AppRelease' } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/app-releases/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    delete:
+      tags: [admin]
+      summary: '[Sprint 15 D1] Remove a version and its file'
+      responses:
+        '200': { description: Removed, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+  /store:
+    get:
+      tags: [account]
+      summary: '[Sprint 43 W2] The store: the timed offers not yet ended, then the packages; each with its WhatsApp chat'
+      responses:
+        '200': { description: The items, content: { application/json: { schema: { type: object, required: [items, whatsapp], properties: { items: { type: array, items: { allOf: [{ $ref: '#/components/schemas/StoreItem' }, { type: object, required: [whatsapp_url], properties: { whatsapp_url: { type: string, description: 'wa.me with the item and the account number' } } }] } }, whatsapp: { type: string } } } } } }
+  /store/{id}/image:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    get:
+      tags: [account]
+      summary: '[Sprint 43 W2] A store item''s picture (JPEG, always 1280 × 720), public'
+      security: []
+      responses:
+        '200': { description: The picture, content: { image/jpeg: { schema: { type: string, format: binary } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /admin/store:
+    get:
+      tags: [admin]
+      summary: '[Sprint 43 W2] Every store item, ended offers too'
+      responses:
+        '200': { description: The items, content: { application/json: { schema: { type: object, required: [items, currency, image], properties: { items: { type: array, items: { $ref: '#/components/schemas/StoreItem' } }, currency: { type: string }, image: { type: object, required: [width, height], properties: { width: { type: integer }, height: { type: integer } } } } } } } }
+    post:
+      tags: [admin]
+      summary: '[Sprint 43 W2] Add a package (it stays) or an offer (until ends_at); its picture uploaded and cut to one size'
+      requestBody: { required: true, content: { multipart/form-data: { schema: { $ref: '#/components/schemas/StoreItemInput' } } } }
+      responses:
+        '201': { description: Added, content: { application/json: { schema: { type: object, required: [item], properties: { item: { $ref: '#/components/schemas/StoreItem' } } } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /admin/store/{id}:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 43 W2] Change an item (a POST, for the picture''s form; the picture is optional)'
+      requestBody: { required: true, content: { multipart/form-data: { schema: { $ref: '#/components/schemas/StoreItemInput' } } } }
+      responses:
+        '200': { description: Changed, content: { application/json: { schema: { type: object, required: [item], properties: { item: { $ref: '#/components/schemas/StoreItem' } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [admin]
+      summary: '[Sprint 43 W2] Delete an item and its picture'
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { type: object, required: [ok], properties: { ok: { type: boolean } } } } } }
+        '404': { $ref: '#/components/responses/Error' }
+  /admin/store/{id}/email:
+    parameters: [{ name: id, in: path, required: true, schema: { type: integer } }]
+    post:
+      tags: [admin]
+      summary: '[Sprint 43 W2] Email an item to every coach who turned the offers on (and confirmed his email)'
+      responses:
+        '200': { description: Sent, content: { application/json: { schema: { type: object, required: [sent], properties: { sent: { type: integer } } } } } }
         '409': { $ref: '#/components/responses/Error' }
   /announcements:
     get:
@@ -3446,6 +3562,7 @@ paths:
               properties:
                 kinds: { type: object, additionalProperties: { type: boolean }, description: 'referee, match_soon, offers, done, absence, news' }
                 email_match: { type: boolean, description: '[X79] The match summary by email (off by default)' }
+                email_offers: { type: boolean, description: '[Sprint 43 W2] The store''s offers by email (off by default)' }
       responses:
         '200':
           description: The settings after
@@ -3456,17 +3573,18 @@ paths:
   /notifications/subscriptions:
     post:
       tags: [notifications]
-      summary: This browser gets the notifications (its PushSubscription)
+      summary: This browser gets the notifications (its PushSubscription), or [Sprint 19 B1] this app (its FCM token)
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [endpoint, keys]
               properties:
+                channel: { type: string, enum: [webpush, fcm], description: 'fcm: the app, with token; otherwise a browser, with endpoint and keys' }
                 endpoint: { type: string }
                 keys: { type: object, required: [p256dh, auth], properties: { p256dh: { type: string }, auth: { type: string } } }
+                token: { type: string, maxLength: 600, description: The app's FCM registration token }
       responses:
         '200':
           description: The settings after
@@ -4955,6 +5073,7 @@ components:
         cost: { type: integer }
         hours: { type: integer }
         balance: { type: integer }
+        finish_coins: { type: integer, description: "[Sprint 18 F1] The coins to finish a search under way now" }
         options:
           type: object
           required: [leagues, nationalities, positions]
@@ -5228,6 +5347,18 @@ components:
             account_vacation: { type: boolean, description: "The account's holiday is on (every league)" }
             absence_warning: { type: boolean, description: 48 hours quiet; cleared by any visit }
             away_deadline: { type: string, format: date-time, nullable: true, description: When the club goes back to a bot if I stay away; null before the season and on holiday }
+            contract:
+              type: object
+              nullable: true
+              description: '[Sprint 43 W1] The contract waiting for my signature this season (null once signed, or with no club)'
+              required: [club, league, season, objective, cup, budget]
+              properties:
+                club: { type: object, required: [id, name, code, colors, crest_url], properties: { id: { type: integer }, name: { type: string }, code: { type: string }, colors: { type: array, items: { type: string } }, crest_url: { type: string } } }
+                league: { type: string }
+                season: { type: integer }
+                objective: { type: object, nullable: true, required: [kind, target], properties: { kind: { type: string, enum: [title, top, mid, survive] }, target: { type: integer } } }
+                cup: { type: string, nullable: true, description: The cup stage to reach }
+                budget: { type: integer, description: The club's money now }
         members:
           type: array
           description: Coaches this season
@@ -5651,6 +5782,55 @@ components:
               reward: { type: object, properties: { coins: { type: integer }, money: { type: integer } } }
               complete: { type: boolean }
               claimed: { type: boolean }
+    AppRelease:
+      type: object
+      description: '[Sprint 15 D1] A version of the app to download'
+      required: [id, platform, version, notes, bytes, received, status, sha256, downloads, published_at, url]
+      properties:
+        id: { type: integer }
+        platform: { type: string, enum: [android] }
+        version: { type: string }
+        notes: { type: string, nullable: true }
+        bytes: { type: integer }
+        received: { type: integer }
+        status: { type: string, enum: [uploading, ready, removed] }
+        sha256: { type: string, nullable: true }
+        downloads: { type: integer }
+        published_at: { type: string, format: date-time, nullable: true }
+        url: { type: string, nullable: true, description: The download (ready only) }
+    StoreItem:
+      type: object
+      description: '[Sprint 43 W2] A store package (it stays) or timed offer'
+      required: [id, kind, title, description, price, old_price, currency, discount, visible, sort, ends_at, ended, image_url, emailed_at]
+      properties:
+        id: { type: integer }
+        kind: { type: string, enum: [package, offer] }
+        title: { type: string }
+        description: { type: string }
+        price: { type: integer }
+        old_price: { type: integer, nullable: true, description: The price before the discount }
+        currency: { type: string }
+        discount: { type: integer, nullable: true, description: Whole per cent, from the two prices }
+        visible: { type: boolean }
+        sort: { type: integer }
+        ends_at: { type: string, format: date-time, nullable: true, description: An offer's end; null for a package }
+        ended: { type: boolean }
+        image_url: { type: string, nullable: true }
+        emailed_at: { type: string, format: date-time, nullable: true }
+    StoreItemInput:
+      type: object
+      required: [kind, title, description, price]
+      properties:
+        kind: { type: string, enum: [package, offer] }
+        title: { type: string, maxLength: 80 }
+        description: { type: string, maxLength: 600 }
+        price: { type: integer }
+        old_price: { type: integer, nullable: true }
+        currency: { type: string, nullable: true, description: 'Default ج.م' }
+        visible: { type: boolean }
+        sort: { type: integer }
+        ends_at: { type: string, format: date-time, nullable: true, description: Required for an offer (in the next 90 days) }
+        image: { type: string, format: binary, description: Required when adding; cut to 1280 × 720 }
     AnnouncementCard:
       type: object
       required: [id, title, body, sent, image_url, cta, sender, at]
@@ -5826,6 +6006,7 @@ components:
             part: { type: integer }
             ends_at: { type: string, format: date-time }
             ads: { $ref: '#/components/schemas/AdStatus' }
+            finish_coins: { type: integer, description: '[Sprint 18 F1] The coins to finish it now' }
     TrainingPlayer:
       type: object
       required: [id, name, position, line, age, overall, training_bonus, potential, progress, sessions, injured, maxed]
@@ -6042,12 +6223,14 @@ components:
           items: { type: object, required: [name, bytes], properties: { name: { type: string }, bytes: { type: integer } } }
     NotificationSettings:
       type: object
-      required: [public_key, enabled, devices, kinds, email_match, email_ready]
+      required: [public_key, enabled, devices, kinds, email_match, email_offers, email_ready]
       properties:
         email_match: { type: boolean, description: '[X79] The match summary by email, the account''s choice (off by default)' }
+        email_offers: { type: boolean, description: '[Sprint 43 W2] The store''s offers by email, the account''s choice (off by default)' }
         email_ready: { type: boolean, description: '[X79] The account has a confirmed email, so the summary can arrive' }
         public_key: { type: string, nullable: true, description: The server's VAPID public key for PushManager.subscribe }
         enabled: { type: boolean, description: The server can push (its keys are set) }
+        app_enabled: { type: boolean, description: '[Sprint 19 B1] The server can push to the Android app (FCM)' }
         devices: { type: integer }
         kinds:
           type: array

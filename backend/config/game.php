@@ -260,6 +260,9 @@ return [
     // [UP10] The training camp and secret training are gone (the owner's spec, 4, 2026-10-26): their tables stay, unused.
     // The live broadcast's server side [Sprint 21 E8], outside game.match so it never enters a match's snapshot.
     'live' => [
+        // [Sprint 43 C5, Hamza 2026-11-05] Joining a match under way: watched live from that minute, no catch-up (the
+        // score is right; the whole match again after the round, or its result only). true brings back E8.5's summary.
+        'catch_up' => false,
         // [E8.6] Back after a gap: the events of at most this many missed minutes in one reply (the summary covers the rest).
         'missed_max_minutes' => 30,
         // [E8.7] The degradation ladder under load (App\League\LiveDegrade): 1 drops the catch-up summary, 2 the
@@ -412,7 +415,10 @@ return [
     'brand' => ['name' => 'Game Legend Manager', 'name_ar' => 'المدرب الأسطورة', 'short' => 'GLM', 'name_latin' => 'Game Legend Manager', 'premium_currency' => 'الكوينز'],
     // [X61] The oldest app still served comes from the same source as the game's version (APP_VERSION), not a number of
     // its own: the server said 0.1.0 and asked for apps from 1.0.0 at once. MIN_APP_VERSION raises it when an app ships.
-    'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30],
+    // [Sprint 15 D1] The app to download from the site: its files on the server's downloads volume, at most max_mb each,
+    // uploaded in pieces of chunk_kb (under any upload limit of PHP or nginx).
+    'app' => ['min_version' => env('MIN_APP_VERSION', env('APP_VERSION', '0.1.0')), 'token_ttl_days' => 30,
+        'downloads_dir' => env('APP_DOWNLOADS_DIR', storage_path('app/downloads')), 'max_mb' => 200, 'chunk_kb' => 1536],
     // The coach's level on the home screen [X18]: points per win, draw and trophy; each level asks level_step more.
     'career' => ['xp_win' => 3, 'xp_draw' => 1, 'xp_trophy' => 30, 'xp_prediction' => 1, 'level_step' => 20],
     // [Sprint 25] The coach's rating (App\Season\CoachRating): points that rise and fall with every league or cup match.
@@ -494,7 +500,9 @@ return [
     // started by the coach and done in part_hours (scaled by the season's length). The pitch's effect is in
     // match.home_pitch_bp (the engine reads it from the match's snapshot).
     // [Sprint 21 E6] Every part is built in part_hours, the same in every league.
-    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 20,
+    // [Sprint 43 C4] A part's time: the season's start to finish_before_rounds rounds before its end, over all the
+    // parts (part_hours only before the calendar exists).
+    'stadium' => ['stages' => 3, 'parts_per_stage' => 5, 'part_hours' => 20, 'finish_before_rounds' => 10,
         'sections' => ['seats', 'pitch', 'training'],
         'part_cost_bp' => [1 => 5, 2 => 8, 3 => 12],          // one part of a stage, as a share of the league's money scale
         'capacity_by_stage' => [20000, 25000, 31000, 38000],   // seats: the same ticket price, more seats
@@ -557,9 +565,13 @@ return [
 
     // [Sprint 30 G6] The admins' scopes: each opens these sections of the panel (the first part of the path under
     // /admin/); an admin with no scope opens everything, and gives the scopes.
+    // [Sprint 43 W2, Hamza 2026-11-05] The store: base packages (they stay) and timed offers, added by the admin; bought
+    // by WhatsApp on this number (a public business line). Each picture is cut to image_w × image_h.
+    'store' => ['whatsapp' => '201116648302', 'currency' => 'ج.م', 'image_w' => 1280, 'image_h' => 720, 'image_max_kb' => 8192,
+        'offer_max_days' => 90, 'max_items' => 60],
     'admin' => ['scopes' => [
         'support' => ['overview', 'activity', 'users', 'conversations', 'vacations', 'alliances', 'leagues', 'reports'],
-        'content' => ['overview', 'announcements', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
+        'content' => ['overview', 'announcements', 'store', 'app-releases', 'house-ads', 'junk', 'ideas', 'polls', 'events', 'commentary', 'data', 'chat', 'reports'],
         'finance' => ['overview', 'activity', 'coins', 'leagues'],
     ], 'users_per_page' => 100,
         // [X54] The most coins an admin gives an account at once.
@@ -584,11 +596,20 @@ return [
         // [Sprint 21 E4.7] Half an hour before kick-off, as the owner asked (was 10 minutes).
         'match_soon_minutes' => 30,
         'vapid' => ['public' => env('WEBPUSH_VAPID_PUBLIC'), 'private' => env('WEBPUSH_VAPID_PRIVATE'), 'subject' => env('WEBPUSH_SUBJECT', 'mailto:admin@legends.local')],
+        // [Sprint 19 B1] The Android app's pushes (App\Notify\Fcm): the service account's JSON file on the server (a
+        // secret, set with legends-set), and the app's Firebase settings, which are not secret and reach it from /app.
+        'fcm' => [
+            'credentials' => env('FCM_CREDENTIALS'),
+            'client' => ['api_key' => env('FIREBASE_API_KEY'), 'app_id' => env('FIREBASE_ANDROID_APP_ID'), 'project_id' => env('FIREBASE_PROJECT_ID'), 'sender_id' => env('FIREBASE_SENDER_ID')],
+        ],
     ],
     // The premium coins [docs/features/premium.md, Sprint 34]: earned in the game only, spent like OSM, never into club money.
     'premium' => [
         'season_cap' => 400,           // the most a coach spends in one league in one season
-        'earn' => ['daily' => 10, 'win' => 5, 'draw' => 2, 'objective_league' => 50, 'objective_cup' => 30,
+        // [Sprint 43 C1, Hamza 2026-11-05] A win 3, a draw 1, a loss 0; and a coach who loses to one of a lower rating tier
+        // pays upset_loss (CoachRating tiers).
+        'upset_loss' => 1,
+        'earn' => ['daily' => 10, 'win' => 3, 'draw' => 1, 'objective_league' => 50, 'objective_cup' => 30,
             // The big season prizes go to the champions alone: the league's and the cup's [X14].
             'league_1' => 300, 'cup_1' => 200],
         'price' => ['spy' => 20, 'specialist' => 25, 'finish_training' => 5, 'finish_scout' => 15, 'finish_stadium_per_stage' => 10, 'quick_sale' => 5,

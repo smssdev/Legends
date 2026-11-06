@@ -32,6 +32,8 @@ Schedule::call(fn () => ServerHealth::beat('scheduler'))->everyMinute()->name('h
 Schedule::command('logs:trim')->hourly()->withoutOverlapping();
 // [X65] The chat groups' messages older than the admin's retention (none while it is 0).
 Schedule::command('chat:prune')->hourly()->withoutOverlapping();
+// [Sprint 43 C6] A replay lasts its round: the scenes of the rounds before go, their results stay.
+Schedule::command('matches:prune-replays')->hourly()->withoutOverlapping();
 
 // Daily backup of the three SQLite files at 04:00 Cairo time, the quietest hour.
 Schedule::command('db:backup')->dailyAt('04:00')->timezone('Africa/Cairo');

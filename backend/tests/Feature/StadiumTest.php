@@ -65,7 +65,8 @@ class StadiumTest extends TestCase
         $before = (int) DB::table('clubs')->where('id', $this->mine)->value('balance');
         $cost = Stadium::partCost($this->league['id'], 1);
         $this->assertGreaterThan(0, $cost);
-        $this->start('seats')->assertOk()->assertJsonPath('building.section', 'seats')->assertJsonPath('building.part', 1);
+        $this->start('seats')->assertOk()->assertJsonPath('building.section', 'seats')->assertJsonPath('building.part', 1)
+            ->assertJsonPath('building.finish_coins', (int) config('game.premium.price.finish_stadium_per_stage'));
         $this->start('seats')->assertOk();
         $this->assertSame($before - $cost, (int) DB::table('clubs')->where('id', $this->mine)->value('balance'));
         $this->start('pitch', 'k2')->assertConflict()->assertJsonPath('message', 'يُبنى جزء الآن، انتظر حتى يكتمل.');
@@ -79,9 +80,16 @@ class StadiumTest extends TestCase
 
     public function test_the_timer_finishes_with_the_coach_away_in_20_hours_and_five_parts_make_a_stage(): void
     {
-        // [Sprint 21 E6] 20 hours a part, in every league.
+        // [Sprint 43 C4] A part's time from the league's length: the 45 parts back to back from the season's start end by
+        // the round finish_before_rounds before the last (a quarter of the rounds in a short league).
         $seconds = Stadium::partSeconds($this->league['id']);
-        $this->assertSame(20 * 3600, $seconds);
+        $season = DB::table('seasons')->where('league_id', $this->league['id'])->first();
+        $rounds = (int) DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->max('round');
+        $target = $rounds - min((int) config('game.stadium.finish_before_rounds'), intdiv($rounds, 4));
+        $deadline = Carbon::parse(DB::table('fixtures')->where('season_id', $season->id)->where('competition', 'league')->where('round', $target)->min('scheduled_at'), 'UTC');
+        $this->assertLessThanOrEqual($deadline->getTimestamp(), Carbon::parse($season->starts_at, 'UTC')->getTimestamp() + 45 * $seconds);
+        $this->assertGreaterThan($deadline->getTimestamp() - 45 * 60, Carbon::parse($season->starts_at, 'UTC')->getTimestamp() + 45 * $seconds);
+        $this->assertNotSame(20 * 3600, $seconds);
         foreach (range(1, 5) as $part) {
             $this->start('pitch', "p{$part}")->assertOk()->assertJsonPath('building.part', $part);
             Carbon::setTestNow(GameClock::now()->addSeconds($seconds - 60));

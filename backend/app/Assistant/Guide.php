@@ -20,7 +20,7 @@ class Guide
     /** The pages the assistant knows, by the web's route names (others fall back to "home"). */
     public const PAGES = ['home', 'club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium',
         'finance', 'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet',
-        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments'];
+        'profile', 'leagues', 'support', 'ideas', 'groups', 'tournaments', 'store'];
 
     /** A route of the web that is a page of another name here. */
     private const ALIASES = ['league-home' => 'league', 'league-newspaper' => 'newspaper', 'league-predictions' => 'predictions',
@@ -32,7 +32,7 @@ class Guide
     /** The pages an answer may open, by the web's section names. */
     public const GO = ['club', 'team', 'lineup', 'tactics', 'training', 'specialists', 'market', 'scout', 'stadium', 'finance',
         'quests', 'match', 'league', 'fixtures', 'stats', 'friendlies', 'newspaper', 'predictions', 'inbox', 'wallet', 'profile',
-        'leagues', 'support', 'ideas', 'groups', 'tournaments'];
+        'leagues', 'support', 'ideas', 'groups', 'tournaments', 'store'];
 
     /**
      * Each page's quick questions: a topic's id is answered from the guide at once; text after "?" goes to the
@@ -40,7 +40,7 @@ class Guide
      */
     private const QUICK = [
         'home' => ['rating', 'slots', 'leagues_create', 'leagues_join', 'coins', '?analysis_overview'],
-        'club' => ['club_board', 'objectives', 'friendlies', 'quests', '?analysis_overview'],
+        'club' => ['club_board', 'objectives', 'contract', 'friendlies', 'quests', '?analysis_overview'],
         'team' => ['morale', 'fitness', 'value', 'potential', '?analysis_best'],
         'lineup' => ['lineup_edit', 'chemistry', 'takers', '?analysis_lineup'],
         'tactics' => ['pressing', 'marking', 'trap', 'opponent_sees', '?analysis_tactics'],
@@ -51,6 +51,7 @@ class Guide
         'stadium' => ['stadium', 'stadium_plan', 'seats', 'pitch', 'training_ground'],
         'finance' => ['finance', 'ticket_price', 'contracts', 'debt', '?analysis_money'],
         'quests' => ['quests', 'coins'],
+        'store' => ['store', 'coins'],
         'match' => ['next_match', 'match_move', 'opponent_sees', 'spy', 'live_changes', 'integrity', '?analysis_last'],
         'league' => ['cup', 'rest_days', 'invite', 'vacation_league', 'alliance', 'draw'],
         'fixtures' => ['stats', 'next_match'],
@@ -273,8 +274,8 @@ class Guide
             // The stadium.
             $t('stadium', ['stadium'], 'stadium', ['كيف يعمل الملعب؟', 'ملعب استاد توسيع بناء مراحل اجزاء', $g['stadium']], ['How does the stadium work?', 'stadium build expand stages parts', $g['stadium']]),
             $t('stadium_plan', ['stadium'], 'stadium',
-                ['كم يأخذ بناء الملعب؟', 'وقت مدة بناء الملعب ساعة جزء', sprintf('تبني جزءاً واحداً في كل مرة، وكل جزء %d ساعة، وتبدأ كل جزء بنفسك. الملعب كاملاً %d جزءاً، أي معظم الموسم، فاختر أولوياتك: الدخل (المقاعد)، أو ميزة الأرض (الأرضية)، أو سرعة التدريب (المنشأة).', $c('stadium.part_hours'), $c('stadium.stages') * $c('stadium.parts_per_stage') * count($c('stadium.sections')))],
-                ['How long does the stadium take?', 'time build stadium hours part', sprintf('You build one part at a time, each part takes %d hours, and you start each part yourself. The full stadium is %d parts, most of the season, so choose your priorities: income (seats), home advantage (pitch) or training speed (facility).', $c('stadium.part_hours'), $c('stadium.stages') * $c('stadium.parts_per_stage') * count($c('stadium.sections')))]),
+                ['كم يأخذ بناء الملعب؟', 'وقت مدة بناء الملعب ساعة جزء', sprintf('تبني جزءاً واحداً في كل مرة، وتبدأ كل جزء بنفسك. الملعب كاملاً %d جزءاً، ومدة الجزء من طول دوريك: من يبني بلا توقف من بداية الموسم يكمله قبل نهاية الدوري بـ%d جولات (وصفحة الملعب تكتب مدة الجزء). فاختر أولوياتك: الدخل (المقاعد)، أو ميزة الأرض (الأرضية)، أو سرعة التدريب (المنشأة).', $c('stadium.stages') * $c('stadium.parts_per_stage') * count($c('stadium.sections')), $c('stadium.finish_before_rounds'))],
+                ['How long does the stadium take?', 'time build stadium hours part', sprintf('You build one part at a time and start each part yourself. The full stadium is %d parts, and a part\'s time comes from your league\'s length: building without a break from the season\'s start finishes it %d rounds before the league ends (the stadium page shows a part\'s time). So choose your priorities: income (seats), home advantage (pitch) or training speed (facility).', $c('stadium.stages') * $c('stadium.parts_per_stage') * count($c('stadium.sections')), $c('stadium.finish_before_rounds'))]),
             $t('seats', ['stadium'], 'stadium', ['ما فائدة المقاعد؟', 'مقاعد مدرجات تذاكر جمهور سعة', $g['seats']], ['What do the seats do?', 'seats stands tickets capacity', $g['seats']]),
             $t('pitch', ['stadium'], 'stadium', ['ما فائدة أرضية الملعب؟', 'ارضية الملعب العشب ميزة الارض', $g['pitch']], ['What does the pitch do?', 'pitch grass home advantage', $g['pitch']]),
             $t('training_ground', ['stadium'], 'stadium', ['ما فائدة منشأة التدريب؟', 'منشاة التدريب مركز', $g['training_ground']], ['What does the training facility do?', 'training facility ground', $g['training_ground']]),
@@ -290,8 +291,8 @@ class Guide
                 ['ماذا يحدث لو صار رصيدي بالسالب؟', 'سالب دين ديون عجز افلاس', sprintf('لو نزل الرصيد تحت الصفر بسبب الرواتب يُمنع أي صرف. وبعد %d جولات متتالية بالسالب يُباع أغلى لاعب تلقائياً للمجموعة بـ 70%% من قيمته.', $c('economy.debt_rounds_before_forced_sale'))],
                 ['What happens if my balance goes negative?', 'negative debt broke', sprintf('If wages take the balance below zero, all spending stops. After %d rounds in a row below zero, your most valuable player is sold automatically to the pool at 70%% of their value.', $c('economy.debt_rounds_before_forced_sale'))]),
             $t('coins', ['wallet', 'home', 'quests'], 'wallet',
-                ['ما هي الكوينز؟', 'كوينز كوين عملات ذهب نقاط شراء', sprintf('الكوينز عملتك أنت لا عملة النادي، وتُكسب داخل اللعبة فقط: الدخول اليومي (%d)، والفوز (%d)، والتعادل (%d)، وتحقيق الأهداف، والألقاب، والمهام. تنهي بها الانتظار وتشتري بها مزايا مثل الجاسوس، ولا تتحول أبداً إلى أموال نادٍ. والشراء الحقيقي بعد النسخة الأولى، فالآن الكل متساوٍ.', $c('premium.earn.daily'), $c('premium.earn.win'), $c('premium.earn.draw'))],
-                ['What are coins?', 'coins coin gold currency buy', sprintf('Coins are your own currency, not the club\'s, earned only in the game: the daily login (%d), a win (%d), a draw (%d), reaching objectives, titles and quests. They end waits and buy features like the spy, and never turn into club money. Real purchases come after the first version, so for now everyone is equal.', $c('premium.earn.daily'), $c('premium.earn.win'), $c('premium.earn.draw'))]),
+                ['ما هي الكوينز؟', 'كوينز كوين عملات ذهب نقاط شراء', sprintf('الكوينز عملتك أنت لا عملة النادي، وتُكسب داخل اللعبة فقط: الدخول اليومي (%d)، والفوز (%d)، والتعادل (%d)، وتحقيق الأهداف، والألقاب، والمهام. والخسارة لا تعطي شيئاً، ومن يخسر أمام مدرب أقل منه تصنيفاً يُخصم منه %d. تنهي بها الانتظار وتشتري بها مزايا مثل الجاسوس، ولا تتحول أبداً إلى أموال نادٍ. والشراء الحقيقي بعد النسخة الأولى، فالآن الكل متساوٍ.', $c('premium.earn.daily'), $c('premium.earn.win'), $c('premium.earn.draw'), $c('premium.upset_loss'))],
+                ['What are coins?', 'coins coin gold currency buy', sprintf('Coins are your own currency, not the club\'s, earned only in the game: the daily login (%d), a win (%d), a draw (%d), reaching objectives, titles and quests. A loss gives nothing, and losing to a coach of a lower rating tier costs %d. They end waits and buy features like the spy, and never turn into club money. Real purchases come after the first version, so for now everyone is equal.', $c('premium.earn.daily'), $c('premium.earn.win'), $c('premium.earn.draw'), $c('premium.upset_loss'))]),
 
             // The match.
             $t('next_match', ['match', 'fixtures'], 'match',
@@ -317,13 +318,13 @@ class Guide
                 ['What is the match report?', 'report match why won lost reasons recap quick missed', 'After every match its report reaches you: the main reasons for the result, one thing to improve, each player\'s rating, the man of the match and your assistant\'s notes. If you missed the match, the quick recap plays its big moments (goals, cards, substitutions) in seconds and then the numbers, and you can skip to the result. I can read the report and analyse it for you.']),
             // [X69] Any finished match of the league, again in full or as a quick recap.
             $t('replays', ['fixtures', 'match'], 'fixtures',
-                ['كيف أشاهد مباراة انتهت؟', 'اعادة إعادة شاهد محاكاة مباراة انتهت الجولة الاخيرة ملخص مباريات الدوري', 'من «جدول المباريات»: في أعلاه آخر مباراة لك وكل مباريات الجولة الأخيرة، ولكل واحدة «ملخص» يعرض أهم لحظاتها في ثوانٍ و«شاهد المحاكاة» يعيدها كاملة على الملعب كما لُعبت، بالسرعة التي تختارها ولك أن تتخطى إلى النهاية. واضغط نتيجة أي مباراة انتهت في الدوري لترى ملخصها ثم محاكاتها. كل أعضاء الدوري يشاهدون كل مبارياته، ولا يظهر تكتيك أي فريق إلا لمدربه.'],
-                ['How do I watch a finished match?', 'replay watch again finished match simulation last round recap league matches', 'From the fixtures: at the top are your last match and every match of the last round, each with «Recap», its big moments in seconds, and «Watch», the whole match again on the pitch as it was played, at the speed you pick, and you can skip to the end. Tap the score of any finished league match to see its recap and then its simulation. Every member of the league watches all its matches, and a side\'s tactics show only to its own coach.']),
+                ['كيف أشاهد مباراة انتهت؟', 'اعادة إعادة شاهد محاكاة مباراة انتهت الجولة الاخيرة ملخص مباريات الدوري', 'من «جدول المباريات»: في أعلاه آخر مباراة لك وكل مباريات الجولة الأخيرة، ولكل واحدة «ملخص» يعرض أهم لحظاتها في ثوانٍ و«شاهد المحاكاة» يعيدها كاملة على الملعب كما لُعبت، بالسرعة التي تختارها ولك أن تتخطى إلى النهاية. واضغط نتيجة أي مباراة انتهت في الدوري لترى ملخصها ثم محاكاتها. كل أعضاء الدوري يشاهدون كل مبارياته، ولا يظهر تكتيك أي فريق إلا لمدربه. والإعادة متاحة حتى تبدأ الجولة التالية، ثم تبقى النتيجة والملخص وحدهما. ومن يدخل مباراة جارية يشاهدها مباشرة من دقيقتها.'],
+                ['How do I watch a finished match?', 'replay watch again finished match simulation last round recap league matches', 'From the fixtures: at the top are your last match and every match of the last round, each with «Recap», its big moments in seconds, and «Watch», the whole match again on the pitch as it was played, at the speed you pick, and you can skip to the end. Tap the score of any finished league match to see its recap and then its simulation. Every member of the league watches all its matches, and a side\'s tactics show only to its own coach. A match can be watched again until the next round starts; then its result and recap stay. Joining a match under way, you watch it live from that minute.']),
 
             // The league.
             $t('cup', ['league'], 'league',
-                ['كيف تعمل الكأس؟', 'كاس الكأس بطولة خروج المغلوب', 'الكأس خروج المغلوب من مباراة واحدة. الأقوى معفون من الدور التمهيدي، والقرعة عشوائية.'],
-                ['How does the cup work?', 'cup knockout tournament', 'The cup is single-match knockout. The strongest skip the preliminary round, and the draw is random.']),
+                ['كيف تعمل الكأس؟', 'كاس الكأس بطولة خروج المغلوب', 'الكأس خروج المغلوب من مباراة واحدة، وشجرتها كاملة من أول الموسم. الأقوى معفون من الدور التمهيدي، والقرعة توزع الأقوياء على كل الأفرع: أقوى ناديين لا يلتقيان إلا في النهائي، وأقوى أربعة إلا في نصف النهائي، ويُسحب الباقون ضدهم.'],
+                ['How does the cup work?', 'cup knockout tournament', 'The cup is single-match knockout, its whole bracket drawn at the start of the season. The strongest skip the preliminary round, and the draw spreads the strongest over every branch: the two strongest meet only in the final, the four strongest only in the semi-finals, and the rest are drawn against them.']),
             $t('invite', ['league', 'leagues'], 'leagues',
                 ['كيف أدعو أصحابي لدوريي؟', 'دعوة ادعو صحابي اصدقاء كود رابط', 'شارك كود الدوري أو رابطه: الرابط يفتح صفحة الانضمام بالكود جاهزاً، فيرسلون طلباً، وتوافق أنت، ثم يختارون فرقهم.'],
                 ['How do I invite friends to my league?', 'invite friends code link', 'Share the league\'s code or link: the link opens the join page with the code filled in, they send a request, you approve it, and then they pick their teams.']),
@@ -336,6 +337,21 @@ class Guide
             $t('vacation_league', ['league'], 'league',
                 ['كيف آخذ إجازة من دوري؟', 'اجازة غياب دوري مسافر', sprintf('إجازة في دوري واحد (مرة في الموسم، حتى %d أيام) تحتاج سبباً يوافق عليه مسؤول الدوري. ولإجازة تشمل كل دورياتك بلا طلب: إجازة الحساب من «حسابي». والغائب بلا إجازة %d أيام قد يُطرد من الدوري.', $c('league.vacation_max_days'), $c('league.absence_days'))],
                 ['How do I take a holiday from a league?', 'holiday vacation absence league away', sprintf('A holiday in one league (once a season, up to %d days) needs a reason the league\'s admin approves. For a holiday across all your leagues with no request: the account holiday in «My account». Someone away without a holiday for %d days may be removed from the league.', $c('league.vacation_max_days'), $c('league.absence_days'))]),
+            // [Sprint 15 D1] The app on the phone.
+            $t('app', ['home', 'profile'], 'profile',
+                ['كيف أحمّل التطبيق على جوالي؟', 'تحميل تنزيل التطبيق اندرويد ايفون apk جوال', 'من صفحة «حمّل التطبيق» في الموقع (رابطها في أسفل كل صفحة): على أندرويد اضغط «نزّل التطبيق» ثم افتح الملف واسمح بالتثبيت إن سألك الجوال. وعلى آيفون افتح الموقع في Safari ثم زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»، فتفتح اللعبة كتطبيق حتى يصل تطبيق App Store. وحسابك ودورياتك نفسها في الموقع والتطبيق.'],
+                ['How do I get the app on my phone?', 'download app android iphone apk phone install', 'From the «Get the app» page of the site (its link is at the bottom of every page): on Android tap «Download the app», then open the file and allow installing if the phone asks. On the iPhone open the site in Safari, then Share, then «Add to Home Screen»: the game opens as an app until the App Store version comes. Your account and leagues are the same on the site and the app.']),
+            // [Sprint 43 W1, W2] The contract with the club, and the store.
+            $t('contract', ['club', 'league'], 'club',
+                ['ما هو عقد تولي الفريق؟', 'عقد توقيع تولي الفريق الادارة', 'حين تبدأ موسماً مع فريقك يعرض عليك عقد تولي القيادة: ناديك ودوريك وموسمه، وهدف الإدارة، والمال المتاح للانتقالات. توقّعه بإصبعك مرة واحدة في الموسم، والتوقيع يُرسم على شاشتك فقط ولا يُرسل ولا يُحفظ.'],
+                ['What is the coaching contract?', 'contract sign take over club board', 'When you start a season with your team, the board offers you its contract: your club, your league and its season, the board\'s objective and the money for transfers. You sign it with your finger once a season, and the signature is drawn on your screen only: it is never sent or kept.']),
+            $t('store', ['store'], 'store',
+                ['ما هي العروض والباقات؟', 'متجر عروض باقات شراء واتساب سعر خصم', 'في صفحة «العروض»: باقات ثابتة يضيفها فريق اللعبة، وعروض لمدة محددة تختفي وحدها بعد انتهائها. لكل واحد صورته وسعره (والسعر قبل الخصم إن وُجد). والطلب عبر واتساب: زر «اطلبه عبر واتساب» يفتح محادثة مع فريق اللعبة فيها اسم العرض ورقم حسابك. ولتصلك العروض بالبريد فعّلها من «حسابي» ← الإشعارات.'],
+                ['What are the offers and packages?', 'store offers packages buy whatsapp price discount', 'On the «Offers» page: fixed packages the game\'s team adds, and offers for a set time that disappear when they end. Each has its picture and price (and the price before a discount, if any). You order by WhatsApp: «Order on WhatsApp» opens a chat with the game\'s team with the item and your account number. To get the offers by email, turn them on in My account, then Notifications.']),
+            // [Sprint 43 C2] The creator never resigns; gone from the game, the league passes on.
+            $t('league_creator', ['league'], 'league',
+                ['ماذا يحدث إن غاب منشئ الدوري؟', 'منشئ الدوري غياب ترك نقل ادارة استقالة', sprintf('منشئ الدوري لا يستقيل منه لأنه يديره. وإن غاب عن اللعبة %d أيام أو حذف حسابه، تنتقل إدارة الدوري بالقرعة إلى أحد المدربين النشطين، ويُنشر بيان بذلك في أخبار الدوري. وإن لم يبقَ مدرب نشط يبقى منشئاً.', $c('league.absence_days'))],
+                ['What happens if the league creator is gone?', 'league creator owner absent left handover resign', sprintf('The league creator cannot resign, since he runs it. If he is away from the game for %d days or deletes his account, the league passes by lot to one of its active coaches, and a statement says so in the league news. With no active coach left, he stays its creator.', $c('league.absence_days'))]),
             $t('vacation_account', ['profile'], 'profile',
                 ['ما هي إجازة الحساب؟', 'اجازة الحساب كله حذف غياب', sprintf('إجازة لحسابك كله تحميه من الحذف: لا يُحسب غيابك في أي دوري، والمدرب المساعد يقود فرقك. حتى %d أيام تبدأ فوراً (مرتين في الموسم)، والأطول يراجعها فريق التطوير.', $c('account.auto_vacation_days'))],
                 ['What is the account holiday?', 'account holiday vacation delete absence', sprintf('A holiday for your whole account protects it from deletion: your absence counts in no league, and the assistant coach runs your teams. Up to %d days start at once (twice a season); longer ones are reviewed by the development team.', $c('account.auto_vacation_days'))]),

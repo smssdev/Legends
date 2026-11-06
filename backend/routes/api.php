@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AllianceController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\AppReleaseController;
 use App\Http\Controllers\Api\AssistantController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Api\SimulatorController;
 use App\Http\Controllers\Api\SpecialistController;
 use App\Http\Controllers\Api\SpyController;
 use App\Http\Controllers\Api\StadiumController;
+use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TicketController;
@@ -153,6 +155,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::post('{league}/members/{membership}/vacation/reject', 'rejectVacation')->whereNumber(['league', 'membership']);
     Route::post('{league}/members/{membership}/kick', 'kick')->whereNumber(['league', 'membership']);
     Route::post('{league}/resign', 'resign')->whereNumber('league');
+    // [Sprint 43 W1] The contract with his club, signed once a season.
+    Route::post('{league}/contract', 'signContract')->whereNumber('league');
     Route::get('{league}/fixtures', 'fixtures')->whereNumber('league');
     Route::get('{league}/standings', 'standings')->whereNumber('league');
     Route::get('{league}/cup', 'cup')->whereNumber('league');
@@ -365,6 +369,18 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         Route::post('chat/prune', 'pruneChat');
         // [X54] Coins to any account by its number.
         Route::post('coins', 'giveCoins')->middleware('throttle:30,1,admin-coins');
+        // [Sprint 15 D1] The app's versions: uploaded in pieces, then published as the latest.
+        Route::get('app-releases', [AppReleaseController::class, 'index']);
+        Route::post('app-releases', [AppReleaseController::class, 'start'])->middleware('throttle:10,1,admin-app');
+        Route::put('app-releases/{id}/chunk', [AppReleaseController::class, 'chunk'])->whereNumber('id')->middleware('throttle:600,1,admin-app-chunk');
+        Route::post('app-releases/{id}/finish', [AppReleaseController::class, 'finish'])->whereNumber('id');
+        Route::delete('app-releases/{id}', [AppReleaseController::class, 'destroy'])->whereNumber('id');
+        // [Sprint 43 W2] The store: packages and timed offers, each by email to those who asked.
+        Route::get('store', [StoreController::class, 'adminIndex']);
+        Route::post('store', [StoreController::class, 'store'])->middleware('throttle:30,1,admin-store');
+        Route::post('store/{id}', [StoreController::class, 'update'])->whereNumber('id')->middleware('throttle:60,1,admin-store');
+        Route::delete('store/{id}', [StoreController::class, 'destroy'])->whereNumber('id');
+        Route::post('store/{id}/email', [StoreController::class, 'email'])->whereNumber('id')->middleware('throttle:5,1,admin-store-email');
         // [Sprint 20 S4] The game's own rewarded ads.
         Route::get('house-ads', 'houseAds');
         Route::post('house-ads', 'storeHouseAd');
@@ -393,6 +409,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:60,1,admin'])->con
         });
     });
 });
+
+// [Sprint 15 D1] The app to download from the site (public): the latest version, and the Android file.
+Route::get('app', [AppReleaseController::class, 'show'])->middleware('throttle:60,1,app');
+Route::get('app/android.apk', [AppReleaseController::class, 'download'])->middleware('throttle:20,1,app-download');
+
+// [Sprint 43 W2] The store for the coaches (bought by WhatsApp), and its pictures (public, for an <img> and the emails).
+Route::get('store', [StoreController::class, 'index'])->middleware(['auth:sanctum', 'throttle:60,1,store']);
+Route::get('store/{id}/image', [StoreController::class, 'image'])->whereNumber('id')->middleware('throttle:240,1,store-image');
 
 // [X54] The developers' announcements as cards, and their pictures (public like a crest, for an <img>).
 Route::get('announcements', [AnnouncementController::class, 'index'])->middleware(['auth:sanctum', 'throttle:60,1,announcements']);
