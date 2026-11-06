@@ -3186,6 +3186,12 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'كود الجروب'**
   String get groupCode;
+
+  /// No description provided for @openIt.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح'**
+  String get openIt;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

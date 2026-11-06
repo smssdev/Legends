@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/settings.dart';
+import 'features/assistant/assistant.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/health/health.dart';
 import 'features/health/status_screens.dart';
@@ -88,6 +89,8 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       supportedLocales: common.supportedLocales,
       localizationsDelegates: common.localizationsDelegates,
       routerConfig: ref.watch(routerProvider),
+      // [Sprint 18 H] The assistant coach over every screen.
+      builder: (context, child) => AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
     );
   }
 }

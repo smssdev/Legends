@@ -1759,4 +1759,7 @@ class LAr extends L {
 
   @override
   String get groupCode => 'كود الجروب';
+
+  @override
+  String get openIt => 'افتح';
 }

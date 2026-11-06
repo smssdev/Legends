@@ -1763,4 +1763,7 @@ class LEn extends L {
 
   @override
   String get groupCode => 'Group code';
+
+  @override
+  String get openIt => 'Open';
 }
