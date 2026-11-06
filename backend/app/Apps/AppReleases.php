@@ -108,6 +108,26 @@ class AppReleases
         return DB::table('app_releases')->where('platform', $platform)->where('status', 'ready')->orderByDesc('id')->first();
     }
 
+    /**
+     * [Sprint 15 D1, 2026-11-06] The app that ships with the site itself (web/public/downloads, described by
+     * android.json): what the download page offers until an admin uploads a newer one. Null when it is not there.
+     */
+    public static function bundled(): ?array
+    {
+        $dir = public_path('downloads');
+        $about = is_file("$dir/android.json") ? json_decode((string) file_get_contents("$dir/android.json"), true) : null;
+        $file = is_array($about) ? basename((string) ($about['file'] ?? '')) : '';
+        if ($file === '' || ! is_file("$dir/$file")) {
+            return null;
+        }
+        $old = basename((string) ($about['old_phones'] ?? ''));
+
+        return ['id' => 0, 'platform' => 'android', 'version' => (string) ($about['version'] ?? ''), 'notes' => $about['notes'] ?? null,
+            'bytes' => (int) filesize("$dir/$file"), 'received' => (int) filesize("$dir/$file"), 'status' => 'ready', 'sha256' => null, 'downloads' => 0,
+            'published_at' => null, 'url' => url("/downloads/$file"),
+            'old_phones_url' => $old !== '' && is_file("$dir/$old") ? url("/downloads/$old") : null];
+    }
+
     public static function card(object $r): array
     {
         return ['id' => (int) $r->id, 'platform' => $r->platform, 'version' => $r->version, 'notes' => $r->notes, 'bytes' => (int) $r->bytes,

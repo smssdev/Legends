@@ -10,7 +10,7 @@ import UiButton from '../components/ui/UiButton.vue'
 import { intlLocale } from '../lib/i18n'
 import { install, installable, isIos, standalone } from '../lib/pwa'
 
-type Release = { version: string; bytes: number; published_at: string | null; url: string | null; notes: string | null }
+type Release = { version: string; bytes: number; published_at: string | null; url: string | null; notes: string | null; old_phones_url?: string | null }
 const android = ref<Release | null>(null)
 const loaded = ref(false)
 const ios = isIos()
@@ -52,6 +52,7 @@ onMounted(async () => {
                 <li>{{ $t('افتح «المدرب الأسطورة» وادخل بحسابك.') }}</li>
               </ol>
               <p v-if="android.notes" class="rounded-lg bg-surface-sunk px-3 py-2 text-sm text-text-muted">{{ android.notes }}</p>
+              <a v-if="android.old_phones_url" :href="android.old_phones_url" download class="text-sm text-text-muted underline">{{ $t('جوال قديم لا يقبل التثبيت؟ نزّل نسخة الجوالات القديمة') }}</a>
             </template>
             <template v-else-if="loaded">
               <p class="text-text-soft">{{ $t('تطبيق أندرويد قريباً هنا. والآن ثبّت الموقع على جوالك فيفتح كتطبيق.') }}</p>

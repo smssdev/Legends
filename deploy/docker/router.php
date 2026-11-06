@@ -32,7 +32,9 @@ const TYPES = ['js' => 'text/javascript; charset=utf-8', 'mjs' => 'text/javascri
     'json' => 'application/json; charset=utf-8', 'svg' => 'image/svg+xml', 'webp' => 'image/webp', 'png' => 'image/png',
     'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'ico' => 'image/x-icon', 'woff2' => 'font/woff2', 'woff' => 'font/woff',
     'webmanifest' => 'application/manifest+json', 'txt' => 'text/plain; charset=utf-8', 'xml' => 'application/xml; charset=utf-8', 'html' => 'text/html; charset=utf-8',
-    'wasm' => 'application/wasm', 'data' => 'application/octet-stream'];
+    'wasm' => 'application/wasm', 'data' => 'application/octet-stream',
+    // [Sprint 15 D1] The Android app bundled with the site (web/public/downloads), downloaded as a file.
+    'apk' => 'application/vnd.android.package-archive'];
 
 // Files whose name or folder changes with their content: kept for a year.
 const LASTING = ['/assets/', '/logos/', '/brand/', '/art/', '/unity/'];
@@ -43,6 +45,9 @@ function send(string $path, string $cache): void
     header('Content-Type: '.(TYPES[$ext] ?? (mime_content_type($path) ?: 'application/octet-stream')));
     header('Cache-Control: '.$cache);
     header('Vary: Accept-Encoding');
+    if ($ext === 'apk') {
+        header('Content-Disposition: attachment; filename="'.basename($path).'"');
+    }
     $accepts = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
     if (str_contains($accepts, 'br') && is_file($path.'.br')) {
         header('Content-Encoding: br');

@@ -6,6 +6,7 @@ use App\Apps\AppReleases;
 use App\Http\Controllers\Controller;
 use App\Notify\Fcm;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -19,12 +20,17 @@ class AppReleaseController extends Controller
 
         // The iPhone has no file to download: it installs the web app from Safari until the App Store (README section 11).
         // [Sprint 19 B1] The app's Firebase settings (not secret), so pushes start without a new build; null until set.
-        return response()->json(['android' => $android ? AppReleases::card($android) : null, 'ios' => null, 'firebase' => Fcm::client()]);
+        // An uploaded release first; else the one that ships with the site (web/public/downloads).
+        return response()->json(['android' => $android ? AppReleases::card($android) : AppReleases::bundled(), 'ios' => null, 'firebase' => Fcm::client()]);
     }
 
-    public function download(): BinaryFileResponse
+    public function download(): BinaryFileResponse|RedirectResponse
     {
         $r = AppReleases::latest();
+        // Nothing uploaded: the app that ships with the site, so this link always works.
+        if (! $r && ($bundled = AppReleases::bundled())) {
+            return redirect()->away($bundled['url']);
+        }
         abort_unless($r && is_file(AppReleases::path((int) $r->id)), 404, 'لا نسخة للتنزيل الآن.');
         DB::table('app_releases')->where('id', $r->id)->increment('downloads');
         $name = 'GameLegendManager-'.preg_replace('/[^0-9A-Za-z.\-]/', '', $r->version).'.apk';

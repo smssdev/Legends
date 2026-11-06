@@ -21,6 +21,8 @@ self.addEventListener('fetch', (e) => {
   // [X51] The server's own pages (signing in with Google, its callback) go straight to the network: the worker must
   // not stand between the browser and Google's redirect.
   if (url.pathname.startsWith('/auth/')) return
+  // [Sprint 15 D1] The app's file downloads as itself, never through the worker (nor saved as a page).
+  if (url.pathname.startsWith('/downloads/')) return
   // Pages: the network first, the saved page when offline. [X50] Only a good page is saved, and the server's error
   // while it restarts for a deploy (502) shows the saved page instead.
   if (e.request.mode === 'navigate') {

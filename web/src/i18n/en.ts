@@ -1092,6 +1092,7 @@ export const EN: Record<string, string> = {
   'ما الجديد (اختياري)': 'What is new (optional)',
   'منشورة': 'Published',
   'نزّل التطبيق': 'Download the app',
+  'جوال قديم لا يقبل التثبيت؟ نزّل نسخة الجوالات القديمة': 'An old phone that will not install it? Download the old-phones version',
   'نسخة أندرويد جديدة': 'New Android version',
   'نفس حسابك ونفس دورياتك في الموقع والتطبيق: ادخل بحسابك وتكمل من حيث توقفت.': 'The same account and the same leagues on the site and the app: sign in and carry on where you left off.',
   'نُشرت النسخة {v} للتنزيل من الموقع.': 'Version {v} is published for download from the site.',

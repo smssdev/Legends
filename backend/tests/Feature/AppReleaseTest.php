@@ -89,4 +89,27 @@ class AppReleaseTest extends TestCase
         $this->actingAs(User::factory()->create())->postJson('/api/v1/admin/app-releases', ['version' => '1.0.0', 'bytes' => 5000])->assertForbidden();
         $this->actingAs($admin)->postJson('/api/v1/admin/app-releases', ['version' => 'new', 'bytes' => 5000])->assertStatus(422);
     }
+
+    public function test_without_an_upload_the_app_that_ships_with_the_site_is_offered(): void
+    {
+        $dir = public_path('downloads');
+        $made = ! is_dir($dir);
+        @mkdir($dir, 0775, true);
+        $about = "$dir/android.json";
+        $kept = is_file($about) ? file_get_contents($about) : null;
+        file_put_contents("$dir/glm-test.apk", 'PK'.str_repeat('x', 2046));
+        file_put_contents($about, json_encode(['version' => '9.9.9', 'file' => 'glm-test.apk']));
+        try {
+            $this->getJson('/api/v1/app')->assertOk()
+                ->assertJsonPath('android.version', '9.9.9')->assertJsonPath('android.bytes', 2048)
+                ->assertJsonPath('android.url', url('/downloads/glm-test.apk'))->assertJsonPath('android.old_phones_url', null);
+            $this->get('/api/v1/app/android.apk')->assertRedirect(url('/downloads/glm-test.apk'));
+        } finally {
+            @unlink("$dir/glm-test.apk");
+            $kept !== null ? file_put_contents($about, $kept) : @unlink($about);
+            if ($made) {
+                @rmdir($dir);
+            }
+        }
+    }
 }
