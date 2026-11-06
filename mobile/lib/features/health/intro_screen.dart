@@ -116,6 +116,22 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with SingleTickerProv
                   Expanded(child: ColoredBox(color: p.bgDeep.withValues(alpha: (1 - left * .92).clamp(0, 1)), child: const SizedBox.expand())),
                   Expanded(child: ColoredBox(color: p.bgDeep.withValues(alpha: (1 - right * .92).clamp(0, 1)), child: const SizedBox.expand())),
                 ]),
+                // [Sprint 46, the owner's choice] Our squad under the lights: real-looking players of our own, rendered in
+                // Unity from Sprint 06's MakeHuman players (unity/build.ps1 splash writes assets/splash/squad.png), rising
+                // into place as the second bank comes on. Until that picture is made, nothing here.
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Opacity(
+                    opacity: _seg(.5, 1.2),
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - _seg(.5, 1.6, Curves.easeOutCubic)) * 80),
+                      child: FractionallySizedBox(
+                        heightFactor: .78,
+                        child: Image.asset('assets/splash/squad.png', fit: BoxFit.contain, alignment: Alignment.bottomCenter, errorBuilder: (_, _, _) => const SizedBox()),
+                      ),
+                    ),
+                  ),
+                ),
                 // The sparks rising once the crest has landed.
                 if (ring > 0) CustomPaint(painter: _Sparks(t: _seg(1.35, 3.0), color: p.goldLight)),
                 Center(

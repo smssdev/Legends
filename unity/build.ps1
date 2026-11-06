@@ -6,6 +6,7 @@
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 demo      builds the Arena and the match scene
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 players   the players' materials from the Blender export, and unity\Captures\players.png
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 capture   plays the match and saves minutes 5, 20, 45, 70, 90 to unity\Captures
+#   powershell -ExecutionPolicy Bypass -File unity\build.ps1 splash    the app's opening squad, our players under the lights, to mobile\assets\splash\squad.png
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 kits      minute 20 in the kits of five matches, far and close, and the bench (unity\Captures\kits-*.png)
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 test      the EditMode then PlayMode tests (results in unity\Logs\tests-*.xml)
 #   powershell -ExecutionPolicy Bypass -File unity\build.ps1 open      opens the editor on the match scene (then press Play)
@@ -15,7 +16,7 @@
 #
 # The log of every step goes to the window and to unity\Logs\<step>.log.
 param(
-    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'players', 'capture', 'kits', 'test', 'serve', 'open', 'webgl', 'android')][string]$Step = 'demo',
+    [Parameter(Position = 0)][ValidateSet('install', 'where', 'setup', 'demo', 'players', 'splash', 'capture', 'kits', 'test', 'serve', 'open', 'webgl', 'android')][string]$Step = 'demo',
     [string]$Unity = ''   # Unity.exe; found under Unity Hub's editors when empty
 )
 $ErrorActionPreference = 'Stop'
@@ -122,6 +123,7 @@ $method = @{
     setup   = 'Legends.EditorTools.Setup.Run'
     demo    = 'Legends.EditorTools.DemoScene.Build'
     players = 'Legends.EditorTools.Players.Run'
+    splash  = 'Legends.EditorTools.SplashCapture.Run'
     moves   = 'Legends.EditorTools.MovesCapture.Run'
     capture = 'Legends.EditorTools.Capture.Run'
     kits    = 'Legends.EditorTools.Capture.RunKits'
@@ -129,7 +131,7 @@ $method = @{
     android = 'Legends.EditorTools.Builds.Android'
 }[$Step]
 $unityArgs = @('-batchmode', '-projectPath', "`"$Project`"", '-executeMethod', $method, '-logFile', "`"$log`"")
-if ($Step -notin @('setup', 'capture', 'kits', 'players')) { $unityArgs += '-quit' }   # these quit by themselves when done
+if ($Step -notin @('setup', 'capture', 'kits', 'players', 'splash')) { $unityArgs += '-quit' }   # these quit by themselves when done
 if ($Step -eq 'webgl') { $unityArgs += @('-buildTarget', 'WebGL') }
 if ($Step -eq 'android') { $unityArgs += @('-buildTarget', 'Android') }
 
