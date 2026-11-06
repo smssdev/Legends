@@ -1467,4 +1467,299 @@ class LAr extends L {
 
   @override
   String get mediaOnWeb => 'صورة أو صوت: افتحه من الموقع';
+
+  @override
+  String get profile => 'حسابي';
+
+  @override
+  String get displayNameSaved => 'حُفظ';
+
+  @override
+  String get coachLook => 'شكلك على الخط';
+
+  @override
+  String get changePassword => 'غيّر كلمة المرور';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get passwordChanged => 'تغيّرت كلمة المرور';
+
+  @override
+  String get inviteFriends => 'ادعُ أصدقاءك';
+
+  @override
+  String inviteReward(int coins, int paid, int max) {
+    return '$coins كوينز لكل صديق يلعب، دُفع لك $paid من $max';
+  }
+
+  @override
+  String get achievements => 'الأوسمة';
+
+  @override
+  String get tierBeginner => 'المبتدئ';
+
+  @override
+  String get tierIntermediate => 'المتوسط';
+
+  @override
+  String get tierPro => 'المحترف';
+
+  @override
+  String get aFirstWin => 'أول فوز';
+
+  @override
+  String aMatches(int n) {
+    return '$n مباراة';
+  }
+
+  @override
+  String aWins(int n) {
+    return '$n فوزاً';
+  }
+
+  @override
+  String get aFirstTitle => 'أول لقب';
+
+  @override
+  String get aLeagueTitle => 'بطل الدوري';
+
+  @override
+  String get aCupTitle => 'بطل الكأس';
+
+  @override
+  String get aProfessional => 'درجة المحترف';
+
+  @override
+  String get aLegend => 'درجة الأسطورة';
+
+  @override
+  String aFriendlies(int n) {
+    return '$n وديات';
+  }
+
+  @override
+  String get aIdea => 'فكرة اعتُمدت';
+
+  @override
+  String aInvites(int n) {
+    return '$n أصدقاء';
+  }
+
+  @override
+  String aTitles(int n) {
+    return '$n ألقاب';
+  }
+
+  @override
+  String get stats => 'الإحصاءات';
+
+  @override
+  String get scorers => 'الهدافون';
+
+  @override
+  String get assistsTitle => 'صناع الأهداف';
+
+  @override
+  String get squadValues => 'قيمة الفرق';
+
+  @override
+  String get goalsShort => 'أهداف';
+
+  @override
+  String get assistsShort => 'تمريرات';
+
+  @override
+  String get noStatsYet => 'تظهر الإحصاءات بعد أول جولة';
+
+  @override
+  String get ideas => 'اقتراحاتك للمطورين';
+
+  @override
+  String ideasLead(int n) {
+    return 'المقبول يأخذ مكافأة كوينز ويدخل صاحبه قائمة الشرف. باقٍ لك اليوم $n.';
+  }
+
+  @override
+  String get suggest => 'أرسل الاقتراح';
+
+  @override
+  String get suggestionSent => 'وصل اقتراحك';
+
+  @override
+  String get polls => 'التصويت';
+
+  @override
+  String get vote => 'صوّت';
+
+  @override
+  String votes(int n) {
+    return '$n صوت';
+  }
+
+  @override
+  String get honourRoll => 'قائمة الشرف';
+
+  @override
+  String get statusPending => 'قيد المراجعة';
+
+  @override
+  String get statusBuilt => 'بُني';
+
+  @override
+  String get support => 'الدعم';
+
+  @override
+  String get supportLead => 'اكتب لفريق اللعبة، والرد هنا.';
+
+  @override
+  String get fromTeam => 'فريق اللعبة';
+
+  @override
+  String get announcements => 'الإعلانات';
+
+  @override
+  String get noAnnouncements => 'لا إعلانات';
+
+  @override
+  String get guide => 'طريقة اللعب';
+
+  @override
+  String get tournaments => 'البطولات';
+
+  @override
+  String get noTournaments => 'لا بطولات بعد';
+
+  @override
+  String get newTournament => 'بطولة جديدة';
+
+  @override
+  String get tplWorldCup => 'كأس العالم (32)';
+
+  @override
+  String get tplWorldCup48 => 'كأس العالم (48)';
+
+  @override
+  String get tplClubWorldCup => 'كأس العالم للأندية';
+
+  @override
+  String get tplAfcon => 'أمم أفريقيا';
+
+  @override
+  String get tplEuro => 'أمم أوروبا';
+
+  @override
+  String get tplAsianCup => 'كأس آسيا';
+
+  @override
+  String get startsOn => 'تبدأ';
+
+  @override
+  String get entryPick => 'كل مدرب يختار منتخبه';
+
+  @override
+  String get entryDraw => 'القرعة توزع المنتخبات على المدربين';
+
+  @override
+  String tournamentCost(int coins) {
+    return 'الكلفة $coins كوينز';
+  }
+
+  @override
+  String get tournamentCode => 'كود الانضمام';
+
+  @override
+  String teamsCount(int n) {
+    return '$n فريقاً';
+  }
+
+  @override
+  String get enter => 'سجّل اسمك';
+
+  @override
+  String get leaveEntry => 'انسحب';
+
+  @override
+  String get watchDraw => 'شاهد القرعة';
+
+  @override
+  String drawAt(String time) {
+    return 'القرعة $time';
+  }
+
+  @override
+  String get drawNotSet => 'لم يُحدَّد موعد القرعة';
+
+  @override
+  String get scheduleDraw => 'حدّد موعد القرعة';
+
+  @override
+  String drawnBalls(int n, int total) {
+    return '$n من $total';
+  }
+
+  @override
+  String groupN(String g) {
+    return 'المجموعة $g';
+  }
+
+  @override
+  String pot(int n) {
+    return 'الوعاء $n';
+  }
+
+  @override
+  String get openLeague => 'افتح الدوري';
+
+  @override
+  String get alliance => 'بطولة التحالفات';
+
+  @override
+  String get allianceLead =>
+      'تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.';
+
+  @override
+  String get createAlliance => 'أنشئ البطولة';
+
+  @override
+  String get captainA => 'قائد التحالف الأول';
+
+  @override
+  String get captainB => 'قائد التحالف الثاني';
+
+  @override
+  String allianceSize(int n) {
+    return 'مدربو كل تحالف: $n';
+  }
+
+  @override
+  String get firstRound => 'الجولة الأولى';
+
+  @override
+  String get goesOn => 'يتأهل';
+
+  @override
+  String get noAlliance => 'لا بطولة تحالفات في هذا الدوري';
+
+  @override
+  String get newGroup => 'جروب جديد';
+
+  @override
+  String get groupName => 'اسم الجروب';
+
+  @override
+  String get groupMembers => 'أسماء المستخدمين (مفصولة بفاصلة)';
+
+  @override
+  String get joinGroup => 'ادخل بالكود';
+
+  @override
+  String get groupCode => 'كود الجروب';
+
+  @override
+  String get openIt => 'افتح';
 }

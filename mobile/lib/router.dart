@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'features/account/account_screens.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/ui/forgot_screen.dart';
 import 'features/auth/ui/login_screen.dart';
@@ -24,6 +25,7 @@ import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
 import 'features/notifications/notifications_screen.dart';
 import 'features/social/social_screens.dart';
+import 'features/tournaments/tournament_screens.dart';
 import 'features/money/stadium_screen.dart';
 import 'features/wallet/wallet_screen.dart';
 import 'features/match/report_screen.dart';
@@ -77,9 +79,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/coaches/:id', builder: (_, s) => CoachProfileScreen(userId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: '/groups', builder: (_, _) => const GroupsScreen()),
+      GoRoute(path: '/groups/join/:code', builder: (_, s) => GroupsScreen(joinCode: s.pathParameters['code'])),
+      GoRoute(path: '/tournaments', builder: (_, _) => const TournamentsScreen()),
+      GoRoute(path: '/tournaments/new', builder: (_, _) => const NewTournamentScreen()),
+      GoRoute(path: '/tournaments/:id', builder: (_, s) => TournamentScreen(id: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/tournaments/:id/draw', builder: (_, s) => DrawScreen(id: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/alliance', builder: (_, s) => AllianceScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/friendlies', builder: (_, s) => FriendliesScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/predictions', builder: (_, s) => PredictionsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/newspaper', builder: (_, s) => NewspaperScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
+      GoRoute(path: '/ideas', builder: (_, _) => const IdeasScreen()),
+      GoRoute(path: '/support', builder: (_, _) => const SupportScreen()),
+      GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),
+      GoRoute(path: '/guide', builder: (_, _) => const GuideScreen()),
+      GoRoute(path: '/leagues/:id/stats', builder: (_, s) => StatsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       GoRoute(path: '/leagues/:id/training', builder: (_, s) => TrainingScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => SpecialistsScreen(leagueId: int.parse(s.pathParameters['id']!))),

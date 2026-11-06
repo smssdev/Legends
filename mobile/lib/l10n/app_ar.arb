@@ -1073,5 +1073,207 @@
   "noGroups": "لا جروبات بعد",
   "typeMessage": "اكتب رسالة",
   "messageDeleted": "حُذفت هذه الرسالة",
-  "mediaOnWeb": "صورة أو صوت: افتحه من الموقع"
+  "mediaOnWeb": "صورة أو صوت: افتحه من الموقع",
+  "profile": "حسابي",
+  "displayNameSaved": "حُفظ",
+  "coachLook": "شكلك على الخط",
+  "changePassword": "غيّر كلمة المرور",
+  "currentPassword": "كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "passwordChanged": "تغيّرت كلمة المرور",
+  "inviteFriends": "ادعُ أصدقاءك",
+  "inviteReward": "{coins} كوينز لكل صديق يلعب، دُفع لك {paid} من {max}",
+  "@inviteReward": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      },
+      "paid": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "achievements": "الأوسمة",
+  "tierBeginner": "المبتدئ",
+  "tierIntermediate": "المتوسط",
+  "tierPro": "المحترف",
+  "aFirstWin": "أول فوز",
+  "aMatches": "{n} مباراة",
+  "@aMatches": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aWins": "{n} فوزاً",
+  "@aWins": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aFirstTitle": "أول لقب",
+  "aLeagueTitle": "بطل الدوري",
+  "aCupTitle": "بطل الكأس",
+  "aProfessional": "درجة المحترف",
+  "aLegend": "درجة الأسطورة",
+  "aFriendlies": "{n} وديات",
+  "@aFriendlies": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aIdea": "فكرة اعتُمدت",
+  "aInvites": "{n} أصدقاء",
+  "@aInvites": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "aTitles": "{n} ألقاب",
+  "@aTitles": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "stats": "الإحصاءات",
+  "scorers": "الهدافون",
+  "assistsTitle": "صناع الأهداف",
+  "squadValues": "قيمة الفرق",
+  "goalsShort": "أهداف",
+  "assistsShort": "تمريرات",
+  "noStatsYet": "تظهر الإحصاءات بعد أول جولة",
+  "ideas": "اقتراحاتك للمطورين",
+  "ideasLead": "المقبول يأخذ مكافأة كوينز ويدخل صاحبه قائمة الشرف. باقٍ لك اليوم {n}.",
+  "@ideasLead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "suggest": "أرسل الاقتراح",
+  "suggestionSent": "وصل اقتراحك",
+  "polls": "التصويت",
+  "vote": "صوّت",
+  "votes": "{n} صوت",
+  "@votes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "honourRoll": "قائمة الشرف",
+  "statusPending": "قيد المراجعة",
+  "statusBuilt": "بُني",
+  "support": "الدعم",
+  "supportLead": "اكتب لفريق اللعبة، والرد هنا.",
+  "fromTeam": "فريق اللعبة",
+  "announcements": "الإعلانات",
+  "noAnnouncements": "لا إعلانات",
+  "guide": "طريقة اللعب",
+  "tournaments": "البطولات",
+  "noTournaments": "لا بطولات بعد",
+  "newTournament": "بطولة جديدة",
+  "tplWorldCup": "كأس العالم (32)",
+  "tplWorldCup48": "كأس العالم (48)",
+  "tplClubWorldCup": "كأس العالم للأندية",
+  "tplAfcon": "أمم أفريقيا",
+  "tplEuro": "أمم أوروبا",
+  "tplAsianCup": "كأس آسيا",
+  "startsOn": "تبدأ",
+  "entryPick": "كل مدرب يختار منتخبه",
+  "entryDraw": "القرعة توزع المنتخبات على المدربين",
+  "tournamentCost": "الكلفة {coins} كوينز",
+  "@tournamentCost": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "tournamentCode": "كود الانضمام",
+  "teamsCount": "{n} فريقاً",
+  "@teamsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "enter": "سجّل اسمك",
+  "leaveEntry": "انسحب",
+  "watchDraw": "شاهد القرعة",
+  "drawAt": "القرعة {time}",
+  "@drawAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "drawNotSet": "لم يُحدَّد موعد القرعة",
+  "scheduleDraw": "حدّد موعد القرعة",
+  "drawnBalls": "{n} من {total}",
+  "@drawnBalls": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupN": "المجموعة {g}",
+  "@groupN": {
+    "placeholders": {
+      "g": {
+        "type": "String"
+      }
+    }
+  },
+  "pot": "الوعاء {n}",
+  "@pot": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "openLeague": "افتح الدوري",
+  "alliance": "بطولة التحالفات",
+  "allianceLead": "تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.",
+  "createAlliance": "أنشئ البطولة",
+  "captainA": "قائد التحالف الأول",
+  "captainB": "قائد التحالف الثاني",
+  "allianceSize": "مدربو كل تحالف: {n}",
+  "@allianceSize": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "firstRound": "الجولة الأولى",
+  "goesOn": "يتأهل",
+  "noAlliance": "لا بطولة تحالفات في هذا الدوري",
+  "newGroup": "جروب جديد",
+  "groupName": "اسم الجروب",
+  "groupMembers": "أسماء المستخدمين (مفصولة بفاصلة)",
+  "joinGroup": "ادخل بالكود",
+  "groupCode": "كود الجروب",
+  "openIt": "افتح"
 }

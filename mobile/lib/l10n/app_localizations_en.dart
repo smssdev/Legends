@@ -1471,4 +1471,299 @@ class LEn extends L {
 
   @override
   String get mediaOnWeb => 'Picture or voice: open it on the site';
+
+  @override
+  String get profile => 'My account';
+
+  @override
+  String get displayNameSaved => 'Saved';
+
+  @override
+  String get coachLook => 'Your look on the touchline';
+
+  @override
+  String get changePassword => 'Change the password';
+
+  @override
+  String get currentPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get passwordChanged => 'Password changed';
+
+  @override
+  String get inviteFriends => 'Invite your friends';
+
+  @override
+  String inviteReward(int coins, int paid, int max) {
+    return '$coins coins for each friend who plays; $paid of $max paid';
+  }
+
+  @override
+  String get achievements => 'Badges';
+
+  @override
+  String get tierBeginner => 'Beginner';
+
+  @override
+  String get tierIntermediate => 'Intermediate';
+
+  @override
+  String get tierPro => 'Pro';
+
+  @override
+  String get aFirstWin => 'First win';
+
+  @override
+  String aMatches(int n) {
+    return '$n matches';
+  }
+
+  @override
+  String aWins(int n) {
+    return '$n wins';
+  }
+
+  @override
+  String get aFirstTitle => 'First title';
+
+  @override
+  String get aLeagueTitle => 'League champion';
+
+  @override
+  String get aCupTitle => 'Cup winner';
+
+  @override
+  String get aProfessional => 'Professional rank';
+
+  @override
+  String get aLegend => 'Legend rank';
+
+  @override
+  String aFriendlies(int n) {
+    return '$n friendlies';
+  }
+
+  @override
+  String get aIdea => 'An idea adopted';
+
+  @override
+  String aInvites(int n) {
+    return '$n friends';
+  }
+
+  @override
+  String aTitles(int n) {
+    return '$n titles';
+  }
+
+  @override
+  String get stats => 'Stats';
+
+  @override
+  String get scorers => 'Top scorers';
+
+  @override
+  String get assistsTitle => 'Top assists';
+
+  @override
+  String get squadValues => 'Squad values';
+
+  @override
+  String get goalsShort => 'goals';
+
+  @override
+  String get assistsShort => 'assists';
+
+  @override
+  String get noStatsYet => 'Stats appear after the first round';
+
+  @override
+  String get ideas => 'Your ideas for the developers';
+
+  @override
+  String ideasLead(int n) {
+    return 'An accepted idea earns coins and puts you on the honour roll. $n left today.';
+  }
+
+  @override
+  String get suggest => 'Send the idea';
+
+  @override
+  String get suggestionSent => 'Your idea was sent';
+
+  @override
+  String get polls => 'Polls';
+
+  @override
+  String get vote => 'Vote';
+
+  @override
+  String votes(int n) {
+    return '$n votes';
+  }
+
+  @override
+  String get honourRoll => 'Honour roll';
+
+  @override
+  String get statusPending => 'Under review';
+
+  @override
+  String get statusBuilt => 'Built';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get supportLead => 'Write to the game\'s team; the answer comes here.';
+
+  @override
+  String get fromTeam => 'The game\'s team';
+
+  @override
+  String get announcements => 'Announcements';
+
+  @override
+  String get noAnnouncements => 'No announcements';
+
+  @override
+  String get guide => 'How to play';
+
+  @override
+  String get tournaments => 'Tournaments';
+
+  @override
+  String get noTournaments => 'No tournaments yet';
+
+  @override
+  String get newTournament => 'New tournament';
+
+  @override
+  String get tplWorldCup => 'World Cup (32)';
+
+  @override
+  String get tplWorldCup48 => 'World Cup (48)';
+
+  @override
+  String get tplClubWorldCup => 'Club World Cup';
+
+  @override
+  String get tplAfcon => 'Africa Cup of Nations';
+
+  @override
+  String get tplEuro => 'European Championship';
+
+  @override
+  String get tplAsianCup => 'Asian Cup';
+
+  @override
+  String get startsOn => 'Starts';
+
+  @override
+  String get entryPick => 'Each coach picks his team';
+
+  @override
+  String get entryDraw => 'The draw gives the teams to the coaches';
+
+  @override
+  String tournamentCost(int coins) {
+    return 'Costs $coins coins';
+  }
+
+  @override
+  String get tournamentCode => 'Join code';
+
+  @override
+  String teamsCount(int n) {
+    return '$n teams';
+  }
+
+  @override
+  String get enter => 'Enter';
+
+  @override
+  String get leaveEntry => 'Withdraw';
+
+  @override
+  String get watchDraw => 'Watch the draw';
+
+  @override
+  String drawAt(String time) {
+    return 'The draw $time';
+  }
+
+  @override
+  String get drawNotSet => 'The draw is not scheduled';
+
+  @override
+  String get scheduleDraw => 'Schedule the draw';
+
+  @override
+  String drawnBalls(int n, int total) {
+    return '$n of $total';
+  }
+
+  @override
+  String groupN(String g) {
+    return 'Group $g';
+  }
+
+  @override
+  String pot(int n) {
+    return 'Pot $n';
+  }
+
+  @override
+  String get openLeague => 'Open the league';
+
+  @override
+  String get alliance => 'Alliance tournament';
+
+  @override
+  String get allianceLead =>
+      'Two alliances of the league\'s coaches; in each tie its two coaches agree who goes on.';
+
+  @override
+  String get createAlliance => 'Create it';
+
+  @override
+  String get captainA => 'First alliance\'s captain';
+
+  @override
+  String get captainB => 'Second alliance\'s captain';
+
+  @override
+  String allianceSize(int n) {
+    return 'Coaches per alliance: $n';
+  }
+
+  @override
+  String get firstRound => 'First round';
+
+  @override
+  String get goesOn => 'Goes on';
+
+  @override
+  String get noAlliance => 'No alliance tournament in this league';
+
+  @override
+  String get newGroup => 'New group';
+
+  @override
+  String get groupName => 'Group name';
+
+  @override
+  String get groupMembers => 'Usernames (comma separated)';
+
+  @override
+  String get joinGroup => 'Join by code';
+
+  @override
+  String get groupCode => 'Group code';
+
+  @override
+  String get openIt => 'Open';
 }

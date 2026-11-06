@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/settings.dart';
+import 'features/assistant/assistant.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/health/health.dart';
 import 'features/health/status_screens.dart';
@@ -36,7 +37,10 @@ class _GlmAppState extends ConsumerState<GlmApp> {
     super.initState();
     final links = AppLinks();
     void open(Uri uri) {
-      if (uri.pathSegments.length >= 2 && uri.pathSegments.first == 'join') ref.read(routerProvider).go('/join/${uri.pathSegments[1]}');
+      final seg = uri.pathSegments;
+      if (seg.length >= 2 && seg.first == 'join') ref.read(routerProvider).go('/join/${seg[1]}');
+      // [Sprint 18 G] A group's invite link.
+      if (seg.length >= 3 && seg.first == 'groups' && seg[1] == 'join') ref.read(routerProvider).push('/groups/join/${seg[2]}');
     }
     links.getInitialLink().then((u) => u == null ? null : open(u)).catchError((_) => null);
     _links = links.uriLinkStream.listen(open, onError: (_) {});
@@ -85,6 +89,8 @@ class _GlmAppState extends ConsumerState<GlmApp> {
       supportedLocales: common.supportedLocales,
       localizationsDelegates: common.localizationsDelegates,
       routerConfig: ref.watch(routerProvider),
+      // [Sprint 18 H] The assistant coach over every screen.
+      builder: (context, child) => AssistantOverlay(router: ref.watch(routerProvider), child: child ?? const SizedBox()),
     );
   }
 }
