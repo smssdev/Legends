@@ -3600,6 +3600,108 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'ابدأ الدوري الآن'**
   String get startLeague;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'غيّر الصورة'**
+  String get changePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'احذف الصورة'**
+  String get removePhoto;
+
+  /// No description provided for @sendPhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل صورة'**
+  String get sendPhoto;
+
+  /// No description provided for @leagueSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات الدوري'**
+  String get leagueSettings;
+
+  /// No description provided for @settingsLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات مقفلة منذ بداية الدوري'**
+  String get settingsLocked;
+
+  /// No description provided for @customTeams.
+  ///
+  /// In ar, this message translates to:
+  /// **'فرق من اختيارك'**
+  String get customTeams;
+
+  /// No description provided for @searchClubs.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن نادٍ'**
+  String get searchClubs;
+
+  /// No description provided for @nationsTab.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنتخبات'**
+  String get nationsTab;
+
+  /// No description provided for @clubsTab.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأندية'**
+  String get clubsTab;
+
+  /// No description provided for @chosenTeams.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} فريقاً مختاراً'**
+  String chosenTeams(int n);
+
+  /// No description provided for @formatLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوري'**
+  String get formatLeague;
+
+  /// No description provided for @formatGroups.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجموعات'**
+  String get formatGroups;
+
+  /// No description provided for @formatKnockout.
+  ///
+  /// In ar, this message translates to:
+  /// **'خروج المغلوب'**
+  String get formatKnockout;
+
+  /// No description provided for @groupsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'المجموعات: {n}'**
+  String groupsCount(int n);
+
+  /// No description provided for @swapPlayers.
+  ///
+  /// In ar, this message translates to:
+  /// **'بادل لاعبين (حتى {n})'**
+  String swapPlayers(int n);
+
+  /// No description provided for @swapGive.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعطي'**
+  String get swapGive;
+
+  /// No description provided for @swapTake.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأخذ'**
+  String get swapTake;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

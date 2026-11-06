@@ -17,6 +17,7 @@ import '../club/club_data.dart';
 import '../../core/api/api_client.dart';
 import '../account/account_screens.dart' show askHoliday;
 import '../club/extras_data.dart';
+import '../tournaments/tournament_screens.dart' show pickWhen;
 import '../home/home_data.dart';
 import '../money/finance_screen.dart' show confirm;
 import 'leagues_repository.dart';
@@ -39,6 +40,11 @@ class LeagueScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(league.value?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+          actions: [
+            // [Sprint 18] The creator renames the league or moves its start until it starts.
+            if (league.value?.isOwner == true && league.value?.locked == false)
+              IconButton(tooltip: l.leagueSettings, icon: const Icon(Icons.settings_rounded), onPressed: () => _settings(context, ref, league.value!)),
+          ],
           bottom: TabBar(isScrollable: true, tabAlignment: TabAlignment.start, labelColor: context.glm.goldText, indicatorColor: context.palette.gold,
               tabs: [Tab(text: l.tabClub), Tab(text: l.tabTable), Tab(text: l.tabFixtures), Tab(text: l.tabCoaches)]),
         ),
@@ -303,6 +309,46 @@ class _FixturesTab extends ConsumerWidget {
       ),
     );
   }
+}
+
+Future<void> _settings(BuildContext context, WidgetRef ref, League lg) async {
+  final l = L.of(context);
+  final name = TextEditingController(text: lg.name);
+  DateTime? starts = lg.startsAt?.toLocal();
+  final ok = await showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, set) => Padding(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(l.leagueSettings, style: ctx.text.titleMedium),
+          TextField(controller: name, maxLength: 60, decoration: InputDecoration(labelText: l.leagueName)),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l.startsOn),
+            subtitle: Text(starts == null ? '—' : when(ctx, starts!)),
+            onTap: () async {
+              final d = await pickWhen(ctx, DateTime.now().add(const Duration(hours: 2)));
+              if (d != null) set(() => starts = d);
+            },
+          ),
+          GlmButton(label: l.save, block: true, onPressed: () => Navigator.pop(ctx, true)),
+        ]),
+      ),
+    ),
+  );
+  if (ok == true && context.mounted) {
+    try {
+      await ref.read(apiProvider).patch('/leagues/${lg.id}', {'name': name.text.trim(), if (starts != null) 'starts_at': starts!.toUtc().toIso8601String()});
+      if (context.mounted) showGlmToast(context, l.saved);
+    } on ApiError catch (e) {
+      if (context.mounted) showGlmToast(context, e.message, error: true);
+    }
+    ref.invalidate(leagueProvider(lg.id));
+  }
+  name.dispose();
 }
 
 Future<void> _owner(BuildContext context, WidgetRef ref, String path, [Map<String, Object>? body]) async {

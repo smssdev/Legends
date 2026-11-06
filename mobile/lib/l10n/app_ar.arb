@@ -1562,5 +1562,43 @@
   "resendEmail": "أعد إرسال رسالة تأكيد البريد",
   "deleteAccount": "احذف حسابي",
   "deleteAccountLead": "تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.",
-  "startLeague": "ابدأ الدوري الآن"
+  "startLeague": "ابدأ الدوري الآن",
+  "changePhoto": "غيّر الصورة",
+  "removePhoto": "احذف الصورة",
+  "sendPhoto": "أرسل صورة",
+  "leagueSettings": "إعدادات الدوري",
+  "settingsLocked": "الإعدادات مقفلة منذ بداية الدوري",
+  "customTeams": "فرق من اختيارك",
+  "searchClubs": "ابحث عن نادٍ",
+  "nationsTab": "المنتخبات",
+  "clubsTab": "الأندية",
+  "chosenTeams": "{n} فريقاً مختاراً",
+  "@chosenTeams": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "formatLeague": "دوري",
+  "formatGroups": "مجموعات",
+  "formatKnockout": "خروج المغلوب",
+  "groupsCount": "المجموعات: {n}",
+  "@groupsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "swapPlayers": "بادل لاعبين (حتى {n})",
+  "@swapPlayers": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "swapGive": "تعطي",
+  "swapTake": "تأخذ"
 }

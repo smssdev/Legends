@@ -75,6 +75,7 @@ void main() {
     expect(find.text('وثّق حسابك واحصل على 1000 كوينز'), findsOneWidget);
     expect(find.text('إجازة طويلة للحساب كله'), findsOneWidget);
     expect(find.text('احذف حسابي'), findsOneWidget);
+    expect(find.text('غيّر الصورة'), findsOneWidget);
   });
 
   testWidgets('the stats, the ideas, support, the announcements and the guide', (t) async {

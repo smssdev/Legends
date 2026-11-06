@@ -2025,4 +2025,61 @@ class LEn extends L {
 
   @override
   String get startLeague => 'Start the league now';
+
+  @override
+  String get changePhoto => 'Change the picture';
+
+  @override
+  String get removePhoto => 'Remove the picture';
+
+  @override
+  String get sendPhoto => 'Send a picture';
+
+  @override
+  String get leagueSettings => 'League settings';
+
+  @override
+  String get settingsLocked => 'Settings are locked since the league started';
+
+  @override
+  String get customTeams => 'Teams of your choice';
+
+  @override
+  String get searchClubs => 'Search a club';
+
+  @override
+  String get nationsTab => 'National teams';
+
+  @override
+  String get clubsTab => 'Clubs';
+
+  @override
+  String chosenTeams(int n) {
+    return '$n teams chosen';
+  }
+
+  @override
+  String get formatLeague => 'League';
+
+  @override
+  String get formatGroups => 'Groups';
+
+  @override
+  String get formatKnockout => 'Knockout';
+
+  @override
+  String groupsCount(int n) {
+    return 'Groups: $n';
+  }
+
+  @override
+  String swapPlayers(int n) {
+    return 'Swap players (up to $n)';
+  }
+
+  @override
+  String get swapGive => 'You give';
+
+  @override
+  String get swapTake => 'You take';
 }

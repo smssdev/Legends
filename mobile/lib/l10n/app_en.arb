@@ -583,5 +583,22 @@
   "resendEmail": "Resend the email confirmation",
   "deleteAccount": "Delete my account",
   "deleteAccountLead": "Your teams go back to the computer, with no undo. Type «احذف» to confirm.",
-  "startLeague": "Start the league now"
+  "startLeague": "Start the league now",
+  "changePhoto": "Change the picture",
+  "removePhoto": "Remove the picture",
+  "sendPhoto": "Send a picture",
+  "leagueSettings": "League settings",
+  "settingsLocked": "Settings are locked since the league started",
+  "customTeams": "Teams of your choice",
+  "searchClubs": "Search a club",
+  "nationsTab": "National teams",
+  "clubsTab": "Clubs",
+  "chosenTeams": "{n} teams chosen",
+  "formatLeague": "League",
+  "formatGroups": "Groups",
+  "formatKnockout": "Knockout",
+  "groupsCount": "Groups: {n}",
+  "swapPlayers": "Swap players (up to {n})",
+  "swapGive": "You give",
+  "swapTake": "You take"
 }

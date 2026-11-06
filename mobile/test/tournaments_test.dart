@@ -45,9 +45,10 @@ Future<void> pump(WidgetTester t, Widget screen, {Map<String, dynamic>? draw}) a
       allianceProvider.overrideWith((ref, id) async => {
             'can_create': false, 'sizes': [1, 5], 'default_size': 2, 'coaches': [],
             'tournament': {
-              'id': 1, 'name': 'Derby of alliances', 'status': 'running', 'my_club_id': 141,
+              'id': 1, 'name': 'Derby of alliances', 'status': 'running', 'my_club_id': 141, 'swap_max': 3,
               'ties': [
                 {'id': 7, 'round': 1, 'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'}, 'away': {'id': 142, 'name': 'Arsenal', 'code': 'ARS'}, 'winner_id': null, 'score': null},
+                {'id': 6, 'round': 0, 'home': {'id': 141, 'name': 'Liverpool', 'code': 'LIV'}, 'away': {'id': 150, 'name': 'Chelsea', 'code': 'CHE'}, 'winner_id': 141, 'score': {'home': 2, 'away': 0}, 'swaps': 1},
               ],
             },
           }),
@@ -73,6 +74,16 @@ void main() {
     await t.tap(find.textContaining('أمم أفريقيا'));
     await t.pump();
     expect(find.text('الكلفة 320 كوينز'), findsOneWidget);
+
+    // Teams of my choice: two national teams picked by name.
+    await t.tap(find.text('فرق من اختيارك'));
+    await t.pump();
+    await t.tap(find.text('France'));
+    await t.pump();
+    await t.tap(find.text('Spain'));
+    await t.pump();
+    expect(find.text('2 فريقاً مختاراً'), findsOneWidget);
+    expect(find.text('الكلفة 40 كوينز'), findsOneWidget);
     await t.pumpWidget(const SizedBox());
   });
 
@@ -100,6 +111,7 @@ void main() {
     await pump(t, const AllianceScreen(leagueId: 8));
     expect(find.text('Derby of alliances'), findsOneWidget);
     expect(find.text('يتأهل: LIV'), findsOneWidget);
+    expect(find.text('بادل لاعبين (حتى 2)'), findsOneWidget);
     await t.pumpWidget(const SizedBox());
   });
 }

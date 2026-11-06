@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -102,6 +103,36 @@ class ProfileScreen extends ConsumerWidget {
             GlmCard(
               gold: true,
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                // The picture: picked from the phone, squared by the server.
+                Row(children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: p.brand,
+                    foregroundImage: me['avatar_url'] == null ? null : NetworkImage('${me['avatar_url']}'),
+                    child: Text('${me['name'] ?? ''}'.characters.take(1).toString(), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Wrap(spacing: 4, children: [
+                      TextButton.icon(
+                        icon: const Icon(Icons.photo_camera_rounded),
+                        label: Text(l.changePhoto),
+                        onPressed: () async {
+                          final f = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
+                          if (f == null || !context.mounted) return;
+                          await _try(context, () => api.upload('/auth/avatar', 'image', f.path));
+                          ref.invalidate(meProvider);
+                        },
+                      ),
+                      if (me['avatar_url'] != null)
+                        TextButton(onPressed: () async {
+                          await _try(context, () => api.delete('/auth/avatar'));
+                          ref.invalidate(meProvider);
+                        }, child: Text(l.removePhoto)),
+                    ]),
+                  ),
+                ]),
+                const SizedBox(height: 8),
                 TextFormField(
                   initialValue: '${me['name'] ?? ''}',
                   decoration: InputDecoration(labelText: l.displayName, suffixIcon: const Icon(Icons.edit_rounded)),

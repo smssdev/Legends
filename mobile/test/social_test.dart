@@ -116,6 +116,7 @@ void main() {
       await t.pump(const Duration(milliseconds: 100));
     }
     expect(find.text('أهلاً بالجميع'), findsOneWidget);
+    expect(find.byTooltip('أرسل صورة'), findsOneWidget);
     await t.enterText(find.byType(TextField), 'مباراة قوية الليلة');
     await t.tap(find.byIcon(Icons.send_rounded));
     await t.pump(const Duration(milliseconds: 500));

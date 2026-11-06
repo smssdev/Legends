@@ -2021,4 +2021,61 @@ class LAr extends L {
 
   @override
   String get startLeague => 'ابدأ الدوري الآن';
+
+  @override
+  String get changePhoto => 'غيّر الصورة';
+
+  @override
+  String get removePhoto => 'احذف الصورة';
+
+  @override
+  String get sendPhoto => 'أرسل صورة';
+
+  @override
+  String get leagueSettings => 'إعدادات الدوري';
+
+  @override
+  String get settingsLocked => 'الإعدادات مقفلة منذ بداية الدوري';
+
+  @override
+  String get customTeams => 'فرق من اختيارك';
+
+  @override
+  String get searchClubs => 'ابحث عن نادٍ';
+
+  @override
+  String get nationsTab => 'المنتخبات';
+
+  @override
+  String get clubsTab => 'الأندية';
+
+  @override
+  String chosenTeams(int n) {
+    return '$n فريقاً مختاراً';
+  }
+
+  @override
+  String get formatLeague => 'دوري';
+
+  @override
+  String get formatGroups => 'مجموعات';
+
+  @override
+  String get formatKnockout => 'خروج المغلوب';
+
+  @override
+  String groupsCount(int n) {
+    return 'المجموعات: $n';
+  }
+
+  @override
+  String swapPlayers(int n) {
+    return 'بادل لاعبين (حتى $n)';
+  }
+
+  @override
+  String get swapGive => 'تعطي';
+
+  @override
+  String get swapTake => 'تأخذ';
 }
