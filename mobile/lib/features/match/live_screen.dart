@@ -14,6 +14,10 @@ import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
+import 'feed/art.dart';
+import 'feed/broadcast.dart';
+import 'feed/director.dart';
+import 'feed/story.dart';
 import 'live_pitch.dart';
 import 'match_data.dart';
 
@@ -59,6 +63,12 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   MatchPause? _pause;
   int _tick = 0, _offset = 0, _minute = 0, _added = 0;
   bool _started = false, _busy = false;
+
+  /// [Sprint 44 C1] The broadcast: the minutes waiting for their scene, and the minutes not yet told (in order), whose
+  /// score and events show when their scene reaches its key moment, so the result never comes before the ball.
+  final List<BroadcastPlay> _plays = [];
+  final List<(LiveTick, bool)> _untold = [];
+  bool _synced = false;
   Timer? _timer;
 
   int get _id => widget.view.id;
@@ -116,17 +126,56 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       if (t.tick <= _tick) continue;
       _tick = t.tick;
       _started = true;
-      _score = t.score;
       _minute = t.minute;
       _added = t.added;
       if (t.teams != null) _teams = t.teams!;
-      _feed.insertAll(0, t.events.reversed);
       _recent.add(t);
+      // A minute with a scene waits for it (not the minutes already played when the page opened); the rest is told
+      // in its turn.
+      final story = _synced ? _story(t) : null;
+      if (story?.scene != null) {
+        _plays.add(BroadcastPlay.of(t.tick, story!, total: (t.moment?.ms ?? widget.view.tickMs) / 1000, moods: t.moods, tier: Tier.high, seed: widget.view.seed ?? 1));
+        _untold.add((t, false));
+      } else {
+        _untold.add((t, true));
+      }
       if (t.finished) _finished = true;
     }
+    _synced = true;
+    _tell();
     if (_recent.length > 3) _recent.removeRange(0, _recent.length - 3);
     if (s.finished) _finished = true;
     if (_feed.length > 200) _feed.removeRange(200, _feed.length);
+  }
+
+  /// The minute's story for the broadcast (feed/story.dart): the names, numbers and clubs as this match has them.
+  FeedStory _story(LiveTick t) {
+    final v = widget.view;
+    return feedStory(t,
+        cast: {
+          for (final side in ['home', 'away'])
+            for (final p in (t.teams ?? _teams)[side]!.players) '${p.id}': (name: p.name, no: p.no, side: side),
+        },
+        clubs: {'home': v.home.name, 'away': v.away.name},
+        seed: v.seed,
+        mine: _you,
+        ar: Localizations.localeOf(context).languageCode == 'ar');
+  }
+
+  /// A minute's key moment has come: it, and every minute after it already told, show their score and events.
+  void _keyed(int tick) {
+    final i = _untold.indexWhere((u) => u.$1.tick == tick);
+    if (i >= 0) _untold[i] = (_untold[i].$1, true);
+    _tell();
+    if (mounted) setState(() {});
+  }
+
+  void _tell() {
+    while (_untold.isNotEmpty && _untold.first.$2) {
+      final t = _untold.removeAt(0).$1;
+      _score = t.score;
+      _feed.insertAll(0, t.events.reversed);
+    }
   }
 
   Future<void> _send(Future<void> Function() order, {bool quiet = false}) async {
@@ -157,7 +206,19 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
         wide: true,
         child: LayoutBuilder(builder: (context, box) {
           final bug = _ScoreBug(view: v, score: _score, minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null, finished: _finished);
-          final pitch = LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers);
+          final light = LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers);
+          // [Sprint 44] The broadcast over the pitch: each moment's cartoon scene, the director's cutaways, the studio
+          // before kick-off.
+          final pitch = AspectRatio(
+            aspectRatio: 105 / 68,
+            child: BroadcastStage(
+              look: _clipLook(context, kits),
+              queue: _plays,
+              onKey: _keyed,
+              studio: _started || _finished ? null : (score: '${_score.$1} - ${_score.$2}', clock: L.of(context).notStarted),
+              child: light,
+            ),
+          );
           final controls = <Widget>[
             if (_pause != null && _you != null && !_finished) _breakBar(l),
             if (_you != null && !_finished) _coachBar(l),
@@ -193,6 +254,19 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
           ]);
         }),
       ),
+    );
+  }
+
+  /// The clip's colours: both kits as on the pitch, the keepers' and the referee's far from them, the night, the rain.
+  ClipLook _clipLook(BuildContext context, Map<String, (Color, Color)> kits) {
+    final p = context.palette;
+    final taken = [kits['home']!.$1, kits['away']!.$1];
+    return ClipLook(
+      kits: kits,
+      keeper: farFrom(taken, const [Color(0xFF7CB342), Color(0xFFFF8F00), Color(0xFF8E24AA), Color(0xFF00ACC1)]),
+      referee: farFrom(taken, const [Color(0xFF111111), Color(0xFFFFD600), Color(0xFF00BFA5)]),
+      grass: p.pitch, grassDark: p.pitchDark, gold: p.gold, night: p.bgDeep,
+      rain: rainy(widget.view.seed),
     );
   }
 
