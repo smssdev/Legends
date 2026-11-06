@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 /// All of it stands still when the phone asks for less motion.
 bool _still(BuildContext context) => MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
+/// The motion that never ends (a sheen passing, a pulse): on in the app, off in the widget tests
+/// (test/flutter_test_config.dart), which wait for the screen to settle.
+abstract final class Ambient {
+  static bool on = true;
+}
+
 /// Fades and rises into place, [index] steps after the first (40 ms each, at most 8 steps).
 class FadeSlideIn extends StatefulWidget {
   const FadeSlideIn({super.key, required this.child, this.index = 0, this.offset = 18});
@@ -68,7 +74,10 @@ class _PulseState extends State<Pulse> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (_still(context)) return widget.child;
+    if (_still(context) || !Ambient.on) {
+      _c.stop();
+      return widget.child;
+    }
     return FadeTransition(opacity: Tween(begin: widget.min, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)), child: widget.child);
   }
 }

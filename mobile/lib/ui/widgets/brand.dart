@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import 'cut.dart';
+import 'kit.dart';
 
 /// [Sprint 15 F2] The game's mark as on the web (BrandMark.vue): the crest, GAME LEGEND MANAGER with MANAGER in gold,
 /// and «المدرب الأسطورة» under it in Arabic.
@@ -57,9 +59,9 @@ class CoinsPill extends StatelessWidget {
     final p = context.palette;
     return Material(
       color: p.gold.withValues(alpha: .16),
-      shape: StadiumBorder(side: BorderSide(color: p.gold.withValues(alpha: .4))),
+      shape: GlmCut.shape(GlmCut.button, side: BorderSide(color: p.gold.withValues(alpha: .45))),
       child: InkWell(
-        customBorder: const StadiumBorder(),
+        customBorder: GlmCut.shape(GlmCut.button),
         onTap: onTap,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: GlmSize.touchMin),
@@ -77,9 +79,9 @@ class CoinsPill extends StatelessWidget {
   }
 }
 
-/// A club's crest from the API (an SVG), with its code while it loads or when it cannot.
+/// A club's crest from the API (an SVG), with a drawn shield and its code while it loads or when it cannot.
 class ClubCrest extends StatelessWidget {
-  const ClubCrest({super.key, required this.url, required this.name, this.size = 44});
+  const ClubCrest({super.key, required this.url, required this.name, this.size = 44, this.color});
 
   /// Off in the widget tests, which never reach the network.
   static bool loadFromNetwork = true;
@@ -88,15 +90,13 @@ class ClubCrest extends StatelessWidget {
   final String name;
   final double size;
 
+  /// The club's colour for the drawn shield, when known.
+  final Color? color;
+
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    final initials = Container(
-      width: size, height: size, alignment: Alignment.center,
-      decoration: BoxDecoration(color: p.surfaceRaised, shape: BoxShape.circle),
-      child: Text(name.characters.take(2).toString(), style: TextStyle(fontWeight: FontWeight.w800, color: p.textSoft, fontSize: size * .32)),
-    );
-    if (url == null || !loadFromNetwork) return initials;
-    return SvgPicture.network(url!, width: size, height: size, placeholderBuilder: (_) => initials, semanticsLabel: name);
+    final shield = CrestShield(code: name, color: color, size: size);
+    if (url == null || !loadFromNetwork) return shield;
+    return SvgPicture.network(url!, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name);
   }
 }

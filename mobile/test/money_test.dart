@@ -110,6 +110,7 @@ void main() {
   testWidgets('the finance: the balance, the ticket price, a sponsor signed after a yes', (t) async {
     final money = FakeMoney();
     await pump(t, const FinanceScreen(leagueId: 8), money: money);
+    await t.pump(const Duration(seconds: 1)); // the balance counts up to its value
     expect(find.text('3M'), findsOneWidget);
     await t.tap(find.text('مميز'));
     await t.pump();

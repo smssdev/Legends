@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import 'cut.dart';
 import 'glm_card.dart';
 import 'motion.dart';
 
@@ -29,10 +30,11 @@ class RatingBadge extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * .28),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(bg, Colors.white, .18)!, bg]),
-        boxShadow: [BoxShadow(color: bg.withValues(alpha: .35), blurRadius: 10, offset: const Offset(0, 4), spreadRadius: -4)],
+      // In the Legend Cut, lit from the top like a medal.
+      decoration: ShapeDecoration(
+        shape: GlmCut.shape(size * .26, side: BorderSide(color: Colors.white.withValues(alpha: .22))),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(bg, Colors.white, .28)!, bg, Color.lerp(bg, Colors.black, .12)!], stops: const [0, .55, 1]),
+        shadows: [BoxShadow(color: bg.withValues(alpha: .40), blurRadius: 12, offset: const Offset(0, 4), spreadRadius: -4)],
       ),
       child: Text('$value', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: size * .5, fontWeight: FontWeight.w800, color: fg, height: 1)),
     );
@@ -51,7 +53,7 @@ class PositionChip extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minWidth: 38),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(color: c.bg, borderRadius: BorderRadius.circular(7)),
+      decoration: ShapeDecoration(color: c.bg, shape: GlmCut.shape(GlmCut.chip)),
       child: Text(position, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
           style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 14, color: c.fg, height: 1.1)),
     );
@@ -97,12 +99,7 @@ class StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(children: [
         if (icon != null) ...[
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(color: (color ?? p.gold).withValues(alpha: .16), borderRadius: BorderRadius.circular(11)),
-            child: Icon(icon, size: 20, color: color ?? p.gold),
-          ),
+          IconTile(icon!, color: color ?? p.gold, size: 36),
           const SizedBox(width: 10),
         ],
         Expanded(
@@ -127,12 +124,8 @@ class GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
-        child: Row(children: [
-          if (icon != null) ...[Icon(icon, size: 18, color: context.palette.gold), const SizedBox(width: 6)],
-          Expanded(child: Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: context.palette.text))),
-          ?trailing,
-        ]),
+        padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
+        child: BroadcastTitle(title, icon: icon, trailing: trailing),
       );
 }
 
@@ -170,16 +163,7 @@ class MenuSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 child: Row(children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-                          colors: [(m.color ?? p.gold).withValues(alpha: .30), (m.color ?? p.gold).withValues(alpha: .12)]),
-                    ),
-                    child: Icon(m.icon, size: 21, color: m.color ?? p.gold),
-                  ),
+                  IconTile(m.icon, color: m.color),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -191,7 +175,7 @@ class MenuSection extends StatelessWidget {
                     Container(
                       margin: const EdgeInsetsDirectional.only(end: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(99)),
+                      decoration: ShapeDecoration(color: p.live, shape: GlmCut.shape(GlmCut.chip + 2)),
                       child: Text(m.badge!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
                     ),
                   Icon(Icons.chevron_right_rounded, color: p.textMuted),
@@ -223,4 +207,73 @@ class GamePanes extends StatelessWidget {
           Expanded(flex: endFlex, child: ListView(padding: padding.copyWith(left: padding.left / 2), children: rise(end, 2))),
         ]);
       });
+}
+
+/// [2026-11-06, stage 3] Cards in as many columns as fit ([minWidth] each), one under the other when narrow, each
+/// arriving with a short staggered rise.
+class GameGrid extends StatelessWidget {
+  const GameGrid({super.key, required this.children, this.minWidth = 340, this.spacing = 10, this.maxColumns = 3});
+
+  final List<Widget> children;
+  final double minWidth, spacing;
+  final int maxColumns;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        final cols = (box.maxWidth / minWidth).floor().clamp(1, maxColumns);
+        final w = (box.maxWidth - (cols - 1) * spacing) / cols;
+        return Wrap(spacing: spacing, runSpacing: spacing, children: [
+          for (final (i, c) in children.indexed) SizedBox(width: w, child: FadeSlideIn(index: i, child: c)),
+        ]);
+      });
+}
+
+/// An icon on a glossy square in its colour: the game's icon style everywhere (menus, rails, headers, empty states).
+class IconTile extends StatelessWidget {
+  const IconTile(this.icon, {super.key, this.color, this.size = 38});
+
+  final IconData icon;
+  final Color? color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? context.palette.gold;
+    return Container(
+      width: size,
+      height: size,
+      decoration: ShapeDecoration(
+        shape: GlmCut.shape(size * .30, side: BorderSide(color: c.withValues(alpha: .30))),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [c.withValues(alpha: .36), c.withValues(alpha: .10)]),
+      ),
+      child: Icon(icon, size: size * .55, color: c),
+    );
+  }
+}
+
+/// True on a wide (landscape) screen: the layouts that sit side by side.
+bool isWide(BuildContext context) => MediaQuery.sizeOf(context).width >= 640;
+
+/// [2026-11-06, stage 3] A screen's bar with its tabs: under the title on a narrow screen, and beside it on a wide one,
+/// where every row of height counts (a phone in landscape is about 390 points tall).
+PreferredSizeWidget gameTabsBar(BuildContext context, {required String title, required List<Tab> tabs, List<Widget>? actions}) {
+  final p = context.palette;
+  final bar = TabBar(
+    tabs: tabs,
+    isScrollable: isWide(context),
+    tabAlignment: isWide(context) ? TabAlignment.center : null,
+    indicatorColor: p.gold,
+    indicatorWeight: 3,
+    labelColor: context.glm.goldText,
+    unselectedLabelColor: p.textSoft,
+    labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15),
+    unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w600, fontSize: 15),
+    dividerColor: Colors.transparent,
+  );
+  if (!isWide(context)) return AppBar(title: Text(title), actions: actions, bottom: bar);
+  return AppBar(
+    titleSpacing: 16,
+    title: Row(children: [Text(title), const SizedBox(width: 16), Expanded(child: bar)]),
+    actions: actions,
+  );
 }

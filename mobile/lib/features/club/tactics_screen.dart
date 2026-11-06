@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import 'team_data.dart';
 
@@ -68,6 +69,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l.tactics)),
       body: GlmBackground(
+        wide: true,
         child: AsyncView(
           value: ref.watch(tacticsProvider(widget.leagueId)),
           onRetry: () => ref.invalidate(tacticsProvider(widget.leagueId)),
@@ -97,35 +99,35 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
                     Row(children: [Text(low, style: TextStyle(color: context.palette.textMuted, fontSize: 12)), const Spacer(), Text(high, style: TextStyle(color: context.palette.textMuted, fontSize: 12))]),
                   ]),
                 );
-            const gap = SizedBox(height: 10);
-            return ListView(padding: const EdgeInsets.all(12), children: [
-              Text(l.savesItself, textAlign: TextAlign.center, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
-              gap,
-              choice(l.plan, 'plan', {'passing': l.planPassing, 'counter': l.planCounter, 'long': l.planLong, 'wings': l.planWings, 'shots': l.planShots}),
-              gap,
-              slider(l.pressing, 'pressing', l.low, l.high),
-              gap,
-              slider(l.style, 'style', l.defensive, l.attacking),
-              gap,
-              slider(l.tempo, 'tempo', l.calm, l.fast),
-              gap,
-              choice(l.tackling, 'tackling', {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}),
-              gap,
-              choice(l.lineAtt, 'att', {'back': l.attBack, 'support': l.attSupport, 'only': l.attOnly}),
-              gap,
-              choice(l.lineMid, 'mid', {'def': l.midDef, 'stay': l.midStay, 'push': l.midPush}),
-              gap,
-              choice(l.lineDef, 'def', {'stay': l.defStay, 'fullbacks': l.defFullbacks, 'mid': l.defMid}),
-              gap,
-              choice(l.marking, 'marking', {'zone': l.markZone, 'man': l.markMan}),
-              gap,
-              GlmCard(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                child: SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(l.trap, style: context.text.titleMedium), value: t.values['trap'] == 1,
-                    activeThumbColor: context.palette.gold, onChanged: (v) => _set('trap', v ? 1 : 0)),
-              ),
-              const SizedBox(height: 24),
-            ]);
+            Widget gap(Widget w) => Padding(padding: const EdgeInsets.only(bottom: 10), child: w);
+            // [2026-11-06, stage 3] In landscape: the plan and its three dials on one side, the lines' orders on the other.
+            return GamePanes(
+              startFlex: 1,
+              endFlex: 1,
+              start: [
+                gap(Row(children: [
+                  Icon(Icons.cloud_done_rounded, size: 16, color: context.palette.textMuted),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text(l.savesItself, style: TextStyle(color: context.palette.textMuted, fontSize: 12))),
+                ])),
+                gap(choice(l.plan, 'plan', {'passing': l.planPassing, 'counter': l.planCounter, 'long': l.planLong, 'wings': l.planWings, 'shots': l.planShots})),
+                gap(slider(l.pressing, 'pressing', l.low, l.high)),
+                gap(slider(l.style, 'style', l.defensive, l.attacking)),
+                gap(slider(l.tempo, 'tempo', l.calm, l.fast)),
+                gap(GlmCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  child: SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(l.trap, style: context.text.titleMedium), value: t.values['trap'] == 1,
+                      activeThumbColor: context.palette.gold, onChanged: (v) => _set('trap', v ? 1 : 0)),
+                )),
+              ],
+              end: [
+                gap(choice(l.tackling, 'tackling', {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3})),
+                gap(choice(l.lineAtt, 'att', {'back': l.attBack, 'support': l.attSupport, 'only': l.attOnly})),
+                gap(choice(l.lineMid, 'mid', {'def': l.midDef, 'stay': l.midStay, 'push': l.midPush})),
+                gap(choice(l.lineDef, 'def', {'stay': l.defStay, 'fullbacks': l.defFullbacks, 'mid': l.defMid})),
+                gap(choice(l.marking, 'marking', {'zone': l.markZone, 'man': l.markMan})),
+              ],
+            );
           },
         ),
       ),

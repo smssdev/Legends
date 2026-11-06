@@ -12,6 +12,7 @@ import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
@@ -240,23 +241,18 @@ class _NextMatchHero extends StatelessWidget {
             Text(c.name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
           ]),
         );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(p.pitchDark, p.surface, .35)!, p.surface]),
-        border: Border.all(color: (live ? p.danger : p.gold).withValues(alpha: .5)),
-        boxShadow: [BoxShadow(color: (live ? p.danger : p.pitch).withValues(alpha: .22), blurRadius: 30, spreadRadius: -8, offset: const Offset(0, 10))],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(23),
-        child: StadiumBackdrop(
+    return HeroFrame(
+      edge: live ? p.danger : p.gold,
+      glow: live ? p.danger : p.pitch,
+      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(p.pitchDark, p.surface, .35)!, p.surface]),
+      child: Builder(builder: (_) => StadiumBackdrop(
         child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: Column(children: [
           Row(children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: live ? p.danger : p.gold.withValues(alpha: .16), borderRadius: BorderRadius.circular(99)),
+              decoration: ShapeDecoration(color: live ? p.danger : p.gold.withValues(alpha: .16), shape: GlmCut.shape(GlmCut.chip + 2)),
               child: live
                   ? Pulse(child: Text(l.liveBadge, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)))
                   : Text(l.nextMatchShort, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
@@ -281,7 +277,7 @@ class _NextMatchHero extends StatelessWidget {
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .75), borderRadius: BorderRadius.circular(99)),
+              decoration: ShapeDecoration(color: p.bgDeep.withValues(alpha: .75), shape: GlmCut.shape(GlmCut.chip + 2)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(s.lineupReady ? Icons.check_circle_rounded : Icons.error_rounded, size: 16, color: s.lineupReady ? p.success : p.danger),
                 const SizedBox(width: 6),

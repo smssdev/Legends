@@ -24,9 +24,11 @@ class GlmBackground extends StatelessWidget {
           stops: const [0, .55, 1],
         ),
       ),
-      // [2026-11-06] A stadium's mowing stripes, barely there, under everything.
+      // [2026-11-06] A stadium's mowing stripes, barely there, under everything; and, the game's signature ground, a
+      // whole pitch's markings drawn faintly across the screen with two floodlights glowing from its top corners.
       child: CustomPaint(
-        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014)),
+        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014),
+            lines: (context.glm.day ? p.textMuted : Colors.white).withValues(alpha: context.glm.day ? .06 : .035), light: p.goldLight.withValues(alpha: context.glm.day ? .0 : .07)),
         child: wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child)),
       ),
     );
@@ -34,12 +36,42 @@ class GlmBackground extends StatelessWidget {
 }
 
 class _Stripes extends CustomPainter {
-  _Stripes(this.color);
+  _Stripes(this.color, {required this.lines, required this.light});
 
-  final Color color;
+  final Color color, lines, light;
 
   @override
   void paint(Canvas canvas, Size size) {
+    // The floodlights.
+    for (final c in [Offset(0, 0), Offset(size.width, 0)]) {
+      final r = size.shortestSide * .9;
+      canvas.drawCircle(c, r, Paint()..shader = RadialGradient(colors: [light, light.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: c, radius: r)));
+    }
+    // The pitch: its outline, the halfway line and circle, both boxes; lying across a wide screen, upright on a tall one.
+    final pen = Paint()
+      ..color = lines
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final wide = size.width >= size.height;
+    final m = size.shortestSide * .06;
+    final f = Rect.fromLTRB(m, m, size.width - m, size.height - m);
+    canvas.drawRect(f, pen);
+    if (wide) {
+      canvas.drawLine(Offset(f.center.dx, f.top), Offset(f.center.dx, f.bottom), pen);
+      for (final left in [true, false]) {
+        final x = left ? f.left : f.right, d = left ? 1.0 : -1.0;
+        canvas.drawRect(Rect.fromPoints(Offset(x, f.center.dy - f.height * .3), Offset(x + d * f.width * .14, f.center.dy + f.height * .3)), pen);
+        canvas.drawRect(Rect.fromPoints(Offset(x, f.center.dy - f.height * .13), Offset(x + d * f.width * .05, f.center.dy + f.height * .13)), pen);
+      }
+    } else {
+      canvas.drawLine(Offset(f.left, f.center.dy), Offset(f.right, f.center.dy), pen);
+      for (final top in [true, false]) {
+        final y = top ? f.top : f.bottom, d = top ? 1.0 : -1.0;
+        canvas.drawRect(Rect.fromPoints(Offset(f.center.dx - f.width * .3, y), Offset(f.center.dx + f.width * .3, y + d * f.height * .14)), pen);
+      }
+    }
+    canvas.drawCircle(f.center, size.shortestSide * .16, pen);
+    canvas.drawCircle(f.center, 3, Paint()..color = lines);
     if (color.a == 0) return;
     final paint = Paint()..color = color;
     const w = 46.0;
@@ -55,7 +87,7 @@ class _Stripes extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_Stripes old) => old.color != color;
+  bool shouldRepaint(_Stripes old) => old.color != color || old.lines != lines || old.light != light;
 }
 
 /// A short message at the bottom (the web's toast): an error in red, the rest quiet.

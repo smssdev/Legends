@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/glm_background.dart';
@@ -84,12 +85,10 @@ class PlayerRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Material(
         color: selected ? c.gold.withValues(alpha: .16) : (starter ? Color.lerp(c.surface, c.pitchDark, .18) : c.surface),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(color: selected ? c.gold : Colors.white.withValues(alpha: context.glm.day ? 0 : .06)),
-        ),
+        shape: GlmCut.shape(GlmCut.badge + 4, side: BorderSide(color: selected ? c.gold : Colors.white.withValues(alpha: context.glm.day ? 0 : .07))),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          customBorder: GlmCut.shape(GlmCut.badge + 4),
           onTap: onTap,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 60),

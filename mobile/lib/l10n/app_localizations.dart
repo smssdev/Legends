@@ -1369,6 +1369,12 @@ abstract class L {
   /// **'أهم اللحظات'**
   String get keyMoments;
 
+  /// No description provided for @matchStats.
+  ///
+  /// In ar, this message translates to:
+  /// **'إحصائيات المباراة'**
+  String get matchStats;
+
   /// No description provided for @bestPlayers.
   ///
   /// In ar, this message translates to:

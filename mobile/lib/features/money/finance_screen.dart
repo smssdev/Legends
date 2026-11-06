@@ -6,7 +6,9 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
+import '../../ui/widgets/motion.dart';
 import '../club/squad_screen.dart' show money;
 import '../leagues/widgets.dart' show when;
 import 'money_data.dart';
@@ -34,6 +36,7 @@ class FinanceScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.finance)),
       body: GlmBackground(
+        wide: true,
         child: AsyncView(
           value: ref.watch(financeProvider(leagueId)),
           onRetry: () => ref.invalidate(financeProvider(leagueId)),
@@ -50,13 +53,19 @@ class FinanceScreen extends ConsumerWidget {
             return RefreshIndicator(
               color: p.gold,
               onRefresh: () => ref.refresh(financeProvider(leagueId).future),
-              child: ListView(padding: const EdgeInsets.all(12), children: [
+              // [2026-11-06, stage 3] In landscape: the balance and the tickets on one side, sponsors and the ledger on the other.
+              child: GamePanes(startFlex: 1, endFlex: 1, start: [
                 GlmCard(
                   gold: true,
+                  accent: f.balance < 0 ? p.live : p.gold,
                   child: Column(children: [
-                    Text(l.balance, style: TextStyle(color: p.textMuted)),
-                    Text(money(context, f.balance), textDirection: TextDirection.ltr,
-                        style: num.copyWith(fontSize: 40, color: f.balance < 0 ? context.glm.liveText : context.glm.goldText)),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(Icons.account_balance_wallet_rounded, size: 18, color: p.textMuted),
+                      const SizedBox(width: 6),
+                      Text(l.balance, style: TextStyle(color: p.textMuted)),
+                    ]),
+                    CountUp(f.balance, format: (v) => money(context, v),
+                        style: num.copyWith(fontSize: 44, color: f.balance < 0 ? context.glm.liveText : context.glm.goldText)),
                     if (!f.canSpend) ...[
                       const SizedBox(height: 6),
                       Text(l.inDebt(f.debtRounds, f.debtLimit), textAlign: TextAlign.center, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700)),
@@ -88,7 +97,7 @@ class FinanceScreen extends ConsumerWidget {
                       ),
                   ]),
                 ),
-                gap,
+              ], end: [
                 SectionTitle(l.sponsors),
                 for (final s in f.sponsors)
                   Padding(
@@ -132,6 +141,7 @@ class FinanceScreen extends ConsumerWidget {
                       ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
+                        leading: IconTile(t.amount >= 0 ? Icons.south_west_rounded : Icons.north_east_rounded, size: 32, color: t.amount >= 0 ? p.success : p.live),
                         title: Text(t.label),
                         subtitle: t.at == null ? null : Text(when(context, t.at!.toLocal())),
                         trailing: Text('${t.amount > 0 ? '+' : ''}${money(context, t.amount)}', textDirection: TextDirection.ltr,
@@ -139,7 +149,6 @@ class FinanceScreen extends ConsumerWidget {
                       ),
                   ]),
                 ),
-                const SizedBox(height: 24),
               ]),
             );
           },

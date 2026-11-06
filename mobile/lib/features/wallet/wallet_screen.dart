@@ -9,7 +9,10 @@ import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
+import '../../ui/widgets/motion.dart';
+import '../../ui/widgets/stadium.dart';
 import '../home/home_data.dart';
 import '../leagues/widgets.dart' show when;
 
@@ -77,6 +80,7 @@ class WalletScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.wallet)),
       body: GlmBackground(
+        wide: true,
         child: AsyncView(
           value: ref.watch(walletProvider),
           onRetry: () => ref.invalidate(walletProvider),
@@ -86,12 +90,19 @@ class WalletScreen extends ConsumerWidget {
               ref.invalidate(storeProvider);
               return ref.refresh(walletProvider.future);
             },
-            child: ListView(padding: const EdgeInsets.all(12), children: [
+            // [2026-11-06, stage 3] In landscape: the balance and its movements on one side, the store on the other.
+            child: GamePanes(startFlex: 1, endFlex: 1, start: [
               GlmCard(
                 gold: true,
+                accent: p.gold,
                 child: Column(children: [
                   Text(l.coins, style: TextStyle(color: p.textMuted)),
-                  Text('${w.balance}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 44, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+                  const SizedBox(height: 4),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Image.asset('assets/brand/coin.png', width: 40, height: 40),
+                    const SizedBox(width: 10),
+                    CountUp(w.balance, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 48, fontWeight: FontWeight.w800, color: context.glm.goldText, height: 1)),
+                  ]),
                   const SizedBox(height: 8),
                   GlmButton(
                     label: w.dailyClaimed ? l.dailyClaimed : l.claimDaily,
@@ -111,7 +122,25 @@ class WalletScreen extends ConsumerWidget {
                   if (!w.dailyClaimed) Padding(padding: const EdgeInsets.only(top: 4), child: Text(l.dailyCoins(w.daily), style: TextStyle(color: p.textMuted, fontSize: 12))),
                 ]),
               ),
-              const SizedBox(height: 14),
+              if (w.transactions.isNotEmpty) ...[
+                SectionTitle(l.transactions),
+                GlmCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: Column(children: [
+                    for (final t in w.transactions)
+                      ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: IconTile(t.amount >= 0 ? Icons.add_rounded : Icons.remove_rounded, size: 32, color: t.amount >= 0 ? p.success : p.live),
+                        title: Text(t.label),
+                        subtitle: t.at == null ? null : Text(when(context, t.at!.toLocal())),
+                        trailing: Text('${t.amount > 0 ? '+' : ''}${t.amount}', textDirection: TextDirection.ltr,
+                            style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 17, color: t.amount >= 0 ? context.glm.successText : context.glm.liveText)),
+                      ),
+                  ]),
+                ),
+              ],
+            ], end: [
               SectionTitle(l.store),
               ...?ref.watch(storeProvider).value?.map((i) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -121,8 +150,13 @@ class WalletScreen extends ConsumerWidget {
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                         if (i.imageUrl != null)
                           ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                            child: AspectRatio(aspectRatio: 16 / 9, child: Image.network(i.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox())),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(GlmCard.radius)),
+                            child: AspectRatio(
+                              aspectRatio: isWide(context) ? 2.4 : 16 / 9,
+                              // Until the picture arrives, or when it cannot: the night stadium with the coin.
+                              child: Image.network(i.imageUrl!, fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => StadiumBackdrop(pitch: false, child: Center(child: Image.asset('assets/brand/coin.png', width: 56, height: 56)))),
+                            ),
                           ),
                         Padding(
                           padding: const EdgeInsets.all(14),
@@ -149,25 +183,6 @@ class WalletScreen extends ConsumerWidget {
                       ]),
                     ),
                   )),
-              if (w.transactions.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                SectionTitle(l.transactions),
-                GlmCard(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  child: Column(children: [
-                    for (final t in w.transactions)
-                      ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(t.label),
-                        subtitle: t.at == null ? null : Text(when(context, t.at!.toLocal())),
-                        trailing: Text('${t.amount > 0 ? '+' : ''}${t.amount}', textDirection: TextDirection.ltr,
-                            style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 17, color: t.amount >= 0 ? context.glm.successText : context.glm.liveText)),
-                      ),
-                  ]),
-                ),
-              ],
-              const SizedBox(height: 24),
             ]),
           ),
         ),

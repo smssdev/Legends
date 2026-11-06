@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import 'cut.dart';
 
 enum GlmButtonVariant { primary, brand, outline, quiet, danger }
 
@@ -46,19 +47,27 @@ class GlmButton extends StatelessWidget {
       enabled: enabled,
       child: Opacity(
         opacity: enabled || loading ? 1 : .45,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: fill, color: flat, borderRadius: BorderRadius.circular(GlmSize.radiusXl), border: Border.fromBorderSide(side),
-            boxShadow: fill != null && enabled ? [BoxShadow(color: p.shade.withValues(alpha: .28), blurRadius: 18, offset: const Offset(0, 8), spreadRadius: -8)] : null,
-          ),
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(GlmSize.radiusXl),
-              onTap: enabled ? () { HapticFeedback.selectionClick(); onPressed!(); } : null,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48, minWidth: GlmSize.touchMin),
-                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), child: child),
+        // [2026-11-06] In the Legend Cut, and the main button carries the passing sheen.
+        child: Shine(
+          enabled: variant == GlmButtonVariant.primary && enabled,
+          clip: GlmCut.button,
+          child: DecoratedBox(
+            decoration: ShapeDecoration(
+              gradient: fill, color: flat, shape: GlmCut.shape(GlmCut.button, side: side),
+              shadows: fill != null && enabled ? [BoxShadow(color: (variant == GlmButtonVariant.primary ? p.gold : p.shade).withValues(alpha: .30), blurRadius: 18, offset: const Offset(0, 8), spreadRadius: -8)] : null,
+            ),
+            child: CutClip(
+              cut: GlmCut.button,
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  customBorder: GlmCut.shape(GlmCut.button),
+                  onTap: enabled ? () { HapticFeedback.selectionClick(); onPressed!(); } : null,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48, minWidth: GlmSize.touchMin),
+                    child: Padding(padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12), child: child),
+                  ),
+                ),
               ),
             ),
           ),

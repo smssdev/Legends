@@ -12,7 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/club/club_data.dart';
+import 'package:glm/features/club/lineup_screen.dart';
 import 'package:glm/features/club/squad_screen.dart';
+import 'package:glm/features/club/tactics_screen.dart';
 import 'package:glm/features/club/team_data.dart';
 import 'package:glm/features/home/home_data.dart';
 import 'package:glm/features/auth/ui/login_screen.dart';
@@ -22,8 +24,12 @@ import 'package:glm/features/leagues/leagues_repository.dart';
 import 'package:glm/features/leagues/models.dart';
 import 'package:glm/features/match/live_screen.dart';
 import 'package:glm/features/match/match_data.dart';
+import 'package:glm/features/match/report_screen.dart';
 import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/market/market_screen.dart';
+import 'package:glm/features/money/finance_screen.dart';
+import 'package:glm/features/money/money_data.dart';
+import 'package:glm/features/wallet/wallet_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
 import 'package:glm/ui/widgets/brand.dart';
@@ -46,7 +52,7 @@ Future<void> fonts() async {
     }
     await l.load();
   }
-  final icons = FontLoader('MaterialIcons')..addFont(Future.value(ByteData.sublistView(File('/opt/sdk/flutter/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf').readAsBytesSync())));
+  final icons = FontLoader('MaterialIcons')..addFont(Future.value(ByteData.sublistView(File('${Platform.environment['FLUTTER_ROOT'] ?? '/opt/sdk/flutter'}/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf').readAsBytesSync())));
   await icons.load();
 }
 
@@ -114,6 +120,18 @@ void main() {
   }
   testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
   testWidgets('squad', (t) => shot(t, 'squad', const SquadScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
+  testWidgets('lineup', (t) => shot(t, 'lineup', const LineupScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
+  testWidgets('tactics', (t) => shot(t, 'tactics', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
+  testWidgets('market-sell', (t) => shot(t, 'market-sell', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())], tap: 'بيع'));
+  testWidgets('report', (t) => shot(t, 'report', const MatchReportScreen(matchId: 77, coach: true), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]));
+  testWidgets('wallet', (t) => shot(t, 'wallet', const WalletScreen(), [
+        walletProvider.overrideWith((ref) async => WalletView.fromJson({...json('wallet'), 'balance': 1250, 'transactions': [
+              {'label': 'هدية البداية', 'amount': 25, 'at': '2026-11-05T20:00:00Z'},
+              {'label': 'ودية', 'amount': -5, 'at': '2026-11-05T21:00:00Z'},
+            ]})),
+        storeProvider.overrideWith((ref) async => [for (final i in json('store')['items'] as List) StoreItem.fromJson(i as Map<String, dynamic>)]),
+      ]));
+  testWidgets('finance', (t) => shot(t, 'finance', const FinanceScreen(leagueId: 8), [financeProvider.overrideWith((ref, id) async => Finance.fromJson(json('finance')))]));
   testWidgets('market', (t) => shot(t, 'market', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())]));
   testWidgets('live', (t) => shot(t, 'live', const LiveMatchScreen(matchId: 77), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]));
 }
