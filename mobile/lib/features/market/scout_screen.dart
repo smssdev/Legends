@@ -14,6 +14,7 @@ import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'market_data.dart';
 import 'market_screen.dart' show BuySheet;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The scout (Sprint 26): the coach's terms, the price and the time from the server, the search under
 /// way (finished now for coins at the server's price) and the reports, whose players he buys at the pool price.
@@ -100,7 +101,7 @@ class _ScoutScreenState extends ConsumerState<ScoutScreen> {
     final l = L.of(context);
     final repo = ref.read(scoutRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l.scout)),
+      appBar: GameBar(title: Text(l.scout)),
       body: GlmBackground(
         child: AsyncView(
           value: ref.watch(scoutProvider(widget.leagueId)),

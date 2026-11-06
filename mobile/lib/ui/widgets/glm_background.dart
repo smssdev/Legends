@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/sounds.dart';
 import '../theme.dart';
+import '../tokens.g.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
 class GlmBackground extends StatelessWidget {
@@ -21,15 +22,16 @@ class GlmBackground extends StatelessWidget {
         gradient: RadialGradient(
           center: const Alignment(0, -1.1),
           radius: 1.35,
-          colors: context.glm.day ? [p.surface, p.bg, p.bgDeep] : [Color.lerp(p.brandDark, p.bg, .55)!, p.bg, p.bgDeep],
+          // [Sprint 46] By night the arena: bright blue at the top, deeper toward the edges.
+          colors: context.glm.day ? [p.surface, p.bg, p.bgDeep] : [GlmArena.blueLight, GlmArena.blue, GlmArena.blueDeep],
           stops: const [0, .55, 1],
         ),
       ),
       // [2026-11-06] A stadium's mowing stripes, barely there, under everything; and, the game's signature ground, a
       // whole pitch's markings drawn faintly across the screen with two floodlights glowing from its top corners.
       child: CustomPaint(
-        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014),
-            lines: (context.glm.day ? p.textMuted : Colors.white).withValues(alpha: context.glm.day ? .06 : .035), light: p.goldLight.withValues(alpha: context.glm.day ? .0 : .07)),
+        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .035),
+            lines: (context.glm.day ? p.textMuted : Colors.white).withValues(alpha: context.glm.day ? .06 : .07), light: Colors.white.withValues(alpha: context.glm.day ? .0 : .10)),
         child: wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child)),
       ),
     );

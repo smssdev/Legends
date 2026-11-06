@@ -64,7 +64,8 @@ void main() {
       ),
     ));
     await t.pumpAndSettle();
-    expect(find.text('مباراتك القادمة'), findsOneWidget);
+    // [Sprint 46] The hub: the next match's round on the stadium, the opponent's name.
+    expect(find.text('الجولة 1'), findsOneWidget);
     expect(find.text(summary.next!.name), findsOneWidget);
 
     // The five sections at the bottom: the matches (calendar, then the table), and «more» with the coaches.

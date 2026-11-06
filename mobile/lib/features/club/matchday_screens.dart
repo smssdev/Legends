@@ -14,6 +14,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'squad_screen.dart' show money;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 I] The club's match-day panels in the app (the web's NextMatch, Contracts and Tickets panels): moving
 /// the next match by hours with the other coach's yes (Sprint 27 B2), the press conference (UP12), what goes on behind
@@ -43,7 +44,7 @@ String price(BuildContext context, Object? p) {
   return m['currency'] == 'coins' ? L.of(context).coinsWord(n) : money(context, n);
 }
 
-Widget _page(String title, Widget body) => Scaffold(appBar: AppBar(title: Text(title)), body: GlmBackground(child: body));
+Widget _page(String title, Widget body) => Scaffold(appBar: GameBar(title: Text(title)), body: GlmBackground(child: body));
 
 class MatchdayScreen extends ConsumerWidget {
   const MatchdayScreen({super.key, required this.leagueId});
@@ -326,7 +327,7 @@ class MissedScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.missedTitle), actions: [
+      appBar: GameBar(title: Text(l.missedTitle), actions: [
         TextButton(
           onPressed: () async {
             await _try(context, () => ref.read(apiProvider).post('/leagues/$leagueId/team/missed/seen'));

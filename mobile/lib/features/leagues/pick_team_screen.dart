@@ -10,6 +10,7 @@ import '../../ui/widgets/glm_button.dart';
 import 'leagues_repository.dart';
 import 'models.dart';
 import 'widgets.dart';
+import 'shell.dart';
 
 /// [Sprint 16 F1] Take one of the league's clubs with no coach: strongest first, each with its objective. A club taken a
 /// moment before by another coach sends the list back (409).
@@ -48,7 +49,7 @@ class _PickTeamScreenState extends ConsumerState<PickTeamScreen> {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.pickClub)),
+      appBar: GameBar(title: Text(l.pickClub)),
       bottomNavigationBar: SafeArea(
         child: Padding(padding: const EdgeInsets.all(16), child: GlmButton(label: l.takeClub, block: true, loading: _busy, onPressed: _club == null ? null : _take)),
       ),

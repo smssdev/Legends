@@ -11,6 +11,7 @@ import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/glm_text_field.dart';
 import 'leagues_repository.dart';
 import 'models.dart';
+import 'shell.dart';
 
 /// [Sprint 16 F1, F2] Join with a league's code (typed, or from an invite link that opened the app): the request, then
 /// the creator's answer, then the team.
@@ -65,7 +66,7 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.joinTitle)),
+      appBar: GameBar(title: Text(l.joinTitle)),
       body: GlmBackground(
         child: ListView(padding: const EdgeInsets.all(20), children: [
           if (_sent == null) ...[

@@ -113,6 +113,22 @@ abstract final class GlmInk {
   static const ring = Color(0xFF096C52);
 }
 
+/// [Sprint 46] The app's arena look: the blue ground, the navy cards, the top bar's pills.
+abstract final class GlmArena {
+  static const blue = Color(0xFF2A62C6);
+  static const blueLight = Color(0xFF4B8AEB);
+  static const blueDeep = Color(0xFF173E8C);
+  static const navy = Color(0xFF0F2248);
+  static const navyLight = Color(0xFF1B3769);
+  static const navyEdge = Color(0xFF2D4F8E);
+  static const pillGreen = Color(0xFF2FA046);
+  static const pillBlue = Color(0xFF2B7ED3);
+  static const alert = Color(0xFF36C43E);
+  static const questTop = Color(0xFFFFE36E);
+  static const questBottom = Color(0xFFF3B71F);
+  static const menu = Color(0xFF2459B8);
+}
+
 /// A player's line: its badge colour and text.
 abstract final class GlmLine {
   static const gk = (bg: Color(0xFFF5B82E), fg: Color(0xFF0B1A2C));

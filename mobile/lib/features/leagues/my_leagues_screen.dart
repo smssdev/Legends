@@ -9,6 +9,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import 'leagues_repository.dart';
+import 'shell.dart';
 
 /// [Sprint 16 F1] My leagues: each with its state and my place in it, and the two ways in.
 class MyLeaguesScreen extends ConsumerWidget {
@@ -19,7 +20,7 @@ class MyLeaguesScreen extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.myLeagues)),
+      appBar: GameBar(title: Text(l.myLeagues)),
       body: GlmBackground(
         child: RefreshIndicator(
           onRefresh: () => ref.refresh(myLeaguesProvider.future),

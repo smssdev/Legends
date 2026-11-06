@@ -20,6 +20,7 @@ import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money;
 import '../leagues/widgets.dart' show when;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 E] The league's social screens in the app: the friendlies (Sprint 24, a quick match played back fast),
 /// the predictions and the newspaper (UP12), and the chat groups (Sprint 29). The server decides and writes all of it.
@@ -57,7 +58,7 @@ Future<T?> _try<T>(BuildContext context, Future<T> Function() action) async {
   }
 }
 
-Widget _page(String title, Widget body) => Scaffold(appBar: AppBar(title: Text(title)), body: GlmBackground(child: body));
+Widget _page(String title, Widget body) => Scaffold(appBar: GameBar(title: Text(title)), body: GlmBackground(child: body));
 
 class FriendliesScreen extends ConsumerWidget {
   const FriendliesScreen({super.key, required this.leagueId});
@@ -448,7 +449,7 @@ class GroupsScreen extends ConsumerWidget {
       });
     }
     return Scaffold(
-      appBar: AppBar(title: Text(l.groups), actions: [
+      appBar: GameBar(title: Text(l.groups), actions: [
         IconButton(
           tooltip: l.joinGroup,
           icon: const Icon(Icons.vpn_key_rounded),
@@ -716,7 +717,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.name)),
+      appBar: GameBar(title: Text(widget.name)),
       body: GlmBackground(
         child: Column(children: [
           Expanded(

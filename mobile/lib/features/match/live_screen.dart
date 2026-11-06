@@ -20,6 +20,7 @@ import 'feed/director.dart';
 import 'feed/story.dart';
 import 'live_pitch.dart';
 import 'match_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 17 F2] The live match in the app (the web's /live/{id}): the score bug, the light pitch, the commentary
 /// line by line from the server (`text`), and for a coach of either side his orders (a substitution, the tactics or
@@ -35,7 +36,7 @@ class LiveMatchScreen extends ConsumerWidget {
     final value = ref.watch(matchProvider(matchId));
     if (value.value case final m?) return _Live(view: m);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: GameBar(),
       body: GlmBackground(child: AsyncView(value: value, onRetry: () => ref.invalidate(matchProvider(matchId)), data: (_) => const SizedBox())),
     );
   }
@@ -201,7 +202,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
         for (final p in _teams[side]!.players) '${p.id}': (side, p.no),
     };
     return Scaffold(
-      appBar: AppBar(title: Text(_finished ? l.fullTime : l.liveNow)),
+      appBar: GameBar(title: Text(_finished ? l.fullTime : l.liveNow)),
       body: GlmBackground(
         wide: true,
         child: LayoutBuilder(builder: (context, box) {

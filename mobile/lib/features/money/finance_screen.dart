@@ -12,6 +12,7 @@ import '../../ui/widgets/motion.dart';
 import '../club/squad_screen.dart' show money;
 import '../leagues/widgets.dart' show when;
 import 'money_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The club's money (the web's FinancePage): the balance and the season, the ticket price, the three
 /// sponsors of the stands (one offer each, for the season) and the ledger. Every number comes from the server.
@@ -34,7 +35,7 @@ class FinanceScreen extends ConsumerWidget {
     final l = L.of(context);
     final repo = ref.read(moneyRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l.finance)),
+      appBar: GameBar(title: Text(l.finance)),
       body: GlmBackground(
         wide: true,
         child: AsyncView(

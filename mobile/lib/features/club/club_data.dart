@@ -8,7 +8,7 @@ import '../leagues/models.dart';
 class ClubSummary {
   const ClubSummary({required this.club, required this.cash, required this.coins, this.next, this.venue, this.matchAt, this.lineupAuto = true,
       this.lineupReady = true, this.position, this.teams, this.goal, this.pending = const [], this.matchId, this.matchStatus, this.missed = 0,
-      this.needs = const [], this.strength, this.top = const [], this.formation, this.timers = const []});
+      this.needs = const [], this.strength, this.top = const [], this.formation, this.timers = const [], this.round});
 
   factory ClubSummary.fromJson(Map<String, dynamic> j) {
     final m = j['match'] as Map<String, dynamic>?;
@@ -34,6 +34,7 @@ class ClubSummary {
           (position: (r as Map)['position'] as int? ?? 0, name: '${r['name']}', code: '${r['code'] ?? ''}', points: r['points'] as int? ?? 0, mine: r['mine'] == true),
       ],
       formation: lineup['formation'] as String?,
+      round: m?['round'] as int?,
       timers: [for (final t in (j['timers'] as List? ?? const [])) (kind: '${(t as Map)['kind']}', at: date(t['at']))],
     );
   }
@@ -64,6 +65,9 @@ class ClubSummary {
   final List<({int position, String name, String code, int points, bool mine})> top;
   final String? formation;
   final List<({String kind, DateTime? at})> timers;
+
+  /// The next match's round.
+  final int? round;
 }
 
 extension _Let<T> on T {

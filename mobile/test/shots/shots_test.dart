@@ -71,7 +71,7 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at, IconData? tapIcon}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = const Size(844 * 2, 390 * 2);
@@ -110,8 +110,8 @@ Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {d
     await t.runAsync(() => precacheImage((e.widget as Image).image, e));
   }
   await t.pump(const Duration(milliseconds: 100));
-  if (tap != null) {
-    await t.tap(find.text(tap).last);
+  if (tap != null || tapIcon != null) {
+    await t.tap(tap != null ? find.text(tap).last : find.byIcon(tapIcon!).first);
     for (var i = 0; i < 8; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }
@@ -142,6 +142,9 @@ void main() {
           fixturesProvider.overrideWith((ref, id) async => [for (final f in json('fixtures')['fixtures'] as List) Fixture.fromJson(f as Map<String, dynamic>)]),
         ]));
   }
+  testWidgets('menu', (t) => shot(t, 'menu', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))], tapIcon: Icons.menu_rounded));
   testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
   testWidgets('squad', (t) => shot(t, 'squad', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),

@@ -16,6 +16,7 @@ import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
 import '../home/home_data.dart';
 import '../leagues/widgets.dart' show when;
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The coins wallet (Sprint 34) and the store (Sprint 43 W2): the balance, today's coins, the latest
 /// movements, and the packages and timed offers, each ordered on WhatsApp as on the site (no payment in the app).
@@ -79,7 +80,7 @@ class WalletScreen extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.wallet)),
+      appBar: GameBar(title: Text(l.wallet)),
       body: GlmBackground(
         wide: true,
         child: AsyncView(

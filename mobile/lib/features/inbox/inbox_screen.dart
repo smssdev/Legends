@@ -9,6 +9,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../leagues/widgets.dart' show when;
 import 'inbox_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 18 F1] The inbox: the newest first, unread marked; a tap reads it and opens its screen in the app.
 class InboxScreen extends ConsumerStatefulWidget {
@@ -68,7 +69,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     final l = L.of(context);
     final p = context.palette;
     return Scaffold(
-      appBar: AppBar(title: Text(l.inbox), actions: [
+      appBar: GameBar(title: Text(l.inbox), actions: [
         if (_items.any((m) => !m.read))
           TextButton(
             onPressed: () async {

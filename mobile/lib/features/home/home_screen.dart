@@ -11,6 +11,9 @@ import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
+import '../../ui/tokens.g.dart';
+import '../../ui/widgets/game_icons.dart';
+import '../../ui/widgets/kit.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/cut.dart';
@@ -119,27 +122,35 @@ class _Home extends ConsumerWidget {
           color: p.gold,
           onRefresh: refresh,
           child: LayoutBuilder(builder: (context, box) {
-            // [2026-11-06] Landscape: the coach on the stadium at the side, his teams in a grid beside him.
+            // [Sprint 46] Landscape, the manager games' way: the manager's file (his card, his record, the gift) on one
+            // side, his slots as big numbered tiles on the stadium on the other, under the arena's top bar.
             if (box.maxWidth >= 700) {
+              final side = (box.maxWidth * .44).clamp(320.0, 470.0);
               return Column(children: [
-                _TopBar(h),
+                _ArenaBar(h),
                 Expanded(
                   child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     SizedBox(
-                      width: (box.maxWidth * .38).clamp(300, 420),
-                      child: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 8, 24), children: [
-                        FadeSlideIn(child: _CoachCard(h.coach)),
-                        for (final (i, w) in extras.indexed) FadeSlideIn(index: i + 1, child: w),
+                      width: side,
+                      child: ListView(padding: const EdgeInsets.fromLTRB(16, 6, 8, 20), children: [
+                        _Label(l.coachFile),
+                        FadeSlideIn(child: _ProfileCard(h.coach)),
+                        const SizedBox(height: 10),
+                        FadeSlideIn(index: 1, child: _RecordTiles(h.coach)),
+                        for (final (i, w) in extras.indexed) FadeSlideIn(index: i + 2, child: w),
+                        if (h.starterClaimed || h.starterCoins == 0) Padding(padding: const EdgeInsets.only(top: 10), child: FadeSlideIn(index: 3, child: _ShopTile())),
                       ]),
                     ),
                     Expanded(
-                      child: ListView(padding: const EdgeInsets.fromLTRB(8, 0, 16, 24), children: [
-                        teamsTitle,
-                        Wrap(spacing: 12, runSpacing: 12, children: [
-                          for (final (i, s) in h.slots.indexed)
-                            SizedBox(width: ((box.maxWidth - (box.maxWidth * .38).clamp(300, 420)) - 24 - 12) / 2, child: FadeSlideIn(index: i + 2, child: _SlotCard(s))),
-                        ]),
-                      ]),
+                      child: LayoutBuilder(builder: (context, pane) {
+                        final w = (pane.maxWidth - 24 - 12) / 2;
+                        return ListView(padding: const EdgeInsets.fromLTRB(8, 6, 16, 20), children: [
+                          _Label('${l.coachSlots} · ${h.slotsOpen}/${h.slots.length}'),
+                          Wrap(spacing: 12, runSpacing: 12, children: [
+                            for (final (i, s) in h.slots.indexed) SizedBox(width: w, height: w * .62, child: FadeSlideIn(index: i + 1, child: _SlotTile(s))),
+                          ]),
+                        ]);
+                      }),
                     ),
                   ]),
                 ),
@@ -374,5 +385,336 @@ class _SlotCard extends ConsumerWidget {
           ]),
         );
     }
+  }
+}
+
+/// [Sprint 46] A section's name over it, as the manager games label their panels: small, bold, light on the blue.
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+        child: Text(text, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 15)),
+      );
+}
+
+/// The arena's top bar on the home: the game's mark, the coins in their green pill (to the wallet), the messages with
+/// their count, the settings.
+class _ArenaBar extends ConsumerWidget {
+  const _ArenaBar(this.h);
+
+  final HomeData h;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    final unread = ref.watch(unreadProvider).value ?? 0;
+    Widget square(IconData icon, String tip, VoidCallback onTap, {int badge = 0}) => Padding(
+          padding: const EdgeInsetsDirectional.only(start: 6),
+          child: Stack(clipBehavior: Clip.none, children: [
+            Material(
+              shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .25))),
+              color: GlmArena.menu,
+              child: InkWell(customBorder: GlmCut.shape(10), onTap: onTap, child: SizedBox(width: 46, height: 38, child: Tooltip(message: tip, child: Icon(icon, color: Colors.white, size: 24)))),
+            ),
+            if (badge > 0)
+              PositionedDirectional(
+                top: -6,
+                end: -4,
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(color: GlmArena.alert, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white, width: 1.5)),
+                  child: Text('$badge', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11)),
+                ),
+              ),
+          ]),
+        );
+    return Container(
+      padding: EdgeInsets.fromLTRB(14, MediaQuery.of(context).padding.top + 6, 10, 6),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
+        border: Border(bottom: BorderSide(color: p.gold.withValues(alpha: .45), width: 1.2)),
+      ),
+      child: Row(children: [
+        const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: FittedBox(child: BrandMark(size: 30)))),
+        CoinsPill(coins: h.coach.coins, onTap: () => context.push('/wallet')),
+        square(Icons.notifications_rounded, l.inbox, () => context.push('/inbox'), badge: unread),
+        square(Icons.emoji_events_rounded, l.myLeagues, () => context.push('/leagues')),
+        square(Icons.settings_rounded, l.settings, () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
+      ]),
+    );
+  }
+}
+
+/// The manager's card: his picture in a lit ring, his name large, then a navy band with his rank, its shield and his
+/// points with their bar, on the arena's bright blue.
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard(this.c);
+
+  final Coach c;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final tier = switch (c.tierKey) {
+      'tactician' => l.tierTactician, 'professional' => l.tierProfessional, 'elite' => l.tierElite, 'mastermind' => l.tierMastermind,
+      'icon' => l.tierIcon, 'legend' => l.tierLegend, _ => l.tierProspect,
+    };
+    const tiers = ['prospect', 'tactician', 'professional', 'elite', 'mastermind', 'icon', 'legend'];
+    final level = tiers.indexOf(c.tierKey) + 1;
+    final fill = ((c.division ?? 1) / 3).clamp(.1, 1.0);
+    return HeroFrame(
+      cut: 18,
+      edge: Colors.white,
+      glow: GlmArena.blueLight,
+      gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.blueLight, GlmArena.blue]),
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [Color(0xFFFFA94D), Color(0xFFE2620E)])),
+              child: CircleAvatar(radius: 34, backgroundColor: GlmArena.navy,
+                  child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white))),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, shadows: [Shadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 4)])),
+            ),
+          ]),
+        ),
+        Container(
+          color: GlmArena.navy.withValues(alpha: .85),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          child: Row(children: [
+            // The rank's shield with its level.
+            SizedBox(width: 46, height: 46, child: CrestShield(code: '$level', color: const Color(0xFFE2620E), size: 46)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Expanded(child: Text(tier, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 17))),
+                  Image.asset('assets/brand/coin.png', width: 18, height: 18),
+                  const SizedBox(width: 4),
+                  CountUp(c.points, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 20, color: Colors.white)),
+                ]),
+                const SizedBox(height: 6),
+                LevelBar(fill, color: p.success, width: double.infinity, height: 8),
+              ]),
+            ),
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
+/// The manager's record as tiles: each number large over its glossy picture.
+class _RecordTiles extends StatelessWidget {
+  const _RecordTiles(this.c);
+
+  final Coach c;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final tiles = [(l.statWon, c.won, GameGlyph.honours), (l.statDrawn, c.drawn, GameGlyph.match), (l.statLost, c.lost, GameGlyph.alliance)];
+    return Row(children: [
+      for (final (i, (label, n, glyph)) in tiles.indexed) ...[
+        if (i > 0) const SizedBox(width: 8),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+            decoration: ShapeDecoration(
+              shape: GlmCut.shape(12, side: const BorderSide(color: GlmArena.navyEdge)),
+              gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
+            ),
+            child: Column(children: [
+              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+              CountUp(n, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: Colors.white, height: 1.1)),
+              GameIcon(glyph, size: 34),
+            ]),
+          ),
+        ),
+      ],
+    ]);
+  }
+}
+
+/// The shop as a gold tile, as the manager games keep their offers in sight.
+class _ShopTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    return Material(
+      shape: GlmCut.shape(14, side: BorderSide(color: p.goldLight)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push('/wallet'),
+        child: Ink(
+          decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.questTop, GlmArena.questBottom])),
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          child: Row(children: [
+            const GameIcon(GameGlyph.shop, size: 52),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(l.shopTile, style: TextStyle(color: p.onGold, fontWeight: FontWeight.w800, fontSize: 19)),
+                Text(l.shopSub, style: TextStyle(color: p.onGold.withValues(alpha: .75), fontWeight: FontWeight.w700, fontSize: 13)),
+              ]),
+            ),
+            Icon(Icons.chevron_right_rounded, color: p.onGold),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+/// A slot as the manager games show it: a big tile on the stadium, its number in a navy corner, the club's crest in its
+/// middle and its name large under it with the league, or the way to a new league, or its lock and countdown. A live
+/// match turns it red; a tap opens the league.
+class _SlotTile extends ConsumerWidget {
+  const _SlotTile(this.s);
+
+  final Slot s;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    final locked = s.state == SlotState.locked;
+    final free = s.state == SlotState.free;
+    VoidCallback? tap = switch (s.state) {
+      SlotState.club => () => context.push('/leagues/${s.leagueId}'),
+      SlotState.free => () => showModalBottomSheet<void>(
+            context: context,
+            showDragHandle: true,
+            builder: (ctx) => SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  GlmButton(label: l.createLeague, block: true, icon: const Icon(Icons.add_rounded), onPressed: () {
+                    Navigator.pop(ctx);
+                    context.push('/leagues/new');
+                  }),
+                  const SizedBox(height: 8),
+                  GlmButton(label: l.joinByCode, block: true, variant: GlmButtonVariant.quiet, icon: const Icon(Icons.vpn_key_rounded), onPressed: () {
+                    Navigator.pop(ctx);
+                    context.push('/join');
+                  }),
+                ]),
+              ),
+            ),
+          ),
+      SlotState.locked when s.unlockCoins != null => () async {
+          if (!await confirm(context, l.unlockConfirm(s.number, s.unlockCoins!)) || !context.mounted) return;
+          try {
+            await ref.read(apiProvider).post('/home/slots/${s.number}/unlock');
+          } on ApiError catch (e) {
+            if (context.mounted) showGlmToast(context, e.message, error: true);
+          }
+          ref.invalidate(homeProvider);
+        },
+      _ => null,
+    };
+    final top = switch (s.state) {
+      SlotState.club => s.live ? l.liveBadge : s.position != null ? '${s.position}/${s.teams}' : '',
+      SlotState.waiting => l.slotWaiting,
+      SlotState.locked => s.opensAt == null ? l.slotLocked : l.slotOpensIn(_left(context, s.opensAt!)),
+      _ => '',
+    };
+    Widget middle = switch (s.state) {
+      SlotState.club => ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 70),
+      SlotState.free => Container(
+          width: 66,
+          height: 66,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.navy, border: Border.all(color: GlmArena.navyEdge, width: 2)),
+          child: const Icon(Icons.add_rounded, size: 52, color: Color(0xFF7FD3FF)),
+        ),
+      SlotState.locked => Icon(Icons.lock_rounded, size: 56, color: Colors.white.withValues(alpha: .85)),
+      _ => const Icon(Icons.hourglass_top_rounded, size: 52, color: Colors.white70),
+    };
+    final name = switch (s.state) {
+      SlotState.club => (s.clubName ?? '').toUpperCase(),
+      SlotState.free => l.newLeagueShort,
+      SlotState.locked when s.unlockCoins != null => l.unlockSlot(s.unlockCoins!),
+      _ => '',
+    };
+    final sub = s.state == SlotState.club ? (s.opponent == null ? s.leagueName ?? '' : l.vs(s.opponent!)) : '';
+    return Material(
+      shape: GlmCut.shape(16, side: BorderSide(color: s.live ? p.danger : Colors.white.withValues(alpha: .18), width: 1.4)),
+      clipBehavior: Clip.antiAlias,
+      color: GlmArena.navy,
+      child: InkWell(
+        onTap: tap,
+        child: Stack(fit: StackFit.expand, children: [
+          if (!free && !locked) const StadiumBackdrop(),
+          if (free) DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(center: const Alignment(-.6, -.8), radius: 1.3, colors: [GlmArena.blueLight.withValues(alpha: .6), GlmArena.blueDeep]))),
+          if (locked) const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]))),
+          if (s.live) DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [GlmArena.blue.withValues(alpha: .7), p.live.withValues(alpha: .8)]))),
+          // The slot's number in its corner.
+          PositionedDirectional(
+            top: 0,
+            end: 14,
+            child: Container(
+              width: 52,
+              height: 58,
+              alignment: Alignment.center,
+              decoration: const ShapeDecoration(shape: BeveledRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(10))), color: GlmArena.navy),
+              child: Text('${s.number}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 36, color: Colors.white)),
+            ),
+          ),
+          if (top.isNotEmpty)
+            PositionedDirectional(
+              top: 10,
+              start: 14,
+              end: 76,
+              child: Text(top, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: s.live ? Colors.white : p.goldLight, fontWeight: FontWeight.w800, fontSize: 15, shadows: const [Shadow(color: Colors.black54, blurRadius: 4)])),
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 28, 12, 10),
+            child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Expanded(child: FittedBox(fit: BoxFit.scaleDown, child: middle)),
+              const SizedBox(height: 6),
+              if (name.isNotEmpty)
+                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, textDirection: s.state == SlotState.club ? TextDirection.ltr : null,
+                    style: TextStyle(fontFamily: s.state == SlotState.club ? GlmFonts.numbers : GlmFonts.body, fontWeight: FontWeight.w800, fontSize: s.state == SlotState.club || free ? 26 : 16, color: Colors.white, height: 1.05,
+                        shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 4)])),
+              if (sub.isNotEmpty) Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w700, fontSize: 13)),
+            ]),
+          ),
+          if (s.pending > 0)
+            PositionedDirectional(
+              bottom: 8,
+              end: 10,
+              child: Container(
+                width: 24,
+                height: 24,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.alert, border: Border.all(color: Colors.white, width: 2)),
+                child: const Text('!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, height: 1)),
+              ),
+            ),
+        ]),
+      ),
+    );
+  }
+
+  String _left(BuildContext context, DateTime at) {
+    final l = L.of(context);
+    final left = at.difference(DateTime.now());
+    if (left.inDays >= 1) return l.days(left.inDays);
+    if (left.inHours >= 1) return l.hours(left.inHours);
+    return l.minutes(left.inMinutes.clamp(1, 59));
   }
 }

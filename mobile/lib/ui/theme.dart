@@ -29,8 +29,19 @@ abstract final class GlmFonts {
   static const numbers = 'BarlowCondensed';
 }
 
+/// [Sprint 46] The app's night look on the arena (tokens.json «arena», the owner's choice): the royal-blue ground, navy
+/// cards and panels, the rest of the night's colours kept (gold, pitch, the text, the states).
+final glmArenaNight = GlmPalette(
+  bg: GlmArena.blue, bgDeep: GlmArena.blueDeep, surface: GlmArena.navy, surfaceSunk: Color.lerp(GlmArena.navy, const Color(0xFF000000), .25)!,
+  surfaceRaised: GlmArena.navyLight, gold: glmNight.gold, goldDark: glmNight.goldDark, goldLight: glmNight.goldLight, pitch: glmNight.pitch,
+  pitchDark: glmNight.pitchDark, text: glmNight.text, textMuted: const Color(0xFFB9C7E3), textSoft: const Color(0xFFD6DFF0), live: glmNight.live,
+  warning: glmNight.warning, success: glmNight.success, onGold: glmNight.onGold, brand: glmNight.brand, brandDark: GlmArena.blueDeep,
+  brandLight: GlmArena.blueLight, ring: glmNight.ring, chrome: glmNight.chrome, chromeDark: glmNight.chromeDark, onChrome: glmNight.onChrome,
+  panel: GlmArena.navy, danger: glmNight.danger, bronze: glmNight.bronze, silver: glmNight.silver, cardYellow: glmNight.cardYellow, shade: glmNight.shade,
+);
+
 ThemeData glmTheme({required bool day}) {
-  final p = day ? glmDay : glmNight;
+  final p = day ? glmDay : glmArenaNight;
   final scheme = ColorScheme(
     brightness: day ? Brightness.light : Brightness.dark,
     primary: p.gold, onPrimary: p.onGold,

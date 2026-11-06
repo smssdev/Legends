@@ -12,6 +12,7 @@ import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
 import 'live_screen.dart' show EventLine;
 import 'match_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 17 F2] After the whistle: the coach's report (why he won or lost, what to improve, his assistant's verdict,
 /// the numbers, the key moments and the best players), or the quick recap for a member who coaches neither side.
@@ -26,7 +27,7 @@ class MatchReportScreen extends ConsumerWidget {
     final l = L.of(context);
     final key = (matchId, coach);
     return Scaffold(
-      appBar: AppBar(title: Text(l.matchReport)),
+      appBar: GameBar(title: Text(l.matchReport)),
       body: GlmBackground(
         wide: true,
         child: AsyncView(

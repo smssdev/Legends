@@ -11,6 +11,7 @@ import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import 'team_data.dart';
+import '../leagues/shell.dart';
 
 /// [Sprint 17 F1] The tactics (the web's TacticsPage): the plan, the tackling, the three sliders, the three lines, the
 /// trap and the marking. Saved by itself a moment after each change (Sprint 27), and refused from the lock five minutes
@@ -67,7 +68,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l.tactics)),
+      appBar: GameBar(title: Text(l.tactics)),
       body: GlmBackground(
         wide: true,
         child: AsyncView(
