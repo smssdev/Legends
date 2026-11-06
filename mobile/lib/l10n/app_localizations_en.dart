@@ -1256,4 +1256,219 @@ class LEn extends L {
 
   @override
   String get emailNeeded => 'Needs a confirmed email on your account';
+
+  @override
+  String get newOffer => 'New offer';
+
+  @override
+  String get counterOffer => 'Counter';
+
+  @override
+  String get pickCoachClub => 'To which club?';
+
+  @override
+  String get noCoachClubs => 'No other coaches in the league yet';
+
+  @override
+  String offerTitleTo(String club) {
+    return 'Offer to $club';
+  }
+
+  @override
+  String get youWant => 'You ask for (up to 5)';
+
+  @override
+  String get youGive => 'And you give (optional)';
+
+  @override
+  String get youPay => 'And you pay';
+
+  @override
+  String offerValues(String want, String give) {
+    return 'Value asked $want, value given $give';
+  }
+
+  @override
+  String fairHint(int min, int max) {
+    return 'A fair deal is between $min% and $max% of the value you ask for';
+  }
+
+  @override
+  String get sendOffer => 'Send the offer';
+
+  @override
+  String get offerSent => 'The offer reached its coach';
+
+  @override
+  String get askLoan => 'Ask to borrow him';
+
+  @override
+  String loanRounds(int n) {
+    return 'Loan rounds: $n';
+  }
+
+  @override
+  String get loanFee => 'Loan fee';
+
+  @override
+  String get loans => 'Loans';
+
+  @override
+  String loanOf(String player, String owner, String borrower) {
+    return '$player: from $owner to $borrower';
+  }
+
+  @override
+  String loanTerms(int rounds, String fee) {
+    return '$rounds rounds · $fee';
+  }
+
+  @override
+  String get loanSent => 'The loan request was sent';
+
+  @override
+  String get academy => 'Academy';
+
+  @override
+  String academyLead(int signed, int per) {
+    return 'Young talents for this period; the potential is a range until you sign one. $signed of $per this season.';
+  }
+
+  @override
+  String signProspect(String price) {
+    return 'Sign for $price';
+  }
+
+  @override
+  String signProspectConfirm(String name, String price) {
+    return 'Sign $name for $price?';
+  }
+
+  @override
+  String potentialRange(int from, int to) {
+    return 'Potential $from–$to';
+  }
+
+  @override
+  String get friendlies => 'Friendlies';
+
+  @override
+  String friendlyLead(int fit) {
+    return 'A quick friendly against any club: fitness +$fit and chemistry, not in the table.';
+  }
+
+  @override
+  String friendlyCost(int coins) {
+    return 'A friendly costs $coins coins';
+  }
+
+  @override
+  String get friendlyFree => 'The first is free';
+
+  @override
+  String get playFriendly => 'Play';
+
+  @override
+  String get suggestedOpponent => 'Suggested';
+
+  @override
+  String get playedToday => 'Played today';
+
+  @override
+  String get recentFriendlies => 'Recent friendlies';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get bestOfMatch => 'Best on the pitch';
+
+  @override
+  String get kGoal => 'Goal';
+
+  @override
+  String get kSaved => 'Saved';
+
+  @override
+  String get kMissed => 'Missed';
+
+  @override
+  String get kCorner => 'Corner';
+
+  @override
+  String get kYellow => 'Yellow';
+
+  @override
+  String get kRed => 'Red';
+
+  @override
+  String get kAttack => 'Attack';
+
+  @override
+  String get predictions => 'Predictions';
+
+  @override
+  String predictionsLead(int round, String reward) {
+    return 'Predict round $round; each right pick pays your club $reward.';
+  }
+
+  @override
+  String get draw => 'Draw';
+
+  @override
+  String get predictionClosed => 'Closed';
+
+  @override
+  String get newspaper => 'Newspaper';
+
+  @override
+  String get noEdition => 'No edition yet: it comes out after the first round';
+
+  @override
+  String roundResults(int round) {
+    return 'Round $round results';
+  }
+
+  @override
+  String get playerOfRound => 'Player of the round';
+
+  @override
+  String get coachOfRound => 'Coach of the round';
+
+  @override
+  String get articles => 'Coaches\' articles';
+
+  @override
+  String get writeArticle => 'Write an article';
+
+  @override
+  String get articleTitle => 'Title';
+
+  @override
+  String get articleBody => 'Article';
+
+  @override
+  String get articleSent =>
+      'Your article went to the league\'s creator for publishing';
+
+  @override
+  String get pendingArticles => 'Waiting to publish';
+
+  @override
+  String get publish => 'Publish';
+
+  @override
+  String get groups => 'Groups';
+
+  @override
+  String get noGroups => 'No groups yet';
+
+  @override
+  String get typeMessage => 'Type a message';
+
+  @override
+  String get messageDeleted => 'This message was deleted';
+
+  @override
+  String get mediaOnWeb => 'Picture or voice: open it on the site';
 }

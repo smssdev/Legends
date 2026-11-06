@@ -2292,6 +2292,378 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'يلزم بريد مؤكد في حسابك'**
   String get emailNeeded;
+
+  /// No description provided for @newOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض جديد'**
+  String get newOffer;
+
+  /// No description provided for @counterOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض مقابل'**
+  String get counterOffer;
+
+  /// No description provided for @pickCoachClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى أي نادٍ؟'**
+  String get pickCoachClub;
+
+  /// No description provided for @noCoachClubs.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مدربين آخرين في الدوري بعد'**
+  String get noCoachClubs;
+
+  /// No description provided for @offerTitleTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض إلى {club}'**
+  String offerTitleTo(String club);
+
+  /// No description provided for @youWant.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطلب من لاعبيه (حتى 5)'**
+  String get youWant;
+
+  /// No description provided for @youGive.
+  ///
+  /// In ar, this message translates to:
+  /// **'وتعطي من لاعبيك (اختياري)'**
+  String get youGive;
+
+  /// No description provided for @youPay.
+  ///
+  /// In ar, this message translates to:
+  /// **'وتدفع'**
+  String get youPay;
+
+  /// No description provided for @offerValues.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة ما تطلب {want}، وما تعطي {give}'**
+  String offerValues(String want, String give);
+
+  /// No description provided for @fairHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصفقة العادلة بين {min}% و{max}% من قيمة ما تطلب'**
+  String fairHint(int min, int max);
+
+  /// No description provided for @sendOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل العرض'**
+  String get sendOffer;
+
+  /// No description provided for @offerSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل العرض إلى مدربه'**
+  String get offerSent;
+
+  /// No description provided for @askLoan.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب إعارته'**
+  String get askLoan;
+
+  /// No description provided for @loanRounds.
+  ///
+  /// In ar, this message translates to:
+  /// **'جولات الإعارة: {n}'**
+  String loanRounds(int n);
+
+  /// No description provided for @loanFee.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسوم الإعارة'**
+  String get loanFee;
+
+  /// No description provided for @loans.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعارات'**
+  String get loans;
+
+  /// No description provided for @loanOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'{player}: من {owner} إلى {borrower}'**
+  String loanOf(String player, String owner, String borrower);
+
+  /// No description provided for @loanTerms.
+  ///
+  /// In ar, this message translates to:
+  /// **'{rounds} جولات · {fee}'**
+  String loanTerms(int rounds, String fee);
+
+  /// No description provided for @loanSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل طلب الإعارة'**
+  String get loanSent;
+
+  /// No description provided for @academy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأكاديمية'**
+  String get academy;
+
+  /// No description provided for @academyLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواهب شابة لهذه الفترة، والإمكانية مدى حتى تضمه. {signed} من {per} هذا الموسم.'**
+  String academyLead(int signed, int per);
+
+  /// No description provided for @signProspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمّه بـ {price}'**
+  String signProspect(String price);
+
+  /// No description provided for @signProspectConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمّ {name} بـ {price}؟'**
+  String signProspectConfirm(String name, String price);
+
+  /// No description provided for @potentialRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإمكانية {from}–{to}'**
+  String potentialRange(int from, int to);
+
+  /// No description provided for @friendlies.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوديات'**
+  String get friendlies;
+
+  /// No description provided for @friendlyLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'ودية سريعة ضد أي نادٍ: ترفع اللياقة {fit} والانسجام، ولا تحتسب في الجدول.'**
+  String friendlyLead(int fit);
+
+  /// No description provided for @friendlyCost.
+  ///
+  /// In ar, this message translates to:
+  /// **'الودية بـ {coins} كوينز'**
+  String friendlyCost(int coins);
+
+  /// No description provided for @friendlyFree.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأولى مجانية'**
+  String get friendlyFree;
+
+  /// No description provided for @playFriendly.
+  ///
+  /// In ar, this message translates to:
+  /// **'العب'**
+  String get playFriendly;
+
+  /// No description provided for @suggestedOpponent.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقترح'**
+  String get suggestedOpponent;
+
+  /// No description provided for @playedToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'لُعبت اليوم'**
+  String get playedToday;
+
+  /// No description provided for @recentFriendlies.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر الوديات'**
+  String get recentFriendlies;
+
+  /// No description provided for @skip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطَّ'**
+  String get skip;
+
+  /// No description provided for @bestOfMatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأفضل في المباراة'**
+  String get bestOfMatch;
+
+  /// No description provided for @kGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدف'**
+  String get kGoal;
+
+  /// No description provided for @kSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصدٍّ'**
+  String get kSaved;
+
+  /// No description provided for @kMissed.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضائعة'**
+  String get kMissed;
+
+  /// No description provided for @kCorner.
+  ///
+  /// In ar, this message translates to:
+  /// **'ركنية'**
+  String get kCorner;
+
+  /// No description provided for @kYellow.
+  ///
+  /// In ar, this message translates to:
+  /// **'صفراء'**
+  String get kYellow;
+
+  /// No description provided for @kRed.
+  ///
+  /// In ar, this message translates to:
+  /// **'حمراء'**
+  String get kRed;
+
+  /// No description provided for @kAttack.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجمة'**
+  String get kAttack;
+
+  /// No description provided for @predictions.
+  ///
+  /// In ar, this message translates to:
+  /// **'التوقعات'**
+  String get predictions;
+
+  /// No description provided for @predictionsLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'توقّع نتائج الجولة {round}، ولكل توقع صحيح {reward} لناديك.'**
+  String predictionsLead(int round, String reward);
+
+  /// No description provided for @draw.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعادل'**
+  String get draw;
+
+  /// No description provided for @predictionClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُغلق التوقع'**
+  String get predictionClosed;
+
+  /// No description provided for @newspaper.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصحيفة'**
+  String get newspaper;
+
+  /// No description provided for @noEdition.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا عدد بعد: تصدر الصحيفة بعد أول جولة'**
+  String get noEdition;
+
+  /// No description provided for @roundResults.
+  ///
+  /// In ar, this message translates to:
+  /// **'نتائج الجولة {round}'**
+  String roundResults(int round);
+
+  /// No description provided for @playerOfRound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاعب الجولة'**
+  String get playerOfRound;
+
+  /// No description provided for @coachOfRound.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدرب الجولة'**
+  String get coachOfRound;
+
+  /// No description provided for @articles.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقالات المدربين'**
+  String get articles;
+
+  /// No description provided for @writeArticle.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب مقالاً'**
+  String get writeArticle;
+
+  /// No description provided for @articleTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'العنوان'**
+  String get articleTitle;
+
+  /// No description provided for @articleBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'المقال'**
+  String get articleBody;
+
+  /// No description provided for @articleSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل مقالك إلى منشئ الدوري للنشر'**
+  String get articleSent;
+
+  /// No description provided for @pendingArticles.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار النشر'**
+  String get pendingArticles;
+
+  /// No description provided for @publish.
+  ///
+  /// In ar, this message translates to:
+  /// **'انشر'**
+  String get publish;
+
+  /// No description provided for @groups.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجروبات'**
+  String get groups;
+
+  /// No description provided for @noGroups.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا جروبات بعد'**
+  String get noGroups;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب رسالة'**
+  String get typeMessage;
+
+  /// No description provided for @messageDeleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'حُذفت هذه الرسالة'**
+  String get messageDeleted;
+
+  /// No description provided for @mediaOnWeb.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة أو صوت: افتحه من الموقع'**
+  String get mediaOnWeb;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

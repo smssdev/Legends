@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/settings.dart';
 import 'package:glm/features/market/market_data.dart';
 import 'package:glm/features/market/market_screen.dart';
+import 'package:glm/features/market/offer_screen.dart';
 import 'package:glm/features/market/scout_screen.dart';
 import 'package:glm/l10n/app_localizations.dart';
 import 'package:glm/ui/theme.dart';
@@ -44,6 +45,32 @@ class FakeMarket implements MarketRepository {
   Future<Deals> deals(int league) async => Deals.fromJson(json('offers'));
   @override
   Future<void> answer(int league, int offer, String action) async => sent.add('$action $offer');
+  @override
+  Future<List<OfferPlayer>> clubPlayers(int league, int club) async =>
+      [for (final p in json('club_142')['players'] as List) OfferPlayer.fromJson(p as Map<String, dynamic>)];
+  @override
+  Future<void> offer(int league, {int? to, int? counterOf, required int money, required List<int> want, required List<int> give}) async =>
+      sent.add('offer to:$to counter:$counterOf money:$money want:$want give:$give');
+  @override
+  Future<({List<Loan> loans, int maxRounds, int maxFeeBp})> loans(int league) async => (
+        loans: [
+          Loan.fromJson({'id': 4, 'status': 'pending', 'mine': true, 'player': {'id': 5625, 'name': 'Florian Wirtz', 'position': 'CAM'},
+            'owner': 'Liverpool', 'borrower': 'Arsenal', 'rounds': 3, 'fee': 500000, 'until_round': null}),
+        ],
+        maxRounds: 6, maxFeeBp: 2000,
+      );
+  @override
+  Future<void> askLoan(int league, int player, int rounds, int fee) async => sent.add('loan $player $rounds $fee');
+  @override
+  Future<void> answerLoan(int league, int loan, bool accept) async => sent.add('loan $loan $accept');
+  @override
+  Future<({List<Prospect> prospects, DateTime? renewsAt, int signed, int perSeason})> academy(int league) async {
+    final j = json('academy');
+    return (prospects: [for (final p in j['prospects'] as List) Prospect.fromJson(p as Map<String, dynamic>)], renewsAt: null, signed: 0, perSeason: 2);
+  }
+
+  @override
+  Future<void> signProspect(int league, int prospect) async => sent.add('academy $prospect');
 }
 
 class FakeScout implements ScoutRepository {
@@ -58,7 +85,7 @@ class FakeScout implements ScoutRepository {
 Future<void> pump(WidgetTester t, Widget screen, FakeMarket market) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  t.view.physicalSize = const Size(360 * 3, 1800 * 3);
+  t.view.physicalSize = const Size(360 * 3, 3200 * 3);
   t.view.devicePixelRatio = 3;
   addTearDown(t.view.reset);
   await t.pumpWidget(ProviderScope(
@@ -114,7 +141,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('عرض من Arsenal'), findsOneWidget);
     expect(find.text('مرفوض'), findsOneWidget);
-    await t.tap(find.text('اقبل'));
+    await t.tap(find.text('اقبل').first);
     await t.pumpAndSettle();
     expect(m.sent.last, 'accept 31');
   });
@@ -128,5 +155,43 @@ void main() {
     await t.tap(find.textContaining('اشترِه بـ'));
     await t.pumpAndSettle();
     expect(m.sent, ['buy 8841']);
+  });
+
+  testWidgets('a new offer to a coach, a counter to his, a loan answered and a prospect signed', (t) async {
+    final m = FakeMarket();
+    await pump(t, const MarketScreen(leagueId: 8), m);
+    await t.tap(find.text('العروض'));
+    await t.pumpAndSettle();
+    // The loan he asked for my player: accepted.
+    await t.tap(find.text('اقبل').last);
+    await t.pumpAndSettle();
+    expect(m.sent, ['loan 4 true']);
+
+    // A counter to Arsenal's offer: his Havertz for my Wirtz, as his offer named them, sent back to him.
+    await t.tap(find.text('عرض مقابل'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('أرسل العرض'));
+    await t.pumpAndSettle();
+    expect(m.sent.last, 'offer to:null counter:31 money:0 want:[5701] give:[5625]');
+
+    await t.tap(find.text('الأكاديمية'));
+    await t.pumpAndSettle();
+    await t.tap(find.textContaining('ضمّه بـ').first);
+    await t.pumpAndSettle();
+    await t.tap(find.text('تأكيد'));
+    await t.pumpAndSettle();
+    expect(m.sent.last, 'academy 3603');
+  });
+
+  testWidgets('a new offer: the club, his player asked for, sent', (t) async {
+    final m = FakeMarket();
+    await pump(t, OfferScreen(leagueId: 8, clubId: 142, clubName: 'Arsenal'), m);
+    await t.tap(find.text('David Raya'));
+    await t.pump();
+    await t.enterText(find.byType(TextField).first, '2000000');
+    await t.pump();
+    await t.tap(find.text('أرسل العرض'));
+    await t.pumpAndSettle();
+    expect(m.sent.last, 'offer to:142 counter:null money:2000000 want:[5650] give:[]');
   });
 }
