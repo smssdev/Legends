@@ -1766,4 +1766,147 @@ class LEn extends L {
 
   @override
   String get openIt => 'Open';
+
+  @override
+  String get matchday => 'Match day';
+
+  @override
+  String get referee => 'Referee';
+
+  @override
+  String get moveMatch => 'Move the match';
+
+  @override
+  String moveLead(int n) {
+    return 'On its own day, if the other coach agrees. $n left.';
+  }
+
+  @override
+  String moveTo(String time) {
+    return 'To $time';
+  }
+
+  @override
+  String movePendingMine(String time) {
+    return 'You asked to move it to $time; waiting for the answer';
+  }
+
+  @override
+  String movePendingTheirs(String time) {
+    return 'He asks to move it to $time';
+  }
+
+  @override
+  String get moveSent => 'Your request went to the other coach';
+
+  @override
+  String hoursEarlier(int n) {
+    return '${n}h earlier';
+  }
+
+  @override
+  String hoursLater(int n) {
+    return '${n}h later';
+  }
+
+  @override
+  String get press => 'Press conference';
+
+  @override
+  String pressOpensAt(String time) {
+    return 'Opens $time';
+  }
+
+  @override
+  String chances(int home, int draw, int away) {
+    return 'Chances: win $home% · draw $draw% · loss $away%';
+  }
+
+  @override
+  String stakes(int win, int draw, int loss) {
+    return 'Morale: win $win · draw $draw · loss $loss';
+  }
+
+  @override
+  String get youSaid => 'You said';
+
+  @override
+  String get integrity => 'Behind the scenes';
+
+  @override
+  String bribe(String money, String extra) {
+    return 'Pay the referee ($money + $extra)';
+  }
+
+  @override
+  String bribeNote(int pct) {
+    return 'The VAR catches it $pct% of the time';
+  }
+
+  @override
+  String get bribePaid => 'You paid the referee';
+
+  @override
+  String securityCheck(String cost) {
+    return 'Security check ($cost)';
+  }
+
+  @override
+  String get spiesOnMe => 'Spies on your match';
+
+  @override
+  String get noSpies => 'No spies so far';
+
+  @override
+  String turnSpy(String cost) {
+    return 'Turn him ($cost)';
+  }
+
+  @override
+  String get accuse => 'Accuse';
+
+  @override
+  String get contracts => 'Contracts';
+
+  @override
+  String contractsLead(String wages, String cap) {
+    return 'Wages $wages a round, cap $cap';
+  }
+
+  @override
+  String untilSeason(int n) {
+    return 'Until season $n';
+  }
+
+  @override
+  String get renew => 'Renew';
+
+  @override
+  String renewSeasons(int n, String cost) {
+    return 'Renew $n seasons ($cost)';
+  }
+
+  @override
+  String releasePlayer(String cost) {
+    return 'Release ($cost)';
+  }
+
+  @override
+  String releaseConfirm(String name) {
+    return 'Release $name? He leaves your team.';
+  }
+
+  @override
+  String get renewEnding => 'Renew every ending contract';
+
+  @override
+  String get cheerTickets => 'Cheer tickets';
+
+  @override
+  String cheerLead(int boost, String price) {
+    return 'Cheer a side in another match: +$boost to its spirit; a ticket costs $price.';
+  }
+
+  @override
+  String get cheer => 'Cheer';
 }

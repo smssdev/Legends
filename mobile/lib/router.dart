@@ -8,6 +8,7 @@ import 'features/auth/ui/forgot_screen.dart';
 import 'features/auth/ui/login_screen.dart';
 import 'features/auth/ui/register_screen.dart';
 import 'features/club/lineup_screen.dart';
+import 'features/club/matchday_screens.dart';
 import 'features/club/squad_screen.dart';
 import 'features/club/extras_screens.dart';
 import 'features/club/tactics_screen.dart';
@@ -94,6 +95,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),
       GoRoute(path: '/guide', builder: (_, _) => const GuideScreen()),
       GoRoute(path: '/leagues/:id/stats', builder: (_, s) => StatsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/matchday', builder: (_, s) => MatchdayScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/contracts', builder: (_, s) => ContractsScreen(leagueId: int.parse(s.pathParameters['id']!))),
+      GoRoute(path: '/leagues/:id/tickets', builder: (_, s) => TicketsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       GoRoute(path: '/leagues/:id/training', builder: (_, s) => TrainingScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/specialists', builder: (_, s) => SpecialistsScreen(leagueId: int.parse(s.pathParameters['id']!))),

@@ -133,7 +133,9 @@ class _ClubTab extends ConsumerWidget {
             childAspectRatio: 1.25,
             children: [
               for (final (icon, label, path) in [
+                (Icons.sports_rounded, l.matchday, 'matchday'),
                 (Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics'),
+                (Icons.description_rounded, l.contracts, 'contracts'), (Icons.confirmation_number_rounded, l.cheerTickets, 'tickets'),
                 (Icons.swap_horiz_rounded, l.market, 'market'), (Icons.travel_explore_rounded, l.scout, 'scout'),
                 (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
                 (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
