@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../core/api/api_error.dart';
+import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/cut.dart';
@@ -297,7 +298,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
           Expanded(child: Text(_pause!.window ? l.windowOpen : l.breakTime, style: const TextStyle(fontWeight: FontWeight.w700))),
           ready
               ? Text(l.readyWaiting, style: TextStyle(color: context.palette.textMuted, fontSize: 12))
-              : GlmButton(label: l.imReady, onPressed: _busy ? null : () => _send(() => _repo.ready(_id))),
+              : GlmButton(label: l.imReady, onPressed: _busy ? null : () { GameSounds.play(Sfx.whistle); _send(() => _repo.ready(_id)); }),
         ]),
       ),
     );

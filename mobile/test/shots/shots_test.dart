@@ -11,12 +11,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glm/core/settings.dart';
+import 'package:glm/core/sounds.dart';
 import 'package:glm/features/club/club_data.dart';
 import 'package:glm/features/club/lineup_screen.dart';
 import 'package:glm/features/club/squad_screen.dart';
 import 'package:glm/features/club/tactics_screen.dart';
 import 'package:glm/features/club/team_data.dart';
+import 'package:glm/features/health/intro_screen.dart';
 import 'package:glm/features/home/home_data.dart';
+import 'package:glm/ui/widgets/motion.dart';
 import 'package:glm/features/auth/ui/login_screen.dart';
 import 'package:glm/features/home/home_screen.dart';
 import 'package:glm/features/leagues/league_screen.dart';
@@ -67,7 +70,7 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = const Size(844 * 2, 390 * 2);
@@ -86,6 +89,18 @@ Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {d
       home: screen,
     ),
   ));
+  if (at != null) {
+    // A moment of an animation (the opening): its pictures first, then the clock moved to [at].
+    for (final e in find.byType(Image).evaluate()) {
+      await t.runAsync(() => precacheImage((e.widget as Image).image, e));
+    }
+    for (var ms = 0; ms < at.inMilliseconds; ms += 50) {
+      await t.pump(const Duration(milliseconds: 50));
+    }
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
+    await t.pumpWidget(const SizedBox());
+    return;
+  }
   for (var i = 0; i < 10; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }
@@ -105,6 +120,14 @@ Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {d
 }
 
 void main() {
+  for (final (name, ms) in [('intro-1', 300), ('intro-2', 1450), ('intro-3', 2300)]) {
+    testWidgets(name, (t) async {
+      Ambient.on = true;
+      GameSounds.enabled = false; // no sound plugin in the tests
+      addTearDown(() => Ambient.on = false);
+      await shot(t, name, const IntroScreen(), [], at: Duration(milliseconds: ms));
+    });
+  }
   testWidgets('home', (t) => shot(t, 'home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeJson))]));
   testWidgets('league', (t) => shot(t, 'league', const LeagueScreen(id: 8), [
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),

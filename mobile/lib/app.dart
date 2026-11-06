@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/settings.dart';
+import 'core/sounds.dart';
 import 'features/assistant/assistant.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/health/health.dart';
@@ -65,6 +66,7 @@ class _GlmAppState extends ConsumerState<GlmApp> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    GameSounds.enabled = settings.sounds;
     final update = ref.watch(updateRequiredProvider).value ?? false;
     final common = (
       theme: glmTheme(day: true),

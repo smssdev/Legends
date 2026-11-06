@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/sounds.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -84,7 +85,7 @@ class _LeagueScreenState extends ConsumerState<LeagueScreen> {
           return Row(children: [
             NavigationRail(
               selectedIndex: _tab,
-              onDestinationSelected: (i) => setState(() => _tab = i),
+              onDestinationSelected: (i) { GameSounds.play(Sfx.tap); setState(() => _tab = i); },
               groupAlignment: 0,
               destinations: [for (final (o, f, t) in items) NavigationRailDestination(icon: Icon(o), selectedIcon: Icon(f), label: Text(t))],
             ),
@@ -95,7 +96,7 @@ class _LeagueScreenState extends ConsumerState<LeagueScreen> {
           Expanded(child: content),
           NavigationBar(
             selectedIndex: _tab,
-            onDestinationSelected: (i) => setState(() => _tab = i),
+            onDestinationSelected: (i) { GameSounds.play(Sfx.tap); setState(() => _tab = i); },
             destinations: [for (final (o, f, t) in items) NavigationDestination(icon: Icon(o), selectedIcon: Icon(f), label: t)],
           ),
         ]);

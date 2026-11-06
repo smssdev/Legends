@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.6.0+7
+version: 1.7.0+8
 
 environment:
   sdk: ^3.13.7
@@ -78,6 +78,8 @@ flutter:
   generate: true
   assets:
     - assets/brand/
+    # [2026-11-06] The game's own sounds (tool/sounds/make_sounds.py).
+    - assets/sounds/
   # [Sprint 15 F1] The game's fonts, bundled (the web serves the same, X100): Tajawal for the words, Barlow Condensed for
   # the numbers. Both SIL Open Font License.
   fonts:

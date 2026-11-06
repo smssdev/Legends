@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/sounds.dart';
 import '../theme.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
@@ -93,6 +94,7 @@ class _Stripes extends CustomPainter {
 /// A short message at the bottom (the web's toast): an error in red, the rest quiet.
 void showGlmToast(BuildContext context, String message, {bool error = false}) {
   final p = context.palette;
+  GameSounds.play(error ? Sfx.error : Sfx.confirm);
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(

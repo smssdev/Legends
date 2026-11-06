@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/config.dart';
+import '../../core/sounds.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
@@ -68,6 +69,7 @@ class _Home extends ConsumerWidget {
                         GlmButton(label: l.claimGift, onPressed: () async {
                           try {
                             await ref.read(apiProvider).post('/home/starter-gift');
+                            GameSounds.play(Sfx.coin);
                           } on ApiError catch (e) {
                             if (context.mounted) showGlmToast(context, e.message, error: true);
                           }
