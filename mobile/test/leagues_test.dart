@@ -67,15 +67,15 @@ void main() {
     expect(find.text('مباراتك القادمة'), findsOneWidget);
     expect(find.text(summary.next!.name), findsOneWidget);
 
+    // The five sections at the bottom: the matches (calendar, then the table), and «more» with the coaches.
+    await t.tap(find.widgetWithText(NavigationDestination, 'المباريات'));
+    await t.pumpAndSettle();
+    expect(find.text('الجولة 1'), findsOneWidget);
     await t.tap(find.widgetWithText(Tab, 'الترتيب'));
     await t.pumpAndSettle();
     expect(find.text(table.first.name), findsOneWidget);
 
-    await t.tap(find.widgetWithText(Tab, 'المباريات'));
-    await t.pumpAndSettle();
-    expect(find.text('الجولة 1'), findsOneWidget);
-
-    await t.tap(find.widgetWithText(Tab, 'المدربون'));
+    await t.tap(find.widgetWithText(NavigationDestination, 'المزيد'));
     await t.pumpAndSettle();
     expect(find.text(league.code), findsOneWidget);
     expect(find.text('طلبات الانضمام'), findsOneWidget);

@@ -8,7 +8,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
-import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -145,9 +144,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final v = widget.view;
-    final kits = {
-      for (final side in ['home', 'away']) side: (hexColor(v.club(side).primary), inkOn(hexColor(v.club(side).primary))),
-    };
+    final kits = matchKits(v);
     final numbers = {
       for (final side in ['home', 'away'])
         for (final p in _teams[side]!.players) '${p.id}': (side, p.no),
@@ -155,22 +152,44 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(title: Text(_finished ? l.fullTime : l.liveNow)),
       body: GlmBackground(
-        child: Column(children: [
-          _ScoreBug(view: v, score: _score, minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null, finished: _finished),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers),
-          ),
-          if (_pause != null && _you != null && !_finished) _breakBar(l),
-          if (_you != null && !_finished) _coachBar(l),
-          if (_finished)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-              child: GlmButton(label: l.matchReport, variant: GlmButtonVariant.brand, block: true, onPressed: () => context.push('/match/$_id/report?coach=${_you != null}')),
-            ),
-          if (!_finished && _started) _socialBar(l),
-          Expanded(child: _feedList(l)),
-        ]),
+        wide: true,
+        child: LayoutBuilder(builder: (context, box) {
+          final bug = _ScoreBug(view: v, score: _score, minute: _started ? (_added > 0 ? "$_minute+$_added'" : "$_minute'") : null, finished: _finished);
+          final pitch = LivePitch(ticks: List.of(_recent), tickMs: v.tickMs, serverOffset: _offset, kits: kits, numbers: numbers);
+          final controls = <Widget>[
+            if (_pause != null && _you != null && !_finished) _breakBar(l),
+            if (_you != null && !_finished) _coachBar(l),
+            if (_finished)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+                child: GlmButton(label: l.matchReport, variant: GlmButtonVariant.brand, block: true, onPressed: () => context.push('/match/$_id/report?coach=${_you != null}')),
+              ),
+            if (!_finished && _started) _socialBar(l),
+          ];
+          // [2026-11-06] Landscape, as a broadcast: the score and the pitch filling one side, the coach's controls and
+          // the commentary on the other.
+          if (box.maxWidth > box.maxHeight) {
+            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                flex: 6,
+                child: Column(children: [
+                  bug,
+                  Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 12), child: Center(child: pitch))),
+                ]),
+              ),
+              Expanded(
+                flex: 5,
+                child: Column(children: [...controls, Expanded(child: _feedList(l))]),
+              ),
+            ]);
+          }
+          return Column(children: [
+            bug,
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: pitch),
+            ...controls,
+            Expanded(child: _feedList(l)),
+          ]);
+        }),
       ),
     );
   }
@@ -288,11 +307,25 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
       child: Row(children: [
-        Expanded(child: GlmButton(label: '${l.substitute} (${team.subsMax - team.subsUsed})', variant: GlmButtonVariant.outline, onPressed: _busy ? null : _subSheet)),
-        const SizedBox(width: 8),
-        Expanded(child: GlmButton(label: l.tactics, variant: GlmButtonVariant.outline, onPressed: _busy ? null : _tacticsSheet)),
-        const SizedBox(width: 8),
-        Expanded(child: GlmButton(label: l.formation, variant: GlmButtonVariant.outline, onPressed: _busy || widget.view.formations.isEmpty ? null : _formationSheet)),
+        for (final (icon, label, onTap) in [
+          (Icons.swap_vert_rounded, '${l.substitute} ${team.subsMax - team.subsUsed}', _busy ? null : _subSheet),
+          (Icons.tune_rounded, l.tactics, _busy ? null : _tacticsSheet),
+          (Icons.grid_view_rounded, l.formation, _busy || widget.view.formations.isEmpty ? null : _formationSheet),
+        ])
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: GlmCard(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                onTap: onTap,
+                child: Column(children: [
+                  Icon(icon, color: onTap == null ? context.palette.textMuted : context.palette.gold),
+                  const SizedBox(height: 2),
+                  Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+                ]),
+              ),
+            ),
+          ),
       ]),
     );
   }
@@ -461,6 +494,8 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
 }
 
 /// The score bug: home on the right in Arabic (tokens.json match.homeSide), the minute or «نهاية المباراة» below.
+/// The score bar, as on a TV broadcast: each side in its kit's colour (the change kit on a clash), the score between them
+/// on a dark plate, and the minute (red while it plays) or «full time» under it. Home on the right in Arabic.
 class _ScoreBug extends StatelessWidget {
   const _ScoreBug({required this.view, required this.score, this.minute, required this.finished});
 
@@ -473,33 +508,56 @@ class _ScoreBug extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final p = context.palette;
-    Widget side(MatchClub c, String key) => Expanded(
-          child: Column(children: [
-            Container(
-              width: 40, height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: hexColor(c.primary, p.surfaceRaised), shape: BoxShape.circle, border: Border.all(color: hexColor(c.secondary, p.text), width: 2)),
-              child: Text(c.code, style: TextStyle(color: inkOn(hexColor(c.primary, p.surfaceRaised)), fontWeight: FontWeight.w800, fontSize: 11)),
-            ),
-            const SizedBox(height: 4),
+    final kits = matchKits(view);
+    Widget side(MatchClub c, String key) {
+      final (shirt, ink) = kits[key]!;
+      final mine = view.you == key;
+      return Expanded(
+        child: Container(
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(shirt, Colors.white, .12)!, shirt]),
+            borderRadius: BorderRadius.circular(14),
+            border: mine ? Border.all(color: p.gold, width: 2) : null,
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(c.code, style: TextStyle(fontFamily: GlmFonts.numbers, color: ink, fontWeight: FontWeight.w800, fontSize: 24, height: 1, letterSpacing: 1)),
             Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
-                style: TextStyle(fontWeight: view.you == key ? FontWeight.w800 : FontWeight.w600, fontSize: 13)),
+                style: TextStyle(color: ink.withValues(alpha: .85), fontWeight: FontWeight.w700, fontSize: 11)),
           ]),
-        );
+          ),
+        ),
+      );
+    }
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       child: Row(children: [
         side(view.home, 'home'),
-        Column(children: [
-          Text('${score.$1} - ${score.$2}', textDirection: TextDirection.ltr,
-              style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 34, fontWeight: FontWeight.w800, color: p.text)),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            decoration: BoxDecoration(color: finished ? p.surfaceRaised : context.glm.liveText, borderRadius: BorderRadius.circular(GlmSize.radiusXl)),
-            child: Text(finished ? l.fullTime : (minute ?? l.notStarted), textDirection: TextDirection.ltr,
-                style: TextStyle(color: finished ? p.text : Colors.white, fontWeight: FontWeight.w800, fontSize: 12, fontFamilyFallback: const [GlmFonts.body])),
+        const SizedBox(width: 6),
+        Container(
+          width: 108,
+          height: 64,
+          decoration: BoxDecoration(color: p.bgDeep, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withValues(alpha: .08))),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text('${score.$1} - ${score.$2}', textDirection: TextDirection.ltr,
+                style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 32, fontWeight: FontWeight.w800, color: p.text, height: 1)),
+            const SizedBox(height: 3),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+              decoration: BoxDecoration(color: finished ? p.surfaceRaised : p.danger, borderRadius: BorderRadius.circular(99)),
+              child: Text(finished ? l.fullTime : (minute ?? l.notStarted), textDirection: TextDirection.ltr,
+                  style: TextStyle(color: finished ? p.text : Colors.white, fontWeight: FontWeight.w800, fontSize: 11, fontFamilyFallback: const [GlmFonts.body])),
+            ),
+          ]),
           ),
-        ]),
+        ),
+        const SizedBox(width: 6),
         side(view.away, 'away'),
       ]),
     );

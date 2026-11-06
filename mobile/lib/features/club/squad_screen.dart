@@ -6,6 +6,8 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
+import '../../ui/widgets/game.dart';
+import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/glm_background.dart';
 import 'team_data.dart';
 
@@ -22,6 +24,7 @@ class SquadScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.squad)),
       body: GlmBackground(
+        wide: true,
         child: RefreshIndicator(
           onRefresh: () => ref.refresh(teamProvider(leagueId).future),
           child: AsyncView(
@@ -37,7 +40,15 @@ class SquadScreen extends ConsumerWidget {
                 ]),
                 for (final e in lines.entries) ...[
                   SectionTitle(e.value),
-                  for (final p in team.players.where((p) => p.line == e.key)) PlayerRow(p, onTap: () => showPlayerCard(context, p)),
+                  // [2026-11-06] Two players a row in landscape.
+                  LayoutBuilder(builder: (context, box) {
+                    final cols = box.maxWidth >= 640 ? 2 : 1;
+                    final w = (box.maxWidth - (cols - 1) * 8) / cols;
+                    return Wrap(spacing: 8, children: [
+                      for (final (i, p) in team.players.where((p) => p.line == e.key).indexed)
+                        SizedBox(width: w, child: FadeSlideIn(index: i, child: PlayerRow(p, onTap: () => showPlayerCard(context, p)))),
+                    ]);
+                  }),
                 ],
               ]);
             },
@@ -67,39 +78,50 @@ class PlayerRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final c = context.palette;
-    final line = lineColor(p.line);
+    // [2026-11-06] A player as a game row: rating badge, position chip, the name, age and role, fitness as a bar.
+    final starter = p.role == 'starter';
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Material(
-        color: selected ? c.gold.withValues(alpha: .16) : c.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(GlmSize.radiusLg), side: BorderSide(color: selected ? c.gold : c.surfaceRaised)),
+        color: selected ? c.gold.withValues(alpha: .16) : (starter ? Color.lerp(c.surface, c.pitchDark, .18) : c.surface),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: selected ? c.gold : Colors.white.withValues(alpha: context.glm.day ? 0 : .06)),
+        ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(GlmSize.radiusLg),
+          borderRadius: BorderRadius.circular(14),
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 56),
+            constraints: const BoxConstraints(minHeight: 60),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Row(children: [
-                Container(
-                  width: 40, padding: const EdgeInsets.symmetric(vertical: 4), alignment: Alignment.center,
-                  decoration: BoxDecoration(color: line.bg, borderRadius: BorderRadius.circular(GlmSize.radiusSm)),
-                  child: Text(p.position, style: TextStyle(color: line.fg, fontWeight: FontWeight.w800, fontSize: 12)),
-                ),
+                RatingBadge(p.overall, size: 42),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    // Player names stay in English in every language (decision 2026-11-01).
-                    Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    Text(
-                      !p.available ? (p.injured > 0 ? l.injuredFor(p.injured) : l.suspendedFor(p.suspended)) : '${l.age(p.age)} · ${p.role == 'starter' ? l.starter : p.role == 'bench' ? l.bench : l.reserve}',
-                      style: TextStyle(color: p.available ? c.textMuted : context.glm.liveText, fontSize: 12),
-                    ),
+                    Row(children: [
+                      PositionChip(p.position, p.line),
+                      const SizedBox(width: 8),
+                      // Player names stay in English in every language (decision 2026-11-01).
+                      Flexible(child: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15))),
+                    ]),
+                    const SizedBox(height: 4),
+                    Row(children: [
+                      Expanded(
+                        child: Text(
+                          !p.available ? (p.injured > 0 ? '🩹 ${l.injuredFor(p.injured)}' : '🟥 ${l.suspendedFor(p.suspended)}') : '${l.age(p.age)} · ${starter ? l.starter : p.role == 'bench' ? l.bench : l.reserve}',
+                          maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: p.available ? (starter ? context.glm.successText : c.textMuted) : context.glm.liveText, fontSize: 12, fontWeight: starter ? FontWeight.w700 : FontWeight.w500),
+                        ),
+                      ),
+                      Text('${p.fitness}%', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 13, color: c.textMuted)),
+                      const SizedBox(width: 6),
+                      LevelBar(p.fitness / 100, color: fitnessColor(p.fitness)),
+                    ]),
                   ]),
                 ),
-                Container(width: 6, height: 28, decoration: BoxDecoration(color: fitnessColor(p.fitness), borderRadius: BorderRadius.circular(3))),
-                const SizedBox(width: 8),
-                Text('${p.overall}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: context.glm.goldText)),
                 ?trailing,
               ]),
             ),

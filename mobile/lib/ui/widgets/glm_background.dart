@@ -4,9 +4,13 @@ import '../theme.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
 class GlmBackground extends StatelessWidget {
-  const GlmBackground({super.key, required this.child});
+  const GlmBackground({super.key, required this.child, this.wide = false});
 
   final Widget child;
+
+  /// A screen laid out for the whole width (two columns, a rail); otherwise a single column centred on wide screens,
+  /// so a list never stretches across a landscape phone.
+  final bool wide;
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +24,38 @@ class GlmBackground extends StatelessWidget {
           stops: const [0, .55, 1],
         ),
       ),
-      child: child,
+      // [2026-11-06] A stadium's mowing stripes, barely there, under everything.
+      child: CustomPaint(
+        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .014)),
+        child: wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child)),
+      ),
     );
   }
+}
+
+class _Stripes extends CustomPainter {
+  _Stripes(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (color.a == 0) return;
+    final paint = Paint()..color = color;
+    const w = 46.0;
+    for (var x = -size.height; x < size.width; x += w * 2) {
+      final path = Path()
+        ..moveTo(x, 0)
+        ..lineTo(x + w, 0)
+        ..lineTo(x + w + size.height * .5, size.height)
+        ..lineTo(x + size.height * .5, size.height)
+        ..close();
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_Stripes old) => old.color != color;
 }
 
 /// A short message at the bottom (the web's toast): an error in red, the rest quiet.

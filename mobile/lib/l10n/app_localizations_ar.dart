@@ -2092,4 +2092,114 @@ class LAr extends L {
 
   @override
   String get micDenied => 'اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال';
+
+  @override
+  String get navClub => 'ناديّ';
+
+  @override
+  String get navTeam => 'الفريق';
+
+  @override
+  String get navMatches => 'المباريات';
+
+  @override
+  String get navMarket => 'السوق';
+
+  @override
+  String get navMore => 'المزيد';
+
+  @override
+  String get secPlayers => 'اللاعبون';
+
+  @override
+  String get secDevelop => 'التطوير';
+
+  @override
+  String get secDeals => 'الصفقات';
+
+  @override
+  String get secMoney => 'المال والملعب';
+
+  @override
+  String get secCompete => 'المنافسة';
+
+  @override
+  String get secCommunity => 'المجتمع';
+
+  @override
+  String get secLeague => 'الدوري';
+
+  @override
+  String get subSquad => 'اللاعبون ولياقتهم وبطاقاتهم';
+
+  @override
+  String get subLineup => 'الأحد عشر والدكة';
+
+  @override
+  String get subTactics => 'الخطة والضغط والأسلوب';
+
+  @override
+  String get subTraining => 'لاعب في كل خط';
+
+  @override
+  String get subSpecialists => 'أسرع تدريب لكل خط';
+
+  @override
+  String get subContracts => 'التجديد والفسخ';
+
+  @override
+  String get subMarket => 'شراء وبيع وعروض وأكاديمية';
+
+  @override
+  String get subScout => 'خمسة لاعبين بشروطك';
+
+  @override
+  String get subFinance => 'الرصيد والرعاة والتذاكر';
+
+  @override
+  String get subStadium => 'المقاعد والأرضية والتدريب';
+
+  @override
+  String get subTickets => 'شجّع في مباريات الآخرين';
+
+  @override
+  String get subMatchday => 'النقل والمؤتمر والكواليس';
+
+  @override
+  String get subFriendlies => 'ودية سريعة لأي نادٍ';
+
+  @override
+  String get subQuests => 'مكافآت الأسبوع';
+
+  @override
+  String get subSpy => 'اكشف خصمك القادم';
+
+  @override
+  String get subNewspaper => 'أخبار الجولة والمقالات';
+
+  @override
+  String get subPredictions => 'توقع النتائج واربح';
+
+  @override
+  String get subStats => 'الهدافون وقيمة الفرق';
+
+  @override
+  String get subGroups => 'دردشة المدربين';
+
+  @override
+  String get subHonours => 'أبطال كل موسم';
+
+  @override
+  String get subAlliance => 'تحالفان من مدربي الدوري';
+
+  @override
+  String get subTournaments => 'بطولات بقرعة مباشرة';
+
+  @override
+  String countdownIn(String time) {
+    return 'بعد $time';
+  }
+
+  @override
+  String get liveBadge => 'مباشر الآن';
 }

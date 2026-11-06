@@ -6,16 +6,20 @@ import 'frames.dart';
 /// [Sprint 17 F2] A league match as the server gives it (`GET /matches/{id}`, the simulator's shape): the clubs, both
 /// teams (the tactics only for your own side, `you`), and the minute's length. The app only draws it.
 class MatchClub {
-  const MatchClub({required this.id, required this.name, required this.code, this.primary, this.secondary, this.logo});
+  const MatchClub({required this.id, required this.name, required this.code, this.primary, this.secondary, this.logo, this.awayKit});
 
   factory MatchClub.fromJson(Map<String, dynamic>? j) => MatchClub(
         id: j?['id'] as int? ?? 0, name: '${j?['name'] ?? ''}', code: '${j?['code'] ?? ''}',
         primary: j?['primary'] as String?, secondary: j?['secondary'] as String?, logo: j?['logo'] as String?,
+        awayKit: (j?['away_kit'] as Map?)?['color'] as String?,
       );
 
   final int id;
   final String name, code;
   final String? primary, secondary, logo;
+
+  /// [Sprint 34 V1] Its change kit's colour, worn on a clash.
+  final String? awayKit;
 }
 
 class MatchPlayer {

@@ -12,8 +12,12 @@ import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/game.dart';
+import '../../ui/widgets/motion.dart';
+import '../../ui/widgets/stadium.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/club_data.dart';
+import '../club/squad_screen.dart' show money;
 import '../../core/api/api_client.dart';
 import '../account/account_screens.dart' show askHoliday;
 import '../club/extras_data.dart';
@@ -24,38 +28,77 @@ import 'leagues_repository.dart';
 import 'models.dart';
 import 'widgets.dart';
 
-/// [Sprint 16 F1] A league: my club's board, the table, the matches (league and cup by round), and the coaches with the
-/// creator's join requests and the invite to share. Before a team: the way to take one, or the request's state.
-class LeagueScreen extends ConsumerWidget {
+/// [Sprint 16 F1, redesigned 2026-11-06] A league as a game hub: five sections in a bottom bar, the way the best manager
+/// games are laid out (our own design): my club's dashboard (the next match as the hero, what needs me, the numbers),
+/// the team, the matches (calendar and table), the market and money, and the rest grouped by what it is for.
+class LeagueScreen extends ConsumerStatefulWidget {
   const LeagueScreen({super.key, required this.id});
 
   final int id;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LeagueScreen> createState() => _LeagueScreenState();
+}
+
+class _LeagueScreenState extends ConsumerState<LeagueScreen> {
+  int _tab = 0;
+
+  @override
+  Widget build(BuildContext context) {
     final l = L.of(context);
-    final league = ref.watch(leagueProvider(id));
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(league.value?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-          actions: [
-            // [Sprint 18] The creator renames the league or moves its start until it starts.
-            if (league.value?.isOwner == true && league.value?.locked == false)
-              IconButton(tooltip: l.leagueSettings, icon: const Icon(Icons.settings_rounded), onPressed: () => _settings(context, ref, league.value!)),
-          ],
-          bottom: TabBar(isScrollable: true, tabAlignment: TabAlignment.start, labelColor: context.glm.goldText, indicatorColor: context.palette.gold,
-              tabs: [Tab(text: l.tabClub), Tab(text: l.tabTable), Tab(text: l.tabFixtures), Tab(text: l.tabCoaches)]),
-        ),
-        body: GlmBackground(
+    final league = ref.watch(leagueProvider(widget.id));
+    final lg = league.value;
+    final hasClub = lg?.myClubId != null;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(lg?.name ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
+          // [Sprint 18] The creator renames the league or moves its start until it starts.
+          if (lg?.isOwner == true && lg?.locked == false)
+            IconButton(tooltip: l.leagueSettings, icon: const Icon(Icons.settings_rounded), onPressed: () => _settings(context, ref, lg!)),
+        ],
+      ),
+      body: LayoutBuilder(builder: (context, box) {
+        final wide = box.maxWidth > box.maxHeight;
+        final content = GlmBackground(
+          wide: true,
           child: AsyncView(
             value: league,
-            onRetry: () => ref.invalidate(leagueProvider(id)),
-            data: (lg) => TabBarView(children: [_ClubTab(lg), _TableTab(lg), _FixturesTab(lg), _CoachesTab(lg)]),
+            onRetry: () => ref.invalidate(leagueProvider(widget.id)),
+            data: (lg) => !hasClub
+                ? _ClubTab(lg)
+                : IndexedStack(index: _tab, children: [_ClubTab(lg), _TeamTab(lg), _MatchesTab(lg), _MarketTab(lg), _MoreTab(lg)]),
           ),
-        ),
-      ),
+        );
+        if (!hasClub) return content;
+        final items = [
+          (Icons.shield_outlined, Icons.shield_rounded, l.navClub),
+          (Icons.groups_outlined, Icons.groups_rounded, l.navTeam),
+          (Icons.calendar_month_outlined, Icons.calendar_month_rounded, l.navMatches),
+          (Icons.storefront_outlined, Icons.storefront_rounded, l.navMarket),
+          (Icons.apps_outlined, Icons.apps_rounded, l.navMore),
+        ];
+        // [2026-11-06] Landscape: the five sections in a rail at the side; upright: at the bottom.
+        if (wide) {
+          return Row(children: [
+            NavigationRail(
+              selectedIndex: _tab,
+              onDestinationSelected: (i) => setState(() => _tab = i),
+              groupAlignment: 0,
+              destinations: [for (final (o, f, t) in items) NavigationRailDestination(icon: Icon(o), selectedIcon: Icon(f), label: Text(t))],
+            ),
+            Expanded(child: content),
+          ]);
+        }
+        return Column(children: [
+          Expanded(child: content),
+          NavigationBar(
+            selectedIndex: _tab,
+            onDestinationSelected: (i) => setState(() => _tab = i),
+            destinations: [for (final (o, f, t) in items) NavigationDestination(icon: Icon(o), selectedIcon: Icon(f), label: t)],
+          ),
+        ]);
+      }),
     );
   }
 }
@@ -82,19 +125,26 @@ class _ClubTab extends ConsumerWidget {
             ],
           ]),
         ),
+        const SizedBox(height: 8),
+        _CoachesTab(lg),
       ]);
     }
+    String go(String path) => '/leagues/${lg.id}/$path';
     return RefreshIndicator(
       onRefresh: () => ref.refresh(clubSummaryProvider(lg.id).future),
       child: AsyncView(
         value: ref.watch(clubSummaryProvider(lg.id)),
         onRetry: () => ref.invalidate(clubSummaryProvider(lg.id)),
-        data: (s) => ListView(padding: const EdgeInsets.all(16), children: [
+        data: (s) => GamePanes(start: [
+          _NextMatchHero(s: s, leagueId: lg.id),
+        ], end: [
+          // What needs me: the contract to sign, the matches I missed.
           if (lg.contract != null)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 10),
               child: GlmCard(
                 gold: true,
+                accent: p.gold,
                 child: Row(children: [
                   Icon(Icons.draw_rounded, color: p.gold),
                   const SizedBox(width: 10),
@@ -106,12 +156,12 @@ class _ClubTab extends ConsumerWidget {
                 ]),
               ),
             ),
-          // [Sprint 20 B3] What was played while I was away.
           if (s.missed > 0)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 10),
               child: GlmCard(
-                onTap: () => context.push('/leagues/${lg.id}/missed'),
+                accent: p.brand,
+                onTap: () => context.push(go('missed')),
                 child: Row(children: [
                   Icon(Icons.history_rounded, color: p.gold),
                   const SizedBox(width: 10),
@@ -120,113 +170,272 @@ class _ClubTab extends ConsumerWidget {
                 ]),
               ),
             ),
-          GlmCard(
-            gold: true,
-            child: Column(children: [
-              Row(children: [
-                Text(l.nextMatchShort, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800)),
-                const SizedBox(width: 10),
-                if (s.matchAt != null)
-                  Expanded(child: Text(when(context, s.matchAt!), textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 13))),
-              ]),
-              const SizedBox(height: 14),
-              Row(children: [
-                Expanded(child: Column(children: [ClubCrest(url: s.club.crestUrl, name: s.club.code, size: 56), const SizedBox(height: 6), Text(s.club.name, textAlign: TextAlign.center, style: context.text.titleSmall)])),
-                Text(s.venue == 'away' ? l.away : l.home, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                Expanded(child: Column(children: [ClubCrest(url: s.next?.crestUrl, name: s.next?.code ?? '', size: 56), const SizedBox(height: 6), Text(s.next?.name ?? '—', textAlign: TextAlign.center, style: context.text.titleSmall)])),
-              ]),
-              const SizedBox(height: 12),
-              Text(s.lineupAuto ? l.lineupAuto : l.lineupReady, style: TextStyle(color: s.lineupReady ? context.glm.successText : context.glm.liveText, fontWeight: FontWeight.w700)),
-              if (s.matchId != null) ...[
-                const SizedBox(height: 12),
-                GlmButton(label: l.watchLive, variant: GlmButtonVariant.brand, block: true, icon: const Icon(Icons.play_circle_fill_rounded), onPressed: () => context.push('/match/${s.matchId}')),
-              ],
-            ]),
-          ),
-          const SizedBox(height: 12),
-          // [Sprint 17] My team's screens.
-          // [Sprint 18] And the club's other screens, three to a row.
-          GridView.count(
-            crossAxisCount: 3,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 1.25,
-            children: [
-              for (final (icon, label, path) in [
-                (Icons.sports_rounded, l.matchday, 'matchday'),
-                (Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics'),
-                (Icons.description_rounded, l.contracts, 'contracts'), (Icons.confirmation_number_rounded, l.cheerTickets, 'tickets'),
-                (Icons.swap_horiz_rounded, l.market, 'market'), (Icons.travel_explore_rounded, l.scout, 'scout'),
-                (Icons.account_balance_wallet_rounded, l.finance, 'finance'), (Icons.stadium_rounded, l.stadium, 'stadium'),
-                (Icons.fitness_center_rounded, l.training, 'training'), (Icons.workspace_premium_rounded, l.specialists, 'specialists'),
-                (Icons.visibility_rounded, l.spy, 'spy'), (Icons.flag_rounded, l.quests, 'quests'), (Icons.emoji_events_rounded, l.honours, 'honours'),
-                (Icons.sports_soccer_rounded, l.friendlies, 'friendlies'), (Icons.how_to_vote_rounded, l.predictions, 'predictions'),
-                (Icons.newspaper_rounded, l.newspaper, 'newspaper'), (Icons.forum_rounded, l.groups, '/groups'), (Icons.leaderboard_rounded, l.stats, 'stats'), (Icons.handshake_rounded, l.alliance, 'alliance'), (Icons.emoji_events_outlined, l.tournaments, '/tournaments'),
-              ])
-                GlmCard(
-                  padding: const EdgeInsets.all(8),
-                  onTap: () => context.push(path.startsWith('/') ? path : '/leagues/${lg.id}/$path'),
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(icon, color: p.gold),
-                    const SizedBox(height: 6),
-                    Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
-                  ]),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Row(children: [
-            Expanded(child: _Stat(label: l.tabTable, value: s.position == null ? '—' : '${s.position}/${s.teams}')),
+            Expanded(child: StatTile(value: s.position == null ? '—' : '${s.position}/${s.teams}', label: l.tabTable, icon: Icons.leaderboard_rounded)),
             const SizedBox(width: 10),
-            Expanded(child: _Stat(label: l.coins, value: '${s.coins}')),
+            Expanded(child: StatTile(value: money(context, s.cash), label: l.balance, icon: Icons.account_balance_wallet_rounded, color: p.success)),
           ]),
-          if (s.goal != null) ...[const SizedBox(height: 12), GlmCard(child: Row(children: [Icon(Icons.flag_rounded, color: p.gold), const SizedBox(width: 10), Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}'))]))],
+          if (s.goal != null) ...[
+            const SizedBox(height: 10),
+            GlmCard(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(children: [
+                Icon(Icons.flag_rounded, color: p.gold),
+                const SizedBox(width: 10),
+                Expanded(child: Text('${l.board}: ${goalText(l, s.goal)}', style: const TextStyle(fontWeight: FontWeight.w700))),
+              ]),
+            ),
+          ],
+          GameHeader(l.secPlayers, icon: Icons.bolt_rounded),
+          Row(children: [
+            for (final (icon, label, path) in [(Icons.groups_rounded, l.squad, 'squad'), (Icons.grid_view_rounded, l.lineup, 'lineup'), (Icons.tune_rounded, l.tactics, 'tactics')])
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: GlmCard(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+                    onTap: () => context.push(go(path)),
+                    child: Column(children: [
+                      Icon(icon, color: p.gold, size: 26),
+                      const SizedBox(height: 6),
+                      Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
+                    ]),
+                  ),
+                ),
+              ),
+          ]),
           for (final line in s.pending) Padding(padding: const EdgeInsets.only(top: 8), child: GlmCard(child: Text(line, style: TextStyle(color: p.textSoft)))),
-          // [Sprint 18] A holiday in this league, asked of its creator.
-          const SizedBox(height: 16),
-          GlmButton(
-            label: l.holidayLeague,
-            variant: GlmButtonVariant.quiet,
-            icon: const Icon(Icons.beach_access_rounded),
-            onPressed: () => askHoliday(context, ref, '/leagues/${lg.id}/vacation', 14),
-          ),
-          // [Sprint 18] Leaving the league: the team goes back to the computer (Leaving::resign), after a clear yes.
-          const SizedBox(height: 28),
-          GlmButton(
-            label: l.resign,
-            variant: GlmButtonVariant.danger,
-            onPressed: () async {
-              if (!await confirm(context, l.resignConfirm) || !context.mounted) return;
-              try {
-                await ref.read(extrasRepositoryProvider).resign(lg.id);
-                ref.invalidate(homeProvider);
-                ref.invalidate(myLeaguesProvider);
-                if (context.mounted) context.go('/');
-              } on ApiError catch (e) {
-                if (context.mounted) showGlmToast(context, e.message, error: true);
-              }
-            },
-          ),
         ]),
       ),
     );
   }
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value});
+/// The next match as the screen's hero: both crests large on a pitch-green glow, the time and how long until it, the
+/// line-up's state, and the way in (live when it plays, the match day panels before).
+class _NextMatchHero extends StatelessWidget {
+  const _NextMatchHero({required this.s, required this.leagueId});
 
-  final String label, value;
+  final ClubSummary s;
+  final int leagueId;
 
   @override
-  Widget build(BuildContext context) => GlmCard(
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    final live = s.matchId != null;
+    final left = s.matchAt?.difference(DateTime.now());
+    String? countdown;
+    if (left != null && !left.isNegative) {
+      countdown = left.inDays >= 1 ? '${l.days(left.inDays)} ${l.hours(left.inHours % 24)}' : left.inHours >= 1 ? l.hours(left.inHours) : l.minutes(left.inMinutes.clamp(1, 59));
+    }
+    Widget side(Side c) => Expanded(
+          child: Column(children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .06), border: Border.all(color: Colors.white.withValues(alpha: .10))),
+              child: ClubCrest(url: c.crestUrl, name: c.code, size: 64),
+            ),
+            const SizedBox(height: 8),
+            Text(c.name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+          ]),
+        );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(p.pitchDark, p.surface, .35)!, p.surface]),
+        border: Border.all(color: (live ? p.danger : p.gold).withValues(alpha: .5)),
+        boxShadow: [BoxShadow(color: (live ? p.danger : p.pitch).withValues(alpha: .22), blurRadius: 30, spreadRadius: -8, offset: const Offset(0, 10))],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(23),
+        child: StadiumBackdrop(
+        child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: Column(children: [
-          Text(value, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 28, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-          Text(label, style: TextStyle(color: context.palette.textMuted, fontSize: 12)),
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: live ? p.danger : p.gold.withValues(alpha: .16), borderRadius: BorderRadius.circular(99)),
+              child: live
+                  ? Pulse(child: Text(l.liveBadge, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)))
+                  : Text(l.nextMatchShort, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
+            ),
+            const SizedBox(width: 8),
+            if (s.matchAt != null)
+              Expanded(child: Text(when(context, s.matchAt!.toLocal()), textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12))),
+          ]),
+          const SizedBox(height: 14),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            side(s.venue == 'away' ? (s.next ?? s.club) : s.club),
+            Padding(
+              padding: const EdgeInsets.only(top: 22),
+              child: Column(children: [
+                Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 28, fontWeight: FontWeight.w800, color: p.gold, height: 1)),
+                if (countdown != null) Text(l.countdownIn(countdown), style: TextStyle(color: p.textSoft, fontSize: 12)),
+              ]),
+            ),
+            side(s.venue == 'away' ? s.club : (s.next ?? s.club)),
+          ]),
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .75), borderRadius: BorderRadius.circular(99)),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(s.lineupReady ? Icons.check_circle_rounded : Icons.error_rounded, size: 16, color: s.lineupReady ? p.success : p.danger),
+                const SizedBox(width: 6),
+                Text(s.lineupAuto ? l.lineupAuto : l.lineupReady, style: TextStyle(color: p.text, fontWeight: FontWeight.w700, fontSize: 13)),
+              ]),
+            ),
+          ),
+          const SizedBox(height: 12),
+          live
+              ? GlmButton(label: l.watchLive, variant: GlmButtonVariant.brand, block: true, icon: const Icon(Icons.play_circle_fill_rounded), onPressed: () => context.push('/match/${s.matchId}'))
+              : GlmButton(label: l.matchday, block: true, icon: const Icon(Icons.sports_rounded), onPressed: () => context.push('/leagues/$leagueId/matchday')),
         ]),
-      );
+      ),
+      ),
+      ),
+    );
+  }
+}
+
+class _TeamTab extends StatelessWidget {
+  const _TeamTab(this.lg);
+
+  final League lg;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    void go(String path) => context.push('/leagues/${lg.id}/$path');
+    return GamePanes(startFlex: 1, endFlex: 1, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), start: [
+      MenuSection(title: l.secPlayers, icon: Icons.groups_rounded, items: [
+        MenuItem(Icons.groups_rounded, l.squad, () => go('squad'), subtitle: l.subSquad),
+        MenuItem(Icons.grid_view_rounded, l.lineup, () => go('lineup'), subtitle: l.subLineup, color: p.success),
+        MenuItem(Icons.tune_rounded, l.tactics, () => go('tactics'), subtitle: l.subTactics, color: p.brandLight),
+      ]),
+    ], end: [
+      MenuSection(title: l.secDevelop, icon: Icons.trending_up_rounded, items: [
+        MenuItem(Icons.fitness_center_rounded, l.training, () => go('training'), subtitle: l.subTraining),
+        MenuItem(Icons.workspace_premium_rounded, l.specialists, () => go('specialists'), subtitle: l.subSpecialists, color: p.warning),
+        MenuItem(Icons.description_rounded, l.contracts, () => go('contracts'), subtitle: l.subContracts, color: p.textSoft),
+      ]),
+    ]);
+  }
+}
+
+class _MatchesTab extends StatelessWidget {
+  const _MatchesTab(this.lg);
+
+  final League lg;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    return DefaultTabController(
+      length: 2,
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: Row(children: [
+            for (final (icon, label, path) in [(Icons.sports_rounded, l.matchday, 'matchday'), (Icons.how_to_vote_rounded, l.predictions, 'predictions'), (Icons.bar_chart_rounded, l.stats, 'stats')])
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: ActionChip(avatar: Icon(icon, size: 18, color: context.palette.gold), label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      onPressed: () => context.push('/leagues/${lg.id}/$path')),
+                ),
+              ),
+          ]),
+        ),
+        TabBar(labelColor: context.glm.goldText, indicatorColor: context.palette.gold, tabs: [Tab(text: l.tabFixtures), Tab(text: l.tabTable)]),
+        Expanded(child: TabBarView(children: [_FixturesTab(lg), _TableTab(lg)])),
+      ]),
+    );
+  }
+}
+
+class _MarketTab extends StatelessWidget {
+  const _MarketTab(this.lg);
+
+  final League lg;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    void go(String path) => context.push('/leagues/${lg.id}/$path');
+    return GamePanes(startFlex: 1, endFlex: 1, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), start: [
+      MenuSection(title: l.secDeals, icon: Icons.swap_horiz_rounded, items: [
+        MenuItem(Icons.storefront_rounded, l.market, () => go('market'), subtitle: l.subMarket),
+        MenuItem(Icons.travel_explore_rounded, l.scout, () => go('scout'), subtitle: l.subScout, color: p.brandLight),
+      ]),
+    ], end: [
+      MenuSection(title: l.secMoney, icon: Icons.payments_rounded, items: [
+        MenuItem(Icons.account_balance_wallet_rounded, l.finance, () => go('finance'), subtitle: l.subFinance, color: p.success),
+        MenuItem(Icons.stadium_rounded, l.stadium, () => go('stadium'), subtitle: l.subStadium),
+        MenuItem(Icons.confirmation_number_rounded, l.cheerTickets, () => go('tickets'), subtitle: l.subTickets, color: p.warning),
+      ]),
+    ]);
+  }
+}
+
+class _MoreTab extends ConsumerWidget {
+  const _MoreTab(this.lg);
+
+  final League lg;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    void go(String path) => context.push(path.startsWith('/') ? path : '/leagues/${lg.id}/$path');
+    return GamePanes(startFlex: 1, endFlex: 1, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), start: [
+      MenuSection(title: l.secCompete, icon: Icons.emoji_events_rounded, items: [
+        MenuItem(Icons.sports_soccer_rounded, l.friendlies, () => go('friendlies'), subtitle: l.subFriendlies, color: p.success),
+        MenuItem(Icons.flag_rounded, l.quests, () => go('quests'), subtitle: l.subQuests),
+        MenuItem(Icons.visibility_rounded, l.spy, () => go('spy'), subtitle: l.subSpy, color: p.danger),
+        MenuItem(Icons.handshake_rounded, l.alliance, () => go('alliance'), subtitle: l.subAlliance, color: p.brandLight),
+        MenuItem(Icons.emoji_events_outlined, l.tournaments, () => go('/tournaments'), subtitle: l.subTournaments, color: p.warning),
+        MenuItem(Icons.military_tech_rounded, l.honours, () => go('honours'), subtitle: l.subHonours),
+      ]),
+      MenuSection(title: l.secCommunity, icon: Icons.forum_rounded, items: [
+        MenuItem(Icons.newspaper_rounded, l.newspaper, () => go('newspaper'), subtitle: l.subNewspaper, color: p.textSoft),
+        MenuItem(Icons.forum_rounded, l.groups, () => go('/groups'), subtitle: l.subGroups, color: p.brandLight),
+      ]),
+    ], end: [
+      GameHeader(l.secLeague, icon: Icons.groups_2_rounded),
+      _CoachesTab(lg),
+      const SizedBox(height: 12),
+      // [Sprint 18] A holiday in this league, asked of its creator.
+      GlmButton(
+        label: l.holidayLeague,
+        variant: GlmButtonVariant.quiet,
+        icon: const Icon(Icons.beach_access_rounded),
+        onPressed: () => askHoliday(context, ref, '/leagues/${lg.id}/vacation', 14),
+      ),
+      // [Sprint 18] Leaving the league: the team goes back to the computer (Leaving::resign), after a clear yes.
+      const SizedBox(height: 20),
+      GlmButton(
+        label: l.resign,
+        variant: GlmButtonVariant.danger,
+        onPressed: () async {
+          if (!await confirm(context, l.resignConfirm) || !context.mounted) return;
+          try {
+            await ref.read(extrasRepositoryProvider).resign(lg.id);
+            ref.invalidate(homeProvider);
+            ref.invalidate(myLeaguesProvider);
+            if (context.mounted) context.go('/');
+          } on ApiError catch (e) {
+            if (context.mounted) showGlmToast(context, e.message, error: true);
+          }
+        },
+      ),
+    ]);
+  }
 }
 
 class _TableTab extends ConsumerWidget {
@@ -370,7 +579,8 @@ class _CoachesTab extends ConsumerWidget {
     final l = L.of(context);
     final p = context.palette;
     final invite = l.inviteText(lg.name, lg.inviteUrl ?? '');
-    return ListView(padding: const EdgeInsets.all(16), children: [
+    // Inside the «more» section and the page before a team: a column, not a list of its own.
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       GlmCard(
         gold: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
