@@ -1482,5 +1482,85 @@
   "markSeen": "شاهدتها كلها",
   "squadChanges": "تغيّر في فريقك",
   "injured": "مصاب",
-  "sentOff": "طُرد"
+  "sentOff": "طُرد",
+  "unlockSlot": "افتحها الآن ({coins} كوينز)",
+  "@unlockSlot": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "unlockConfirm": "فتح الفتحة {n} الآن بـ {coins} كوينز؟ تبقى مفتوحة دائماً.",
+  "@unlockConfirm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "starterGift": "هدية البداية: {coins} كوينز",
+  "@starterGift": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "claimGift": "استلمها",
+  "ranking": "ترتيب المدربين",
+  "trophiesShort": "{n} ألقاب",
+  "@trophiesShort": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "holiday": "إجازة",
+  "holidayLeague": "اطلب إجازة من هذا الدوري",
+  "holidayAccount": "إجازة طويلة للحساب كله",
+  "holidayDays": "الأيام: {n}",
+  "@holidayDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "holidayReason": "السبب",
+  "holidaySent": "وصل طلب الإجازة",
+  "endHoliday": "أنهِ الإجازة",
+  "vacationAsk": "يطلب إجازة {days} أيام: {reason}",
+  "@vacationAsk": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "kick": "أبعِده",
+  "kickReason": "السبب (يراه الجميع)",
+  "verifyAccount": "وثّق حسابك واحصل على {coins} كوينز",
+  "@verifyAccount": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCode": "أرسل الرمز إلى بريدي",
+  "codeSent": "أُرسل الرمز",
+  "verifyCode": "الرمز",
+  "verified": "حسابك موثّق",
+  "resendEmail": "أعد إرسال رسالة تأكيد البريد",
+  "deleteAccount": "احذف حسابي",
+  "deleteAccountLead": "تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.",
+  "startLeague": "ابدأ الدوري الآن"
 }

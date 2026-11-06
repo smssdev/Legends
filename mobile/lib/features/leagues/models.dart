@@ -38,13 +38,14 @@ class League {
 }
 
 class Member {
-  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false, this.userId});
+  const Member({required this.id, required this.name, this.username, this.club, this.isOwner = false, this.onHoliday = false, this.userId, this.vacationRequest});
 
   factory Member.fromJson(Map<String, dynamic> j) {
     final u = j['user'] as Map<String, dynamic>? ?? const {};
     final c = j['club'] as Map<String, dynamic>?;
     return Member(id: j['id'] as int, name: '${u['name'] ?? ''}', username: u['username'] as String?, club: c?['name'] as String?,
-        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?);
+        isOwner: j['is_owner'] == true, onHoliday: j['on_holiday'] == true, userId: u['id'] as int?,
+        vacationRequest: j['vacation_request'] is Map ? (days: (j['vacation_request'] as Map)['days'] as int? ?? 0, reason: '${(j['vacation_request'] as Map)['reason'] ?? ''}') : null);
   }
 
   final int id;
@@ -54,6 +55,9 @@ class Member {
 
   /// The coach's account, for his profile.
   final int? userId;
+
+  /// A holiday he asked for, for the league's creator to answer.
+  final ({int days, String reason})? vacationRequest;
 }
 
 class ClubCardData {

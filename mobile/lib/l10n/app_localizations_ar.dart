@@ -1931,4 +1931,94 @@ class LAr extends L {
 
   @override
   String get sentOff => 'طُرد';
+
+  @override
+  String unlockSlot(int coins) {
+    return 'افتحها الآن ($coins كوينز)';
+  }
+
+  @override
+  String unlockConfirm(int n, int coins) {
+    return 'فتح الفتحة $n الآن بـ $coins كوينز؟ تبقى مفتوحة دائماً.';
+  }
+
+  @override
+  String starterGift(int coins) {
+    return 'هدية البداية: $coins كوينز';
+  }
+
+  @override
+  String get claimGift => 'استلمها';
+
+  @override
+  String get ranking => 'ترتيب المدربين';
+
+  @override
+  String trophiesShort(int n) {
+    return '$n ألقاب';
+  }
+
+  @override
+  String get holiday => 'إجازة';
+
+  @override
+  String get holidayLeague => 'اطلب إجازة من هذا الدوري';
+
+  @override
+  String get holidayAccount => 'إجازة طويلة للحساب كله';
+
+  @override
+  String holidayDays(int n) {
+    return 'الأيام: $n';
+  }
+
+  @override
+  String get holidayReason => 'السبب';
+
+  @override
+  String get holidaySent => 'وصل طلب الإجازة';
+
+  @override
+  String get endHoliday => 'أنهِ الإجازة';
+
+  @override
+  String vacationAsk(int days, String reason) {
+    return 'يطلب إجازة $days أيام: $reason';
+  }
+
+  @override
+  String get kick => 'أبعِده';
+
+  @override
+  String get kickReason => 'السبب (يراه الجميع)';
+
+  @override
+  String verifyAccount(int coins) {
+    return 'وثّق حسابك واحصل على $coins كوينز';
+  }
+
+  @override
+  String get sendCode => 'أرسل الرمز إلى بريدي';
+
+  @override
+  String get codeSent => 'أُرسل الرمز';
+
+  @override
+  String get verifyCode => 'الرمز';
+
+  @override
+  String get verified => 'حسابك موثّق';
+
+  @override
+  String get resendEmail => 'أعد إرسال رسالة تأكيد البريد';
+
+  @override
+  String get deleteAccount => 'احذف حسابي';
+
+  @override
+  String get deleteAccountLead =>
+      'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.';
+
+  @override
+  String get startLeague => 'ابدأ الدوري الآن';
 }

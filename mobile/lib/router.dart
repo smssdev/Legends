@@ -90,6 +90,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/leagues/:id/predictions', builder: (_, s) => PredictionsScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/leagues/:id/newspaper', builder: (_, s) => NewspaperScreen(leagueId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
+      GoRoute(path: '/ranking', builder: (_, _) => const RankingScreen()),
       GoRoute(path: '/ideas', builder: (_, _) => const IdeasScreen()),
       GoRoute(path: '/support', builder: (_, _) => const SupportScreen()),
       GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),

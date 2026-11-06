@@ -4,17 +4,22 @@ import '../../core/api/api_client.dart';
 
 /// [Sprint 15] The coach's home (`/home`, X18): his card, his coins and rating, and his eight club slots.
 class HomeData {
-  const HomeData({required this.coach, required this.slots, required this.slotsOpen});
+  const HomeData({required this.coach, required this.slots, required this.slotsOpen, this.starterCoins = 0, this.starterClaimed = true});
 
   factory HomeData.fromJson(Map<String, dynamic> j) => HomeData(
         coach: Coach.fromJson(j['coach'] as Map<String, dynamic>),
         slots: [for (final s in j['slots'] as List) Slot.fromJson(s as Map<String, dynamic>)],
         slotsOpen: j['slots_open'] as int? ?? 0,
+        starterCoins: (j['starter_gift'] as Map?)?['coins'] as int? ?? 0, starterClaimed: (j['starter_gift'] as Map?)?['claimed'] != false,
       );
 
   final Coach coach;
   final List<Slot> slots;
   final int slotsOpen;
+
+  /// [Sprint 30 P6] A new coach's first coins, claimed once.
+  final int starterCoins;
+  final bool starterClaimed;
 }
 
 class Coach {

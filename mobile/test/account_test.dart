@@ -46,6 +46,7 @@ Future<void> pump(WidgetTester t, Widget screen) async {
             {'id': 1, 'title': 'Season two', 'body': 'Starts on Friday.', 'image_url': null, 'cta': null},
           ]),
       guideProvider.overrideWith((ref) async => json('guide')['sections'] as List),
+      rankingProvider.overrideWith((ref) async => json('ranking')['coaches'] as List),
     ],
     child: MaterialApp(
       theme: glmTheme(day: false),
@@ -71,6 +72,9 @@ void main() {
     expect(find.text('ادعُ أصدقاءك'), findsOneWidget);
     expect(find.text('أول فوز'), findsOneWidget);
     expect(find.text('100 مباراة'), findsOneWidget);
+    expect(find.text('وثّق حسابك واحصل على 1000 كوينز'), findsOneWidget);
+    expect(find.text('إجازة طويلة للحساب كله'), findsOneWidget);
+    expect(find.text('احذف حسابي'), findsOneWidget);
   });
 
   testWidgets('the stats, the ideas, support, the announcements and the guide', (t) async {
@@ -82,6 +86,8 @@ void main() {
     expect(find.text('فريق اللعبة'), findsOneWidget);
     await pump(t, const AnnouncementsScreen());
     expect(find.text('Season two'), findsOneWidget);
+    await pump(t, const RankingScreen());
+    expect(find.text('مدرب التجربة'), findsWidgets);
     await pump(t, const GuideScreen());
     expect(find.text('البداية والحساب'), findsOneWidget);
     await t.tap(find.text('البداية والحساب'));

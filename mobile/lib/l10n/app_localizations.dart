@@ -3450,6 +3450,156 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'طُرد'**
   String get sentOff;
+
+  /// No description provided for @unlockSlot.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتحها الآن ({coins} كوينز)'**
+  String unlockSlot(int coins);
+
+  /// No description provided for @unlockConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح الفتحة {n} الآن بـ {coins} كوينز؟ تبقى مفتوحة دائماً.'**
+  String unlockConfirm(int n, int coins);
+
+  /// No description provided for @starterGift.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدية البداية: {coins} كوينز'**
+  String starterGift(int coins);
+
+  /// No description provided for @claimGift.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلمها'**
+  String get claimGift;
+
+  /// No description provided for @ranking.
+  ///
+  /// In ar, this message translates to:
+  /// **'ترتيب المدربين'**
+  String get ranking;
+
+  /// No description provided for @trophiesShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} ألقاب'**
+  String trophiesShort(int n);
+
+  /// No description provided for @holiday.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجازة'**
+  String get holiday;
+
+  /// No description provided for @holidayLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب إجازة من هذا الدوري'**
+  String get holidayLeague;
+
+  /// No description provided for @holidayAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجازة طويلة للحساب كله'**
+  String get holidayAccount;
+
+  /// No description provided for @holidayDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيام: {n}'**
+  String holidayDays(int n);
+
+  /// No description provided for @holidayReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب'**
+  String get holidayReason;
+
+  /// No description provided for @holidaySent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل طلب الإجازة'**
+  String get holidaySent;
+
+  /// No description provided for @endHoliday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنهِ الإجازة'**
+  String get endHoliday;
+
+  /// No description provided for @vacationAsk.
+  ///
+  /// In ar, this message translates to:
+  /// **'يطلب إجازة {days} أيام: {reason}'**
+  String vacationAsk(int days, String reason);
+
+  /// No description provided for @kick.
+  ///
+  /// In ar, this message translates to:
+  /// **'أبعِده'**
+  String get kick;
+
+  /// No description provided for @kickReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب (يراه الجميع)'**
+  String get kickReason;
+
+  /// No description provided for @verifyAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'وثّق حسابك واحصل على {coins} كوينز'**
+  String verifyAccount(int coins);
+
+  /// No description provided for @sendCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الرمز إلى بريدي'**
+  String get sendCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل الرمز'**
+  String get codeSent;
+
+  /// No description provided for @verifyCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز'**
+  String get verifyCode;
+
+  /// No description provided for @verified.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك موثّق'**
+  String get verified;
+
+  /// No description provided for @resendEmail.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد إرسال رسالة تأكيد البريد'**
+  String get resendEmail;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'احذف حسابي'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعود فرقك للكمبيوتر ولا رجوع. اكتب «احذف» للتأكيد.'**
+  String get deleteAccountLead;
+
+  /// No description provided for @startLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ الدوري الآن'**
+  String get startLeague;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

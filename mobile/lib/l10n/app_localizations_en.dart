@@ -1935,4 +1935,94 @@ class LEn extends L {
 
   @override
   String get sentOff => 'sent off';
+
+  @override
+  String unlockSlot(int coins) {
+    return 'Open it now ($coins coins)';
+  }
+
+  @override
+  String unlockConfirm(int n, int coins) {
+    return 'Open slot $n now for $coins coins? It stays open for good.';
+  }
+
+  @override
+  String starterGift(int coins) {
+    return 'Starter gift: $coins coins';
+  }
+
+  @override
+  String get claimGift => 'Claim it';
+
+  @override
+  String get ranking => 'Coaches\' ranking';
+
+  @override
+  String trophiesShort(int n) {
+    return '$n titles';
+  }
+
+  @override
+  String get holiday => 'Holiday';
+
+  @override
+  String get holidayLeague => 'Ask for a holiday in this league';
+
+  @override
+  String get holidayAccount => 'A long holiday for the whole account';
+
+  @override
+  String holidayDays(int n) {
+    return 'Days: $n';
+  }
+
+  @override
+  String get holidayReason => 'Reason';
+
+  @override
+  String get holidaySent => 'Holiday request sent';
+
+  @override
+  String get endHoliday => 'End the holiday';
+
+  @override
+  String vacationAsk(int days, String reason) {
+    return 'Asks for $days days off: $reason';
+  }
+
+  @override
+  String get kick => 'Remove';
+
+  @override
+  String get kickReason => 'Reason (everyone sees it)';
+
+  @override
+  String verifyAccount(int coins) {
+    return 'Verify your account and get $coins coins';
+  }
+
+  @override
+  String get sendCode => 'Send the code to my email';
+
+  @override
+  String get codeSent => 'Code sent';
+
+  @override
+  String get verifyCode => 'The code';
+
+  @override
+  String get verified => 'Your account is verified';
+
+  @override
+  String get resendEmail => 'Resend the email confirmation';
+
+  @override
+  String get deleteAccount => 'Delete my account';
+
+  @override
+  String get deleteAccountLead =>
+      'Your teams go back to the computer, with no undo. Type «احذف» to confirm.';
+
+  @override
+  String get startLeague => 'Start the league now';
 }

@@ -125,6 +125,7 @@ void main() {
     final money = FakeMoney();
     await pump(t, const StadiumScreen(leagueId: 8), money: money);
     expect(find.text('التذاكر والمقاعد'), findsOneWidget);
+    expect(find.text('كل جزء يأخذ 19 ساعة'), findsOneWidget);
     await t.tap(find.textContaining('ابنِ').first);
     await t.pump(const Duration(milliseconds: 300));
     expect(money.sent, ['build seats']);

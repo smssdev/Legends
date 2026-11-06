@@ -36,6 +36,12 @@ class AuthController extends AsyncNotifier<Account?> {
     state = const AsyncData(null);
   }
 
+  /// The account is gone (deleted): forget it on this phone.
+  Future<void> forgetHere() async {
+    await ref.read(tokenStoreProvider).clear();
+    state = const AsyncData(null);
+  }
+
   Future<void> _forget() async {
     if (state.value == null) return;
     await ref.read(tokenStoreProvider).clear();

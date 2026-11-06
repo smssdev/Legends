@@ -33,7 +33,7 @@ class ApiClient {
   Future<Map<String, dynamic>> post(String path, [Object? body]) => _call(() => dio.post(path, data: body));
   Future<Map<String, dynamic>> put(String path, [Object? body]) => _call(() => dio.put(path, data: body));
   Future<Map<String, dynamic>> patch(String path, [Object? body]) => _call(() => dio.patch(path, data: body));
-  Future<Map<String, dynamic>> delete(String path) => _call(() => dio.delete(path));
+  Future<Map<String, dynamic>> delete(String path, [Object? body]) => _call(() => dio.delete(path, data: body));
 
   Future<Map<String, dynamic>> _call(Future<Response<dynamic>> Function() send) async {
     try {

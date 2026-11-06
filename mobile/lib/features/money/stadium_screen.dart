@@ -82,7 +82,7 @@ class _StadiumScreenState extends ConsumerState<StadiumScreen> {
             final left = b == null ? Duration.zero : b.endsAt.difference(DateTime.now().toUtc());
             final finishCoins = b?.finishCoins ?? 0;
             const gap = SizedBox(height: 12);
-            final partTime = s.partMinutes >= 120 ? '${(s.partMinutes / 60).round()} ${l.hours}' : '${s.partMinutes} ${l.minutes}';
+            final partTime = s.partMinutes >= 120 ? l.hours((s.partMinutes / 60).round()) : l.minutes(s.partMinutes);
             return RefreshIndicator(
               color: p.gold,
               onRefresh: () {

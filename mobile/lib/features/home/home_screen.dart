@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/config.dart';
 import '../../l10n/app_localizations.dart';
@@ -17,6 +18,7 @@ import '../health/status_screens.dart';
 import 'home_data.dart';
 import '../inbox/inbox_data.dart';
 import '../match/match_data.dart';
+import '../money/finance_screen.dart' show confirm;
 import 'settings_sheet.dart';
 
 /// [Sprint 15] The app's first screen after sign-in, as the web's home (MobileHome.dc.html): the coach's card with his
@@ -85,6 +87,26 @@ class _Home extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
               sliver: SliverList.list(children: [
                 _CoachCard(h.coach),
+                if (!h.starterClaimed && h.starterCoins > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: GlmCard(
+                      gold: true,
+                      child: Row(children: [
+                        const Text('🎁', style: TextStyle(fontSize: 26)),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(l.starterGift(h.starterCoins), style: const TextStyle(fontWeight: FontWeight.w800))),
+                        GlmButton(label: l.claimGift, onPressed: () async {
+                          try {
+                            await ref.read(apiProvider).post('/home/starter-gift');
+                          } on ApiError catch (e) {
+                            if (context.mounted) showGlmToast(context, e.message, error: true);
+                          }
+                          ref.invalidate(homeProvider);
+                        }),
+                      ]),
+                    ),
+                  ),
                 // [Sprint 17 F2] My matches under way, in every league: one tap to the live screen.
                 ...?ref.watch(myLiveMatchesProvider).value?.map((m) => Padding(
                       padding: const EdgeInsets.only(top: 12),
@@ -159,7 +181,7 @@ class _CoachCard extends StatelessWidget {
   }
 }
 
-class _SlotCard extends StatelessWidget {
+class _SlotCard extends ConsumerWidget {
   const _SlotCard(this.s);
 
   final Slot s;
@@ -173,7 +195,7 @@ class _SlotCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
     final p = context.palette;
     final number = Text('${s.number}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 18, color: p.textMuted));
@@ -238,6 +260,24 @@ class _SlotCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(l.slotLocked, style: context.text.titleMedium),
                 if (s.opensAt != null) Text(l.slotOpensIn(_when(context, s.opensAt!)), style: TextStyle(color: p.textMuted, fontSize: 13)),
+                // [Sprint 24 B3] Open it now for coins, at the server's price; it stays open for good.
+                if (s.unlockCoins != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: GlmButton(
+                      label: l.unlockSlot(s.unlockCoins!),
+                      variant: GlmButtonVariant.outline,
+                      onPressed: () async {
+                        if (!await confirm(context, l.unlockConfirm(s.number, s.unlockCoins!)) || !context.mounted) return;
+                        try {
+                          await ref.read(apiProvider).post('/home/slots/${s.number}/unlock');
+                        } on ApiError catch (e) {
+                          if (context.mounted) showGlmToast(context, e.message, error: true);
+                        }
+                        ref.invalidate(homeProvider);
+                      },
+                    ),
+                  ),
               ]),
             ),
             number,

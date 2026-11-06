@@ -26,7 +26,7 @@ Future<void> _act(BuildContext context, Future<void> Function() action) async {
 
 String _lineName(L l, String line) => switch (line) { 'gk' => l.lineGk, 'def' => l.lineDef, 'mid' => l.lineMid, _ => l.lineAtt };
 
-String _span(L l, int minutes) => minutes >= 120 ? '${(minutes / 60).round()} ${l.hours}' : '$minutes ${l.minutes}';
+String _span(L l, int minutes) => minutes >= 120 ? l.hours((minutes / 60).round()) : l.minutes(minutes);
 
 Widget _scaffold(String title, Widget body) => Scaffold(appBar: AppBar(title: Text(title)), body: GlmBackground(child: body));
 
