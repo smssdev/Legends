@@ -417,15 +417,87 @@ class NewspaperScreen extends ConsumerWidget {
   }
 }
 
+/// [Sprint 18 G] Open a group by its invite code (a link gamelegendmanager.online/groups/join/CODE, or typed).
+Future<void> joinGroup(BuildContext context, WidgetRef ref, String code) async {
+  final r = await _try(context, () => ref.read(apiProvider).post('/groups/join/${code.trim().toLowerCase()}'));
+  ref.invalidate(groupsProvider);
+  final g = r?['group'] as Map?;
+  if (g != null && context.mounted) {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
+  }
+}
+
 class GroupsScreen extends ConsumerWidget {
-  const GroupsScreen({super.key});
+  const GroupsScreen({super.key, this.joinCode});
+
+  /// A code from an invite link: joined as the screen opens.
+  final String? joinCode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
-    return _page(
-      l.groups,
-      AsyncView(
+    if (joinCode != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) joinGroup(context, ref, joinCode!);
+      });
+    }
+    return Scaffold(
+      appBar: AppBar(title: Text(l.groups), actions: [
+        IconButton(
+          tooltip: l.joinGroup,
+          icon: const Icon(Icons.vpn_key_rounded),
+          onPressed: () async {
+            final code = TextEditingController();
+            final ok = await showDialog<bool>(
+              context: context,
+              builder: (d) => AlertDialog(
+                title: Text(l.joinGroup),
+                content: TextField(controller: code, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.groupCode)),
+                actions: [TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.cancel)), FilledButton(onPressed: () => Navigator.pop(d, true), child: Text(l.confirm))],
+              ),
+            );
+            if (ok == true && context.mounted) await joinGroup(context, ref, code.text);
+            code.dispose();
+          },
+        ),
+      ]),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.group_add_rounded),
+        label: Text(l.newGroup),
+        onPressed: () async {
+          final name = TextEditingController(), members = TextEditingController();
+          final ok = await showModalBottomSheet<bool>(
+            context: context,
+            isScrollControlled: true,
+            showDragHandle: true,
+            builder: (ctx) => Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(ctx).viewInsets.bottom + 16),
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                TextField(controller: name, maxLength: 60, decoration: InputDecoration(labelText: l.groupName)),
+                TextField(controller: members, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.groupMembers)),
+                const SizedBox(height: 12),
+                GlmButton(label: l.create, block: true, onPressed: () => Navigator.pop(ctx, true)),
+              ]),
+            ),
+          );
+          if (ok == true && context.mounted) {
+            final usernames = [for (final u in members.text.split(RegExp(r'[,،\s]+'))) if (u.trim().isNotEmpty) u.trim().replaceFirst('@', '')];
+            final r = await _try(context, () => ref.read(apiProvider).post('/groups', {'name': name.text.trim(), 'usernames': usernames}));
+            ref.invalidate(groupsProvider);
+            final g = r?['group'] as Map?;
+            if (g != null && context.mounted) {
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(groupId: g['id'] as int, name: '${g['name']}')));
+            }
+          }
+          name.dispose();
+          members.dispose();
+        },
+      ),
+      body: GlmBackground(child: _groupsBody(context, ref, l)),
+    );
+  }
+
+  Widget _groupsBody(BuildContext context, WidgetRef ref, L l) => AsyncView(
         value: ref.watch(groupsProvider),
         onRetry: () => ref.invalidate(groupsProvider),
         data: (d) {
@@ -448,9 +520,7 @@ class GroupsScreen extends ConsumerWidget {
             ]),
           );
         },
-      ),
-    );
-  }
+      );
 }
 
 /// A group's conversation: the latest page, asked again every few seconds while open, and a line to write.

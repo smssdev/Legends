@@ -1183,5 +1183,96 @@
   "fromTeam": "فريق اللعبة",
   "announcements": "الإعلانات",
   "noAnnouncements": "لا إعلانات",
-  "guide": "طريقة اللعب"
+  "guide": "طريقة اللعب",
+  "tournaments": "البطولات",
+  "noTournaments": "لا بطولات بعد",
+  "newTournament": "بطولة جديدة",
+  "tplWorldCup": "كأس العالم (32)",
+  "tplWorldCup48": "كأس العالم (48)",
+  "tplClubWorldCup": "كأس العالم للأندية",
+  "tplAfcon": "أمم أفريقيا",
+  "tplEuro": "أمم أوروبا",
+  "tplAsianCup": "كأس آسيا",
+  "startsOn": "تبدأ",
+  "entryPick": "كل مدرب يختار منتخبه",
+  "entryDraw": "القرعة توزع المنتخبات على المدربين",
+  "tournamentCost": "الكلفة {coins} كوينز",
+  "@tournamentCost": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "tournamentCode": "كود الانضمام",
+  "teamsCount": "{n} فريقاً",
+  "@teamsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "enter": "سجّل اسمك",
+  "leaveEntry": "انسحب",
+  "watchDraw": "شاهد القرعة",
+  "drawAt": "القرعة {time}",
+  "@drawAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "drawNotSet": "لم يُحدَّد موعد القرعة",
+  "scheduleDraw": "حدّد موعد القرعة",
+  "drawnBalls": "{n} من {total}",
+  "@drawnBalls": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupN": "المجموعة {g}",
+  "@groupN": {
+    "placeholders": {
+      "g": {
+        "type": "String"
+      }
+    }
+  },
+  "pot": "الوعاء {n}",
+  "@pot": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "openLeague": "افتح الدوري",
+  "alliance": "بطولة التحالفات",
+  "allianceLead": "تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.",
+  "createAlliance": "أنشئ البطولة",
+  "captainA": "قائد التحالف الأول",
+  "captainB": "قائد التحالف الثاني",
+  "allianceSize": "مدربو كل تحالف: {n}",
+  "@allianceSize": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "firstRound": "الجولة الأولى",
+  "goesOn": "يتأهل",
+  "noAlliance": "لا بطولة تحالفات في هذا الدوري",
+  "newGroup": "جروب جديد",
+  "groupName": "اسم الجروب",
+  "groupMembers": "أسماء المستخدمين (مفصولة بفاصلة)",
+  "joinGroup": "ادخل بالكود",
+  "groupCode": "كود الجروب"
 }

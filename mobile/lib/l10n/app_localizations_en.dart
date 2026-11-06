@@ -1631,4 +1631,136 @@ class LEn extends L {
 
   @override
   String get guide => 'How to play';
+
+  @override
+  String get tournaments => 'Tournaments';
+
+  @override
+  String get noTournaments => 'No tournaments yet';
+
+  @override
+  String get newTournament => 'New tournament';
+
+  @override
+  String get tplWorldCup => 'World Cup (32)';
+
+  @override
+  String get tplWorldCup48 => 'World Cup (48)';
+
+  @override
+  String get tplClubWorldCup => 'Club World Cup';
+
+  @override
+  String get tplAfcon => 'Africa Cup of Nations';
+
+  @override
+  String get tplEuro => 'European Championship';
+
+  @override
+  String get tplAsianCup => 'Asian Cup';
+
+  @override
+  String get startsOn => 'Starts';
+
+  @override
+  String get entryPick => 'Each coach picks his team';
+
+  @override
+  String get entryDraw => 'The draw gives the teams to the coaches';
+
+  @override
+  String tournamentCost(int coins) {
+    return 'Costs $coins coins';
+  }
+
+  @override
+  String get tournamentCode => 'Join code';
+
+  @override
+  String teamsCount(int n) {
+    return '$n teams';
+  }
+
+  @override
+  String get enter => 'Enter';
+
+  @override
+  String get leaveEntry => 'Withdraw';
+
+  @override
+  String get watchDraw => 'Watch the draw';
+
+  @override
+  String drawAt(String time) {
+    return 'The draw $time';
+  }
+
+  @override
+  String get drawNotSet => 'The draw is not scheduled';
+
+  @override
+  String get scheduleDraw => 'Schedule the draw';
+
+  @override
+  String drawnBalls(int n, int total) {
+    return '$n of $total';
+  }
+
+  @override
+  String groupN(String g) {
+    return 'Group $g';
+  }
+
+  @override
+  String pot(int n) {
+    return 'Pot $n';
+  }
+
+  @override
+  String get openLeague => 'Open the league';
+
+  @override
+  String get alliance => 'Alliance tournament';
+
+  @override
+  String get allianceLead =>
+      'Two alliances of the league\'s coaches; in each tie its two coaches agree who goes on.';
+
+  @override
+  String get createAlliance => 'Create it';
+
+  @override
+  String get captainA => 'First alliance\'s captain';
+
+  @override
+  String get captainB => 'Second alliance\'s captain';
+
+  @override
+  String allianceSize(int n) {
+    return 'Coaches per alliance: $n';
+  }
+
+  @override
+  String get firstRound => 'First round';
+
+  @override
+  String get goesOn => 'Goes on';
+
+  @override
+  String get noAlliance => 'No alliance tournament in this league';
+
+  @override
+  String get newGroup => 'New group';
+
+  @override
+  String get groupName => 'Group name';
+
+  @override
+  String get groupMembers => 'Usernames (comma separated)';
+
+  @override
+  String get joinGroup => 'Join by code';
+
+  @override
+  String get groupCode => 'Group code';
 }

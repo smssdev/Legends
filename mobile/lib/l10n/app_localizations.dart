@@ -2952,6 +2952,240 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'طريقة اللعب'**
   String get guide;
+
+  /// No description provided for @tournaments.
+  ///
+  /// In ar, this message translates to:
+  /// **'البطولات'**
+  String get tournaments;
+
+  /// No description provided for @noTournaments.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا بطولات بعد'**
+  String get noTournaments;
+
+  /// No description provided for @newTournament.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطولة جديدة'**
+  String get newTournament;
+
+  /// No description provided for @tplWorldCup.
+  ///
+  /// In ar, this message translates to:
+  /// **'كأس العالم (32)'**
+  String get tplWorldCup;
+
+  /// No description provided for @tplWorldCup48.
+  ///
+  /// In ar, this message translates to:
+  /// **'كأس العالم (48)'**
+  String get tplWorldCup48;
+
+  /// No description provided for @tplClubWorldCup.
+  ///
+  /// In ar, this message translates to:
+  /// **'كأس العالم للأندية'**
+  String get tplClubWorldCup;
+
+  /// No description provided for @tplAfcon.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمم أفريقيا'**
+  String get tplAfcon;
+
+  /// No description provided for @tplEuro.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمم أوروبا'**
+  String get tplEuro;
+
+  /// No description provided for @tplAsianCup.
+  ///
+  /// In ar, this message translates to:
+  /// **'كأس آسيا'**
+  String get tplAsianCup;
+
+  /// No description provided for @startsOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'تبدأ'**
+  String get startsOn;
+
+  /// No description provided for @entryPick.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل مدرب يختار منتخبه'**
+  String get entryPick;
+
+  /// No description provided for @entryDraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'القرعة توزع المنتخبات على المدربين'**
+  String get entryDraw;
+
+  /// No description provided for @tournamentCost.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكلفة {coins} كوينز'**
+  String tournamentCost(int coins);
+
+  /// No description provided for @tournamentCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'كود الانضمام'**
+  String get tournamentCode;
+
+  /// No description provided for @teamsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} فريقاً'**
+  String teamsCount(int n);
+
+  /// No description provided for @enter.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل اسمك'**
+  String get enter;
+
+  /// No description provided for @leaveEntry.
+  ///
+  /// In ar, this message translates to:
+  /// **'انسحب'**
+  String get leaveEntry;
+
+  /// No description provided for @watchDraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'شاهد القرعة'**
+  String get watchDraw;
+
+  /// No description provided for @drawAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'القرعة {time}'**
+  String drawAt(String time);
+
+  /// No description provided for @drawNotSet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُحدَّد موعد القرعة'**
+  String get drawNotSet;
+
+  /// No description provided for @scheduleDraw.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّد موعد القرعة'**
+  String get scheduleDraw;
+
+  /// No description provided for @drawnBalls.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} من {total}'**
+  String drawnBalls(int n, int total);
+
+  /// No description provided for @groupN.
+  ///
+  /// In ar, this message translates to:
+  /// **'المجموعة {g}'**
+  String groupN(String g);
+
+  /// No description provided for @pot.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوعاء {n}'**
+  String pot(int n);
+
+  /// No description provided for @openLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح الدوري'**
+  String get openLeague;
+
+  /// No description provided for @alliance.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطولة التحالفات'**
+  String get alliance;
+
+  /// No description provided for @allianceLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.'**
+  String get allianceLead;
+
+  /// No description provided for @createAlliance.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ البطولة'**
+  String get createAlliance;
+
+  /// No description provided for @captainA.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائد التحالف الأول'**
+  String get captainA;
+
+  /// No description provided for @captainB.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائد التحالف الثاني'**
+  String get captainB;
+
+  /// No description provided for @allianceSize.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدربو كل تحالف: {n}'**
+  String allianceSize(int n);
+
+  /// No description provided for @firstRound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجولة الأولى'**
+  String get firstRound;
+
+  /// No description provided for @goesOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتأهل'**
+  String get goesOn;
+
+  /// No description provided for @noAlliance.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا بطولة تحالفات في هذا الدوري'**
+  String get noAlliance;
+
+  /// No description provided for @newGroup.
+  ///
+  /// In ar, this message translates to:
+  /// **'جروب جديد'**
+  String get newGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الجروب'**
+  String get groupName;
+
+  /// No description provided for @groupMembers.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسماء المستخدمين (مفصولة بفاصلة)'**
+  String get groupMembers;
+
+  /// No description provided for @joinGroup.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادخل بالكود'**
+  String get joinGroup;
+
+  /// No description provided for @groupCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'كود الجروب'**
+  String get groupCode;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

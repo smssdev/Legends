@@ -1627,4 +1627,136 @@ class LAr extends L {
 
   @override
   String get guide => 'طريقة اللعب';
+
+  @override
+  String get tournaments => 'البطولات';
+
+  @override
+  String get noTournaments => 'لا بطولات بعد';
+
+  @override
+  String get newTournament => 'بطولة جديدة';
+
+  @override
+  String get tplWorldCup => 'كأس العالم (32)';
+
+  @override
+  String get tplWorldCup48 => 'كأس العالم (48)';
+
+  @override
+  String get tplClubWorldCup => 'كأس العالم للأندية';
+
+  @override
+  String get tplAfcon => 'أمم أفريقيا';
+
+  @override
+  String get tplEuro => 'أمم أوروبا';
+
+  @override
+  String get tplAsianCup => 'كأس آسيا';
+
+  @override
+  String get startsOn => 'تبدأ';
+
+  @override
+  String get entryPick => 'كل مدرب يختار منتخبه';
+
+  @override
+  String get entryDraw => 'القرعة توزع المنتخبات على المدربين';
+
+  @override
+  String tournamentCost(int coins) {
+    return 'الكلفة $coins كوينز';
+  }
+
+  @override
+  String get tournamentCode => 'كود الانضمام';
+
+  @override
+  String teamsCount(int n) {
+    return '$n فريقاً';
+  }
+
+  @override
+  String get enter => 'سجّل اسمك';
+
+  @override
+  String get leaveEntry => 'انسحب';
+
+  @override
+  String get watchDraw => 'شاهد القرعة';
+
+  @override
+  String drawAt(String time) {
+    return 'القرعة $time';
+  }
+
+  @override
+  String get drawNotSet => 'لم يُحدَّد موعد القرعة';
+
+  @override
+  String get scheduleDraw => 'حدّد موعد القرعة';
+
+  @override
+  String drawnBalls(int n, int total) {
+    return '$n من $total';
+  }
+
+  @override
+  String groupN(String g) {
+    return 'المجموعة $g';
+  }
+
+  @override
+  String pot(int n) {
+    return 'الوعاء $n';
+  }
+
+  @override
+  String get openLeague => 'افتح الدوري';
+
+  @override
+  String get alliance => 'بطولة التحالفات';
+
+  @override
+  String get allianceLead =>
+      'تحالفان من مدربي الدوري، وكل مواجهة يتأهل منها من يتفق مدرباها عليه.';
+
+  @override
+  String get createAlliance => 'أنشئ البطولة';
+
+  @override
+  String get captainA => 'قائد التحالف الأول';
+
+  @override
+  String get captainB => 'قائد التحالف الثاني';
+
+  @override
+  String allianceSize(int n) {
+    return 'مدربو كل تحالف: $n';
+  }
+
+  @override
+  String get firstRound => 'الجولة الأولى';
+
+  @override
+  String get goesOn => 'يتأهل';
+
+  @override
+  String get noAlliance => 'لا بطولة تحالفات في هذا الدوري';
+
+  @override
+  String get newGroup => 'جروب جديد';
+
+  @override
+  String get groupName => 'اسم الجروب';
+
+  @override
+  String get groupMembers => 'أسماء المستخدمين (مفصولة بفاصلة)';
+
+  @override
+  String get joinGroup => 'ادخل بالكود';
+
+  @override
+  String get groupCode => 'كود الجروب';
 }
