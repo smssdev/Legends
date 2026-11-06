@@ -886,5 +886,123 @@
   "kindAbsence": "الغياب والإجازات",
   "emailMatch": "ملخص المباراة بالبريد",
   "emailOffers": "عروض المتجر بالبريد",
-  "emailNeeded": "يلزم بريد مؤكد في حسابك"
+  "emailNeeded": "يلزم بريد مؤكد في حسابك",
+  "newOffer": "عرض جديد",
+  "counterOffer": "عرض مقابل",
+  "pickCoachClub": "إلى أي نادٍ؟",
+  "noCoachClubs": "لا مدربين آخرين في الدوري بعد",
+  "offerTitleTo": "عرض إلى {club}",
+  "@offerTitleTo": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "youWant": "تطلب من لاعبيه (حتى 5)",
+  "youGive": "وتعطي من لاعبيك (اختياري)",
+  "youPay": "وتدفع",
+  "offerValues": "قيمة ما تطلب {want}، وما تعطي {give}",
+  "@offerValues": {
+    "placeholders": {
+      "want": {
+        "type": "String"
+      },
+      "give": {
+        "type": "String"
+      }
+    }
+  },
+  "fairHint": "الصفقة العادلة بين {min}% و{max}% من قيمة ما تطلب",
+  "@fairHint": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "sendOffer": "أرسل العرض",
+  "offerSent": "وصل العرض إلى مدربه",
+  "askLoan": "اطلب إعارته",
+  "loanRounds": "جولات الإعارة: {n}",
+  "@loanRounds": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loanFee": "رسوم الإعارة",
+  "loans": "الإعارات",
+  "loanOf": "{player}: من {owner} إلى {borrower}",
+  "@loanOf": {
+    "placeholders": {
+      "player": {
+        "type": "String"
+      },
+      "owner": {
+        "type": "String"
+      },
+      "borrower": {
+        "type": "String"
+      }
+    }
+  },
+  "loanTerms": "{rounds} جولات · {fee}",
+  "@loanTerms": {
+    "placeholders": {
+      "rounds": {
+        "type": "int"
+      },
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "loanSent": "وصل طلب الإعارة",
+  "academy": "الأكاديمية",
+  "academyLead": "مواهب شابة لهذه الفترة، والإمكانية مدى حتى تضمه. {signed} من {per} هذا الموسم.",
+  "@academyLead": {
+    "placeholders": {
+      "signed": {
+        "type": "int"
+      },
+      "per": {
+        "type": "int"
+      }
+    }
+  },
+  "signProspect": "ضمّه بـ {price}",
+  "@signProspect": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "signProspectConfirm": "ضمّ {name} بـ {price}؟",
+  "@signProspectConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "potentialRange": "الإمكانية {from}–{to}",
+  "@potentialRange": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  }
 }

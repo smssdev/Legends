@@ -1253,4 +1253,96 @@ class LAr extends L {
 
   @override
   String get emailNeeded => 'يلزم بريد مؤكد في حسابك';
+
+  @override
+  String get newOffer => 'عرض جديد';
+
+  @override
+  String get counterOffer => 'عرض مقابل';
+
+  @override
+  String get pickCoachClub => 'إلى أي نادٍ؟';
+
+  @override
+  String get noCoachClubs => 'لا مدربين آخرين في الدوري بعد';
+
+  @override
+  String offerTitleTo(String club) {
+    return 'عرض إلى $club';
+  }
+
+  @override
+  String get youWant => 'تطلب من لاعبيه (حتى 5)';
+
+  @override
+  String get youGive => 'وتعطي من لاعبيك (اختياري)';
+
+  @override
+  String get youPay => 'وتدفع';
+
+  @override
+  String offerValues(String want, String give) {
+    return 'قيمة ما تطلب $want، وما تعطي $give';
+  }
+
+  @override
+  String fairHint(int min, int max) {
+    return 'الصفقة العادلة بين $min% و$max% من قيمة ما تطلب';
+  }
+
+  @override
+  String get sendOffer => 'أرسل العرض';
+
+  @override
+  String get offerSent => 'وصل العرض إلى مدربه';
+
+  @override
+  String get askLoan => 'اطلب إعارته';
+
+  @override
+  String loanRounds(int n) {
+    return 'جولات الإعارة: $n';
+  }
+
+  @override
+  String get loanFee => 'رسوم الإعارة';
+
+  @override
+  String get loans => 'الإعارات';
+
+  @override
+  String loanOf(String player, String owner, String borrower) {
+    return '$player: من $owner إلى $borrower';
+  }
+
+  @override
+  String loanTerms(int rounds, String fee) {
+    return '$rounds جولات · $fee';
+  }
+
+  @override
+  String get loanSent => 'وصل طلب الإعارة';
+
+  @override
+  String get academy => 'الأكاديمية';
+
+  @override
+  String academyLead(int signed, int per) {
+    return 'مواهب شابة لهذه الفترة، والإمكانية مدى حتى تضمه. $signed من $per هذا الموسم.';
+  }
+
+  @override
+  String signProspect(String price) {
+    return 'ضمّه بـ $price';
+  }
+
+  @override
+  String signProspectConfirm(String name, String price) {
+    return 'ضمّ $name بـ $price؟';
+  }
+
+  @override
+  String potentialRange(int from, int to) {
+    return 'الإمكانية $from–$to';
+  }
 }

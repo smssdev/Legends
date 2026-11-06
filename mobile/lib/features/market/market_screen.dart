@@ -15,6 +15,7 @@ import '../club/squad_screen.dart' show money, lineColor;
 import '../leagues/widgets.dart' show when;
 import '../money/finance_screen.dart' show confirm;
 import 'market_data.dart';
+import 'offer_screen.dart';
 
 /// [Sprint 18 F1] The market in three tabs: buy (the transfer list by line, UP11), sell (my players: listed up to
 /// their cap, or now for a fee, X6) and the offers between coaches (answered here; made on the site for now).
@@ -27,14 +28,14 @@ class MarketScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l.market),
-          bottom: TabBar(indicatorColor: context.palette.gold, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers)]),
+          bottom: TabBar(indicatorColor: context.palette.gold, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers), Tab(text: l.academy)]),
         ),
         body: GlmBackground(
-          child: TabBarView(children: [_BuyTab(leagueId), _SellTab(leagueId), _OffersTab(leagueId)]),
+          child: TabBarView(children: [_BuyTab(leagueId), _SellTab(leagueId), _OffersTab(leagueId), _AcademyTab(leagueId)]),
         ),
       ),
     );
@@ -410,6 +411,27 @@ class _OffersTab extends ConsumerWidget {
       ref.invalidate(sellingProvider(leagueId));
     }
 
+    Future<void> answerLoan(int loan, bool accept) async {
+      try {
+        await ref.read(marketRepositoryProvider).answerLoan(leagueId, loan, accept);
+      } on ApiError catch (e) {
+        if (context.mounted) showGlmToast(context, e.message, error: true);
+      }
+      ref.invalidate(loansProvider(leagueId));
+    }
+
+    Future<void> open(int club, String name, {int? counterOf, Set<int> want = const {}, Set<int> give = const {}}) async {
+      final d = ref.read(dealsProvider(leagueId)).value;
+      final sent = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => OfferScreen(leagueId: leagueId, clubId: club, clubName: name, counterOf: counterOf, want: want, give: give,
+            fairMinBp: d?.fairMinBp ?? 5000, fairMaxBp: d?.fairMaxBp ?? 20000),
+      ));
+      if (sent == true) {
+        ref.invalidate(dealsProvider(leagueId));
+        ref.invalidate(loansProvider(leagueId));
+      }
+    }
+
     return AsyncView(
       value: ref.watch(dealsProvider(leagueId)),
       onRetry: () => ref.invalidate(dealsProvider(leagueId)),
@@ -417,6 +439,30 @@ class _OffersTab extends ConsumerWidget {
         color: p.gold,
         onRefresh: () => ref.refresh(dealsProvider(leagueId).future),
         child: ListView(padding: const EdgeInsets.all(12), children: [
+          // [Sprint 18 D] A new offer to one of the league's coaches.
+          GlmButton(
+            label: l.newOffer,
+            icon: const Icon(Icons.add_rounded),
+            block: true,
+            onPressed: () async {
+              if (d.clubs.isEmpty) {
+                showGlmToast(context, l.noCoachClubs);
+                return;
+              }
+              final club = await showModalBottomSheet<({int id, String name})>(
+                context: context,
+                showDragHandle: true,
+                builder: (ctx) => SafeArea(
+                  child: ListView(shrinkWrap: true, children: [
+                    Padding(padding: const EdgeInsets.all(8), child: Text(l.pickCoachClub, textAlign: TextAlign.center, style: ctx.text.titleMedium)),
+                    for (final c in d.clubs) ListTile(title: Text(c.name, textDirection: TextDirection.ltr, textAlign: TextAlign.start), onTap: () => Navigator.pop(ctx, c)),
+                  ]),
+                ),
+              );
+              if (club != null && context.mounted) await open(club.id, club.name);
+            },
+          ),
+          const SizedBox(height: 12),
           if (d.offers.isEmpty) Padding(padding: const EdgeInsets.all(32), child: Text(l.noOffers, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted))),
           for (final o in d.offers)
             Padding(
@@ -441,23 +487,113 @@ class _OffersTab extends ConsumerWidget {
                   ],
                   if (o.pending) ...[
                     const SizedBox(height: 10),
-                    if (o.incoming)
+                    if (o.incoming) ...[
                       Row(children: [
                         Expanded(child: GlmButton(label: l.accept, onPressed: () => answer(o.id, 'accept'))),
                         const SizedBox(width: 8),
                         Expanded(child: GlmButton(label: l.reject, variant: GlmButtonVariant.outline, onPressed: () => answer(o.id, 'reject'))),
-                      ])
+                      ]),
+                      const SizedBox(height: 6),
+                      // My terms instead: his players he offered are those I may ask for, mine he asked for those I may give.
+                      GlmButton(
+                        label: l.counterOffer,
+                        variant: GlmButtonVariant.quiet,
+                        block: true,
+                        onPressed: () => open(o.fromId, o.from, counterOf: o.id, want: {for (final x in o.give) x.id}, give: {for (final x in o.players) x.id}),
+                      ),
+                    ]
                     else
                       GlmButton(label: l.cancelOffer, variant: GlmButtonVariant.outline, block: true, onPressed: () => answer(o.id, 'cancel')),
                   ],
                 ]),
               ),
             ),
-          const SizedBox(height: 8),
-          Text(l.offersOnWeb, textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
+          ...?ref.watch(loansProvider(leagueId)).value?.loans.let((loans) => [
+                if (loans.isNotEmpty) SectionTitle(l.loans),
+                for (final x in loans)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: GlmCard(
+                      gold: x.mine && x.pending,
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Text(l.loanOf(x.player, x.owner, x.borrower), style: const TextStyle(fontWeight: FontWeight.w700)),
+                        Text(l.loanTerms(x.rounds, money(context, x.fee)), style: TextStyle(color: p.textMuted)),
+                        if (x.mine && x.pending) ...[
+                          const SizedBox(height: 8),
+                          Row(children: [
+                            Expanded(child: GlmButton(label: l.accept, onPressed: () => answerLoan(x.id, true))),
+                            const SizedBox(width: 8),
+                            Expanded(child: GlmButton(label: l.reject, variant: GlmButtonVariant.outline, onPressed: () => answerLoan(x.id, false))),
+                          ]),
+                        ],
+                      ]),
+                    ),
+                  ),
+              ]),
           const SizedBox(height: GlmSize.radiusXl),
         ]),
       ),
+    );
+  }
+}
+
+extension<T> on T {
+  R let<R>(R Function(T) f) => f(this);
+}
+
+/// [Sprint 18 D] The youth academy (X61 E3): this period's prospects, their potential as a range, signed at the price.
+class _AcademyTab extends ConsumerWidget {
+  const _AcademyTab(this.leagueId);
+
+  final int leagueId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.of(context);
+    final p = context.palette;
+    return AsyncView(
+      value: ref.watch(academyProvider(leagueId)),
+      onRetry: () => ref.invalidate(academyProvider(leagueId)),
+      data: (a) => ListView(padding: const EdgeInsets.all(12), children: [
+        Text(l.academyLead(a.signed, a.perSeason), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
+        if (a.renewsAt != null) Text(l.renewsAt(when(context, a.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
+        const SizedBox(height: 12),
+        for (final x in a.prospects)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: GlmCard(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Row(children: [
+                  _ovr(context, x.overall, x.line),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(x.name, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
+                      Text('${x.position} · ${x.age} · ${x.nationality ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                      Text(l.potentialRange(x.potentialFrom, x.potentialTo), style: TextStyle(color: context.glm.goldText, fontSize: 12, fontWeight: FontWeight.w700)),
+                    ]),
+                  ),
+                ]),
+                const SizedBox(height: 10),
+                GlmButton(
+                  label: l.signProspect(money(context, x.price)),
+                  onPressed: a.signed >= a.perSeason
+                      ? null
+                      : () async {
+                          if (!await confirm(context, l.signProspectConfirm(x.name, money(context, x.price))) || !context.mounted) return;
+                          try {
+                            await ref.read(marketRepositoryProvider).signProspect(leagueId, x.id);
+                            if (context.mounted) showGlmToast(context, l.bought);
+                          } on ApiError catch (e) {
+                            if (context.mounted) showGlmToast(context, e.message, error: true);
+                          }
+                          ref.invalidate(academyProvider(leagueId));
+                        },
+                ),
+              ]),
+            ),
+          ),
+      ]),
     );
   }
 }

@@ -2292,6 +2292,150 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'يلزم بريد مؤكد في حسابك'**
   String get emailNeeded;
+
+  /// No description provided for @newOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض جديد'**
+  String get newOffer;
+
+  /// No description provided for @counterOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض مقابل'**
+  String get counterOffer;
+
+  /// No description provided for @pickCoachClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى أي نادٍ؟'**
+  String get pickCoachClub;
+
+  /// No description provided for @noCoachClubs.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مدربين آخرين في الدوري بعد'**
+  String get noCoachClubs;
+
+  /// No description provided for @offerTitleTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض إلى {club}'**
+  String offerTitleTo(String club);
+
+  /// No description provided for @youWant.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطلب من لاعبيه (حتى 5)'**
+  String get youWant;
+
+  /// No description provided for @youGive.
+  ///
+  /// In ar, this message translates to:
+  /// **'وتعطي من لاعبيك (اختياري)'**
+  String get youGive;
+
+  /// No description provided for @youPay.
+  ///
+  /// In ar, this message translates to:
+  /// **'وتدفع'**
+  String get youPay;
+
+  /// No description provided for @offerValues.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة ما تطلب {want}، وما تعطي {give}'**
+  String offerValues(String want, String give);
+
+  /// No description provided for @fairHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصفقة العادلة بين {min}% و{max}% من قيمة ما تطلب'**
+  String fairHint(int min, int max);
+
+  /// No description provided for @sendOffer.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل العرض'**
+  String get sendOffer;
+
+  /// No description provided for @offerSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل العرض إلى مدربه'**
+  String get offerSent;
+
+  /// No description provided for @askLoan.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب إعارته'**
+  String get askLoan;
+
+  /// No description provided for @loanRounds.
+  ///
+  /// In ar, this message translates to:
+  /// **'جولات الإعارة: {n}'**
+  String loanRounds(int n);
+
+  /// No description provided for @loanFee.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسوم الإعارة'**
+  String get loanFee;
+
+  /// No description provided for @loans.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعارات'**
+  String get loans;
+
+  /// No description provided for @loanOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'{player}: من {owner} إلى {borrower}'**
+  String loanOf(String player, String owner, String borrower);
+
+  /// No description provided for @loanTerms.
+  ///
+  /// In ar, this message translates to:
+  /// **'{rounds} جولات · {fee}'**
+  String loanTerms(int rounds, String fee);
+
+  /// No description provided for @loanSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل طلب الإعارة'**
+  String get loanSent;
+
+  /// No description provided for @academy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأكاديمية'**
+  String get academy;
+
+  /// No description provided for @academyLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواهب شابة لهذه الفترة، والإمكانية مدى حتى تضمه. {signed} من {per} هذا الموسم.'**
+  String academyLead(int signed, int per);
+
+  /// No description provided for @signProspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمّه بـ {price}'**
+  String signProspect(String price);
+
+  /// No description provided for @signProspectConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمّ {name} بـ {price}؟'**
+  String signProspectConfirm(String name, String price);
+
+  /// No description provided for @potentialRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإمكانية {from}–{to}'**
+  String potentialRange(int from, int to);
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {
