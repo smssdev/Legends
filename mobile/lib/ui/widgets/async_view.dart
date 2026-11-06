@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'cut.dart';
 import 'glm_button.dart';
 
 /// [Sprint 16] One way for every screen to wait, fail and show: a spinner, the API's message with «try again», or
@@ -31,7 +32,7 @@ class AsyncView<T> extends StatelessWidget {
         ),
       );
     }
-    return Center(child: CircularProgressIndicator(color: context.palette.gold));
+    return const Center(child: GlmLoader());
   }
 }
 
@@ -44,7 +45,66 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
-        child: Row(children: [Expanded(child: Text(text, style: context.text.titleLarge)), ?trailing]),
+        padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
+        // [2026-11-06] The broadcast slab, the game's section mark on every screen.
+        child: BroadcastTitle(text, trailing: trailing),
       );
+}
+
+/// [2026-11-06] The game's own wait: a ball spinning under a floodlight's glow, its shadow breathing on the grass.
+class GlmLoader extends StatefulWidget {
+  const GlmLoader({super.key, this.size = 46});
+
+  final double size;
+
+  @override
+  State<GlmLoader> createState() => _GlmLoaderState();
+}
+
+class _GlmLoaderState extends State<GlmLoader> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final still = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final ball = Icon(Icons.sports_soccer_rounded, size: widget.size, color: p.text);
+    return Semantics(
+      label: '…',
+      child: SizedBox(
+        width: widget.size * 2,
+        height: widget.size * 1.9,
+        child: AnimatedBuilder(
+          animation: _c,
+          builder: (_, _) {
+            final t = still ? 0.0 : _c.value;
+            // A small bounce: up and down twice a turn.
+            final hop = still ? 0.0 : (1 - (2 * ((t * 2) % 1) - 1).abs()) * widget.size * .28;
+            return Stack(alignment: Alignment.center, children: [
+              Container(
+                width: widget.size * 1.8,
+                height: widget.size * 1.8,
+                decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [p.goldLight.withValues(alpha: .18), p.goldLight.withValues(alpha: 0)])),
+              ),
+              Positioned(
+                bottom: widget.size * .12,
+                child: Container(
+                  width: widget.size * (.75 - hop / widget.size * .6),
+                  height: widget.size * .14,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(widget.size), color: p.shade.withValues(alpha: .45)),
+                ),
+              ),
+              Transform.translate(offset: Offset(0, -hop - widget.size * .1), child: Transform.rotate(angle: t * 6.283185307179586, child: ball)),
+            ]);
+          },
+        ),
+      ),
+    );
+  }
 }

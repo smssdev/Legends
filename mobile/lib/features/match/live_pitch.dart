@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../ui/theme.dart';
+import '../../ui/widgets/cut.dart';
 import 'frames.dart';
 import 'match_data.dart';
 
@@ -55,8 +56,8 @@ class _LivePitchState extends State<LivePitch> with SingleTickerProviderStateMix
     final p = context.palette;
     return AspectRatio(
       aspectRatio: 105 / 68,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+      child: CutClip(
+        cut: GlmCut.card,
         child: CustomPaint(painter: _PitchPainter(_frame(), widget.kits, widget.numbers, p.pitch, p.pitchDark)),
       ),
     );

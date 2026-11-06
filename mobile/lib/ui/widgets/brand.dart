@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import 'cut.dart';
 import 'kit.dart';
 
 /// [Sprint 15 F2] The game's mark as on the web (BrandMark.vue): the crest, GAME LEGEND MANAGER with MANAGER in gold,
@@ -58,9 +59,9 @@ class CoinsPill extends StatelessWidget {
     final p = context.palette;
     return Material(
       color: p.gold.withValues(alpha: .16),
-      shape: StadiumBorder(side: BorderSide(color: p.gold.withValues(alpha: .4))),
+      shape: GlmCut.shape(GlmCut.button, side: BorderSide(color: p.gold.withValues(alpha: .45))),
       child: InkWell(
-        customBorder: const StadiumBorder(),
+        customBorder: GlmCut.shape(GlmCut.button),
         onTap: onTap,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: GlmSize.touchMin),

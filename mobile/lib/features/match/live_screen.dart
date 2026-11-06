@@ -8,6 +8,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -373,7 +374,7 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
                           dense: true,
                           selected: sel?.id == p.id,
                           selectedTileColor: ctx.palette.gold.withValues(alpha: .18),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: GlmCut.shape(GlmCut.badge),
                           title: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr),
                           subtitle: Text('${p.pos} · ${p.fit}%', textDirection: TextDirection.ltr),
                           onTap: () => set(() => on(p)),
@@ -516,10 +517,9 @@ class _ScoreBug extends StatelessWidget {
         child: Container(
           height: 64,
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(shirt, Colors.white, .12)!, shirt]),
-            borderRadius: BorderRadius.circular(14),
-            border: mine ? Border.all(color: p.gold, width: 2) : null,
+            shape: GlmCut.shape(GlmCut.badge + 4, side: mine ? BorderSide(color: p.gold, width: 2) : BorderSide.none),
           ),
           child: FittedBox(
             fit: BoxFit.scaleDown,
@@ -541,7 +541,7 @@ class _ScoreBug extends StatelessWidget {
         Container(
           width: 108,
           height: 64,
-          decoration: BoxDecoration(color: p.bgDeep, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withValues(alpha: .08))),
+          decoration: ShapeDecoration(color: p.bgDeep, shape: GlmCut.shape(GlmCut.badge + 2, side: BorderSide(color: Colors.white.withValues(alpha: .08)))),
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -550,7 +550,7 @@ class _ScoreBug extends StatelessWidget {
             const SizedBox(height: 3),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-              decoration: BoxDecoration(color: finished ? p.surfaceRaised : p.danger, borderRadius: BorderRadius.circular(99)),
+              decoration: ShapeDecoration(color: finished ? p.surfaceRaised : p.danger, shape: GlmCut.shape(GlmCut.chip + 2)),
               child: Text(finished ? l.fullTime : (minute ?? l.notStarted), textDirection: TextDirection.ltr,
                   style: TextStyle(color: finished ? p.text : Colors.white, fontWeight: FontWeight.w800, fontSize: 11, fontFamilyFallback: const [GlmFonts.body])),
             ),
@@ -586,10 +586,9 @@ class EventLine extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: e.type == 'goal' ? p.gold.withValues(alpha: .16) : p.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: e.type == 'goal' ? p.gold.withValues(alpha: .5) : p.surfaceRaised),
+        shape: GlmCut.shape(GlmCut.badge, side: BorderSide(color: e.type == 'goal' ? p.gold.withValues(alpha: .5) : p.surfaceRaised)),
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(width: 44, child: Text(e.clock, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: context.glm.goldText))),

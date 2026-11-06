@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 import '../tokens.g.dart';
+import 'cut.dart';
 import 'glm_card.dart';
 import 'motion.dart';
 
@@ -29,10 +30,11 @@ class RatingBadge extends StatelessWidget {
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * .28),
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(bg, Colors.white, .18)!, bg]),
-        boxShadow: [BoxShadow(color: bg.withValues(alpha: .35), blurRadius: 10, offset: const Offset(0, 4), spreadRadius: -4)],
+      // In the Legend Cut, lit from the top like a medal.
+      decoration: ShapeDecoration(
+        shape: GlmCut.shape(size * .26, side: BorderSide(color: Colors.white.withValues(alpha: .22))),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(bg, Colors.white, .28)!, bg, Color.lerp(bg, Colors.black, .12)!], stops: const [0, .55, 1]),
+        shadows: [BoxShadow(color: bg.withValues(alpha: .40), blurRadius: 12, offset: const Offset(0, 4), spreadRadius: -4)],
       ),
       child: Text('$value', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: size * .5, fontWeight: FontWeight.w800, color: fg, height: 1)),
     );
@@ -51,7 +53,7 @@ class PositionChip extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minWidth: 38),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(color: c.bg, borderRadius: BorderRadius.circular(7)),
+      decoration: ShapeDecoration(color: c.bg, shape: GlmCut.shape(GlmCut.chip)),
       child: Text(position, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
           style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 14, color: c.fg, height: 1.1)),
     );
@@ -97,12 +99,7 @@ class StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(children: [
         if (icon != null) ...[
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(color: (color ?? p.gold).withValues(alpha: .16), borderRadius: BorderRadius.circular(11)),
-            child: Icon(icon, size: 20, color: color ?? p.gold),
-          ),
+          IconTile(icon!, color: color ?? p.gold, size: 36),
           const SizedBox(width: 10),
         ],
         Expanded(
@@ -127,12 +124,8 @@ class GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
-        child: Row(children: [
-          if (icon != null) ...[Icon(icon, size: 18, color: context.palette.gold), const SizedBox(width: 6)],
-          Expanded(child: Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: context.palette.text))),
-          ?trailing,
-        ]),
+        padding: const EdgeInsets.fromLTRB(2, 18, 2, 10),
+        child: BroadcastTitle(title, icon: icon, trailing: trailing),
       );
 }
 
@@ -182,7 +175,7 @@ class MenuSection extends StatelessWidget {
                     Container(
                       margin: const EdgeInsetsDirectional.only(end: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(99)),
+                      decoration: ShapeDecoration(color: p.live, shape: GlmCut.shape(GlmCut.chip + 2)),
                       child: Text(m.badge!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
                     ),
                   Icon(Icons.chevron_right_rounded, color: p.textMuted),
@@ -249,10 +242,9 @@ class IconTile extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * .32),
-        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.withValues(alpha: .34), c.withValues(alpha: .10)]),
-        border: Border.all(color: c.withValues(alpha: .22)),
+      decoration: ShapeDecoration(
+        shape: GlmCut.shape(size * .30, side: BorderSide(color: c.withValues(alpha: .30))),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [c.withValues(alpha: .36), c.withValues(alpha: .10)]),
       ),
       child: Icon(icon, size: size * .55, color: c),
     );

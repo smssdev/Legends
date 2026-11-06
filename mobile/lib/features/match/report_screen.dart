@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
@@ -71,8 +72,8 @@ class _Report extends StatelessWidget {
       ('possession', l.possession), ('shots', l.shots), ('on_target', l.onTarget), ('corners', l.corners), ('fouls', l.fouls), ('saves', l.saves),
     ].where((s) => r.stats['home']!.containsKey(s.$1));
     // [2026-11-06, stage 3] The score on the night stadium, the result as a lit pill, the man of the match with his star.
-    final hero = ClipRRect(
-      borderRadius: BorderRadius.circular(GlmCard.radius),
+    final hero = HeroFrame(
+      edge: r.result == 'win' ? p.success : r.result == 'loss' ? p.live : p.gold,
       child: StadiumBackdrop(
         tint: r.result == 'win' ? p.success : r.result == 'loss' ? p.live : null,
         child: Padding(
@@ -85,7 +86,7 @@ class _Report extends StatelessWidget {
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                decoration: BoxDecoration(color: color.withValues(alpha: .18), borderRadius: BorderRadius.circular(99), border: Border.all(color: color.withValues(alpha: .5))),
+                decoration: ShapeDecoration(color: color.withValues(alpha: .18), shape: GlmCut.shape(GlmCut.chip + 2, side: BorderSide(color: color.withValues(alpha: .5)))),
                 child: Text(result, style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 16)),
               ),
             ],

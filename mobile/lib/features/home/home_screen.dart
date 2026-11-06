@@ -12,6 +12,7 @@ import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
@@ -209,15 +210,8 @@ class _CoachCard extends StatelessWidget {
             Text(label, style: TextStyle(color: p.textSoft, fontSize: 11)),
           ]),
         );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: p.gold.withValues(alpha: .5)),
-        boxShadow: [BoxShadow(color: p.gold.withValues(alpha: .14), blurRadius: 28, spreadRadius: -6)],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(21),
-        child: StadiumBackdrop(
+    return HeroFrame(
+      child: Builder(builder: (_) => StadiumBackdrop(
           pitch: false,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -237,7 +231,7 @@ class _CoachCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                      decoration: BoxDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .30), p.gold.withValues(alpha: .12)]), borderRadius: BorderRadius.circular(99)),
+                      decoration: ShapeDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .30), p.gold.withValues(alpha: .12)]), shape: GlmCut.shape(GlmCut.chip + 2)),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [
                         Icon(Icons.military_tech_rounded, size: 15, color: context.glm.goldText),
                         const SizedBox(width: 4),

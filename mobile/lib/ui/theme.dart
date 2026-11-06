@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'tokens.g.dart';
+import 'widgets/cut.dart';
 
 /// [Sprint 15 F1, F2] The game's look in Flutter, from the same tokens as the web: the night (our own) and the day,
 /// Tajawal for the words and Barlow Condensed for the numbers. Every colour comes from [GlmPalette]: no colour by hand.
@@ -72,11 +73,13 @@ ThemeData glmTheme({required bool day}) {
       selectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w800, color: day ? GlmInk.gold : p.gold),
       unselectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w600, color: p.textMuted),
       labelType: NavigationRailLabelType.all,
+      indicatorShape: GlmCut.shape(GlmCut.badge),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: day ? p.panel : p.bgDeep,
       surfaceTintColor: Colors.transparent,
       indicatorColor: p.gold.withValues(alpha: day ? .22 : .18),
+      indicatorShape: GlmCut.shape(GlmCut.badge),
       height: 68,
       labelTextStyle: WidgetStateProperty.resolveWith((s) => TextStyle(fontFamily: GlmFonts.body, fontSize: 12,
           fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: s.contains(WidgetState.selected) ? (day ? GlmInk.gold : p.gold) : p.textMuted)),
@@ -84,24 +87,28 @@ ThemeData glmTheme({required bool day}) {
     ),
     tabBarTheme: TabBarThemeData(labelColor: day ? GlmInk.gold : p.gold, unselectedLabelColor: p.textMuted, indicatorColor: p.gold, dividerColor: Colors.transparent,
         labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15)),
-    chipTheme: ChipThemeData(backgroundColor: p.surface, side: BorderSide(color: p.surfaceRaised), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    chipTheme: ChipThemeData(backgroundColor: p.surface, side: BorderSide(color: p.surfaceRaised), shape: GlmCut.shape(GlmCut.badge),
         labelStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, color: p.text)),
     bottomSheetTheme: BottomSheetThemeData(backgroundColor: day ? p.panel : p.surface, surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24)))),
+        shape: BeveledRectangleBorder(borderRadius: BorderRadiusDirectional.only(topStart: const Radius.circular(22), topEnd: const Radius.circular(5)))),
     listTileTheme: ListTileThemeData(iconColor: p.gold, titleTextStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15, color: p.text)),
     dividerTheme: DividerThemeData(color: p.surfaceRaised, thickness: 1),
     snackBarTheme: SnackBarThemeData(behavior: SnackBarBehavior.floating, backgroundColor: p.surfaceRaised,
         contentTextStyle: TextStyle(fontFamily: GlmFonts.body, color: p.text, fontWeight: FontWeight.w600),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl))),
+        shape: GlmCut.shape(GlmCut.button)),
+    // [2026-11-06] The Legend Cut on the dialogs, the segmented choices and the menus too.
+    dialogTheme: DialogThemeData(backgroundColor: day ? p.panel : p.surface, surfaceTintColor: Colors.transparent, shape: GlmCut.shape(GlmCut.card)),
+    segmentedButtonTheme: SegmentedButtonThemeData(style: ButtonStyle(shape: WidgetStatePropertyAll(GlmCut.shape(GlmCut.button)))),
+    popupMenuTheme: PopupMenuThemeData(shape: GlmCut.shape(GlmCut.badge), color: p.surfaceRaised),
     inputDecorationTheme: InputDecorationTheme(
       filled: true, fillColor: p.surfaceSunk,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       hintStyle: TextStyle(color: p.textMuted),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl), borderSide: BorderSide(color: p.surfaceRaised)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl), borderSide: BorderSide(color: p.surfaceRaised)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl), borderSide: BorderSide(color: p.gold, width: 2)),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl), borderSide: BorderSide(color: p.live)),
-      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(GlmSize.radiusXl), borderSide: BorderSide(color: p.live, width: 2)),
+      border: CutInputBorder(borderSide: BorderSide(color: p.surfaceRaised)),
+      enabledBorder: CutInputBorder(borderSide: BorderSide(color: p.surfaceRaised)),
+      focusedBorder: CutInputBorder(borderSide: BorderSide(color: p.gold, width: 2)),
+      errorBorder: CutInputBorder(borderSide: BorderSide(color: p.live)),
+      focusedErrorBorder: CutInputBorder(borderSide: BorderSide(color: p.live, width: 2)),
       errorStyle: TextStyle(color: day ? GlmInk.live : p.danger, fontWeight: FontWeight.w600),
     ),
     progressIndicatorTheme: ProgressIndicatorThemeData(color: p.gold),

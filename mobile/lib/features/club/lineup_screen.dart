@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
+import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/glm_card.dart';
@@ -194,11 +195,10 @@ class _Pitch extends StatelessWidget {
       final w = box.maxWidth, h = box.maxHeight;
       const tokenW = 76.0, tokenH = 66.0;
       return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+        decoration: ShapeDecoration(
+          shape: GlmCut.shape(GlmCut.card + 4, side: BorderSide(color: Colors.white.withValues(alpha: .12))),
           gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.pitch, p.pitchDark]),
-          border: Border.all(color: Colors.white.withValues(alpha: .10)),
-          boxShadow: [BoxShadow(color: p.shade.withValues(alpha: .45), blurRadius: 24, offset: const Offset(0, 12), spreadRadius: -10)],
+          shadows: [BoxShadow(color: p.shade.withValues(alpha: .45), blurRadius: 24, offset: const Offset(0, 12), spreadRadius: -10)],
         ),
         child: Stack(children: [
           Positioned.fill(child: CustomPaint(painter: _Lines(Colors.white.withValues(alpha: .35), horizontal: horizontal))),
