@@ -52,7 +52,10 @@ class FakeSocial implements SocialRepository {
   @override
   Future<Map<String, dynamic>> groups() async => json('groups');
   @override
-  Future<List<Map<String, dynamic>>> messages(int group) async => [for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>];
+  Future<List<Map<String, dynamic>>> messages(int group) async => [
+        for (final m in json('group_messages')['messages'] as List) m as Map<String, dynamic>,
+        {'id': 2, 'kind': 'audio', 'deleted': false, 'body': '', 'user': {'id': 9, 'name': 'حمزة'}, 'seconds': 7, 'created_at': '2026-11-06T08:00:00Z'},
+      ];
   @override
   Future<void> say(int group, String body) async => sent.add('say $group $body');
   @override
@@ -117,6 +120,8 @@ void main() {
     }
     expect(find.text('أهلاً بالجميع'), findsOneWidget);
     expect(find.byTooltip('أرسل صورة'), findsOneWidget);
+    expect(find.byTooltip('سجّل رسالة صوتية'), findsOneWidget);
+    expect(find.text('رسالة صوتية 7 ث'), findsOneWidget);
     await t.enterText(find.byType(TextField), 'مباراة قوية الليلة');
     await t.tap(find.byIcon(Icons.send_rounded));
     await t.pump(const Duration(milliseconds: 500));

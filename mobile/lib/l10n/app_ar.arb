@@ -1600,5 +1600,16 @@
     }
   },
   "swapGive": "تعطي",
-  "swapTake": "تأخذ"
+  "swapTake": "تأخذ",
+  "recordVoice": "سجّل رسالة صوتية",
+  "stopAndSend": "أوقف وأرسل",
+  "voiceNote": "رسالة صوتية {n} ث",
+  "@voiceNote": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "micDenied": "اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال"
 }

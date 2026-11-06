@@ -36,8 +36,8 @@ class ApiClient {
   Future<Map<String, dynamic>> delete(String path, [Object? body]) => _call(() => dio.delete(path, data: body));
 
   /// A file sent as a form (a picture for the avatar or a group), with its other fields.
-  Future<Map<String, dynamic>> upload(String path, String field, String filePath, {Map<String, Object> fields = const {}}) =>
-      _call(() async => dio.post(path, data: FormData.fromMap({...fields, field: await MultipartFile.fromFile(filePath)})));
+  Future<Map<String, dynamic>> upload(String path, String field, String filePath, {Map<String, Object> fields = const {}, String? type}) =>
+      _call(() async => dio.post(path, data: FormData.fromMap({...fields, field: await MultipartFile.fromFile(filePath, contentType: type == null ? null : DioMediaType.parse(type))})));
 
   /// A private file's bytes (a group's picture), with the account's token.
   Future<List<int>> bytes(String path) async {

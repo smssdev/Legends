@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
@@ -547,6 +551,74 @@ class _GroupImageState extends ConsumerState<_GroupImage> {
       );
 }
 
+/// A voice note sent in a group: fetched once with the account's token, then played from the phone.
+class _GroupVoice extends ConsumerStatefulWidget {
+  const _GroupVoice({required this.path, required this.seconds});
+
+  final String path;
+  final int seconds;
+
+  @override
+  ConsumerState<_GroupVoice> createState() => _GroupVoiceState();
+}
+
+class _GroupVoiceState extends ConsumerState<_GroupVoice> {
+  final _player = AudioPlayer();
+  bool _playing = false, _loading = false;
+  String? _file;
+
+  @override
+  void initState() {
+    super.initState();
+    _player.onPlayerComplete.listen((_) {
+      if (mounted) setState(() => _playing = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggle() async {
+    if (_playing) {
+      await _player.pause();
+      setState(() => _playing = false);
+      return;
+    }
+    if (_file == null) {
+      setState(() => _loading = true);
+      try {
+        final bytes = await ref.read(apiProvider).bytes(widget.path);
+        final dir = await getTemporaryDirectory();
+        final f = File('${dir.path}/voice-${widget.path.hashCode}.m4a');
+        await f.writeAsBytes(bytes);
+        _file = f.path;
+      } catch (_) {
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
+    }
+    await _player.play(DeviceFileSource(_file!));
+    if (mounted) {
+      setState(() {
+        _playing = true;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
+        IconButton(
+          onPressed: _loading ? null : _toggle,
+          icon: _loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : Icon(_playing ? Icons.pause_rounded : Icons.play_arrow_rounded, color: context.palette.gold),
+        ),
+        Text(L.of(context).voiceNote(widget.seconds)),
+      ]);
+}
+
 /// A group's conversation: the latest page, asked again every few seconds while open, and a line to write.
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.groupId, required this.name});
@@ -575,6 +647,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void dispose() {
     _poll?.cancel();
+    _recorder.dispose();
     _text.dispose();
     super.dispose();
   }
@@ -586,6 +659,40 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       unawaited(_repo.read(widget.groupId).catchError((_) {}));
     } on ApiError {
       // Asked again in a moment.
+    }
+  }
+
+  /// A voice note: the first tap records (AAC, up to the server's two minutes), the second stops and sends it.
+  final _recorder = AudioRecorder();
+  DateTime? _recordingSince;
+
+  Future<void> _voice() async {
+    if (_recordingSince == null) {
+      if (!await _recorder.hasPermission()) {
+        if (mounted) showGlmToast(context, L.of(context).micDenied, error: true);
+        return;
+      }
+      final dir = await getTemporaryDirectory();
+      await _recorder.start(const RecordConfig(encoder: AudioEncoder.aacLc, bitRate: 48000, sampleRate: 22050, numChannels: 1),
+          path: '${dir.path}/note-${DateTime.now().millisecondsSinceEpoch}.m4a');
+      setState(() => _recordingSince = DateTime.now());
+      return;
+    }
+    final seconds = DateTime.now().difference(_recordingSince!).inSeconds.clamp(1, 120);
+    final path = await _recorder.stop();
+    setState(() {
+      _recordingSince = null;
+      _sending = true;
+    });
+    try {
+      if (path != null) {
+        await ref.read(apiProvider).upload('/groups/${widget.groupId}/media', 'file', path, fields: {'kind': 'audio', 'seconds': seconds}, type: 'audio/mp4');
+        await _load();
+      }
+    } on ApiError catch (e) {
+      if (mounted) showGlmToast(context, e.message, error: true);
+    } finally {
+      if (mounted) setState(() => _sending = false);
     }
   }
 
@@ -626,6 +733,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       Text('${(m['user'] as Map?)?['name'] ?? ''}', style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800, fontSize: 12)),
                       if (m['deleted'] != true && m['kind'] == 'image')
                         _GroupImage(path: '/groups/${widget.groupId}/media/${m['id']}')
+                      else if (m['deleted'] != true && m['kind'] == 'audio')
+                        _GroupVoice(path: '/groups/${widget.groupId}/media/${m['id']}', seconds: m['seconds'] as int? ?? 0)
                       else
                         Text(m['deleted'] == true ? l.messageDeleted : m['kind'] == 'text' ? '${m['body'] ?? ''}' : l.mediaOnWeb,
                             style: TextStyle(fontStyle: m['deleted'] == true || m['kind'] != 'text' ? FontStyle.italic : null)),
@@ -640,6 +749,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
               child: Row(children: [
+                IconButton(
+                  tooltip: _recordingSince == null ? l.recordVoice : l.stopAndSend,
+                  icon: Icon(_recordingSince == null ? Icons.mic_rounded : Icons.stop_circle_rounded, color: _recordingSince == null ? p.gold : context.glm.liveText),
+                  onPressed: _sending ? null : _voice,
+                ),
                 IconButton(
                   tooltip: l.sendPhoto,
                   icon: Icon(Icons.image_rounded, color: p.gold),

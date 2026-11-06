@@ -600,5 +600,9 @@
   "groupsCount": "Groups: {n}",
   "swapPlayers": "Swap players (up to {n})",
   "swapGive": "You give",
-  "swapTake": "You take"
+  "swapTake": "You take",
+  "recordVoice": "Record a voice note",
+  "stopAndSend": "Stop and send",
+  "voiceNote": "Voice note {n}s",
+  "micDenied": "Allow the app to use the microphone in the phone's settings"
 }

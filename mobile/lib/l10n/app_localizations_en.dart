@@ -2082,4 +2082,19 @@ class LEn extends L {
 
   @override
   String get swapTake => 'You take';
+
+  @override
+  String get recordVoice => 'Record a voice note';
+
+  @override
+  String get stopAndSend => 'Stop and send';
+
+  @override
+  String voiceNote(int n) {
+    return 'Voice note ${n}s';
+  }
+
+  @override
+  String get micDenied =>
+      'Allow the app to use the microphone in the phone\'s settings';
 }
