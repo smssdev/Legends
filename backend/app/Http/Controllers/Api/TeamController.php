@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Data\Nations;
 use App\Economy\Contracts;
 use App\Economy\Economy;
 use App\Economy\Money;
@@ -422,6 +423,8 @@ class TeamController extends Controller
             ->map(fn ($p) => [
                 'id' => $p->id, 'name' => $p->name, 'position' => $p->position, 'alt_positions' => $p->alt_positions, 'line' => $p->line,
                 'age' => $p->age, 'nationality' => Nation::name($p->nationality), 'foot' => $p->preferred_foot,
+                // [Sprint 46] His national team's code and colours (Nations), for the app's flag chip, as the site draws its badge.
+                'nation' => ($n = Nations::canonical($p->nationality)) === null ? null : ['code' => Nations::info($n)['code'], 'colors' => Nations::info($n)['colors']],
                 'overall' => $p->overall, 'training_bonus' => (int) $p->training_bonus, 'potential' => $p->potential, 'value' => (int) $p->value, 'fitness' => $p->fitness,
                 'injured_matches' => $p->injured_matches, 'suspended_matches' => $p->suspended_matches,
                 'available' => $p->injured_matches === 0 && $p->suspended_matches === 0,

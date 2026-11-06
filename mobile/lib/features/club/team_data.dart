@@ -7,19 +7,24 @@ import '../../core/api/api_client.dart';
 class Player {
   const Player({required this.id, required this.name, required this.position, required this.line, required this.age, required this.overall,
       required this.potential, required this.value, required this.fitness, required this.available, required this.role,
-      this.injured = 0, this.suspended = 0, this.attributes = const {}, this.nationality});
+      this.injured = 0, this.suspended = 0, this.attributes = const {}, this.nationality, this.nationCode, this.nationColors = const []});
 
   factory Player.fromJson(Map<String, dynamic> j) => Player(
         id: j['id'] as int, name: '${j['name']}', position: '${j['position']}', line: '${j['line']}', age: j['age'] as int? ?? 0,
         overall: (j['overall'] as int? ?? 0) + (j['training_bonus'] as int? ?? 0), potential: j['potential'] as int? ?? 0,
         value: j['value'] as int? ?? 0, fitness: j['fitness'] as int? ?? 100, available: j['available'] != false, role: '${j['role'] ?? 'reserve'}',
         injured: j['injured_matches'] as int? ?? 0, suspended: j['suspended_matches'] as int? ?? 0, nationality: j['nationality'] as String?,
+        nationCode: (j['nation'] as Map?)?['code'] as String?, nationColors: [for (final c in ((j['nation'] as Map?)?['colors'] as List? ?? const [])) '$c'],
         attributes: {for (final e in ((j['attributes'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
       );
 
   final int id, age, overall, potential, value, fitness, injured, suspended;
   final String name, position, line, role;
   final String? nationality;
+
+  /// [Sprint 46] His national team's code and two colours (the server's Nations), for the flag chip.
+  final String? nationCode;
+  final List<String> nationColors;
   final bool available;
   final Map<String, int> attributes;
 }

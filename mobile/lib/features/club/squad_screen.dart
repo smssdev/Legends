@@ -445,8 +445,10 @@ class _Row extends StatelessWidget {
               ],
             ]),
             age: Text('${p.age}', textAlign: TextAlign.center, style: num.copyWith(fontWeight: FontWeight.w600)),
-            nat: Text(p.nationality ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: soft)),
+            nat: p.nationCode == null
+                ? Text(p.nationality ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: soft))
+                : Center(child: Tooltip(message: p.nationality ?? '', child: NationFlag(code: p.nationCode!, colors: p.nationColors, width: 44))),
             pos: Center(child: PositionChip(p.position, p.line)),
             ovr: Text('${p.overall}', textAlign: TextAlign.center, style: num),
             pot: Text('${p.potential}', textAlign: TextAlign.center, style: num.copyWith(color: p.potential > p.overall ? c.success : soft, fontWeight: FontWeight.w600)),

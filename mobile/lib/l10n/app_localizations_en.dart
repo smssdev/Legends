@@ -2398,4 +2398,37 @@ class LEn extends L {
 
   @override
   String get colState => 'Status';
+
+  @override
+  String get benchPanel => 'The bench';
+
+  @override
+  String get improve => 'Improve';
+
+  @override
+  String get modeFitness => 'Fitness';
+
+  @override
+  String get modeAge => 'Age';
+
+  @override
+  String get modeValue => 'Value';
+
+  @override
+  String get shareLineup => 'Share';
+
+  @override
+  String get prepareTactics => 'Set your tactics for the next match';
+
+  @override
+  String get balancedWord => 'Balanced';
+
+  @override
+  String get positioning => 'Positioning';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
 }

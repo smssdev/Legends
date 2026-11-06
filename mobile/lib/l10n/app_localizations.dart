@@ -4320,6 +4320,72 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'الحالة'**
   String get colState;
+
+  /// No description provided for @benchPanel.
+  ///
+  /// In ar, this message translates to:
+  /// **'دكة البدلاء'**
+  String get benchPanel;
+
+  /// No description provided for @improve.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحسين'**
+  String get improve;
+
+  /// No description provided for @modeFitness.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللياقة'**
+  String get modeFitness;
+
+  /// No description provided for @modeAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'السن'**
+  String get modeAge;
+
+  /// No description provided for @modeValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة'**
+  String get modeValue;
+
+  /// No description provided for @shareLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'شارك'**
+  String get shareLineup;
+
+  /// No description provided for @prepareTactics.
+  ///
+  /// In ar, this message translates to:
+  /// **'جهّز تكتيكاتك للمباراة القادمة'**
+  String get prepareTactics;
+
+  /// No description provided for @balancedWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'توازن'**
+  String get balancedWord;
+
+  /// No description provided for @positioning.
+  ///
+  /// In ar, this message translates to:
+  /// **'التمركز'**
+  String get positioning;
+
+  /// No description provided for @yes.
+  ///
+  /// In ar, this message translates to:
+  /// **'نعم'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا'**
+  String get no;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

@@ -2393,4 +2393,37 @@ class LAr extends L {
 
   @override
   String get colState => 'الحالة';
+
+  @override
+  String get benchPanel => 'دكة البدلاء';
+
+  @override
+  String get improve => 'تحسين';
+
+  @override
+  String get modeFitness => 'اللياقة';
+
+  @override
+  String get modeAge => 'السن';
+
+  @override
+  String get modeValue => 'القيمة';
+
+  @override
+  String get shareLineup => 'شارك';
+
+  @override
+  String get prepareTactics => 'جهّز تكتيكاتك للمباراة القادمة';
+
+  @override
+  String get balancedWord => 'توازن';
+
+  @override
+  String get positioning => 'التمركز';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
 }
