@@ -161,7 +161,12 @@ void main() {
   testWidgets('lineup', (t) => shot(t, 'lineup', const LeagueShell(leagueId: 8, location: '/leagues/8/lineup', child: LineupScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
         clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));
-  testWidgets('tactics', (t) => shot(t, 'tactics', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
+  testWidgets('tactics', (t) => shot(t, 'tactics', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));
+  testWidgets('tactics-lines', (t) => shot(t, 'tactics-lines', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))], scroll: 520));
+  testWidgets('tactics-plan', (t) => shot(t, 'tactics-plan', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))], scroll: 300));
   testWidgets('market-sell', (t) => shot(t, 'market-sell', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())], tap: 'بيع'));
   testWidgets('report', (t) => shot(t, 'report', const MatchReportScreen(matchId: 77, coach: true), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]));
   testWidgets('wallet', (t) => shot(t, 'wallet', const WalletScreen(), [

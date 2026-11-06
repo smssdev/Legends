@@ -710,5 +710,16 @@
   "groupDef": "Defenders",
   "groupGk": "Goalkeepers",
   "colNat": "Nat.",
-  "colState": "Status"
+  "colState": "Status",
+  "benchPanel": "The bench",
+  "improve": "Improve",
+  "modeFitness": "Fitness",
+  "modeAge": "Age",
+  "modeValue": "Value",
+  "shareLineup": "Share",
+  "prepareTactics": "Set your tactics for the next match",
+  "balancedWord": "Balanced",
+  "positioning": "Positioning",
+  "yes": "Yes",
+  "no": "No"
 }

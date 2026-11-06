@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../core/config.dart';
+
 import '../theme.dart';
 import '../tokens.g.dart';
 import 'cut.dart';
@@ -97,6 +99,12 @@ class ClubCrest extends StatelessWidget {
   Widget build(BuildContext context) {
     final shield = CrestShield(code: name, color: color, size: size);
     if (url == null || !loadFromNetwork) return shield;
-    return SvgPicture.network(url!, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name);
+    // [Sprint 46] The club's real logo, as the site shows it: the crest address answers with the imported picture
+    // (/logos/....webp, ClubLogo) where the club has one, else with its drawn badge (SVG). The picture first, the SVG
+    // when it is not one, our shield while either loads.
+    final full = url!.startsWith('/') ? '${AppConfig.siteUrl}$url' : url!;
+    return Image.network(full, width: size, height: size, fit: BoxFit.contain, semanticLabel: name,
+        loadingBuilder: (_, child, progress) => progress == null ? child : shield,
+        errorBuilder: (_, _, _) => SvgPicture.network(full, width: size, height: size, placeholderBuilder: (_) => shield, semanticsLabel: name));
   }
 }

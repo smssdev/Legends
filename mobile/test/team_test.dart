@@ -112,7 +112,12 @@ void main() {
   testWidgets('the tactics save themselves after a change', (t) async {
     final repo = FakeTeamRepository();
     await pump(t, const TacticsScreen(leagueId: 1), repo);
-    await t.tap(find.text('هجوم مرتد'));
+    // [Sprint 46] The plan is turned with its arrows: from passes back twice to the counter-attack.
+    for (var i = 0; i < 2; i++) {
+      await t.tap(find.byIcon(Icons.chevron_right_rounded).first);
+      await t.pump();
+    }
+    expect(find.text('هجوم مرتد'), findsOneWidget);
     await t.pump(const Duration(seconds: 1));
     expect(repo.tacticsSent, [{'plan': 'counter'}]);
   });

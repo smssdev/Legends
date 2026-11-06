@@ -166,3 +166,37 @@ class _Shield extends CustomPainter {
   @override
   bool shouldRepaint(_Shield old) => old.color != color || old.rim != rim;
 }
+
+/// [Sprint 46] A national team's flag chip, as the site draws a national team's badge: its two colours in bands, its
+/// three-letter code across them (the game has no flag pictures of its own; these are its teams' colours).
+class NationFlag extends StatelessWidget {
+  const NationFlag({super.key, required this.code, required this.colors, this.width = 40});
+
+  final String code;
+  final List<String> colors;
+  final double width;
+
+  static Color _hex(String h, Color fallback) {
+    final v = int.tryParse(h.replaceFirst('#', ''), radix: 16);
+    return v == null ? fallback : Color(0xFF000000 | v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final a = _hex(colors.isNotEmpty ? colors[0] : '', Colors.white), b = _hex(colors.length > 1 ? colors[1] : '', context.palette.bgDeep);
+    final ink = a.computeLuminance() > .5 && b.computeLuminance() > .5 ? context.palette.bgDeep : Colors.white;
+    return Container(
+      width: width,
+      height: width * .66,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(3),
+        border: Border.all(color: Colors.black.withValues(alpha: .25)),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [a, a, b, b], stops: const [0, .5, .5, 1]),
+      ),
+      alignment: Alignment.center,
+      child: Text(code, textDirection: TextDirection.ltr,
+          style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: width * .32, color: ink, height: 1,
+              shadows: [Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 2)])),
+    );
+  }
+}

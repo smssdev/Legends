@@ -1724,5 +1724,16 @@
   "groupDef": "المدافعون",
   "groupGk": "حراس المرمى",
   "colNat": "الجنسية",
-  "colState": "الحالة"
+  "colState": "الحالة",
+  "benchPanel": "دكة البدلاء",
+  "improve": "تحسين",
+  "modeFitness": "اللياقة",
+  "modeAge": "السن",
+  "modeValue": "القيمة",
+  "shareLineup": "شارك",
+  "prepareTactics": "جهّز تكتيكاتك للمباراة القادمة",
+  "balancedWord": "توازن",
+  "positioning": "التمركز",
+  "yes": "نعم",
+  "no": "لا"
 }

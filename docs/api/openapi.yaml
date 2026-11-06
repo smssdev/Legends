@@ -6138,6 +6138,7 @@ components:
         line: { type: string, enum: [gk, def, mid, att] }
         age: { type: integer }
         nationality: { type: string, nullable: true }
+        nation: { type: [object, 'null'], description: '[Sprint 46] His national team: its three-letter code and two colours (Nations), for a flag chip', required: [code, colors], properties: { code: { type: string }, colors: { type: array, items: { type: string } } } }
         foot: { type: string, nullable: true }
         overall: { type: integer, description: With the training on top }
         training_bonus: { type: integer, description: Points gained in training this season }

@@ -14306,6 +14306,11 @@ export interface components {
             line: "gk" | "def" | "mid" | "att";
             age: number;
             nationality?: string | null;
+            /** @description [Sprint 46] His national team: its three-letter code and two colours (Nations), for a flag chip */
+            nation?: {
+                code: string;
+                colors: string[];
+            } | null;
             foot?: string | null;
             /** @description With the training on top */
             overall: number;
