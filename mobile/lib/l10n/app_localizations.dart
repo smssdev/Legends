@@ -4224,6 +4224,102 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'كوينز وعروض'**
   String get shopSub;
+
+  /// No description provided for @leaguePlace.
+  ///
+  /// In ar, this message translates to:
+  /// **'المركز في الدوري'**
+  String get leaguePlace;
+
+  /// No description provided for @boardGoal.
+  ///
+  /// In ar, this message translates to:
+  /// **'هدف الإدارة'**
+  String get boardGoal;
+
+  /// No description provided for @teamRating.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفريق'**
+  String get teamRating;
+
+  /// No description provided for @bestRated.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعلى تقييم'**
+  String get bestRated;
+
+  /// No description provided for @starPlayer.
+  ///
+  /// In ar, this message translates to:
+  /// **'النجم'**
+  String get starPlayer;
+
+  /// No description provided for @bestProspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموهبة'**
+  String get bestProspect;
+
+  /// No description provided for @lineGkShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'حرس'**
+  String get lineGkShort;
+
+  /// No description provided for @lineDefShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفاع'**
+  String get lineDefShort;
+
+  /// No description provided for @lineMidShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'وسط'**
+  String get lineMidShort;
+
+  /// No description provided for @lineAttShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجوم'**
+  String get lineAttShort;
+
+  /// No description provided for @groupAtt.
+  ///
+  /// In ar, this message translates to:
+  /// **'المهاجمون'**
+  String get groupAtt;
+
+  /// No description provided for @groupMid.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاعبو الوسط'**
+  String get groupMid;
+
+  /// No description provided for @groupDef.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدافعون'**
+  String get groupDef;
+
+  /// No description provided for @groupGk.
+  ///
+  /// In ar, this message translates to:
+  /// **'حراس المرمى'**
+  String get groupGk;
+
+  /// No description provided for @colNat.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجنسية'**
+  String get colNat;
+
+  /// No description provided for @colState.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالة'**
+  String get colState;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

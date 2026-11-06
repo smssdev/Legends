@@ -2350,4 +2350,52 @@ class LEn extends L {
 
   @override
   String get shopSub => 'Coins and offers';
+
+  @override
+  String get leaguePlace => 'League position';
+
+  @override
+  String get boardGoal => 'Board objective';
+
+  @override
+  String get teamRating => 'Team';
+
+  @override
+  String get bestRated => 'Top rated';
+
+  @override
+  String get starPlayer => 'Star';
+
+  @override
+  String get bestProspect => 'Prospect';
+
+  @override
+  String get lineGkShort => 'GK';
+
+  @override
+  String get lineDefShort => 'DEF';
+
+  @override
+  String get lineMidShort => 'MID';
+
+  @override
+  String get lineAttShort => 'ATT';
+
+  @override
+  String get groupAtt => 'Forwards';
+
+  @override
+  String get groupMid => 'Midfielders';
+
+  @override
+  String get groupDef => 'Defenders';
+
+  @override
+  String get groupGk => 'Goalkeepers';
+
+  @override
+  String get colNat => 'Nat.';
+
+  @override
+  String get colState => 'Status';
 }

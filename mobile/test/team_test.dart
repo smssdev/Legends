@@ -69,9 +69,11 @@ void main() {
 
   testWidgets('the squad by line, and a player card', (t) async {
     await pump(t, const SquadScreen(leagueId: 1), FakeTeamRepository());
-    expect(find.text('حراسة المرمى'), findsOneWidget);
-    expect(find.text('الهجوم'), findsOneWidget);
+    // [Sprint 46] Grouped as the manager games list them: forwards first, the goalkeepers last.
+    expect(find.text('المهاجمون'), findsOneWidget);
     final first = sample.players.first;
+    await t.scrollUntilVisible(find.text(first.name), 300, scrollable: find.byType(Scrollable).first);
+    expect(find.text('حراس المرمى'), findsOneWidget);
     await t.tap(find.text(first.name));
     await t.pumpAndSettle();
     expect(find.text('المهارات'), findsOneWidget);

@@ -71,7 +71,7 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at, IconData? tapIcon}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at, IconData? tapIcon, double scroll = 0}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   t.view.physicalSize = const Size(844 * 2, 390 * 2);
@@ -116,6 +116,12 @@ Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {d
       await t.pump(const Duration(milliseconds: 100));
     }
   }
+  if (scroll > 0) {
+    await t.drag(find.byType(Scrollable).first, Offset(0, -scroll));
+    for (var i = 0; i < 6; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+  }
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
   await t.pumpWidget(const SizedBox());
 }
@@ -149,6 +155,9 @@ void main() {
   testWidgets('squad', (t) => shot(t, 'squad', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
         clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));
+  testWidgets('squad-rows', (t) => shot(t, 'squad-rows', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))], scroll: 300));
   testWidgets('lineup', (t) => shot(t, 'lineup', const LeagueShell(leagueId: 8, location: '/leagues/8/lineup', child: LineupScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
         clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));

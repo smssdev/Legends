@@ -10,7 +10,6 @@ import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
-import '../match/feed/art.dart';
 
 /// [2026-11-06] Whether the opening has played (once a launch): the router holds the start page until it has.
 final introDoneProvider = NotifierProvider<IntroDone, bool>(IntroDone.new);
@@ -117,9 +116,6 @@ class _IntroScreenState extends ConsumerState<IntroScreen> with SingleTickerProv
                   Expanded(child: ColoredBox(color: p.bgDeep.withValues(alpha: (1 - left * .92).clamp(0, 1)), child: const SizedBox.expand())),
                   Expanded(child: ColoredBox(color: p.bgDeep.withValues(alpha: (1 - right * .92).clamp(0, 1)), child: const SizedBox.expand())),
                 ]),
-                // [Sprint 46] The squad lined up under the lights, our own cartoon players in the game's two kits, rising
-                // into place one after another as the second bank comes on.
-                CustomPaint(painter: _Squad(t: _seg(.5, 1.6, Curves.easeOutCubic), gold: p.gold)),
                 // The sparks rising once the crest has landed.
                 if (ring > 0) CustomPaint(painter: _Sparks(t: _seg(1.35, 3.0), color: p.goldLight)),
                 Center(
@@ -243,33 +239,3 @@ class _Sparks extends CustomPainter {
   bool shouldRepaint(_Sparks old) => old.t != t;
 }
 
-/// The squad behind the crest: seven of our cartoon players (match art), facing the camera, each in his number, the
-/// middle ones nearer, the line rising into the light from below.
-class _Squad extends CustomPainter {
-  _Squad({required this.t, required this.gold});
-
-  final double t;
-  final Color gold;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (t <= 0) return;
-    canvas.save();
-    fitFrame(canvas, size);
-    const kits = [(Color(0xFF1E5FD0), Colors.white), (Color(0xFFF3F0E6), Color(0xFF0F2248))];
-    // From the edges inward, so the middle ones stand in front.
-    const spots = [(90.0, 455.0, 0), (910.0, 455.0, 1), (190.0, 480.0, 1), (810.0, 480.0, 0), (290.0, 505.0, 0), (710.0, 505.0, 1)];
-    for (final (i, (x, y, k)) in spots.indexed) {
-      final d = ((t * 1.4) - i * .07).clamp(0.0, 1.0);
-      if (d <= 0) continue;
-      final rise = (1 - Curves.easeOutBack.transform(d)) * 140;
-      drawPlayer(canvas, x, y + rise, shirt: kits[k].$1, ink: kits[k].$2, shorts: kits[k].$1, no: '${[9, 10, 7, 4, 8, 11][i]}', front: true, face: 'joy', scale: 1.2, armOut: i.isEven ? .15 : 0, shadow: false);
-    }
-    // The lights' glow over their heads.
-    canvas.drawRect(const Rect.fromLTWH(0, 380, frameW, 182), Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .55)]).createShader(const Rect.fromLTWH(0, 380, frameW, 182)));
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_Squad old) => old.t != t;
-}
