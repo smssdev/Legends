@@ -2208,4 +2208,81 @@ class LAr extends L {
 
   @override
   String get liveBadge => 'مباشر الآن';
+
+  @override
+  String get navOffice => 'المكتب';
+
+  @override
+  String get officeHello => 'مكتب المدرب';
+
+  @override
+  String get strengthCompare => 'قوة الفريقين';
+
+  @override
+  String get needsYou => 'ينتظرك الآن';
+
+  @override
+  String get allClear => 'كل شيء جاهز، استعد للمباراة';
+
+  @override
+  String get needWindow => 'نافذة الأوامر مفتوحة في مباراتك';
+
+  @override
+  String get needLineup => 'لاعبون غائبون في تشكيلتك';
+
+  @override
+  String get needOffers => 'عروض بانتظار ردك';
+
+  @override
+  String get needRequests => 'طلبات انضمام للدوري';
+
+  @override
+  String get needTrainingEmpty => 'خطوط بلا تدريب';
+
+  @override
+  String get needTrainingDone => 'تدريب انتهى وينتظر لاعباً جديداً';
+
+  @override
+  String tileSquadSub(int n) {
+    return '$n لاعباً';
+  }
+
+  @override
+  String get tileReady => 'جاهزة';
+
+  @override
+  String get tileAuto => 'تلقائية';
+
+  @override
+  String get tileFixtures => 'الجدول والنتائج';
+
+  @override
+  String get colPos => 'مركز';
+
+  @override
+  String get colName => 'اللاعب';
+
+  @override
+  String get colAge => 'عمر';
+
+  @override
+  String get colOvr => 'تقييم';
+
+  @override
+  String get colPot => 'إمكانية';
+
+  @override
+  String get colFit => 'لياقة';
+
+  @override
+  String get colValue => 'القيمة';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get dragHint => 'اسحب لاعباً إلى مكانه، أو المس لاعبَين للتبديل';
+
+  @override
+  String get leagueTable => 'الترتيب';
 }

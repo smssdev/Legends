@@ -25,6 +25,7 @@ import 'package:glm/features/home/home_screen.dart';
 import 'package:glm/features/leagues/league_screen.dart';
 import 'package:glm/features/leagues/leagues_repository.dart';
 import 'package:glm/features/leagues/models.dart';
+import 'package:glm/features/leagues/shell.dart';
 import 'package:glm/features/match/live_screen.dart';
 import 'package:glm/features/match/match_data.dart';
 import 'package:glm/features/match/report_screen.dart';
@@ -129,21 +130,25 @@ void main() {
     });
   }
   testWidgets('home', (t) => shot(t, 'home', const HomeScreen(), [homeProvider.overrideWith((ref) async => HomeData.fromJson(homeJson))]));
-  testWidgets('league', (t) => shot(t, 'league', const LeagueScreen(id: 8), [
+  testWidgets('league', (t) => shot(t, 'league', const LeagueShell(leagueId: 8, location: '/leagues/8', child: LeagueScreen(id: 8)), [
         leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
         clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
       ], h: 1400));
-  for (final (name, tab) in [('league-team', 'الفريق'), ('league-matches', 'المباريات'), ('league-more', 'المزيد')]) {
-    testWidgets(name, (t) => shot(t, name, const LeagueScreen(id: 8), [
+  for (final name in ['league-team', 'league-matches', 'league-more']) {
+    testWidgets(name, (t) => shot(t, name, LeagueShell(leagueId: 8, location: '/leagues/8?tab=${{'league-team': 'team', 'league-matches': 'matches', 'league-more': 'more'}[name]}', child: LeagueScreen(id: 8, tab: {'league-team': 'team', 'league-matches': 'matches', 'league-more': 'more'}[name])), [
           leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
           clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary'))),
           standingsProvider.overrideWith((ref, id) async => [for (final r in json('standings')['table'] as List) StandingRow.fromJson(r as Map<String, dynamic>)]),
           fixturesProvider.overrideWith((ref, id) async => [for (final f in json('fixtures')['fixtures'] as List) Fixture.fromJson(f as Map<String, dynamic>)]),
-        ], tap: tab));
+        ]));
   }
   testWidgets('login', (t) => shot(t, 'login', const LoginScreen(), []));
-  testWidgets('squad', (t) => shot(t, 'squad', const SquadScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
-  testWidgets('lineup', (t) => shot(t, 'lineup', const LineupScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
+  testWidgets('squad', (t) => shot(t, 'squad', const LeagueShell(leagueId: 8, location: '/leagues/8/squad', child: SquadScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));
+  testWidgets('lineup', (t) => shot(t, 'lineup', const LeagueShell(leagueId: 8, location: '/leagues/8/lineup', child: LineupScreen(leagueId: 8)), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository()),
+        leagueProvider.overrideWith((ref, id) async => League.fromJson(json('league')['league'] as Map<String, dynamic>)),
+        clubSummaryProvider.overrideWith((ref, id) async => ClubSummary.fromJson(json('summary')))]));
   testWidgets('tactics', (t) => shot(t, 'tactics', const TacticsScreen(leagueId: 8), [teamRepositoryProvider.overrideWithValue(FakeTeamRepository())]));
   testWidgets('market-sell', (t) => shot(t, 'market-sell', const MarketScreen(leagueId: 8), [marketRepositoryProvider.overrideWithValue(FakeMarket())], tap: 'بيع'));
   testWidgets('report', (t) => shot(t, 'report', const MatchReportScreen(matchId: 77, coach: true), [matchRepositoryProvider.overrideWithValue(FakeMatchRepository())]));

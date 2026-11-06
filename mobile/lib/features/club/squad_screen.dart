@@ -12,47 +12,233 @@ import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/glm_background.dart';
 import 'team_data.dart';
 
-/// [Sprint 17 F1] The squad by line (the web's Squad): each player's position badge in his line's colour, his rating,
-/// age, fitness and role, and who cannot play; a tap opens his card.
-class SquadScreen extends ConsumerWidget {
+/// [Sprint 17 F1, Sprint 45 M3] The squad as the manager games show it, a table: the position in its line's colour,
+/// the name, age, rating, potential, fitness as a bar, value and who cannot play; a tap on a column sorts by it (again:
+/// the other way), the lines filter it, and a tap on a player opens his card.
+class SquadScreen extends ConsumerStatefulWidget {
   const SquadScreen({super.key, required this.leagueId});
 
   final int leagueId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SquadScreen> createState() => _SquadScreenState();
+}
+
+enum _Col { pos, name, age, ovr, pot, fit, value }
+
+class _SquadScreenState extends ConsumerState<SquadScreen> {
+  _Col _sort = _Col.pos;
+  bool _desc = false;
+  String? _line;
+
+  static const _lineOrder = {'gk': 0, 'def': 1, 'mid': 2, 'att': 3};
+
+  void _by(_Col c) => setState(() {
+        _desc = _sort == c ? !_desc : c != _Col.pos && c != _Col.name;
+        _sort = c;
+      });
+
+  List<Player> _rows(TeamData team) {
+    final xs = [for (final p in team.players) if (_line == null || p.line == _line) p];
+    int cmp(Player a, Player b) => switch (_sort) {
+          _Col.pos => (_lineOrder[a.line] ?? 9).compareTo(_lineOrder[b.line] ?? 9) != 0 ? (_lineOrder[a.line] ?? 9).compareTo(_lineOrder[b.line] ?? 9) : b.overall.compareTo(a.overall),
+          _Col.name => a.name.compareTo(b.name),
+          _Col.age => a.age.compareTo(b.age),
+          _Col.ovr => a.overall.compareTo(b.overall),
+          _Col.pot => a.potential.compareTo(b.potential),
+          _Col.fit => a.fitness.compareTo(b.fitness),
+          _Col.value => a.value.compareTo(b.value),
+        };
+    xs.sort((a, b) => _desc ? cmp(b, a) : cmp(a, b));
+    return xs;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = L.of(context);
+    final c = context.palette;
     return Scaffold(
       appBar: AppBar(title: Text(l.squad)),
       body: GlmBackground(
         wide: true,
         child: RefreshIndicator(
-          onRefresh: () => ref.refresh(teamProvider(leagueId).future),
+          onRefresh: () => ref.refresh(teamProvider(widget.leagueId).future),
           child: AsyncView(
-            value: ref.watch(teamProvider(leagueId)),
-            onRetry: () => ref.invalidate(teamProvider(leagueId)),
+            value: ref.watch(teamProvider(widget.leagueId)),
+            onRetry: () => ref.invalidate(teamProvider(widget.leagueId)),
             data: (team) {
-              final lines = {'gk': l.lineGk, 'def': l.lineDef, 'mid': l.lineMid, 'att': l.lineAtt};
-              return ListView(padding: const EdgeInsets.all(12), children: [
-                Row(children: [
-                  Text(l.morale(team.morale), style: TextStyle(color: context.palette.textSoft, fontWeight: FontWeight.w700)),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text('${l.squadValue}: ${money(context, team.squadValue)}', textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: context.palette.textMuted))),
-                ]),
-                for (final e in lines.entries) ...[
-                  SectionTitle(e.value),
-                  // [2026-11-06] Two players a row in landscape.
-                  LayoutBuilder(builder: (context, box) {
-                    final cols = box.maxWidth >= 640 ? 2 : 1;
-                    final w = (box.maxWidth - (cols - 1) * 8) / cols;
-                    return Wrap(spacing: 8, children: [
-                      for (final (i, p) in team.players.where((p) => p.line == e.key).indexed)
-                        SizedBox(width: w, child: FadeSlideIn(index: i, child: PlayerRow(p, onTap: () => showPlayerCard(context, p)))),
-                    ]);
-                  }),
-                ],
+              final rows = _rows(team);
+              final lines = {null: l.filterAll, 'gk': l.lineGk, 'def': l.lineDef, 'mid': l.lineMid, 'att': l.lineAtt};
+              return Column(children: [
+                // The squad in numbers, and the lines to filter by.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+                  child: Row(children: [
+                    _Chip(icon: Icons.groups_rounded, text: '${team.players.length}'),
+                    const SizedBox(width: 6),
+                    _Chip(icon: Icons.payments_rounded, text: money(context, team.squadValue)),
+                    const SizedBox(width: 6),
+                    _Chip(icon: Icons.mood_rounded, text: l.morale(team.morale)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: [
+                          for (final e in lines.entries)
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(start: 6),
+                              child: ChoiceChip(
+                                label: Text(e.value),
+                                selected: _line == e.key,
+                                showCheckmark: false,
+                                selectedColor: e.key == null ? c.gold.withValues(alpha: .28) : lineColor(e.key!).bg,
+                                labelStyle: TextStyle(fontWeight: FontWeight.w800, color: _line == e.key && e.key != null ? lineColor(e.key!).fg : c.text),
+                                onSelected: (_) => setState(() => _line = e.key),
+                              ),
+                            ),
+                        ]),
+                      ),
+                    ),
+                  ]),
+                ),
+                // The table: its header sorts.
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Container(
+                    decoration: ShapeDecoration(shape: GlmCut.shape(GlmCut.badge), color: Colors.black.withValues(alpha: .28)),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: _Cells(
+                      pos: _Head(l.colPos, _Col.pos, this),
+                      name: _Head(l.colName, _Col.name, this),
+                      age: _Head(l.colAge, _Col.age, this),
+                      ovr: _Head(l.colOvr, _Col.ovr, this),
+                      pot: _Head(l.colPot, _Col.pot, this),
+                      fit: _Head(l.colFit, _Col.fit, this),
+                      value: _Head(l.colValue, _Col.value, this),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+                    itemCount: rows.length,
+                    itemBuilder: (context, i) => FadeSlideIn(index: i, child: _Row(rows[i], odd: i.isOdd, onTap: () => showPlayerCard(context, rows[i]))),
+                  ),
+                ),
               ]);
             },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: ShapeDecoration(shape: GlmCut.shape(8), color: Colors.black.withValues(alpha: .25)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 15, color: context.palette.gold),
+          const SizedBox(width: 5),
+          Text(text, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+        ]),
+      );
+}
+
+/// The table's columns: the same widths in the header and each row.
+class _Cells extends StatelessWidget {
+  const _Cells({required this.pos, required this.name, required this.age, required this.ovr, required this.pot, required this.fit, required this.value});
+
+  final Widget pos, name, age, ovr, pot, fit, value;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        final roomy = box.maxWidth >= 520;
+        return Row(children: [
+          SizedBox(width: 50, child: pos),
+          const SizedBox(width: 8),
+          Expanded(child: name),
+          SizedBox(width: 40, child: age),
+          SizedBox(width: 50, child: ovr),
+          if (roomy) SizedBox(width: 50, child: pot),
+          SizedBox(width: roomy ? 78 : 56, child: fit),
+          if (roomy) SizedBox(width: 64, child: value),
+        ]);
+      });
+}
+
+class _Head extends StatelessWidget {
+  const _Head(this.label, this.col, this.state);
+
+  final String label;
+  final _Col col;
+  final _SquadScreenState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final on = state._sort == col;
+    return InkWell(
+      onTap: () => state._by(col),
+      child: Row(mainAxisAlignment: col == _Col.name ? MainAxisAlignment.start : MainAxisAlignment.center, children: [
+        Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: on ? context.glm.goldText : p.textMuted))),
+        if (on) Icon(state._desc ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded, size: 18, color: p.gold),
+      ]),
+    );
+  }
+}
+
+/// One player in the table: his line's colour down its edge, a starter's green tint, the unavailable marked.
+class _Row extends StatelessWidget {
+  const _Row(this.p, {required this.odd, required this.onTap});
+
+  final Player p;
+  final bool odd;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.palette;
+    final num = TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 17, color: c.text);
+    final starter = p.role == 'starter';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 3),
+      child: Material(
+        shape: GlmCut.shape(GlmCut.chip + 2),
+        clipBehavior: Clip.antiAlias,
+        color: starter ? Color.lerp(c.surface, c.pitchDark, .22) : (odd ? c.surface : Color.lerp(c.surface, c.surfaceRaised, .35)),
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: lineColor(p.line).bg, width: 4))),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+            child: _Cells(
+              pos: Center(child: PositionChip(p.position, p.line)),
+              name: Row(children: [
+                Flexible(child: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, textAlign: TextAlign.start, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14))),
+                if (!p.available) ...[
+                  const SizedBox(width: 6),
+                  Icon(p.injured > 0 ? Icons.healing_rounded : Icons.block_rounded, size: 16, color: c.danger),
+                ],
+                if (starter) ...[const SizedBox(width: 6), Icon(Icons.check_circle_rounded, size: 14, color: c.success)],
+              ]),
+              age: Text('${p.age}', textAlign: TextAlign.center, style: num.copyWith(fontSize: 15, color: c.textSoft)),
+              ovr: Center(child: RatingBadge(p.overall, size: 32)),
+              pot: Text('${p.potential}', textAlign: TextAlign.center, style: num.copyWith(color: p.potential > p.overall ? context.glm.successText : c.textSoft)),
+              fit: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Flexible(child: LevelBar(p.fitness / 100, color: fitnessColor(p.fitness), width: 34, height: 6)),
+                const SizedBox(width: 4),
+                Text('${p.fitness}', style: num.copyWith(fontSize: 13, color: c.textSoft)),
+              ]),
+              value: Text(money(context, p.value), textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: num.copyWith(fontSize: 14, color: context.glm.goldText)),
+            ),
           ),
         ),
       ),
