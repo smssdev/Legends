@@ -694,5 +694,21 @@
   "statLost": "Losses",
   "statPoints": "Points",
   "shopTile": "Shop",
-  "shopSub": "Coins and offers"
+  "shopSub": "Coins and offers",
+  "leaguePlace": "League position",
+  "boardGoal": "Board objective",
+  "teamRating": "Team",
+  "bestRated": "Top rated",
+  "starPlayer": "Star",
+  "bestProspect": "Prospect",
+  "lineGkShort": "GK",
+  "lineDefShort": "DEF",
+  "lineMidShort": "MID",
+  "lineAttShort": "ATT",
+  "groupAtt": "Forwards",
+  "groupMid": "Midfielders",
+  "groupDef": "Defenders",
+  "groupGk": "Goalkeepers",
+  "colNat": "Nat.",
+  "colState": "Status"
 }

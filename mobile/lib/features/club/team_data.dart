@@ -51,17 +51,23 @@ class Lineup {
 }
 
 class TeamData {
-  const TeamData({required this.players, required this.lineup, required this.morale, required this.squadValue});
+  const TeamData({required this.players, required this.lineup, required this.morale, required this.squadValue, this.lines = const {}, this.captain});
 
   factory TeamData.fromJson(Map<String, dynamic> j) => TeamData(
         players: [for (final p in j['players'] as List) Player.fromJson(p as Map<String, dynamic>)],
         lineup: Lineup.fromJson(j['lineup'] as Map<String, dynamic>),
         morale: (j['morale'] as Map?)?['value'] as int? ?? 70, squadValue: j['squad_value'] as int? ?? 0,
+        lines: {for (final e in ((j['lines'] as Map?) ?? const {}).entries) '${e.key}': (e.value as num).toInt()},
+        captain: ((j['takers'] as Map?)?['captain'] as Map?)?['player_id'] as int?,
       );
 
   final List<Player> players;
   final Lineup lineup;
   final int morale, squadValue;
+
+  /// [Sprint 46] Each line's rating (gk, def, mid, att, the server's) and the captain.
+  final Map<String, int> lines;
+  final int? captain;
 
   Player? byId(int id) => players.where((p) => p.id == id).firstOrNull;
 }

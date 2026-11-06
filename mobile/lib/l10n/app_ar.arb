@@ -1708,5 +1708,21 @@
   "statLost": "الهزائم",
   "statPoints": "النقاط",
   "shopTile": "المتجر",
-  "shopSub": "كوينز وعروض"
+  "shopSub": "كوينز وعروض",
+  "leaguePlace": "المركز في الدوري",
+  "boardGoal": "هدف الإدارة",
+  "teamRating": "الفريق",
+  "bestRated": "أعلى تقييم",
+  "starPlayer": "النجم",
+  "bestProspect": "الموهبة",
+  "lineGkShort": "حرس",
+  "lineDefShort": "دفاع",
+  "lineMidShort": "وسط",
+  "lineAttShort": "هجوم",
+  "groupAtt": "المهاجمون",
+  "groupMid": "لاعبو الوسط",
+  "groupDef": "المدافعون",
+  "groupGk": "حراس المرمى",
+  "colNat": "الجنسية",
+  "colState": "الحالة"
 }

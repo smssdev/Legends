@@ -190,7 +190,7 @@ class _ClubTab extends ConsumerWidget {
           }
           return Column(children: [
             Expanded(child: stage),
-            SizedBox(height: math.min(150, box.maxHeight * .36), child: tiles),
+            SizedBox(height: math.min(250, box.maxHeight * .52), child: tiles),
           ]);
         }),
       ),
@@ -322,57 +322,101 @@ class _HubTiles extends StatelessWidget {
       return d.inDays > 0 ? (ar ? '${d.inDays}ي' : '${d.inDays}d') : (ar ? '${d.inHours}س ${d.inMinutes % 60}د' : '${d.inHours}h ${d.inMinutes % 60}m');
     }
 
-    final tiles = <Widget>[
-      if (contract != null) _HubTile(width: 230, gold: true, alert: true, onTap: contract!, icon: GameGlyph.contracts, title: l.sign, sub: goalText(l, s.goal)),
-      _HubTile(
-        width: 270,
-        alert: missing,
-        onTap: () => go('lineup'),
-        icon: GameGlyph.lineup,
-        title: l.matchPrep,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(missing ? l.prepMissing : s.lineupAuto ? l.prepAuto : l.prepReady, style: TextStyle(color: missing ? p.danger : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12)),
-          const SizedBox(height: 6),
-          _Progress(value: prep, color: missing ? p.danger : prep < 1 ? p.gold : p.success),
-        ]),
-      ),
-      _HubTile(width: 170, alert: needs('training_empty') || needs('training_done'), onTap: () => go('training'), icon: GameGlyph.training, title: l.training,
-          sub: left(timer('training')).isEmpty ? l.trainingSub : left(timer('training'))),
-      _HubTile(width: 230, onTap: () => go('friendlies'), icon: GameGlyph.friendlies, title: l.quickFriendly, sub: l.quickFriendlySub),
-      _HubTile(
-        width: 250,
-        onTap: table,
-        icon: GameGlyph.table,
-        title: l.leagueTable,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          for (final r in s.top.take(3))
-            Row(children: [
+    final table = _HubTile(
+      onTap: this.table,
+      icon: GameGlyph.table,
+      title: l.leagueTable,
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        for (final r in s.top.take(3))
+          Container(
+            color: r.mine ? Colors.white.withValues(alpha: .08) : null,
+            child: Row(children: [
               SizedBox(width: 22, child: Text('${r.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.mine ? p.goldLight : Colors.white70))),
-              Expanded(child: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, textAlign: TextAlign.start,
-                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 13, height: 1.15, color: r.mine ? p.goldLight : Colors.white))),
+              Expanded(child: Text(r.name.toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.start,
+                  style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 14, height: 1.2, color: r.mine ? p.goldLight : Colors.white))),
+              const SizedBox(width: 8),
               Text('${r.points}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, color: r.mine ? p.goldLight : Colors.white)),
             ]),
-        ]),
-      ),
-      _HubTile(width: 190, gold: true, onTap: () => go('quests'), icon: GameGlyph.quests, title: l.quests, sub: left(timer('daily')).isEmpty ? l.questsSub : left(timer('daily'))),
-      _HubTile(width: 190, alert: needs('offers'), onTap: () => go('market'), icon: GameGlyph.transfers, title: l.market, sub: left(timer('market')).isEmpty ? l.subMarket : '${l.marketRenews} ${left(timer('market'))}'),
-    ];
-    return ListView.separated(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-      itemCount: tiles.length,
-      separatorBuilder: (_, _) => const SizedBox(width: 10),
-      itemBuilder: (_, i) => FadeSlideIn(index: i, child: tiles[i]),
+          ),
+      ]),
     );
+    // [Sprint 46, the owner's screenshots] Two rows under the match, filling the width as the manager games do: the
+    // quick friendly, the match's preparation, training's clock and the form; then the quests (or the contract), the
+    // market and the table.
+    Widget row(List<(int, Widget)> xs) => Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          for (final (i, (flex, w)) in xs.indexed) ...[if (i > 0) const SizedBox(width: 10), Expanded(flex: flex, child: FadeSlideIn(index: i, child: w))],
+        ]);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+      child: Column(children: [
+        Expanded(
+          child: row([
+            (5, _HubTile(onTap: () => go('friendlies'), icon: GameGlyph.quick, title: l.quickFriendly, sub: l.quickFriendlySub)),
+            (5, _HubTile(
+              alert: missing,
+              onTap: () => go('lineup'),
+              icon: GameGlyph.lineup,
+              title: l.matchPrep,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+                Text(missing ? l.prepMissing : s.lineupAuto ? l.prepAuto : l.prepReady, style: TextStyle(color: missing ? p.danger : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12)),
+                const SizedBox(height: 6),
+                _Progress(value: prep, color: missing ? p.danger : prep < 1 ? p.gold : p.success),
+              ]),
+            )),
+            (3, _HubTile(upright: true, alert: needs('training_empty') || needs('training_done'), onTap: () => go('training'), icon: GameGlyph.training,
+                title: left(timer('training')).isEmpty ? l.training : left(timer('training')))),
+            (3, _HubTile(upright: true, onTap: () => go('stats'), icon: GameGlyph.honours, title: l.form, child: _Form(s.form))),
+          ]),
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: row([
+            (3, contract != null
+                ? _HubTile(gold: true, alert: true, onTap: contract!, icon: GameGlyph.contracts, title: l.sign, sub: goalText(l, s.goal))
+                : _HubTile(gold: true, onTap: () => go('quests'), icon: GameGlyph.quests, title: l.quests, sub: left(timer('daily')).isEmpty ? l.questsSub : left(timer('daily')))),
+            (5, _HubTile(alert: needs('offers'), onTap: () => go('market'), icon: GameGlyph.transfers, title: l.market,
+                sub: left(timer('market')).isEmpty ? l.subMarket : '${l.marketRenews} ${left(timer('market'))}')),
+            (5, table),
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
+/// The club's last results as five lit squares (W green, D grey, L red), newest at the reading end.
+class _Form extends StatelessWidget {
+  const _Form(this.form);
+
+  final List<String> form;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final last = form.length > 5 ? form.sublist(form.length - 5) : form;
+    if (last.isEmpty) return Text('—', style: TextStyle(color: p.textMuted, fontWeight: FontWeight.w800));
+    final ar = Localizations.localeOf(context).languageCode == 'ar';
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      for (final r in last)
+        Container(
+          width: 20,
+          height: 20,
+          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+          alignment: Alignment.center,
+          decoration: ShapeDecoration(shape: GlmCut.shape(5), color: r == 'W' ? p.success : r == 'L' ? p.live : p.textMuted),
+          child: Text(ar ? {'W': 'ف', 'D': 'ت', 'L': 'خ'}[r] ?? r : r, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, height: 1)),
+        ),
+    ]);
   }
 }
 
 /// A tile of the hub: a navy card lit from the top (gold for the quests), its glossy icon, its title in gold, a line or
 /// its own content, and the green «!» when it needs the coach.
 class _HubTile extends StatelessWidget {
-  const _HubTile({required this.width, required this.onTap, required this.icon, required this.title, this.sub, this.child, this.alert = false, this.gold = false});
+  const _HubTile({required this.onTap, required this.icon, required this.title, this.sub, this.child, this.alert = false, this.gold = false, this.upright = false});
 
-  final double width;
+  /// The icon over the title, centred (the small tiles: training, the form).
+  final bool upright;
   final VoidCallback onTap;
   final GameGlyph icon;
   final String title;
@@ -389,22 +433,27 @@ class _HubTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Ink(
-          width: width,
           decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
                 colors: gold ? [GlmArena.questTop, GlmArena.questBottom] : [GlmArena.navyLight, GlmArena.navy]),
           ),
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            GameIcon(icon, size: 52),
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+          child: upright
+              ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Expanded(child: FittedBox(fit: BoxFit.scaleDown, child: GameIcon(icon, size: 44))),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(title, maxLines: 1, style: const TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: [GlmFonts.body], color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18, height: 1.1))),
+                  if (child != null) ...[const SizedBox(height: 3), FittedBox(fit: BoxFit.scaleDown, child: child)],
+                ])
+              : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            GameIcon(icon, size: 46),
             const SizedBox(width: 10),
             Expanded(
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+              child: LayoutBuilder(builder: (context, c) => FittedBox(fit: BoxFit.scaleDown, alignment: AlignmentDirectional.centerStart, child: SizedBox(width: c.maxWidth, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                 Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: gold ? p.onGold : p.goldLight, fontWeight: FontWeight.w800, fontSize: 17)),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 ?child,
-                if (sub != null) Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: gold ? p.onGold.withValues(alpha: .8) : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12.5)),
-              ]),
+                if (sub != null) Text(sub!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: gold ? p.onGold.withValues(alpha: .8) : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12.5)),
+              ])))),
             ),
           ]),
         ),

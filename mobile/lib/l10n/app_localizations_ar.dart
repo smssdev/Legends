@@ -2345,4 +2345,52 @@ class LAr extends L {
 
   @override
   String get shopSub => 'كوينز وعروض';
+
+  @override
+  String get leaguePlace => 'المركز في الدوري';
+
+  @override
+  String get boardGoal => 'هدف الإدارة';
+
+  @override
+  String get teamRating => 'الفريق';
+
+  @override
+  String get bestRated => 'أعلى تقييم';
+
+  @override
+  String get starPlayer => 'النجم';
+
+  @override
+  String get bestProspect => 'الموهبة';
+
+  @override
+  String get lineGkShort => 'حرس';
+
+  @override
+  String get lineDefShort => 'دفاع';
+
+  @override
+  String get lineMidShort => 'وسط';
+
+  @override
+  String get lineAttShort => 'هجوم';
+
+  @override
+  String get groupAtt => 'المهاجمون';
+
+  @override
+  String get groupMid => 'لاعبو الوسط';
+
+  @override
+  String get groupDef => 'المدافعون';
+
+  @override
+  String get groupGk => 'حراس المرمى';
+
+  @override
+  String get colNat => 'الجنسية';
+
+  @override
+  String get colState => 'الحالة';
 }

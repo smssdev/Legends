@@ -8,7 +8,7 @@ import '../leagues/models.dart';
 class ClubSummary {
   const ClubSummary({required this.club, required this.cash, required this.coins, this.next, this.venue, this.matchAt, this.lineupAuto = true,
       this.lineupReady = true, this.position, this.teams, this.goal, this.pending = const [], this.matchId, this.matchStatus, this.missed = 0,
-      this.needs = const [], this.strength, this.top = const [], this.formation, this.timers = const [], this.round});
+      this.needs = const [], this.strength, this.top = const [], this.formation, this.timers = const [], this.round, this.form = const []});
 
   factory ClubSummary.fromJson(Map<String, dynamic> j) {
     final m = j['match'] as Map<String, dynamic>?;
@@ -35,6 +35,7 @@ class ClubSummary {
       ],
       formation: lineup['formation'] as String?,
       round: m?['round'] as int?,
+      form: [for (final f in ((m?['club'] as Map?)?['form'] as List? ?? const [])) '$f'],
       timers: [for (final t in (j['timers'] as List? ?? const [])) (kind: '${(t as Map)['kind']}', at: date(t['at']))],
     );
   }
@@ -66,8 +67,9 @@ class ClubSummary {
   final String? formation;
   final List<({String kind, DateTime? at})> timers;
 
-  /// The next match's round.
+  /// The next match's round, and my club's last results (W, D, L), newest last.
   final int? round;
+  final List<String> form;
 }
 
 extension _Let<T> on T {
