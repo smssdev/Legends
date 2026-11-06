@@ -170,16 +170,7 @@ class MenuSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 child: Row(children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-                          colors: [(m.color ?? p.gold).withValues(alpha: .30), (m.color ?? p.gold).withValues(alpha: .12)]),
-                    ),
-                    child: Icon(m.icon, size: 21, color: m.color ?? p.gold),
-                  ),
+                  IconTile(m.icon, color: m.color),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -223,4 +214,74 @@ class GamePanes extends StatelessWidget {
           Expanded(flex: endFlex, child: ListView(padding: padding.copyWith(left: padding.left / 2), children: rise(end, 2))),
         ]);
       });
+}
+
+/// [2026-11-06, stage 3] Cards in as many columns as fit ([minWidth] each), one under the other when narrow, each
+/// arriving with a short staggered rise.
+class GameGrid extends StatelessWidget {
+  const GameGrid({super.key, required this.children, this.minWidth = 340, this.spacing = 10, this.maxColumns = 3});
+
+  final List<Widget> children;
+  final double minWidth, spacing;
+  final int maxColumns;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: (context, box) {
+        final cols = (box.maxWidth / minWidth).floor().clamp(1, maxColumns);
+        final w = (box.maxWidth - (cols - 1) * spacing) / cols;
+        return Wrap(spacing: spacing, runSpacing: spacing, children: [
+          for (final (i, c) in children.indexed) SizedBox(width: w, child: FadeSlideIn(index: i, child: c)),
+        ]);
+      });
+}
+
+/// An icon on a glossy square in its colour: the game's icon style everywhere (menus, rails, headers, empty states).
+class IconTile extends StatelessWidget {
+  const IconTile(this.icon, {super.key, this.color, this.size = 38});
+
+  final IconData icon;
+  final Color? color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? context.palette.gold;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(size * .32),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.withValues(alpha: .34), c.withValues(alpha: .10)]),
+        border: Border.all(color: c.withValues(alpha: .22)),
+      ),
+      child: Icon(icon, size: size * .55, color: c),
+    );
+  }
+}
+
+/// True on a wide (landscape) screen: the layouts that sit side by side.
+bool isWide(BuildContext context) => MediaQuery.sizeOf(context).width >= 640;
+
+/// [2026-11-06, stage 3] A screen's bar with its tabs: under the title on a narrow screen, and beside it on a wide one,
+/// where every row of height counts (a phone in landscape is about 390 points tall).
+PreferredSizeWidget gameTabsBar(BuildContext context, {required String title, required List<Tab> tabs, List<Widget>? actions}) {
+  final p = context.palette;
+  final bar = TabBar(
+    tabs: tabs,
+    isScrollable: isWide(context),
+    tabAlignment: isWide(context) ? TabAlignment.center : null,
+    indicatorColor: p.gold,
+    indicatorWeight: 3,
+    labelColor: context.glm.goldText,
+    unselectedLabelColor: p.textSoft,
+    labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15),
+    unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w600, fontSize: 15),
+    dividerColor: Colors.transparent,
+  );
+  if (!isWide(context)) return AppBar(title: Text(title), actions: actions, bottom: bar);
+  return AppBar(
+    titleSpacing: 16,
+    title: Row(children: [Text(title), const SizedBox(width: 16), Expanded(child: bar)]),
+    actions: actions,
+  );
 }

@@ -702,6 +702,9 @@ class LEn extends L {
   String get keyMoments => 'Key moments';
 
   @override
+  String get matchStats => 'Match stats';
+
+  @override
   String get bestPlayers => 'The best';
 
   @override

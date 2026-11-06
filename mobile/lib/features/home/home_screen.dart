@@ -12,6 +12,7 @@ import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
 import '../../ui/widgets/stadium.dart';
@@ -60,7 +61,7 @@ class _Home extends ConsumerWidget {
                     child: GlmCard(
                       gold: true,
                       child: Row(children: [
-                        const Text('🎁', style: TextStyle(fontSize: 26)),
+                        const Pulse(child: IconTile(Icons.redeem_rounded, size: 42)),
                         const SizedBox(width: 10),
                         Expanded(child: Text(l.starterGift(h.starterCoins), style: const TextStyle(fontWeight: FontWeight.w800))),
                         GlmButton(label: l.claimGift, onPressed: () async {

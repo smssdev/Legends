@@ -10,6 +10,7 @@ import '../../ui/tokens.g.dart';
 import '../../ui/widgets/async_view.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../club/squad_screen.dart' show money, lineColor;
 import '../leagues/widgets.dart' show when;
@@ -30,10 +31,7 @@ class MarketScreen extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(l.market),
-          bottom: TabBar(indicatorColor: context.palette.gold, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers), Tab(text: l.academy)]),
-        ),
+        appBar: gameTabsBar(context, title: l.market, tabs: [Tab(text: l.tabBuy), Tab(text: l.tabSell), Tab(text: l.tabOffers), Tab(text: l.academy)]),
         body: GlmBackground(
           child: TabBarView(children: [_BuyTab(leagueId), _SellTab(leagueId), _OffersTab(leagueId), _AcademyTab(leagueId)]),
         ),
@@ -42,12 +40,42 @@ class MarketScreen extends StatelessWidget {
   }
 }
 
-Widget _ovr(BuildContext context, int v, String line) => Container(
-      width: 40,
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(color: lineColor(line).bg, borderRadius: BorderRadius.circular(10)),
-      child: Text('$v', textAlign: TextAlign.center, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: lineColor(line).fg)),
-    );
+/// [2026-11-06, stage 3] A player in the market as a game card: the rating badge by level, the position in its line's
+/// colour, the name, a line under it, and the price (or an action) at the end.
+class _PlayerCard extends StatelessWidget {
+  const _PlayerCard({required this.overall, required this.position, required this.line, required this.name, required this.sub, this.end, this.onTap, this.gold = false, this.subColor});
+
+  final int overall;
+  final String position, line, name, sub;
+  final Widget? end;
+  final VoidCallback? onTap;
+  final bool gold;
+  final Color? subColor;
+
+  @override
+  Widget build(BuildContext context) => GlmCard(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        gold: gold,
+        accent: lineColor(line).bg,
+        onTap: onTap,
+        child: Row(children: [
+          RatingBadge(overall, size: 44),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                PositionChip(position, line),
+                const SizedBox(width: 8),
+                Flexible(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15))),
+              ]),
+              const SizedBox(height: 4),
+              Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: subColor ?? context.palette.textMuted, fontSize: 12, fontWeight: subColor == null ? FontWeight.w500 : FontWeight.w700)),
+            ]),
+          ),
+          if (end != null) ...[const SizedBox(width: 8), end!],
+        ]),
+      );
+}
 
 class _BuyTab extends ConsumerStatefulWidget {
   const _BuyTab(this.leagueId);
@@ -73,7 +101,7 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
-        child: SegmentedButton<String>(
+        child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: SegmentedButton<String>(
           showSelectedIcon: false,
           segments: [
             for (final (v, t) in [('gk', l.lineGk), ('def', l.lineDef), ('mid', l.lineMid), ('att', l.lineAtt)])
@@ -81,7 +109,7 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
           ],
           selected: {_line},
           onSelectionChanged: (s) => setState(() => _line = s.first),
-        ),
+        )),
       ),
       Expanded(
         child: AsyncView(
@@ -94,31 +122,23 @@ class _BuyTabState extends ConsumerState<_BuyTab> with AutomaticKeepAliveClientM
               if (m.closed != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.marketClosed, textAlign: TextAlign.center, style: TextStyle(color: context.glm.liveText, fontWeight: FontWeight.w700))),
               if (m.renewsAt != null)
                 Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(l.renewsAt(when(context, m.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12))),
-              for (final pl in m.players)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: GlmCard(
-                    padding: const EdgeInsets.all(10),
+              GameGrid(children: [
+                for (final pl in m.players)
+                  _PlayerCard(
+                    overall: pl.overall,
+                    position: pl.position,
+                    line: pl.line,
+                    name: pl.name,
+                    sub: '${pl.age} · ${pl.sellerKind == 'world' ? l.sellerWorld : pl.sellerClub ?? ''}',
                     gold: pl.fits,
                     onTap: () => _buySheet(pl),
-                    child: Row(children: [
-                      _ovr(context, pl.overall, pl.line),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(pl.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
-                          Text('${pl.position} · ${pl.age} · ${pl.sellerKind == 'world' ? l.sellerWorld : pl.sellerClub ?? ''}',
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textMuted, fontSize: 12)),
-                        ]),
-                      ),
-                      Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        Text(money(context, pl.price), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 18, fontWeight: FontWeight.w800, color: context.glm.goldText)),
-                        if (pl.wasPrice != null)
-                          Text(money(context, pl.wasPrice!), textDirection: TextDirection.ltr, style: TextStyle(color: p.textMuted, fontSize: 12, decoration: TextDecoration.lineThrough)),
-                      ]),
+                    end: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                      Text(money(context, pl.price), textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 20, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+                      if (pl.wasPrice != null)
+                        Text(money(context, pl.wasPrice!), textDirection: TextDirection.ltr, style: TextStyle(color: p.textMuted, fontSize: 12, decoration: TextDecoration.lineThrough)),
                     ]),
                   ),
-                ),
+              ]),
             ]),
           ),
         ),
@@ -178,7 +198,7 @@ class _BuySheetState extends State<BuySheet> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
-            _ovr(context, pl.overall, pl.line),
+            RatingBadge(pl.overall, size: 52),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(pl.name, textDirection: TextDirection.ltr, style: context.text.titleLarge),
@@ -249,12 +269,17 @@ class _SellTab extends ConsumerWidget {
         child: ListView(padding: const EdgeInsets.all(12), children: [
           Text(l.listingsOf(s.listed, s.maxListings), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
           const SizedBox(height: 8),
-          for (final pl in s.mine)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: GlmCard(
-                padding: const EdgeInsets.all(10),
+          GameGrid(children: [
+            for (final pl in s.mine)
+              _PlayerCard(
+                overall: pl.overall,
+                position: pl.position,
+                line: pl.line,
+                name: pl.name,
                 gold: pl.listed,
+                sub: pl.listed ? l.listedAt(money(context, pl.listedPrice!)) : '${l.value} ${money(context, pl.value)}',
+                subColor: pl.listed ? context.glm.goldText : null,
+                end: Icon(Icons.sell_rounded, color: pl.listed ? p.gold : p.textMuted, size: 20),
                 onTap: () async {
                   final changed = await showModalBottomSheet<bool>(
                     context: context,
@@ -264,20 +289,8 @@ class _SellTab extends ConsumerWidget {
                   );
                   if (changed == true) ref.invalidate(sellingProvider(leagueId));
                 },
-                child: Row(children: [
-                  _ovr(context, pl.overall, pl.line),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(pl.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
-                      Text(pl.listed ? l.listedAt(money(context, pl.listedPrice!)) : '${pl.position} · ${l.value} ${money(context, pl.value)}',
-                          style: TextStyle(color: pl.listed ? context.glm.goldText : p.textMuted, fontSize: 12)),
-                    ]),
-                  ),
-                  const Icon(Icons.chevron_right_rounded),
-                ]),
               ),
-            ),
+          ]),
         ]),
       ),
     );
@@ -558,18 +571,23 @@ class _AcademyTab extends ConsumerWidget {
         Text(l.academyLead(a.signed, a.perSeason), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted)),
         if (a.renewsAt != null) Text(l.renewsAt(when(context, a.renewsAt!.toLocal())), textAlign: TextAlign.center, style: TextStyle(color: p.textMuted, fontSize: 12)),
         const SizedBox(height: 12),
-        for (final x in a.prospects)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: GlmCard(
+        GameGrid(children: [
+          for (final x in a.prospects)
+            GlmCard(
+              accent: lineColor(x.line).bg,
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Row(children: [
-                  _ovr(context, x.overall, x.line),
-                  const SizedBox(width: 10),
+                  RatingBadge(x.overall, size: 44),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(x.name, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800)),
-                      Text('${x.position} · ${x.age} · ${x.nationality ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
+                      Row(children: [
+                        PositionChip(x.position, x.line),
+                        const SizedBox(width: 8),
+                        Flexible(child: Text(x.name, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800))),
+                      ]),
+                      const SizedBox(height: 4),
+                      Text('${x.age} · ${x.nationality ?? ''}', style: TextStyle(color: p.textMuted, fontSize: 12)),
                       Text(l.potentialRange(x.potentialFrom, x.potentialTo), style: TextStyle(color: context.glm.goldText, fontSize: 12, fontWeight: FontWeight.w700)),
                     ]),
                   ),
@@ -592,7 +610,7 @@ class _AcademyTab extends ConsumerWidget {
                 ),
               ]),
             ),
-          ),
+        ]),
       ]),
     );
   }
