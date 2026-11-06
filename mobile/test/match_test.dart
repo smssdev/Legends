@@ -140,7 +140,7 @@ void main() {
     expect(repo.readies, 1);
 
     // A substitution: Salah off, Szoboszlai on.
-    await t.tap(find.textContaining('تبديل ('));
+    await t.tap(find.textContaining('تبديل 3'));
     await wait(t);
     expect(find.text('يخرج'), findsOneWidget);
     await t.tap(find.text('Mohamed Salah'));

@@ -1,0 +1,4 @@
+tags:
+  # Screenshots for design review (test/shots): flutter test test/shots --tags shots --run-skipped --update-goldens
+  shots:
+    skip: "screenshots only on request"

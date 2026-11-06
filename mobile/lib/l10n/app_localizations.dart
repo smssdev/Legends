@@ -3726,6 +3726,222 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال'**
   String get micDenied;
+
+  /// No description provided for @navClub.
+  ///
+  /// In ar, this message translates to:
+  /// **'ناديّ'**
+  String get navClub;
+
+  /// No description provided for @navTeam.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفريق'**
+  String get navTeam;
+
+  /// No description provided for @navMatches.
+  ///
+  /// In ar, this message translates to:
+  /// **'المباريات'**
+  String get navMatches;
+
+  /// No description provided for @navMarket.
+  ///
+  /// In ar, this message translates to:
+  /// **'السوق'**
+  String get navMarket;
+
+  /// No description provided for @navMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'المزيد'**
+  String get navMore;
+
+  /// No description provided for @secPlayers.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللاعبون'**
+  String get secPlayers;
+
+  /// No description provided for @secDevelop.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطوير'**
+  String get secDevelop;
+
+  /// No description provided for @secDeals.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصفقات'**
+  String get secDeals;
+
+  /// No description provided for @secMoney.
+  ///
+  /// In ar, this message translates to:
+  /// **'المال والملعب'**
+  String get secMoney;
+
+  /// No description provided for @secCompete.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنافسة'**
+  String get secCompete;
+
+  /// No description provided for @secCommunity.
+  ///
+  /// In ar, this message translates to:
+  /// **'المجتمع'**
+  String get secCommunity;
+
+  /// No description provided for @secLeague.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدوري'**
+  String get secLeague;
+
+  /// No description provided for @subSquad.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللاعبون ولياقتهم وبطاقاتهم'**
+  String get subSquad;
+
+  /// No description provided for @subLineup.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأحد عشر والدكة'**
+  String get subLineup;
+
+  /// No description provided for @subTactics.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطة والضغط والأسلوب'**
+  String get subTactics;
+
+  /// No description provided for @subTraining.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاعب في كل خط'**
+  String get subTraining;
+
+  /// No description provided for @subSpecialists.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسرع تدريب لكل خط'**
+  String get subSpecialists;
+
+  /// No description provided for @subContracts.
+  ///
+  /// In ar, this message translates to:
+  /// **'التجديد والفسخ'**
+  String get subContracts;
+
+  /// No description provided for @subMarket.
+  ///
+  /// In ar, this message translates to:
+  /// **'شراء وبيع وعروض وأكاديمية'**
+  String get subMarket;
+
+  /// No description provided for @subScout.
+  ///
+  /// In ar, this message translates to:
+  /// **'خمسة لاعبين بشروطك'**
+  String get subScout;
+
+  /// No description provided for @subFinance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرصيد والرعاة والتذاكر'**
+  String get subFinance;
+
+  /// No description provided for @subStadium.
+  ///
+  /// In ar, this message translates to:
+  /// **'المقاعد والأرضية والتدريب'**
+  String get subStadium;
+
+  /// No description provided for @subTickets.
+  ///
+  /// In ar, this message translates to:
+  /// **'شجّع في مباريات الآخرين'**
+  String get subTickets;
+
+  /// No description provided for @subMatchday.
+  ///
+  /// In ar, this message translates to:
+  /// **'النقل والمؤتمر والكواليس'**
+  String get subMatchday;
+
+  /// No description provided for @subFriendlies.
+  ///
+  /// In ar, this message translates to:
+  /// **'ودية سريعة لأي نادٍ'**
+  String get subFriendlies;
+
+  /// No description provided for @subQuests.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكافآت الأسبوع'**
+  String get subQuests;
+
+  /// No description provided for @subSpy.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكشف خصمك القادم'**
+  String get subSpy;
+
+  /// No description provided for @subNewspaper.
+  ///
+  /// In ar, this message translates to:
+  /// **'أخبار الجولة والمقالات'**
+  String get subNewspaper;
+
+  /// No description provided for @subPredictions.
+  ///
+  /// In ar, this message translates to:
+  /// **'توقع النتائج واربح'**
+  String get subPredictions;
+
+  /// No description provided for @subStats.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهدافون وقيمة الفرق'**
+  String get subStats;
+
+  /// No description provided for @subGroups.
+  ///
+  /// In ar, this message translates to:
+  /// **'دردشة المدربين'**
+  String get subGroups;
+
+  /// No description provided for @subHonours.
+  ///
+  /// In ar, this message translates to:
+  /// **'أبطال كل موسم'**
+  String get subHonours;
+
+  /// No description provided for @subAlliance.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحالفان من مدربي الدوري'**
+  String get subAlliance;
+
+  /// No description provided for @subTournaments.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطولات بقرعة مباشرة'**
+  String get subTournaments;
+
+  /// No description provided for @countdownIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعد {time}'**
+  String countdownIn(String time);
+
+  /// No description provided for @liveBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباشر الآن'**
+  String get liveBadge;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

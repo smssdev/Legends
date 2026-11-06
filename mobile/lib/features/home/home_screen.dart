@@ -9,7 +9,6 @@ import '../../core/api/api_error.dart';
 import '../../core/config.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
-import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
@@ -62,31 +61,11 @@ class _Home extends ConsumerWidget {
             return ref.refresh(homeProvider.future);
           },
           child: CustomScrollView(slivers: [
-            SliverAppBar(
-              floating: true,
-              backgroundColor: p.panel.withValues(alpha: .92),
-              titleSpacing: 16,
-              title: const BrandMark(size: 36),
-              actions: [
-                IconButton(
-                  tooltip: l.inbox,
-                  icon: Badge(
-                    isLabelVisible: (ref.watch(unreadProvider).value ?? 0) > 0,
-                    label: Text('${ref.watch(unreadProvider).value ?? 0}'),
-                    child: const Icon(Icons.mail_outline_rounded),
-                  ),
-                  onPressed: () => context.push('/inbox'),
-                ),
-                IconButton(tooltip: l.myLeagues, icon: const Icon(Icons.emoji_events_outlined), onPressed: () => context.push('/leagues')),
-                CoinsPill(coins: h.coach.coins, onTap: () => context.push('/wallet')),
-                IconButton(tooltip: l.settings, icon: const Icon(Icons.tune_rounded), onPressed: () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
-                const SizedBox(width: 6),
-              ],
-            ),
+            // [2026-11-06] The header: the brand and the coach's tools on a stadium-night banner, then the coach himself.
+            SliverToBoxAdapter(child: _HomeHeader(h)),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
               sliver: SliverList.list(children: [
-                _CoachCard(h.coach),
                 if (!h.starterClaimed && h.starterCoins > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
@@ -141,38 +120,81 @@ class _Home extends ConsumerWidget {
   }
 }
 
-class _CoachCard extends StatelessWidget {
-  const _CoachCard(this.c);
+class _HomeHeader extends ConsumerWidget {
+  const _HomeHeader(this.h);
 
-  final Coach c;
+  final HomeData h;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = L.of(context);
     final p = context.palette;
+    final c = h.coach;
     final hour = DateTime.now().hour;
     final tier = switch (c.tierKey) {
       'tactician' => l.tierTactician, 'professional' => l.tierProfessional, 'elite' => l.tierElite, 'mastermind' => l.tierMastermind,
       'icon' => l.tierIcon, 'legend' => l.tierLegend, _ => l.tierProspect,
     };
     final division = c.division == null ? '' : ' ${['', 'I', 'II', 'III'][c.division!]}';
-    return GlmCard(
-      gold: true,
-      child: Row(children: [
-        CircleAvatar(radius: 32, backgroundColor: p.brand, child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(hour < 12 ? l.greetingMorning : l.greetingEvening, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700, fontSize: 13)),
-            Text(c.name, style: context.text.titleLarge, maxLines: 1, overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 6),
-            Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+    final unread = ref.watch(unreadProvider).value ?? 0;
+    Widget record(String n, String label, Color color) => Expanded(
+          child: Column(children: [
+            Text(n, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: color, height: 1.1)),
+            Text(label, style: TextStyle(color: p.textMuted, fontSize: 11)),
+          ]),
+        );
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: context.glm.day ? [p.panel, p.bg] : [Color.lerp(p.brandDark, p.bgDeep, .35)!, p.bg.withValues(alpha: 0)]),
+      ),
+      padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 6, 16, 12),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(children: [
+          const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: FittedBox(child: BrandMark(size: 30)))),
+          CoinsPill(coins: c.coins, onTap: () => context.push('/wallet')),
+          IconButton(
+            tooltip: l.inbox,
+            icon: Badge(isLabelVisible: unread > 0, label: Text('$unread'), child: const Icon(Icons.notifications_rounded)),
+            onPressed: () => context.push('/inbox'),
+          ),
+          IconButton(tooltip: l.settings, icon: const Icon(Icons.menu_rounded), onPressed: () => showSettingsSheet(context, accountNo: c.accountNo)),
+        ]),
+        const SizedBox(height: 10),
+        GlmCard(
+          gold: true,
+          accent: p.gold,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+          child: Column(children: [
+            Row(children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(GlmSize.radiusPill)),
-                child: Text('$tier$division · ${c.points}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [p.goldLight, p.goldDark])),
+                child: CircleAvatar(radius: 30, backgroundColor: p.brand,
+                    child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
               ),
-              Text(l.record(c.won, c.drawn, c.lost), style: TextStyle(color: p.textMuted, fontSize: 12)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(hour < 12 ? l.greetingMorning : l.greetingEvening, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700, fontSize: 13)),
+                  Text(c.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .28), p.gold.withValues(alpha: .10)]), borderRadius: BorderRadius.circular(99)),
+                    child: Text('🏅 $tier$division · ${c.points}', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: context.glm.goldText)),
+                  ),
+                ]),
+              ),
+              IconButton(tooltip: l.myLeagues, icon: Icon(Icons.emoji_events_rounded, color: p.gold, size: 28), onPressed: () => context.push('/leagues')),
+            ]),
+            const SizedBox(height: 12),
+            Divider(height: 1, color: Colors.white.withValues(alpha: .08)),
+            const SizedBox(height: 10),
+            Row(children: [
+              record('${c.won}', l.won, p.success),
+              record('${c.drawn}', l.drawn, p.textSoft),
+              record('${c.lost}', l.lost, p.danger),
             ]),
           ]),
         ),
@@ -203,35 +225,48 @@ class _SlotCard extends ConsumerWidget {
       case SlotState.club:
         final locale = Localizations.localeOf(context).toLanguageTag();
         return GlmCard(
+          accent: s.live ? p.danger : p.pitch,
           onTap: () => context.push('/leagues/${s.leagueId}'),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
-              ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 48),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .06)),
+                child: ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 52),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(s.clubName ?? '', style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(s.clubName ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr),
                   Text(s.leagueName ?? '', style: TextStyle(color: p.textMuted, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ]),
               ),
-              if (s.pending > 0)
+              if (s.position != null && s.teams != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                  decoration: BoxDecoration(color: p.live, borderRadius: BorderRadius.circular(GlmSize.radiusPill)),
-                  child: Text('${s.pending}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(color: p.gold.withValues(alpha: .14), borderRadius: BorderRadius.circular(12), border: Border.all(color: p.gold.withValues(alpha: .35))),
+                  child: Column(children: [
+                    Text('${s.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: context.glm.goldText, height: 1)),
+                    Text('/${s.teams}', textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 12, color: p.textMuted, height: 1.1)),
+                  ]),
                 ),
-              const SizedBox(width: 6),
-              number,
+              if (s.pending > 0) ...[
+                const SizedBox(width: 6),
+                Badge(label: Text('${s.pending}'), backgroundColor: p.live),
+              ],
             ]),
-            if (s.position != null && s.teams != null) ...[
-              const SizedBox(height: 12),
-              Text(l.position(s.position!, s.teams!), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-            ],
             if (s.matchAt != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                '${s.live ? '● ' : ''}${l.nextMatch}: ${l.vs(s.opponent ?? '')} · ${latinDigits(DateFormat.E(locale).add_jm().format(s.matchAt!))}',
-                style: TextStyle(color: s.live ? context.glm.liveText : p.textMuted, fontSize: 13, fontWeight: s.live ? FontWeight.w800 : FontWeight.w500),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: (s.live ? p.danger : Colors.black).withValues(alpha: s.live ? .18 : .18), borderRadius: BorderRadius.circular(12)),
+                child: Row(children: [
+                  Icon(s.live ? Icons.sensors_rounded : Icons.event_rounded, size: 16, color: s.live ? context.glm.liveText : p.gold),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text('${l.vs(s.opponent ?? '')} · ${s.home ? l.home : l.away}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: s.live ? context.glm.liveText : p.text))),
+                  Text(latinDigits(DateFormat.E(locale).add_jm().format(s.matchAt!.toLocal())), style: TextStyle(color: p.textMuted, fontSize: 12)),
+                ]),
               ),
             ],
           ]),

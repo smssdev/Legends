@@ -2097,4 +2097,114 @@ class LEn extends L {
   @override
   String get micDenied =>
       'Allow the app to use the microphone in the phone\'s settings';
+
+  @override
+  String get navClub => 'My club';
+
+  @override
+  String get navTeam => 'Team';
+
+  @override
+  String get navMatches => 'Matches';
+
+  @override
+  String get navMarket => 'Market';
+
+  @override
+  String get navMore => 'More';
+
+  @override
+  String get secPlayers => 'Players';
+
+  @override
+  String get secDevelop => 'Development';
+
+  @override
+  String get secDeals => 'Deals';
+
+  @override
+  String get secMoney => 'Money and stadium';
+
+  @override
+  String get secCompete => 'Competition';
+
+  @override
+  String get secCommunity => 'Community';
+
+  @override
+  String get secLeague => 'The league';
+
+  @override
+  String get subSquad => 'Players, fitness and cards';
+
+  @override
+  String get subLineup => 'The eleven and the bench';
+
+  @override
+  String get subTactics => 'Plan, pressing and style';
+
+  @override
+  String get subTraining => 'One player per line';
+
+  @override
+  String get subSpecialists => 'Faster training per line';
+
+  @override
+  String get subContracts => 'Renewals and releases';
+
+  @override
+  String get subMarket => 'Buy, sell, offers, academy';
+
+  @override
+  String get subScout => 'Five players to your terms';
+
+  @override
+  String get subFinance => 'Balance, sponsors, tickets';
+
+  @override
+  String get subStadium => 'Seats, pitch, training';
+
+  @override
+  String get subTickets => 'Cheer in other matches';
+
+  @override
+  String get subMatchday => 'Moving, press, behind the scenes';
+
+  @override
+  String get subFriendlies => 'A quick friendly with any club';
+
+  @override
+  String get subQuests => 'This week\'s rewards';
+
+  @override
+  String get subSpy => 'Reveal your next opponent';
+
+  @override
+  String get subNewspaper => 'The round\'s news and articles';
+
+  @override
+  String get subPredictions => 'Predict and win';
+
+  @override
+  String get subStats => 'Scorers and squad values';
+
+  @override
+  String get subGroups => 'The coaches\' chats';
+
+  @override
+  String get subHonours => 'Each season\'s champions';
+
+  @override
+  String get subAlliance => 'Two alliances of coaches';
+
+  @override
+  String get subTournaments => 'Tournaments with a live draw';
+
+  @override
+  String countdownIn(String time) {
+    return 'In $time';
+  }
+
+  @override
+  String get liveBadge => 'Live now';
 }

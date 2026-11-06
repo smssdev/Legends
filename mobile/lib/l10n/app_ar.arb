@@ -1611,5 +1611,48 @@
       }
     }
   },
-  "micDenied": "اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال"
+  "micDenied": "اسمح للتطبيق باستعمال الميكروفون من إعدادات الجوال",
+  "navClub": "ناديّ",
+  "navTeam": "الفريق",
+  "navMatches": "المباريات",
+  "navMarket": "السوق",
+  "navMore": "المزيد",
+  "secPlayers": "اللاعبون",
+  "secDevelop": "التطوير",
+  "secDeals": "الصفقات",
+  "secMoney": "المال والملعب",
+  "secCompete": "المنافسة",
+  "secCommunity": "المجتمع",
+  "secLeague": "الدوري",
+  "subSquad": "اللاعبون ولياقتهم وبطاقاتهم",
+  "subLineup": "الأحد عشر والدكة",
+  "subTactics": "الخطة والضغط والأسلوب",
+  "subTraining": "لاعب في كل خط",
+  "subSpecialists": "أسرع تدريب لكل خط",
+  "subContracts": "التجديد والفسخ",
+  "subMarket": "شراء وبيع وعروض وأكاديمية",
+  "subScout": "خمسة لاعبين بشروطك",
+  "subFinance": "الرصيد والرعاة والتذاكر",
+  "subStadium": "المقاعد والأرضية والتدريب",
+  "subTickets": "شجّع في مباريات الآخرين",
+  "subMatchday": "النقل والمؤتمر والكواليس",
+  "subFriendlies": "ودية سريعة لأي نادٍ",
+  "subQuests": "مكافآت الأسبوع",
+  "subSpy": "اكشف خصمك القادم",
+  "subNewspaper": "أخبار الجولة والمقالات",
+  "subPredictions": "توقع النتائج واربح",
+  "subStats": "الهدافون وقيمة الفرق",
+  "subGroups": "دردشة المدربين",
+  "subHonours": "أبطال كل موسم",
+  "subAlliance": "تحالفان من مدربي الدوري",
+  "subTournaments": "بطولات بقرعة مباشرة",
+  "countdownIn": "بعد {time}",
+  "@countdownIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "liveBadge": "مباشر الآن"
 }

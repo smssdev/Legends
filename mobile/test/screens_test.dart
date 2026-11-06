@@ -68,7 +68,7 @@ void main() {
     expect(find.text('1250'), findsOneWidget);
     expect(find.textContaining('المحترف III · 420'), findsOneWidget);
     expect(find.text('Liverpool'), findsOneWidget);
-    expect(find.text('المركز 2 من 20'), findsOneWidget);
+    expect(find.text('/20'), findsOneWidget); // the position badge
     expect(find.text('2'), findsWidgets); // the waiting badge and the slot number
     expect(find.text('فتحة فارغة'), findsOneWidget);
     expect(find.text('أنشئ دورياً'), findsOneWidget);

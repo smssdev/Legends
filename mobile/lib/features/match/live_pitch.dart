@@ -135,3 +135,23 @@ Color hexColor(String? hex, [Color fallback = Colors.white]) {
 
 /// Black or white numbers, whichever reads on the shirt.
 Color inkOn(Color shirt) => shirt.computeLuminance() > .5 ? const Color(0xFF111111) : Colors.white;
+
+/// [2026-11-06] Both sides' shirts and numbers, as the site draws them (SimMatch.vue bkits): two similar shirts and the
+/// away side changes to its own change kit, else its second colour, else white or navy.
+Map<String, (Color, Color)> matchKits(MatchView v) {
+  int far(Color a, Color b) => ((a.r - b.r).abs() + (a.g - b.g).abs() + (a.b - b.b).abs()) * 255 ~/ 1;
+  final home = hexColor(v.home.primary);
+  var away = hexColor(v.away.primary);
+  if (far(home, away) <= 160) {
+    final alt = v.away.awayKit == null ? null : hexColor(v.away.awayKit);
+    final second = hexColor(v.away.secondary);
+    away = alt != null && far(home, alt) > 160
+        ? alt
+        : far(home, second) > 160
+            ? second
+            : far(home, const Color(0xFFF3F0E6)) > 160
+                ? const Color(0xFFF3F0E6)
+                : const Color(0xFF1C2333);
+  }
+  return {'home': (home, inkOn(home)), 'away': (away, inkOn(away))};
+}
