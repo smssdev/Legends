@@ -89,7 +89,7 @@ class _SquadScreenState extends ConsumerState<SquadScreen> {
                       itemCount: rows.where((p) => p.line == line).length,
                       itemBuilder: (context, i) {
                         final pl = rows.where((p) => p.line == line).elementAt(i);
-                        return _Row(pl, captain: team.captain == pl.id, onTap: () => showPlayerCard(context, pl));
+                        return FadeSlideIn(index: i, offset: 12, child: _Row(pl, captain: team.captain == pl.id, onTap: () => showPlayerCard(context, pl)));
                       },
                     ),
                   ],
@@ -178,16 +178,7 @@ class _TeamHero extends StatelessWidget {
       (l.bestProspect, best((x) => x.potential, (x) => x.age <= 21), (Player x) => '${x.potential}'),
     ];
     Widget bubble(String label, int? v) => Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-            width: 54,
-            height: 54,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.navy, border: Border.all(color: const Color(0xFF55D6F2), width: 2.5)),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text(label, style: const TextStyle(color: Color(0xFF8FE3F7), fontSize: 11, fontWeight: FontWeight.w700, height: 1)),
-              Text(v == null ? '—' : '$v', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 21, color: Colors.white, height: 1.05)),
-            ]),
-          ),
+          ArcGauge(value: v ?? 0, size: 58, label: label),
           CustomPaint(size: const Size(10, 6), painter: _Pin()),
         ]);
     return SizedBox(
@@ -249,21 +240,7 @@ class _TeamHero extends StatelessWidget {
                   ]),
                 ),
                 const SizedBox(width: 10),
-                Container(
-                  width: 130,
-                  height: 130,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: GlmArena.navy,
-                    border: Border.all(color: const Color(0xFF55D6F2), width: 6),
-                    boxShadow: [BoxShadow(color: const Color(0xFF55D6F2).withValues(alpha: .45), blurRadius: 18)],
-                  ),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text(l.teamRating, style: const TextStyle(color: Color(0xFF8FE3F7), fontWeight: FontWeight.w700, fontSize: 15, height: 1)),
-                    CountUp(rating, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 56, color: Colors.white, height: 1.05)),
-                  ]),
-                ),
+                ArcGauge(value: rating, size: 136, label: l.teamRating, stroke: 9),
               ]),
             ),
           ]),
@@ -420,7 +397,10 @@ class _Row extends StatelessWidget {
         child: Container(
           height: 62,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFEFF2F7)))),
+          decoration: BoxDecoration(
+            border: BorderDirectional(bottom: const BorderSide(color: Color(0xFFEFF2F7)), start: BorderSide(color: starter ? const Color(0xFF6BE04A) : Colors.transparent, width: 5)),
+            gradient: starter ? LinearGradient(colors: [const Color(0xFF6BE04A).withValues(alpha: .10), Colors.white], stops: const [0, .35]) : null,
+          ),
           child: _Cells(
             name: Row(children: [
               Stack(clipBehavior: Clip.none, children: [
@@ -450,7 +430,19 @@ class _Row extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: soft))
                 : Center(child: Tooltip(message: p.nationality ?? '', child: NationFlag(code: p.nationCode!, colors: p.nationColors, width: 44))),
             pos: Center(child: PositionChip(p.position, p.line)),
-            ovr: Text('${p.overall}', textAlign: TextAlign.center, style: num),
+            // [Sprint 46, the polish] The rating on a pill tinted by its level.
+            ovr: Center(
+              child: Container(
+                width: 46,
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                decoration: BoxDecoration(
+                  color: ArcGauge.levelColor(context, p.overall).withValues(alpha: .18),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ArcGauge.levelColor(context, p.overall).withValues(alpha: .7), width: 1.5),
+                ),
+                child: Text('${p.overall}', textAlign: TextAlign.center, style: num),
+              ),
+            ),
             pot: Text('${p.potential}', textAlign: TextAlign.center, style: num.copyWith(color: p.potential > p.overall ? c.success : soft, fontWeight: FontWeight.w600)),
             fit: FittedBox(fit: BoxFit.scaleDown, child: Row(mainAxisSize: MainAxisSize.min, children: [
               bar(p.fitness / 100, fitnessColor(p.fitness)),

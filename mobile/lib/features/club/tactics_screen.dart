@@ -13,6 +13,7 @@ import '../../core/sounds.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/cut.dart';
+import '../../ui/widgets/game.dart';
 import '../../ui/widgets/game_icons.dart';
 import '../../ui/widgets/stadium.dart';
 import '../leagues/models.dart';
@@ -103,7 +104,17 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
               pair(
                 _Carousel(title: l.plan, values: const ['shots', 'counter', 'long', 'passing', 'wings'], value: '${t.values['plan']}',
                     label: (v) => {'passing': l.planPassing, 'counter': l.planCounter, 'long': l.planLong, 'wings': l.planWings, 'shots': l.planShots}[v]!,
-                    picture: (v) => SizedBox(height: 120, child: CustomPaint(painter: _PlanArt(v), size: Size.infinite)), onChanged: (v) => _set('plan', v)),
+                    picture: (v) => SizedBox(
+                      height: 120,
+                      // [Sprint 46, the polish] The plan's arrows trace themselves in as it is chosen.
+                      child: TweenAnimationBuilder<double>(
+                        key: ValueKey(v),
+                        tween: Tween(begin: MediaQuery.of(context).disableAnimations ? 1 : 0, end: 1),
+                        duration: const Duration(milliseconds: 900),
+                        curve: Curves.easeInOutCubic,
+                        builder: (_, t, _) => CustomPaint(painter: _PlanArt(v, t), size: Size.infinite),
+                      ),
+                    ), onChanged: (v) => _set('plan', v)),
                 _Carousel(title: l.tackling, values: const [3, 2, 1, 0], value: (t.values['tackling'] as num).toInt(),
                     label: (v) => {0: l.tackle0, 1: l.tackle1, 2: l.tackle2, 3: l.tackle3}[v]!,
                     picture: (v) => SizedBox(height: 120, child: CustomPaint(painter: _TackleArt(v), size: Size.infinite)), onChanged: (v) => _set('tackling', v)),
@@ -138,13 +149,7 @@ class _NextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final home = s.venue != 'away';
-    Widget ring(int? v, bool mine) => Container(
-          width: 58,
-          height: 58,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.navy, border: Border.all(color: const Color(0xFF55D6F2), width: 3)),
-          child: Text(v == null ? '—' : '${v ~/ 100}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white)),
-        );
+    Widget ring(int? v, bool mine) => ArcGauge(value: v == null ? 0 : v ~/ 100, size: 62, color: mine ? context.palette.gold : GlmArena.blueLight);
     Widget side(Side? c, bool mine) => Expanded(
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ClubCrest(url: c?.crestUrl, name: c?.code ?? '', size: 62),
@@ -350,11 +355,17 @@ class _Dial extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Container(
+            // [Sprint 46, the polish] The number's box lit by where the dial stands: cool low, gold balanced, red high.
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               width: 54,
               height: 48,
               alignment: Alignment.center,
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                border: Border(bottom: BorderSide(color: value < 40 ? GlmArena.blueLight : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E), width: 4)),
+                boxShadow: [BoxShadow(color: (value < 40 ? GlmArena.blueLight : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E)).withValues(alpha: .35), blurRadius: 12)],
+              ),
               child: Text('${value.round()}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white)),
             ),
           ]),
@@ -383,7 +394,7 @@ void _miniPitch(Canvas c, Size s, Rect f) {
   }
 }
 
-void _arrowLine(Canvas c, List<Offset> pts, Color color, {double width = 4}) {
+void _arrowLine(Canvas c, List<Offset> pts, Color color, {double width = 4, double t = 1}) {
   final path = Path()..moveTo(pts.first.dx, pts.first.dy);
   if (pts.length == 3) {
     path.quadraticBezierTo(pts[1].dx, pts[1].dy, pts[2].dx, pts[2].dy);
@@ -392,7 +403,14 @@ void _arrowLine(Canvas c, List<Offset> pts, Color color, {double width = 4}) {
       path.lineTo(p.dx, p.dy);
     }
   }
-  c.drawPath(path, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = width..strokeCap = StrokeCap.round..strokeJoin = StrokeJoin.round);
+  // Drawn as far as [t] along its length: the arrow traces itself in, its head arriving last.
+  final drawn = Path();
+  for (final m in path.computeMetrics()) {
+    drawn.addPath(m.extractPath(0, m.length * t.clamp(0, 1)), Offset.zero);
+  }
+  c.drawPath(drawn, Paint()..color = color.withValues(alpha: .35)..style = PaintingStyle.stroke..strokeWidth = width * 2.4..strokeCap = StrokeCap.round..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
+  c.drawPath(drawn, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = width..strokeCap = StrokeCap.round..strokeJoin = StrokeJoin.round);
+  if (t < .98) return;
   final end = pts.last, before = pts.length == 3 ? pts[1] : pts[pts.length - 2];
   final a = math.atan2(end.dy - before.dy, end.dx - before.dx);
   c.drawPath(Path()..moveTo(end.dx + math.cos(a) * width * 2, end.dy + math.sin(a) * width * 2)..lineTo(end.dx + math.cos(a + 2.4) * width * 2.4, end.dy + math.sin(a + 2.4) * width * 2.4)..lineTo(end.dx + math.cos(a - 2.4) * width * 2.4, end.dy + math.sin(a - 2.4) * width * 2.4)..close(), Paint()..color = color);
@@ -401,9 +419,10 @@ void _arrowLine(Canvas c, List<Offset> pts, Color color, {double width = 4}) {
 /// The plan drawn on its pitch (attacking toward the reading start): short passes weaving, a counter's long ball after
 /// the short ones, the long ball's arc, both wings, shots from distance.
 class _PlanArt extends CustomPainter {
-  _PlanArt(this.plan);
+  _PlanArt(this.plan, [this.t = 1]);
 
   final String plan;
+  final double t;
 
   @override
   void paint(Canvas c, Size s) {
@@ -413,26 +432,26 @@ class _PlanArt extends CustomPainter {
     Offset at(double u, double v) => Offset(f.left + f.width * u, f.top + f.height * v);
     switch (plan) {
       case 'passing':
-        _arrowLine(c, [at(.85, .5), at(.75, .5), at(.68, .3), at(.6, .65), at(.52, .35), at(.44, .7), at(.36, .45), at(.18, .5)], red, width: 3);
+        _arrowLine(c, [at(.85, .5), at(.75, .5), at(.68, .3), at(.6, .65), at(.52, .35), at(.44, .7), at(.36, .45), at(.18, .5)], red, width: 3, t: t);
       case 'counter':
-        _arrowLine(c, [at(.82, .7), at(.62, .75)], blue, width: 3);
-        _arrowLine(c, [at(.6, .72), at(.4, .68)], blue, width: 3);
-        _arrowLine(c, [at(.78, .4), at(.5, -.3), at(.22, .4)], red);
+        _arrowLine(c, [at(.82, .7), at(.62, .75)], blue, width: 3, t: t);
+        _arrowLine(c, [at(.6, .72), at(.4, .68)], blue, width: 3, t: t);
+        _arrowLine(c, [at(.78, .4), at(.5, -.3), at(.22, .4)], red, t: t);
       case 'long':
-        _arrowLine(c, [at(.8, .55), at(.5, -.5), at(.2, .55)], red, width: 5);
+        _arrowLine(c, [at(.8, .55), at(.5, -.5), at(.2, .55)], red, width: 5, t: t);
       case 'wings':
-        _arrowLine(c, [at(.72, .12), at(.25, .12)], red);
-        _arrowLine(c, [at(.72, .88), at(.25, .88)], red);
+        _arrowLine(c, [at(.72, .12), at(.25, .12)], red, t: t);
+        _arrowLine(c, [at(.72, .88), at(.25, .88)], red, t: t);
       default:
         for (final (u, v) in [(.42, .3), (.44, .5), (.42, .72)]) {
-          _arrowLine(c, [at(u, v), at(u - .18, v + .02)], red, width: 3);
+          _arrowLine(c, [at(u, v), at(u - .18, v + .02)], red, width: 3, t: t);
           c.drawCircle(at(u + .03, v), 5, Paint()..color = Colors.white);
         }
     }
   }
 
   @override
-  bool shouldRepaint(_PlanArt old) => old.plan != plan;
+  bool shouldRepaint(_PlanArt old) => old.plan != plan || old.t != t;
 }
 
 /// How hard they tackle: a boot meeting the ball, the cards it may bring (none, a yellow, a yellow and a red).
