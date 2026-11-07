@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
@@ -277,4 +279,71 @@ PreferredSizeWidget gameTabsBar(BuildContext context, {required String title, re
     title: Row(children: [Text(title), const SizedBox(width: 16), Expanded(child: bar)]),
     actions: actions,
   );
+}
+
+/// [Sprint 46, the polish] A number in a lit ring whose arc fills to it (out of [max]), counting up as it arrives: the
+/// strengths, the team's rating, the lines'. The arc's colour follows the rating's level unless one is given.
+class ArcGauge extends StatelessWidget {
+  const ArcGauge({super.key, required this.value, this.max = 100, this.size = 60, this.label, this.color, this.stroke});
+
+  final int value, max;
+  final double size;
+  final String? label;
+  final Color? color;
+  final double? stroke;
+
+  static Color levelColor(BuildContext context, int v) {
+    final p = context.palette;
+    return v >= 85 ? p.gold : v >= 75 ? const Color(0xFF55D6F2) : v >= 65 ? GlmLine.def.bg : p.textMuted;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? levelColor(context, value);
+    final still = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final w = stroke ?? size * .085;
+    Widget face(double t) => CustomPaint(
+          painter: _Arc(fraction: (value / max).clamp(0, 1) * t, color: c, width: w),
+          child: SizedBox.square(
+            dimension: size,
+            child: Center(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                if (label != null) Text(label!, style: TextStyle(color: c.withValues(alpha: .9), fontWeight: FontWeight.w700, fontSize: size * .17, height: 1)),
+                Text('${(value * t).round()}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: size * (label == null ? .44 : .38), color: Colors.white, height: 1.05)),
+              ]),
+            ),
+          ),
+        );
+    if (still) return face(1);
+    return TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: 1), duration: const Duration(milliseconds: 1100), curve: Curves.easeOutCubic, builder: (_, t, _) => face(t));
+  }
+}
+
+class _Arc extends CustomPainter {
+  _Arc({required this.fraction, required this.color, required this.width});
+
+  final double fraction, width;
+  final Color color;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final r = (s.shortestSide - width) / 2;
+    final o = s.center(Offset.zero);
+    c.drawCircle(o, r + width / 2, Paint()..color = const Color(0xFF0F2248));
+    c.drawCircle(o, r, Paint()..color = Colors.white.withValues(alpha: .10)..style = PaintingStyle.stroke..strokeWidth = width);
+    final rect = Rect.fromCircle(center: o, radius: r);
+    c.drawArc(rect, -math.pi / 2, math.pi * 2 * fraction, false, Paint()
+      ..color = color.withValues(alpha: .45)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width * 2.2
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6));
+    c.drawArc(rect, -math.pi / 2, math.pi * 2 * fraction, false, Paint()
+      ..shader = SweepGradient(startAngle: -math.pi / 2, endAngle: math.pi * 1.5, colors: [Color.lerp(color, Colors.white, .35)!, color]).createShader(rect)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width
+      ..strokeCap = StrokeCap.round);
+  }
+
+  @override
+  bool shouldRepaint(_Arc old) => old.fraction != fraction || old.color != color;
 }

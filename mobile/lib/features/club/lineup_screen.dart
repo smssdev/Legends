@@ -413,6 +413,15 @@ class _ArenaState extends State<_Arena> {
         if (rtl) across = 1 - across;
         final at = place(across, (s.x / 740).clamp(0.0, 1.0));
         final k = lerpDouble(.8, 1.0, ((at.dy - top) / (bottom - top)).clamp(0.0, 1.0))! * room;
+        // Its shadow on the grass.
+        cards.add((at.dy - .1, Positioned(
+          left: at.dx - cardW * k * .42,
+          top: at.dy - 4,
+          width: cardW * k * .84,
+          height: 12 * k,
+          child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(40), color: Colors.black.withValues(alpha: .35),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .4), blurRadius: 8)]))),
+        )));
         cards.add((at.dy, Positioned(
           left: at.dx - cardW * k / 2,
           top: at.dy - cardH * k,
@@ -421,7 +430,11 @@ class _ArenaState extends State<_Arena> {
           child: _Drag(
             id: pl.id,
             onDrop: (d) => widget.onDrop(d, pl.id),
-            child: GestureDetector(onTap: () => widget.onTap(pl.id), child: FittedBox(child: SizedBox(width: cardW, height: cardH, child: _Card(pl, mode: _mode, picked: widget.picked == pl.id, starter: true)))),
+            child: GestureDetector(
+              onTap: () => widget.onTap(pl.id),
+              // [Sprint 46, the polish] The eleven drop onto their places one after another.
+              child: FadeSlideIn(index: i, offset: -24, child: FittedBox(child: SizedBox(width: cardW, height: cardH, child: _Card(pl, mode: _mode, picked: widget.picked == pl.id, starter: true, captain: widget.team.captain == pl.id)))),
+            ),
           ),
         )));
       }
@@ -552,7 +565,18 @@ class _ArenaPitch extends CustomPainter {
     // The near box and the six-yard box.
     for (final (w, d) in [(.5, .2), (.24, .07)]) {
       c.drawPath(Path()..moveTo(at(.5 - w / 2, .97).dx, at(.5 - w / 2, .97).dy)..lineTo(at(.5 - w / 2, .97 - d).dx, at(.5 - w / 2, .97 - d).dy)..lineTo(at(.5 + w / 2, .97 - d).dx, at(.5 + w / 2, .97 - d).dy)..lineTo(at(.5 + w / 2, .97).dx, at(.5 + w / 2, .97).dy), line);
+    }    // [Sprint 46, the polish] The far goal, the floodlights' beams falling on the grass from both corners, their glow,
+    // and the night closing in at the edges.
+    final g0 = at(.44, 0), g1 = at(.56, 0);
+    final goal = Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2.5;
+    c.drawPath(Path()..moveTo(g0.dx, g0.dy)..lineTo(g0.dx, g0.dy - s.height * .05)..lineTo(g1.dx, g1.dy - s.height * .05)..lineTo(g1.dx, g1.dy), goal);
+    for (final x in [0.0, s.width]) {
+      final o = Offset(x, 0);
+      c.drawPath(Path()..moveTo(x, 0)..lineTo(s.width * .5 + (x == 0 ? -s.width * .05 : s.width * .05), bottom)..lineTo(s.width * .5 + (x == 0 ? -s.width * .35 : s.width * .35), bottom)..close(),
+          Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .10), Colors.white.withValues(alpha: 0)]).createShader(r));
+      c.drawCircle(o, s.width * .22, Paint()..shader = RadialGradient(colors: [const Color(0xFFFFE9B0).withValues(alpha: .35), const Color(0xFFFFE9B0).withValues(alpha: 0)]).createShader(Rect.fromCircle(center: o, radius: s.width * .22)));
     }
+    c.drawRect(r, Paint()..shader = RadialGradient(radius: .9, colors: [Colors.transparent, Colors.black.withValues(alpha: .35)], stops: const [.65, 1]).createShader(r));
   }
 
   @override
@@ -563,11 +587,11 @@ class _ArenaPitch extends CustomPainter {
 /// What it shows follows the mode: his rating, his line's letters and fitness and availability as two bars; his age,
 /// nation and potential; his value.
 class _Card extends StatelessWidget {
-  const _Card(this.p, {required this.mode, this.picked = false, this.starter = false});
+  const _Card(this.p, {required this.mode, this.picked = false, this.starter = false, this.captain = false});
 
   final Player p;
   final _Mode mode;
-  final bool picked, starter;
+  final bool picked, starter, captain;
 
   @override
   Widget build(BuildContext context) {
@@ -584,7 +608,7 @@ class _Card extends StatelessWidget {
         );
     final body = switch (mode) {
       _Mode.fitness => Row(children: [
-          Text('${p.overall}', style: big),
+          Text('${p.overall}', style: big.copyWith(color: ArcGauge.levelColor(context, p.overall) == c.textMuted ? Colors.white : ArcGauge.levelColor(context, p.overall))),
           const SizedBox(width: 6),
           Expanded(child: Center(child: Icon(Icons.person_rounded, size: 34, color: Colors.white.withValues(alpha: .25)))),
           Column(mainAxisAlignment: MainAxisAlignment.center, children: [bar(p.fitness / 100, fitnessColor(p.fitness)), const SizedBox(height: 5), bar(p.available ? 1 : .15, p.available ? const Color(0xFF6BE04A) : c.live)]),
@@ -606,12 +630,24 @@ class _Card extends StatelessWidget {
         gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
         shadows: [BoxShadow(color: (starter ? const Color(0xFF6BE04A) : Colors.black).withValues(alpha: .35), blurRadius: 10, spreadRadius: -2)],
       ),
-      child: Padding(
+      child: Stack(children: [
+        // A glossy band across the card's upper half.
+        Positioned(left: 4, right: 4, top: 3, height: 22, child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .16), Colors.white.withValues(alpha: 0)])))),
+        Padding(
         padding: const EdgeInsets.fromLTRB(10, 5, 10, 4),
         child: Column(children: [
           Row(children: [
             PositionChip(p.position, p.line),
             const Spacer(),
+            // The captain's armband.
+            if (captain)
+              Container(
+                margin: const EdgeInsetsDirectional.only(end: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(color: c.gold, borderRadius: BorderRadius.circular(3)),
+                child: Text('C', style: TextStyle(color: c.onGold, fontWeight: FontWeight.w900, fontSize: 12)),
+              ),
             if (!p.available) Icon(p.injured > 0 ? Icons.local_hospital_rounded : Icons.style_rounded, size: 14, color: c.live),
           ]),
           Expanded(child: body),
@@ -619,6 +655,7 @@ class _Card extends StatelessWidget {
               style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white, height: 1.05)),
         ]),
       ),
+      ]),
     );
   }
 }

@@ -224,7 +224,11 @@ class _Versus extends StatelessWidget {
     Widget team(Side c, int? strength, bool mine) => Expanded(
           child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              ClubCrest(url: c.crestUrl, name: c.code, size: 84),
+              // [Sprint 46, the polish] The crest on a soft halo of light, as under the floodlights.
+              Container(
+                decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: (mine ? context.palette.gold : GlmArena.blueLight).withValues(alpha: .35), blurRadius: 30, spreadRadius: 4)]),
+                child: ClubCrest(url: c.crestUrl, name: c.code, size: 84),
+              ),
               if (strength != null) ...[const SizedBox(width: 10), _Ring(value: strength ~/ 100, mine: mine)],
             ]),
             const SizedBox(height: 6),
@@ -252,9 +256,9 @@ class _Versus extends StatelessWidget {
                 Pulse(child: Text(l.liveBadge, style: TextStyle(color: p.danger, fontWeight: FontWeight.w800, fontSize: 18)))
               else if (countdown != null)
                 Text(countdown, style: const TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: [GlmFonts.body], fontWeight: FontWeight.w800, fontSize: 24, color: Colors.white)),
-              Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 60, height: 1,
+              Pulse(min: .7, child: Text('VS', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 60, height: 1,
                   foreground: Paint()..shader = LinearGradient(colors: [p.goldLight, p.gold, p.goldDark]).createShader(const Rect.fromLTWH(0, 0, 80, 60)),
-                  shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 3), blurRadius: 8)])),
+                  shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 3), blurRadius: 8)]))),
               Text(home ? l.homeAway : l.awayGame, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 12)),
               const SizedBox(height: 6),
               live
@@ -277,22 +281,7 @@ class _Ring extends StatelessWidget {
   final bool mine;
 
   @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final c = mine ? p.gold : GlmArena.blueLight;
-    return Container(
-      width: 62,
-      height: 62,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: GlmArena.navy.withValues(alpha: .92),
-        border: Border.all(color: c, width: 3.5),
-        boxShadow: [BoxShadow(color: c.withValues(alpha: .5), blurRadius: 14)],
-      ),
-      child: Text('$value', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: Colors.white, height: 1)),
-    );
-  }
+  Widget build(BuildContext context) => ArcGauge(value: value, size: 68, color: mine ? context.palette.gold : GlmArena.blueLight);
 }
 
 /// The hub's strip of tiles under the match, scrolling across when it does not fit.

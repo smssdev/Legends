@@ -9,6 +9,7 @@ import '../../ui/tokens.g.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game_icons.dart';
+import '../../ui/widgets/motion.dart';
 import '../club/club_data.dart';
 import '../club/squad_screen.dart' show money;
 import 'leagues_repository.dart';
@@ -273,7 +274,8 @@ class _Menu extends ConsumerWidget {
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 2),
                       child: Text(title, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: .6)),
                     ),
-                  for (final x in entries) _Item(entry: x, on: _isOn(x.path), onTap: () => _go(context, x.path, push: x.push)),
+                  // [Sprint 46, the polish] The sections slide in one after another as the menu opens.
+                  for (final x in entries) FadeSlideIn(index: groups.expand((g) => g.$2).toList().indexOf(x) ~/ 2, offset: 0, child: _Item(entry: x, on: _isOn(x.path), onTap: () => _go(context, x.path, push: x.push))),
                 ],
               ]),
             ),
