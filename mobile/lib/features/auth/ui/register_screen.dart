@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api/api_error.dart';
@@ -70,10 +69,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return AuthLayout(
       title: l.registerTitle,
       lead: l.registerLead,
-      footer: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-        Text(l.haveAccount, style: TextStyle(color: p.textMuted)),
-        TextButton(onPressed: () => context.go('/login'), child: Text(l.signIn, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800))),
-      ]),
+      tab: AuthTab.register,
       children: [
         GlmTextField(label: l.displayName, controller: _name, autofill: const [AutofillHints.nickname], error: _errors['name']),
         const SizedBox(height: 14),

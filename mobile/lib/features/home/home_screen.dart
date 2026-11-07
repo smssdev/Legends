@@ -13,14 +13,12 @@ import '../../ui/theme.dart';
 import '../../ui/widgets/brand.dart';
 import '../../ui/tokens.g.dart';
 import '../../ui/widgets/game_icons.dart';
-import '../../ui/widgets/kit.dart';
 import '../../ui/widgets/glm_background.dart';
 import '../../ui/widgets/glm_button.dart';
 import '../../ui/widgets/cut.dart';
 import '../../ui/widgets/game.dart';
 import '../../ui/widgets/glm_card.dart';
 import '../../ui/widgets/motion.dart';
-import '../../ui/widgets/stadium.dart';
 import '../health/status_screens.dart';
 import 'home_data.dart';
 import '../inbox/inbox_data.dart';
@@ -134,9 +132,10 @@ class _Home extends ConsumerWidget {
                       width: side,
                       child: ListView(padding: const EdgeInsets.fromLTRB(16, 6, 8, 20), children: [
                         _Label(l.coachFile),
-                        FadeSlideIn(child: _ProfileCard(h.coach)),
+                        // [Sprint 47] The approved design's coach card, then the simulator's door.
+                        FadeSlideIn(child: _CoachCard(h.coach)),
                         const SizedBox(height: 10),
-                        FadeSlideIn(index: 1, child: _RecordTiles(h.coach)),
+                        const FadeSlideIn(index: 1, child: SimBanner()),
                         for (final (i, w) in extras.indexed) FadeSlideIn(index: i + 2, child: w),
                         if (h.starterClaimed || h.starterCoins == 0) Padding(padding: const EdgeInsets.only(top: 10), child: FadeSlideIn(index: 3, child: _ShopTile())),
                       ]),
@@ -147,7 +146,7 @@ class _Home extends ConsumerWidget {
                         return ListView(padding: const EdgeInsets.fromLTRB(8, 6, 16, 20), children: [
                           _Label('${l.coachSlots} · ${h.slotsOpen}/${h.slots.length}'),
                           Wrap(spacing: 12, runSpacing: 12, children: [
-                            for (final (i, s) in h.slots.indexed) SizedBox(width: w, height: w * .62, child: FadeSlideIn(index: i + 1, child: _SlotTile(s))),
+                            for (final (i, s) in h.slots.indexed) SizedBox(width: w, height: (w * .5).clamp(128.0, 170.0), child: FadeSlideIn(index: i + 1, child: _SlotTile(s))),
                           ]),
                         ]);
                       }),
@@ -159,6 +158,7 @@ class _Home extends ConsumerWidget {
             return ListView(padding: EdgeInsets.zero, children: [
               _TopBar(h),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _CoachCard(h.coach)),
+              const Padding(padding: EdgeInsets.fromLTRB(16, 12, 16, 0), child: SimBanner()),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -201,7 +201,8 @@ class _TopBar extends ConsumerWidget {
   }
 }
 
-/// The coach himself on the stadium at night: his picture in a gold ring, his name and rank, and his record.
+/// [Sprint 47] The coach's card in the approved design: his initial in a mint ring, his name, his rank in gold with
+/// its bar toward the next level, his points large, and his record under it.
 class _CoachCard extends StatelessWidget {
   const _CoachCard(this.c);
 
@@ -211,56 +212,105 @@ class _CoachCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final p = context.palette;
-    final hour = DateTime.now().hour;
     final tier = switch (c.tierKey) {
       'tactician' => l.tierTactician, 'professional' => l.tierProfessional, 'elite' => l.tierElite, 'mastermind' => l.tierMastermind,
       'icon' => l.tierIcon, 'legend' => l.tierLegend, _ => l.tierProspect,
     };
-    final division = c.division == null ? '' : ' ${['', 'I', 'II', 'III'][c.division!]}';
+    final division = c.division == null ? '' : ' ${['', 'I', 'II', 'III'][c.division!.clamp(0, 3)]}';
+    final fill = ((c.division ?? 1) / 3).clamp(.1, 1.0);
     Widget record(int n, String label, Color color) => Expanded(
           child: Column(children: [
-            CountUp(n, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w800, color: color, height: 1.1)),
-            Text(label, style: TextStyle(color: p.textSoft, fontSize: 11)),
+            CountUp(n, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w700, color: color, height: 1.1)),
+            Text(label, style: TextStyle(color: p.textMuted, fontSize: 12)),
           ]),
         );
-    return HeroFrame(
-      child: Builder(builder: (_) => StadiumBackdrop(
-          pitch: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-            child: Column(children: [
+    return GlmCard(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+      onTap: () => context.push('/profile'),
+      child: Column(children: [
+        Row(children: [
+          Container(
+            width: 58,
+            height: 58,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: p.surfaceRaised, border: Border.all(color: context.glm.day ? p.brand : p.ring, width: 3)),
+            child: Text(c.name.characters.take(1).toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: context.glm.goldText)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(c.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
               Row(children: [
-                Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [p.goldLight, p.goldDark])),
-                  child: CircleAvatar(radius: 30, backgroundColor: p.brand,
-                      child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white))),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(hour < 12 ? l.greetingMorning : l.greetingEvening, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w700, fontSize: 13)),
-                    Text(c.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                      decoration: ShapeDecoration(gradient: LinearGradient(colors: [p.gold.withValues(alpha: .30), p.gold.withValues(alpha: .12)]), shape: GlmCut.shape(GlmCut.chip + 2)),
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(Icons.military_tech_rounded, size: 15, color: context.glm.goldText),
-                        const SizedBox(width: 4),
-                        Flexible(child: Text('$tier$division · ${c.points}', maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: context.glm.goldText))),
-                      ]),
-                    ),
-                  ]),
-                ),
-                IconButton(tooltip: l.myLeagues, icon: Icon(Icons.emoji_events_rounded, color: p.gold, size: 28), onPressed: () => context.push('/leagues')),
+                Icon(Icons.star_rounded, size: 15, color: context.glm.goldText),
+                const SizedBox(width: 4),
+                Flexible(child: Text('$tier$division', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: context.glm.goldText))),
               ]),
-              const SizedBox(height: 14),
+              const SizedBox(height: 6),
+              LevelBar(fill, color: context.glm.day ? p.brand : p.ring, width: double.infinity, height: 6),
+            ]),
+          ),
+          const SizedBox(width: 12),
+          Column(children: [
+            CountUp(c.points, style: const TextStyle(fontFamily: GlmFonts.numbers, fontSize: 26, fontWeight: FontWeight.w700, height: 1)),
+            Text(l.pointsWord, style: TextStyle(color: p.textMuted, fontSize: 12)),
+          ]),
+        ]),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(color: p.surfaceSunk, borderRadius: BorderRadius.circular(10)),
+          child: Row(children: [record(c.won, l.won, context.glm.successText), record(c.drawn, l.drawn, context.glm.goldText), record(c.lost, l.lost, p.warning)]),
+        ),
+      ]),
+    );
+  }
+}
+
+/// [Sprint 47] The simulator's door on the home: an emerald card, a ball rolling, «play» in gold. A quick match against
+/// the computer or a friend, apart from the leagues.
+class SimBanner extends StatelessWidget {
+  const SimBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = L.of(context);
+    final p = context.palette;
+    return Shine(
+      strength: .14,
+      period: const Duration(milliseconds: 3400),
+      clip: GlmCut.card,
+      child: Material(
+        color: p.brandDark,
+        shape: GlmCut.shape(GlmCut.card, side: BorderSide(color: p.brand)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            GameSounds.play(Sfx.tap);
+            context.push('/sim');
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            child: Row(children: [
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .6), borderRadius: BorderRadius.circular(14)),
-                child: Row(children: [record(c.won, l.won, p.success), record(c.drawn, l.drawn, p.textSoft), record(c.lost, l.lost, p.danger)]),
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(color: p.bgDeep.withValues(alpha: .35), borderRadius: BorderRadius.circular(12)),
+                child: const Center(child: RollingBall(size: 28)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(l.simQuickTitle, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Colors.white)),
+                  Text(l.simQuickLead, style: TextStyle(fontSize: 13, color: p.chrome)),
+                ]),
+              ),
+              Container(
+                height: 36,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(color: p.gold, borderRadius: BorderRadius.circular(10)),
+                child: Text(l.simPlay, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: p.onGold)),
               ),
             ]),
           ),
@@ -291,51 +341,60 @@ class _SlotCard extends ConsumerWidget {
     switch (s.state) {
       case SlotState.club:
         final locale = Localizations.localeOf(context).toLanguageTag();
+        // [Sprint 47] The approved design: the slot's emerald band (its number and league, the live mark), then the club.
         return GlmCard(
-          accent: s.live ? p.danger : p.pitch,
+          padding: EdgeInsets.zero,
           onTap: () => context.push('/leagues/${s.leagueId}'),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Row(children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .06)),
-                child: ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 52),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(s.clubName ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr),
-                  Text(s.leagueName ?? '', style: TextStyle(color: p.textMuted, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ]),
-              ),
-              if (s.position != null && s.teams != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: p.gold.withValues(alpha: .14), borderRadius: BorderRadius.circular(12), border: Border.all(color: p.gold.withValues(alpha: .35))),
-                  child: Column(children: [
-                    Text('${s.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 22, fontWeight: FontWeight.w800, color: context.glm.goldText, height: 1)),
-                    Text('/${s.teams}', textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 12, color: p.textMuted, height: 1.1)),
+            Container(
+              height: 34,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              color: p.brandDark,
+              child: Row(children: [
+                Expanded(child: Text('${l.slotN(s.number)} · ${s.leagueName ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white))),
+                if (s.live)
+                  Pulse(child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Container(width: 8, height: 8, decoration: BoxDecoration(color: p.live, shape: BoxShape.circle)),
+                    const SizedBox(width: 6),
+                    Text(l.liveNow, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white)),
+                  ])),
+                if (s.pending > 0) ...[
+                  const SizedBox(width: 6),
+                  Badge(label: Text('${s.pending}'), backgroundColor: p.live),
+                ],
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+              child: Row(children: [
+                ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 52),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(s.clubName ?? '', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr),
+                    if (s.matchAt != null)
+                      Text('${l.vs(s.opponent ?? '')} · ${latinDigits(DateFormat.E(locale).add_jm().format(s.matchAt!.toLocal()))}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: p.textSoft, fontSize: 13))
+                    else
+                      Text(s.leagueName ?? '', style: TextStyle(color: p.textMuted, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ]),
                 ),
-              if (s.pending > 0) ...[
-                const SizedBox(width: 6),
-                Badge(label: Text('${s.pending}'), backgroundColor: p.live),
-              ],
-            ]),
-            if (s.matchAt != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(color: (s.live ? p.danger : Colors.black).withValues(alpha: s.live ? .18 : .18), borderRadius: BorderRadius.circular(12)),
-                child: Row(children: [
-                  Icon(s.live ? Icons.sensors_rounded : Icons.event_rounded, size: 16, color: s.live ? context.glm.liveText : p.gold),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text('${l.vs(s.opponent ?? '')} · ${s.home ? l.home : l.away}', maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: s.live ? context.glm.liveText : p.text))),
-                  Text(latinDigits(DateFormat.E(locale).add_jm().format(s.matchAt!.toLocal())), style: TextStyle(color: p.textMuted, fontSize: 12)),
-                ]),
-              ),
-            ],
+                if (s.position != null)
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(color: s.position! <= 3 ? p.gold : p.surfaceRaised, borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.all(4),
+                    child: FittedBox(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Text('${s.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w700, height: 1, color: s.position! <= 3 ? p.onGold : p.text)),
+                        Text(l.positionWord, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: s.position! <= 3 ? p.onGold : p.textMuted)),
+                      ]),
+                    ),
+                  ),
+              ]),
+            ),
           ]),
         );
       case SlotState.waiting:
@@ -397,7 +456,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-        child: Text(text, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 15)),
+        child: Text(text, style: TextStyle(color: context.palette.textSoft, fontWeight: FontWeight.w800, fontSize: 15)),
       );
 }
 
@@ -417,9 +476,9 @@ class _ArenaBar extends ConsumerWidget {
           padding: const EdgeInsetsDirectional.only(start: 6),
           child: Stack(clipBehavior: Clip.none, children: [
             Material(
-              shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .25))),
-              color: GlmArena.menu,
-              child: InkWell(customBorder: GlmCut.shape(10), onTap: onTap, child: SizedBox(width: 46, height: 38, child: Tooltip(message: tip, child: Icon(icon, color: Colors.white, size: 24)))),
+              shape: GlmCut.shape(12, side: BorderSide(color: p.surfaceRaised)),
+              color: context.glm.day ? p.surface : GlmStage.card,
+              child: InkWell(customBorder: GlmCut.shape(12), onTap: onTap, child: SizedBox(width: 44, height: 44, child: Tooltip(message: tip, child: Icon(icon, color: p.text, size: 22)))),
             ),
             if (badge > 0)
               PositionedDirectional(
@@ -428,7 +487,7 @@ class _ArenaBar extends ConsumerWidget {
                 child: Container(
                   constraints: const BoxConstraints(minWidth: 20),
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                  decoration: BoxDecoration(color: GlmArena.alert, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white, width: 1.5)),
+                  decoration: BoxDecoration(color: GlmStage.alert, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.white, width: 1.5)),
                   child: Text('$badge', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11)),
                 ),
               ),
@@ -437,8 +496,8 @@ class _ArenaBar extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(14, MediaQuery.of(context).padding.top + 6, 10, 6),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
-        border: Border(bottom: BorderSide(color: p.gold.withValues(alpha: .45), width: 1.2)),
+        color: context.glm.day ? p.panel : GlmStage.deep,
+        border: Border(bottom: BorderSide(color: p.surfaceRaised)),
       ),
       child: Row(children: [
         const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: FittedBox(child: BrandMark(size: 30)))),
@@ -448,104 +507,6 @@ class _ArenaBar extends ConsumerWidget {
         square(Icons.settings_rounded, l.settings, () => showSettingsSheet(context, accountNo: h.coach.accountNo)),
       ]),
     );
-  }
-}
-
-/// The manager's card: his picture in a lit ring, his name large, then a navy band with his rank, its shield and his
-/// points with their bar, on the arena's bright blue.
-class _ProfileCard extends StatelessWidget {
-  const _ProfileCard(this.c);
-
-  final Coach c;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final p = context.palette;
-    final tier = switch (c.tierKey) {
-      'tactician' => l.tierTactician, 'professional' => l.tierProfessional, 'elite' => l.tierElite, 'mastermind' => l.tierMastermind,
-      'icon' => l.tierIcon, 'legend' => l.tierLegend, _ => l.tierProspect,
-    };
-    const tiers = ['prospect', 'tactician', 'professional', 'elite', 'mastermind', 'icon', 'legend'];
-    final level = tiers.indexOf(c.tierKey) + 1;
-    final fill = ((c.division ?? 1) / 3).clamp(.1, 1.0);
-    return HeroFrame(
-      cut: 18,
-      edge: Colors.white,
-      glow: GlmArena.blueLight,
-      gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.blueLight, GlmArena.blue]),
-      child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [Color(0xFFFFA94D), Color(0xFFE2620E)])),
-              child: CircleAvatar(radius: 34, backgroundColor: GlmArena.navy,
-                  child: Text(c.name.characters.take(1).toString(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white))),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, shadows: [Shadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 4)])),
-            ),
-          ]),
-        ),
-        Container(
-          color: GlmArena.navy.withValues(alpha: .85),
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-          child: Row(children: [
-            // The rank's shield with its level.
-            SizedBox(width: 46, height: 46, child: CrestShield(code: '$level', color: const Color(0xFFE2620E), size: 46)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  Expanded(child: Text(tier, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 17))),
-                  Image.asset('assets/brand/coin.png', width: 18, height: 18),
-                  const SizedBox(width: 4),
-                  CountUp(c.points, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 20, color: Colors.white)),
-                ]),
-                const SizedBox(height: 6),
-                LevelBar(fill, color: p.success, width: double.infinity, height: 8),
-              ]),
-            ),
-          ]),
-        ),
-      ]),
-    );
-  }
-}
-
-/// The manager's record as tiles: each number large over its glossy picture.
-class _RecordTiles extends StatelessWidget {
-  const _RecordTiles(this.c);
-
-  final Coach c;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = L.of(context);
-    final tiles = [(l.statWon, c.won, GameGlyph.honours), (l.statDrawn, c.drawn, GameGlyph.match), (l.statLost, c.lost, GameGlyph.alliance)];
-    return Row(children: [
-      for (final (i, (label, n, glyph)) in tiles.indexed) ...[
-        if (i > 0) const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
-            decoration: ShapeDecoration(
-              shape: GlmCut.shape(12, side: const BorderSide(color: GlmArena.navyEdge)),
-              gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
-            ),
-            child: Column(children: [
-              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
-              CountUp(n, style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 30, color: Colors.white, height: 1.1)),
-              GameIcon(glyph, size: 34),
-            ]),
-          ),
-        ),
-      ],
-    ]);
   }
 }
 
@@ -561,7 +522,7 @@ class _ShopTile extends StatelessWidget {
       child: InkWell(
         onTap: () => context.push('/wallet'),
         child: Ink(
-          decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.questTop, GlmArena.questBottom])),
+          decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.questTop, GlmStage.questBottom])),
           padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
           child: Row(children: [
             const GameIcon(GameGlyph.shop, size: 52),
@@ -627,82 +588,100 @@ class _SlotTile extends ConsumerWidget {
         },
       _ => null,
     };
-    final top = switch (s.state) {
-      SlotState.club => s.live ? l.liveBadge : s.position != null ? '${s.position}/${s.teams}' : '',
-      SlotState.waiting => l.slotWaiting,
-      SlotState.locked => s.opensAt == null ? l.slotLocked : l.slotOpensIn(_left(context, s.opensAt!)),
-      _ => '',
+    // [Sprint 47] The approved design's slot: its emerald band (its number and league, live in red), then the club with
+    // its next opponent and its place in gold; a free slot dashed in mint; a locked one with its clock and its price.
+    final band = switch (s.state) {
+      SlotState.club => '${l.slotN(s.number)} · ${s.leagueName ?? ''}',
+      _ => l.slotN(s.number),
     };
-    Widget middle = switch (s.state) {
-      SlotState.club => ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 70),
-      SlotState.free => Container(
-          width: 66,
-          height: 66,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.navy, border: Border.all(color: GlmArena.navyEdge, width: 2)),
-          child: const Icon(Icons.add_rounded, size: 52, color: Color(0xFF7FD3FF)),
-        ),
-      SlotState.locked => Icon(Icons.lock_rounded, size: 56, color: Colors.white.withValues(alpha: .85)),
-      _ => const Icon(Icons.hourglass_top_rounded, size: 52, color: Colors.white70),
-    };
-    final name = switch (s.state) {
-      SlotState.club => (s.clubName ?? '').toUpperCase(),
-      SlotState.free => l.newLeagueShort,
-      SlotState.locked when s.unlockCoins != null => l.unlockSlot(s.unlockCoins!),
-      _ => '',
-    };
-    final sub = s.state == SlotState.club ? (s.opponent == null ? s.leagueName ?? '' : l.vs(s.opponent!)) : '';
-    return Material(
-      shape: GlmCut.shape(16, side: BorderSide(color: s.live ? p.danger : Colors.white.withValues(alpha: .18), width: 1.4)),
-      clipBehavior: Clip.antiAlias,
-      color: GlmArena.navy,
-      child: InkWell(
-        onTap: tap,
-        child: Stack(fit: StackFit.expand, children: [
-          if (!free && !locked) const StadiumBackdrop(),
-          if (free) DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(center: const Alignment(-.6, -.8), radius: 1.3, colors: [GlmArena.blueLight.withValues(alpha: .6), GlmArena.blueDeep]))),
-          if (locked) const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]))),
-          if (s.live) DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [GlmArena.blue.withValues(alpha: .7), p.live.withValues(alpha: .8)]))),
-          // The slot's number in its corner.
-          PositionedDirectional(
-            top: 0,
-            end: 14,
-            child: Container(
-              width: 52,
-              height: 58,
-              alignment: Alignment.center,
-              decoration: const ShapeDecoration(shape: BeveledRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(10))), color: GlmArena.navy),
-              child: Text('${s.number}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 36, color: Colors.white)),
-            ),
-          ),
-          if (top.isNotEmpty)
-            PositionedDirectional(
-              top: 10,
-              start: 14,
-              end: 76,
-              child: Text(top, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: s.live ? Colors.white : p.goldLight, fontWeight: FontWeight.w800, fontSize: 15, shadows: const [Shadow(color: Colors.black54, blurRadius: 4)])),
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 28, 12, 10),
-            child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-              Expanded(child: FittedBox(fit: BoxFit.scaleDown, child: middle)),
-              const SizedBox(height: 6),
-              if (name.isNotEmpty)
-                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, textDirection: s.state == SlotState.club ? TextDirection.ltr : null,
-                    style: TextStyle(fontFamily: s.state == SlotState.club ? GlmFonts.numbers : GlmFonts.body, fontWeight: FontWeight.w800, fontSize: s.state == SlotState.club || free ? 26 : 16, color: Colors.white, height: 1.05,
-                        shadows: const [Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 4)])),
-              if (sub.isNotEmpty) Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w700, fontSize: 13)),
+    final Widget body = switch (s.state) {
+      SlotState.club => Row(children: [
+          ClubCrest(url: s.crestUrl, name: s.clubName ?? '', size: 46),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(s.clubName ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+              if (s.opponent != null) Text(l.vs(s.opponent!), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textSoft, fontSize: 13)),
             ]),
           ),
+          if (s.position != null)
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(color: s.position! <= 3 ? p.gold : p.surfaceRaised, borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.all(4),
+              child: FittedBox(
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text('${s.position}', style: TextStyle(fontFamily: GlmFonts.numbers, fontSize: 24, fontWeight: FontWeight.w700, height: 1, color: s.position! <= 3 ? p.onGold : p.text)),
+                  Text(l.positionWord, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: s.position! <= 3 ? p.onGold : p.textMuted)),
+                ]),
+              ),
+            ),
+        ]),
+      SlotState.free => Row(children: [
+          Container(width: 48, height: 48, decoration: BoxDecoration(color: p.brand.withValues(alpha: .22), borderRadius: BorderRadius.circular(12)),
+              child: Icon(Icons.add_rounded, size: 30, color: context.glm.brandText)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(l.newLeagueShort, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17))),
+        ]),
+      SlotState.locked => Row(children: [
+          Container(width: 48, height: 48, decoration: BoxDecoration(color: p.surface, borderRadius: BorderRadius.circular(12)), child: Icon(Icons.lock_rounded, color: p.textMuted)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(s.opensAt == null ? l.slotLocked : l.slotOpensIn(_left(context, s.opensAt!)), maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: p.textSoft, fontWeight: FontWeight.w700, fontSize: 14)),
+          ),
+          if (s.unlockCoins != null)
+            Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: p.gold)),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Image.asset('assets/brand/coin.png', width: 18, height: 18),
+                const SizedBox(width: 4),
+                Text('${s.unlockCoins}', style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 17, color: context.glm.goldText)),
+              ]),
+            ),
+        ]),
+      _ => Row(children: [Icon(Icons.hourglass_top_rounded, color: p.gold), const SizedBox(width: 10), Expanded(child: Text(l.slotWaiting))]),
+    };
+    final club = s.state == SlotState.club;
+    return Material(
+      shape: GlmCut.shape(GlmCut.card, side: BorderSide(color: s.live ? p.live : p.surfaceRaised, width: free || locked ? 1.5 : 1)),
+      clipBehavior: Clip.antiAlias,
+      color: locked || free ? p.surfaceSunk : p.surface,
+      child: InkWell(
+        onTap: tap,
+        child: Stack(children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Container(
+              height: 32,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              color: club ? p.brandDark : Colors.transparent,
+              child: Row(children: [
+                Expanded(child: Text(band, maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: club ? Colors.white : p.textMuted))),
+                if (s.live)
+                  Pulse(child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Container(width: 8, height: 8, decoration: BoxDecoration(color: p.live, shape: BoxShape.circle)),
+                    const SizedBox(width: 5),
+                    Text(l.liveNow, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.white)),
+                  ])),
+              ]),
+            ),
+            Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(12, 6, 12, 10), child: Center(child: body))),
+          ]),
           if (s.pending > 0)
             PositionedDirectional(
-              bottom: 8,
-              end: 10,
+              top: 4,
+              end: 8,
               child: Container(
-                width: 24,
-                height: 24,
+                width: 22,
+                height: 22,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.alert, border: Border.all(color: Colors.white, width: 2)),
-                child: const Text('!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, height: 1)),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: GlmStage.alert, border: Border.all(color: Colors.white, width: 2)),
+                child: const Text('!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, height: 1)),
               ),
             ),
         ]),

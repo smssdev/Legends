@@ -105,16 +105,17 @@ class GameBar extends ConsumerWidget implements PreferredSizeWidget {
       bottom: bottom,
       flexibleSpace: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: context.glm.day ? [p.panel, p.panel] : [GlmArena.navyLight, GlmArena.navy]),
-          border: Border(bottom: BorderSide(color: p.gold.withValues(alpha: .45), width: 1.2)),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: context.glm.day ? [p.panel, p.panel] : [GlmStage.deep, GlmStage.deep]),
+          border: Border(bottom: BorderSide(color: p.surfaceRaised)),
         ),
       ),
       actions: [
         ...?actions,
         if (s != null) ...[
-          _Pill(color: GlmArena.pillGreen, leading: Image.asset('assets/brand/coin.png', width: 20, height: 20), value: '${s.coins}', plus: true, onTap: () => context.push('/wallet')),
+          // [Sprint 47] The approved design: the club's money (a green note) then the coins (gold), in dark pills.
+          _Pill(leading: const _Coin(color: GlmStage.cash, icon: Icons.payments_rounded), value: money(context, s.cash), onTap: () => context.go('/leagues/${shell!.leagueId}/finance')),
           const SizedBox(width: 6),
-          _Pill(color: GlmArena.pillBlue, leading: const Icon(Icons.account_balance_rounded, size: 18, color: Colors.white), value: money(context, s.cash), onTap: () => context.go('/leagues/${shell!.leagueId}/finance')),
+          _Pill(leading: Image.asset('assets/brand/coin.png', width: 22, height: 22), value: '${s.coins}', plus: true, onTap: () => context.push('/wallet')),
           const SizedBox(width: 10),
         ],
       ],
@@ -132,49 +133,63 @@ class _MenuButton extends StatelessWidget {
         button: true,
         label: MaterialLocalizations.of(context).openAppDrawerTooltip,
         child: Material(
-          shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .25))),
-          color: GlmArena.menu,
+          shape: GlmCut.shape(12, side: const BorderSide(color: GlmStage.edge)),
+          color: GlmStage.card,
           child: InkWell(
             customBorder: GlmCut.shape(10),
             onTap: onTap,
-            child: const SizedBox(width: 46, height: 38, child: Icon(Icons.menu_rounded, color: Colors.white, size: 26)),
+            child: const SizedBox(width: 44, height: 40, child: Icon(Icons.menu_rounded, color: Colors.white, size: 24)),
           ),
         ),
       );
 }
 
-/// A resource in the top bar: a pill in its colour, its icon and its number, and «+» where it can be topped up.
+/// A resource in the top bar: [Sprint 47] a dark pill with its icon, its number, and «+» where it can be topped up.
 class _Pill extends StatelessWidget {
-  const _Pill({required this.color, required this.leading, required this.value, this.plus = false, this.onTap});
+  const _Pill({required this.leading, required this.value, this.plus = false, this.onTap});
 
-  final Color color;
   final Widget leading;
   final String value;
   final bool plus;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => Material(
-        shape: GlmCut.shape(9, side: BorderSide(color: Colors.white.withValues(alpha: .3))),
-        clipBehavior: Clip.antiAlias,
-        color: color,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 88, minHeight: 34),
-            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(color, Colors.white, .22)!, color, Color.lerp(color, Colors.black, .18)!])),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              if (plus) const Icon(Icons.add_rounded, size: 18, color: Colors.white),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Text(value, textDirection: TextDirection.ltr,
-                    style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 19, color: Colors.white, shadows: [Shadow(color: Colors.black38, offset: Offset(0, 1), blurRadius: 1)])),
-              ),
-              leading,
-            ]),
-          ),
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Material(
+      shape: StadiumBorder(side: BorderSide(color: p.surfaceRaised)),
+      clipBehavior: Clip.antiAlias,
+      color: context.glm.day ? p.surface : GlmStage.pill,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 34),
+          padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 10, 0),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            leading,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(value, textDirection: TextDirection.ltr, style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, fontSize: 18, color: p.text)),
+            ),
+            if (plus) Icon(Icons.add_circle_rounded, size: 18, color: context.glm.brandText),
+          ]),
         ),
+      ),
+    );
+  }
+}
+
+/// A resource's round icon in the top bar (the money's green note).
+class _Coin extends StatelessWidget {
+  const _Coin({required this.color, required this.icon});
+
+  final Color color;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 24, height: 24, decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        child: Icon(icon, size: 15, color: GlmStage.deep),
       );
 }
 
@@ -234,11 +249,11 @@ class _Menu extends ConsumerWidget {
     ];
     return Drawer(
       width: 330,
-      backgroundColor: GlmArena.menu,
+      backgroundColor: GlmStage.menu,
       shape: const RoundedRectangleBorder(),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(GlmArena.menu, Colors.white, .08)!, GlmArena.menu, GlmArena.blueDeep]),
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.menu, GlmStage.deep]),
         ),
         child: SafeArea(
           child: Column(children: [
@@ -247,7 +262,7 @@ class _Menu extends ConsumerWidget {
               onTap: () => _go(context, base),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                decoration: BoxDecoration(color: GlmArena.navy.withValues(alpha: .55), border: Border(bottom: BorderSide(color: p.gold.withValues(alpha: .5)))),
+                decoration: const BoxDecoration(color: GlmStage.band),
                 child: Row(children: [
                   ClubCrest(url: s?.club.crestUrl, name: s?.club.code ?? '', size: 48),
                   const SizedBox(width: 12),
@@ -272,7 +287,7 @@ class _Menu extends ConsumerWidget {
                   if (title.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 2),
-                      child: Text(title, style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: .6)),
+                      child: Text(title, style: const TextStyle(color: GlmStage.accent, fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: .4)),
                     ),
                   // [Sprint 46, the polish] The sections slide in one after another as the menu opens.
                   for (final x in entries) FadeSlideIn(index: groups.expand((g) => g.$2).toList().indexOf(x) ~/ 2, offset: 0, child: _Item(entry: x, on: _isOn(x.path), onTap: () => _go(context, x.path, push: x.push))),
@@ -308,20 +323,19 @@ class _Item extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
     return Material(
-      color: on ? Colors.white.withValues(alpha: .14) : Colors.transparent,
+      color: on ? GlmStage.accent.withValues(alpha: .14) : Colors.transparent,
       child: InkWell(
         onTap: onTap,
         child: Container(
-          decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: on ? p.gold : Colors.transparent, width: 4))),
+          decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: on ? GlmStage.accent : Colors.transparent, width: 4))),
           padding: const EdgeInsets.fromLTRB(16, 7, 16, 7),
           child: Row(children: [
             GameIcon(entry.icon, size: 46),
             const SizedBox(width: 16),
             Expanded(
               child: Text(entry.label, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: on ? p.goldLight : Colors.white, shadows: const [Shadow(color: Colors.black26, offset: Offset(0, 1), blurRadius: 2)])),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: on ? GlmStage.accent : Colors.white)),
             ),
           ]),
         ),

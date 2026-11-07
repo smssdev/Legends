@@ -29,19 +29,9 @@ abstract final class GlmFonts {
   static const numbers = 'BarlowCondensed';
 }
 
-/// [Sprint 46] The app's night look on the arena (tokens.json «arena», the owner's choice): the royal-blue ground, navy
-/// cards and panels, the rest of the night's colours kept (gold, pitch, the text, the states).
-final glmArenaNight = GlmPalette(
-  bg: GlmArena.blue, bgDeep: GlmArena.blueDeep, surface: GlmArena.navy, surfaceSunk: Color.lerp(GlmArena.navy, const Color(0xFF000000), .25)!,
-  surfaceRaised: GlmArena.navyLight, gold: glmNight.gold, goldDark: glmNight.goldDark, goldLight: glmNight.goldLight, pitch: glmNight.pitch,
-  pitchDark: glmNight.pitchDark, text: glmNight.text, textMuted: const Color(0xFFB9C7E3), textSoft: const Color(0xFFD6DFF0), live: glmNight.live,
-  warning: glmNight.warning, success: glmNight.success, onGold: glmNight.onGold, brand: glmNight.brand, brandDark: GlmArena.blueDeep,
-  brandLight: GlmArena.blueLight, ring: glmNight.ring, chrome: glmNight.chrome, chromeDark: glmNight.chromeDark, onChrome: glmNight.onChrome,
-  panel: GlmArena.navy, danger: glmNight.danger, bronze: glmNight.bronze, silver: glmNight.silver, cardYellow: glmNight.cardYellow, shade: glmNight.shade,
-);
-
 ThemeData glmTheme({required bool day}) {
-  final p = day ? glmDay : glmArenaNight;
+  // [Sprint 47] The approved design: the app at night takes the web's own night colours (tokens.json «color»).
+  final p = day ? glmDay : glmNight;
   final scheme = ColorScheme(
     brightness: day ? Brightness.light : Brightness.dark,
     primary: p.gold, onPrimary: p.onGold,
@@ -78,10 +68,10 @@ ThemeData glmTheme({required bool day}) {
     // In landscape the league's sections stand in a rail at the side.
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: day ? p.panel : p.bgDeep,
-      indicatorColor: p.gold.withValues(alpha: day ? .22 : .18),
-      selectedIconTheme: IconThemeData(color: day ? GlmInk.gold : p.gold, size: 24),
+      indicatorColor: p.brand.withValues(alpha: .22),
+      selectedIconTheme: IconThemeData(color: day ? GlmInk.brand : p.brandLight, size: 24),
       unselectedIconTheme: IconThemeData(color: p.textMuted, size: 24),
-      selectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w800, color: day ? GlmInk.gold : p.gold),
+      selectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w800, color: day ? GlmInk.brand : p.brandLight),
       unselectedLabelTextStyle: TextStyle(fontFamily: GlmFonts.body, fontSize: 12, fontWeight: FontWeight.w600, color: p.textMuted),
       labelType: NavigationRailLabelType.all,
       indicatorShape: GlmCut.shape(GlmCut.badge),
@@ -89,20 +79,24 @@ ThemeData glmTheme({required bool day}) {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: day ? p.panel : p.bgDeep,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: p.gold.withValues(alpha: day ? .22 : .18),
-      indicatorShape: GlmCut.shape(GlmCut.badge),
+      indicatorColor: p.brand.withValues(alpha: .22),
+      indicatorShape: const StadiumBorder(),
       height: 68,
       labelTextStyle: WidgetStateProperty.resolveWith((s) => TextStyle(fontFamily: GlmFonts.body, fontSize: 12,
-          fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: s.contains(WidgetState.selected) ? (day ? GlmInk.gold : p.gold) : p.textMuted)),
-      iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: s.contains(WidgetState.selected) ? (day ? GlmInk.gold : p.gold) : p.textMuted, size: 24)),
+          fontWeight: s.contains(WidgetState.selected) ? FontWeight.w800 : FontWeight.w600, color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted)),
+      iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(color: s.contains(WidgetState.selected) ? (day ? GlmInk.brand : p.brandLight) : p.textMuted, size: 24)),
     ),
-    tabBarTheme: TabBarThemeData(labelColor: day ? GlmInk.gold : p.gold, unselectedLabelColor: p.textMuted, indicatorColor: p.gold, dividerColor: Colors.transparent,
-        labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15)),
+    // [Sprint 47] The approved design's tabs: the chosen one an ivory pill (chrome), the others muted.
+    tabBarTheme: TabBarThemeData(labelColor: p.onChrome, unselectedLabelColor: p.textMuted, dividerColor: Colors.transparent,
+        indicator: BoxDecoration(color: p.chrome, borderRadius: BorderRadius.circular(9)), indicatorSize: TabBarIndicatorSize.tab,
+        splashBorderRadius: BorderRadius.circular(9), labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+        labelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, fontSize: 15),
+        unselectedLabelStyle: const TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15)),
     chipTheme: ChipThemeData(backgroundColor: p.surface, side: BorderSide(color: p.surfaceRaised), shape: GlmCut.shape(GlmCut.badge),
         labelStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, color: p.text)),
     bottomSheetTheme: BottomSheetThemeData(backgroundColor: day ? p.panel : p.surface, surfaceTintColor: Colors.transparent,
-        shape: BeveledRectangleBorder(borderRadius: BorderRadiusDirectional.only(topStart: const Radius.circular(22), topEnd: const Radius.circular(5)))),
-    listTileTheme: ListTileThemeData(iconColor: p.gold, titleTextStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15, color: p.text)),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22)))),
+    listTileTheme: ListTileThemeData(iconColor: day ? GlmInk.brand : p.brandLight, titleTextStyle: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w700, fontSize: 15, color: p.text)),
     dividerTheme: DividerThemeData(color: p.surfaceRaised, thickness: 1),
     snackBarTheme: SnackBarThemeData(behavior: SnackBarBehavior.floating, backgroundColor: p.surfaceRaised,
         contentTextStyle: TextStyle(fontFamily: GlmFonts.body, color: p.text, fontWeight: FontWeight.w600),
@@ -117,7 +111,7 @@ ThemeData glmTheme({required bool day}) {
       hintStyle: TextStyle(color: p.textMuted),
       border: CutInputBorder(borderSide: BorderSide(color: p.surfaceRaised)),
       enabledBorder: CutInputBorder(borderSide: BorderSide(color: p.surfaceRaised)),
-      focusedBorder: CutInputBorder(borderSide: BorderSide(color: p.gold, width: 2)),
+      focusedBorder: CutInputBorder(borderSide: BorderSide(color: day ? p.brand : p.ring, width: 2)),
       errorBorder: CutInputBorder(borderSide: BorderSide(color: p.live)),
       focusedErrorBorder: CutInputBorder(borderSide: BorderSide(color: p.live, width: 2)),
       errorStyle: TextStyle(color: day ? GlmInk.live : p.danger, fontWeight: FontWeight.w600),

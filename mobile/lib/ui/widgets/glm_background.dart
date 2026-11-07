@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/sounds.dart';
 import '../theme.dart';
-import '../tokens.g.dart';
 
 /// [Sprint 15 F2] The screens' ground as on the web: a night pitch glow (or warm paper by day) behind everything.
 class GlmBackground extends StatelessWidget {
@@ -17,23 +16,22 @@ class GlmBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final body = wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child));
+    // [Sprint 47] The approved design: by night the web's ink, flat, with an emerald glow from the top as from the
+    // floodlights; by day the warm paper as before.
+    if (!context.glm.day) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(center: const Alignment(0, -1.25), radius: 1.2, colors: [Color.lerp(p.bg, p.brand, .22)!, p.bg, p.bg], stops: const [0, .6, 1]),
+        ),
+        child: body,
+      );
+    }
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: RadialGradient(
-          center: const Alignment(0, -1.1),
-          radius: 1.35,
-          // [Sprint 46] By night the arena: bright blue at the top, deeper toward the edges.
-          colors: context.glm.day ? [p.surface, p.bg, p.bgDeep] : [GlmArena.blueLight, GlmArena.blue, GlmArena.blueDeep],
-          stops: const [0, .55, 1],
-        ),
+        gradient: RadialGradient(center: const Alignment(0, -1.1), radius: 1.35, colors: [p.surface, p.bg, p.bgDeep], stops: const [0, .55, 1]),
       ),
-      // [2026-11-06] A stadium's mowing stripes, barely there, under everything; and, the game's signature ground, a
-      // whole pitch's markings drawn faintly across the screen with two floodlights glowing from its top corners.
-      child: CustomPaint(
-        painter: _Stripes(Colors.white.withValues(alpha: context.glm.day ? .0 : .035),
-            lines: (context.glm.day ? p.textMuted : Colors.white).withValues(alpha: context.glm.day ? .06 : .07), light: Colors.white.withValues(alpha: context.glm.day ? .0 : .10)),
-        child: wide ? child : Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 760), child: child)),
-      ),
+      child: CustomPaint(painter: _Stripes(Colors.white.withValues(alpha: 0), lines: p.textMuted.withValues(alpha: .06), light: Colors.white.withValues(alpha: 0)), child: body),
     );
   }
 }
