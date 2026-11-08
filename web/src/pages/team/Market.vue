@@ -263,9 +263,12 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
           <p v-else-if="!shown.length" class="flex flex-wrap items-center gap-2 p-4 text-sm text-text-muted">{{ $t('لا لاعب يطابق البحث.') }}
             <button type="button" class="min-h-touch font-bold text-gold" @click="clearFilters">{{ $t('امسح البحث') }}</button></p>
           <!-- [Sprint 30 Q6] Fixed columns: their names stay over the list while it scrolls. -->
-          <div v-if="shown.length" class="sticky top-[var(--shell-header,4.25rem)] z-10 flex items-center gap-2 rounded-lg bg-surface-sunk px-2 py-1.5 text-xs font-bold text-text-muted sm:gap-3" aria-hidden="true">
+          <!-- [Sprint 48 T5] The columns' bar in the line's colour, as the squad's tables (the owner's screenshots, our own look). -->
+          <div v-if="shown.length" class="market-head sticky top-[var(--shell-header,4.25rem)] z-10 flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold sm:gap-3" aria-hidden="true"
+            :style="{ '--line': `var(--color-line-${list!.line})`, '--line-fg': `var(--color-line-${list!.line}-fg)` }">
             <span class="w-8 text-center sm:w-10">{{ $t('القوة') }}</span><span class="flex-1">{{ $t('اللاعب') }}</span>
-            <span class="hidden max-w-48 flex-1 sm:block">{{ $t('النادي') }}</span><span class="w-16 text-end sm:w-20">{{ $t('السعر') }}</span>
+            <span class="hidden w-12 text-center sm:block">{{ $t('المركز') }}</span><span class="hidden w-10 text-center sm:block">{{ $t('العمر') }}</span>
+            <span class="hidden w-48 sm:block">{{ $t('النادي') }}</span><span class="w-16 text-end sm:w-20">{{ $t('السعر') }}</span>
           </div>
           <ul v-if="shown.length" class="flex flex-col">
             <li v-for="p in shown.slice(page * PAGE, (page + 1) * PAGE)" :key="p.id" class="v-row">
@@ -274,9 +277,11 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
                 <span class="min-w-0 flex-1">
                   <b class="flex items-center gap-1.5 truncate"><bdi class="truncate">{{ $nm(p.name) }}</bdi><span v-if="p.star" class="shrink-0 rounded-pill bg-gold px-1.5 text-[11px] font-bold text-on-gold">⭐ {{ $t('نجم') }}</span><span v-if="p.special" class="shrink-0 rounded-pill bg-brand px-1.5 text-[11px] font-bold text-white">{{ $t(SPECIAL[p.special]) }}</span></b>
                   <span v-if="p.fits" class="me-1 inline-block rounded-pill bg-success/15 px-1.5 text-[11px] font-bold text-success">{{ $t('يناسب تشكيلتك') }}</span>
-                  <span class="block text-xs text-text-muted">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · {{ $nm(p.nationality) }}</template></span>
+                  <span class="block text-xs text-text-muted"><span class="sm:hidden">{{ $t('{v0} · {v1} سنة', { v0: p.position, v1: p.age }) }}<template v-if="p.nationality"> · </template></span><template v-if="p.nationality">{{ $nm(p.nationality) }}</template></span>
                 </span>
-                <span class="hidden min-w-0 max-w-48 items-center gap-1.5 text-xs sm:flex">
+                <span class="hidden w-12 text-center text-sm text-text-soft sm:block" dir="ltr">{{ p.position }}</span>
+                <span class="hidden w-10 text-center font-numbers text-text-soft sm:block">{{ p.age }}</span>
+                <span class="hidden w-48 min-w-0 items-center gap-1.5 text-xs sm:flex">
                   <img v-if="p.seller.logo" :src="p.seller.logo" alt="" class="size-6 object-contain" loading="lazy" />
                   <span class="min-w-0"><span class="block truncate">{{ p.seller.club ? $nm(p.seller.club) : '' }}</span><span v-if="p.seller.coach" class="block truncate text-brand-light">{{ p.seller.coach }}</span></span>
                 </span>
@@ -380,6 +385,8 @@ onBeforeUnmount(() => window.removeEventListener('glm:league-changed', changed))
 </template>
 
 <style scoped>
+.market-head { background: linear-gradient(90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); color: var(--line-fg); }
+:dir(rtl) .market-head { background: linear-gradient(-90deg, color-mix(in srgb, var(--line) 82%, #000), var(--line)); }
 /* [UP11] The deal done: the card pops in, on the GPU only. */
 .celebrate { animation: pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1.2) both }
 @keyframes pop { from { transform: scale(0.8); opacity: 0 } to { transform: scale(1); opacity: 1 } }
