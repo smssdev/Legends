@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../tokens.g.dart';
 import 'cut.dart';
 import 'kit.dart';
+import 'legend_crest.dart';
 
 /// [Sprint 15 F2] The game's mark as on the web (BrandMark.vue): the crest, GAME LEGEND MANAGER with MANAGER in gold,
 /// and «المدرب الأسطورة» under it in Arabic.
@@ -26,11 +27,12 @@ class BrandMark extends StatelessWidget {
         TextSpan(text: 'MANAGER', style: TextStyle(color: context.glm.goldText)),
       ]),
       textDirection: TextDirection.ltr,
-      style: TextStyle(fontFamily: GlmFonts.body, fontWeight: FontWeight.w800, letterSpacing: stacked ? 3 : 1, fontSize: stacked ? 22 : 14),
+      style: TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w700, letterSpacing: stacked ? 2 : 1, fontSize: stacked ? 26 : 16),
     );
     final sub = Text(ar ? 'المدرب الأسطورة' : 'ONLINE FOOTBALL MANAGER',
         style: TextStyle(fontSize: stacked ? 15 : 10, fontWeight: FontWeight.w700, color: p.textSoft, letterSpacing: ar ? 0 : 2));
-    final crest = Image.asset(ar ? 'assets/brand/emblem-ar.png' : 'assets/brand/emblem.png', width: size, height: size, semanticLabel: 'Game Legend Manager');
+    // [Sprint 47] The approved design's crest, drawn (legend_crest.dart), as tall as [size].
+    final crest = LegendCrest(size: size * 150 / 172, letters: size >= 56);
     if (stacked) {
       return Column(mainAxisSize: MainAxisSize.min, children: [crest, const SizedBox(height: 14), name, const SizedBox(height: 4), sub]);
     }

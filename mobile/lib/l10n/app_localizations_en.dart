@@ -103,6 +103,9 @@ class LEn extends L {
   String get googleSoon => 'Google sign-in is coming to the app soon';
 
   @override
+  String get orWord => 'or';
+
+  @override
   String get orByEmail => 'or by email';
 
   @override
@@ -2431,4 +2434,97 @@ class LEn extends L {
 
   @override
   String get no => 'No';
+
+  @override
+  String get pointsWord => 'points';
+
+  @override
+  String get positionWord => 'Place';
+
+  @override
+  String slotN(int n) {
+    return 'Slot $n';
+  }
+
+  @override
+  String get simQuickTitle => 'A quick match in the simulator';
+
+  @override
+  String get simQuickLead => 'Against the computer or a friend';
+
+  @override
+  String get simPlay => 'Play';
+
+  @override
+  String get simTitle => 'Simulator';
+
+  @override
+  String get simLead => 'A trial match apart from your leagues';
+
+  @override
+  String get simFree => 'Free';
+
+  @override
+  String get simVsCpu => 'Vs the computer';
+
+  @override
+  String get simVsCpuLead => 'Start now and test your plan';
+
+  @override
+  String get simVsFriend => 'Vs a friend';
+
+  @override
+  String get simVsFriendLead => 'Invite them with a link, play live';
+
+  @override
+  String get simYourTeam => 'Your team';
+
+  @override
+  String get simOpponent => 'Opponent';
+
+  @override
+  String get simSearch => 'Search a club';
+
+  @override
+  String get simStart => 'Start the match';
+
+  @override
+  String get simOpenRoom => 'Open the room, invite a friend';
+
+  @override
+  String get simInvite => 'Send the invite';
+
+  @override
+  String simInviteText(String link) {
+    return 'Take me on in a match on Game Legend Manager: $link';
+  }
+
+  @override
+  String get simWaitingFriend => 'Waiting for your friend…';
+
+  @override
+  String get simComputer => 'The computer';
+
+  @override
+  String get simKickoff => 'Kick-off';
+
+  @override
+  String get simOff => 'The simulator is not switched on on the server yet';
+
+  @override
+  String simStrength(int n) {
+    return 'Strength $n';
+  }
+
+  @override
+  String get simRandom => 'A random opponent';
+
+  @override
+  String get simAttack => 'Attack';
+
+  @override
+  String get simMidfield => 'Midfield';
+
+  @override
+  String get simDefence => 'Defence';
 }

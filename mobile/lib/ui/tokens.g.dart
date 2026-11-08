@@ -113,20 +113,21 @@ abstract final class GlmInk {
   static const ring = Color(0xFF096C52);
 }
 
-/// [Sprint 46] The app's arena look: the blue ground, the navy cards, the top bar's pills.
-abstract final class GlmArena {
-  static const blue = Color(0xFF2A62C6);
-  static const blueLight = Color(0xFF4B8AEB);
-  static const blueDeep = Color(0xFF173E8C);
-  static const navy = Color(0xFF0F2248);
-  static const navyLight = Color(0xFF1B3769);
-  static const navyEdge = Color(0xFF2D4F8E);
-  static const pillGreen = Color(0xFF2FA046);
-  static const pillBlue = Color(0xFF2B7ED3);
-  static const alert = Color(0xFF36C43E);
-  static const questTop = Color(0xFFFFE36E);
-  static const questBottom = Color(0xFFF3B71F);
-  static const menu = Color(0xFF2459B8);
+/// [Sprint 47] The app's stage in the approved design: the night ground, the navy cards, the mint accent, the pills.
+abstract final class GlmStage {
+  static const ground = Color(0xFF0B1A2C);
+  static const deep = Color(0xFF06111E);
+  static const card = Color(0xFF102538);
+  static const cardRaised = Color(0xFF183349);
+  static const edge = Color(0xFF183349);
+  static const accent = Color(0xFF4FE0B5);
+  static const band = Color(0xFF0A7559);
+  static const cash = Color(0xFF2BB673);
+  static const pill = Color(0xFF0D2133);
+  static const alert = Color(0xFF2BB673);
+  static const questTop = Color(0xFFFFD36B);
+  static const questBottom = Color(0xFFF5B82E);
+  static const menu = Color(0xFF0D2133);
 }
 
 /// A player's line: its badge colour and text.

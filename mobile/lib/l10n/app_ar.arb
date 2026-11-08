@@ -30,6 +30,7 @@
   "required": "مطلوب",
   "google": "المتابعة بحساب Google",
   "googleSoon": "الدخول بجوجل قريباً في التطبيق",
+  "orWord": "أو",
   "orByEmail": "أو بالبريد",
   "updateTitle": "حدّث التطبيق",
   "updateBody": "نسخة جديدة من اللعبة متاحة، ولا تعمل هذه النسخة معها. حدّث التطبيق لتكمل.",
@@ -1735,5 +1736,55 @@
   "balancedWord": "توازن",
   "positioning": "التمركز",
   "yes": "نعم",
-  "no": "لا"
+  "no": "لا",
+  "pointsWord": "نقطة",
+  "positionWord": "المركز",
+  "slotN": "الفتحة {n}",
+  "@slotN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "simQuickTitle": "مباراة سريعة في المحاكي",
+  "simQuickLead": "ضد الكمبيوتر أو تحدَّ صديقاً",
+  "simPlay": "العب",
+  "simTitle": "المحاكي",
+  "simLead": "مباراة تجريبية لا تؤثر على دورياتك",
+  "simFree": "مجانية",
+  "simVsCpu": "ضد الكمبيوتر",
+  "simVsCpuLead": "ابدأ فوراً واختبر خطتك",
+  "simVsFriend": "ضد صديق",
+  "simVsFriendLead": "ادعُه برابط وتحدّاه مباشرة",
+  "simYourTeam": "فريقك",
+  "simOpponent": "الخصم",
+  "simSearch": "ابحث عن نادٍ",
+  "simStart": "ابدأ المحاكاة",
+  "simOpenRoom": "افتح الغرفة وادعُ صديقك",
+  "simInvite": "أرسل الدعوة",
+  "simInviteText": "تحدّاني في مباراة على Game Legend Manager: {link}",
+  "@simInviteText": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "simWaitingFriend": "بانتظار صديقك…",
+  "simComputer": "الكمبيوتر",
+  "simKickoff": "صافرة البداية",
+  "simOff": "المحاكي غير مفعّل على السيرفر بعد",
+  "simStrength": "القوة {n}",
+  "@simStrength": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "simRandom": "خصم عشوائي",
+  "simAttack": "هجوم",
+  "simMidfield": "وسط",
+  "simDefence": "دفاع"
 }

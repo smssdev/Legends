@@ -30,15 +30,15 @@ class GlmCard extends StatelessWidget {
     final day = context.glm.day;
     final rtl = Directionality.of(context) == TextDirection.rtl;
     final base = color ?? (day ? p.panel : p.surface);
-    final top = Color.lerp(base, day ? Colors.white : p.surfaceRaised, day ? .6 : .55)!;
-    final shape = GlmCut.shape(radius, side: BorderSide(color: gold ? p.gold.withValues(alpha: .6) : (day ? p.surfaceRaised : Colors.white.withValues(alpha: .08))));
+    // [Sprint 47] The approved design's card: flat navy, a hairline edge (gold for the screen's main card), a soft shadow.
+    final shape = GlmCut.shape(radius, side: BorderSide(color: gold ? p.gold.withValues(alpha: .55) : p.surfaceRaised));
     Widget card = DecoratedBox(
       decoration: ShapeDecoration(
         shape: shape,
-        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [top, base]),
+        color: base,
         shadows: [
-          BoxShadow(color: p.shade.withValues(alpha: day ? .10 : .45), blurRadius: 24, offset: const Offset(0, 12), spreadRadius: -10),
-          if (gold) BoxShadow(color: p.gold.withValues(alpha: day ? .10 : .18), blurRadius: 28, spreadRadius: -6),
+          BoxShadow(color: p.shade.withValues(alpha: day ? .08 : .30), blurRadius: 18, offset: const Offset(0, 8), spreadRadius: -10),
+          if (gold) BoxShadow(color: p.gold.withValues(alpha: day ? .10 : .16), blurRadius: 24, spreadRadius: -6),
         ],
       ),
       child: CutClip(

@@ -141,3 +141,68 @@ class _PressScaleState extends State<PressScale> {
         child: AnimatedScale(scale: _down ? .96 : 1, duration: const Duration(milliseconds: 110), curve: Curves.easeOut, child: widget.child),
       );
 }
+
+/// [Sprint 47] A football that rolls a little to and fro, turning as it goes (the simulator's door, a waiting screen).
+class RollingBall extends StatefulWidget {
+  const RollingBall({super.key, this.size = 24, this.travel = 10});
+
+  final double size, travel;
+
+  @override
+  State<RollingBall> createState() => _RollingBallState();
+}
+
+class _RollingBallState extends State<RollingBall> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_still(context) && Ambient.on) {
+      if (!_c.isAnimating) _c.repeat(reverse: true);
+    } else {
+      _c.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ball = CustomPaint(size: Size.square(widget.size), painter: BallPainter());
+    if (!_c.isAnimating) return ball;
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (_, child) {
+        final t = Curves.easeInOut.transform(_c.value) * 2 - 1;
+        final dx = t * widget.travel;
+        return Transform.translate(offset: Offset(dx, 0), child: Transform.rotate(angle: dx / (widget.size / 2), child: child));
+      },
+      child: ball,
+    );
+  }
+}
+
+/// A white ball with its dark patch, in the game's night colours.
+class BallPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size s) {
+    const white = Color(0xFFF7F4EA), ink = Color(0xFF06111E);
+    final c = s.center(Offset.zero), r = s.width / 2 - 1;
+    canvas.drawCircle(c, r, Paint()..color = white);
+    canvas.drawCircle(c, r, Paint()
+      ..color = ink
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = s.width / 16);
+    final k = s.width / 24;
+    canvas.drawPath(Path()..addPolygon([Offset(12 * k, 7 * k), Offset(16 * k, 10 * k), Offset(14.5 * k, 15 * k), Offset(9.5 * k, 15 * k), Offset(8 * k, 10 * k)], true),
+        Paint()..color = ink);
+  }
+
+  @override
+  bool shouldRepaint(BallPainter old) => false;
+}

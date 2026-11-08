@@ -59,21 +59,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return AuthLayout(
       title: l.signInTitle,
       lead: l.signInLead,
-      footer: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-        Text(l.noAccount, style: TextStyle(color: p.textMuted)),
-        TextButton(onPressed: () => context.go('/register'), child: Text(l.createAccount, style: TextStyle(color: context.glm.goldText, fontWeight: FontWeight.w800))),
-      ]),
+      tab: AuthTab.signIn,
+      // [Sprint 47] The approved design: the form first, the gold button, then Google under «or».
       children: [
-        GlmButton(label: l.google, variant: GlmButtonVariant.outline, block: true, icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-            onPressed: () => showGlmToast(context, l.googleSoon)),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          child: Row(children: [
-            Expanded(child: Divider(color: p.surfaceRaised)),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text(l.orByEmail, style: TextStyle(color: p.textMuted, fontSize: 13))),
-            Expanded(child: Divider(color: p.surfaceRaised)),
-          ]),
-        ),
         GlmTextField(label: l.emailOrUsername, controller: _login, ltr: true, hint: 'you@example.com', keyboard: TextInputType.emailAddress,
             autofill: const [AutofillHints.username, AutofillHints.email], error: _errors['email']),
         const SizedBox(height: 14),
@@ -81,10 +69,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             onSubmitted: (_) => _submit(), error: _errors['password']),
         Align(
           alignment: AlignmentDirectional.centerEnd,
-          child: TextButton(onPressed: () => context.push('/forgot'), child: Text(l.forgotPassword, style: TextStyle(color: context.glm.goldText))),
+          child: TextButton(onPressed: () => context.push('/forgot'), child: Text(l.forgotPassword, style: TextStyle(color: context.glm.brandText, fontWeight: FontWeight.w700))),
         ),
-        const SizedBox(height: 6),
         GlmButton(label: l.signIn, block: true, loading: _busy, onPressed: _submit),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Row(children: [
+            Expanded(child: Divider(color: p.surfaceRaised)),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text(l.orWord, style: TextStyle(color: p.textMuted, fontSize: 13))),
+            Expanded(child: Divider(color: p.surfaceRaised)),
+          ]),
+        ),
+        GlmButton(label: l.google, variant: GlmButtonVariant.outline, block: true, icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+            onPressed: () => showGlmToast(context, l.googleSoon)),
       ],
     );
   }

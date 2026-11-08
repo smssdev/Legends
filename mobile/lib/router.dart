@@ -27,6 +27,7 @@ import 'features/market/scout_screen.dart';
 import 'features/match/live_screen.dart';
 import 'features/money/finance_screen.dart';
 import 'features/notifications/notifications_screen.dart';
+import 'features/sim/sim_screens.dart';
 import 'features/social/social_screens.dart';
 import 'features/tournaments/tournament_screens.dart';
 import 'features/money/stadium_screen.dart';
@@ -116,6 +117,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/announcements', builder: (_, _) => const AnnouncementsScreen()),
       GoRoute(path: '/guide', builder: (_, _) => const GuideScreen()),
       GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
+      // [Sprint 47] The simulator: a trial match against the computer or a friend.
+      GoRoute(path: '/sim', builder: (_, _) => const SimSetupScreen()),
       GoRoute(path: '/match/:id', builder: (_, s) => LiveMatchScreen(matchId: int.parse(s.pathParameters['id']!))),
       GoRoute(path: '/match/:id/report', builder: (_, s) => MatchReportScreen(matchId: int.parse(s.pathParameters['id']!), coach: s.uri.queryParameters['coach'] == 'true')),
       GoRoute(path: '/leagues/:id/pick', builder: (_, s) => PickTeamScreen(leagueId: int.parse(s.pathParameters['id']!))),

@@ -445,7 +445,7 @@ class _ArenaState extends State<_Arena> {
               message: tip,
               child: Material(
                 shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 3)),
-                color: GlmArena.navyLight,
+                color: GlmStage.cardRaised,
                 elevation: 4,
                 child: InkWell(customBorder: const CircleBorder(), onTap: onTap, child: SizedBox.square(dimension: 56, child: Center(child: icon))),
               ),
@@ -457,12 +457,12 @@ class _ArenaState extends State<_Arena> {
               Container(
                 width: 56,
                 height: 44,
-                decoration: const BoxDecoration(color: GlmArena.navy, borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+                decoration: const BoxDecoration(color: GlmStage.card, borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
                 child: Center(child: icon),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                decoration: ShapeDecoration(shape: GlmCut.shape(8, side: const BorderSide(color: GlmArena.navyEdge)), color: GlmArena.navy),
+                decoration: ShapeDecoration(shape: GlmCut.shape(8, side: const BorderSide(color: GlmStage.edge)), color: GlmStage.card),
                 child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
               ),
             ]),
@@ -530,7 +530,7 @@ class _ArenaPitch extends CustomPainter {
   @override
   void paint(Canvas c, Size s) {
     final r = Offset.zero & s;
-    c.drawRect(r, Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.blueDeep, GlmArena.navy]).createShader(r));
+    c.drawRect(r, Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.deep, GlmStage.card]).createShader(r));
     // The crowd: dots in the stands around the pitch.
     final rnd = math.Random(4);
     final dot = Paint();
@@ -596,7 +596,7 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.palette;
-    final edge = picked ? c.gold : starter ? const Color(0xFF6BE04A) : GlmArena.navyEdge;
+    final edge = picked ? c.gold : starter ? const Color(0xFF6BE04A) : GlmStage.edge;
     final big = const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 24, color: Colors.white, height: 1);
     final small = const TextStyle(color: Color(0xFFB9C7E3), fontWeight: FontWeight.w700, fontSize: 11, height: 1);
     Widget bar(double v, Color color) => Container(
@@ -627,7 +627,7 @@ class _Card extends StatelessWidget {
     return DecoratedBox(
       decoration: ShapeDecoration(
         shape: GlmCut.shape(12, side: BorderSide(color: edge, width: 3)),
-        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]),
+        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.cardRaised, GlmStage.card]),
         shadows: [BoxShadow(color: (starter ? const Color(0xFF6BE04A) : Colors.black).withValues(alpha: .35), blurRadius: 10, spreadRadius: -2)],
       ),
       child: Stack(children: [
@@ -699,8 +699,8 @@ class _BenchPanel extends StatelessWidget {
     final l = L.of(context);
     final lines = [('att', l.groupAtt), ('mid', l.groupMid), ('def', l.groupDef), ('gk', l.groupGk)];
     return Material(
-      shape: GlmCut.shape(16, side: const BorderSide(color: GlmArena.blueLight, width: 3)),
-      color: GlmArena.navy.withValues(alpha: .96),
+      shape: GlmCut.shape(16, side: const BorderSide(color: GlmStage.accent, width: 3)),
+      color: GlmStage.card.withValues(alpha: .96),
       clipBehavior: Clip.antiAlias,
       child: Stack(children: [
         Padding(
