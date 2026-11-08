@@ -102,6 +102,9 @@ class LAr extends L {
   String get googleSoon => 'الدخول بجوجل قريباً في التطبيق';
 
   @override
+  String get orWord => 'أو';
+
+  @override
   String get orByEmail => 'أو بالبريد';
 
   @override
@@ -2426,4 +2429,97 @@ class LAr extends L {
 
   @override
   String get no => 'لا';
+
+  @override
+  String get pointsWord => 'نقطة';
+
+  @override
+  String get positionWord => 'المركز';
+
+  @override
+  String slotN(int n) {
+    return 'الفتحة $n';
+  }
+
+  @override
+  String get simQuickTitle => 'مباراة سريعة في المحاكي';
+
+  @override
+  String get simQuickLead => 'ضد الكمبيوتر أو تحدَّ صديقاً';
+
+  @override
+  String get simPlay => 'العب';
+
+  @override
+  String get simTitle => 'المحاكي';
+
+  @override
+  String get simLead => 'مباراة تجريبية لا تؤثر على دورياتك';
+
+  @override
+  String get simFree => 'مجانية';
+
+  @override
+  String get simVsCpu => 'ضد الكمبيوتر';
+
+  @override
+  String get simVsCpuLead => 'ابدأ فوراً واختبر خطتك';
+
+  @override
+  String get simVsFriend => 'ضد صديق';
+
+  @override
+  String get simVsFriendLead => 'ادعُه برابط وتحدّاه مباشرة';
+
+  @override
+  String get simYourTeam => 'فريقك';
+
+  @override
+  String get simOpponent => 'الخصم';
+
+  @override
+  String get simSearch => 'ابحث عن نادٍ';
+
+  @override
+  String get simStart => 'ابدأ المحاكاة';
+
+  @override
+  String get simOpenRoom => 'افتح الغرفة وادعُ صديقك';
+
+  @override
+  String get simInvite => 'أرسل الدعوة';
+
+  @override
+  String simInviteText(String link) {
+    return 'تحدّاني في مباراة على Game Legend Manager: $link';
+  }
+
+  @override
+  String get simWaitingFriend => 'بانتظار صديقك…';
+
+  @override
+  String get simComputer => 'الكمبيوتر';
+
+  @override
+  String get simKickoff => 'صافرة البداية';
+
+  @override
+  String get simOff => 'المحاكي غير مفعّل على السيرفر بعد';
+
+  @override
+  String simStrength(int n) {
+    return 'القوة $n';
+  }
+
+  @override
+  String get simRandom => 'خصم عشوائي';
+
+  @override
+  String get simAttack => 'هجوم';
+
+  @override
+  String get simMidfield => 'وسط';
+
+  @override
+  String get simDefence => 'دفاع';
 }

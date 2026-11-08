@@ -24,12 +24,12 @@ class GlmButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final enabled = onPressed != null && !loading;
-    final (Color fg, Gradient? fill, Color? flat, BorderSide side) = switch (variant) {
-      GlmButtonVariant.primary => (p.onGold, LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.goldLight, p.gold, p.goldDark], stops: const [0, .55, 1]), null, BorderSide.none),
-      GlmButtonVariant.brand => (Colors.white, LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [p.brand, p.brandDark]), null, BorderSide.none),
-      GlmButtonVariant.outline => (p.text, null, Colors.transparent, BorderSide(color: p.surfaceRaised, width: 1.5)),
-      GlmButtonVariant.quiet => (p.text, null, p.surfaceSunk, BorderSide.none),
-      GlmButtonVariant.danger => (Colors.white, null, p.live, BorderSide.none),
+    final (Color fg, Color flat, BorderSide side) = switch (variant) {
+      GlmButtonVariant.primary => (p.onGold, p.gold, BorderSide.none),
+      GlmButtonVariant.brand => (Colors.white, p.brandDark, BorderSide.none),
+      GlmButtonVariant.outline => (p.text, Colors.transparent, BorderSide(color: p.surfaceRaised, width: 1.5)),
+      GlmButtonVariant.quiet => (p.text, p.surfaceRaised, BorderSide.none),
+      GlmButtonVariant.danger => (Colors.white, p.live, BorderSide.none),
     };
     final child = Row(
       mainAxisSize: block ? MainAxisSize.max : MainAxisSize.min,
@@ -54,8 +54,10 @@ class GlmButton extends StatelessWidget {
           clip: GlmCut.button,
           child: DecoratedBox(
             decoration: ShapeDecoration(
-              gradient: fill, color: flat, shape: GlmCut.shape(GlmCut.button, side: side),
-              shadows: fill != null && enabled ? [BoxShadow(color: (variant == GlmButtonVariant.primary ? p.gold : p.shade).withValues(alpha: .30), blurRadius: 18, offset: const Offset(0, 8), spreadRadius: -8)] : null,
+              color: flat, shape: GlmCut.shape(GlmCut.button, side: side),
+              // [Sprint 47] The approved design's gold button stands on its darker edge, like a game's key.
+              shadows: enabled && variant == GlmButtonVariant.primary ? [BoxShadow(color: p.goldDark, offset: const Offset(0, 3))]
+                  : enabled && variant == GlmButtonVariant.brand ? [BoxShadow(color: p.shade.withValues(alpha: .35), offset: const Offset(0, 3))] : null,
             ),
             child: CutClip(
               cut: GlmCut.button,

@@ -277,6 +277,12 @@ abstract class L {
   /// **'الدخول بجوجل قريباً في التطبيق'**
   String get googleSoon;
 
+  /// No description provided for @orWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'أو'**
+  String get orWord;
+
   /// No description provided for @orByEmail.
   ///
   /// In ar, this message translates to:
@@ -4386,6 +4392,180 @@ abstract class L {
   /// In ar, this message translates to:
   /// **'لا'**
   String get no;
+
+  /// No description provided for @pointsWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقطة'**
+  String get pointsWord;
+
+  /// No description provided for @positionWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'المركز'**
+  String get positionWord;
+
+  /// No description provided for @slotN.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفتحة {n}'**
+  String slotN(int n);
+
+  /// No description provided for @simQuickTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراة سريعة في المحاكي'**
+  String get simQuickTitle;
+
+  /// No description provided for @simQuickLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضد الكمبيوتر أو تحدَّ صديقاً'**
+  String get simQuickLead;
+
+  /// No description provided for @simPlay.
+  ///
+  /// In ar, this message translates to:
+  /// **'العب'**
+  String get simPlay;
+
+  /// No description provided for @simTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحاكي'**
+  String get simTitle;
+
+  /// No description provided for @simLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'مباراة تجريبية لا تؤثر على دورياتك'**
+  String get simLead;
+
+  /// No description provided for @simFree.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجانية'**
+  String get simFree;
+
+  /// No description provided for @simVsCpu.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضد الكمبيوتر'**
+  String get simVsCpu;
+
+  /// No description provided for @simVsCpuLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ فوراً واختبر خطتك'**
+  String get simVsCpuLead;
+
+  /// No description provided for @simVsFriend.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضد صديق'**
+  String get simVsFriend;
+
+  /// No description provided for @simVsFriendLead.
+  ///
+  /// In ar, this message translates to:
+  /// **'ادعُه برابط وتحدّاه مباشرة'**
+  String get simVsFriendLead;
+
+  /// No description provided for @simYourTeam.
+  ///
+  /// In ar, this message translates to:
+  /// **'فريقك'**
+  String get simYourTeam;
+
+  /// No description provided for @simOpponent.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخصم'**
+  String get simOpponent;
+
+  /// No description provided for @simSearch.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن نادٍ'**
+  String get simSearch;
+
+  /// No description provided for @simStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ المحاكاة'**
+  String get simStart;
+
+  /// No description provided for @simOpenRoom.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح الغرفة وادعُ صديقك'**
+  String get simOpenRoom;
+
+  /// No description provided for @simInvite.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الدعوة'**
+  String get simInvite;
+
+  /// No description provided for @simInviteText.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحدّاني في مباراة على Game Legend Manager: {link}'**
+  String simInviteText(String link);
+
+  /// No description provided for @simWaitingFriend.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار صديقك…'**
+  String get simWaitingFriend;
+
+  /// No description provided for @simComputer.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمبيوتر'**
+  String get simComputer;
+
+  /// No description provided for @simKickoff.
+  ///
+  /// In ar, this message translates to:
+  /// **'صافرة البداية'**
+  String get simKickoff;
+
+  /// No description provided for @simOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحاكي غير مفعّل على السيرفر بعد'**
+  String get simOff;
+
+  /// No description provided for @simStrength.
+  ///
+  /// In ar, this message translates to:
+  /// **'القوة {n}'**
+  String simStrength(int n);
+
+  /// No description provided for @simRandom.
+  ///
+  /// In ar, this message translates to:
+  /// **'خصم عشوائي'**
+  String get simRandom;
+
+  /// No description provided for @simAttack.
+  ///
+  /// In ar, this message translates to:
+  /// **'هجوم'**
+  String get simAttack;
+
+  /// No description provided for @simMidfield.
+  ///
+  /// In ar, this message translates to:
+  /// **'وسط'**
+  String get simMidfield;
+
+  /// No description provided for @simDefence.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفاع'**
+  String get simDefence;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

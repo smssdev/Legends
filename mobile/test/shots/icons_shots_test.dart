@@ -23,7 +23,7 @@ void main() {
       textDirection: TextDirection.ltr,
       child: RepaintBoundary(
         child: Container(
-          color: GlmArena.blue,
+          color: GlmStage.ground,
           padding: const EdgeInsets.all(16),
           child: Wrap(spacing: 14, runSpacing: 14, children: [for (final g in GameGlyph.values) GameIcon(g, size: 72)]),
         ),

@@ -34,7 +34,7 @@ class _Glyph extends CustomPainter {
     switch (g) {
       case GameGlyph.office:
         _solid(c, Path()..moveTo(14, 48)..lineTo(50, 16)..lineTo(86, 48)..lineTo(78, 48)..lineTo(78, 86)..lineTo(22, 86)..lineTo(22, 48)..close(), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
-        _solid(c, _rr(42, 60, 16, 26, 3), GlmArena.questTop, GlmArena.questBottom);
+        _solid(c, _rr(42, 60, 16, 26, 3), GlmStage.questTop, GlmStage.questBottom);
       case GameGlyph.squad || GameGlyph.kit:
         _shirt(c, const Color(0xFFFFD23F), const Color(0xFF2B7ED3));
       case GameGlyph.lineup:
@@ -61,7 +61,7 @@ class _Glyph extends CustomPainter {
         _solid(c, _rr(18, 76, 64, 12, 4), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
       case GameGlyph.specialists:
         _solid(c, Path()..moveTo(16, 24)..quadraticBezierTo(50, 12, 84, 24)..lineTo(84, 74)..quadraticBezierTo(50, 62, 16, 74)..close(), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
-        c.drawPath(Path()..moveTo(16, 40)..quadraticBezierTo(50, 28, 84, 40)..lineTo(84, 58)..quadraticBezierTo(50, 46, 16, 58)..close(), Paint()..color = GlmArena.questTop);
+        c.drawPath(Path()..moveTo(16, 40)..quadraticBezierTo(50, 28, 84, 40)..lineTo(84, 58)..quadraticBezierTo(50, 46, 16, 58)..close(), Paint()..color = GlmStage.questTop);
         _star(c, const Offset(50, 46), 10, const Color(0xFF1D5FC4));
       case GameGlyph.transfers:
         _solid(c, _rr(20, 12, 54, 74, 6), Colors.white, const Color(0xFFCFD8E6));
@@ -79,7 +79,7 @@ class _Glyph extends CustomPainter {
         _solid(c, _rr(42, 40, 16, 16, 4), const Color(0xFF5B6E8C), const Color(0xFF222F45));
       case GameGlyph.friendlies:
         _solid(c, Path()..moveTo(18, 18)..lineTo(82, 18)..lineTo(50, 88)..close(), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
-        c.drawPath(Path()..moveTo(30, 28)..lineTo(70, 28)..lineTo(50, 72)..close(), Paint()..color = GlmArena.questTop);
+        c.drawPath(Path()..moveTo(30, 28)..lineTo(70, 28)..lineTo(50, 72)..close(), Paint()..color = GlmStage.questTop);
       case GameGlyph.quick:
         _cup(c);
         _shadowText(c, 'VS', const Offset(50, 46), 26);
@@ -89,7 +89,7 @@ class _Glyph extends CustomPainter {
         }
         c.drawCircle(const Offset(54, 46), 36, _line(const Color(0xFF8E1B18), 2.5));
         for (final (x, y) in [(18.0, 78.0), (30.0, 84.0), (78.0, 80.0)]) {
-          _solid(c, Path()..addOval(Rect.fromCenter(center: Offset(x, y), width: 26, height: 14)), GlmArena.questTop, GlmArena.questBottom);
+          _solid(c, Path()..addOval(Rect.fromCenter(center: Offset(x, y), width: 26, height: 14)), GlmStage.questTop, GlmStage.questBottom);
         }
       case GameGlyph.predict:
         _solid(c, _rr(12, 22, 76, 60, 8), const Color(0xFF6B7C96), const Color(0xFF2B3A52));
@@ -116,7 +116,7 @@ class _Glyph extends CustomPainter {
         _solid(c, Path()..moveTo(50, 14)..lineTo(88, 84)..lineTo(12, 84)..close(), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
         c.drawPath(Path()..moveTo(50, 40)..lineTo(64, 84)..lineTo(36, 84)..close(), Paint()..color = const Color(0xFF0F2248));
         c.drawLine(const Offset(50, 14), const Offset(50, 4), _line(const Color(0xFF6E431B), 3));
-        c.drawPath(Path()..moveTo(50, 4)..lineTo(64, 8)..lineTo(50, 12)..close(), Paint()..color = GlmArena.questBottom);
+        c.drawPath(Path()..moveTo(50, 4)..lineTo(64, 8)..lineTo(50, 12)..close(), Paint()..color = GlmStage.questBottom);
       case GameGlyph.stadium:
         _solid(c, Path()..addOval(const Rect.fromLTWH(10, 26, 80, 54)), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
         c.drawOval(const Rect.fromLTWH(24, 36, 52, 34), Paint()..color = const Color(0xFF2FA046));
@@ -151,7 +151,7 @@ class _Glyph extends CustomPainter {
         c.save();
         c.translate(76, 56);
         c.rotate(.6);
-        _solid(c, _rr(-5, -30, 10, 44, 3), GlmArena.questTop, GlmArena.questBottom);
+        _solid(c, _rr(-5, -30, 10, 44, 3), GlmStage.questTop, GlmStage.questBottom);
         c.restore();
       case GameGlyph.honours:
         _cup(c);
@@ -180,7 +180,7 @@ class _Glyph extends CustomPainter {
           _solid(c, Path()..moveTo(x, 14)..quadraticBezierTo(x + 20, 20, x + 24, 18)..quadraticBezierTo(x + 24, 64, x, 86)..quadraticBezierTo(x - 24, 64, x - 24, 18)..quadraticBezierTo(x - 20, 20, x, 14)..close(), top, bottom);
         }
       case GameGlyph.shop:
-        _solid(c, Path()..moveTo(50, 10)..lineTo(84, 30)..lineTo(84, 66)..lineTo(50, 90)..lineTo(16, 66)..lineTo(16, 30)..close(), GlmArena.questTop, GlmArena.questBottom);
+        _solid(c, Path()..moveTo(50, 10)..lineTo(84, 30)..lineTo(84, 66)..lineTo(50, 90)..lineTo(16, 66)..lineTo(16, 30)..close(), GlmStage.questTop, GlmStage.questBottom);
         _solid(c, Path()..moveTo(50, 26)..lineTo(68, 38)..lineTo(50, 74)..lineTo(32, 38)..close(), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
       case GameGlyph.invite:
         for (final (x, col) in [(36.0, const Color(0xFF4FA3FF)), (62.0, const Color(0xFF2FA046))]) {
@@ -188,8 +188,8 @@ class _Glyph extends CustomPainter {
           _solid(c, Path()..addRRect(RRect.fromRectAndCorners(Rect.fromLTWH(x - 20, 50, 40, 34), topLeft: const Radius.circular(18), topRight: const Radius.circular(18))), Color.lerp(col, Colors.white, .2)!, col);
         }
       case GameGlyph.bell:
-        _solid(c, Path()..moveTo(50, 14)..quadraticBezierTo(76, 18, 76, 46)..lineTo(84, 72)..lineTo(16, 72)..lineTo(24, 46)..quadraticBezierTo(24, 18, 50, 14)..close(), GlmArena.questTop, GlmArena.questBottom);
-        c.drawCircle(const Offset(50, 80), 8, Paint()..color = GlmArena.questBottom);
+        _solid(c, Path()..moveTo(50, 14)..quadraticBezierTo(76, 18, 76, 46)..lineTo(84, 72)..lineTo(16, 72)..lineTo(24, 46)..quadraticBezierTo(24, 18, 50, 14)..close(), GlmStage.questTop, GlmStage.questBottom);
+        c.drawCircle(const Offset(50, 80), 8, Paint()..color = GlmStage.questBottom);
       case GameGlyph.clock:
         _solid(c, Path()..addOval(Rect.fromCircle(center: const Offset(50, 54), radius: 34)), const Color(0xFF4FA3FF), const Color(0xFF1D5FC4));
         c.drawCircle(const Offset(50, 54), 26, Paint()..color = Colors.white);
@@ -264,10 +264,10 @@ void _shirt(Canvas c, Color body, Color trim) {
 }
 
 void _cup(Canvas c) {
-  c.drawArc(const Rect.fromLTWH(10, 22, 26, 30), math.pi / 2, math.pi, false, _line(GlmArena.questBottom, 6));
-  c.drawArc(const Rect.fromLTWH(64, 22, 26, 30), -math.pi / 2, math.pi, false, _line(GlmArena.questBottom, 6));
-  _solid(c, Path()..moveTo(24, 14)..lineTo(76, 14)..quadraticBezierTo(76, 62, 50, 66)..quadraticBezierTo(24, 62, 24, 14)..close(), GlmArena.questTop, GlmArena.questBottom);
-  _solid(c, _rr(42, 64, 16, 12, 2), GlmArena.questTop, GlmArena.questBottom);
+  c.drawArc(const Rect.fromLTWH(10, 22, 26, 30), math.pi / 2, math.pi, false, _line(GlmStage.questBottom, 6));
+  c.drawArc(const Rect.fromLTWH(64, 22, 26, 30), -math.pi / 2, math.pi, false, _line(GlmStage.questBottom, 6));
+  _solid(c, Path()..moveTo(24, 14)..lineTo(76, 14)..quadraticBezierTo(76, 62, 50, 66)..quadraticBezierTo(24, 62, 24, 14)..close(), GlmStage.questTop, GlmStage.questBottom);
+  _solid(c, _rr(42, 64, 16, 12, 2), GlmStage.questTop, GlmStage.questBottom);
   _solid(c, _rr(28, 76, 44, 12, 3), const Color(0xFF6E431B), const Color(0xFF3E2410));
 }
 

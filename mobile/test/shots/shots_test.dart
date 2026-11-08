@@ -71,10 +71,10 @@ const homeJson = {
   ],
 };
 
-Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {double h = 800, String? tap, Duration? at, IconData? tapIcon, double scroll = 0}) async {
+Future<void> shot(WidgetTester t, String name, Widget screen, List overrides, {Size size = const Size(844, 390), double h = 800, String? tap, Duration? at, IconData? tapIcon, double scroll = 0}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
-  t.view.physicalSize = const Size(844 * 2, 390 * 2);
+  t.view.physicalSize = size * 2;
   t.view.devicePixelRatio = 2;
   addTearDown(t.view.reset);
   ClubCrest.loadFromNetwork = false;

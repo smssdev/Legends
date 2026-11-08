@@ -179,13 +179,19 @@ class _ClubTab extends ConsumerWidget {
                   ]),
                 );
           if (box.maxWidth < 560 || box.maxHeight < 300) {
+            // [Sprint 47] The approved design's office on a phone: the next match, what waits for the coach, then the
+            // sections as big tiles.
             return ListView(padding: const EdgeInsets.all(12), children: [
               ?contract,
               SizedBox(height: 300, child: stage),
-              const SizedBox(height: 10),
-              SizedBox(height: 150, child: tiles),
               GameHeader(l.needsYou, icon: Icons.notifications_active_rounded),
               _Needs(s: s, leagueId: lg.id),
+              const SizedBox(height: 14),
+              _HubTiles(s: s, go: (path) => context.push(go(path)), table: () => context.go('/leagues/${lg.id}?tab=matches'), compact: true,
+                  contract: lg.contract == null ? null : () async {
+                    await ref.read(leaguesRepositoryProvider).signContract(lg.id);
+                    ref.invalidate(leagueProvider(lg.id));
+                  }),
             ]);
           }
           return Column(children: [
@@ -226,7 +232,7 @@ class _Versus extends StatelessWidget {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               // [Sprint 46, the polish] The crest on a soft halo of light, as under the floodlights.
               Container(
-                decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: (mine ? context.palette.gold : GlmArena.blueLight).withValues(alpha: .35), blurRadius: 30, spreadRadius: 4)]),
+                decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: (mine ? context.palette.gold : GlmStage.accent).withValues(alpha: .35), blurRadius: 30, spreadRadius: 4)]),
                 child: ClubCrest(url: c.crestUrl, name: c.code, size: 84),
               ),
               if (strength != null) ...[const SizedBox(width: 10), _Ring(value: strength ~/ 100, mine: mine)],
@@ -248,7 +254,7 @@ class _Versus extends StatelessWidget {
             child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisSize: MainAxisSize.min, children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                decoration: ShapeDecoration(shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .15))), color: GlmArena.navy.withValues(alpha: .9)),
+                decoration: ShapeDecoration(shape: GlmCut.shape(10, side: BorderSide(color: Colors.white.withValues(alpha: .15))), color: GlmStage.card.withValues(alpha: .9)),
                 child: Text(s.round == null ? l.nextMatchShort : l.round(s.round!), style: TextStyle(color: p.goldLight, fontWeight: FontWeight.w800, fontSize: 17)),
               ),
               const SizedBox(height: 6),
@@ -281,14 +287,17 @@ class _Ring extends StatelessWidget {
   final bool mine;
 
   @override
-  Widget build(BuildContext context) => ArcGauge(value: value, size: 68, color: mine ? context.palette.gold : GlmArena.blueLight);
+  Widget build(BuildContext context) => ArcGauge(value: value, size: 68, color: mine ? context.palette.gold : GlmStage.accent);
 }
 
 /// The hub's strip of tiles under the match, scrolling across when it does not fit.
 class _HubTiles extends StatelessWidget {
-  const _HubTiles({required this.s, required this.go, required this.table, this.contract});
+  const _HubTiles({required this.s, required this.go, required this.table, this.contract, this.compact = false});
 
   final ClubSummary s;
+
+  /// A phone held upright: two rows of four tiles.
+  final bool compact;
   final void Function(String path) go;
   final VoidCallback table;
 
@@ -332,6 +341,35 @@ class _HubTiles extends StatelessWidget {
     // [Sprint 46, the owner's screenshots] Two rows under the match, filling the width as the manager games do: the
     // quick friendly, the match's preparation, training's clock and the form; then the quests (or the contract), the
     // market and the table.
+    // [Sprint 47] On a phone, the approved design's office: four big tiles a row, each its icon over its name.
+    if (compact) {
+      final tiles = <Widget>[
+        _HubTile(upright: true, alert: missing, onTap: () => go('lineup'), icon: GameGlyph.lineup, title: l.lineup,
+            child: SizedBox(width: 56, child: _Progress(value: prep, color: missing ? p.danger : prep < 1 ? p.gold : p.success))),
+        _HubTile(upright: true, onTap: () => go('tactics'), icon: GameGlyph.tactics, title: l.tactics),
+        _HubTile(upright: true, alert: needs('training_empty') || needs('training_done'), onTap: () => go('training'), icon: GameGlyph.training,
+            title: left(timer('training')).isEmpty ? l.training : left(timer('training'))),
+        _HubTile(upright: true, onTap: () => go('friendlies'), icon: GameGlyph.quick, title: l.friendlies),
+        contract != null
+            ? _HubTile(upright: true, gold: true, alert: true, onTap: contract!, icon: GameGlyph.contracts, title: l.sign)
+            : _HubTile(upright: true, gold: true, onTap: () => go('quests'), icon: GameGlyph.quests, title: l.quests),
+        _HubTile(upright: true, alert: needs('offers'), onTap: () => go('market'), icon: GameGlyph.transfers, title: l.market),
+        _HubTile(upright: true, onTap: this.table, icon: GameGlyph.table, title: l.leagueTable),
+        _HubTile(upright: true, onTap: () => go('stats'), icon: GameGlyph.honours, title: l.form, child: _Form(s.form)),
+      ];
+      return Column(children: [
+        for (final r in [0, 4])
+          Padding(
+            padding: EdgeInsets.only(top: r == 0 ? 0 : 8),
+            child: SizedBox(
+              height: 92,
+              child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                for (var i = r; i < r + 4; i++) ...[if (i > r) const SizedBox(width: 8), Expanded(child: FadeSlideIn(index: i, child: tiles[i]))],
+              ]),
+            ),
+          ),
+      ]);
+    }
     Widget row(List<(int, Widget)> xs) => Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           for (final (i, (flex, w)) in xs.indexed) ...[if (i > 0) const SizedBox(width: 10), Expanded(flex: flex, child: FadeSlideIn(index: i, child: w))],
         ]);
@@ -417,20 +455,20 @@ class _HubTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final card = Material(
-      shape: GlmCut.shape(14, side: BorderSide(color: gold ? p.goldLight : GlmArena.navyEdge, width: 1.2)),
+      shape: GlmCut.shape(15, side: BorderSide(color: gold ? p.goldLight : GlmStage.edge)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                colors: gold ? [GlmArena.questTop, GlmArena.questBottom] : [GlmArena.navyLight, GlmArena.navy]),
+                colors: gold ? [GlmStage.questTop, GlmStage.questBottom] : [GlmStage.card, GlmStage.card]),
           ),
           padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
           child: upright
               ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Expanded(child: FittedBox(fit: BoxFit.scaleDown, child: GameIcon(icon, size: 44))),
-                  FittedBox(fit: BoxFit.scaleDown, child: Text(title, maxLines: 1, style: const TextStyle(fontFamily: GlmFonts.numbers, fontFamilyFallback: [GlmFonts.body], color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18, height: 1.1))),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(title, maxLines: 1, style: TextStyle(fontFamily: GlmFonts.body, color: gold ? p.onGold : Colors.white, fontWeight: FontWeight.w700, fontSize: 14, height: 1.2))),
                   if (child != null) ...[const SizedBox(height: 3), FittedBox(fit: BoxFit.scaleDown, child: child)],
                 ])
               : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -448,7 +486,7 @@ class _HubTile extends StatelessWidget {
         ),
       ),
     );
-    return Stack(clipBehavior: Clip.none, children: [
+    return Stack(clipBehavior: Clip.none, fit: StackFit.expand, children: [
       PressScale(child: card),
       if (alert)
         PositionedDirectional(
@@ -459,7 +497,7 @@ class _HubTile extends StatelessWidget {
               width: 24,
               height: 24,
               alignment: Alignment.center,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: GlmArena.alert, border: Border.all(color: Colors.white, width: 2), boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)]),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: GlmStage.alert, border: Border.all(color: Colors.white, width: 2), boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)]),
               child: const Text('!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, height: 1)),
             ),
           ),

@@ -136,7 +136,7 @@ class _TacticsScreenState extends ConsumerState<TacticsScreen> {
   }
 }
 
-const _cardFill = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy]);
+const _cardFill = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.cardRaised, GlmStage.card]);
 const _titleBlue = Color(0xFF7FC4FF);
 
 /// The next match over the tactics: both crests and strengths, «VS», and the band of both formations under it.
@@ -149,7 +149,7 @@ class _NextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L.of(context);
     final home = s.venue != 'away';
-    Widget ring(int? v, bool mine) => ArcGauge(value: v == null ? 0 : v ~/ 100, size: 62, color: mine ? context.palette.gold : GlmArena.blueLight);
+    Widget ring(int? v, bool mine) => ArcGauge(value: v == null ? 0 : v ~/ 100, size: 62, color: mine ? context.palette.gold : GlmStage.accent);
     Widget side(Side? c, bool mine) => Expanded(
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ClubCrest(url: c?.crestUrl, name: c?.code ?? '', size: 62),
@@ -182,7 +182,7 @@ class _NextCard extends StatelessWidget {
           ),
         ),
         Container(
-          color: GlmArena.navy,
+          color: GlmStage.card,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Row(children: [
             const GameIcon(GameGlyph.lineup, size: 26),
@@ -221,7 +221,7 @@ class _Carousel<T extends Object> extends StatelessWidget {
 
     Widget arrow(IconData icon, int d) => Material(
           shape: const CircleBorder(),
-          color: GlmArena.pillBlue,
+          color: GlmStage.pill,
           child: InkWell(customBorder: const CircleBorder(), onTap: () => step(d), child: SizedBox.square(dimension: 44, child: Icon(icon, color: Colors.white, size: 28))),
         );
     return GestureDetector(
@@ -314,7 +314,7 @@ class _Arrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
         shape: const CircleBorder(),
-        color: GlmArena.pillBlue,
+        color: GlmStage.pill,
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: () {
@@ -346,7 +346,7 @@ class _Dial extends StatelessWidget {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 8,
-                  activeTrackColor: GlmArena.pillBlue,
+                  activeTrackColor: GlmStage.pill,
                   inactiveTrackColor: Colors.black.withValues(alpha: .45),
                   thumbColor: Colors.white,
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
@@ -363,8 +363,8 @@ class _Dial extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.black,
-                border: Border(bottom: BorderSide(color: value < 40 ? GlmArena.blueLight : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E), width: 4)),
-                boxShadow: [BoxShadow(color: (value < 40 ? GlmArena.blueLight : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E)).withValues(alpha: .35), blurRadius: 12)],
+                border: Border(bottom: BorderSide(color: value < 40 ? GlmStage.accent : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E), width: 4)),
+                boxShadow: [BoxShadow(color: (value < 40 ? GlmStage.accent : value > 60 ? const Color(0xFFFF6A2B) : const Color(0xFFFFE36E)).withValues(alpha: .35), blurRadius: 12)],
               ),
               child: Text('${value.round()}', style: const TextStyle(fontFamily: GlmFonts.numbers, fontWeight: FontWeight.w800, fontSize: 26, color: Colors.white)),
             ),

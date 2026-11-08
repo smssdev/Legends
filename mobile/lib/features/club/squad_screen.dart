@@ -143,7 +143,7 @@ class _InfoBand extends StatelessWidget {
         );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmArena.navyLight, GlmArena.navy])),
+      decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [GlmStage.cardRaised, GlmStage.card])),
       child: Row(children: [
         fact(const GameIcon(GameGlyph.honours, size: 26), l.leaguePlace, summary?.position == null ? '—' : '${summary!.position}'),
         fact(const GameIcon(GameGlyph.contracts, size: 26), l.boardGoal, summary?.goal == null ? '—' : goalText(l, summary!.goal).replaceAll(RegExp(r'^[^:]*:\s*'), '')),
@@ -294,7 +294,7 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrink, bool overlaps) {
     final l = L.of(context);
     return Container(
-      color: GlmArena.pillBlue,
+      color: GlmStage.pill,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       alignment: Alignment.center,
       child: _Cells(
@@ -404,7 +404,7 @@ class _Row extends StatelessWidget {
           child: _Cells(
             name: Row(children: [
               Stack(clipBehavior: Clip.none, children: [
-                KitShirt(color: starter ? GlmArena.pillBlue : bench ? const Color(0xFF9AA4B5) : const Color(0xFFD9DEE6), trim: starter ? const Color(0xFFF3B71F) : Colors.white, size: 38),
+                KitShirt(color: starter ? GlmStage.pill : bench ? const Color(0xFF9AA4B5) : const Color(0xFFD9DEE6), trim: starter ? const Color(0xFFF3B71F) : Colors.white, size: 38),
                 if (captain)
                   Positioned(
                     bottom: -2,
