@@ -51,6 +51,8 @@ export const router = createRouter({
         { path: 'training', name: 'training', component: () => import('./pages/team/TrainingPage.vue'), meta: { auth: true } },
         // Sprint 31: the specialists
         { path: 'specialists', name: 'specialists', component: () => import('./pages/team/SpecialistsPage.vue'), meta: { auth: true } },
+        // [Sprint 48 T4] The captain and the set-piece takers, a card each (were at the foot of the lineup).
+        { path: 'takers', name: 'takers', component: () => import('./pages/team/TakersPage.vue'), meta: { auth: true } },
         // Sprint 29: the stadium
         { path: 'stadium', name: 'stadium', component: () => import('./pages/team/StadiumPage.vue'), meta: { auth: true } },
         // Sprint 24: the market

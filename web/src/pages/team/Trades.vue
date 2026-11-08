@@ -15,6 +15,7 @@ import { nm } from '../../lib/names'
 import { t as tr } from '../../lib/i18n'
 import type { components } from '../../api/schema'
 import LineBadge from '../../components/ui/LineBadge.vue'
+import Character from '../../components/characters/Character.vue'
 import { count, money, type Line } from '../../lib/format'
 
 type T = components['schemas']['Transfers']
@@ -142,7 +143,10 @@ onMounted(load)
       <p class="rounded-xl bg-surface px-4 py-3 text-sm text-text-muted">{{ $t('لعرض لاعب للبيع: تبويب «بيع لاعبيّ» في السوق، أو بطاقة اللاعب في صفحة الفريق.') }}</p>
     </template>
 
-    <template v-if="t && view === 'offers'">
+    <!-- [Sprint 48 T6] The negotiations (the owner's screenshots, our own look): the offers in the middle, and at the side
+         the assistant coach with how a deal between coaches goes. -->
+    <div v-if="t && view === 'offers'" class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+     <div class="flex min-w-0 flex-col gap-3">
       <div class="flex flex-wrap items-center gap-2">
         <label class="flex h-11 items-center gap-2 rounded-lg bg-surface px-3 text-sm text-text-muted">{{ $t('عرض جديد إلى') }}
           <select class="h-8 bg-transparent font-semibold text-text" :disabled="!!t.closed" @change="(e) => { const c = t!.clubs.find((c) => c.id === Number((e.target as HTMLSelectElement).value)); if (c) compose(c.id, c.name); (e.target as HTMLSelectElement).value = '' }">
@@ -151,7 +155,10 @@ onMounted(load)
         </label>
         <span class="text-xs text-text-muted">{{ $t('ما يُدفع فوق القيمة بين ناديين في الموسم لا يتجاوز {v0}', { v0: count(t.pair_cap) }) }}</span>
       </div>
-      <p v-if="!t.offers.length" class="rounded-xl bg-surface p-4 text-sm text-text-muted">{{ $t('لا عروض بعد.') }}</p>
+      <div v-if="!t.offers.length" class="deals-empty flex min-h-72 flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center">
+        <p class="font-display text-xl font-extrabold text-white">{{ $t('هنا تظهر مفاوضاتك الجارية') }}</p>
+        <p class="max-w-sm text-sm text-white/80">{{ $t('اختر مدرباً من القائمة أعلاه وابدأ أول عرض.') }}</p>
+      </div>
       <article v-for="o in [...pending, ...done]" :key="o.id" class="flex flex-col gap-2 rounded-xl border bg-surface p-4" :class="o.status === 'pending' && o.incoming ? 'border-gold/50' : 'border-transparent'">
         <div class="flex flex-wrap items-center gap-2 text-sm">
           <b>{{ o.incoming ? $t('عرض وارد من {v0}', { v0: o.from.name }) : $t('عرضك إلى {v0}', { v0: o.to.name }) }}</b>
@@ -178,7 +185,15 @@ onMounted(load)
           <button v-else type="button" class="h-touch rounded-md bg-surface-raised px-4" :disabled="busy(`deal:${o.id}`)" @click="decide(o, 'cancel')">{{ $t('اسحب العرض') }}</button>
         </div>
       </article>
-    </template>
+     </div>
+      <aside class="deals-aside flex flex-col overflow-hidden rounded-2xl" :aria-label="$t('صفقات المدربين')">
+        <div class="deals-hero grid place-items-center pt-4"><Character model="B2" mood="happy" class="w-36" /></div>
+        <div class="flex flex-col gap-2 bg-surface p-4">
+          <h2 class="font-display text-lg font-extrabold">{{ $t('صفقات المدربين') }}</h2>
+          <p class="text-sm leading-6 text-text-soft">{{ $t('كل لاعب في الدوري قابل للتفاوض: اطلب لاعباً أو أكثر من مدرب، وأعطه مالاً أو لاعبين أو نسبة من بيعه القادم. ويرد بالقبول أو الرفض أو بعرض مضاد قبل أن ينتهي العرض.') }}</p>
+        </div>
+      </aside>
+    </div>
 
     <UiDialog :open="draft.open" bare @close="draft.open = false"><template v-if="draft.open">
       <section :aria-label="draft.counterOf ? $t('رد بعرض') : $t('عرض جديد')" class="flex max-h-[90dvh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-t-xxl bg-surface p-4 md:rounded-xxl">
@@ -227,3 +242,11 @@ onMounted(load)
     </template></UiDialog>
   </div>
 </template>
+
+<style scoped>
+/* [Sprint 48 T6] The empty table: a night pitch out of focus, in our own colours. */
+.deals-empty { background: radial-gradient(70% 60% at 50% 40%, rgb(255 255 255 / 0.12), transparent 70%), repeating-linear-gradient(90deg, var(--color-pitch) 0 48px, var(--color-pitch-dark) 48px 96px); box-shadow: inset 0 0 80px rgb(0 0 0 / 0.45); }
+.deals-empty p { text-shadow: 0 1px 3px rgb(0 0 0 / 0.5); }
+.deals-hero { background: radial-gradient(80% 70% at 50% 100%, var(--color-pitch), transparent 70%), linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
+.deals-aside { border: 1px solid color-mix(in srgb, var(--color-gold) 22%, transparent); }
+</style>
