@@ -10,7 +10,8 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://localhost:5173',
-    ...devices['Pixel 7'],
+    // [Sprint 48 L1] The game is played sideways: a phone turned on its side (upright, the rotate card covers it).
+    ...devices['Pixel 7 landscape'],
     locale: 'ar',
     trace: 'retain-on-failure',
     // In the cloud sessions the preinstalled browser; in CI the one `npx playwright install chromium` fetches.

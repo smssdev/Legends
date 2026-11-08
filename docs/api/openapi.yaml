@@ -1016,6 +1016,51 @@ paths:
                 properties:
                   lineup: { $ref: '#/components/schemas/Lineup' }
         '403': { $ref: '#/components/responses/Error' }
+  /leagues/{league}/team/season:
+    parameters: [{ $ref: '#/components/parameters/League' }]
+    get:
+      tags: [team]
+      summary: '[Sprint 48 T1] The squad''s season: goals, assists and ratings by league round, and the league''s transfers'
+      description: From the finished matches' sheets. Ratings in hundredths (750 is 7.5), keyed by round. Members with a club only.
+      responses:
+        '200':
+          description: The squad's season
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [rounds, players, transfers]
+                properties:
+                  rounds: { type: integer, description: The last league round played }
+                  players:
+                    type: object
+                    description: By player id
+                    additionalProperties:
+                      type: object
+                      required: [goals, assists, played, ratings, average]
+                      properties:
+                        goals: { type: integer }
+                        assists: { type: integer }
+                        played: { type: integer }
+                        ratings: { type: object, additionalProperties: { type: integer }, description: By league round }
+                        average: { type: integer, nullable: true }
+                  transfers:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, player_id, name, position, from, to, price, value, at]
+                      properties:
+                        id: { type: integer }
+                        player_id: { type: integer }
+                        name: { type: string }
+                        position: { type: string }
+                        from: { type: string, nullable: true }
+                        to: { type: string, nullable: true }
+                        price: { type: integer }
+                        value: { type: integer }
+                        at: { type: string, format: date-time }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /leagues/{league}/team/lineup:
     parameters: [{ $ref: '#/components/parameters/League' }]
     put:

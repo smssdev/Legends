@@ -15,6 +15,9 @@
   <SplashScreen v-if="splash" @done="splash = false" />
   <!-- [Sprint 30 Q2] The one «are you sure» window (stores/confirm). -->
   <ConfirmHost />
+  <!-- [Sprint 48 L1] The whole game is played sideways (the owner's decision 2026-11-08): upright on a phone, the
+       match's card asks to turn it on every game screen (not the public pages; the match page shows its own). -->
+  <TurnPhone game v-if="(auth.signedIn || route.meta.auth) && route.name !== 'sim-match' && route.name !== 'league-match'" />
   </TooltipProvider>
   </ConfigProvider>
 </template>
@@ -25,8 +28,13 @@ import { ConfigProvider, TooltipProvider } from 'reka-ui'
 import { locale } from './lib/i18n'
 import SplashScreen from './components/SplashScreen.vue'
 import ConfirmHost from './components/shell/ConfirmHost.vue'
+import TurnPhone from './components/match/TurnPhone.vue'
+import { useRoute } from 'vue-router'
+import { useAuth } from './stores/auth'
 import { useBroadcast } from './stores/broadcast'
 
 const splash = ref(true)
 const broadcast = useBroadcast()
+const auth = useAuth()
+const route = useRoute()
 </script>

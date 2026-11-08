@@ -29,7 +29,7 @@ import { useInbox } from '../stores/inbox'
 import { useSlot } from '../stores/slot'
 import { useWallet } from '../stores/wallet'
 import { useBroadcast } from '../stores/broadcast'
-import { GROUPS, SECTIONS, type Group, type Section } from './nav'
+import { COMMUNITY, GROUPS, OUTSIDE, SECTIONS, type Group, type Section } from './nav'
 
 const route = useRoute()
 const broadcast = useBroadcast()
@@ -115,6 +115,8 @@ onBeforeUnmount(() => sizer?.disconnect())
           <ClubSwitcher v-if="inSlot" />
           <RouterLink v-else to="/" :aria-label="$t('الرئيسية')" class="shrink-0 md:py-2"><BrandMark size="sm" /></RouterLink>
           <div class="flex-1" />
+          <!-- [Sprint 48 D2] The game's emblem in the middle of the bar, as a manager game's crest over its stadium. -->
+          <RouterLink v-if="inSlot" to="/" :aria-label="$t('الرئيسية')" class="shell-brand absolute inset-x-0 mx-auto hidden w-fit xl:flex"><BrandMark size="sm" /></RouterLink>
 
           <template v-if="auth.user">
             <div class="flex shrink-0 items-center gap-1 md:gap-2">
@@ -173,6 +175,44 @@ onBeforeUnmount(() => sizer?.disconnect())
         </div>
       </div>
 
+      <!-- [Sprint 48 D2] The computer's menu: one row of sections under the bar (it was a side menu), each portal a list
+           that drops under its name, and a gold seam under the row. -->
+      <nav v-if="auth.user" class="shell-nav hidden md:block" :aria-label="inSlot ? $t('أقسام النادي') : $t('أقسام اللعبة')">
+        <div class="mx-auto flex max-w-7xl items-stretch gap-1 px-6" :class="route.meta.wide ? 'xl:max-w-[96rem]' : ''">
+          <template v-if="inSlot">
+            <RouterLink v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" class="nav-item" :class="active(pathOf(s)) ? 'is-active' : ''" :aria-current="active(pathOf(s)) ? 'page' : undefined">
+              <Icon :name="s.icon" :size="20" class="nav-icon" />{{ $t(s.label) }}
+            </RouterLink>
+            <Popover v-for="g in groups" :key="g.key" class="relative flex">
+              <PopoverButton class="nav-item" :class="groupActive(g.key) ? 'is-active' : ''">
+                <Icon :name="g.icon" :size="20" class="nav-icon" />{{ $t(g.label) }}<span class="text-xs text-gold" aria-hidden="true">▾</span>
+              </PopoverButton>
+              <Transition name="drop">
+                <PopoverPanel v-slot="{ close }" class="nav-panel">
+                  <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="nav-link" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined" @click="close()">
+                    <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
+                  </RouterLink>
+                </PopoverPanel>
+              </Transition>
+            </Popover>
+          </template>
+          <template v-else>
+            <RouterLink v-for="s in OUTSIDE" :key="s.path" :to="s.path" class="nav-item" :class="route.path === s.path ? 'is-active' : ''" :aria-current="route.path === s.path ? 'page' : undefined">
+              <Icon :name="s.icon" :size="20" class="nav-icon" />{{ $t(s.label) }}
+            </RouterLink>
+          </template>
+          <div class="flex-1" />
+          <Popover class="relative flex">
+            <PopoverButton class="nav-item"><Icon name="chat" :size="20" class="nav-icon" />{{ $t('المجتمع') }}<span class="text-xs text-gold" aria-hidden="true">▾</span></PopoverButton>
+            <Transition name="drop">
+              <PopoverPanel v-slot="{ close }" class="nav-panel end-0 start-auto">
+                <RouterLink v-for="s in COMMUNITY" :key="s.path" :to="s.path" class="nav-link" :class="active(s.path) ? 'is-active' : ''" @click="close()"><Icon :name="s.icon" :size="18" />{{ $t(s.label) }}</RouterLink>
+              </PopoverPanel>
+            </Transition>
+          </Popover>
+        </div>
+      </nav>
+
       <!-- A portal's list on the phone: a sheet over the bottom bar. -->
       <div v-if="inSlot && openGroup" class="fixed inset-0 z-20 bg-black/50 md:hidden" @click="portal = null" />
       <section v-if="inSlot && openGroup" id="portal-list" class="portal-list md:hidden" :aria-label="$t(openGroup.label)">
@@ -205,25 +245,7 @@ onBeforeUnmount(() => sizer?.disconnect())
       {{ $t('مكافأة {n} كوينز تنتظرك.', { n: auth.user.verification?.welcome_coins ?? 0 }) }} <span class="font-bold text-gold">{{ $t('وثّق حسابك من صفحة حسابي') }}</span>
     </RouterLink>
 
-    <div :class="inSlot ? 'md:grid md:grid-cols-[15rem_minmax(0,1fr)]' : ''">
-      <!-- [W6] Inside a slot on the computer: every section, always in sight. -->
-      <nav v-if="inSlot" class="side-nav hidden md:flex" :aria-label="$t('أقسام النادي')">
-        <RouterLink v-for="s in clubSections.filter((x) => !x.group)" :key="s.name" :to="pathOf(s)" class="side-item" :class="active(pathOf(s)) ? 'is-active' : ''" :aria-current="active(pathOf(s)) ? 'page' : undefined">
-          <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
-        </RouterLink>
-        <div v-for="g in groups" :key="g.key" class="flex flex-col">
-          <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t(g.label) }}</h3>
-          <RouterLink v-for="s in g.items" :key="s.name" :to="pathOf(s)" class="side-item" :class="route.path === pathOf(s) ? 'is-active' : ''" :aria-current="route.path === pathOf(s) ? 'page' : undefined">
-            <Icon :name="s.icon" :size="18" />{{ $t(s.label) }}
-          </RouterLink>
-        </div>
-        <h3 class="px-2 pb-1 pt-3 text-xs font-bold text-text-muted">{{ $t('حسابي') }}</h3>
-        <RouterLink to="/" class="side-item"><Icon name="home" :size="18" />{{ $t('فرقي') }}</RouterLink>
-        <RouterLink to="/leagues" class="side-item"><Icon name="leagues" :size="18" />{{ $t('دورياتي') }}</RouterLink>
-        <RouterLink to="/profile" class="side-item"><Icon name="team" :size="18" />{{ $t('حسابي') }}</RouterLink>
-        <RouterLink to="/store" class="side-item"><Icon name="megaphone" :size="18" />{{ $t('العروض') }}</RouterLink>
-        <RouterLink to="/ideas" class="side-item"><Icon name="idea" :size="18" />{{ $t('اقتراحات التطوير') }}</RouterLink>
-      </nav>
+    <div>
       <main class="mx-auto w-full max-w-7xl px-3 py-5 md:px-6 md:pb-10" :class="[inSlot ? 'shell-main-slot' : 'pb-10', route.meta.wide ? 'xl:max-w-[96rem]' : '']">
         <RouterView v-slot="{ Component, route: r }">
           <Transition name="page">
@@ -346,21 +368,74 @@ onBeforeUnmount(() => sizer?.disconnect())
 }
 /* [X85] Always in sight on its screens, narrow phones too: only tighter. */
 @media (max-width: 380px) { .pill-money { padding: 0 0.45rem } }
-/* [Sprint 20 W6] The computer's fixed side menu inside a slot. */
-.side-nav {
-  position: sticky;
-  top: var(--shell-header, 4.25rem);
-  align-self: start;
-  height: calc(100vh - var(--shell-header, 4.25rem));
-  height: calc(100dvh - var(--shell-header, 4.25rem));
+/* [Sprint 48 D2] The computer's menu row: night glass over the stadium, each section an icon over its name as in the
+   manager games' bars, the current one lit in gold, and the gold seam under the row (the bar's own seam is emerald). */
+.shell-nav {
+  position: relative;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-bg-deep) 92%, transparent), color-mix(in srgb, var(--color-panel) 88%, transparent));
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  box-shadow: 0 10px 24px -18px var(--color-shade);
+}
+.nav-item {
+  position: relative;
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.nav-item .nav-icon { color: var(--color-gold); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); transition: transform 0.15s ease; }
+.nav-item:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.nav-item:hover .nav-icon { transform: translateY(-2px) scale(1.08); }
+.nav-item.is-active { color: var(--color-gold-light); }
+.nav-item.is-active::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.6rem;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(90deg, var(--color-gold-dark), var(--color-gold-light), var(--color-gold-dark));
+}
+.nav-panel {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  z-index: 40;
+  display: flex;
+  min-width: 14rem;
   flex-direction: column;
-  gap: 0.1rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  padding: 1rem 0.75rem 2rem;
-  background: linear-gradient(180deg, var(--color-panel), var(--color-bg-deep));
-  border-inline-end: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
+  gap: 0.15rem;
+  margin-top: 0.35rem;
+  padding: 0.4rem;
+  border-radius: 0.9rem;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+  box-shadow: 0 18px 40px -16px var(--color-shade);
+}
+.nav-link {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.7rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  color: var(--color-text-soft);
+}
+.nav-link:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+.nav-link.is-active { color: #fff; background: var(--color-brand); }
+/* [Sprint 48 L1] A phone turned sideways is short: the bar and the menu row tighten so the page keeps its room. */
+@media (max-height: 520px) and (min-width: 768px) {
+  .nav-item { min-height: 2.4rem; font-size: 0.85rem; padding: 0 0.6rem; }
+  .shell-brand { display: none; }
+  :global(.chrome-tab), .coach-tab { min-height: 2.6rem; margin-block: 0.25rem; }
 }
 /* [UP7] A portal's list: a sheet above the phone's bottom bar, a panel under the portals on the computer. */
 .portal-list {
@@ -393,19 +468,6 @@ onBeforeUnmount(() => sizer?.disconnect())
 }
 .portal-item:hover { transform: scale(1.03); box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--color-shade) 70%, transparent); color: var(--color-text); }
 .portal-item.is-active { color: #fff; background: linear-gradient(180deg, var(--color-brand-light), var(--color-brand)); }
-.side-item {
-  display: flex;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0 0.6rem;
-  border-radius: 0.6rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-text-soft);
-}
-.side-item:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
-.side-item.is-active { color: #fff; background: var(--color-brand); }
 /* [X41] The broadcast's bar: a strip in the emerald of the shell, under the header. */
 .on-air {
   background: linear-gradient(90deg, color-mix(in srgb, var(--color-live) 25%, var(--color-panel)), var(--color-panel));

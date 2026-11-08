@@ -132,6 +132,7 @@ class AdminController extends Controller
     /** [Sprint 21 E7.3] Delete a coach's account for good: the admin types its number to confirm; logged. */
     public function deleteUser(Request $request, User $user): JsonResponse
     {
+        $this->fullAdmin($request);
         abort_if($user->isAdmin(), 409, 'لا يُحذف حساب مدير من اللوحة.');
         $confirm = (int) $request->validate(['confirm' => ['required', 'integer']])['confirm'];
         abort_unless($confirm === (int) $user->account_no, 422, 'اكتب رقم الحساب نفسه لتأكيد الحذف.');
@@ -237,6 +238,7 @@ class AdminController extends Controller
     /** Gives a developer's account one of the reserved names (Owner-Sizar, Owner-Sliman) and its badge [X11]. */
     public function official(Request $request, User $user): JsonResponse
     {
+        $this->fullAdmin($request);
         $name = (string) $request->validate(['name' => ['required', 'string', Rule::in(config('game.account.official_usernames'))]])['name'];
         abort_if(Username::taken($name, $user->id), 409, 'هذا الاسم الرسمي لحساب آخر.');
         $user->forceFill(['username' => strtolower($name)])->save();
@@ -463,6 +465,15 @@ class AdminController extends Controller
     }
 
     /** owner-sizar → Owner-Sizar, as written in the settings. */
+    /**
+     * [Sprint 48 A1] What only a full admin does, whatever the scope opens under users/: deleting an account and giving
+     * an official name. A support admin still suspends, and issues a verification code for one who gets no email.
+     */
+    private function fullAdmin(Request $request): void
+    {
+        abort_unless($request->user()->admin_scope === null, 403, 'هذه العملية للمدير الكامل فقط.');
+    }
+
     private function officialName(string $username): string
     {
         foreach (config('game.account.official_usernames') as $name) {

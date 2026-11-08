@@ -5,6 +5,9 @@
 // the phone is turned. Leaving the match lets the phone turn freely again.
 import { onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 
+// [Sprint 48 L1] On every game screen too (App.vue), with the game's own words.
+const props = withDefaults(defineProps<{ game?: boolean }>(), { game: false })
+
 const query = '(orientation: portrait) and (pointer: coarse) and (max-width: 820px)'
 const upright = ref(false)
 const lockable = ref(typeof screen !== 'undefined' && 'orientation' in screen && typeof (screen.orientation as any)?.lock === 'function'
@@ -44,8 +47,8 @@ onBeforeUnmount(() => { media?.removeEventListener('change', update); release() 
     <div class="flex max-w-xs flex-col items-center gap-4">
       <div class="device" aria-hidden="true" />
       <b class="font-display text-2xl">{{ $t('لفّ جوالك') }} 🔄</b>
-      <span class="text-sm leading-relaxed text-text-muted">{{ $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
-      <button v-if="lockable" type="button" class="min-h-touch rounded-xl bg-gold px-6 font-bold text-on-gold" @click="turn">{{ $t('شاهد بالعرض وملء الشاشة') }}</button>
+      <span class="text-sm leading-relaxed text-text-muted">{{ props.game ? $t('اللعبة تُلعب بالعرض. أدر الجوال وتكمل فوراً.') : $t('المباراة تُلعب بالعرض. أدر الجوال وتبدأ فوراً.') }}</span>
+      <button v-if="lockable" type="button" class="min-h-touch rounded-xl bg-gold px-6 font-bold text-on-gold" @click="turn">{{ props.game ? $t('العب بالعرض وملء الشاشة') : $t('شاهد بالعرض وملء الشاشة') }}</button>
     </div>
   </div>
 </template>

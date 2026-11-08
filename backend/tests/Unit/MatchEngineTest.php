@@ -167,4 +167,61 @@ class MatchEngineTest extends TestCase
         $this->assertGreaterThan(5, $seen);
         $this->assertLessThan(40, $seen);
     }
+
+    /** [Sprint 48 B2] Two men down, the shootout is still even: the side with more leaves its extra takers out. */
+    public function test_a_shootout_is_taken_from_equal_numbers(): void
+    {
+        $seen = 0;
+        foreach (range(1, 60) as $seed) {
+            $s = $this->state($seed);
+            $s['competition'] = 'cup';
+            foreach ([0, 1] as $n) {
+                $i = array_key_first(array_filter($s['teams']['home']['players'], fn ($p) => $p['on'] && $p['slot_line'] === 'def'));
+                $s['teams']['home']['players'][$i]['on'] = false;
+                $s['teams']['home']['players'][$i]['out'] = 'red';
+                $s['teams']['home']['missing']++;
+            }
+            $s['period'] = 5;
+            $out = Runner::tick($s)['out'];
+            $kicks = array_values(array_filter($out['events'], fn ($e) => $e['type'] === 'shootout'))[0]['kicks'];
+            $by = ['home' => [], 'away' => []];
+            foreach ($kicks as $k) {
+                $by[$k['team']][] = $k['taker'];
+            }
+            $this->assertLessThanOrEqual(9, count(array_unique($by['away'])), "seed $seed: the away side kicks from nine, as the home side");
+            if (count($by['away']) > 9) {
+                $seen++;
+                $this->assertSame($by['away'][0], $by['away'][9], "seed $seed: the tenth kick goes back to the first taker");
+            }
+        }
+    }
+
+    /** [Sprint 48 B4] Under seven players on the pitch the match ends: 3-0 to the other side. */
+    public function test_a_match_ends_when_a_side_is_under_seven(): void
+    {
+        $s = Runner::tick($this->state(11));
+        $off = array_slice(array_keys(array_filter($s['teams']['away']['players'], fn ($p) => $p['on'] && $p['slot_line'] !== 'gk')), 0, 5);
+        foreach ($off as $i) {
+            $s['teams']['away']['players'][$i]['on'] = false;
+            $s['teams']['away']['players'][$i]['out'] = 'red';
+            $s['teams']['away']['missing']++;
+        }
+        $s = Runner::tick($s);
+        $this->assertTrue($s['finished']);
+        $this->assertSame(['home' => 3, 'away' => 0], $s['score']);
+        $this->assertContains('abandoned', array_column($s['out']['events'], 'type'));
+    }
+
+    /** [Sprint 48 B4] Seven is enough: the match goes on. */
+    public function test_a_side_of_seven_plays_on(): void
+    {
+        $s = Runner::tick($this->state(11));
+        $off = array_slice(array_keys(array_filter($s['teams']['away']['players'], fn ($p) => $p['on'] && $p['slot_line'] !== 'gk')), 0, 4);
+        foreach ($off as $i) {
+            $s['teams']['away']['players'][$i]['on'] = false;
+            $s['teams']['away']['players'][$i]['out'] = 'red';
+            $s['teams']['away']['missing']++;
+        }
+        $this->assertFalse(Runner::tick($s)['finished']);
+    }
 }
