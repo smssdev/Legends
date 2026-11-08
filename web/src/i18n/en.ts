@@ -2901,4 +2901,9 @@ export const EN: Record<string, string> = {
   'الانتقالات': 'Transfers',
   'تقييمات اللاعبين': 'Player ratings',
   'جدول': 'Table',
+  // [Sprint 48 T3] The lineup's rails and panel.
+  'أدوات التشكيلة': 'Lineup tools',
+  'أفضل اللاعبين المناسبين للطريقة المختارة': 'The best players for the chosen formation',
+  'خارج التشكيلة': 'Outside the lineup',
+  'كل الفريق في التشكيلة أو على الدكة.': 'The whole squad is in the lineup or on the bench.',
 }
