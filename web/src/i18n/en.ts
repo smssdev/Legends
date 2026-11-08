@@ -2906,4 +2906,10 @@ export const EN: Record<string, string> = {
   'أفضل اللاعبين المناسبين للطريقة المختارة': 'The best players for the chosen formation',
   'خارج التشكيلة': 'Outside the lineup',
   'كل الفريق في التشكيلة أو على الدكة.': 'The whole squad is in the lineup or on the bench.',
+  // [Sprint 48 T4] The specialists' page.
+  'عيّن قائدك ومنفذي الكرات الثابتة. «تلقائي» يختار الأفضل من الأساسيين في كل مباراة.': 'Pick your captain and set-piece takers. «Auto» picks the best of the eleven each match.',
+  'السن: {v0}': 'Age: {v0}',
+  'لا أحد بعد': 'No one yet',
+  'تبديل اللاعب': 'Change player',
+  'قائد الفريق': 'Team captain',
 }

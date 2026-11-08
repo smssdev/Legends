@@ -16,6 +16,8 @@ export const SECTIONS: Section[] = [
   { name: 'team', path: '/team', label: 'الفريق', icon: 'team', club: true, group: 'team' },
   { name: 'lineup', path: '/lineup', label: 'التشكيلة', icon: 'lineup', club: true, group: 'team' },
   { name: 'tactics', path: '/tactics', label: 'التكتيك', icon: 'tactics', club: true, group: 'team' },
+  // [Sprint 48 T4] The captain and the set-piece takers.
+  { name: 'takers', path: '/takers', label: 'المتخصصون', icon: 'lineup', club: true, group: 'team' },
   { name: 'training', path: '/training', label: 'التدريب', icon: 'training', club: true, group: 'team' },
   { name: 'specialists', path: '/specialists', label: 'الجهاز الفني', icon: 'staff', club: true, group: 'team' },
   { name: 'market', path: '/market', label: 'السوق', icon: 'market', club: true, group: 'club' },

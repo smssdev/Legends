@@ -410,29 +410,7 @@ async function save() {
 const dirtyAgainst = (l: { formation: string; starters: (number | null)[]; bench: number[] }) =>
   JSON.stringify([l.formation, l.starters, l.bench]) !== JSON.stringify([formation.value, starters.value, bench.value])
 
-// Captain and set-piece takers [PLAN 2.16]. [Sprint 27 W5] Cards, each chosen from the whole squad by its skill;
-// «تلقائي» lets the server choose the best of the eleven.
-const ROLES = { captain: 'القائد', penalty: 'ضربات الجزاء', free_kick: 'الضربات الحرة', corner: 'الركنيات' } as const
-const SKILL = { captain: 'القيادة', penalty: 'الجزاء', free_kick: 'الحرة', corner: 'العرضيات' } as const
-type Role = keyof typeof ROLES
-const takerRole = ref<Role | null>(null)
-async function setTaker(role: Role, value: number | null) {
-  takerRole.value = null
-  if (!leagueId.value || !team.value) return
-  const body: Record<string, number | null> = {}
-  for (const r of Object.keys(ROLES) as Role[]) {
-    const t = team.value.takers[r]
-    body[r] = r === role ? value : (t?.chosen_id ?? null)
-  }
-  try {
-    await ensureCsrf()
-    const { data } = await api.PUT('/leagues/{league}/team/takers', { params: { path: { league: leagueId.value } }, body })
-    team.value = data as typeof team.value
-  } catch (e) {
-    message.value = asApiError(e).message
-  }
-}
-const skillOf = (role: Role, id: number | null | undefined) => team.value?.takers[role]?.candidates?.find((c) => c.id === id)?.skill
+// [Sprint 48 T4] The captain and the set-piece takers have their own page (TakersPage.vue).
 
 // My own formations: ten cells on a 4 × 5 grid, the goalkeeper fixed [PLAN 2.15].
 const ROWS = [['att', 'هجوم'], ['am', 'وسط هجومي'], ['dm', 'وسط دفاعي'], ['def', 'دفاع']] as const
@@ -539,7 +517,7 @@ async function saveCustom() {
                 <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5" /><path d="M16 4l4 4M20 4l-4 4M6 10c0 6 4 8 10 8M13 15l3 3-3 3" /></svg>
                 <b class="text-sm">{{ $t('التكتيك') }}</b>
               </RouterLink>
-              <RouterLink :to="{ name: 'specialists' }" class="rail-btn">
+              <RouterLink :to="{ name: 'takers' }" class="rail-btn">
                 <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.4 6.7 19.1l1-5.8-4.2-4.1 5.9-.9z" /></svg>
                 <b class="text-sm">{{ $t('المتخصصون') }}</b>
               </RouterLink>
@@ -681,20 +659,6 @@ async function saveCustom() {
         </div>
       </UiDialog>
 
-      <!-- [Sprint 27 W5] The specialists: a card per role, chosen from the whole squad. -->
-      <section class="flex flex-col gap-2" aria-labelledby="h-takers">
-        <h2 id="h-takers" class="font-display text-xl font-extrabold">{{ $t('المتخصصون') }}</h2>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
-          <button v-for="(label, role) in ROLES" :key="role" type="button" class="flex min-h-touch flex-col items-start gap-1 rounded-xl bg-surface p-3 text-start" @click="takerRole = role">
-            <span class="text-xs text-text-muted">{{ $t(label) }}</span>
-            <b class="w-full truncate">{{ $nm(players.get(team.takers[role]?.player_id ?? 0)?.name) || '—' }}</b>
-            <span class="flex w-full items-center justify-between text-xs">
-              <span class="font-numbers text-gold">{{ skillOf(role, team.takers[role]?.player_id) ?? '' }}</span>
-              <span class="rounded-pill px-2" :class="team.takers[role]?.auto ? 'bg-surface-sunk text-text-muted' : 'bg-gold/15 text-gold'">{{ team.takers[role]?.auto ? $t('تلقائي') : $t('اختيارك') }}</span>
-            </span>
-          </button>
-        </div>
-      </section>
     </template>
     <p v-else class="text-text-muted">{{ $t('جارٍ التحميل…') }}</p>
 
@@ -761,24 +725,6 @@ async function saveCustom() {
       </div>
     </UiDialog>
 
-    <!-- [Sprint 27 W5] A specialist: anyone in the squad, the best at it first. -->
-    <UiDialog :open="!!takerRole" :title="takerRole ? ROLES[takerRole] : ''" @close="takerRole = null">
-      <ul v-if="takerRole && team" class="flex max-h-[65vh] flex-col gap-1 overflow-y-auto">
-        <li>
-          <button type="button" class="flex min-h-touch w-full items-center justify-between rounded-lg px-3 font-bold" :class="team.takers[takerRole]?.chosen_id ? 'bg-surface' : 'bg-gold/15 text-gold'" @click="setTaker(takerRole!, null)">
-            {{ $t('تلقائي: الأفضل من الأساسيين') }}
-          </button>
-        </li>
-        <li v-for="c in team.takers[takerRole]?.candidates ?? []" :key="c.id">
-          <button type="button" class="flex min-h-touch w-full items-center gap-2 rounded-lg px-3 py-2 text-start" :class="team.takers[takerRole]?.chosen_id === c.id ? 'bg-gold/15' : 'bg-surface'" @click="setTaker(takerRole!, c.id)">
-            <span class="font-numbers w-8 text-lg font-bold text-gold">{{ c.skill }}</span>
-            <span class="min-w-0 flex-1 truncate text-sm font-bold">{{ $nm(players.get(c.id)?.name) }}</span>
-            <span class="text-xs" :class="c.on ? 'text-success' : 'text-text-muted'">{{ c.on ? $t('أساسي') : $t('ليس أساسياً') }}</span>
-          </button>
-        </li>
-      </ul>
-      <p v-if="takerRole" class="mt-2 text-xs text-text-muted">{{ $t('الرقم: {v0}', { v0: $t(SKILL[takerRole]) }) }}</p>
-    </UiDialog>
 
     <PlayerCard v-if="card" :player="card" @close="card = null" />
 
