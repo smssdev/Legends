@@ -71,6 +71,9 @@ final class MatchEngine
             $label = $this->minuteLabel();
             $period = $this->s['period'];
             $this->clock();
+            if (! $this->s['finished']) {
+                $this->abandonIfShort();
+            }
         }
 
         unset($this->s['out']);
@@ -161,6 +164,31 @@ final class MatchEngine
     }
 
     private int $periodEvents = 0;
+
+    /**
+     * [Sprint 48 B4] The law (IFAB 3): no match goes on with a side under seven players on the pitch (the one being
+     * replaced after an injury counts until the coach picks). It ends there, a 3-0 win for the other side, or the score
+     * as it stands if that side already led by three or more.
+     */
+    private function abandonIfShort(): void
+    {
+        foreach (['home', 'away'] as $side) {
+            $team = $this->s['teams'][$side];
+            $on = count(array_filter($team['players'], fn ($p) => $p['on'])) + (isset($team['pending_injury']) ? 1 : 0);
+            if ($on >= 7) {
+                continue;
+            }
+            $other = $side === 'home' ? 'away' : 'home';
+            if ($this->s['score'][$other] - $this->s['score'][$side] < 3) {
+                $this->s['score'][$side] = 0;
+                $this->s['score'][$other] = 3;
+            }
+            $this->event('abandoned', $side, ['reason' => 'too_few_players', 'players' => $on, 'score' => $this->s['score']]);
+            $this->finish();
+
+            return;
+        }
+    }
 
     private function finish(): void
     {
@@ -898,7 +926,8 @@ final class MatchEngine
                 if (! $p['on']) {
                     continue;
                 }
-                $own = $p['line'] === 'gk' ? intdiv($drain, 2) : intdiv($drain * (130 - $p['a']['sta']), 60);
+                // [Sprint 48 B3] By where he plays now: a field player in goal tires as a keeper, a keeper up front as a runner.
+                $own = $p['slot_line'] === 'gk' ? intdiv($drain, 2) : intdiv($drain * (130 - $p['a']['sta']), 60);
                 $p['fit'] = max(0, $p['fit'] - $own);
             }
             unset($p);
@@ -915,6 +944,10 @@ final class MatchEngine
             usort($takers, fn ($a, $b) => $b['a']['pen'] <=> $a['a']['pen'] ?: $a['id'] <=> $b['id']);
             $order[$side] = $takers;
         }
+        // [Sprint 48 B2] The law (IFAB 10): the side with more players on the pitch leaves out its extra ones (its weakest
+        // takers), so both sides take from the same number and no one kicks twice before the other side's last has.
+        $even = min(count($order['home']), count($order['away']));
+        $order = ['home' => array_slice($order['home'], 0, $even), 'away' => array_slice($order['away'], 0, $even)];
         $taken = ['home' => 0, 'away' => 0];
         for ($round = 0; $round < 30; $round++) {
             foreach (['home', 'away'] as $side) {

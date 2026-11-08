@@ -47,3 +47,22 @@ export const GROUPS: { key: Group; label: string; icon: keyof typeof PATHS }[] =
   { key: 'comps', label: 'المنافسات', icon: 'league' },
   { key: 'media', label: 'الإعلام والتفاعل', icon: 'news' },
 ]
+
+/** [Sprint 48 D2] The computer's menu row outside a slot, and the community's list at its end (in and out of a slot). */
+export const OUTSIDE: { path: string; label: string; icon: keyof typeof PATHS }[] = [
+  { path: '/', label: 'الرئيسية', icon: 'home' },
+  { path: '/leagues', label: 'دورياتي', icon: 'leagues' },
+  { path: '/leagues/new', label: 'أنشئ دورياً', icon: 'league' },
+  { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
+  { path: '/store', label: 'العروض', icon: 'megaphone' },
+]
+export const COMMUNITY: { path: string; label: string; icon: keyof typeof PATHS }[] = [
+  { path: '/', label: 'فرقي', icon: 'home' },
+  { path: '/leagues', label: 'دورياتي', icon: 'leagues' },
+  { path: '/groups', label: 'الجروبات', icon: 'chat' },
+  { path: '/tournaments', label: 'البطولات', icon: 'trophy' },
+  { path: '/store', label: 'العروض', icon: 'megaphone' },
+  { path: '/ideas', label: 'اقتراحات التطوير', icon: 'idea' },
+  { path: '/inbox', label: 'الرسائل', icon: 'inbox' },
+  { path: '/profile', label: 'حسابي', icon: 'team' },
+]

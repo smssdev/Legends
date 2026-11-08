@@ -94,8 +94,10 @@ final class AutoPick
         if (in_array($p['pos'], $fits, true)) {
             return 0;
         }
+        // [Sprint 48 B1] Never a keeper out of goal or a field player in it while the squad has one that fits: the
+        // penalty is more than any rating gap (it was 60 points, and a 99 striker beat a 38 keeper to the gloves).
         if ($slot['line'] === 'gk' || $p['line'] === 'gk') {
-            return 6000;
+            return 20000;
         }
         $alt = array_map('trim', explode(',', (string) ($p['alt'] ?? '')));
         if (array_intersect($alt, $fits)) {

@@ -150,4 +150,19 @@ class AdminToolsTest extends TestCase
         $this->actingAs($this->admin)->getJson('/api/v1/admin/leagues')->assertOk();
         $this->getJson('/api/v1/admin/vacations')->assertOk();
     }
+
+    public function test_a_support_admin_suspends_but_neither_deletes_nor_names_an_account_official(): void
+    {
+        // [Sprint 48 A1] The support scope opens users/, but deleting and the official names stay the full admin's.
+        $support = User::factory()->create(['role' => 'admin']);
+        $support->forceFill(['admin_scope' => 'support'])->save();
+        $coach = User::factory()->create();
+        $this->actingAs($support)->postJson("/api/v1/admin/users/{$coach->id}/suspend", ['reason' => 'test'])->assertOk();
+        $this->deleteJson("/api/v1/admin/users/{$coach->id}", ['confirm' => $coach->account_no])->assertForbidden();
+        $name = config('game.account.official_usernames')[0];
+        $this->postJson("/api/v1/admin/users/{$coach->id}/official", ['name' => $name])->assertForbidden();
+        $this->postJson("/api/v1/admin/users/{$coach->id}/verification-code")->assertOk();
+        $this->assertDatabaseHas('users', ['id' => $coach->id]);
+        $this->actingAs($this->admin)->deleteJson("/api/v1/admin/users/{$coach->id}", ['confirm' => $coach->account_no])->assertOk();
+    }
 }

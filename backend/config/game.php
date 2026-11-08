@@ -320,7 +320,9 @@ return [
     'engine' => [
         // 13 [X99]: keeper for keeper on an injury, a keeper in an outfield place counts there, the shootout ends when decided.
         // 14 [Sprint 43 B1, B2]: home advantage 3% and 2.5% of the ball, and the attackers' own foul taking a goal away.
-        'version' => 14,
+        // 15 [Sprint 48 B1 to B4]: equal takers in the shootout, a keeper's tiredness by where he plays, a match ends under
+        //    seven players, and the auto-pick never puts a field player in goal while a keeper is there.
+        'version' => 15,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً

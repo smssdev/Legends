@@ -1,5 +1,5 @@
 {
-    "engine_version": 14,
+    "engine_version": 15,
     "snapshot": {
         "match": {
             "half_length": 45,
@@ -126,7 +126,7 @@
             }
         },
         "engine": {
-            "version": 14,
+            "version": 15,
             "overall_weight": 60,
             "attributes_weight": 40,
             "attack_rate_bp": 4500,

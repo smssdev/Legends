@@ -5,7 +5,6 @@ import Icon from '../../components/Icon.vue'
 // ready, one round a day at the owner's evening, the integrity system and the press conferences on, one season).
 // Changing anything makes it a customized league, paid once: the clubs × 20 coins, shown with the coin, never as a "price".
 import UiSlider from '../../components/ui/UiSlider.vue'
-import UiSelect from '../../components/ui/UiSelect.vue'
 import UiToggle from '../../components/ui/UiToggle.vue'
 import RestDaysPicker from '../../components/league/RestDaysPicker.vue'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -19,8 +18,12 @@ import ClubCrest from '../../components/ui/ClubCrest.vue'
 import UiButton from '../../components/ui/UiButton.vue'
 import { strength } from '../../lib/format'
 import { useWallet } from '../../stores/wallet'
+import LeaguePicker from '../../components/league/LeaguePicker.vue'
+import LeagueFlag from '../../components/league/LeagueFlag.vue'
+import { placeOf } from '../../content/leagueAtlas'
+import { locale } from '../../lib/i18n'
 
-type Template = { name: string; clubs: number; top_strength_cp: number }
+type Template = { name: string; clubs: number; top_strength_cp: number; avg_strength_cp?: number }
 type Club = components['schemas']['DataClub']
 
 const COINS_PER_CLUB = 20
@@ -63,7 +66,14 @@ function togglePick(id: number) {
   else if (picked.value.length < count.value) picked.value.push(id)
 }
 
-const step = ref<'settings' | 'club'>('settings')
+// [Sprint 48 D1] First the league, on the picker's tiles; then its settings; then the club.
+const step = ref<'league' | 'settings' | 'club'>('league')
+const place = computed(() => placeOf(template.value))
+function chooseLeague(name: string) {
+  template.value = name
+  step.value = 'settings'
+  window.scrollTo({ top: 0 })
+}
 const clubs = ref<Club[]>([])
 const club = ref<Club | null>(null)
 const error = ref<ApiError | null>(null)
@@ -195,22 +205,27 @@ const field = (name: string) => error.value?.field(name) ?? ''
   <div class="flex flex-col gap-5">
     <header class="flex items-center gap-3">
       <button
-        v-if="step === 'club'"
+        v-if="step !== 'league'"
         type="button"
         class="flex size-touch items-center justify-center rounded-lg bg-surface text-xl"
-        :aria-label="$t('رجوع للإعدادات')"
-        @click="step = 'settings'"
+        :aria-label="step === 'club' ? $t('رجوع للإعدادات') : $t('رجوع لاختيار الدوري')"
+        @click="step = step === 'club' ? 'settings' : 'league'"
       >›</button>
       <div>
-        <h1 class="font-display text-3xl font-extrabold">{{ step === 'settings' ? $t('أنشئ دوريك') : drawMode ? $t('اختر فرق الدوري') : $t('اختر فريقك') }}</h1>
-        <p class="text-sm text-text-muted">{{ step === 'settings' ? $t('كل الإعدادات تُقفل عند بداية الموسم') : drawMode ? $t('اختر {v0} فرق، والقرعة تعطي كل لاعب فريقه', { v0: count }) : $t('باقي الفرق يديرها الحاسوب حتى ينضم أصحابك') }}</p>
+        <h1 class="font-display text-3xl font-extrabold">{{ step === 'league' ? $t('اختيار دوري') : step === 'settings' ? $t('أنشئ دوريك') : drawMode ? $t('اختر فرق الدوري') : $t('اختر فريقك') }}</h1>
+        <p class="text-sm text-text-muted">{{ step === 'league' ? $t('دوريك نسخة من دوري حقيقي بأنديته ولاعبيه: اختر بلده') : step === 'settings' ? $t('كل الإعدادات تُقفل عند بداية الموسم') : drawMode ? $t('اختر {v0} فرق، والقرعة تعطي كل لاعب فريقه', { v0: count }) : $t('باقي الفرق يديرها الحاسوب حتى ينضم أصحابك') }}</p>
       </div>
     </header>
 
     <p v-if="loadError" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(loadError) }}</p>
     <p v-if="error && !Object.keys(error.errors).length" class="rounded-lg bg-live/15 px-4 py-3 text-sm text-danger" role="alert">{{ $t(error.message) }}</p>
 
-    <form v-if="step === 'settings'" class="grid gap-4 lg:grid-cols-[1fr_22rem]" @submit.prevent="toClubs">
+    <LeaguePicker v-if="step === 'league' && templates.length" :templates="templates" :model-value="template" @pick="chooseLeague" />
+    <div v-else-if="step === 'league' && !loadError" class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-hidden="true">
+      <div v-for="n in 8" :key="n" class="h-48 animate-pulse rounded-2xl bg-surface" />
+    </div>
+
+    <form v-else-if="step === 'settings'" class="grid gap-4 lg:grid-cols-[1fr_22rem]" @submit.prevent="toClubs">
       <div class="flex flex-col gap-4">
         <section class="flex flex-col gap-4 rounded-xl bg-surface p-4 md:p-5" aria-labelledby="h-basics">
           <h2 id="h-basics" class="font-display text-xl font-extrabold">{{ $t('الأساسيات') }}</h2>
@@ -218,8 +233,12 @@ const field = (name: string) => error.value?.field(name) ?? ''
           <div class="grid gap-4 md:grid-cols-2">
             <div class="flex flex-col gap-1.5">
               <span class="text-sm font-bold">{{ $t('الدوري') }}</span>
-              <!-- [Sprint 30 Q4] Some forty leagues: typed to filter (Combobox), not a long scroll. -->
-              <UiSelect v-model="template" :options="templates.map((t) => ({ value: t.name, label: $t('{v0} · {v1} نادياً', { v0: $nm(t.name), v1: t.clubs }) }))" label="الدوري" searchable />
+              <!-- [Sprint 48 D1] The league chosen on the picker, and the way back to it. -->
+              <button type="button" class="flex min-h-12 items-center gap-3 rounded-lg border border-gold/40 bg-surface-sunk px-2 py-1 text-start hover:border-gold" @click="step = 'league'">
+                <LeagueFlag :country="place.country" :label="place.ar" :size="40" />
+                <span class="min-w-0 flex-1 leading-tight"><b class="block truncate">{{ locale === 'ar' ? place.ar : place.en }}</b><span class="block truncate text-xs text-text-muted" dir="ltr">{{ template }} · {{ fullTeams }}</span></span>
+                <span class="text-sm font-bold text-gold">{{ $t('غيّر') }}</span>
+              </button>
               <span v-if="field('template')" class="text-sm text-danger">{{ field('template') }}</span>
             </div>
             <label class="flex flex-col gap-1.5">
