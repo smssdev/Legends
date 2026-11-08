@@ -169,6 +169,8 @@ Route::prefix('leagues')->middleware(['auth:sanctum', 'throttle:120,1,leagues', 
     Route::controller(TeamController::class)->prefix('{league}/team')->whereNumber('league')->group(function () {
         Route::get('/', 'show');
         Route::get('suggestion', 'suggestion');
+        // [Sprint 48 T1] The squad's season: goals and ratings by round, and the league's transfers.
+        Route::get('season', 'season');
         Route::put('lineup', 'saveLineup');
         Route::delete('lineup', 'resetLineup');
         Route::put('formations/{number}', 'saveFormation')->whereNumber('number');

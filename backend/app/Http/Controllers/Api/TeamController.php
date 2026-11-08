@@ -17,6 +17,7 @@ use App\League\MatchPrep;
 use App\League\Morale;
 use App\League\Scenarios;
 use App\League\Spy;
+use App\League\SquadSeason;
 use App\League\Tactics;
 use App\League\TacticsBook;
 use App\League\TeamSheet;
@@ -270,6 +271,15 @@ class TeamController extends Controller
         return DB::table('fixtures')->whereIn('status', ['scheduled', 'locked', 'live'])->where('is_bye', false)
             ->where(fn ($q) => $q->where('home_id', $club->id)->orWhere('away_id', $club->id))
             ->whereNotNull('home_id')->whereNotNull('away_id')->orderBy('scheduled_at')->first();
+    }
+
+    /** [Sprint 48 T1] The squad's season for the team screen: goals, ratings by round, and the league's transfers. */
+    public function season(Request $request, League $league): JsonResponse
+    {
+        $club = $this->club($request->user(), $league);
+        abort_unless($league->season, 404, 'لا موسم جارٍ في هذا الدوري.');
+
+        return response()->json(SquadSeason::of($club->id, $league->id, $league->season->id));
     }
 
     /** The club's money [Sprint 23 W1]: the balance, the debt count, the movements, the sponsors and the gate. */

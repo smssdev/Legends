@@ -2341,6 +2341,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leagues/{league}/team/season": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league: components["parameters"]["League"];
+            };
+            cookie?: never;
+        };
+        /**
+         * [Sprint 48 T1] The squad's season: goals, assists and ratings by league round, and the league's transfers
+         * @description From the finished matches' sheets. Ratings in hundredths (750 is 7.5), keyed by round. Members with a club only.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    league: components["parameters"]["League"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The squad's season */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description The last league round played */
+                            rounds: number;
+                            /** @description By player id */
+                            players: {
+                                [key: string]: {
+                                    goals: number;
+                                    assists: number;
+                                    played: number;
+                                    /** @description By league round */
+                                    ratings: {
+                                        [key: string]: number;
+                                    };
+                                    average: number | null;
+                                };
+                            };
+                            transfers: {
+                                id: number;
+                                player_id: number;
+                                name: string;
+                                position: string;
+                                from: string | null;
+                                to: string | null;
+                                price: number;
+                                value: number;
+                                /** Format: date-time */
+                                at: string;
+                            }[];
+                        };
+                    };
+                };
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leagues/{league}/team/lineup": {
         parameters: {
             query?: never;
