@@ -30,12 +30,34 @@ class LivePitch extends StatefulWidget {
 }
 
 class _LivePitchState extends State<LivePitch> with SingleTickerProviderStateMixin {
-  late final Ticker _ticker = createTicker((_) => setState(() {}))..start();
+  // [2026-11-09] Each screen frame repaints the pitch alone (the painter listens to this clock): no widget rebuild,
+  // and the shirt numbers are laid out once each, not 22 times a frame.
+  final _clock = ValueNotifier<int>(0);
+  late final Ticker _ticker = createTicker((_) => _clock.value++)..start();
+  final Map<(int, int, double), TextPainter> _labels = {};
 
   @override
   void dispose() {
     _ticker.dispose();
+    _clock.dispose();
+    for (final t in _labels.values) {
+      t.dispose();
+    }
     super.dispose();
+  }
+
+  /// A shirt number, laid out once for its colour and size.
+  TextPainter _label(int number, Color ink, double size) {
+    if (_labels.length > 96) {
+      for (final t in _labels.values) {
+        t.dispose();
+      }
+      _labels.clear();
+    }
+    return _labels.putIfAbsent((number, ink.toARGB32(), size), () => TextPainter(
+          text: TextSpan(text: '$number', style: TextStyle(color: ink, fontSize: size, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers)),
+          textDirection: TextDirection.ltr,
+        )..layout());
   }
 
   RenderFrame? _frame() {
@@ -58,16 +80,19 @@ class _LivePitchState extends State<LivePitch> with SingleTickerProviderStateMix
       aspectRatio: 105 / 68,
       child: CutClip(
         cut: GlmCut.card,
-        child: CustomPaint(painter: _PitchPainter(_frame(), widget.kits, widget.numbers, p.pitch, p.pitchDark)),
+        child: RepaintBoundary(
+          child: CustomPaint(painter: _PitchPainter(_frame, _label, widget.kits, widget.numbers, p.pitch, p.pitchDark, _clock)),
+        ),
       ),
     );
   }
 }
 
 class _PitchPainter extends CustomPainter {
-  _PitchPainter(this.frame, this.kits, this.numbers, this.grass, this.stripe);
+  _PitchPainter(this.frame, this.label, this.kits, this.numbers, this.grass, this.stripe, Listenable clock) : super(repaint: clock);
 
-  final RenderFrame? frame;
+  final RenderFrame? Function() frame;
+  final TextPainter Function(int number, Color ink, double size) label;
   final Map<String, (Color, Color)> kits;
   final Map<String, (String, int)> numbers;
   final Color grass, stripe;
@@ -93,7 +118,7 @@ class _PitchPainter extends CustomPainter {
       canvas.drawRect(Rect.fromPoints(Offset(x0, (340 - 201.6) * sy), Offset(x0 + d * 165 * sx, (340 + 201.6) * sy)), line);
       canvas.drawRect(Rect.fromPoints(Offset(x0, (340 - 91.6) * sy), Offset(x0 + d * 55 * sx, (340 + 91.6) * sy)), line);
     }
-    final f = frame;
+    final f = frame();
     if (f == null) return;
     final r = (size.width / 52).clamp(6.0, 13.0);
     for (final e in f.players.entries) {
@@ -107,10 +132,7 @@ class _PitchPainter extends CustomPainter {
         ..color = ink.withValues(alpha: .8)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2);
-      final tp = TextPainter(
-        text: TextSpan(text: '${who.$2}', style: TextStyle(color: ink, fontSize: r * 1.05, fontWeight: FontWeight.w800, fontFamily: GlmFonts.numbers)),
-        textDirection: TextDirection.ltr,
-      )..layout();
+      final tp = label(who.$2, ink, r * 1.05);
       tp.paint(canvas, c - Offset(tp.width / 2, tp.height / 2));
     }
     for (final o in f.officials ?? const <Point2>[]) {
@@ -123,7 +145,8 @@ class _PitchPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_PitchPainter old) => true;
+  bool shouldRepaint(_PitchPainter old) =>
+      old.frame != frame || old.kits != kits || old.numbers != numbers || old.grass != grass || old.stripe != stripe;
 }
 
 /// A club colour from the server ('#C8102E'); white when there is none.

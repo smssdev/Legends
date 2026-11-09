@@ -313,6 +313,24 @@ abstract class L {
   /// **'لا اتصال'**
   String get offlineTitle;
 
+  /// No description provided for @notFoundTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصفحة غير موجودة'**
+  String get notFoundTitle;
+
+  /// No description provided for @notFoundBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرابط غير صحيح أو لم يعد موجوداً.'**
+  String get notFoundBody;
+
+  /// No description provided for @keeperSlotOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'خانة الحارس لحارس مرمى فقط'**
+  String get keeperSlotOnly;
+
   /// No description provided for @retry.
   ///
   /// In ar, this message translates to:

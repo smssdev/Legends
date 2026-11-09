@@ -5,6 +5,7 @@
 // outside the league. A tap opens his card and the deal: the price and 1 or 2 coins to register it, or, short of cash
 // with half the price at least, the cash and coins for the rest. Prices and rules come from the API.
 import UiButton from '../../components/ui/UiButton.vue'
+import { uuid } from '../../lib/uuid'
 import { useEscape } from '../../lib/escape'
 import UiDialog from '../../components/ui/UiDialog.vue'
 import EmptyState from '../../components/ui/EmptyState.vue'
@@ -132,14 +133,14 @@ async function buy(compensate: boolean) {
     // A coach's listed player: an offer at his price, for his coach to accept (the negotiations).
     ? await act(`buy:${p.id}`, async () => {
         const res = await api.POST('/leagues/{league}/transfers/offers', { params: { path: { league } },
-          body: { to_club_id: p.seller.club_id!, money: p.price, in: [p.id], idempotency_key: crypto.randomUUID() } as any })
+          body: { to_club_id: p.seller.club_id!, money: p.price, in: [p.id], idempotency_key: uuid() } as any })
         offer = (res.data as { offer?: { id: number } } | undefined)?.offer?.id ?? 0
         return res
       }, {
         success: t('أُرسل عرضك لمدرب {v0}. تابعه في المفاوضات.', { v0: nm(p.seller.club ?? '') }),
         undo: () => (offer ? api.POST('/leagues/{league}/transfers/offers/{offer}/cancel' as any, { params: { path: { league, offer } } }) : Promise.resolve()),
       })
-    : await act(`buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league } }, body: { player_id: p.id, idempotency_key: crypto.randomUUID(), compensate } }))
+    : await act(`buy:${p.id}`, () => api.POST('/leagues/{league}/market/buy', { params: { path: { league } }, body: { player_id: p.id, idempotency_key: uuid(), compensate } }))
   if (r === undefined) return
   if (p.seller.kind !== 'coach') { celebrate.value = p.name; void wallet.load() }
   picked.value = null

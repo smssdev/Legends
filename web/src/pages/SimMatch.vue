@@ -263,6 +263,7 @@
 
 <script setup lang="ts">
 import { scoreText } from '../lib/format'
+import { uuid } from '../lib/uuid'
 import FirstMatchTips from '../components/match/FirstMatchTips.vue'
 import TurnPhone from '../components/match/TurnPhone.vue'
 import { useAuth } from '../stores/auth'
@@ -574,7 +575,7 @@ async function order(label: string, body: Record<string, unknown>) {
   if (!mine.value || finished.value) return
   try {
     const r = props.league ? await leagueMatch.order(props.id, body) : await sim.order(props.id, { team: mine.value, ...body })
-    pending.value.push({ key: crypto.randomUUID(), label, target: r.target_tick })
+    pending.value.push({ key: uuid(), label, target: r.target_tick })
   } catch (e: any) {
     error.value = e.message
   }
@@ -870,7 +871,7 @@ function catchUp() {
 // is hidden, so it is asked again on every return.
 let wakeLock: { released: boolean; release: () => Promise<void> } | null = null
 async function keepAwake() {
-  if (!live.value || finished.value || document.visibilityState !== 'visible' || !('wakeLock' in navigator)) return
+  if (!live.value || finished.value || broadcast.away || document.visibilityState !== 'visible' || !('wakeLock' in navigator)) return
   if (wakeLock && !wakeLock.released) return
   try {
     wakeLock = await (navigator as any).wakeLock.request('screen')
@@ -1126,8 +1127,10 @@ watch(() => [view.value, score.value.home, score.value.away, minuteText.value, f
 }, { immediate: true })
 // [X74] Kept behind the other screens only while live (and until closed from the bar); a recorded match closes on leaving.
 watch(live, (on) => { broadcast.keep = on }, { immediate: true })
-onActivated(() => { broadcast.away = false; broadcast.keep = live.value })
-onDeactivated(() => { broadcast.away = !finished.value })
+// [2026-11-09] Behind the other screens the broadcast keeps polling (the bar's score), but the screen may sleep: the
+// wake lock is let go, and asked again on the way back.
+onActivated(() => { broadcast.away = false; broadcast.keep = live.value; keepAwake() })
+onDeactivated(() => { broadcast.away = !finished.value; releaseAwake() })
 watch(() => broadcast.muteAsk, () => { if (soundOn.value) toggleSound() })
 
 onBeforeUnmount(() => {
@@ -1146,7 +1149,7 @@ onBeforeUnmount(() => {
   clearTimeout(introTimer)
   highlighting.value = false
   sound.stop()
-  voice.stop()
+  voice.dispose()
 })
 
 const lastAttacks = computed(() => (last.value?.events ?? []).filter((e) => e.type === 'attack'))

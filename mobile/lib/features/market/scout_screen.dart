@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -62,7 +63,7 @@ class ScoutRepository {
 
   Future<ScoutView> show(int league) async => ScoutView.fromJson(await _api.get('/leagues/$league/scout'));
   Future<ScoutView> ask(int league, Map<String, Object> criteria) async =>
-      ScoutView.fromJson(await _api.post('/leagues/$league/scout', {...criteria, 'idempotency_key': 'app-${DateTime.now().microsecondsSinceEpoch}'}));
+      ScoutView.fromJson(await Intents.run('scout:$league:$criteria', (key) => _api.post('/leagues/$league/scout', {...criteria, 'idempotency_key': key})));
   Future<ScoutView> finishNow(int league) async => ScoutView.fromJson(await _api.post('/leagues/$league/scout/finish'));
 }
 

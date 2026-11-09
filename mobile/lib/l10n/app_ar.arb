@@ -1786,5 +1786,8 @@
   "simRandom": "خصم عشوائي",
   "simAttack": "هجوم",
   "simMidfield": "وسط",
-  "simDefence": "دفاع"
+  "simDefence": "دفاع",
+  "notFoundTitle": "الصفحة غير موجودة",
+  "notFoundBody": "الرابط غير صحيح أو لم يعد موجوداً.",
+  "keeperSlotOnly": "خانة الحارس لحارس مرمى فقط"
 }

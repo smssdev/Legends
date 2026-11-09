@@ -5,6 +5,7 @@
 // league: the first tap asks to confirm with the price, and the coins go with the match. [Sprint 27 B3] Then the quick
 // simulation plays in the page (QuickMatch, from the server's timeline) before the result shows.
 import { scoreText } from '../../lib/format'
+import { uuid } from '../../lib/uuid'
 import { computed, onMounted, ref } from 'vue'
 import QuickMatch from '../../components/match/QuickMatch.vue'
 import { api } from '../../api/client'
@@ -41,7 +42,7 @@ async function play(opponent: number) {
     return
   }
   confirming.value = null
-  const r = await act('friendly', () => api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: crypto.randomUUID() } }))
+  const r = await act('friendly', () => api.POST('/leagues/{league}/friendlies', { ...path.value, body: { opponent_id: opponent, idempotency_key: uuid() } }))
   const data = r?.data
   if (!data) return
   last.value = data.friendly

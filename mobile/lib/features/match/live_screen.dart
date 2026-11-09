@@ -111,6 +111,9 @@ class _LiveState extends ConsumerState<_Live> with WidgetsBindingObserver {
       wait = s.pollMs ?? wait;
     } on ApiError {
       wait = 4000;
+    } catch (_) {
+      // [2026-11-09] Any other failure (a field the app did not expect) must not stop the match: try again shortly.
+      wait = 4000;
     }
     if (mounted && !_finished) _timer = Timer(Duration(milliseconds: wait), _poll);
   }

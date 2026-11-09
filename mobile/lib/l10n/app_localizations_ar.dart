@@ -121,6 +121,15 @@ class LAr extends L {
   String get offlineTitle => 'لا اتصال';
 
   @override
+  String get notFoundTitle => 'الصفحة غير موجودة';
+
+  @override
+  String get notFoundBody => 'الرابط غير صحيح أو لم يعد موجوداً.';
+
+  @override
+  String get keeperSlotOnly => 'خانة الحارس لحارس مرمى فقط';
+
+  @override
   String get retry => 'إعادة المحاولة';
 
   @override

@@ -49,8 +49,15 @@ export const officialKit = () => pickKit(['#15171C', '#F2E205', '#E85D9A', '#7B3
 const sa = (e, k, v) => { const key = '_' + k; if (e[key] === v) return; e[key] = v; e.setAttribute(k, v) }
 
 let uid = 0
+// [2026-11-09] Text that goes into markup (v-html): a club's code, colour or logo address can never become HTML.
+const ENTITY = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+export const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ENTITY[c])
+
 export const crest = ([c1, c2, t]) => {
   const id = 'cr' + ++uid
+  c1 = esc(c1)
+  c2 = esc(c2)
+  t = esc(t)
   return `<svg viewBox="0 0 64 72"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${shade(c1, -50)}"/></linearGradient></defs><path d="M32 2 L60 10 V36 C60 54 47 65 32 70 C17 65 4 54 4 36 V10 Z" fill="url(#${id})" stroke="${c2}" stroke-width="3"/><path d="M32 9 L53 15 V35 C53 49 43 58 32 62" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed, Tajawal, sans-serif" font-weight="800" font-size="${t.length > 2 ? 17 : 20}" fill="${lum(c1) > 150 ? '#0A1F42' : '#fff'}">${t}</text></svg>`
 }
 

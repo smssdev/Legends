@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/intents.dart';
 import '../../core/api/api_error.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/theme.dart';
@@ -30,8 +31,8 @@ class SocialRepository {
   final ApiClient _api;
 
   Future<Map<String, dynamic>> friendlies(int league) => _api.get('/leagues/$league/friendlies');
-  Future<Map<String, dynamic>> playFriendly(int league, int opponent) =>
-      _api.post('/leagues/$league/friendlies', {'opponent_id': opponent, 'idempotency_key': 'app-${DateTime.now().microsecondsSinceEpoch}'});
+  Future<Map<String, dynamic>> playFriendly(int league, int opponent) => Intents.run(
+      'friendly:$league:$opponent', (key) => _api.post('/leagues/$league/friendlies', {'opponent_id': opponent, 'idempotency_key': key}));
   Future<Map<String, dynamic>> predictions(int league) => _api.get('/leagues/$league/predictions');
   Future<Map<String, dynamic>> predict(int league, int fixture, String pick) => _api.post('/leagues/$league/predictions', {'fixture_id': fixture, 'pick': pick});
   Future<Map<String, dynamic>> newspaper(int league) => _api.get('/leagues/$league/newspaper');

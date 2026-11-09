@@ -751,5 +751,8 @@
   "simRandom": "A random opponent",
   "simAttack": "Attack",
   "simMidfield": "Midfield",
-  "simDefence": "Defence"
+  "simDefence": "Defence",
+  "notFoundTitle": "Page not found",
+  "notFoundBody": "This link is wrong or no longer exists.",
+  "keeperSlotOnly": "The goal is for a goalkeeper only"
 }
