@@ -64,7 +64,10 @@ class MatchResult
             ]);
             self::players($club[$side], $team, $m->seed, $matchId);
             // Morale after the result [X25].
-            Morale::after($club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
+            // [Sprint 49] With the strength gap at kick-off (the other's minus ours), for a draw against a stronger side.
+            $strength = DB::table('clubs')->whereIn('id', [$club['home'], $club['away']])->pluck('strength_snapshot', 'id');
+            $gap = (int) ($strength[$club[$side === 'home' ? 'away' : 'home']] ?? 0) - (int) ($strength[$club[$side]] ?? 0);
+            Morale::after($club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home'], $gap);
             // [X61 E9] And the press statement, judged by the result.
             PressRoom::judge($f, $club[$side], $state['score'][$side], $state['score'][$side === 'home' ? 'away' : 'home']);
             // Coins for the coach: a win or a draw [docs/features/premium.md].

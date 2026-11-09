@@ -15,6 +15,9 @@ namespace App\Engine;
 final class MatchEngine
 {
     /** Attribute mix used in the progress phase for each attack plan. */
+    /** [Sprint 49] The lines in a zone's fight for the ball: the midfield most, the full-backs and forwards there too. */
+    private const ZONE_LINES = ['def' => 1, 'mid' => 2, 'att' => 1];
+
     private const PLAN_MIX = ['counter' => 'counter', 'long' => 'long', 'passing' => 'passing', 'wings' => 'wings', 'shots' => 'shots'];
 
     private array $s;
@@ -212,8 +215,18 @@ final class MatchEngine
         }
         $rate = max(3500, min(8000, $rate));
 
-        $midDiff = $this->ability('home', 'build', Ability::LINES['passing']) - $this->ability('away', 'build', Ability::LINES['passing']);
-        $share = 5000 + intdiv($midDiff * (int) $this->eng['share_slope_bp'], 100)
+        if (isset($this->eng['zone_scale_cp'])) {
+            // [Sprint 49, the owner's guide 6.1.2] The ball is fought for in one of three zones (left, centre, right) each
+            // minute: the players there against the ones facing them, on an S-curve (½ + ½·tanh), so a small edge
+            // counts in proportion and a large one stops short of all of the ball.
+            [$zone, $gap] = $this->zoneGap();
+            $this->s['zone'] = $zone;
+            $base = Curves::share($gap, (int) $this->eng['zone_scale_cp']);
+        } else {
+            $midDiff = $this->ability('home', 'build', Ability::LINES['passing']) - $this->ability('away', 'build', Ability::LINES['passing']);
+            $base = 5000 + intdiv($midDiff * (int) $this->eng['share_slope_bp'], 100);
+        }
+        $share = $base
             + ($home['tactics']['style'] - $away['tactics']['style']) * (int) $this->eng['style_share_bp']
             + $this->gameState('home') - $this->gameState('away')
             + ($this->s['venue'] === 'home' ? (int) $this->eng['home_share_bp'] : 0);
@@ -235,6 +248,39 @@ final class MatchEngine
         $this->s['busy'] = $this->periodEvents;
     }
 
+    /**
+     * [Sprint 49] This minute's zone and the home side's edge in it (rating centi-points). Where the ball goes leans to
+     * both plans (wings to the flanks, passing and long shots through the middle); home's left faces away's right.
+     * In a zone the players whose places are there, by the build-up mix with the side's own home advantage, captain
+     * and men down (ability()); a zone nobody covers is weak.
+     */
+    private function zoneGap(): array
+    {
+        $weights = ['left' => 0, 'centre' => 0, 'right' => 0];
+        foreach (['home', 'away'] as $side) {
+            $plan = $this->s['teams'][$side]['tactics']['plan'];
+            $w = $this->eng['zone_weights'][$plan] ?? $this->eng['zone_weights']['default'];
+            $weights['left'] += (int) $w[0];
+            $weights['centre'] += (int) $w[1];
+            $weights['right'] += (int) $w[2];
+        }
+        $zone = (string) $this->rng->weighted($weights);
+        $facing = ['left' => 'right', 'centre' => 'centre', 'right' => 'left'][$zone];
+
+        return [$zone, $this->ability('home', 'build', self::ZONE_LINES, $zone) - $this->ability('away', 'build', self::ZONE_LINES, $facing)];
+    }
+
+    /** [Sprint 49] Left, centre or right, by a place's width on the pitch (0..680, the formation book's y). */
+    private function zoneOf(string $side, array $p): ?string
+    {
+        if (! $p['on'] || $p['slot'] === null) {
+            return null;
+        }
+        $y = (int) (MatchSetup::slots($this->s['teams'][$side])[$p['slot']]['y'] ?? 340);
+
+        return $y < 227 ? 'left' : ($y > 453 ? 'right' : 'centre');
+    }
+
     /** Trailing teams push after minute 60, and red cards cost initiative. */
     private function gameState(string $side): int
     {
@@ -249,10 +295,13 @@ final class MatchEngine
         return $push - $this->s['teams'][$side]['missing'] * 400;
     }
 
-    /** Ability of a team's lines in a phase, with home advantage, captain and red cards. */
-    private function ability(string $side, string $mix, array $lines): int
+    /** Ability of a team's lines in a phase, with home advantage, captain and red cards; [Sprint 49] in one zone only. */
+    private function ability(string $side, string $mix, array $lines, ?string $zone = null): int
     {
         $team = $this->s['teams'][$side];
+        if ($zone !== null) {
+            $team['players'] = array_values(array_filter($team['players'], fn ($p) => $this->zoneOf($side, $p) === $zone));
+        }
         $value = Ability::lines($team, $mix, $lines);
         if ($side === 'home' && $this->s['venue'] === 'home') {
             // The base advantage, and the home pitch's stage on top [PLAN 2.9].
@@ -307,7 +356,7 @@ final class MatchEngine
             $a = $this->ability($atk, 'build', Ability::LINES['build']) - $tempoLoss + $this->posMod($ta, 'build');
             $d = $this->ability($def, 'press', Ability::LINES['press'])
                 + ($td['pressing'] - 50) * (int) $this->eng['press_bonus_cp'] + $tackleBonus + $this->posMod($td, 'press');
-            $r = $this->phase('build', $a, $d, 0, $this->chemistry($atk));
+            $r = $this->phase('build', $a, $d, 0, $this->chemistry($atk) - $this->leadership($atk));
             $phases[] = ['n' => 'build', 'ok' => $r['ok'], 'p' => $r['p']];
             if (! $r['ok']) {
                 $this->stat($atk, 'builds_lost');
@@ -551,7 +600,68 @@ final class MatchEngine
             default => null,
         };
 
-        return $fit === null ? 0 : (int) $this->eng['synergy_bp'][$fit];
+        return ($fit === null ? 0 : (int) $this->eng['synergy_bp'][$fit]) + $this->planFit($side, $plan);
+    }
+
+    /**
+     * [Sprint 49, the owner's guide 5.1.2] The players the plan leans on, and how many of them have what it asks (wide
+     * men quick and skilful for the wings, quick forwards for the counter, passers in midfield for passing, strong
+     * forwards for long balls, shooters for long shots): half of them is neutral, all of them plan_fit_bp more on the
+     * progress and the chance, none of them as much less. Who the players are, not how good: the same rule for any side.
+     */
+    private function planFit(string $side, string $plan): int
+    {
+        $rule = $this->eng['plan_fit'][$plan] ?? null;
+        if ($rule === null) {
+            return 0;
+        }
+        $count = 0;
+        $met = 0;
+        foreach ($this->s['teams'][$side]['players'] as $p) {
+            if (! $p['on'] || ! in_array($p['slot_line'], $rule['lines'], true)) {
+                continue;
+            }
+            if (! empty($rule['wide']) && $this->zoneOf($side, $p) === 'centre') {
+                continue;
+            }
+            $count++;
+            $ok = true;
+            foreach ($rule['need'] as $attr => $min) {
+                $ok = $ok && ($p['a'][$attr] ?? 0) >= (int) $min;
+            }
+            $met += $ok ? 1 : 0;
+        }
+        $share = $count > 0 ? intdiv($met * 10000, $count) : 0;
+
+        return intdiv(($share - 5000) * (int) $this->eng['plan_fit_bp'], 5000);
+    }
+
+    /**
+     * [Sprint 49, the owner's guide 6.1] The captain's standing: half his years (to 32) and half his rating. A captain
+     * well under the best leader on the pitch costs the side's build-up captain_deficit_bp a whole point of the gap,
+     * twice that while it trails. The armband of a captain off the pitch passes to the best, so no cost then.
+     */
+    private function leadership(string $side): int
+    {
+        if (! isset($this->eng['captain_deficit_bp'])) {
+            return 0;
+        }
+        $team = $this->s['teams'][$side];
+        $score = fn ($p) => intdiv(5000 * min((int) $p['age'], 32), 32) + 50 * (int) $p['a']['ovr'];
+        $best = 0;
+        foreach ($team['players'] as $p) {
+            if ($p['on']) {
+                $best = max($best, $score($p));
+            }
+        }
+        $captain = $this->player($side, $team['takers']['captain'] ?? 0);
+        if (! $captain || ! $captain['on']) {
+            return 0;
+        }
+        $other = $side === 'home' ? 'away' : 'home';
+        $cost = intdiv(($best - $score($captain)) * (int) $this->eng['captain_deficit_bp'], 10000);
+
+        return $this->s['score'][$side] < $this->s['score'][$other] ? 2 * $cost : $cost;
     }
 
     /**
@@ -633,6 +743,12 @@ final class MatchEngine
 
         // Tired legs break [X21]: under the tired line, the victim is injured three times as often.
         $chance = (int) $this->eng['injury_bp'][$level];
+        if (isset($this->eng['injury_tired_bp'])) {
+            // [Sprint 49, the owner's guide 6.3] On top, under 75% fitness: the square of how far under, so the risk
+            // climbs slowly at first and sharply under 70%.
+            $under = max(0, 7500 - $this->fitOf($atk, $victim));
+            $chance += intdiv($under * $under * (int) $this->eng['injury_tired_bp'], 7500 * 7500);
+        }
         if ($this->fitOf($atk, $victim) < (int) ($this->eng['tired_fit'] ?? 0)) {
             $chance = intdiv($chance * (int) $this->eng['tired_injury_bp'], 10000);
         }
@@ -690,11 +806,15 @@ final class MatchEngine
         $shot += $minute > 70 ? ($minute - 70) * (int) $this->eng['late_lapse_cp_per_minute'] : 0;
         $save = $keeper ? Ability::player($keeper, 'keep') : 3000;
 
-        $base = (int) $this->eng['goal_base_bp'][$quality];
-        // [Sprint 39 E3] Morale up finishes the chances; morale down misses them.
         $moraleNow = $this->s['teams'][$atk]['morale'] ?? null;
-        $base += $moraleNow === null ? 0 : ($moraleNow - 50) * (int) $this->eng['morale_finish_bp'];
-        $goalP = max(150, min(8500, $base + intdiv(($shot - $save) * (int) $this->eng['goal_slope_bp'], 100)));
+        if (isset($this->eng['goal_logit'])) {
+            $goalP = $this->goalChance($atk, $def, $quality, $shot, $save, $moraleNow);
+        } else {
+            $base = (int) $this->eng['goal_base_bp'][$quality];
+            // [Sprint 39 E3] Morale up finishes the chances; morale down misses them.
+            $base += $moraleNow === null ? 0 : ($moraleNow - 50) * (int) $this->eng['morale_finish_bp'];
+            $goalP = max(150, min(8500, $base + intdiv(($shot - $save) * (int) $this->eng['goal_slope_bp'], 100)));
+        }
         $this->stat($atk, 'shots');
         $this->stat($atk, 'xg', $goalP);
         if ($quality === 'big') {
@@ -747,6 +867,27 @@ final class MatchEngine
         }
     }
 
+    /**
+     * [Sprint 49, the owner's guide 6.1.4] A shot's goal chance on the logistic curve, so it can never pass its ceiling:
+     * x = the chance's own start (its quality) + the shooter over his reference − the keeper over his − the defence
+     * over its own, + the side's tempo and morale; then 1 / (1 + e^−x), kept between goal_min_bp and goal_max_bp.
+     * Each weight is per rating centi-point, in units of 1/10000 of x; the references centre an ordinary match.
+     */
+    private function goalChance(string $atk, string $def, string $quality, int $shot, int $save, ?int $morale): int
+    {
+        $w = $this->eng['goal_weights'];
+        $ref = $this->eng['goal_ref_cp'];
+        $defence = $this->ability($def, 'mark', Ability::LINES['mark']);
+        $x = (int) $this->eng['goal_logit'][$quality]
+            + intdiv(($shot - (int) $ref['shot']) * (int) $w['shot'], 10)
+            - intdiv(($save - (int) $ref['keep']) * (int) $w['keep'], 10)
+            - intdiv(($defence - (int) $ref['defence']) * (int) $w['defence'], 10)
+            + ($this->s['teams'][$atk]['tactics']['tempo'] - 50) * (int) $w['tempo']
+            + ($morale === null ? 0 : ($morale - 50) * (int) $w['morale']);
+
+        return max((int) $this->eng['goal_min_bp'], min((int) $this->eng['goal_max_bp'], Curves::logistic($x)));
+    }
+
     private function corner(string $atk): void
     {
         $def = $atk === 'home' ? 'away' : 'home';
@@ -757,7 +898,11 @@ final class MatchEngine
         if (! $header || ! $marker) {
             return;
         }
-        $a = Ability::player($this->player($atk, $header), 'head') + ($taker ? ($this->player($atk, $taker)['a']['cross'] - 60) * 10 : 0);
+        $t = $taker ? $this->player($atk, $taker)['a'] : null;
+        // [Sprint 49, the owner's guide 6.1d] The delivery: his crossing, and with the guide on, half of it his passing
+        // and dribbling (0.7 and 0.3) instead.
+        $delivery = $t === null ? 60 : (isset($this->eng['corner_guide']) ? intdiv($t['cross'] + intdiv(70 * $t['pas'] + 30 * $t['dri'], 100), 2) : $t['cross']);
+        $a = Ability::player($this->player($atk, $header), 'head') + ($taker ? ($delivery - 60) * 10 : 0);
         $d = Ability::player($this->player($def, $marker), 'mark');
         $r = $this->phase('header', $a, $d);
         $this->event('corner', $atk, ['taker' => $taker, 'won' => $r['ok']]);
@@ -772,9 +917,13 @@ final class MatchEngine
         $def = $atk === 'home' ? 'away' : 'home';
         $keeper = $this->keeper($def);
         $p = $this->player($atk, $taker);
-        $skill = $kind === 'penalty' ? $p['a']['pen'] : $p['a']['fk'];
-        $base = $kind === 'penalty' ? (int) $this->eng['penalty_goal_bp'] : (int) $this->eng['free_kick_goal_bp'];
-        $goalP = max(100, min(9200, $base + ($skill - ($keeper['a']['gk'] ?? 50)) * 25));
+        if (isset($this->eng['set_piece_guide'])) {
+            $goalP = $kind === 'penalty' ? $this->penaltyChance($atk, $p, $keeper) : $this->freeKickChance($p, $keeper);
+        } else {
+            $skill = $kind === 'penalty' ? $p['a']['pen'] : $p['a']['fk'];
+            $base = $kind === 'penalty' ? (int) $this->eng['penalty_goal_bp'] : (int) $this->eng['free_kick_goal_bp'];
+            $goalP = max(100, min(9200, $base + ($skill - ($keeper['a']['gk'] ?? 50)) * 25));
+        }
         $this->stat($atk, 'shots');
         $this->stat($atk, 'xg', $goalP);
         $this->rate($atk, $taker, 2, 'shots');
@@ -786,6 +935,38 @@ final class MatchEngine
             $this->stat($atk, 'on_target');
             $this->stat($def, 'saves');
         }
+    }
+
+    /**
+     * [Sprint 49, the owner's guide 6.1b] A penalty: 76% at an even duel, + 18 points from 50 to 100 of the taker's
+     * finishing (half his shooting, half his penalties), − 14 the same way for the keeper, ± 4 for his side's morale,
+     * + 6 for a forward who finishes well, − 25 for a defender or midfielder who does not; between 45% and 94%.
+     */
+    private function penaltyChance(string $atk, array $taker, ?array $keeper): int
+    {
+        $g = $this->eng['set_piece_guide'];
+        $skill = intdiv($taker['a']['sho'] + $taker['a']['pen'], 2);
+        $morale = $this->s['teams'][$atk]['morale'] ?? 50;
+        $role = $taker['line'] === 'att' && $taker['a']['sho'] >= (int) $g['finisher_sho'] ? (int) $g['pen_forward_bp']
+            : ($taker['line'] !== 'att' && $taker['a']['sho'] < (int) $g['wrong_taker_sho'] ? -(int) $g['pen_wrong_bp'] : 0);
+        $p = (int) $g['pen_base_bp'] + intdiv(($skill - 50) * (int) $g['pen_skill_bp'], 50)
+            - intdiv((($keeper['a']['gk'] ?? 50) - 50) * (int) $g['pen_keeper_bp'], 50) + ($morale - 50) * (int) $g['pen_morale_bp'] + $role;
+
+        return max((int) $g['pen_min_bp'], min((int) $g['pen_max_bp'], $p));
+    }
+
+    /**
+     * [Sprint 49, the owner's guide 6.1c] A direct free kick: the taker's strike (0.65 shooting and 0.35 passing, here
+     * averaged with his own free-kick skill) against the keeper, 8% at an even duel and 14 points more per 50 of the
+     * gap; between 3% and 28%.
+     */
+    private function freeKickChance(array $taker, ?array $keeper): int
+    {
+        $g = $this->eng['set_piece_guide'];
+        $strike = intdiv(intdiv(65 * $taker['a']['sho'] + 35 * $taker['a']['pas'], 100) + $taker['a']['fk'], 2);
+        $p = (int) $g['fk_base_bp'] + intdiv(($strike - ($keeper['a']['gk'] ?? 50)) * (int) $g['fk_slope_bp'], 50);
+
+        return max((int) $g['fk_min_bp'], min((int) $g['fk_max_bp'], $p));
     }
 
     private function goal(string $side, int $scorer, int $assist, string $kind = 'open'): void

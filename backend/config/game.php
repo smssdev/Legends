@@ -322,7 +322,52 @@ return [
         // 14 [Sprint 43 B1, B2]: home advantage 3% and 2.5% of the ball, and the attackers' own foul taking a goal away.
         // 15 [Sprint 48 B1 to B4]: equal takers in the shootout, a keeper's tiredness by where he plays, a match ends under
         //    seven players, and the auto-pick never puts a field player in goal while a keeper is there.
-        'version' => 15,
+        // 16 [Sprint 49, the owner's guide section 6]: the ball fought for in three zones on a tanh curve, a shot's goal
+        //    chance on the logistic curve (shooter, keeper, defence, tempo, morale; 2% to 55%), and injuries that also
+        //    climb sharply under 75% fitness; the captain's standing, the players' fit for the plan, and the set-piece
+        //    takers by the guide (6.1).
+        'version' => 16,
+        // [Sprint 49] Possession by zone (MatchEngine::zoneGap): home's share in the minute's zone is ½ + ½·tanh(gap /
+        // zone_scale_cp), the gap in rating centi-points between the players there. Where the ball goes leans to both
+        // plans: [left, centre, right] weights summed for the two sides.
+        'zone_scale_cp' => 12000,
+        'zone_weights' => [
+            'default' => [30, 40, 30], 'wings' => [45, 10, 45], 'passing' => [20, 60, 20], 'shots' => [20, 60, 20],
+            'long' => [30, 40, 30], 'counter' => [35, 30, 35],
+        ],
+        // [Sprint 49] A shot's goal chance (MatchEngine::goalChance): logistic(x), x in units of 1/10000. goal_logit is
+        // each quality's start (ln(p / (1 − p)) of its old base); the weights are per rating centi-point (tenths of the
+        // guide's 2.4, 1.6 and 1.4 per point of 100) and per tempo or morale point; the references centre an ordinary
+        // Premier League match. Never under goal_min_bp nor over goal_max_bp (the guide's 2% and 55%).
+        'goal_logit' => ['big' => -13863, 'normal' => -29500, 'half' => -38000, 'long' => -21972, 'header' => -30550],
+        'goal_weights' => ['shot' => 14, 'keep' => 10, 'defence' => 4, 'tempo' => 50, 'morale' => 70],
+        'goal_ref_cp' => ['shot' => 7800, 'keep' => 8000, 'defence' => 7750],
+        'goal_min_bp' => 150, 'goal_max_bp' => 5500,
+        // [Sprint 49] An injury on a foul: injury_bp by the tackling (the guide's tackling aggression), plus
+        // injury_tired_bp × ((75 − fitness) / 75)² under 75% fitness (the guide's 6.3).
+        'injury_tired_bp' => 350,
+        // [Sprint 49, the guide 5.1.2] The players a plan leans on (their lines, wide only or not) and what each needs;
+        // all of them plan_fit_bp on the progress and the chance, half of them nothing, none of them as much less.
+        'plan_fit' => [
+            'wings' => ['lines' => ['mid', 'att'], 'wide' => true, 'need' => ['dri' => 70, 'pac' => 75]],
+            'counter' => ['lines' => ['att'], 'need' => ['pac' => 75]],
+            'passing' => ['lines' => ['mid'], 'need' => ['pas' => 75]],
+            'long' => ['lines' => ['att'], 'need' => ['phy' => 75]],
+            'shots' => ['lines' => ['mid', 'att'], 'need' => ['sho' => 75]],
+        ],
+        'plan_fit_bp' => 120,
+        // [Sprint 49, the guide 6.1a] A captain under the best leader on the pitch: this much of the build-up per whole
+        // point of the gap (12%), twice while behind.
+        'captain_deficit_bp' => 1200,
+        // [Sprint 49, the guide 6.1b and 6.1c] Penalties and direct free kicks (MatchEngine::penaltyChance, freeKickChance).
+        'set_piece_guide' => [
+            'pen_base_bp' => 7600, 'pen_skill_bp' => 1800, 'pen_keeper_bp' => 1400, 'pen_morale_bp' => 8,
+            'finisher_sho' => 75, 'pen_forward_bp' => 600, 'wrong_taker_sho' => 60, 'pen_wrong_bp' => 2500,
+            'pen_min_bp' => 4500, 'pen_max_bp' => 9400,
+            'fk_base_bp' => 700, 'fk_slope_bp' => 1400, 'fk_min_bp' => 300, 'fk_max_bp' => 2800,
+        ],
+        // [Sprint 49, the guide 6.1d] A corner's delivery: half the taker's crossing, half 0.7 passing + 0.3 dribbling.
+        'corner_guide' => 1,
         // القيم مبدئية وتُضبط بأدوات المحاكاة (docs/ENGINE.md 9)
         'overall_weight' => 60, 'attributes_weight' => 40,
         'attack_rate_bp' => 4500,                 // هجمات في الدقيقة للفريقين معاً
@@ -720,7 +765,10 @@ return [
     // Morale [X25], 0..100: after a win, a draw, a defeat, and more down from the second match in a row without a
     // win; in a match each side adds its crowd (twice for the home side on its ground), and `ticket` for each
     // league coach who bought a ticket to cheer it (up to tickets_max). The engine's effect is in engine.morale_bp.
+    // [Sprint 49, the owner's guide 6.3b] margin_tenths: tenths of a point more for each goal of the margin past the
+    // first, up to margin_max (a win up, a loss down); draw_stronger for a draw against a side stronger by stronger_gap.
     'morale' => ['start' => 70, 'min' => 20, 'max' => 100, 'win' => 6, 'draw' => -2, 'loss' => -6, 'winless_extra' => 2,
+        'margin_tenths' => 15, 'margin_max' => 3, 'draw_stronger' => 1, 'stronger_gap' => 300,
         'crowd' => 3, 'ticket' => 2, 'tickets_max' => 6, 'ticket_cost_bp' => 5],
     // [UP13] The assistant takes a team whose coach has not been in its league since its last match (or is on
     // holiday): the tired under min_fitness rest, and one of these balanced formations with balanced tactics.

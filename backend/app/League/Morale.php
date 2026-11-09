@@ -17,17 +17,27 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Morale
 {
-    /** After a match: the result for this club, its morale and its run. */
-    public static function after(int $clubId, int $for, int $against): void
+    /**
+     * After a match: the result for this club, its morale and its run. [Sprint 49, the owner's guide 6.3b] A win or a
+     * loss by more than one goal moves it margin_tenths / 10 more for each goal past the first (up to margin_max goals),
+     * and a draw against a side stronger by stronger_gap (strength centi-points; $gap = theirs − ours) is taken as a
+     * good point (draw_stronger instead of draw).
+     */
+    public static function after(int $clubId, int $for, int $against, int $gap = 0): void
     {
         $c = config('game.morale');
         $club = DB::table('clubs')->where('id', $clubId)->first(['morale', 'winless_run']);
+        $margin = intdiv((int) ($c['margin_tenths'] ?? 0) * min(abs($for - $against) - 1, (int) ($c['margin_max'] ?? 3)), 10);
         if ($for > $against) {
-            $change = (int) $c['win'];
+            $change = (int) $c['win'] + max(0, $margin);
             $run = 0;
+        } elseif ($for === $against && isset($c['draw_stronger']) && $gap >= (int) $c['stronger_gap']) {
+            // A good point: no loss of morale, and the run without a win does not grow.
+            $change = (int) $c['draw_stronger'];
+            $run = (int) $club->winless_run;
         } else {
             $run = (int) $club->winless_run + 1;
-            $change = (int) ($for === $against ? $c['draw'] : $c['loss']) - ($run >= 2 ? (int) $c['winless_extra'] : 0);
+            $change = (int) ($for === $against ? $c['draw'] : $c['loss']) - ($run >= 2 ? (int) $c['winless_extra'] : 0) - max(0, $margin);
             $change += Specialists::effect($clubId, 'mental_coach', 'mental_coach_boost');
             $change = min(0, $change);
         }
