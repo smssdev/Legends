@@ -4,13 +4,16 @@
 /** The game's email, for the coaches' problems and ideas (the address the game's own emails come from). */
 export const EMAIL = 'game.legend.manager@gmail.com'
 
-export type Social = { key: 'facebook' | 'instagram' | 'tiktok' | 'youtube'; name: string; url: string | null }
+export type Social = { key: 'facebook' | 'instagram' | 'tiktok' | 'youtube' | 'x' | 'whatsapp'; name: string; url: string | null }
 
 export const SOCIALS: Social[] = [
   { key: 'facebook', name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61595892341604' },
   { key: 'instagram', name: 'Instagram', url: 'https://www.instagram.com/gamelegendmanager/' },
   { key: 'tiktok', name: 'TikTok', url: 'https://www.tiktok.com/@matchzone100' },
   { key: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/@GameLegendManager' },
+  // [X102] The owner's (2026-11-09): the game's X account and its WhatsApp channel.
+  { key: 'x', name: 'X', url: 'https://x.com/gamelegendtv' },
+  { key: 'whatsapp', name: 'WhatsApp', url: 'https://whatsapp.com/channel/0029VbDeTYZ9MF8wLnWPrD1g' },
 ]
 
 /**
